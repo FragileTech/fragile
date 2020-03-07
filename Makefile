@@ -4,9 +4,9 @@ PROJECT = fragile
 
 .POSIX:
 check:
-	!(grep -R /tmp fragile/tests)
-	flake8 --count fragile
-	pylint fragile
+	-!(grep -R /tmp ./tests)
+	-flake8 --count fragile
+	-pylint fragile
 	black --check fragile
 
 .PHONY: test

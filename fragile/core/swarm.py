@@ -55,14 +55,17 @@ class Swarm(BaseSwarm):
 
     @property
     def best_found(self) -> numpy.ndarray:
+        """Return the best found state."""
         return self.walkers.states.best_obs
 
     @property
     def best_reward_found(self) -> Scalar:
+        """Return the best found reward value."""
         return self.walkers.states.best_reward
 
     @property
     def critic(self) -> BaseCritic:
+        """Return the walkers critic."""
         return self._walkers.critic
 
     def init_swarm(
@@ -195,7 +198,7 @@ class Swarm(BaseSwarm):
                     print(self)
                     clear_output(True)
                 self.epoch += 1
-            except KeyboardInterrupt as e:
+            except KeyboardInterrupt:
                 break
 
     def calculate_end_condition(self) -> bool:

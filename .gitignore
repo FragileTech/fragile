@@ -121,3 +121,5 @@ ENV/
 fragile/experimental
 old_examples/
 data/
+
+.env
