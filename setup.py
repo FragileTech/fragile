@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 
 
 setup(
@@ -13,6 +13,7 @@ setup(
     keywords=["reinforcement learning", "artificial intelligence", "monte carlo", "planning"],
     test_requires=["pytest", "hypothesis"],
     install_requires=["numpy", "scipy", "plangym", "networkx"],
+    packages=find_packages(),
     package_data={"": ["README.md"]},
     classifiers=[
         "Development Status :: 3 - Alpha",
