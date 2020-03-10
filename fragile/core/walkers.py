@@ -378,7 +378,7 @@ class Walkers(SimpleWalkers):
         self.efficiency = 0
         self._min_entropy = 0
         if reward_limit is None:
-            reward_limit = - numpy.inf if self.minimize else numpy.inf
+            reward_limit = -numpy.inf if self.minimize else numpy.inf
         self.reward_limit = reward_limit
 
     def __repr__(self):
@@ -397,8 +397,11 @@ class Walkers(SimpleWalkers):
 
         """
         end_condition = super(Walkers, self).calculate_end_condition()
-        reward_limit_reached = (self.states.best_reward_found < self.reward_limit if self.minimize
-                                else self.states.best_reward_found > self.reward_limit)
+        reward_limit_reached = (
+            self.states.best_reward_found < self.reward_limit
+            if self.minimize
+            else self.states.best_reward_found > self.reward_limit
+        )
         return end_condition or reward_limit_reached
 
     # @profile
