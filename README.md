@@ -105,4 +105,4 @@ If you use this framework in your research please cite us as:
 This project is currently licensed under AGPLv3.0. 
 
 However, if you are considering using it for applications that require a more permissive license, 
-please let me know in this [Issue](https://github.com/Guillemdb/fragile/issues/5)
+please let me know in this [Issue](https://github.com/FragileTech/fragile/issues/5)
