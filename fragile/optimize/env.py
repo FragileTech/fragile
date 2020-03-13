@@ -153,7 +153,7 @@ class Function(Environment):
             Boolean array containing the out condition for the points.
 
         """
-        if self.out_of_domain_check != None:
+        if self.out_of_domain_check is not None:
             for i in range(len(points)):
                 if not end[i]:
                     end[i] = self.out_of_domain_check(points[i])
