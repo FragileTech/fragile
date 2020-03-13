@@ -285,21 +285,6 @@ class BaseEnvironment(StatesOwner):
         """
         raise NotImplementedError
 
-    def calculate_custom_death(self, env_states: StatesEnv) -> np.ndarray:
-        """
-        Check the environment for a custom dead conditions for a batch of \
-        StateEnvs. The base implementation returns False as a default.
-
-        Args:
-            env_states: States representing the data to be checked in the \
-            environment.
-
-        Returns:
-            Boolean array containing the dead condition for the StateEnvs.
-
-        """
-        return np.full(env_states.n, False, dtype=np.bool_)
-
     def reset(
         self, batch_size: int = 1, env_states: StatesEnv = None, *args, **kwargs
     ) -> StatesEnv:
