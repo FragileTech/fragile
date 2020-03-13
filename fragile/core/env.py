@@ -65,6 +65,8 @@ class Environment(BaseEnvironment):
             ends=ends,
             **kwargs
         )
+        custom_death = self.calculate_custom_death(state)
+        state.ends = np.logical_or(state.ends, custom_death)
         return state
 
 
