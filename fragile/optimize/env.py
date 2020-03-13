@@ -140,10 +140,10 @@ class Function(Environment):
         )
         return new_states
 
-    def calculate_custom_end(self, points, end: numpy.ndarray) -> numpy.ndarray:
+    def calculate_custom_end(self, points: numpy.ndarray, end: numpy.ndarray) -> numpy.ndarray:
         """
         Check if points already in the bounds, are not in a custom domain \
-        defined by custom_out_of_domain_check(point) == True. \
+        defined by out_of_domain_check(point) == True. \
         The base implementation returns False as a default.
 
         Args:
@@ -156,7 +156,7 @@ class Function(Environment):
         if self.out_of_domain_check != None:
             for i in range(len(points)):
                 if not end[i]:
-                    end[i] = self.out_of_domain(points[i])
+                    end[i] = self.out_of_domain_check(points[i])
         return end
 
     def calculate_end(self, points: numpy.ndarray) -> numpy.ndarray:
