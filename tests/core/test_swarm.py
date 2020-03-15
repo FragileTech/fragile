@@ -80,6 +80,9 @@ class TestSwarm:
         score = test_scores[request.param]
         return swarm, score
 
+    def test_repr(self, swarm):
+        assert isinstance(swarm.__repr__(), str)
+
     def test_init_not_crashes(self, swarm):
         assert swarm is not None
 
