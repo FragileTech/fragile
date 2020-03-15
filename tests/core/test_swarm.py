@@ -19,7 +19,6 @@ def create_cartpole_swarm():
         reward_limit=131,
         n_walkers=150,
         max_iters=300,
-        prune_tree=True,
         reward_scale=2,
     )
     return swarm
@@ -34,7 +33,6 @@ def create_atari_swarm():
         env=lambda: DiscreteEnv(env),
         n_walkers=67,
         max_iters=20,
-        prune_tree=True,
         reward_scale=2,
         reward_limit=751,
     )
@@ -42,8 +40,7 @@ def create_atari_swarm():
 
 
 def create_function_swarm():
-    shape = (2,)
-    env = Rastrigin(shape=shape)
+    env = Rastrigin(dims=2)
     swarm = FunctionMapper(
         model=lambda x: NormalContinuous(bounds=env.bounds),
         env=lambda: env,

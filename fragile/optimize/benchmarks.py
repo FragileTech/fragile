@@ -94,7 +94,7 @@ class Sphere(OptimBenchmark):
 class Rastrigin(OptimBenchmark):
     benchmark = 0
 
-    def __init__(self, dims: tuple):
+    def __init__(self, dims: int):
         super(Rastrigin, self).__init__(dims=dims, function=rastrigin)
 
     @staticmethod
