@@ -17,8 +17,10 @@ class Function(Environment):
     """
 
     def __init__(
-        self, function: Callable[[numpy.ndarray], numpy.ndarray], bounds: Bounds,
-            out_of_domain_check: Callable[[numpy.ndarray], bool] = None
+        self,
+        function: Callable[[numpy.ndarray], numpy.ndarray],
+        bounds: Bounds,
+        custom_domain_check: Callable[[numpy.ndarray], numpy.ndarray] = None,
     ):
         """
         Initialize a :class:`Function`.
@@ -29,6 +31,9 @@ class Function(Environment):
                       scalar. This function is applied to a batch of walker \
                       observations.
             bounds: :class:`Bounds` that defines the domain of the function.
+            custom_domain_check: Callable that checks points inside the bounds \
+                    to know if they are in a custom domain when it is not just \
+                    a set of rectangular bounds.
 
         """
         if not isinstance(bounds, Bounds):
@@ -36,7 +41,7 @@ class Function(Environment):
         self.function = function
         self.bounds = bounds
         self.shape = self.bounds.shape
-        self.out_of_domain_check = out_of_domain_check
+        self.custom_domain_check = custom_domain_check
         super(Function, self).__init__(observs_shape=self.shape, states_shape=self.shape)
 
     @classmethod
@@ -140,25 +145,6 @@ class Function(Environment):
         )
         return new_states
 
-    def calculate_custom_end(self, points: numpy.ndarray, end: numpy.ndarray) -> numpy.ndarray:
-        """
-        Check if points already in the bounds, are not in a custom domain \
-        defined by out_of_domain_check(point) == True. \
-        The base implementation returns False as a default.
-
-        Args:
-            points: points to be checked.
-
-        Returns:
-            Boolean array containing the out condition for the points.
-
-        """
-        if self.out_of_domain_check is not None:
-            for i in range(len(points)):
-                if not end[i]:
-                    end[i] = self.out_of_domain_check(points[i])
-        return end
-
     def calculate_end(self, points: numpy.ndarray) -> numpy.ndarray:
         """
         Determine if a given batch of vectors lie inside the function domain.
@@ -174,7 +160,9 @@ class Function(Environment):
 
         """
         end = numpy.logical_not(self.bounds.points_in_bounds(points)).flatten()
-        end = self.calculate_custom_end(points, end)
+        if self.custom_domain_check is not None:
+            alive_mask = numpy.logical_not(end)
+            end[alive_mask] = self.custom_domain_check(points[alive_mask], end[alive_mask])
         return end
 
     def sample_bounds(self, batch_size: int) -> numpy.ndarray:
