@@ -16,7 +16,7 @@ def create_cartpole_swarm():
         model=lambda x: DiscreteUniform(env=x),
         walkers=Walkers,
         env=lambda: DiscreteEnv(ClassicControl()),
-        reward_limit=131,
+        reward_limit=121,
         n_walkers=150,
         max_iters=300,
         reward_scale=2,
@@ -60,7 +60,7 @@ swarm_dict = {
 }
 swarm_names = list(swarm_dict.keys())
 test_scores = {
-    "cartpole": 130,
+    "cartpole": 120,
     "atari": 750,
     "function": 10,
 }

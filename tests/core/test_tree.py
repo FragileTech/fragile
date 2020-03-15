@@ -16,7 +16,7 @@ def swarm_with_tree():
     swarm = Swarm(
         model=lambda x: DiscreteUniform(env=x),
         env=lambda: DiscreteEnv(ClassicControl()),
-        reward_limit=131,
+        reward_limit=200,
         n_walkers=150,
         max_iters=300,
         reward_scale=2,
@@ -38,7 +38,7 @@ class TestBaseNetworkxTree:
         assert tree.ROOT_ID in tree.leafs
 
     @staticmethod
-    def integration_test():
+    def test_tree_with_integration_test(swarm_with_tree):
         swarm_with_tree.run()
         assert networkx.is_tree(swarm_with_tree.tree.data)
 
