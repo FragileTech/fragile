@@ -63,6 +63,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.githubpages",
     "m2r",
+    #"sphinx-rtd-theme",
 ]
 # Napoleon settings
 napoleon_google_docstring = True
