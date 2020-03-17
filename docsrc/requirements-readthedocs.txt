@@ -5,5 +5,4 @@ networkx==2.4
 numpy==1.18.1
 scipy==1.4.1
 psycopg2-binary==2.8.4
-pyarrow==0.16.0
 setproctitle==1.1.10
