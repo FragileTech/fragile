@@ -74,7 +74,7 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+docsrc/_build/
 
 # PyBuilder
 target/
@@ -116,11 +116,6 @@ ENV/
 .ci
 
 # Notebooks by default are ignored
-.ipynb
-# Project specific ignores
-examples/*.pickle
-examples/*.gif
-examples/*.png
-examples/
-fragile/experimental/
+*.ipynb
+
 data/

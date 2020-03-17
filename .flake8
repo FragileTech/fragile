@@ -1,10 +1,10 @@
 [flake8]
-ignore=B008,B301,E121,E123,E126,E203,E226,E24,E704,W503,W504,D100,D105,D200,D301,D402
+ignore=B008,B301,C815,C816,C812,D100,D105,D200,D202,D301,D402,E121,E123,E126,E203,E226,E24,E704,W503,W504
 max-line-length=99
 exclude=
     .git
     docs
-    fragile/physics/*
+
 inline-quotes="
 import-order-style=appnexus
 application-package-names=fragile
@@ -12,7 +12,4 @@ per-file-ignores=
     **/__init__.py: F401
     **/tests/**:D
     **/tests/**:F811
-    # Should be resolved one by one
-    ./fragile/experimental/**:D
-    ./fragile/optimize/**:D
-    ./fragile/core/tree.py:D
+    ./fragile/optimize/benchmarks.py:D

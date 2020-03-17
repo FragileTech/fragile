@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Architecture &#8212; Fragile 0.0a documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Examples" href="examples/examples_index.html" />
+    <link rel="prev" title="Welcome to Fragile’s documentation!" href="../index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <style>
+  .states {color: black; font-weight:bold; font-size:16px;
+          border-width: 2px; border-style: solid;
+          border-color: #555555; background-color: #CCCCCC;}
+  .swarm {color: black; font-weight:bold; font-size:16px;
+          border-width: 2px; border-style: solid;
+          border-color: #B85450; background-color: #F8CECC;}
+  .env {color: black; font-weight:bold; font-size:16px;
+        border-width: 2px; border-style: solid;
+         border-color: #6C8EBF; background-color: #7AC9E6;}
+  .model {color: black; font-weight:bold; font-size:16px;
+          border-width: 2px; border-style: solid;
+          border-color: #9673A6; background-color: #E1D5E7;}
+  .walkers {color:black; font-weight:bold; font-size:16px;
+            border-width: 2px; border-style: solid;
+            border-color: #82B366; background-color: #D5E8D4;}
+  .walkers-st {color:black; font-weight:bold; font-size:16px;
+               border-width: 2px; border-style: solid;
+               border-color: #82B366; background-color: #EAFFE9;}
+  .env-st {color: black; font-weight:bold; font-size:16px;
+           border-width: 2px; border-style: solid;
+           border-color: #6C8EBF; background-color: #ABE0FF;}
+  .model-st {color: black; font-weight:bold; font-size:16px;
+             border-width: 2px; border-style: solid;
+             border-color: #9673A6; background-color: #F8EBFF;}
+  .tree {color: black; font-weight:bold; font-size:16px;
+         border-width: 2px; border-style: solid;
+         border-color: #D79B00; background-color: #E0CAB4;}
+  .critic {color: black; font-weight:bold; font-size:16px;
+           border-width: 2px; border-style: solid;
+           border-color: #D6B656; background-color: #FFF2CC;}
+</style><div class="section" id="architecture">
+<h1>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-descriptions">
+<h2>Class descriptions<a class="headerlink" href="#class-descriptions" title="Permalink to this headline">¶</a></h2>
+<p>The fragile framework is designed to quickly implement and test new FractalAI based algorithms.
+The different classes are combined using composition to isolate the different aspects
+of the algorithms:</p>
+<ul class="simple">
+<li><p><span class="swarm">Swarm</span>: It defines the main computation loop for the algorithm, and it coordinates all the other classes involved in the algorithm.</p></li>
+</ul>
+<p>The following classes represent different aspects of modelling a given problem.
+They are state-less, and they write and save data to the <span class="states">States</span>.</p>
+<ul class="simple">
+<li><p><span class="env">Environment</span>: It represents the problem that is being solved, and it
+allows to sample new states as the algorithm evolves.</p></li>
+<li><p><span class="model">Model</span>: This implements the policy used to sample new actions that
+will be applied to the <span class="env">Environment</span>.</p></li>
+<li><p><span class="walkers">Walkers</span>: This class takes care of the data processing necessary
+to implement the FractalAI algorithms.</p></li>
+</ul>
+<p>All the data needed to make a <span class="swarm">Swarm</span> evolve is stored inside <span class="states">States</span>, and all the
+historical data generated is manged by the <span class="tree">StateTree</span>.</p>
+<p>The <span class="states">States</span> contain functionality for storing, accessing and cloning all the data of its
+respective classes.</p>
+<ul>
+<li><p><span class="tree">StateTree</span>: Data structure that stores the data generated by the algorithm, keeping
+track of its history as a directed acyclic graph.</p></li>
+<li><p><span class="env-st">StateEnv</span>: Contains the data provided by the <span class="env">Environment</span>,
+and it describes the problem being solved. It contains at least the following attributes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>states</strong>: This data tracks the internal state of the <code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code> simulation,
+and they are only used to save and restore its state.</p></li>
+<li><p><strong>observs</strong>: This is the data that corresponds to the observations of the current
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code> state. The observations are used for calculating distances.</p></li>
+<li><p><strong>rewards</strong>: This vector contains the rewards associated with each observation.</p></li>
+<li><p><strong>oobs</strong>: Stands for <strong>Out Of Bounds</strong>. It is a vector of booleans that represents and arbitrary
+boundary condition. If a value is <code class="docutils literal notranslate"><span class="pre">True</span></code> the corresponding states will be treated as
+being outside the <code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code> domain. The states considered out of bounds
+will be avoided by the sampling algorithms.</p></li>
+<li><p><strong>terminals</strong>: Vector of booleans representing the successful termination of an environment.
+A <code class="docutils literal notranslate"><span class="pre">True</span></code> value indicates that the <code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code> has successfully reached a
+terminal state that is not out of bounds.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><span class="model-st">StatesModel</span>: Contains the data provided by the :class:Model. This data describes the
+internal state of the <span class="model">Model</span>, and the actions applied to the <span class="env">Environment</span>.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>actions</strong>: Array containing the actions that will be applied to the states.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><span class="walkers-st">StatesWalkers</span>: This data describes the internal state of the <span class="walkers">Walkers</span>.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>id_walkers</strong>: Array of of integers that uniquely identify a given state. They are obtained by hashing the states.</p></li>
+<li><p><strong>compas_clone</strong>: Array of integers containing the index of the walkers selected as companions for cloning.</p></li>
+<li><p><strong>processed_rewards</strong>: Array of normalized rewards. It contains positive values with an
+average of 1. Values greater than one correspond to rewards above the average, and values
+lower than one correspond to rewards below the average.</p></li>
+<li><p><strong>virtual_rewards</strong>: Array containing the virtual rewards assigned to each walker.</p></li>
+<li><p><strong>cum_rewards</strong>: Array of rewards used to compute the virtual rewards. This value can
+accumulate the rewards provided by the <code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code> during an algorithm run.</p></li>
+<li><p><strong>distances</strong>: Array containing the similarity metric of each walker used to compute the virtual rewards.</p></li>
+<li><p><strong>clone_probs</strong>: Array containing the probability that a walker clones to its companion during the cloning phase.</p></li>
+<li><p><strong>will_clone</strong>: Boolean array. A <code class="docutils literal notranslate"><span class="pre">True</span></code> value indicates that the corresponding walker will clone to its companion.</p></li>
+<li><p><strong>in_bounds</strong>: Boolean array. A <code class="docutils literal notranslate"><span class="pre">True</span></code> value indicates that a walker is in the domain defined by the <code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code>.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>The <span class="walkers-st">StatesWalkers</span> also track the data associated with the best state found during the algorithm run:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>best_state</strong>: State of the walker with the best <code class="docutils literal notranslate"><span class="pre">cum_reward</span></code> found during the algorithm run.</p></li>
+<li><p><strong>best_obs</strong>: Observation corresponding to the <code class="docutils literal notranslate"><span class="pre">best_state</span></code>.</p></li>
+<li><p><strong>best_reward</strong>: Best <code class="docutils literal notranslate"><span class="pre">cum_reward</span></code> found during the algorithm run.</p></li>
+<li><p><strong>best_id</strong>: Integer representing the hash of the <code class="docutils literal notranslate"><span class="pre">best_state</span></code>.</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="class-dependency">
+<h2>Class dependency<a class="headerlink" href="#class-dependency" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-default" id="id1">
+<img alt="Composition relationships among the different fragile classes." src="../_images/fragile_architecture.png" />
+<p class="caption"><span class="caption-text">Composition relationship among the different classes</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="swarm-algorithm-loop">
+<h2>Swarm algorithm loop<a class="headerlink" href="#swarm-algorithm-loop" title="Permalink to this headline">¶</a></h2>
+<p>The algorithm loop executed when <span class="swarm">run_swarm</span> is called executes the following methods of the classes listed above.</p>
+<p>Each method name is colored according to the class that implements it. After the method name are listed inside parenthesis
+the different <span class="states">States</span> classes that will be read, and after the <code class="docutils literal notranslate"><span class="pre">-&gt;</span></code> are described the <span class="states">States</span> that each method modifies.</p>
+<ol class="upperalpha">
+<li><p><span class="swarm">reset</span></p>
+<ol class="arabic simple">
+<li><p><span class="env">reset</span> -&gt; <span class="env-st">StatesEnv (SE)</span></p></li>
+<li><p><span class="model">reset</span> -&gt; <span class="model-st">StatesModel (SM)</span></p></li>
+<li><p><span class="walkers">reset</span> -&gt; <span class="walkers-st">StatesWalkers (SW)</span></p></li>
+<li><p><span class="tree">reset</span></p></li>
+</ol>
+</li>
+<li><p>While not <span class="walkers">calculate_end_condition</span> then <span class="swarm">run_step</span>:</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p><span class="swarm">step_and_update_best</span></p>
+<blockquote>
+<div><p>1.1 <span class="walkers">update_best</span> (<span class="env-st">SE</span>) -&gt; <span class="walkers-st">SW</span></p>
+<p>1.2 <span class="walkers">fix_best</span> (<span class="walkers-st">SW</span>) -&gt; <span class="walkers-st">SW</span>, <span class="env-st">SE</span></p>
+<p>1.3 <span class="swarm">step_walkers</span></p>
+<blockquote>
+<div><p>1.3.1 <span class="model">predict</span> (<span class="env-st">SE</span> , <span class="model-st">SM</span>, <span class="walkers-st">SW</span>) -&gt; <span class="model-st">SM</span></p>
+<p>1.3.2 <span class="env">step</span> (<span class="env-st">SE</span> , <span class="model-st">SM</span>, <span class="walkers-st">SW</span>) -&gt; <span class="env-st">SE</span></p>
+<p>1.3.3 <span class="walkers">update_states</span> (<span class="env-st">SE</span> , <span class="model-st">SM</span>) -&gt; <span class="env-st">SE</span> , <span class="model-st">SM</span>, <span class="walkers-st">SW</span></p>
+<p>1.3.4 <span class="walkers">update_id</span> (<span class="walkers-st">SW</span>) -&gt; <span class="walkers-st">SW</span></p>
+<p>1.3.5 <span class="tree">add_states</span> (<span class="env-st">SE</span> , <span class="model-st">SM</span>, <span class="walkers-st">SW</span>)</p>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p><span class="swarm">balance_and_prune</span></p>
+<blockquote>
+<div><p>2.1 <span class="walkers">balance</span></p>
+<p>2.2 <span class="walkers">calculate_distances</span> (<span class="env-st">SE</span>) -&gt; <span class="walkers-st">SW</span></p>
+<p>2.3 <span class="walkers">calculate_virtual_reward</span> (<span class="walkers-st">SW</span>) -&gt; <span class="walkers-st">SW</span></p>
+<p>2.4 <span class="walkers">update_clone_probs</span> (<span class="walkers-st">SW</span>) -&gt; <span class="walkers-st">SW</span></p>
+<p>2.5 <span class="walkers">clone_walkers</span> (<span class="walkers-st">SW</span>) -&gt; <span class="walkers-st">SW</span>, <span class="env-st">SE</span>, <span class="model-st">SM</span></p>
+<p>2.6 <span class="tree">prune_tree</span></p>
+</div></blockquote>
+</li>
+</ol>
+</div></blockquote>
+</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Fragile</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#class-descriptions">Class descriptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class-dependency">Class dependency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#swarm-algorithm-loop">Swarm algorithm loop</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples/examples_index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module_docs/core.html">Core module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module_docs/atari.html">Atari games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module_docs/optimize.html">Function Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module_docs/distributed.html">Distributed Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module_docs/dataviz.html">Data Visualization</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../index.html" title="previous chapter">Welcome to Fragile’s documentation!</a></li>
+      <li>Next: <a href="examples/examples_index.html" title="next chapter">Examples</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Guillem Duran, Sergio Hernandez.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/resources/architecture.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

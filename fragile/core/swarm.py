@@ -4,13 +4,13 @@ from typing import Callable, List
 import numpy
 
 from fragile.core.base_classes import (
+    BaseCritic,
     BaseEnvironment,
     BaseModel,
     BaseStateTree,
     BaseSwarm,
-    BaseCritic,
 )
-from fragile.core.states import States
+from fragile.core.states import StatesEnv, StatesModel
 from fragile.core.utils import clear_output, Scalar
 from fragile.core.walkers import StatesWalkers, Walkers
 
@@ -23,12 +23,57 @@ class Swarm(BaseSwarm):
     Walkers instance to run the Swarm evolution algorithm.
     """
 
-    def __init__(self, walkers: Callable = Walkers, *args, **kwargs):
+    def __init__(
+        self,
+        n_walkers: int,
+        env: Callable[[], BaseEnvironment],
+        model: Callable[[BaseEnvironment], BaseModel],
+        walkers: Callable[..., Walkers] = Walkers,
+        reward_scale: float = 1.0,
+        dist_scale: float = 1.0,
+        tree: Callable[[], BaseStateTree] = None,
+        prune_tree: bool = True,
+        *args,
+        **kwargs
+    ):
+        """
+        Initialize a :class:`Swarm`.
+
+        Args:
+            n_walkers: Number of walkers of the swarm.
+            env: A callable that returns an instance of an Environment.
+            model: A callable that returns an instance of a Model.
+            walkers: A callable that returns an instance of BaseWalkers.
+            reward_scale: Virtual reward exponent for the reward score.
+            dist_scale:Virtual reward exponent for the distance score.
+            tree: class:`StatesTree` that keeps track of the visited states.
+            prune_tree: If `tree` is `None` it has no effect. If true, \
+                       store in the :class:`Tree` only the past history of alive \
+                        walkers, and discard the branches with leaves that have \
+                        no walkers.
+            *args: Additional args passed to init_swarm.
+            **kwargs: Additional kwargs passed to init_swarm.
+
+        """
         self._use_tree = False
         self._prune_tree = False
-        super(Swarm, self).__init__(walkers=walkers, *args, **kwargs)
+        super(Swarm, self).__init__(
+            walkers=walkers,
+            env=env,
+            model=model,
+            n_walkers=n_walkers,
+            reward_scale=reward_scale,
+            dist_scale=dist_scale,
+            tree=tree,
+            prune_tree=prune_tree,
+            *args,
+            **kwargs
+        )
 
-    def __repr__(self):
+    def __len__(self) -> int:
+        return self.walkers.n
+
+    def __repr__(self) -> str:
         return self.walkers.__repr__()
 
     @property
@@ -53,26 +98,45 @@ class Swarm(BaseSwarm):
         return self._walkers
 
     @property
-    def best_found(self) -> numpy.ndarray:
-        return self.walkers.states.best_obs
+    def best_state(self) -> numpy.ndarray:
+        """Return the state of the best walker found in the current algorithm run."""
+        return self.walkers.best_state
 
     @property
-    def best_reward_found(self) -> Scalar:
-        return self.walkers.states.best_reward
+    def best_reward(self) -> Scalar:
+        """Return the reward of the best walker found in the current algorithm run."""
+        return self.walkers.best_reward
+
+    @property
+    def best_id(self) -> int:
+        """
+        Return the id (hash value of the state) of the best walker found in the \
+        current algorithm run.
+        """
+        return self.walkers.best_id
+
+    @property
+    def best_obs(self) -> numpy.ndarray:
+        """
+        Return the observation corresponding to the best walker found in the \
+        current algorithm run.
+        """
+        return self.walkers.best_obs
 
     @property
     def critic(self) -> BaseCritic:
+        """Return the :class:`Critic` of the walkers."""
         return self._walkers.critic
 
     def init_swarm(
         self,
-        env_callable: Callable,
-        model_callable: Callable,
-        walkers_callable: Callable,
+        env_callable: Callable[[], BaseEnvironment],
+        model_callable: Callable[[BaseEnvironment], BaseModel],
+        walkers_callable: Callable[..., Walkers],
         n_walkers: int,
         reward_scale: float = 1.0,
         dist_scale: float = 1.0,
-        tree: Callable = None,
+        tree: Callable[[], BaseStateTree] = None,
         prune_tree: bool = True,
         *args,
         **kwargs
@@ -84,20 +148,22 @@ class Swarm(BaseSwarm):
         model.
 
         Args:
-            env_callable: A function that returns an instance of an
+            env_callable: A callable that returns an instance of an
                 :class:`fragile.Environment`.
-            model_callable: A function that returns an instance of a
+            model_callable: A callable that returns an instance of a
                 :class:`fragile.Model`.
-            walkers_callable: A function that returns an instance of
+            walkers_callable: A callable that returns an instance of
                 :class:`fragile.Walkers`.
             n_walkers: Number of walkers of the swarm.
             reward_scale: Virtual reward exponent for the reward score.
             dist_scale: Virtual reward exponent for the distance score.
-            tree: class:`Tree` that keeps track of the visited states.
-            prune_tree: If `use_tree` is False it has no effect. If true, \
-                       store in the :class:`Tree` the past history of alive walkers.
-            args: Passed to `walkers_callable`.
-            kwargs: Passed to `walkers_callable`.
+            tree: class:`StatesTree` that keeps track of the visited states.
+            prune_tree: If `tree` is `None` it has no effect. If true, \
+                       store in the :class:`Tree` only the past history of alive \
+                        walkers, and discard the branches with leaves that have \
+                        no walkers.
+            args: Passed to ``walkers_callable``.
+            kwargs: Passed to ``walkers_callable``.
 
         Returns:
             None.
@@ -125,43 +191,44 @@ class Swarm(BaseSwarm):
     def reset(
         self,
         walkers_states: StatesWalkers = None,
-        model_states: States = None,
-        env_states: States = None,
+        model_states: StatesModel = None,
+        env_states: StatesEnv = None,
     ):
         """
         Reset the :class:`fragile.Walkers`, the :class:`Environment`, the \
         :class:`Model` and clear the internal data to start a new search process.
 
         Args:
-            model_states: States that define the initial state of the environment.
-            env_states: States that define the initial state of the model.
-            walkers_states: States that define the internal states of the walkers.
-
+            model_states: :class:`StatesModel` that define the initial state of \
+                          the :class:`Model`.
+            env_states: :class:`StatesEnv` that define the initial state of \
+                        the :class:`Environment`.
+            walkers_states: :class:`StatesWalkers` that define the internal \
+                            states of the :class:`Walkers`.
         """
         env_sates = self.env.reset(batch_size=self.walkers.n) if env_states is None else env_states
-
         model_states = (
             self.model.reset(batch_size=self.walkers.n, env_states=env_states)
             if model_states is None
             else model_states
         )
-
         model_states.update(init_actions=model_states.actions)
         self.walkers.reset(env_states=env_sates, model_states=model_states)
-        self.walkers.update_ids()
         if self._use_tree:
+            root_ids = numpy.array([self.tree.ROOT_HASH] * self.walkers.n)
+            self.walkers.states.id_walkers = root_ids
             self.tree.reset(
                 env_states=self.walkers.env_states,
                 model_states=self.walkers.model_states,
                 walkers_states=walkers_states,
             )
-            self.update_tree([0] * self.walkers.n)
+            ids: List[int] = root_ids.tolist()
+            self.update_tree(states_ids=ids)
 
-    # @profile
-    def run_swarm(
+    def run(
         self,
-        model_states: States = None,
-        env_states: States = None,
+        model_states: StatesModel = None,
+        env_states: StatesEnv = None,
         walkers_states: StatesWalkers = None,
         print_every: int = 1e100,
     ):
@@ -169,10 +236,14 @@ class Swarm(BaseSwarm):
         Run a new search process.
 
         Args:
-            model_states: States that define the initial state of the environment.
-            env_states: States that define the initial state of the model.
-            walkers_states: States that define the internal states of the walkers.
-            print_every: Display the algorithm progress every `print_every` epochs.
+            model_states: :class:`StatesModel` that define the initial state of \
+                          the :class:`Model`.
+            env_states: :class:`StatesEnv` that define the initial state of \
+                        the :class:`Function`.
+            walkers_states: :class:`StatesWalkers` that define the internal \
+                            states of the :class:`Walkers`.
+            print_every: Display the algorithm progress every ``print_every`` epochs.
+
         Returns:
             None.
 
@@ -182,11 +253,11 @@ class Swarm(BaseSwarm):
         while not self.calculate_end_condition():
             try:
                 self.run_step()
-                if self.epoch % print_every == 0:
+                if self.epoch % print_every == 0 and self.epoch > 0:
                     print(self)
                     clear_output(True)
                 self.epoch += 1
-            except KeyboardInterrupt as e:
+            except KeyboardInterrupt:
                 break
 
     def calculate_end_condition(self) -> bool:
@@ -211,12 +282,10 @@ class Swarm(BaseSwarm):
         It also updates the :class:`Tree` data structure that takes care of \
         storing the visited states.
         """
-        # old_ids = set(self.walkers.states.id_walkers.copy())
         self.walkers.balance()
-        new_ids = set(self.walkers.states.id_walkers)
-        self.prune_tree(leaf_nodes=set(new_ids))
+        new_ids = set(self.walkers.states.id_walkers.tolist())
+        self.prune_tree(leaf_nodes=new_ids)
 
-    # @profile
     def run_step(self) -> None:
         """
         Compute one iteration of the :class:`Swarm` evolution process and \
@@ -226,7 +295,6 @@ class Swarm(BaseSwarm):
         self.balance_and_prune()
         self.walkers.fix_best()
 
-    # @profile
     def step_walkers(self) -> None:
         """
         Make the walkers evolve to their next state sampling an action from the \
@@ -247,7 +315,7 @@ class Swarm(BaseSwarm):
         )
         env_states = self.env.step(model_states=model_states, env_states=env_states)
         self.walkers.update_states(
-            env_states=env_states, model_states=model_states, end_condition=env_states.ends
+            env_states=env_states, model_states=model_states,
         )
         self.walkers.update_ids()
         self.update_tree(states_ids)
@@ -284,7 +352,7 @@ class NoBalance(Swarm):
     """Swarm that does not perform the cloning process."""
 
     def balance_and_prune(self):
-        """Does noting."""
+        """Do noting."""
         pass
 
     def calculate_end_condition(self):

@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>fragile.optimize.swarm &#8212; Fragile 0.0a documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for fragile.optimize.swarm</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+
+<span class="kn">from</span> <span class="nn">fragile.core.models</span> <span class="kn">import</span> <span class="n">Bounds</span><span class="p">,</span> <span class="n">NormalContinuous</span>
+<span class="kn">from</span> <span class="nn">fragile.core.states</span> <span class="kn">import</span> <span class="n">StatesEnv</span><span class="p">,</span> <span class="n">StatesModel</span><span class="p">,</span> <span class="n">StatesWalkers</span>
+<span class="kn">from</span> <span class="nn">fragile.core.swarm</span> <span class="kn">import</span> <span class="n">Swarm</span>
+<span class="kn">from</span> <span class="nn">fragile.optimize.env</span> <span class="kn">import</span> <span class="n">Function</span>
+
+
+<div class="viewcode-block" id="FunctionMapper"><a class="viewcode-back" href="../../../module_docs/optimize.html#fragile.optimize.swarm.FunctionMapper">[docs]</a><span class="k">class</span> <span class="nc">FunctionMapper</span><span class="p">(</span><span class="n">Swarm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;It is a swarm adapted to minimize mathematical functions.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FunctionMapper.__init__"><a class="viewcode-back" href="../../../module_docs/optimize.html#fragile.optimize.swarm.FunctionMapper.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">NormalContinuous</span><span class="p">(</span><span class="n">bounds</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">bounds</span><span class="p">),</span>
+        <span class="n">accumulate_rewards</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">minimize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">start_same_pos</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a :class:`FunctionMapper`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model: A function that returns an instance of a :class:`Model`.</span>
+<span class="sd">            accumulate_rewards: If ``True`` the rewards obtained after transitioning \</span>
+<span class="sd">                                to a new state will accumulate. If ``False`` only the last \</span>
+<span class="sd">                                reward will be taken into account.</span>
+<span class="sd">            minimize: If ``True`` the algorithm will perform a minimization \</span>
+<span class="sd">                      process. If ``False`` it will be a maximization process.</span>
+<span class="sd">            start_same_pos: If ``True`` all the walkers will have the same \</span>
+<span class="sd">                            starting position.</span>
+<span class="sd">            *args: Passed :class:`Swarm` __init__.</span>
+<span class="sd">            **kwargs: Passed :class:`Swarm` __init__.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FunctionMapper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">accumulate_rewards</span><span class="o">=</span><span class="n">accumulate_rewards</span><span class="p">,</span> <span class="n">minimize</span><span class="o">=</span><span class="n">minimize</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_same_pos</span> <span class="o">=</span> <span class="n">start_same_pos</span></div>
+
+<div class="viewcode-block" id="FunctionMapper.from_function"><a class="viewcode-back" href="../../../module_docs/optimize.html#fragile.optimize.swarm.FunctionMapper.from_function">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_function</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">bounds</span><span class="p">:</span> <span class="n">Bounds</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FunctionMapper&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a :class:`FunctionMapper` using a python callable and a \</span>
+<span class="sd">        :class:`Bounds` instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            function: Callable representing an arbitrary function to be optimized.</span>
+<span class="sd">            bounds: Represents the domain of the function to be optimized.</span>
+<span class="sd">            *args: Passed to :class:`FunctionMapper` __init__.</span>
+<span class="sd">            **kwargs: Passed to :class:`FunctionMapper` __init__.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Instance of :class:`FunctionMapper` that optimizes the target function.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">env</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">function</span><span class="o">=</span><span class="n">function</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">FunctionMapper</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">env</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">(),</span> <span class="nb">super</span><span class="p">(</span><span class="n">FunctionMapper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">())</span>
+
+<div class="viewcode-block" id="FunctionMapper.reset"><a class="viewcode-back" href="../../../module_docs/optimize.html#fragile.optimize.swarm.FunctionMapper.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">walkers_states</span><span class="p">:</span> <span class="n">StatesWalkers</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">model_states</span><span class="p">:</span> <span class="n">StatesModel</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">env_states</span><span class="p">:</span> <span class="n">StatesEnv</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset the :class:`fragile.Walkers`, the :class:`Function` environment, the \</span>
+<span class="sd">        :class:`Model` and clear the internal data to start a new search process.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model_states: :class:`StatesModel` that define the initial state of \</span>
+<span class="sd">                          the :class:`Model`.</span>
+<span class="sd">            env_states: :class:`StatesEnv` that define the initial state of \</span>
+<span class="sd">                        the :class:`Function`.</span>
+<span class="sd">            walkers_states: :class:`StatesWalkers` that define the internal \</span>
+<span class="sd">                            states of the :class:`Walkers`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FunctionMapper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span>
+            <span class="n">walkers_states</span><span class="o">=</span><span class="n">walkers_states</span><span class="p">,</span> <span class="n">model_states</span><span class="o">=</span><span class="n">model_states</span><span class="p">,</span> <span class="n">env_states</span><span class="o">=</span><span class="n">env_states</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_same_pos</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">walkers</span><span class="o">.</span><span class="n">env_states</span><span class="o">.</span><span class="n">observs</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">walkers</span><span class="o">.</span><span class="n">env_states</span><span class="o">.</span><span class="n">observs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">walkers</span><span class="o">.</span><span class="n">env_states</span><span class="o">.</span><span class="n">states</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">walkers</span><span class="o">.</span><span class="n">env_states</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Fragile</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../resources/architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../resources/examples/examples_index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/core.html">Core module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/atari.html">Atari games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/optimize.html">Function Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/distributed.html">Distributed Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/dataviz.html">Data Visualization</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Guillem Duran, Sergio Hernandez.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

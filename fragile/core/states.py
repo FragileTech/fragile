@@ -1,42 +1,48 @@
 import copy
-from typing import Dict, Generator, List, Optional, Set, Tuple, Union
+from typing import Dict, Generator, Iterable, List, Optional, Set, Tuple, Union
 
-import numpy as np
+import numpy
 
-from fragile.core.utils import float_type, hash_numpy, Scalar, StateDict
+from fragile.core.utils import float_type, hash_numpy, similiar_chunks_indexes, StateDict
 
 
 class States:
     """
-    Handles several tensors that will contain the data associated with the \
-    walkers of a Swarm. Each tensor will be associated to a class attribute.
+    Handles several arrays that will contain the data associated with the \
+    walkers of a :class:`Swarm`. Each array will be associated to a class \
+    attribute, and it will store the corresponding value of that attribute \
+    for all the walkers of a :class:`Swarm`.
 
-    This class behaves as a dictionary of tensors with some extra functionality
-    to make easier the process of cloning the along the walkers dimension. Each \
-    tensor will have an extra dimension equal to the number of walkers.
+    This class behaves as a dictionary of arrays with some extra functionality \
+    to make easier the process of cloning the walkers' data. All of its internal \
+    arrays will have an extra first dimension equal to the number of walkers.
 
     In order to define the tensors, a `state_dict` dictionary needs to be \
     specified using the following structure::
 
         state_dict = {"name_1": {"size": tuple([1]),
-                                 "dtype": np.float32,
+                                 "dtype": numpy.float32,
                                 },
                      }
 
-    Where tuple is a tuple indicating the shape of the desired tensor, that will \
-    be accessed using the name_1 attribute of the class. If "size" is not defined \
-    the attribute will be considered a vector of length `batch_size`.
+    Where tuple is a tuple indicating the shape of the desired tensor. The \
+    created arrays will accessible the ``name_1`` attribute of the class, or \
+    indexing the class with ``states["name_1"]``.
+
+    If ``size`` is not defined the attribute will be considered a vector of \
+    length `batch_size`.
 
 
     Args:
         batch_size: The number of items in the first dimension of the tensors.
         state_dict: Dictionary defining the attributes of the tensors.
         **kwargs: Data can be directly specified as keyword arguments.
+
     """
 
     def __init__(self, batch_size: int, state_dict: Optional[StateDict] = None, **kwargs):
         """
-        Initialise a :class:`States`.
+        Initialize a :class:`States`.
 
         Args:
              batch_size: The number of items in the first dimension of the tensors.
@@ -55,7 +61,7 @@ class States:
         """Length is equal to n_walkers."""
         return self.n
 
-    def __getitem__(self, item: str) -> Union[np.ndarray, List[np.ndarray]]:
+    def __getitem__(self, item: str) -> Union[numpy.ndarray, List[numpy.ndarray]]:
         """
         Query an attribute of the class as if it was a dictionary.
 
@@ -69,12 +75,12 @@ class States:
         if isinstance(item, str):
             try:
                 return getattr(self, item)
-            except AttributeError as e:
+            except AttributeError:
                 raise TypeError("Tried to get a non existing attribute with key {}".format(item))
         else:
             raise TypeError("item must be an instance of str, got {} instead".format(item))
 
-    def __setitem__(self, key, value: Union[Tuple, List, np.ndarray]):
+    def __setitem__(self, key, value: Union[Tuple, List, numpy.ndarray]):
         """
         Allow the class to set its attributes as if it was a dict.
 
@@ -100,33 +106,87 @@ class States:
 
     def __hash__(self) -> int:
         _hash = hash(
-            tuple([hash_numpy(x) if isinstance(x, np.ndarray) else hash(x) for x in self.vals()])
+            tuple(
+                [hash_numpy(x) if isinstance(x, numpy.ndarray) else hash(x) for x in self.vals()]
+            )
         )
         return _hash
 
     def group_hash(self, name: str) -> int:
+        """Return a unique id for a given attribute."""
         val = getattr(self, name)
-        return hash_numpy(val) if isinstance(val, np.ndarray) else hash(val)
+        return hash_numpy(val) if isinstance(val, numpy.ndarray) else hash(val)
 
     def hash_values(self, name: str) -> List[int]:
+        """Return a unique id for each walker attribute."""
         values = getattr(self, name)
-        hashes = [hash_numpy(val) if isinstance(val, np.ndarray) else hash(val) for val in values]
+        hashes = [
+            hash_numpy(val) if isinstance(val, numpy.ndarray) else hash(val) for val in values
+        ]
         return hashes
 
-    @classmethod
-    def concat_states(cls, states: List["States"]) -> "States":
+    @staticmethod
+    def merge_states(states: Iterable["States"]) -> "States":
         """
-        Transform a list containing states with only one walker to a single \
-        States instance with many walkers.
+        Combine different states containing the same kind of data into a single \
+        :class:`State` with batch size equal to the sum of all the state batch \
+        sizes.
+
+        Args:
+            states: Iterable returning :class:`States` with the same attributes.
+
+        Returns:
+            :class:`States` containing the combined data of the input values.
+
         """
-        n_walkers = sum([s.n for s in states])
-        names = list(states[0].keys())
-        state_dict = {}
-        for name in names:
-            shape = tuple([n_walkers]) + tuple(states[0][name].shape)
-            state_dict[name] = np.concatenate(tuple([s[name] for s in states])).reshape(shape)
-        s = cls(batch_size=n_walkers, **state_dict)
-        return s
+
+        def merge_one_name(states_list, name):
+            vals = []
+            is_scalar_vector = True
+            for state in states_list:
+                data = state[name]
+                # Attributes that are not numpy arrays are not stacked.
+                if not isinstance(data, numpy.ndarray):
+                    return data
+                state_len = len(state)
+                if len(data.shape) == 0 and state_len == 1:
+                    # Name is scalar vector. Data is scalar value. Transform to array first
+                    value = numpy.array([data]).flatten()
+                elif len(data.shape) == 1 and state_len == 1:
+                    if data.shape[0] == 1:
+                        # Name is scalar vector. Data already transformed to an array
+                        value = data
+                    else:
+                        # Name is a matrix of vectors. Data needs an additional dimension
+                        is_scalar_vector = False
+                        value = numpy.array([data])
+                elif len(data.shape) == 1 and state_len > 1:
+                    # Name is a scalar vector. Data already has is a one dimensional array
+                    value = data
+                elif (
+                    len(data.shape) > 1
+                    and state_len > 1
+                    or len(data.shape) > 1
+                    and len(state) == 1
+                ):
+                    # Name is a matrix of vectors. Data has the correct shape
+                    is_scalar_vector = False
+                    value = data
+                else:
+                    raise ValueError(
+                        "Could not infer data concatenation for attribute %s  with shape %s"
+                        % (name, data.shape)
+                    )
+                vals.append(value)
+            if is_scalar_vector:
+                return numpy.concatenate(vals)
+            else:
+                return numpy.vstack(vals)
+
+        # Assumes all states have the same names.
+        data = {name: merge_one_name(states, name) for name in states[0]._names}
+        batch_size = sum(s.n for s in states)
+        return states[0].__class__(batch_size=batch_size, **data)
 
     @property
     def n(self) -> int:
@@ -188,16 +248,31 @@ class States:
         if self.n < 1:
             return self.vals()
         for i in range(self.n):
-            values = [v[i] if isinstance(v, np.ndarray) else v for v in self.vals()]
+            values = (v[i] if isinstance(v, numpy.ndarray) else v for v in self.vals())
             yield tuple(self._names), tuple(values)
 
-    def split_states(self) -> "States":
+    def split_states(self, n_chunks: int) -> Generator["States", None, None]:
         """
-        Return a generator for n_walkers different states, where each one \
-        contain only the  data corresponding to one walker.
+        Return a generator for n_chunks different states, where each one \
+        contain only the data corresponding to one walker.
         """
-        for k, v in self.iteritems():
-            yield self.__class__(batch_size=1, **dict(zip(k, v)))
+
+        def get_chunck_size(state, start, end):
+            for name in state._names:
+                attr = state[name]
+                if isinstance(attr, numpy.ndarray):
+                    return len(attr[start:end])
+            return int(numpy.ceil(self.n / n_chunks))
+
+        for start, end in similiar_chunks_indexes(self.n, n_chunks):
+            chunk_size = get_chunck_size(self, start, end)
+
+            data = {
+                k: val[start:end] if isinstance(val, numpy.ndarray) else val
+                for k, val in self.items()
+            }
+            new_state = self.__class__(batch_size=chunk_size, **data)
+            yield new_state
 
     def update(self, other: "States" = None, **kwargs):
         """
@@ -216,7 +291,7 @@ class States:
             for name, val in attrs.items():
                 try:
                     getattr(self, name)[:] = copy.deepcopy(val)
-                except (AttributeError, TypeError, KeyError, ValueError) as e:
+                except (AttributeError, TypeError, KeyError, ValueError):
                     setattr(self, name, copy.deepcopy(val))
 
         if other is not None:
@@ -225,7 +300,10 @@ class States:
             update_or_set_attributes(kwargs)
 
     def clone(
-        self, will_clone: np.ndarray, compas_ix: np.ndarray, ignore: Optional[Set[str]] = None
+        self,
+        will_clone: numpy.ndarray,
+        compas_ix: numpy.ndarray,
+        ignore: Optional[Set[str]] = None,
     ):
         """
         Clone all the stored data according to the provided arrays.
@@ -241,7 +319,7 @@ class States:
         """
         ignore = set() if ignore is None else ignore
         for name in self.keys():
-            if isinstance(self[name], np.ndarray) and name not in ignore:
+            if isinstance(self[name], numpy.ndarray) and name not in ignore:
                 self[name][will_clone] = self[name][compas_ix][will_clone]
 
     def get_params_dict(self) -> StateDict:
@@ -249,7 +327,7 @@ class States:
         return {
             k: {"shape": v.shape, "dtype": v.dtype}
             for k, v in self.__dict__.items()
-            if isinstance(v, np.ndarray)
+            if isinstance(v, numpy.ndarray)
         }
 
     def copy(self) -> "States":
@@ -258,7 +336,7 @@ class States:
         return States(batch_size=self.n, **param_dict)
 
     @staticmethod
-    def params_to_arrays(param_dict: StateDict, n_walkers: int) -> Dict[str, np.ndarray]:
+    def params_to_arrays(param_dict: StateDict, n_walkers: int) -> Dict[str, numpy.ndarray]:
         """
         Create a dictionary containing the arrays specified by param_dict.
 
@@ -273,33 +351,75 @@ class States:
         """
         tensor_dict = {}
         for key, val in param_dict.items():
-            val_size = val.get("size")
+            # Shape already includes the number of walkers. Remove walkers axis to create size.
+            shape = val.get("shape")
+            if shape is None:
+                val_size = val.get("size")
+            elif len(shape) > 1:
+                val_size = shape[1:]
+            else:
+                val_size = val.get("size")
+            # Create appropriate shapes with current state's number of walkers.
             sizes = n_walkers if val_size is None else tuple([n_walkers]) + val_size
             if "size" in val:
                 del val["size"]
-            tensor_dict[key] = np.zeros(sizes, **val)
+            if "shape" in val:
+                del val["shape"]
+            tensor_dict[key] = numpy.zeros(shape=sizes, **val)
         return tensor_dict
 
 
 class StatesEnv(States):
-    """Keeps track of the data structures used by the :class:`Env`."""
+    """
+    Keeps track of the data structures used by the :class:`Environment`.
+
+    Attributes:
+        states: This data tracks the internal state of the Environment simulation, \
+                 and they are only used to save and restore its state.
+        observs: This is the data that corresponds to the observations of the \
+                 current :class:`Environment` state. The observations are used \
+                 for calculating distances.
+        rewards: This vector contains the rewards associated with each observation.
+        oobs: Stands for **Out Of Bounds**. It is a vector of booleans that \
+              represents and arbitrary boundary condition. If a value is ``True`` \
+              the corresponding states will be treated as being outside the \
+              :class:`Environment` domain. The states considered out of bounds \
+              will be avoided by the sampling algorithms.
+        terminals: Vector of booleans representing the successful termination \
+                   of an environment. A ``True`` value indicates that the \
+                   :class:`Environment` has successfully reached a terminal \
+                   state that is not out of bounds.
+
+    """
 
     def __init__(self, batch_size: int, state_dict: Optional[StateDict] = None, **kwargs):
+        """
+        Initialise a :class:`StatesEnv`.
+
+        Args:
+             batch_size: The number of items in the first dimension of the tensors.
+             state_dict: Dictionary defining the attributes of the tensors.
+             **kwargs: The name-tensor pairs can also be specified as kwargs.
+
+        """
         self.observs = None
         self.states = None
         self.rewards = None
-        self.ends = None
+        self.oobs = None
+        self.terminals = None
         updated_dict = self.get_params_dict()
         if state_dict is not None:
             updated_dict.update(state_dict)
         super(StatesEnv, self).__init__(state_dict=updated_dict, batch_size=batch_size, **kwargs)
 
     def get_params_dict(self) -> StateDict:
+        """Return a dictionary describing the data stored in the :class:`StatesEnv`."""
         params = {
-            "states": {"dtype": np.int64},
-            "observs": {"dtype": np.float32},
-            "rewards": {"dtype": np.float32},
-            "ends": {"dtype": np.bool_},
+            "states": {"dtype": numpy.int64},
+            "observs": {"dtype": numpy.float32},
+            "rewards": {"dtype": numpy.float32},
+            "oobs": {"dtype": numpy.bool_},
+            "terminals": {"dtype": numpy.bool_},
         }
         state_dict = super(StatesEnv, self).get_params_dict()
         params.update(state_dict)
@@ -307,9 +427,24 @@ class StatesEnv(States):
 
 
 class StatesModel(States):
-    """Keeps track of the data structures used by the :class:`Model`."""
+    """
+    Keeps track of the data structures used by the :class:`Model`.
+
+    Attributes:
+        actions: Represents the actions that will be sampled by a :class:`Model`.
+
+    """
 
     def __init__(self, batch_size: int, state_dict: Optional[StateDict] = None, **kwargs):
+        """
+        Initialise a :class:`StatesModel`.
+
+        Args:
+             batch_size: The number of items in the first dimension of the tensors.
+             state_dict: Dictionary defining the attributes of the tensors.
+             **kwargs: The name-tensor pairs can also be specified as kwargs.
+
+        """
         self.actions = None
         updated_dict = self.get_params_dict()
         if state_dict is not None:
@@ -317,8 +452,9 @@ class StatesModel(States):
         super(StatesModel, self).__init__(state_dict=updated_dict, batch_size=batch_size, **kwargs)
 
     def get_params_dict(self) -> StateDict:
+        """Return the parameter dictionary with tre attributes common to all Models."""
         params = {
-            "actions": {"dtype": np.float32},
+            "actions": {"dtype": numpy.float32},
         }
         state_dict = super(StatesModel, self).get_params_dict()
         params.update(state_dict)
@@ -326,7 +462,38 @@ class StatesModel(States):
 
 
 class StatesWalkers(States):
-    """Keeps track of the data structures used by the :class:`Walkers`."""
+    """
+    Keeps track of the data structures used by the :class:`Walkers`.
+
+    Attributes:
+        id_walkers: Array of of integers that uniquely identify a given state. \
+                    They are obtained by hashing the states.
+        compas_clone: Array of integers containing the index of the walkers \
+                      selected as companions for cloning.
+        processed_rewards: Array of normalized rewards. It contains positive \
+                           values with an average of 1. Values greater than one \
+                           correspond to rewards above the average, and values \
+                           lower than one correspond to rewards below the average.
+        virtual_rewards: Array containing the virtual rewards assigned to each walker.
+        cum_rewards: Array of rewards used to compute the virtual_reward. This \
+                    value can accumulate the rewards provided by the \
+                    :class:`Environment` during an algorithm run.
+        distances: Array containing the similarity metric of each walker used \
+                   to compute the virtual reward.
+        clone_probs: Array containing the probability that a walker clones to \
+                     its companion during the cloning phase.
+        will_clone: Boolean array. A ``True`` value indicates that the \
+                    corresponding walker will clone to its companion.
+        in_bounds: Boolean array. A `True` value indicates that a walker is \
+                   in the domain defined by the :class:`Environment`.
+
+        best_state: State of the walker with the best ``cum_reward`` found \
+                   during the algorithm run.
+        best_obs: Observation corresponding to the ``best_state``.
+        best_reward: Best ``cum_reward`` found during the algorithm run.
+        best_id: Integer representing the hash of the ``best_state``.
+
+    """
 
     def __init__(self, batch_size: int, state_dict: Optional[StateDict] = None, **kwargs):
         """
@@ -334,6 +501,7 @@ class StatesWalkers(States):
 
         Args:
             batch_size: Number of walkers that the class will be tracking.
+            state_dict: Dictionary defining the attributes of the tensors.
             kwargs: attributes that will not be set as numpy.ndarrays
         """
         self.will_clone = None
@@ -343,48 +511,40 @@ class StatesWalkers(States):
         self.virtual_rewards = None
         self.distances = None
         self.clone_probs = None
-        self.alive_mask = None
+        self.in_bounds = None
         self.id_walkers = None
-        self.end_condition = None
+        # This is only to allow __repr__. Should be overridden after reset
+        self.best_id = None
+        self.best_obs = None
+        self.best_state = None
+        self.best_reward = -numpy.inf
         updated_dict = self.get_params_dict()
         if state_dict is not None:
             updated_dict.update(state_dict)
         super(StatesWalkers, self).__init__(
             state_dict=updated_dict, batch_size=batch_size, **kwargs
         )
-        self.best_id = 0
-        self.best_obs = None
-        self.best_reward = -np.inf
-
-    @property
-    def best_found(self) -> np.ndarray:
-        return self.best_obs
-
-    @property
-    def best_reward_found(self) -> Scalar:
-        return self.best_reward
 
     def get_params_dict(self) -> StateDict:
         """Return a dictionary containing the param_dict to build an instance \
         of States that can handle all the data generated by the :class:`Walkers`.
         """
         params = {
-            "id_walkers": {"dtype": np.int64},
-            "compas_clone": {"dtype": np.int64},
+            "id_walkers": {"dtype": numpy.int64},
+            "compas_clone": {"dtype": numpy.int64},
             "processed_rewards": {"dtype": float_type},
             "virtual_rewards": {"dtype": float_type},
             "cum_rewards": {"dtype": float_type},
             "distances": {"dtype": float_type},
             "clone_probs": {"dtype": float_type},
-            "will_clone": {"dtype": np.bool_},
-            "alive_mask": {"dtype": np.bool_},
-            "end_condition": {"dtype": np.bool_},
+            "will_clone": {"dtype": numpy.bool_},
+            "in_bounds": {"dtype": numpy.bool_},
         }
         state_dict = super(StatesWalkers, self).get_params_dict()
         params.update(state_dict)
         return params
 
-    def clone(self, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
+    def clone(self, **kwargs) -> Tuple[numpy.ndarray, numpy.ndarray]:
         """Perform the clone only on cum_rewards and id_walkers and reset the other arrays."""
         clone, compas = self.will_clone, self.compas_clone
         self.cum_rewards[clone] = copy.deepcopy(self.cum_rewards[compas][clone])
@@ -397,15 +557,14 @@ class StatesWalkers(States):
         for attr in other_attrs:
             setattr(self, attr, None)
         self.update(
-            id_walkers=np.zeros(self.n, dtype=np.int64),
-            compas_dist=np.arange(self.n),
-            compas_clone=np.arange(self.n),
-            processed_rewards=np.zeros(self.n, dtype=float_type),
-            cum_rewards=np.zeros(self.n, dtype=float_type),
-            virtual_rewards=np.ones(self.n, dtype=float_type),
-            distances=np.zeros(self.n, dtype=float_type),
-            clone_probs=np.zeros(self.n, dtype=float_type),
-            will_clone=np.zeros(self.n, dtype=np.bool_),
-            alive_mask=np.ones(self.n, dtype=np.bool_),
-            end_condition=np.zeros(self.n, dtype=np.bool_),
+            id_walkers=numpy.zeros(self.n, dtype=numpy.int64),
+            compas_dist=numpy.arange(self.n),
+            compas_clone=numpy.arange(self.n),
+            processed_rewards=numpy.zeros(self.n, dtype=float_type),
+            cum_rewards=numpy.zeros(self.n, dtype=float_type),
+            virtual_rewards=numpy.ones(self.n, dtype=float_type),
+            distances=numpy.zeros(self.n, dtype=float_type),
+            clone_probs=numpy.zeros(self.n, dtype=float_type),
+            will_clone=numpy.zeros(self.n, dtype=numpy.bool_),
+            in_bounds=numpy.ones(self.n, dtype=numpy.bool_),
         )

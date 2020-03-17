@@ -1,14 +1,15 @@
-FROM ubuntu:18.04
+FROM ubuntu:19.04
+ARG JUPYTER_PASSWORD=fragile
 ENV BROWSER=/browser \
-    LC_ALL=en_US.UTF-8 \
-    JUPYTER_PASSWORD=fragile_in_the_cloud
+    LC_ALL=en_US.UTF-8
 COPY requirements.txt fragile/requirements.txt
+COPY requirements-viz.txt fragile/requirements-viz.txt
 RUN apt-get update && \
     apt-get install -y --no-install-suggests --no-install-recommends \
       ca-certificates locales pkg-config apt-utils gcc g++ wget make git cmake libffi-dev \
-      libjpeg-turbo-progs libglib2.0-0 python3 python3-dev python3-distutils python3-setuptools \
+      libjpeg-turbo-progs libglib2.0-0 python3.7 python3.7-dev python3-distutils python3-setuptools \
       libjpeg8-dev zlib1g zlib1g-dev libsm6 libxext6 libxrender1 libfontconfig1 pkg-config flex \
-      bison curl libpng16-16 libpng-dev libjpeg-turbo8 libjpeg-turbo8-dev zlib1g-dev libhdf5-100 \
+      bison curl libpng16-16 libpng-dev libjpeg-turbo8 libjpeg-turbo8-dev zlib1g-dev libhdf5-103 \
       libhdf5-dev libopenblas-base libopenblas-dev gfortran libfreetype6 libfreetype6-dev && \
     ln -s /usr/lib/x86_64-linux-gnu/libz.so /lib/ && \
     ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /lib/ && \
@@ -28,14 +29,13 @@ echo\n\' > /browser && \
 ENV NPY_NUM_BUILD_JOBS 8
 RUN pip3 install --no-cache-dir cython && \
     pip3 install --no-cache-dir \
-        git+https://github.com/openai/gym \
-        networkx jupyter h5py Pillow-simd PyOpenGL matplotlib && \
-    git clone https://github.com/ray-project/ray.git && \
-    pip3 install -U https://s3-us-west-2.amazonaws.com/ray-wheels/latest/ray-0.8.0.dev6-cp36-cp36m-manylinux1_x86_64.whl && \
-    git clone https://github.com/Guillemdb/plangym.git && \
-    cd plangym && pip3 install -e . && cd .. && \
+         h5py Pillow-simd PyOpenGL && \
+    pip3 install -U https://s3-us-west-2.amazonaws.com/ray-wheels/latest/ray-0.9.0.dev0-cp37-cp37m-manylinux1_x86_64.whl && \
+    pip3 install git+https://github.com/FragileTech/atari-py#egg=atari-py && \
+    pip3 install git+https://github.com/FragileTech/plangym#egg=plangym && \
     cd fragile && \
-    pip3 install -U --no-cache-dir -r requirements.txt --no-use-pep517&& \
+    pip3 install --no-cache-dir -r requirements.txt --no-use-pep517&& \
+    pip3 install --no-cache-dir -r requirements-viz.txt --no-use-pep517&& \
     python3 -c "import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot"
 
 # Install holoviews image save
@@ -47,8 +47,7 @@ RUN pip3 install selenium && apt install curl -y && \
 
 COPY . fragile/
 
-RUN cd fragile && pip3 install -e . --no-use-pep517 && pip3 install jupyter psutil setproctitle && \
-    pip3 uninstall -y atari-py && pip3 install git+https://github.com/Guillem-db/atari-py
+RUN cd fragile && pip3 install -e . --no-use-pep517 && pip3 install jupyter psutil setproctitle
 
 RUN pip3 uninstall -y cython && \
     apt-get remove -y cmake pkg-config flex bison curl libpng-dev \

@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Union
+from typing import Optional, Union
 
 from numba import jit
 import numpy as np
@@ -7,7 +7,7 @@ from fragile.core.base_classes import BaseCritic, BaseModel
 from fragile.core.bounds import Bounds
 from fragile.core.env import DiscreteEnv
 from fragile.core.states import StatesEnv, StatesModel, StatesWalkers
-from fragile.core.utils import float_type
+from fragile.core.utils import float_type, StateDict
 
 
 class Model(BaseModel):
@@ -15,7 +15,7 @@ class Model(BaseModel):
     Base class that incorporates a critic for adding arbitrary extra \
     computation steps to any kind of Model.
 
-    It defines, resetting, handles parameter checking, error raising and inserts \
+    It defines, resets, handles parameter checking, raises errors and inserts \
     the calculated actions into its corresponding :class:`States`.
     """
 
@@ -109,7 +109,7 @@ class Model(BaseModel):
         )
         return model_states
 
-    def add_critic_params(self, params: dict, override_params: bool = True) -> dict:
+    def add_critic_params(self, params: dict, override_params: bool = True) -> StateDict:
         """
         Update the model parameters dictionary with the :class:`Critic` parameters.
 
@@ -120,6 +120,7 @@ class Model(BaseModel):
 
         Returns:
             dict containing the parameters of both the :class:`Model` and its :class:`Critic`.
+
         """
         if self.critic is not None:
             critic_vals = self.critic.get_params_dict()
@@ -147,13 +148,15 @@ class Model(BaseModel):
 
         Returns:
             model_states updated with the actions and the dt calculated by the Critic.
+
         """
-        critic_score = (
-            1
-            if self.critic is None
-            else self.critic.calculate(batch_size=batch_size, model_states=model_states, **kwargs)
-        )
-        model_states.update(actions=actions, critic=critic_score)
+        if self.critic is None:
+            model_states.update(actions=actions)
+        else:
+            critic_state = self.critic.calculate(
+                batch_size=batch_size, model_states=model_states, **kwargs
+            )
+            model_states.update(other=critic_state, actions=actions)
         return model_states
 
 
@@ -161,13 +164,13 @@ class _DtModel(Model):
     """
     Model class that allows to sample actions meant to be applied a different \
     number of time steps. In order to account for the target number of time \
-    steps it incorporates the `dt` attribute, that will represent the number of \
+    steps it incorporates in the `dt` attribute, that will represent the number of \
     times that the calculated action should be applied.
 
-    This model is not mean to be instantiated directly but used for class inheritance.
+    This model is not meant to be instantiated directly but used for class inheritance.
     """
 
-    def get_params_dict(self, override_params: bool = True) -> Dict[str, Dict[str, Any]]:
+    def get_params_dict(self, override_params: bool = True) -> StateDict:
         """
         Return the dictionary with the parameters to create a new `DiscreteUniform` model.
 
@@ -177,8 +180,9 @@ class _DtModel(Model):
 
         Returns:
             dict containing the parameters of both the :class:`Model` and its :class:`Critic`.
+
         """
-        dt = {"dt": {"dtype": np.int_}, "critic": {"dtype": np.int_}}
+        dt = {"dt": {"dtype": np.int_}, "critic_score": {"dtype": np.int_}}
         all_params = self.add_critic_params(params=dt, override_params=override_params)
         return all_params
 
@@ -198,14 +202,22 @@ class _DtModel(Model):
 
         Returns:
             model_states updated with the actions and the dt calculated by the Critic.
+
         """
-        critic_score = (
-            1
-            if self.critic is None
-            else self.critic.calculate(batch_size=batch_size, model_states=model_states, **kwargs)
-        )
-        dt = critic_score.astype(int) if isinstance(critic_score, np.ndarray) else critic_score
-        model_states.update(actions=actions, critic=critic_score, dt=dt)
+        if self.critic is not None:
+            critic_states = self.critic.calculate(
+                batch_size=batch_size, model_states=model_states, **kwargs
+            )
+
+            dt = (
+                critic_states.critic_score.astype(int)
+                if isinstance(critic_states.critic_score, np.ndarray)
+                else critic_states.critic_score
+            )
+            model_states.update(actions=actions, other=critic_states, dt=dt)
+        else:
+            dt = np.ones(batch_size, dtype=int)
+            model_states.update(actions=actions, critic_score=dt, dt=dt)
         return model_states
 
 
@@ -223,6 +235,7 @@ class DiscreteModel(_DtModel):
             env: :class:`DiscreteEnvironment` that will be used to extract the \
             number of different possible outcomes.
             critic: Critic used to calculate the time step strategy.
+
         """
         super(DiscreteModel, self).__init__(critic=critic)
         if n_actions is None and env is None:
@@ -234,7 +247,7 @@ class DiscreteModel(_DtModel):
         """Return the number of different possible discrete actions that the model can output."""
         return self._n_actions
 
-    def get_params_dict(self, override_params: bool = True) -> Dict[str, Dict[str, Any]]:
+    def get_params_dict(self, override_params: bool = True) -> StateDict:
         """Return the dictionary with the parameters to create a new `DiscreteUniform` model."""
         params = super(DiscreteModel, self).get_params_dict(override_params=override_params)
         params.update({"actions": {"dtype": np.int_}})
@@ -290,13 +303,14 @@ class BinarySwap(DiscreteModel):
             env: :class:`DiscreteEnvironment` that will be used to extract the \
             dimension of the target vector.
             critic: dt_sampler used to calculate an additional time step strategy.
+
         """
         super(BinarySwap, self).__init__(critic=critic, n_actions=n_actions, env=env)
         if n_swaps <= 0:
             raise ValueError("n_swaps must be greater than 0.")
         self.n_swaps = n_swaps if n_swaps is not None else self.n_actions
 
-    def get_params_dict(self, override_params: bool = True) -> Dict[str, Dict[str, Any]]:
+    def get_params_dict(self, override_params: bool = True) -> StateDict:
         """Return the dictionary with the parameters to create a new :class:`BinarySwap` model."""
         all_params = super(BinarySwap, self).get_params_dict(override_params=override_params)
         actions = {"actions": {"dtype": np.int_, "size": (self.n_actions,)}}
@@ -311,7 +325,7 @@ class BinarySwap(DiscreteModel):
         **kwargs,
     ) -> StatesModel:
         """
-        Swaps the values of `n_swaps` dimensions chosen at random. It works on a \
+        Swap the values of `n_swaps` dimensions chosen at random. It works on a \
         matrix of binary values of size (batch_size, n_actions).
 
         Args:
@@ -322,6 +336,7 @@ class BinarySwap(DiscreteModel):
 
         Returns:
             :class:`States` variable containing the calculated actions and dt.
+
         """
 
         @jit(nopython=True)
@@ -350,9 +365,7 @@ class ContinuousModel(_DtModel):
     possible outcomes.
     """
 
-    def __init__(
-        self, bounds: Bounds, critic: Optional[BaseCritic] = None,
-    ):
+    def __init__(self, bounds: Bounds, critic: Optional[BaseCritic] = None, **kwargs):
         """
         Initialize a :class:`RandomContinuous`.
 
@@ -360,6 +373,8 @@ class ContinuousModel(_DtModel):
             bounds: :class:`Bounds` class defining the range of allowed output \
             values of the model.
             critic: :class:`Critic` that will be used to make additional computation.
+            **kwargs: Ignored. Only defined to march :class:`Model` interface.
+
         """
         super(ContinuousModel, self).__init__(critic=critic)
         self.bounds = bounds
@@ -374,7 +389,7 @@ class ContinuousModel(_DtModel):
         """Return the number of dimensions of the sampled random variable."""
         return self.bounds.shape[0]
 
-    def get_params_dict(self, override_params: bool = True) -> Dict[str, Dict[str, Any]]:
+    def get_params_dict(self, override_params: bool = True) -> StateDict:
         """Return the dictionary with the parameters to create a new `DiscreteUniform` model."""
         all_params = super(ContinuousModel, self).get_params_dict(override_params=override_params)
         actions = {"actions": {"size": self.shape, "dtype": float_type}}
@@ -382,7 +397,7 @@ class ContinuousModel(_DtModel):
         return all_params
 
 
-class ContinousUniform(ContinuousModel):
+class ContinuousUniform(ContinuousModel):
     """Model that samples continuous actions in a given interval using a uniform prior."""
 
     def sample(self, batch_size: int, model_states: StatesModel = None, **kwargs) -> StatesModel:
@@ -397,6 +412,7 @@ class ContinousUniform(ContinuousModel):
         Returns:
             States containing the new sampled discrete random values inside \
             `state.actions` attribute.
+
         """
         actions = self.random_state.uniform(
             low=self.bounds.low, high=self.bounds.high, size=tuple([batch_size]) + self.shape
@@ -418,6 +434,7 @@ class NormalContinuous(ContinuousModel):
         loc: Union[int, float, np.ndarray] = 0.0,
         scale: Optional[Union[int, float, np.ndarray]] = 1.0,
         critic: Optional[BaseCritic] = None,
+        **kwargs,
     ):
         """
         Initialize a :class:`RandomContinuous`.
@@ -427,6 +444,8 @@ class NormalContinuous(ContinuousModel):
             loc: Mean of the gaussian distribution used for sampling actions.
             scale: Standard deviation of the gaussian distribution used for sampling actions.
             critic: :class:`Critic` that will be used to make additional computation.
+            **kwargs: Ignored. Only defined to march :class:`Model` interface.
+
         """
         super(NormalContinuous, self).__init__(critic=critic, bounds=bounds)
         self.loc = loc
