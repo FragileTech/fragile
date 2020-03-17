@@ -1,4 +1,5 @@
 attrs>=19.3.0
+git+https://github.com/FragileTech/plangym.git#egg=plangym
 sphinx-rtd-theme==0.4.3
 m2r==0.2.1
 networkx==2.4
