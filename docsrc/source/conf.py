@@ -26,8 +26,7 @@ class Mock(MagicMock):
 
 sys.path.insert(0, os.path.abspath("../.."))
 sys.setrecursionlimit(1500)
-MOCK_MODULES = ["plangym", "numpy", "atari-py", "scipy",
-                "numba", "holoviews.streams", "pandas", "ray", "streamz", "holoviews"]
+MOCK_MODULES = ["pandas", "holoviews.streams", "holoviews"]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 # -- Project information -----------------------------------------------------
 
@@ -75,8 +74,6 @@ napoleon_use_admonition_for_references = False
 napoleon_use_ivar = False
 napoleon_use_param = True
 napoleon_use_rtype = True
-
-autodoc_mock_imports = ["plangym", "numpy", "atari-py", "scipy", "numba"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
