@@ -18,7 +18,7 @@ from fragile.core.wrappers import (
     CriticWrapper,
     EnvWrapper,
     ModelWrapper,
-    TreeWrapper,
     SwarmWrapper,
+    TreeWrapper,
     WalkersWrapper,
 )

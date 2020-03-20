@@ -3,8 +3,8 @@ from typing import Any, Callable, Iterable, List, Union
 import numpy
 
 from fragile.core import (
-    BaseWrapper,
     BaseCritic,
+    BaseWrapper,
     Environment,
     Model,
     OneWalker,

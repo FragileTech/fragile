@@ -148,9 +148,15 @@ class SwarmViz(SwarmWrapper):
             None.
 
         """
-        Swarm.run(self, root_walker=root_walker, env_states=env_states,
-                                  model_states=model_states, walkers_states=walkers_states,
-                                  report_interval=report_interval, show_pbar=show_pbar)
+        Swarm.run(
+            self,
+            root_walker=root_walker,
+            env_states=env_states,
+            model_states=model_states,
+            walkers_states=walkers_states,
+            report_interval=report_interval,
+            show_pbar=show_pbar,
+        )
         # Stream the last step if it was not streamed
         if not self.epoch - 1 % self.stream_interval == 0:
             self.stream_plots()
