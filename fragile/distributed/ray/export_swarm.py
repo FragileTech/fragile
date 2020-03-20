@@ -12,9 +12,12 @@ from fragile.distributed.ray import ray
 class ExportParamServer(ParamServer):
     """:class:`ParamServer` that can be used with ray."""
 
-    def get_data(self, name: str):
+    def get(self, name: str, default=None):
         """Access attributes of :class:`ParamServer`."""
-        return getattr(self, name)
+        try:
+            return getattr(self, name)
+        except Exception:
+            return default
 
 
 @ray.remote

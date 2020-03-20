@@ -34,9 +34,9 @@ class StepStatesWalkers(StatesWalkers):
         additional attributes.
 
         **init_actions**: Used for storing the first action taken during \
-                          a :internal_swarm:`Swarm` run.
+                          a :swarm:`Swarm` run.
         **init_dts**: Used for storing the first action taken during \
-                          a :internal_swarm:`Swarm` run.
+                          a :swarm:`Swarm` run.
 
         """
         params_dict = super(StepStatesWalkers, self).get_params_dict()
@@ -78,7 +78,7 @@ class StepWalkers(Walkers):
 
 class StoreInitAction(SwarmWrapper):
     """
-    Wrapper that allows a internal_swarm to keep track of the first action and first \
+    Wrapper that allows a swarm to keep track of the first action and first \
     dt sampled during a run.
 
     This is accomplished including an additional update of the walkers data that
@@ -87,7 +87,7 @@ class StoreInitAction(SwarmWrapper):
 
     def __init__(self, swarm: Swarm):
         """
-        Initialize a :internal_swarm:`StoreInitAction`.
+        Initialize a :swarm:`StoreInitAction`.
 
         Args:
             swarm: :class:`Swarm` that will be wrapped to keep track of the \
@@ -147,7 +147,7 @@ class RootModel(BaseModel):
         Args:
             root_env_states: :env-st:`StatesEnv` class containing the data \
                             corresponding to the root walker of a :class:`StepSwarm`.
-            walkers: :walkers:`StepWalkers` used by the internal internal_swarm of a \
+            walkers: :walkers:`StepWalkers` used by the internal swarm of a \
                      :class:`StepSwarm`.
 
         Returns:
@@ -167,13 +167,13 @@ class MajorityDiscreteModel(RootModel):
     :model:`Model` used to sample a discrete ``action`` and ``dt`` for a root walker.
 
     The predicted action will be the initial action taken by a majority of the \
-    internal internal_swarm's walkers. The returned dt will correspond to the smallest dt \
+    internal swarm's walkers. The returned dt will correspond to the smallest dt \
     of all the walkers that took the predicted action.
     """
 
     def predict(self, root_env_states: StatesEnv, walkers: StepWalkers,) -> StatesModel:
         """
-        Select the most frequent ``init_action`` assigned to the internal internal_swarm's walkers.
+        Select the most frequent ``init_action`` assigned to the internal swarm's walkers.
 
         The selected ``dt`` will be equal to the minimum ``init_dts`` among all \
         the walkers that sampled the selected ``init_action``.
@@ -181,7 +181,7 @@ class MajorityDiscreteModel(RootModel):
         Args:
             root_env_states: :env-st:`StatesEnv` class containing the data \
                             corresponding to the root walker of a :class:`StepSwarm`.
-            walkers: :walkers:`StepWalkers` used by the internal internal_swarm of a \
+            walkers: :walkers:`StepWalkers` used by the internal warm of a \
                      :class:`StepSwarm`.
 
         Returns:
@@ -209,18 +209,18 @@ class FollowBestModel(RootModel):
     :model:`Model` used to sample a discrete ``action`` and ``dt`` for a root walker.
 
     The selected action and dt will be equal to the ``init_actions`` and \
-    ``init_dts`` assigned to the best walker found after the internal internal_swarm run.
+    ``init_dts`` assigned to the best walker found after the internal swarm run.
     """
 
     def predict(self, root_env_states: StatesEnv, walkers: StepWalkers,) -> StatesModel:
         """
         Select the ``init_action`` and ``init_dt`` of the best walker found \
-        during the internal internal_swarm run.
+        during the internal swarm run.
 
         Args:
             root_env_states: :env-st:`StatesEnv` class containing the data \
                             corresponding to the root walker of a :class:`StepSwarm`.
-            walkers: :walkers:`StepWalkers` used by the internal internal_swarm of a \
+            walkers: :walkers:`StepWalkers` used by the internal swarm of a \
                      :class:`StepSwarm`.
 
         Returns:
@@ -246,16 +246,16 @@ class FollowBestModel(RootModel):
 
 class StepSwarm(Swarm):
     """
-    The :class:`StepSwarm` is a :internal_swarm`Swarm` that builds a search tree to \
+    The :class:`StepSwarm` is a :swarm:`Swarm` that builds a search tree to \
     sample one action.
 
     It implements the :class:`Swarm` methods, and can be used the same way a \
     :class:`Swarm` can be used.
 
-    This search process for selecting an action if done using an **internal internal_swarm**. \
-    The internal internal_swarm is a :class:`Swarm` that runs the a search process every \
-    time that ``step_and_update_best` is called using the **root walker** as \
-    starting point. The internal internal_swarm can be accessed as the ``internal_swarm`` \
+    This search process for selecting an action if done using an **internal swarm**. \
+    The internal swarm is a :class:`Swarm` that runs the a search process every \
+    time that ``step_and_update_best`` is called using the **root walker** as \
+    starting point. The internal swarm can be accessed as the ``internal_swarm`` \
     attribute of the :class:`StepSwarm`.
 
     The root walker represents the state of the search process of the :class:`StepSwarm`. \
@@ -271,7 +271,7 @@ class StepSwarm(Swarm):
       data of the root walker.
     - ``root_model_states``: :class:`StatesModel` containing the data that will \
       be passed to the :class:`RootModel` to step the root walker.
-    - ``root_walkers_states`: :class:`StatesWalkers` storing data of the root walker.
+    - ``root_walkers_states``: :class:`StatesWalkers` storing data of the root walker.
 
     """
 
@@ -565,7 +565,7 @@ class StepSwarm(Swarm):
 
 class StepToBest(StepSwarm):
     """
-    The :internal_swarm:`StatesToBest` uses an internal :class:`Swarm` to \
+    The :swarm:`StatesToBest` uses an internal :class:`Swarm` to \
     perform a search process and steps the root walker to the best state found \
     by the internal swarm.
     """
