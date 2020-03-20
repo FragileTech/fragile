@@ -1,9 +1,9 @@
 import copy
 import logging
-from typing import Callable, Iterable, List
+from typing import Any, Callable, Iterable, List
 
 import numpy
-from tqdm.autonotebook import trange
+from tqdm.auto import trange
 
 from fragile.core.base_classes import (
     BaseCritic,
@@ -39,6 +39,7 @@ class Swarm(BaseSwarm):
         prune_tree: bool = True,
         report_interval: int = numpy.inf,
         show_pbar: bool = True,
+        use_notebook_widget: bool = True,
         *args,
         **kwargs
     ):
@@ -81,6 +82,7 @@ class Swarm(BaseSwarm):
             **kwargs
         )
         self._notebook_container = None
+        self._use_notebook_widget = use_notebook_widget
         self.setup_notebook_container()
 
     def __len__(self) -> int:
@@ -140,6 +142,21 @@ class Swarm(BaseSwarm):
     def critic(self) -> BaseCritic:
         """Return the :class:`Critic` of the walkers."""
         return self._walkers.critic
+
+    def get_data(self, name: str) -> Any:
+        """Access attributes of the :class:`Swarm` and its children."""
+        if hasattr(self.walkers.states, name):
+            return getattr(self.walkers.states, name)
+        elif hasattr(self.walkers.env_states, name):
+            return getattr(self.walkers.env_states, name)
+        elif hasattr(self.walkers.model_states, name):
+            return getattr(self.walkers.model_states, name)
+        elif hasattr(self.walkers, name):
+            return getattr(self.walkers, name)
+        elif hasattr(self, name):
+            return getattr(self, name)
+        else:
+            raise ValueError("%s is not an attribute of the states, swarm or walkers." % name)
 
     def init_swarm(
         self,
@@ -330,7 +347,7 @@ class Swarm(BaseSwarm):
             if use_tqdm
             else range(self.max_epochs)
         )
-        if running_in_ipython():
+        if running_in_ipython() and self._use_notebook_widget:
             from IPython.core.display import display
 
             display(self._notebook_container)
@@ -338,7 +355,7 @@ class Swarm(BaseSwarm):
 
     def setup_notebook_container(self):
         """Display the display widgets if the Swarm is running in an IPython kernel."""
-        if running_in_ipython():
+        if running_in_ipython() and self._use_notebook_widget:
             from ipywidgets import HTML
             from IPython.core.display import display, HTML as cell_html
 
@@ -348,7 +365,7 @@ class Swarm(BaseSwarm):
 
     def report_progress(self):
         """Report information of the current run."""
-        if running_in_ipython():
+        if running_in_ipython() and self._use_notebook_widget:
             line_break = '<br style="line-height:1px; content: "  ";>'
             html = str(self).replace("\n\n", "\n").replace("\n", line_break)
             # Add strong formatting for headers
@@ -356,7 +373,7 @@ class Swarm(BaseSwarm):
             html = html.replace("Model States", "<strong>Model States</strong>")
             html = html.replace("Environment States", "<strong>Environment Model</strong>")
             self._notebook_container.value = "%s" % html
-        else:
+        elif not running_in_ipython():
             self._log.info(repr(self))
 
     def calculate_end_condition(self) -> bool:
@@ -445,9 +462,9 @@ class Swarm(BaseSwarm):
             self.tree.prune_tree(alive_leafs=leaf_nodes, from_hash=True)
 
     def _update_env_with_root(self, root_walker, env_states) -> StatesEnv:
-        env_states.rewards[:] = copy.deepcopy(root_walker.rewards.flatten())
-        env_states.observs[:] = copy.deepcopy(root_walker.observs.flatten())
-        env_states.states[:] = copy.deepcopy(root_walker.states.flatten())
+        env_states.rewards[:] = copy.deepcopy(root_walker.rewards[0])
+        env_states.observs[:] = copy.deepcopy(root_walker.observs[0])
+        env_states.states[:] = copy.deepcopy(root_walker.states[0])
         return env_states
 
 
