@@ -56,10 +56,14 @@ class Swarm(BaseSwarm):
             tree: class:`StatesTree` that keeps track of the visited states.
             prune_tree: If `tree` is `None` it has no effect. If true, \
                        store in the :class:`Tree` only the past history of alive \
-                        walkers, and discard the branches with leaves that have \
-                        no walkers.
-            report_interval: Display the algorithm progress every ``log_interval`` epochs.
-            show_pbar: A progress bar will display the progress of the algorithm run.
+                       walkers, and discard the branches with leaves that have \
+                       no walkers.
+            report_interval: Display the algorithm progress every ``report_interval`` epochs.
+            show_pbar: If ``True`` A progress bar will display the progress of \
+                       the algorithm run.
+            use_notebook_widget: If ``True`` and the class is running in an IPython \
+                                kernel it will display the evolution of the swarm \
+                                in a widget.
             *args: Additional args passed to init_swarm.
             **kwargs: Additional kwargs passed to init_swarm.
 
@@ -143,7 +147,7 @@ class Swarm(BaseSwarm):
         """Return the :class:`Critic` of the walkers."""
         return self._walkers.critic
 
-    def get_data(self, name: str) -> Any:
+    def get(self, name: str, default: Any = None) -> Any:
         """Access attributes of the :class:`Swarm` and its children."""
         if hasattr(self.walkers.states, name):
             return getattr(self.walkers.states, name)
@@ -155,8 +159,7 @@ class Swarm(BaseSwarm):
             return getattr(self.walkers, name)
         elif hasattr(self, name):
             return getattr(self, name)
-        else:
-            raise ValueError("%s is not an attribute of the states, swarm or walkers." % name)
+        return default
 
     def init_swarm(
         self,

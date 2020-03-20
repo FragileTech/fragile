@@ -273,8 +273,8 @@ class SwarmWrapper(BaseWrapper, Swarm):
     def __repr__(self):
         return self.unwrapped.__class__.__repr__(self.unwrapped)
 
-    def get_data(self, name: str) -> Any:
-        return self.unwrapped.__class__.get_data(self.unwrapped, name)
+    def get(self, name: str) -> Any:
+        return self.unwrapped.__class__.get(self.unwrapped, name)
 
     def increase_epoch(self) -> None:
         return self.unwrapped.__class__.increase_epoch(self.unwrapped)

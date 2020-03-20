@@ -148,7 +148,7 @@ class SwarmViz(SwarmWrapper):
             None.
 
         """
-        Swarm.run(
+        self.unwrapped.__class__.run(
             self,
             root_walker=root_walker,
             env_states=env_states,

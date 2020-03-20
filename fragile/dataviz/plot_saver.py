@@ -71,7 +71,7 @@ class PlotSaver(SwarmWrapper):
             backend=holoviews.Store.current_backend
         )
 
-    def ___run(
+    def run(
         self,
         root_walker: OneWalker = None,
         env_states: StatesEnv = None,
@@ -96,20 +96,4 @@ class PlotSaver(SwarmWrapper):
             None.
 
         """
-        report_interval = self.report_interval if report_interval is None else report_interval
-        self.reset(
-            root_walker=root_walker,
-            model_states=model_states,
-            env_states=env_states,
-            walkers_states=walkers_states,
-        )
-        for _ in self.get_run_loop(show_pbar=show_pbar):
-            if self.calculate_end_condition():
-                break
-            try:
-                self.run_step()
-                if self.epoch % report_interval == 0 and self.epoch > 0:
-                    self.report_progress()
-                self.increase_epoch()
-            except KeyboardInterrupt:
-                break
+        self.unwrapped.__class__.run(self)

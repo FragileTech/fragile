@@ -82,7 +82,9 @@ class States:
         elif isinstance(item, int):
             return self._ix(item)
         else:
-            raise TypeError("item must be an instance of str, got {} instead".format(item))
+            raise TypeError(
+                "item must be an instance of str, got {} of type instead".format(item, type(item))
+            )
 
     def _ix(self, index: int):
         # TODO(guillemdb): Allow slicing
