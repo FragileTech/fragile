@@ -1,2 +1,3 @@
-# fragile
-Fragile Kung fu
+# Welcome to fragile
+
+FractalAI Kung Fu
