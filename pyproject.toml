@@ -46,6 +46,19 @@ dependencies = [
     "flogging",
     "pre-commit",
     "click",
+    "torch",
+    "numba",
+    "numpy",
+    "einops",
+    "hydraclick",
+    "panel",
+    "holoviews",
+    "bokeh",
+    "pillow-simd",
+    "shaolin",
+    "pip>=24.2",
+    "quantlib>=1.35",
+    "hvplot>=0.11.0",
 ]  # ToDo: Modify according to your needs!
 [project.urls]
 # important URLs for this project
@@ -57,7 +70,7 @@ fragile = "fragile.__main__:run"
 
 [project.optional-dependencies]
 lint= ["mypy", "ruff", "mypy"]
-test = ["pytest", "pytest-cov", "pytest-xdist"]
+test = ["pytest", "pytest-cov", "pytest-xdist", "tomli>=2.0.2"]
 docs = [
     "autoapi",
     "jupyter-book",
@@ -157,7 +170,7 @@ line-length = 99
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 select = [
-    "ARG", "C4", "D", "E", "EM", "F", "FBT",
+    "ARG", "C4", "E", "EM", "F", "FBT",
     "FLY", "FIX", "FURB", "N", "NPY",
     "INP", "ISC", "PERF", "PIE", "PL",
     "PTH", "RET", "RUF", "S", "T10",
@@ -211,7 +224,7 @@ quote-style = "double"
 [tool.ruff.lint.isort]
 known-first-party = ["fragile"]
 forced-separate = ["conftest"]
-force-single-line = true
+force-single-line = false
 order-by-type = false
 force-sort-within-sections = true
 combine-as-imports = true
