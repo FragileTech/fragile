@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from typing import Any
 
+import numpy as np
 import torch
 from torch import Tensor
 
@@ -12,9 +13,9 @@ def random_choice(x, size=None, replace=True):
     size = size if size is not None else 1
     if replace:
         size = size if isinstance(size, tuple) else (size,)
-        indices = random_state.randint(0, x.shape[0], size=size, device=x.device)
+        indices = random_state.randint(0, x.shape[0], size=size).to(x.device)
     else:
-        indices = random_state.randperm(x.shape[0], device=x.device)[:size]
+        indices = random_state.randperm(x.shape[0]).to(x.device)[:size]
     return x[indices]
 
 
@@ -73,6 +74,30 @@ def calculate_distance(
     return distance_norm if not return_compas else (distance_norm, compas)
 
 
+def cross_distance(
+    observ: Tensor,
+    dst_observ: Tensor,
+    oobs: Tensor = None,
+    distance_function: Callable = l2_norm,
+    return_compas: bool = False,
+    return_distance: bool = False,
+    compas: Tensor = None,
+):
+    """Calculate a distance metric for each walker with respect to a random companion."""
+    if compas is None:
+        compas = random_alive_compas(oobs, dst_observ)[: observ.shape[0]]
+    flattened_observs = observ.view(observ.shape[0], -1)
+    flattened_dst_observs = dst_observ.view(dst_observ.shape[0], -1)
+    distance = distance_function(flattened_observs, flattened_dst_observs[compas])
+    distance_norm = relativize(distance.flatten())
+    data = (distance_norm,)
+    if return_compas:
+        data = (*data, compas)
+    if return_distance:
+        data = (*data, distance)
+    return data[0] if len(data) == 1 else tuple(data)
+
+
 def calculate_virtual_reward(
     observs: Tensor,
     rewards: Tensor,
@@ -100,6 +125,37 @@ def calculate_virtual_reward(
     return return_data[0] if len(return_data) == 1 else tuple(return_data)
 
 
+def cross_virtual_reward(
+    observs: Tensor,
+    rewards: Tensor,
+    dst_observs: Tensor,
+    oobs: Tensor = None,
+    dist_coef: float = 1.0,
+    reward_coef: float = 1.0,
+    other_reward: Tensor = 1.0,
+    return_compas: bool = False,
+    return_distance: bool = False,
+    distance_function: Callable = l2_norm,
+) -> Tensor | (tuple[Tensor, Tensor] | tuple[Tensor, Tensor, Tensor]):
+    """Calculate the virtual rewards given the required data."""
+    distance_norm, compas, distance = cross_distance(
+        observs,
+        dst_observs,
+        oobs,
+        distance_function,
+        return_compas=True,
+        return_distance=True,
+    )
+    rewards_norm = relativize(rewards.flatten())
+    virtual_reward = distance_norm**dist_coef * rewards_norm**reward_coef * other_reward
+    return_data = (virtual_reward,)
+    if return_compas:
+        return_data = (*return_data, compas)
+    if return_distance:
+        return_data = (*return_data, distance)
+    return return_data[0] if len(return_data) == 1 else tuple(return_data)
+
+
 def calculate_clone(
     virtual_rewards: Tensor, oobs: Tensor | None = None, eps=1e-8
 ) -> tuple[Tensor, Tensor, Tensor]:
@@ -107,6 +163,24 @@ def calculate_clone(
     compas_ix = random_alive_compas(oobs, virtual_rewards)
     vir_rew = virtual_rewards.flatten()
     clone_probs = (vir_rew[compas_ix] - vir_rew) / torch.where(
+        vir_rew > eps,
+        vir_rew,
+        torch.tensor(eps, device=vir_rew.device),
+    )
+    will_clone = clone_probs.flatten() > torch.randperm(
+        len(clone_probs), device=clone_probs.device
+    )
+    return compas_ix, will_clone, clone_probs
+
+
+def cross_clone(
+    virtual_rewards: Tensor, dst_virtual_reward: Tensor, oobs: Tensor | None = None, eps=1e-8
+) -> tuple[Tensor, Tensor, Tensor]:
+    """Calculate the clone indexes and masks from the virtual rewards."""
+    compas_ix = random_alive_compas(oobs, dst_virtual_reward)[: virtual_rewards.shape[0]]
+    vir_rew = virtual_rewards.flatten()
+    dst_vir_rew = dst_virtual_reward.flatten()
+    clone_probs = (dst_vir_rew[compas_ix] - vir_rew) / torch.where(
         vir_rew > eps,
         vir_rew,
         torch.tensor(eps, device=vir_rew.device),
@@ -158,9 +232,17 @@ def fai_iteration(
     return compas_ix, will_clone, *rest_data
 
 
-def clone_tensor(x: Tensor, compas_ix: Tensor, will_clone: Tensor) -> Tensor:
+def clone_tensor(
+    x: Tensor | np.ndarray, compas_ix: Tensor, will_clone: Tensor
+) -> Tensor | np.ndarray:
     """Clone the data from the compas indexes."""
     if not will_clone.any():
         return x
-    x[will_clone] = x[compas_ix][will_clone]
+    if isinstance(x, torch.Tensor):
+        x[will_clone] = x[compas_ix][will_clone]
+    elif isinstance(x, np.ndarray):
+        compas_ix, will_clone = compas_ix.cpu().numpy(), will_clone.cpu().numpy()
+        x[will_clone] = x[compas_ix][will_clone]
+    else:
+        raise ValueError(f"Unsupported type {type(x)}")
     return x
