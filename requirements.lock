@@ -468,11 +468,9 @@ pillow==11.0.0
     # via imageio
     # via matplotlib
     # via plangym
-pillow-simd==9.5.0.post2
-    # via fragile
 pip==24.2
     # via fragile
-plangym==0.1.28
+plangym==0.1.29
     # via fragile
 platformdirs==4.3.6
     # via jupyter-core
