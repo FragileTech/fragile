@@ -61,27 +61,27 @@ def test_eggholder(test_inputs):
     output = eggholder(x)
     # Known global minimum
     expected_min = -959.6407
-    assert torch.isclose(
-        output[0], torch.tensor(expected_min), atol=1e-3
-    ), "Eggholder function minimum value mismatch"
+    assert torch.isclose(output[0], torch.tensor(expected_min), atol=1e-3), (
+        "Eggholder function minimum value mismatch"
+    )
 
 
 def test_styblinski_tang(test_inputs):
     x = test_inputs["styblinski_tang"]
     output = styblinski_tang(x)
     expected_value = torch.tensor([-49.2970, -78.3324])  # Known minimum value per sample
-    assert torch.allclose(
-        output, expected_value, atol=1e-3
-    ), "Styblinski-Tang function output mismatch"
+    assert torch.allclose(output, expected_value, atol=1e-3), (
+        "Styblinski-Tang function output mismatch"
+    )
 
 
 def test_rosenbrock(test_inputs):
     x = test_inputs["rosenbrock"]
     output = rosenbrock(x)
     expected_values = torch.tensor([0.0, 0.0, 0.0])
-    assert torch.allclose(
-        output, expected_values, atol=1e-3
-    ), "Rosenbrock function output mismatch"
+    assert torch.allclose(output, expected_values, atol=1e-3), (
+        "Rosenbrock function output mismatch"
+    )
 
 
 def test_easom(test_inputs):
@@ -95,9 +95,9 @@ def test_holder_table(test_inputs):
     x = test_inputs["holder_table"]
     output = holder_table(x)
     expected_values = torch.tensor([-19.2085, -0.0])
-    assert torch.allclose(
-        output, expected_values, atol=1e-3
-    ), "Holder Table function output mismatch"
+    assert torch.allclose(output, expected_values, atol=1e-3), (
+        "Holder Table function output mismatch"
+    )
 
 
 def test_lennard_jones(test_inputs):
@@ -139,9 +139,9 @@ def test_styblinski_tang_class():
     x = torch.ones((1, dims)) * -2.903534
     output = benchmark(x)
     expected_value = torch.tensor([-78.3324])
-    assert torch.allclose(
-        output, expected_value, atol=1e-3
-    ), "Styblinski-Tang class output mismatch"
+    assert torch.allclose(output, expected_value, atol=1e-3), (
+        "Styblinski-Tang class output mismatch"
+    )
 
 
 def test_rosenbrock_class():
@@ -192,9 +192,9 @@ def test_benchmark_sampling():
     for benchmark in benchmarks:
         samples = benchmark.sample(10)
         assert samples.shape[0] == 10, f"Sample size mismatch in {benchmark.__class__.__name__}"
-        assert (
-            samples.shape[1] == benchmark.dims
-        ), f"Sample dimension mismatch in {benchmark.__class__.__name__}"
+        assert samples.shape[1] == benchmark.dims, (
+            f"Sample dimension mismatch in {benchmark.__class__.__name__}"
+        )
 
 
 # Test the bounds in the OptimBenchmark classes
@@ -211,12 +211,12 @@ def test_benchmark_bounds():
     ]
     for benchmark in benchmarks:
         bounds = benchmark.bounds
-        assert hasattr(bounds, "low") and hasattr(
-            bounds, "high"
-        ), f"Bounds missing in {benchmark.__class__.__name__}"
-        assert bounds.shape == (
-            benchmark.dims,
-        ), f"Bounds shape mismatch in {benchmark.__class__.__name__}"
+        assert hasattr(bounds, "low") and hasattr(bounds, "high"), (
+            f"Bounds missing in {benchmark.__class__.__name__}"
+        )
+        assert bounds.shape == (benchmark.dims,), (
+            f"Bounds shape mismatch in {benchmark.__class__.__name__}"
+        )
 
         # Test that the best_state is within bounds
         best_state = benchmark.best_state

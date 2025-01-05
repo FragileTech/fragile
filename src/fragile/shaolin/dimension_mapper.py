@@ -296,8 +296,6 @@ class ColorDim(DimensionMapper):
                 np.nan: np.nan,
                 0.0: 0.0,
                 1.0: 1.0,
-                False: 0.0,
-                True: 1.0,
                 "False": 0.0,
                 "True": 1.0,
             })

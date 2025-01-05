@@ -199,7 +199,7 @@ class TorchBounds:
                 :class:`Bounds` instance.
 
         Examples:
-            >>> intervals = ((-1, 1), (-2, 1), (2, 3))
+            >>> intervals = ((-1., 1.), (-2., 1.), (2., 3.))
             >>> bounds = Bounds.from_tuples(intervals)
             >>> print(bounds)
             Bounds shape torch.float32 dtype torch.Size([3]) \

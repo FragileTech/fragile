@@ -186,7 +186,7 @@ ignore = [
     "PTH123", "PLR6301", "PLR0917", "S311", "S403", "PLR0914", "PLR0915", "S608",
     "EM102", "PTH111", "FIX004", "UP035", "PLW2901", "S318", "S404",
     "S408", 'S405', 'S607', 'S603',
-    'E902', "TD001", "TD002", "FIX001", "T201", "PLW3201",
+    'E902', "TD001", "TD002", "FIX001", "T201", "PLW3201", "RUF052",
 ]
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]

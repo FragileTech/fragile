@@ -87,8 +87,8 @@ class StreamingPlot:
         """
 
         def plot_func(data):
-            _plot = plot(data)
-            return self.opts(plot=_plot)
+            plot_ = plot(data)
+            return self.opts(plot=plot_)
 
         self.plot = holoviews.DynamicMap(plot_func, streams=[self.data_stream])
         self.opts()
