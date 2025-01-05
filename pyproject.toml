@@ -368,7 +368,7 @@ style = [
     "ruff check --fix-only --unsafe-fixes {args:.}", "ruff format {args:.}",
 ]
 check = ["ruff check {args:.}", "ruff format --diff {args:.}"]
-all = ["style", "check", "typing"]
+all = ["style", "check"]
 
 # Test matrix for various Python versions replacing the functionality of tox
 [[tool.hatch.envs.py-test.matrix]]

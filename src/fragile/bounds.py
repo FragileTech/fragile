@@ -42,7 +42,7 @@ class Bounds:
             return TorchBounds(high, low, *args, **kwargs)
         if isinstance(high, numpy.ndarray) or isinstance(low, numpy.ndarray):
             return NumpyBounds(high, low, *args, **kwargs)
-        if isinstance(high, torch.Tensor) or isinstance(low, torch.Tensor):
+        if isinstance(high, torch.Tensor) or isinstance(low, torch.Tensor | int | float):
             return TorchBounds(high, low, *args, **kwargs)
         msg = "Inputs must be either numpy arrays or torch tensors."
         raise TypeError(msg)
@@ -60,11 +60,11 @@ class Bounds:
                 :class:`Bounds` instance.
 
         Examples:
-            >>> intervals = ((-1, 1), (-2, 1), (2, 3))
+            >>> intervals = ((-1., 1.), (-2., 1.), (2, 3))
             >>> bounds = Bounds.from_tuples(intervals)
             >>> print(bounds)
-            Bounds shape torch.float32 dtype torch.Size([3]) \
-            low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
+            TorchBounds shape torch.float32 dtype torch.Size([3]) \
+low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
 
         """
         low, high = [], []
@@ -77,6 +77,42 @@ class Bounds:
     def from_space(cls, space: "gym.spaces.box.Box") -> "Bounds":  # noqa: F821
         """Initialize a :class:`Bounds` from a :class:`Box` gym action space."""
         return Bounds(low=space.low, high=space.high, dtype=space.dtype)
+
+    @classmethod
+    def from_array(cls, x: Tensor | numpy.ndarray, scale: float = 1.0) -> "Bounds":
+        """Instantiate a bounds compatible for bounding the given array. It also allows to set a \
+        margin for the high and low values.
+
+        The value of the high and low will be proportional to the maximum and minimum values of \
+        the array. Scale defines the proportion to make the bounds bigger and smaller. For \
+        example, if scale is 1.1 the higher bound will be 10% higher, and the lower bounds 10% \
+        smaller. If scale is 0.9 the higher bound will be 10% lower, and the lower bound 10% \
+        higher. If scale is one, `high` and `low` will be equal to the maximum and minimum values \
+        of the array.
+
+        Args:
+            x: Numpy array used to initialize the bounds.
+            scale: Value representing the tolerance in percentage from the current maximum and \
+            minimum values of the array.
+
+        Returns:
+            :class:`Bounds` instance.
+
+        Examples:
+            >>> import torch
+            >>> x = torch.ones((3, 3))
+            >>> x[1:-1, 1:-1] = -5
+            >>> bounds = Bounds.from_array(x, scale=1.5)
+            >>> print(bounds)
+            TorchBounds shape torch.float32 dtype torch.Size([3]) \
+low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
+
+        """
+        return (
+            NumpyBounds.from_array(x, scale=scale)
+            if isinstance(x, numpy.ndarray)
+            else TorchBounds.from_array(x, scale=scale)
+        )
 
 
 class TorchBounds:
@@ -120,16 +156,16 @@ class TorchBounds:
             >>> high, low = torch.ones(3, dtype=torch.float), -1 * torch.ones(3, dtype=torch.int)
             >>> bounds = Bounds(high=high, low=low)
             >>> print(bounds)
-            Bounds shape torch.float32 dtype torch.Size([3]) \
-            low tensor([-1, -1, -1], dtype=torch.int32) high tensor([1., 1., 1.])
+            TorchBounds shape torch.float32 dtype torch.Size([3]) \
+low tensor([-1, -1, -1], dtype=torch.int32) high tensor([1., 1., 1.])
 
             Initializing :class:`Bounds` using  typing_.Scalars:
 
             >>> high, low, shape = 4, 2.1, (5,)
             >>> bounds = Bounds(high=high, low=low, shape=shape)
             >>> print(bounds)
-            Bounds shape torch.float32 dtype torch.Size([5]) low  \
-            tensor([2.1000, 2.1000, 2.1000, 2.1000, 2.1000]) high tensor([4., 4., 4., 4., 4.])
+            TorchBounds shape torch.float32 dtype torch.Size([5]) low \
+tensor([2.1000, 2.1000, 2.1000, 2.1000, 2.1000]) high tensor([4., 4., 4., 4., 4.])
 
         """
         if dtype is not None:
@@ -147,10 +183,10 @@ class TorchBounds:
             isinstance(high, torch.Tensor) and high.ndim == 0
         ):
             high = (
-                torch.tensor(high) if isinstance(high, _Iterable) else torch.ones(shape)
-            ) * high
+                torch.tensor(high) if isinstance(high, _Iterable) else (torch.ones(shape) * high)
+            )
         if not isinstance(low, torch.Tensor) or (isinstance(low, torch.Tensor) and low.ndim == 0):
-            low = torch.tensor(low) if isinstance(low, _Iterable) else torch.ones(shape) * low
+            low = torch.tensor(low) if isinstance(low, _Iterable) else (torch.ones(shape) * low)
         self.high = high.to(dtype=dtype, device=device)
         self.low = low.to(dtype=dtype, device=device)
         self._bounds_dist = self.high - self.low
@@ -202,8 +238,8 @@ class TorchBounds:
             >>> intervals = ((-1., 1.), (-2., 1.), (2., 3.))
             >>> bounds = Bounds.from_tuples(intervals)
             >>> print(bounds)
-            Bounds shape torch.float32 dtype torch.Size([3]) \
-            low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
+            TorchBounds shape torch.float32 dtype torch.Size([3]) \
+low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
 
         """
         low, high = [], []
@@ -282,8 +318,8 @@ class TorchBounds:
             >>> x[1:-1, 1:-1] = -5
             >>> bounds = Bounds.from_array(x, scale=1.5)
             >>> print(bounds)
-            Bounds shape torch.float32 dtype torch.Size([3]) \
-            low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
+            TorchBounds shape torch.float32 dtype torch.Size([3]) \
+low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
 
         """
         xmin, xmax = torch.min(x, dim=0).values, torch.max(x, dim=0).values
@@ -476,16 +512,16 @@ class NumpyBounds:
             >>> high, low = torch.ones(3, dtype=torch.float), -1 * torch.ones(3, dtype=torch.int)
             >>> bounds = Bounds(high=high, low=low)
             >>> print(bounds)
-            Bounds shape torch.float32 dtype torch.Size([3]) \
-            low tensor([-1, -1, -1], dtype=torch.int32) high tensor([1., 1., 1.])
+            TorchBounds shape torch.float32 dtype torch.Size([3]) \
+low tensor([-1, -1, -1], dtype=torch.int32) high tensor([1., 1., 1.])
 
             Initializing :class:`Bounds` using  typing_.Scalars:
 
             >>> high, low, shape = 4, 2.1, (5,)
             >>> bounds = Bounds(high=high, low=low, shape=shape)
             >>> print(bounds)
-            Bounds shape torch.float32 dtype torch.Size([5]) low  \
-            tensor([2.1000, 2.1000, 2.1000, 2.1000, 2.1000]) high tensor([4., 4., 4., 4., 4.])
+            TorchBounds shape torch.float32 dtype torch.Size([5]) low \
+tensor([2.1000, 2.1000, 2.1000, 2.1000, 2.1000]) high tensor([4., 4., 4., 4., 4.])
 
         """
         # Infer shape if not specified
@@ -549,11 +585,11 @@ class NumpyBounds:
                 :class:`Bounds` instance.
 
         Examples:
-            >>> intervals = ((-1, 1), (-2, 1), (2, 3))
+            >>> intervals = ((-1., 1.), (-2., 1.), (2, 3))
             >>> bounds = Bounds.from_tuples(intervals)
             >>> print(bounds)
-            Bounds shape torch.float32 dtype torch.Size([3]) \
-            low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
+            TorchBounds shape torch.float32 dtype torch.Size([3]) \
+low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
 
         """
         low, high = [], []
@@ -632,8 +668,8 @@ class NumpyBounds:
             >>> x[1:-1, 1:-1] = -5
             >>> bounds = Bounds.from_array(x, scale=1.5)
             >>> print(bounds)
-            Bounds shape torch.float32 dtype torch.Size([3]) \
-            low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
+            TorchBounds shape torch.float32 dtype torch.Size([3]) \
+low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
 
         """
         xmin, xmax = numpy.min(x, axis=0), numpy.max(x, axis=0)
