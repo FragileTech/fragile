@@ -159,15 +159,15 @@ jobs:
           rye build --clean
           twine check dist/*
 
-      - name: Publish 📦 to Test PyPI
-        env:
-          TEST_PYPI_PASS: ${{ secrets.TEST_PYPI_PASS }}
-        if: "'$TEST_PYPI_PASS' != ''"
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.TEST_PYPI_PASS }}
-          repository-url: https://test.pypi.org/legacy/
-          skip-existing: true
+#      - name: Publish 📦 to Test PyPI
+#        env:
+#          TEST_PYPI_PASS: ${{ secrets.TEST_PYPI_PASS }}
+#        if: "'$TEST_PYPI_PASS' != ''"
+#        uses: pypa/gh-action-pypi-publish@release/v1
+#        with:
+#          password: ${{ secrets.TEST_PYPI_PASS }}
+#          repository-url: https://test.pypi.org/legacy/
+#          skip-existing: true
 
   bump-version:
     name: Bump package version
@@ -231,15 +231,15 @@ jobs:
           rye build --clean
           twine check dist/*
 
-      - name: Publish 📦 to PyPI
-        env:
-          PYPI_PASS: ${{ secrets.PYPI_PASS }}
-        if: "'$PYPI_PASS' != ''"
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_PASS }}
-          skip-existing: true
-#
+#      - name: Publish 📦 to PyPI
+#        env:
+#          PYPI_PASS: ${{ secrets.PYPI_PASS }}
+#        if: "'$PYPI_PASS' != ''"
+#        uses: pypa/gh-action-pypi-publish@release/v1
+#        with:
+#          password: ${{ secrets.PYPI_PASS }}
+#          skip-existing: true
+##
 #  release:
 #    runs-on: ubuntu-latest
 #    environment: release
