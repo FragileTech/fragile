@@ -49,10 +49,10 @@ def easom(x) -> torch.Tensor:
     return -torch.cos(x[:, 0]) * torch.cos(x[:, 1]) * torch.exp(-exp_term)
 
 
-def holder_table(_x) -> torch.Tensor:
-    x, y = _x[:, 0], _x[:, 1]
-    exp = torch.abs(1 - (torch.sqrt(x * x + y * y) / np.pi))
-    return -torch.abs(torch.sin(x) * torch.cos(y) * torch.exp(exp))
+def holder_table(x) -> torch.Tensor:
+    _x, y = x[:, 0], x[:, 1]
+    exp = torch.abs(1 - (torch.sqrt(_x * _x + y * y) / np.pi))
+    return -torch.abs(torch.sin(_x) * torch.cos(y) * torch.exp(exp))
 
 
 @jit(nopython=True)

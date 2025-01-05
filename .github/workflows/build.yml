@@ -71,6 +71,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           set -x
+          sudo apt-get install -y graphviz graphviz-dev
           rye pin --relaxed cpython@${{ matrix.python-version }}
           rye sync --all-features
 
