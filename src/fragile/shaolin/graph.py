@@ -24,8 +24,8 @@ from shaolin.dimension_mapper import (
 from shaolin.utils import find_closest_point
 
 
-Value = np.ndarray | list  # | torch.Tensor
-DictValues = dict[str, Value]
+Value = np.ndarray | list[Any]  # | torch.Tensor
+DictValues = dict[str, np.ndarray | list[Any]]
 DEFAULT_ROOT_ID = np.uint64(0)
 DEFAULT_FIRST_NODE_ID = np.uint64(1)
 
@@ -34,7 +34,7 @@ def create_graphviz_layout(
     graph: nx.DiGraph | nx.Graph,
     top_to_bottom: bool = False,
     prog: str = "dot",
-    root: int | str | None = DEFAULT_ROOT_ID,
+    root: int | str | Any | None = DEFAULT_ROOT_ID,
     args: str = "",
 ) -> dict[str, tuple[float, float]]:
     """Create a layout for a graph using Graphviz.
@@ -134,8 +134,8 @@ def parse_attributes(attrs: DictValues) -> dict[str, Any]:
 
 def simplify_graph_attributes(
     graph: nx.DiGraph | nx.Graph,
-    default_node_attrs: DictValues = None,
-    default_edge_attrs: DictValues = None,
+    default_node_attrs: DictValues | None = None,
+    default_edge_attrs: DictValues | None = None,
 ) -> tuple[nx.DiGraph | nx.Graph, dict[int | str, int]]:
     """Simplifies the attributes of a graph's nodes and edges.
 
@@ -287,7 +287,7 @@ class InteractiveGraph(param.Parameterized):
         rename = {k: f"{k}_" for k in self.df_edges.columns if k in self.df_nodes.columns}
         self.df_edges = self.df_edges.rename(columns=rename)
 
-    def bind_to_stream(self, function: callable):
+    def bind_to_stream(self, function: Callable):
         return pn.bind(function, x=self.tap_stream.param.y, y=self.tap_stream.param.x)
 
     @param.depends("sel_x.value", "sel_y.value")

@@ -58,13 +58,12 @@ def aggregate_visits(array, block_size=5, upsample=True):
 class BaseFractalTree:
     def __init__(
         self,
-        max_walkers,
+        max_walkers: int,
         env,
         policy=None,
         device="cuda",
         start_walkers: int = 100,
         min_leafs: int = 100,
-        erase_coef: float = 0.05,
     ):
         self.max_walkers = max_walkers
         self.n_walkers = start_walkers
@@ -73,13 +72,42 @@ class BaseFractalTree:
         self.env = env
         self.policy = policy
         self.device = device
-
         self.total_steps = 0
         self.iteration = 0
-        self.erase_coef = erase_coef
+
+        self.parent: torch.Tensor = None
+        self.is_leaf: torch.Tensor = None
+        self.can_clone: torch.Tensor = None
+        self.is_cloned: torch.Tensor = None
+        self.is_compa_distance: torch.Tensor = None
+        self.is_compa_clone: torch.Tensor = None
+        self.is_dead: torch.Tensor = None
+
+        self.reward: torch.Tensor = None
+        self.cum_reward: torch.Tensor = None
+        self.oobs: torch.Tensor = None
+        self.observ: torch.Tensor = None
+        self.action: torch.Tensor = None
+        self.state: np.ndarray = None
+
+        self.virtual_reward: torch.Tensor = None
+        self.clone_prob: torch.Tensor = None
+        self.clone_ix: torch.Tensor = None
+        self.distance_ix: torch.Tensor = None
+        self.wants_clone: torch.Tensor = None
+        self.will_clone: torch.Tensor = None
+        self.distance: torch.Tensor = None
+        self.scaled_distance: torch.Tensor = None
+        self.scaled_reward: torch.Tensor = None
+
+        self._reset_data(start_walkers)
+
+    def _reset_data(self, start_walkers):
+        self.total_steps = 0
+        self.iteration = 0
 
         self.parent = torch.zeros(start_walkers, device=self.device, dtype=torch.long)
-        self.is_leaf = torch.ones(start_walkers, device=self.device, dtype=torch.long)
+        self.is_leaf = torch.ones(start_walkers, device=self.device, dtype=torch.bool)
         self.can_clone = torch.zeros(start_walkers, device=self.device, dtype=torch.bool)
         self.is_cloned = torch.zeros(start_walkers, device=self.device, dtype=torch.bool)
         self.is_compa_distance = torch.ones(start_walkers, device=self.device, dtype=torch.bool)
@@ -89,6 +117,9 @@ class BaseFractalTree:
         self.reward = torch.zeros(start_walkers, device=self.device, dtype=torch.float32)
         self.cum_reward = torch.zeros(start_walkers, device=self.device, dtype=torch.float32)
         self.oobs = torch.zeros(start_walkers, device=self.device, dtype=torch.bool)
+        obs_shape = (self.start_walkers, *self.obs_shape)
+        self.observ = torch.zeros(obs_shape, device=self.device, dtype=torch.float32)
+        self.state = np.empty(start_walkers, dtype=object)
 
         self.virtual_reward = torch.zeros(start_walkers, device=self.device, dtype=torch.float32)
         self.clone_prob = torch.zeros(start_walkers, device=self.device, dtype=torch.float32)
@@ -99,6 +130,32 @@ class BaseFractalTree:
         self.distance = torch.zeros(start_walkers, device=self.device, dtype=torch.float32)
         self.scaled_distance = torch.zeros(start_walkers, device=self.device, dtype=torch.float32)
         self.scaled_reward = torch.zeros(start_walkers, device=self.device, dtype=torch.float32)
+
+    @property
+    def obs_shape(self) -> tuple[int, ...]:
+        return self.env.observation_space.shape
+
+    def sample_first_actions(self):
+        raise NotImplementedError
+
+    def reset(self, state, obs, reward):
+        self._reset_data(self.start_walkers)
+
+        self.action = self.sample_first_actions()
+        self.state = np.array([state.copy() for _ in range(self.start_walkers)])
+
+        data = self.env.step_batch(states=self.state, actions=self.action.numpy(force=True))
+        new_states, observ, reward, oobs, _truncateds, _infos = data
+        self.observ[0, :] = torch.tensor(obs, dtype=torch.float32, device=self.device)
+        self.observ[1:, :] = torch.tensor(
+            np.vstack(observ[1:]), dtype=torch.float32, device=self.device
+        )
+        self.reward[1:] = torch.tensor(reward[1:], dtype=torch.float32, device=self.device)
+        self.cum_reward[1:] = torch.tensor(reward[1:], dtype=torch.float32, device=self.device)
+        self.oobs[1 : self.n_walkers] = torch.tensor(
+            oobs[1 : self.n_walkers], dtype=torch.bool, device=self.device
+        )
+        self.state[1:] = new_states[1:]
 
     def add_walkers(self, new_walkers):
         self.n_walkers += new_walkers
@@ -134,6 +191,11 @@ class BaseFractalTree:
 
         oobs = torch.ones(new_walkers, device=self.device, dtype=torch.bool)
         self.oobs = torch.cat((self.oobs, oobs), dim=0).contiguous()
+
+        observ = torch.zeros(
+            (new_walkers, *self.obs_shape), device=self.device, dtype=torch.float32
+        )
+        self.observ = torch.cat((self.observ, observ), dim=0).contiguous()
 
         virtual_reward = torch.zeros(new_walkers, device=self.device, dtype=torch.float32)
         self.virtual_reward = torch.cat((self.virtual_reward, virtual_reward), dim=0).contiguous()
@@ -185,26 +247,23 @@ class FractalTree(BaseFractalTree):
             device=device,
             start_walkers=start_walkers,
             min_leafs=min_leafs,
-            erase_coef=erase_coef,
         )
         self.agg_block_size = agg_block_size
+        self.erase_coef = erase_coef
         self.rgb_shape = rgb_shape
-        self.obs_shape = self.env.observation_space.shape
 
         self.observ = torch.zeros(
             (self.start_walkers, *self.obs_shape), device=self.device, dtype=torch.float32
         )
-        self.action = torch.zeros(self.start_walkers, device=self.device, dtype=torch.int64)
-        self.state = np.empty(self.start_walkers, dtype=object)
+        self.action: torch.Tensor = torch.zeros(
+            self.start_walkers, device=self.device, dtype=torch.int64
+        )
+        self.state: np.ndarray = np.empty(self.start_walkers, dtype=object)
         self.rgb = np.zeros((self.start_walkers, *self.rgb_shape), dtype=np.uint8)
         self.visits = np.zeros((24, 160, 160), dtype=np.int64)
 
     def add_walkers(self, new_walkers):
         super().add_walkers(new_walkers)
-        observ = torch.zeros(
-            (new_walkers, *self.obs_shape), device=self.device, dtype=torch.float32
-        )
-        self.observ = torch.cat((self.observ, observ), dim=0).contiguous()
 
         action = torch.zeros(new_walkers, device=self.device, dtype=torch.int64)
         self.action = torch.cat((self.action, action), dim=0).contiguous()

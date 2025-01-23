@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from typing import Any
 
 import einops
 import holoviews
@@ -14,10 +15,15 @@ class StreamingPlot:
     """Represents a holoviews plot updated with streamed data."""
 
     name = ""
-    default_opts = {"framewise": True, "axiswise": True, "normalize": True, "shared_axes": False}
+    default_opts: dict[str, Any] = {
+        "framewise": True,
+        "axiswise": True,
+        "normalize": True,
+        "shared_axes": False,
+    }
     stream_class = Pipe
-    default_bokeh_opts = {}
-    default_mpl_opts = {}
+    default_bokeh_opts: dict[str, Any] = {}
+    default_mpl_opts: dict[str, Any] = {}
 
     def __init__(
         self,
@@ -76,7 +82,7 @@ class StreamingPlot:
     def send(self, data) -> None:
         """Stream data to the plot and keep track of how many times the data has been streamed."""
         data = self.preprocess_data(data)
-        self.data_stream.send(data)
+        self.data_stream.send(data)  # type: ignore
 
     def init_plot(self, plot: Callable) -> None:
         """Initialize the holoviews plot to accept streaming data.
@@ -487,7 +493,7 @@ class Bivariate(StreamingPlot):
             scatter_kwargs["size"] = scatter_kwargs.get("size", 3.5)
         elif Store.current_backend == "matplotlib":
             scatter_kwargs["s"] = scatter_kwargs.get("s", 15)
-        self.plot = self.plot.opts(
+        self.plot = self.plot.opts(  # type: ignore
             holoviews.opts.Bivariate(
                 title=title,
                 xlabel=xlabel,
@@ -563,7 +569,7 @@ class QuadMesh(StreamingPlot):
     def send(self, data, xx=None, yy=None, zz=None) -> None:
         """Stream data to the plot and keep track of how many times the data has been streamed."""
         data = self.preprocess_data(data, xx=xx, yy=yy, zz=zz)
-        self.data_stream.send(data)
+        self.data_stream.send(data)  # type: ignore
 
     def plot_quadmesh(self, data):
         """Plot the data as an energy landscape.
@@ -793,8 +799,8 @@ class Landscape2D(StreamingPlot):
 
         """
         # self.plot = self.quadmesh_ps.plot
-        if True:  # self.contours_ps is not None:
-            self.plot = self.contours_ps.plot
+        # if True:  # self.contours_ps is not None:
+        self.plot = self.contours_ps.plot  # type: ignore
 
         # self.plot = self.plot * self.scatter_ps.plot
 
@@ -829,12 +835,12 @@ class Landscape2D(StreamingPlot):
         self.scatter_ps.send(df)
         xlim, ylim = (data[0].min(), data[0].max()), (data[1].min(), data[1].max())
         zlim = (data[2].min(), data[2].max())
-        self.quadmesh_ps.plot = self.quadmesh_ps.plot.redim(
+        self.quadmesh_ps.plot = self.quadmesh_ps.plot.redim(  # type: ignore
             x=holoviews.Dimension("x", range=xlim),
             y=holoviews.Dimension("y", range=ylim),
             z=holoviews.Dimension("z", range=zlim),
         )
-        self.contours_ps.plot = self.contours_ps.plot.redim(
+        self.contours_ps.plot = self.contours_ps.plot.redim(  # type: ignore
             x=holoviews.Dimension("x", range=xlim),
             y=holoviews.Dimension("y", range=ylim),
             z=holoviews.Dimension("z", range=zlim),
@@ -848,78 +854,3 @@ class Landscape2D(StreamingPlot):
         self.quadmesh_ps.opts(**kwargs)
         if self.contours_ps is not None:
             self.contours_ps.opts(**kwargs)
-
-    def __opts(
-        self,
-        title="Distribution landscape",
-        xlabel: str = "x",
-        ylabel: str = "y",
-        framewise: bool = True,
-        axiswise: bool = True,
-        normalize: bool = True,
-        cmap: str = "default",
-        **kwargs,
-    ):
-        """Update the plot parameters. Same as ``holoviews`` ``opts``.
-
-        The default values updates the plot axes independently when being \
-        displayed in a :class:`Holomap`.
-        """
-        kwargs = self.update_kwargs(**kwargs)
-        cmap = cmap if cmap != "default" else ("viridis_r" if self.invert_cmap else "viridis")
-        # Add specific defaults to Contours
-        contours_kwargs = dict(kwargs)
-        if Store.current_backend == "bokeh":
-            contours_kwargs["line_width"] = contours_kwargs.get("line_width", 1)
-        elif Store.current_backend == "matplotlib":
-            contours_kwargs["linewidth"] = contours_kwargs.get("linewidth", 1)
-
-        # Add specific defaults to Scatter
-        scatter_kwargs = dict(kwargs)
-        if Store.current_backend == "bokeh":
-            scatter_kwargs["fill_color"] = scatter_kwargs.get("fill_color", "red")
-            scatter_kwargs["size"] = scatter_kwargs.get("size", 3.5)
-        elif Store.current_backend == "matplotlib":
-            scatter_kwargs["color"] = scatter_kwargs.get("color", "red")
-            scatter_kwargs["s"] = scatter_kwargs.get("s", 15)
-
-        self.plot = self.plot.opts(
-            holoviews.opts.QuadMesh(
-                cmap=cmap,
-                colorbar=True,
-                title=title,
-                bgcolor="lightgray",
-                xlabel=xlabel,
-                ylabel=ylabel,
-                framewise=framewise,
-                axiswise=axiswise,
-                normalize=normalize,
-                **kwargs,
-            ),
-            holoviews.opts.Contours(
-                cmap=["black"],
-                alpha=0.9,
-                title=title,
-                xlabel=xlabel,
-                ylabel=ylabel,
-                show_legend=False,
-                framewise=framewise,
-                axiswise=axiswise,
-                normalize=normalize,
-                **contours_kwargs,
-            ),
-            holoviews.opts.Scatter(
-                alpha=0.7,
-                xlabel=xlabel,
-                ylabel=ylabel,
-                framewise=framewise,
-                axiswise=axiswise,
-                normalize=normalize,
-                **scatter_kwargs,
-            ),
-            holoviews.opts.NdOverlay(
-                normalize=normalize,
-                framewise=framewise,
-                axiswise=axiswise,
-            ),
-        )

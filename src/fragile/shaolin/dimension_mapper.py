@@ -8,6 +8,9 @@ import param
 from shaolin.colormaps import ColorMap
 
 
+ValueRangeType = tuple[int | float, int | float] | tuple[int | float, int | float, int | float]
+
+
 def is_string_column(df, column_name):
     if isinstance(df[column_name].dtype, pd.CategoricalDtype):
         return False
@@ -40,10 +43,10 @@ class DimensionMapper(param.Parameterized):
         df: pd.DataFrame,
         name,
         default_value,
-        value_range: tuple[int, int] | tuple[int, int, int],
+        value_range: ValueRangeType,
         ignore_cols: tuple[str, ...] = (),
         resolution: int = 100,
-        default_range: tuple[int, int] | tuple[float, float] | None = None,
+        default_range: ValueRangeType | None = None,
         ignore_string_cols: bool = True,
         epsilon: float = 1e-5,
     ):
@@ -199,10 +202,10 @@ class AlphaDim(DimensionMapper):
         df: pd.DataFrame,
         name="alpha",
         default=1.0,
-        value_range: tuple[int, int] | tuple[int, int, int] = (0.0, 1.0),
+        value_range: ValueRangeType = (0.0, 1.0),
         ignore_cols: tuple[str, ...] = (),
         resolution: int = 100,
-        default_range: tuple[int, int] | tuple[float, float] | None = (0.1, 1.0),
+        default_range: ValueRangeType | None = (0.1, 1.0),
         ignore_string_cols: bool = True,
         epsilon: float = 1e-7,
     ):
@@ -226,10 +229,10 @@ class LineWidthDim(DimensionMapper):
         df: pd.DataFrame,
         name="line_width",
         default=2.0,
-        value_range: tuple[int, int] | tuple[int, int, int] = (0.0, 6.0),
+        value_range: ValueRangeType = (0.0, 6.0),
         ignore_cols: tuple[str, ...] = (),
         resolution: int = 100,
-        default_range: tuple[int, int] | tuple[float, float] | None = (0.5, 3),
+        default_range: ValueRangeType | None = (0.5, 3),
         ignore_string_cols: bool = True,
         epsilon: float = 1e-7,
     ):
@@ -255,7 +258,8 @@ class ColorDim(DimensionMapper):
         df: pd.DataFrame,
         name="color",
         default="#30a2da",
-        value_range: tuple[int, int] | tuple[int, int, int] = (0.0, 1.0),
+        value_range: tuple[int | float, int | float]
+        | tuple[int | float, int | float, int | float] = (0.0, 1.0),
         ignore_cols: tuple[str, ...] = (),
         resolution: int = 100,
         default_range: tuple[int, int] | tuple[float, float] | None = (0.0, 1.0),
@@ -379,7 +383,7 @@ class Dimensions:
         ),
     ):
         self.dimensions = self.init_dimensions(df, **kwargs)
-        self.widgets = []
+        self.widgets: list[pn.widgets.Widget] = []
         self.n_cols = n_cols
 
     @property

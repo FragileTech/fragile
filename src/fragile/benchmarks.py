@@ -4,6 +4,7 @@ import math
 import einops
 from numba import jit
 import numpy as np
+from pyarrow import Tensor
 import torch
 
 from fragile.bounds import Bounds, NumpyBounds, TorchBounds
@@ -83,8 +84,8 @@ def lennard_jones(x: torch.Tensor) -> torch.Tensor:
 
 
 class OptimBenchmark:
-    benchmark = None
-    best_state = None
+    benchmark: Tensor = None
+    best_state: Tensor = None
 
     def __init__(self, dims: int, function: Callable, **kwargs):  # noqa: ARG002
         self.dims = dims
@@ -102,7 +103,7 @@ class OptimBenchmark:
         return self.bounds.shape
 
     @staticmethod
-    def get_bounds(dims: int) -> Bounds | TorchBounds | NumpyBounds:
+    def get_bounds(dims: int) -> TorchBounds | NumpyBounds:
         raise NotImplementedError
 
 
@@ -210,8 +211,8 @@ class Easom(OptimBenchmark):
 
 
 class HolderTable(OptimBenchmark):
-    def __init__(self, dims: int | None = None, *args, **kwargs):  # noqa: ARG002
-        super().__init__(dims=2, function=holder_table, *args, **kwargs)
+    def __init__(self, dims: int | None = None, **kwargs):  # noqa: ARG002
+        super().__init__(dims=2, function=holder_table, **kwargs)
 
     @staticmethod
     def get_bounds(dims):

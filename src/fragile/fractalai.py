@@ -8,6 +8,9 @@ from torch import Tensor
 from fragile.random_state import random_state
 
 
+TensorTuple = tuple[Tensor] | tuple[Tensor, Tensor] | tuple[Tensor, Tensor, Tensor]
+
+
 def random_choice(x, size=None, replace=True):
     """Randomly sample from a tensor."""
     size = size if size is not None else 1
@@ -40,7 +43,7 @@ def get_alive_indexes(oobs: Tensor):
     if torch.all(oobs):
         return ix_range
     ix = torch.logical_not(oobs).flatten()
-    return random_choice(ix_range[ix], size=size, replace=ix.sum() < size).to(oobs.device)
+    return random_choice(ix_range[ix], size=size, replace=(ix.sum() < size).item()).to(oobs.device)
 
 
 def random_alive_compas(
@@ -62,8 +65,8 @@ def calculate_distance(
     observs: Tensor,
     distance_function: Callable = l2_norm,
     return_compas: bool = False,
-    oobs: Tensor = None,
-    compas: Tensor = None,
+    oobs: Tensor | None = None,
+    compas: Tensor | None = None,
 ):
     """Calculate a distance metric for each walker with respect to a random companion."""
     if compas is None:
@@ -77,12 +80,12 @@ def calculate_distance(
 def cross_distance(
     observ: Tensor,
     dst_observ: Tensor,
-    oobs: Tensor = None,
+    oobs: Tensor | None = None,
     distance_function: Callable = l2_norm,
     return_compas: bool = False,
     return_distance: bool = False,
-    compas: Tensor = None,
-):
+    compas: Tensor | None = None,
+) -> Tensor | tuple[Tensor, Tensor] | tuple[Tensor, Tensor, Tensor]:
     """Calculate a distance metric for each walker with respect to a random companion."""
     if compas is None:
         compas = random_alive_compas(oobs, dst_observ)[: observ.shape[0]]
@@ -90,7 +93,7 @@ def cross_distance(
     flattened_dst_observs = dst_observ.view(dst_observ.shape[0], -1)
     distance = distance_function(flattened_observs, flattened_dst_observs[compas])
     distance_norm = relativize(distance.flatten())
-    data = (distance_norm,)
+    data: TensorTuple = (distance_norm,)
     if return_compas:
         data = (*data, compas)
     if return_distance:
@@ -101,14 +104,14 @@ def cross_distance(
 def calculate_virtual_reward(
     observs: Tensor,
     rewards: Tensor,
-    oobs: Tensor = None,
+    oobs: Tensor | None = None,
     dist_coef: float = 1.0,
     reward_coef: float = 1.0,
-    other_reward: Tensor = 1.0,
+    other_reward: Tensor | float = 1.0,
     return_compas: bool = False,
     return_distance: bool = False,
     distance_function: Callable = l2_norm,
-) -> Tensor | (tuple[Tensor, Tensor] | tuple[Tensor, Tensor, Tensor]):
+) -> Tensor | tuple[Tensor, Tensor] | tuple[Tensor, Tensor, Tensor]:
     """Calculate the virtual rewards given the required data."""
     compas = random_alive_compas(oobs, observs)
     flattened_observs = observs.reshape(len(compas), -1)
@@ -117,7 +120,7 @@ def calculate_virtual_reward(
     distance_norm = relativize(distance.flatten())
     rewards_norm = relativize(rewards.flatten())
     virtual_reward = distance_norm**dist_coef * rewards_norm**reward_coef * other_reward
-    return_data = (virtual_reward,)
+    return_data: TensorTuple = (virtual_reward,)
     if return_compas:
         return_data = (*return_data, compas)
     if return_distance:
@@ -129,10 +132,10 @@ def cross_virtual_reward(
     observs: Tensor,
     rewards: Tensor,
     dst_observs: Tensor,
-    oobs: Tensor = None,
+    oobs: Tensor | None = None,
     dist_coef: float = 1.0,
     reward_coef: float = 1.0,
-    other_reward: Tensor = 1.0,
+    other_reward: Tensor | float = 1.0,
     return_compas: bool = False,
     return_distance: bool = False,
     distance_function: Callable = l2_norm,
@@ -145,10 +148,10 @@ def cross_virtual_reward(
         distance_function,
         return_compas=True,
         return_distance=True,
-    )
+    )  # type: ignore
     rewards_norm = relativize(rewards.flatten())
     virtual_reward = distance_norm**dist_coef * rewards_norm**reward_coef * other_reward
-    return_data = (virtual_reward,)
+    return_data: TensorTuple = (virtual_reward,)
     if return_compas:
         return_data = (*return_data, compas)
     if return_distance:
@@ -198,7 +201,7 @@ def fai_iteration(
     dist_coef: float = 1.0,
     reward_coef: float = 1.0,
     eps=1e-8,
-    other_reward: Tensor = 1.0,
+    other_reward: Tensor | float = 1.0,
     return_clone_probs: bool = False,
     return_compas_dist: bool = False,
     return_distance: bool = False,

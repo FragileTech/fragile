@@ -1,7 +1,9 @@
 from collections.abc import Iterable, Iterable as _Iterable
+from typing import Any
 
 import einops
 import numpy
+import numpy as np
 import torch
 from torch import Tensor
 
@@ -74,12 +76,14 @@ low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
         return Bounds(low=low, high=high)
 
     @classmethod
-    def from_space(cls, space: "gym.spaces.box.Box") -> "Bounds":  # noqa: F821
+    def from_space(cls, space: "gym.spaces.box.Box") -> "Bounds":  # type: ignore # noqa: F821
         """Initialize a :class:`Bounds` from a :class:`Box` gym action space."""
         return Bounds(low=space.low, high=space.high, dtype=space.dtype)
 
     @classmethod
-    def from_array(cls, x: Tensor | numpy.ndarray, scale: float = 1.0) -> "Bounds":
+    def from_array(
+        cls, x: Tensor | numpy.ndarray, scale: float = 1.0
+    ) -> "TorchBounds | NumpyBounds":
         """Instantiate a bounds compatible for bounding the given array. It also allows to set a \
         margin for the high and low values.
 
@@ -127,7 +131,7 @@ class TorchBounds:
         high: torch.Tensor | Scalar = torch.inf,
         low: torch.Tensor | Scalar = -numpy.inf,
         shape: tuple | None = None,
-        dtype: type | None = None,
+        dtype: torch.dtype | numpy.dtype[Any] | None = None,
         device: str | None = None,
     ):
         """Initialize a :class:`Bounds`.
@@ -157,7 +161,7 @@ class TorchBounds:
             >>> bounds = Bounds(high=high, low=low)
             >>> print(bounds)
             TorchBounds shape torch.float32 dtype torch.Size([3]) \
-low tensor([-1, -1, -1], dtype=torch.int32) high tensor([1., 1., 1.])
+low tensor([-1., -1., -1.]) high tensor([1., 1., 1.])
 
             Initializing :class:`Bounds` using  typing_.Scalars:
 
@@ -187,17 +191,19 @@ tensor([2.1000, 2.1000, 2.1000, 2.1000, 2.1000]) high tensor([4., 4., 4., 4., 4.
             )
         if not isinstance(low, torch.Tensor) or (isinstance(low, torch.Tensor) and low.ndim == 0):
             low = torch.tensor(low) if isinstance(low, _Iterable) else (torch.ones(shape) * low)
-        self.high = high.to(dtype=dtype, device=device)
-        self.low = low.to(dtype=dtype, device=device)
-        self._bounds_dist = self.high - self.low
+
         if dtype is not None:
-            self.dtype = dtype
+            self.dtype: torch._C.dtype = dtype
         elif hasattr(high, "dtype"):
             self.dtype = high.dtype
         elif hasattr(low, "dtype"):
             self.dtype = low.dtype
         else:
-            self.dtype = type(high) if high is not None else type(low)
+            msg = "Could not infer dtype from either dtype, high or low."
+            raise ValueError(msg)
+        self.high = high.to(dtype=self.dtype, device=device)
+        self.low = low.to(dtype=self.dtype, device=device)
+        self._bounds_dist = self.high - self.low
 
     def __repr__(self):
         return (
@@ -246,11 +252,12 @@ low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
         for lo, hi in bounds:
             low.append(lo)
             high.append(hi)
-        low, high = torch.tensor(low, dtype=torch.float), torch.tensor(high, dtype=torch.float)
+        low = torch.tensor(low, dtype=torch.float)
+        high = torch.tensor(high, dtype=torch.float)
         return TorchBounds(low=low, high=high)
 
     @classmethod
-    def from_space(cls, space: "gym.spaces.box.Box") -> "TorchBounds":  # noqa: F821
+    def from_space(cls, space: "gym.spaces.box.Box") -> "TorchBounds":  # type: ignore # noqa: F821
         """Initialize a :class:`Bounds` from a :class:`Box` gym action space."""
         return TorchBounds(low=space.low, high=space.high, dtype=space.dtype)
 
@@ -293,7 +300,7 @@ low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
         return xmin_scaled, xmax_scaled
 
     @classmethod
-    def from_array(cls, x: Tensor, scale: float = 1.0) -> "Bounds":
+    def from_array(cls, x: Tensor, scale: float = 1.0) -> "TorchBounds":
         """Instantiate a bounds compatible for bounding the given array. It also allows to set a \
         margin for the high and low values.
 
@@ -435,7 +442,7 @@ low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
         """
         return tuple(zip(self.low, self.high))
 
-    def to_space(self) -> "gym.spaces.box.Box":  # noqa: F821
+    def to_space(self) -> "gym.spaces.box.Box":  # type: ignore # noqa: F821
         """Return a :class:`Box` gym space with the same characteristics as the :class:`Bounds`."""
         from gym.spaces.box import Box  # noqa:PLC0415
 
@@ -509,19 +516,17 @@ class NumpyBounds:
             Initializing :class:`Bounds` using  numpy arrays:
 
             >>> import torch
-            >>> high, low = torch.ones(3, dtype=torch.float), -1 * torch.ones(3, dtype=torch.int)
+            >>> high, low = np.ones(3, dtype=np.float32), -1 * numpy.ones(3, dtype=np.int64)
             >>> bounds = Bounds(high=high, low=low)
             >>> print(bounds)
-            TorchBounds shape torch.float32 dtype torch.Size([3]) \
-low tensor([-1, -1, -1], dtype=torch.int32) high tensor([1., 1., 1.])
+            NumpyBounds shape float32 dtype (3,) low [-1. -1. -1.] high [1. 1. 1.]
 
             Initializing :class:`Bounds` using  typing_.Scalars:
 
             >>> high, low, shape = 4, 2.1, (5,)
-            >>> bounds = Bounds(high=high, low=low, shape=shape)
+            >>> bounds = NumpyBounds(high=high, low=low, shape=shape)
             >>> print(bounds)
-            TorchBounds shape torch.float32 dtype torch.Size([5]) low \
-tensor([2.1000, 2.1000, 2.1000, 2.1000, 2.1000]) high tensor([4., 4., 4., 4., 4.])
+            NumpyBounds shape float64 dtype (5,) low [2.1 2.1 2.1 2.1 2.1] high [4. 4. 4. 4. 4.]
 
         """
         # Infer shape if not specified
@@ -573,7 +578,7 @@ tensor([2.1000, 2.1000, 2.1000, 2.1000, 2.1000]) high tensor([4., 4., 4., 4., 4.
         return self.high.shape
 
     @classmethod
-    def from_tuples(cls, bounds: Iterable[tuple]) -> "Bounds":
+    def from_tuples(cls, bounds: Iterable[tuple]) -> "NumpyBounds":
         """Instantiate a :class:`Bounds` from a collection of tuples containing \
         the higher and lower bounds for every dimension as a tuple.
 
@@ -598,19 +603,19 @@ low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
             high.append(hi)
         low, high = numpy.array(low, dtype=numpy.float32)
         high = numpy.array(high, dtype=numpy.float32)
-        return Bounds(low=low, high=high)
+        return Bounds(low=low, high=high)  # type: ignore
 
     @classmethod
-    def from_space(cls, space: "gym.spaces.box.Box") -> "Bounds":  # noqa: F821
+    def from_space(cls, space: "gym.spaces.box.Box") -> "NumpyBounds":  # type: ignore # noqa: F821
         """Initialize a :class:`Bounds` from a :class:`Box` gym action space."""
-        return Bounds(low=space.low, high=space.high, dtype=space.dtype)
+        return Bounds(low=space.low, high=space.high, dtype=space.dtype)  # type: ignore
 
     @staticmethod
     def get_scaled_intervals(
         low: numpy.ndarray | (float | int),
         high: numpy.ndarray | (float | int),
         scale: float,
-    ) -> tuple[Tensor | float, Tensor | float]:
+    ) -> tuple[np.ndarray[Any, np.dtype[Any]], np.ndarray[Any, np.dtype[Any]]]:
         """Scale the high and low vectors by a scale factor.
 
         The value of the high and low will be proportional to the maximum and minimum values of \
@@ -633,7 +638,13 @@ low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
         pct = numpy.array(scale - 1)
         big_scale = 1 + numpy.abs(pct)
         small_scale = 1 - numpy.abs(pct)
-        zero = numpy.array(0.0).astype(low.dtype)
+        if isinstance(low, numpy.ndarray):
+            zero_dtype = low.dtype
+        elif isinstance(high, numpy.ndarray):
+            zero_dtype = high.dtype
+        else:
+            zero_dtype = numpy.float32
+        zero = numpy.array(0.0).astype(zero_dtype)
         if pct > 0:
             xmin_scaled = numpy.where(low < zero, low * big_scale, low * small_scale)
             xmax_scaled = numpy.where(high < zero, high * small_scale, high * big_scale)
@@ -643,7 +654,7 @@ low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
         return xmin_scaled, xmax_scaled
 
     @classmethod
-    def from_array(cls, x: Tensor, scale: float = 1.0) -> "Bounds":
+    def from_array(cls, x: Tensor | np.ndarray, scale: float = 1.0) -> "NumpyBounds":
         """Instantiate a bounds compatible for bounding the given array. It also allows to set a \
         margin for the high and low values.
 
@@ -674,7 +685,7 @@ low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
         """
         xmin, xmax = numpy.min(x, axis=0), numpy.max(x, axis=0)
         xmin_scaled, xmax_scaled = cls.get_scaled_intervals(xmin, xmax, scale)
-        return Bounds(low=xmin_scaled, high=xmax_scaled)
+        return Bounds(low=xmin_scaled, high=xmax_scaled)  # type: ignore
 
     def clip(self, x: numpy.ndarray) -> numpy.ndarray:
         """Clip the values of the target array to fall inside the bounds (closed interval).
@@ -785,7 +796,7 @@ low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
         """
         return tuple(zip(self.low, self.high))
 
-    def to_space(self) -> "gym.spaces.box.Box":  # noqa: F821
+    def to_space(self) -> "gym.spaces.box.Box":  # type: ignore # noqa: F821
         """Return a :class:`Box` gym space with the same characteristics as the :class:`Bounds`."""
         from gym.spaces.box import Box  # noqa:PLC0415
 
@@ -819,5 +830,5 @@ low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
 
         """
         shape = (num_samples, *self.shape)
-        rand = numpy.random.rand(*shape).astype(self.dtype)  # noqa: NPY002
+        rand: np.ndarray = numpy.random.rand(*shape).astype(self.dtype)  # noqa: NPY002
         return self.low + (self.high - self.low) * rand

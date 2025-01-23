@@ -23,7 +23,7 @@ def find_closest_point(points: np.ndarray, x: float, y: float) -> int:
     target = np.array([[x, y]])
     distances = np.sqrt(np.sum((points - target) ** 2, axis=1))
     # Find the index of the minimum distance
-    return np.argmin(distances)
+    return int(np.argmin(distances))
 
 
 def create_gif(data, filename=None, fps=10, optimize=False):

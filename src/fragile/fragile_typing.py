@@ -18,14 +18,14 @@ Default = Any
 # Values are those types that are passed as inputs to the component or returned by forward.
 # The contain the population values of the state.
 Value = torch.Tensor | numpy.ndarray | list
-DictValues = dict[str, Value]
+DictValues = dict[str, torch.Tensor | numpy.ndarray | list]
 ValueWalker = torch.Tensor | numpy.ndarray | list  # Batch size 1 and represents a single walker
 
 # Values passed and returned by step and reset
-InputValues = dict[str, Value]  # Values passed to forward and warmup
-OutputValues = dict[str, Value]  # Values returned by forward
-ResetValues = dict[str, Value]  # Values returned by warmup
-DictWalker = dict[str, Value]  # Represents data from a single walker
+InputValues = dict[str, torch.Tensor | numpy.ndarray | list]  # Values passed to forward and warmup
+OutputValues = dict[str, torch.Tensor | numpy.ndarray | list]  # Values returned by forward
+ResetValues = dict[str, torch.Tensor | numpy.ndarray | list]  # Values returned by warmup
+DictWalker = dict[str, torch.Tensor | numpy.ndarray | list]  # Represents data from a single walker
 DictTensor = dict[str, torch.Tensor]
 Walkers = list[DictWalker]
 
@@ -36,14 +36,14 @@ NumpyIndex = numpy.ndarray
 
 # Configs are those types that are used to describe the data that the component processes.
 class ValueConfig(ABC):
-    type: str = None
+    type: str | None = None
     shape: Shape
     dtype: Dtype
     default: Default
 
     @property
     @abstractmethod
-    def example(self) -> Value:
+    def example(self) -> numpy.ndarray | list[Any]:
         """Return an example value with batch size 1."""
 
 

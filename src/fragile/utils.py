@@ -89,7 +89,7 @@ def is_single_value(state: DictValues) -> bool:
     return get_n_walkers(state) == 1
 
 
-def combine_values(state: DictValues = None, **kwargs: Value) -> DictValues:
+def combine_values(state: DictValues | None = None, **kwargs: Value) -> DictValues | None:
     """Combine the state and kwargs into a single state dictionary."""
     if state is None:
         return kwargs or None
@@ -169,7 +169,10 @@ def batch_to_walkers(state: DictValues, as_items: bool = False) -> Walkers:
         return val
 
     walkers = []
-    for i in range(get_n_walkers(state)):
+    n_walkers = get_n_walkers(state)
+    if n_walkers is None:
+        raise ValueError(f"Could not get the number of walkers from state: {state}")
+    for i in range(n_walkers):
         single_walker = {}
         for k in state.keys():
             value = _get_index(state[k], i)
@@ -188,8 +191,10 @@ def walkers_to_batch(walkers: list[Walkers]) -> DictValues:
         A dictionary containing the state of a population of walkers.
 
     """
-    batch = {}
-    for key in walkers[0].keys():
+    batch: DictValues = {}
+    if not walkers:
+        return batch
+    for key in walkers[0].keys():  # type: ignore
         first_value = walkers[0][key]
         if isinstance(first_value, list):
             batch[key] = [value for walker in walkers for value in walker[key]]
@@ -256,7 +261,7 @@ def set_index(
         raise ValueError(msg) from e
 
 
-def values_are_equal(value_1: Value, value_2: Value) -> bool:
+def values_are_equal(value_1: Value, value_2: Value) -> bool | numpy.bool | torch.dtype:  # noqa PLR0911
     if not isinstance(value_1, type(value_2)):
         return False
     if isinstance(value_1, list):
@@ -267,6 +272,8 @@ def values_are_equal(value_1: Value, value_2: Value) -> bool:
         except TypeError:
             return numpy.all(value_1 == value_2)
     if isinstance(value_1, torch.Tensor):
+        if not isinstance(value_2, torch.Tensor):
+            return False
         return torch.allclose(value_1, value_2, equal_nan=True)
     return value_1 == value_2
 
