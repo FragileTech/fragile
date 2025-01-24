@@ -508,20 +508,17 @@ class NumpyBounds:
         Examples:
             Initializing :class:`Bounds` using  numpy arrays:
 
-            >>> import torch
-            >>> high, low = torch.ones(3, dtype=torch.float), -1 * torch.ones(3, dtype=torch.int)
+            >>> high, low = np.ones(3, dtype=np.float32), -1 * np.ones(3, dtype=np.int32)
             >>> bounds = Bounds(high=high, low=low)
             >>> print(bounds)
-            TorchBounds shape torch.float32 dtype torch.Size([3]) \
-low tensor([-1, -1, -1], dtype=torch.int32) high tensor([1., 1., 1.])
+            NumpyBounds shape float32 dtype (3,) low [-1. -1. -1.] high [1. 1. 1.]
 
             Initializing :class:`Bounds` using  typing_.Scalars:
 
             >>> high, low, shape = 4, 2.1, (5,)
-            >>> bounds = Bounds(high=high, low=low, shape=shape)
+            >>> bounds = NumpyBounds(high=high, low=low, shape=shape)
             >>> print(bounds)
-            TorchBounds shape torch.float32 dtype torch.Size([5]) low \
-tensor([2.1000, 2.1000, 2.1000, 2.1000, 2.1000]) high tensor([4., 4., 4., 4., 4.])
+            NumpyBounds shape float64 dtype (5,) low [2.1 2.1 2.1 2.1 2.1] high [4. 4. 4. 4. 4.]
 
         """
         # Infer shape if not specified
@@ -573,37 +570,37 @@ tensor([2.1000, 2.1000, 2.1000, 2.1000, 2.1000]) high tensor([4., 4., 4., 4., 4.
         return self.high.shape
 
     @classmethod
-    def from_tuples(cls, bounds: Iterable[tuple]) -> "Bounds":
+    def from_tuples(cls, bounds: Iterable[tuple], dtype=numpy.float32) -> "NumpyBounds":
         """Instantiate a :class:`Bounds` from a collection of tuples containing \
         the higher and lower bounds for every dimension as a tuple.
 
         Args:
             bounds: Iterable that returns tuples containing the higher and lower \
                     bound for every dimension of the target bounds.
+            dtype: Data type of the array that will be bounded. Default is numpy.float32.
 
         Returns:
                 :class:`Bounds` instance.
 
         Examples:
             >>> intervals = ((-1., 1.), (-2., 1.), (2, 3))
-            >>> bounds = Bounds.from_tuples(intervals)
+            >>> bounds = NumpyBounds.from_tuples(intervals)
             >>> print(bounds)
-            TorchBounds shape torch.float32 dtype torch.Size([3]) \
-low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
+            NumpyBounds shape float32 dtype (3,) low [-1. -2.  2.] high [1. 1. 3.]
 
         """
         low, high = [], []
         for lo, hi in bounds:
             low.append(lo)
             high.append(hi)
-        low, high = numpy.array(low, dtype=numpy.float32)
-        high = numpy.array(high, dtype=numpy.float32)
+        low = numpy.array(low, dtype=dtype)
+        high = numpy.array(high, dtype=dtype)
         return Bounds(low=low, high=high)
 
     @classmethod
-    def from_space(cls, space: "gym.spaces.box.Box") -> "Bounds":  # noqa: F821
+    def from_space(cls, space: "gym.spaces.box.Box") -> "NumpyBounds":  # noqa: F821
         """Initialize a :class:`Bounds` from a :class:`Box` gym action space."""
-        return Bounds(low=space.low, high=space.high, dtype=space.dtype)
+        return NumpyBounds(low=space.low, high=space.high, dtype=space.dtype)
 
     @staticmethod
     def get_scaled_intervals(
@@ -643,7 +640,7 @@ low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
         return xmin_scaled, xmax_scaled
 
     @classmethod
-    def from_array(cls, x: Tensor, scale: float = 1.0) -> "Bounds":
+    def from_array(cls, x: Tensor | numpy.ndarray, scale: float = 1.0) -> "NumpyBounds":
         """Instantiate a bounds compatible for bounding the given array. It also allows to set a \
         margin for the high and low values.
 
@@ -663,15 +660,15 @@ low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
             :class:`Bounds` instance.
 
         Examples:
-            >>> import torch
-            >>> x = torch.ones((3, 3))
+            >>> x = np.ones((3, 3))
             >>> x[1:-1, 1:-1] = -5
             >>> bounds = Bounds.from_array(x, scale=1.5)
             >>> print(bounds)
-            TorchBounds shape torch.float32 dtype torch.Size([3]) \
-low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
+            NumpyBounds shape float64 dtype (3,) low [ 0.5 -7.5  0.5] high [1.5 1.5 1.5]
 
         """
+        if isinstance(x, Tensor):
+            x = x.numpy(force=True)
         xmin, xmax = numpy.min(x, axis=0), numpy.max(x, axis=0)
         xmin_scaled, xmax_scaled = cls.get_scaled_intervals(xmin, xmax, scale)
         return Bounds(low=xmin_scaled, high=xmax_scaled)
@@ -715,7 +712,7 @@ low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
             Periodic boundary condition so all the values are inside the defined bounds.
 
         """
-        x, y = einops.asnumpy(x).astype(self.low), einops.asnumpy(x).astype(self.low)
+        x, y = einops.asnumpy(x).astype(self.low), einops.asnumpy(y).astype(self.low)
         delta = numpy.abs(x - y)
         return numpy.where(x > 0.5 * self._bounds_dist, delta - self._bounds_dist, delta)
 
@@ -740,7 +737,7 @@ low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
         low: numpy.ndarray | Scalar = None,
         high: numpy.ndarray | Scalar | None = None,
         scale: float = 1.0,
-    ) -> "Bounds":
+    ) -> "NumpyBounds":
         """Initialize a new :class:`Bounds` with its bounds increased o decreased \
         by a scale factor.
 
@@ -776,11 +773,12 @@ low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
               (xn_low, xn_high))
 
         Examples
-            >>> import torch
-            >>> array = torch.tensor([1, 2, 5])
+            >>> array = np.array([1, 2, 5])
             >>> bounds = Bounds(high=array, low=-array)
             >>> print(bounds.to_tuples())
-            ((tensor(-1), tensor(1)), (tensor(-2), tensor(2)), (tensor(-5), tensor(5)))
+            ((np.float64(-1.0), np.float64(1.0)), (np.float64(-2.0), np.float64(2.0)), \
+(np.float64(-5.0), np.float64(5.0)))
+
 
         """
         return tuple(zip(self.low, self.high))
