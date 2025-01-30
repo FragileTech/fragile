@@ -48,7 +48,7 @@ class Bounds:
         raise TypeError(msg)
 
     @classmethod
-    def from_tuples(cls, bounds: Iterable[tuple]) -> "Bounds":
+    def from_tuples(cls, bounds: Iterable[tuple]) -> "NumpyBounds | TorchBounds":
         """Instantiate a :class:`Bounds` from a collection of tuples containing \
         the higher and lower bounds for every dimension as a tuple.
 

@@ -21,7 +21,8 @@ def bounds(request):
         high = np.array([5.0, 10.0, 15.0])
         low = np.array([1.0, 2.0, 3.0])
         return bounds_class(high=high, low=low)
-    return None
+    msg = "Invalid bounds class."
+    raise ValueError(msg)
 
 
 def test_sample(bounds):

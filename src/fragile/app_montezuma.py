@@ -11,8 +11,8 @@ import param
 import plangym
 from plangym.utils import process_frame
 
-from fragile.montezuma import aggregate_visits, FractalTree
 from fragile.shaolin.stream_plots import Image, RGB
+from fragile.videogames import aggregate_visits, MontezumaTree
 
 
 hv.extension("bokeh")
@@ -328,7 +328,7 @@ def main():
 
     n_walkers = 10000
     plot = MontezumaDisplay()
-    fai = FractalTree(
+    fai = MontezumaTree(
         max_walkers=n_walkers, env=env, device="cpu", min_leafs=100, start_walkers=100
     )
     runner = FaiRunner(fai, 1000000, plot=plot)

@@ -104,10 +104,10 @@ def calculate_virtual_reward(
     oobs: Tensor = None,
     dist_coef: float = 1.0,
     reward_coef: float = 1.0,
-    other_reward: Tensor = 1.0,
+    other_reward: Tensor | float = 1.0,
     return_compas: bool = False,
     return_distance: bool = False,
-    distance_function: Callable = l2_norm,
+    distance_function: Callable[[Tensor, Tensor], Tensor] = l2_norm,
 ) -> Tensor | (tuple[Tensor, Tensor] | tuple[Tensor, Tensor, Tensor]):
     """Calculate the virtual rewards given the required data."""
     compas = random_alive_compas(oobs, observs)
