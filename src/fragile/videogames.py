@@ -35,7 +35,7 @@ def aggregate_visits(array, block_size=5, upsample=True):
     return np.repeat(np.repeat(aggregated_array, block_size, axis=1), block_size, axis=2)
 
 
-class VideogameTree(FractalTree):
+class VideoGameTree(FractalTree):
     def __init__(
         self,
         max_walkers,
@@ -77,6 +77,11 @@ class VideogameTree(FractalTree):
         rgb = np.zeros((new_walkers, *self.rgb_shape), dtype=np.uint8)
         self.rgb = np.concatenate((self.rgb, rgb), axis=0)
 
+    def sample_dt(self, n_walkers: int | None = None):
+        if n_walkers is None:
+            n_walkers = self.n_walkers
+        return np.random.randint(1, 5, size=len(n_walkers))  # noqa: NPY002
+
     def to_dict(self):
         data = super().to_dict()
         data["rgb"] = self.rgb
@@ -109,7 +114,7 @@ class VideogameTree(FractalTree):
         return (state, _obs, _info), new_states, observ, reward, oobs, _truncateds, infos
 
 
-class MontezumaTree(VideogameTree):
+class MontezumaTree(FractalTree):
     def __init__(
         self,
         max_walkers,
@@ -124,7 +129,7 @@ class MontezumaTree(VideogameTree):
         action_dtype: torch.dtype | None = None,
         state_shape: tuple[int, ...] | None = (),
         state_dtype: torch.dtype | type = object,
-        rgb_shape: tuple[int, ...] = (210, 160, 3),
+        img_shape: tuple[int, ...] = (210, 160, 3),
         count_visits: bool = True,
         erase_coef=0.05,
         agg_block_size: int = 5,
@@ -142,12 +147,17 @@ class MontezumaTree(VideogameTree):
             action_dtype=action_dtype,
             state_shape=state_shape,
             state_dtype=state_dtype,
-            rgb_shape=rgb_shape,
+            img_shape=img_shape,
         )
         self.agg_block_size = agg_block_size
         self.count_visits = count_visits
         self.erase_coef = erase_coef
         self.visits = np.zeros((24, 160, 160), dtype=np.int64)
+
+    def sample_dt(self, n_walkers: int | None = None):
+        if n_walkers is None:
+            n_walkers = self.n_walkers
+        return np.random.randint(1, 5, size=len(n_walkers))  # noqa: NPY002
 
     def to_dict(self):
         data = super().to_dict()
