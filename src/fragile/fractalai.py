@@ -111,7 +111,7 @@ def calculate_virtual_reward(
 ) -> Tensor | (tuple[Tensor, Tensor] | tuple[Tensor, Tensor, Tensor]):
     """Calculate the virtual rewards given the required data."""
     compas = random_alive_compas(oobs, observs)
-    flattened_observs = observs.reshape(len(compas), -1)
+    flattened_observs = observs.reshape(len(compas), -1).to(torch.float32)
     other_reward = other_reward.flatten() if isinstance(other_reward, Tensor) else other_reward
     distance = distance_function(flattened_observs, flattened_observs[compas])
     distance_norm = relativize(distance.flatten())
