@@ -70,15 +70,15 @@ def get_segments(parent, x, y):
     return x[parent], y[parent], x, y
 
 
-def plot_edges(df, **kwargs):
-    parent, x, y = df["parent"].values, df["x"].values, df["y"].values
+def plot_edges(df, x_col="x", y_col="y", parent_col="parent", **kwargs):
+    parent, x, y = df[parent_col].values, df[x_col].values, df[y_col].values
     segs = x[parent], y[parent], x, y
     kwargs["line_color"] = kwargs.get("line_color", "black")
     return hv.Segments(segs).opts(**kwargs)
 
 
-def plot_nodes(df, **kwargs):
-    return hv.Scatter(df, kdims=["x"], vdims=["y"]).opts(**kwargs)
+def plot_nodes(df, x_col: str = "x", y_col: str = "y", **kwargs):
+    return hv.Scatter(df, kdims=[x_col], vdims=[y_col]).opts(**kwargs)
 
 
 def plot_graph(df, edge_kwargs=None, **node_kwargs):
@@ -86,10 +86,14 @@ def plot_graph(df, edge_kwargs=None, **node_kwargs):
     return plot_edges(df, **edge_kwargs) * plot_nodes(df, **node_kwargs)
 
 
-def draw_benchmark(benchmark):
+def draw_benchmark(benchmark, benchmark_lims=False):
     x, y = benchmark.best_state[:2]
-    x_low, y_low = benchmark.bounds.low[:2].numpy(force=True).tolist()
-    x_high, y_high = benchmark.bounds.high[:2].numpy(force=True).tolist()
+    if benchmark_lims:
+        x_low, y_low = benchmark.bounds.low[:2].numpy(force=True).tolist()
+        x_high, y_high = benchmark.bounds.high[:2].numpy(force=True).tolist()
+    else:
+        x_low, y_low = None, None
+        x_high, y_high = None, None
     return hv.Scatter(([x], [y])).opts(
         marker="star", color="red", size=8, xlim=(x_low, x_high), ylim=(y_low, y_high), alpha=0.7
     )
@@ -100,6 +104,8 @@ def view_plot(
     df: pd.DataFrame,
     dim_x: str = "x",
     dim_y: str = "y",
+    draw_edges: bool = True,
+    benchmark_lims: bool = False,
     ignore_cols: tuple[str] | None = ("states",),
     **kwargs,
 ):
@@ -111,7 +117,7 @@ def view_plot(
         (n.capitalize().replace("_", " "), f"@{n}") for n in hover_cols
     ]
     hover = HoverTool(tooltips=tooltips)
-    return plot_edges(df) * hv.Scatter(df, kdims=[dim_x], vdims=[dim_y, *hover_cols]).opts(
+    plot = hv.Scatter(df, kdims=[dim_x], vdims=[dim_y, *hover_cols]).opts(
         width=self.width.value,
         height=self.height.value,
         title="",
@@ -120,6 +126,11 @@ def view_plot(
         tools=[hover],
         **kwargs,
     )
+    if draw_edges:
+        plot = plot_edges(df, x_col=dim_x, y_col=dim_y) * plot
+    if dim_x == "x" and dim_y == "y":
+        plot *= draw_benchmark(self.fai.env, benchmark_lims=benchmark_lims)
+    return plot
 
 
 def plot_table(data, **kwargs):
@@ -168,13 +179,21 @@ class InteractiveFai(param.Parameterized):
         streams["df"] = self.data_pipe.param.data
         self.dmap = hv.DynamicMap(
             functools.partial(view_plot, self=self), streams=streams
-        ) * draw_benchmark(fai.env)
+        )  # * draw_benchmark(fai.env)
         self.tap_stream = hv.streams.Tap(source=self.dmap, x=np.nan, y=np.nan)
         self.summary_dmap = hv.DynamicMap(plot_table, streams=[self.summary_pipe.param.data])
 
     @property
     def df(self):
         return self.data_pipe.data
+
+    def send(self, fai):
+        self.data_pipe.send(pd.DataFrame(fai.to_dict()))
+        self.summary_pipe.send(pd.DataFrame(fai.summary(), index=["value"]).T.reset_index())
+
+    def reset(self, fai):
+        self.data_pipe.send(pd.DataFrame(fai.to_dict()))
+        self.summary_pipe.send(pd.DataFrame(fai.summary(), index=["value"]).T.reset_index())
 
     def bind_to_stream(self, function: Callable):
         return pn.bind(function, x=self.tap_stream.param.x, y=self.tap_stream.param.y)

@@ -1,137 +1,19 @@
 from functools import partial
-import threading
-import time
 
 import holoviews as hv
 from holoviews.streams import Pipe
 import numpy as np
-import pandas as pd
 import panel as pn
-import param
 import plangym
 from plangym.utils import process_frame
 
+from fragile.core import FaiRunner
 from fragile.shaolin.stream_plots import Image, RGB
 from fragile.videogames import aggregate_visits, MontezumaTree
 
 
 hv.extension("bokeh")
 pn.extension("tabulator", theme="dark")
-
-
-class FaiRunner(param.Parameterized):
-    is_running = param.Boolean(default=False)
-
-    def __init__(self, fai, n_steps, plot=None, report_interval=100):
-        super().__init__()
-        self.reset_btn = pn.widgets.Button(icon="restore", button_type="primary")
-        self.play_btn = pn.widgets.Button(icon="player-play", button_type="primary")
-        self.pause_btn = pn.widgets.Button(icon="player-pause", button_type="primary")
-        self.step_btn = pn.widgets.Button(name="Step", button_type="primary")
-        self.progress = pn.indicators.Progress(
-            name="Progress", value=0, width=600, max=n_steps, bar_color="primary"
-        )
-        self.sleep_val = pn.widgets.FloatInput(value=0.0, width=60)
-        self.report_interval = pn.widgets.IntInput(value=report_interval)
-        self.table = pn.widgets.Tabulator()
-        self.fai = fai
-        self.n_steps = n_steps
-        self.curr_step = 0
-        self.plot = plot
-        self.thread = None
-        self.erase_coef_val = pn.widgets.FloatInput(value=0.05, width=60, name="erase")
-
-    @param.depends("erase_coef_val.value")
-    def update_erase_coef(self):
-        self.fai.erase_coef = self.erase_coef_val.value
-
-    @param.depends("reset_btn.value")
-    def on_reset_click(self):
-        self.fai.reset()
-        self.curr_step = 0
-        self.progress.value = 1
-        self.curr_step = 0
-        self.play_btn.disabled = False
-        self.pause_btn.disabled = True
-        self.step_btn.disabled = False
-        self.is_running = False
-        self.progress.bar_color = "primary"
-        summary = pd.DataFrame(self.fai.summary(), index=[0])
-        self.table.value = summary
-        if self.plot is not None:
-            self.plot.reset(self.fai)
-            self.plot.send(self.fai)
-
-    @param.depends("play_btn.value")
-    def on_play_click(self):
-        self.play_btn.disabled = True
-        self.pause_btn.disabled = False
-        self.is_running = True
-        if self.thread is None or not self.thread.is_alive():
-            self.thread = threading.Thread(target=self.run)
-            self.thread.start()
-
-    @param.depends("pause_btn.clicks")
-    def on_pause_click(self):
-        self.is_running = False
-        self.play_btn.disabled = False
-        self.pause_btn.disabled = True
-        if self.thread is not None:
-            self.thread.join()
-
-    @param.depends("step_btn.value")
-    def on_step_click(self):
-        self.take_single_step()
-
-    def take_single_step(self):
-        self.fai.step_tree()
-        self.curr_step += 1
-        self.progress.value = self.curr_step
-        if self.curr_step >= self.n_steps:
-            self.is_running = False
-            self.progress.bar_color = "success"
-            self.step_btn.disabled = True
-            self.play_btn.disabled = True
-            self.pause_btn.disabled = True
-
-        if self.fai.oobs.sum().cpu().item() == self.fai.n_walkers - 1:
-            self.is_running = False
-            self.progress.bar_color = "danger"
-
-        if self.fai.iteration % self.report_interval.value == 0:
-            summary = pd.DataFrame(self.fai.summary(), index=[0])
-            self.table.value = summary
-            if self.plot is not None:
-                self.plot.send(self.fai)
-
-    def run(self):
-        while self.is_running:
-            self.take_single_step()
-            time.sleep(self.sleep_val.value)
-
-    def __panel__(self):
-        # pn.state.add_periodic_callback(self.run, period=20)
-
-        return pn.Column(
-            self.table,
-            self.progress,
-            pn.Row(
-                self.play_btn,
-                self.pause_btn,
-                self.reset_btn,
-                self.step_btn,
-                pn.pane.Markdown("**Sleep**"),
-                self.sleep_val,
-                self.report_interval,
-                self.erase_coef_val,
-            ),
-            self.on_play_click,
-            self.on_pause_click,
-            self.on_reset_click,
-            self.on_step_click,
-            self.update_erase_coef,
-            # self.run,
-        )
 
 
 PYRAMID = [
@@ -324,7 +206,9 @@ def main():
         frameskip=3,
         check_death=True,
         episodic_life=False,
-    )  # , n_workers=10, ray=True)
+        n_workers=10,
+        ray=True,
+    )
 
     n_walkers = 10000
     plot = MontezumaDisplay()
@@ -333,6 +217,3 @@ def main():
     )
     runner = FaiRunner(fai, 1000000, plot=plot)
     pn.panel(pn.Column(runner, plot)).servable()
-
-
-main()

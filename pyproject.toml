@@ -59,7 +59,7 @@ dependencies = [
     "quantlib>=1.35",
     "hvplot>=0.11.0",
     "streamz>=0.6.4",
-    "plangym[atari]>=0.1.29",
+    "plangym[dm_control,atari]>=0.1.29",
     "ray>=2.37.0",
     "jupyter",
     "notebook",
