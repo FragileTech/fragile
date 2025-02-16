@@ -76,8 +76,9 @@ def aggregate_visits(array, block_size=5, upsample=True):
     return np.repeat(np.repeat(aggregated_array, block_size, axis=1), block_size, axis=2)
 
 
-class BasePolicy:
-    def __init__(self, fractal: "BaseFractalTree | None" = None):
+class BasePolicy(param.Parameterized):
+    def __init__(self, fractal: "BaseFractalTree | None" = None, **kwargs):
+        super().__init__(**kwargs)
         self._fractal = fractal
 
     def __call__(
@@ -104,8 +105,9 @@ class BasePolicy:
         pass
 
 
-class BaseDtSampler:
-    def __init__(self, fractal: "BaseFractalTree | None" = None):
+class BaseDtSampler(param.Parameterized):
+    def __init__(self, fractal: "BaseFractalTree | None" = None, **kwargs):
+        super().__init__(**kwargs)
         self._fractal = fractal
 
     def __call__(
@@ -288,7 +290,12 @@ class _BaseFractalTree:
         self.scaled_reward = torch.cat((self.scaled_reward, scaled_reward), dim=0).contiguous()
 
 
-class BaseFractalTree:
+class BaseFractalTree(param.Parameterized):
+    max_walkers = param.Integer(default=1000, bounds=(2, None), per_instance=True)
+    start_walkers = param.Integer(default=100, bounds=(2, None), per_instance=True)
+    min_leafs = param.Integer(default=100, bounds=(2, None), per_instance=True)
+    n_walkers = param.Integer(default=100, bounds=(2, None), per_instance=True)
+
     def __init__(
         self,
         max_walkers,
@@ -296,11 +303,15 @@ class BaseFractalTree:
         device="cuda",
         start_walkers: int = 100,
         min_leafs: int = 100,
+        **kwargs,
     ):
-        self.max_walkers = max_walkers
-        self.n_walkers = start_walkers
-        self.start_walkers = start_walkers
-        self.min_leafs = min_leafs
+        super().__init__(
+            max_walkers=max_walkers,
+            start_walkers=start_walkers,
+            min_leafs=min_leafs,
+            n_walkers=start_walkers,
+            **kwargs,
+        )
         self.env = env
         self.device = device
 
@@ -328,6 +339,18 @@ class BaseFractalTree:
         self._distance = torch.zeros(max_walkers, device=self.device, dtype=torch.float32)
         self._scaled_distance = torch.zeros(max_walkers, device=self.device, dtype=torch.float32)
         self._scaled_reward = torch.zeros(max_walkers, device=self.device, dtype=torch.float32)
+
+    def widgets(self) -> dict[str, pn.widgets.Widget]:
+        return {
+            "max_walkers": pn.widgets.IntInput(
+                name="max_walkers", value=self.max_walkers, width=100
+            ),
+            "start_walkers": pn.widgets.IntInput(
+                name="start_walkers", value=self.start_walkers, width=100
+            ),
+            "min_leafs": pn.widgets.IntInput(name="min_leafs", value=self.min_leafs, width=100),
+            "n_walkers": pn.widgets.IntInput(name="n_walkers", value=self.n_walkers, width=100),
+        }
 
     def reset_tensors(self):
         self._parent = torch.zeros_like(self._parent)
@@ -433,6 +456,9 @@ class BaseFractalTree:
 
 
 class FractalTree(BaseFractalTree):
+    dist_coef = param.Number(default=1.0, bounds=(0.0, None), per_instance=True)
+    reward_coef = param.Number(default=1.0, bounds=(0.0, None), per_instance=True)
+
     def __init__(
         self,
         max_walkers,
@@ -454,7 +480,7 @@ class FractalTree(BaseFractalTree):
         distance_function: Callable[[torch.Tensor, torch.Tensor], torch.Tensor] = l2_norm,
         dist_coef: float = 1.0,
         reward_coef: float = 1.0,
-        accumulate_reward:bool=True,
+        accumulate_reward: bool = True,
     ):
         super().__init__(
             max_walkers=max_walkers,
@@ -462,11 +488,11 @@ class FractalTree(BaseFractalTree):
             device=device,
             start_walkers=start_walkers,
             min_leafs=min_leafs,
+            dist_coef=dist_coef,
+            reward_coef=reward_coef,
         )
         self.accumulate_reward = accumulate_reward
         self.distance_function = distance_function
-        self.dist_coef = dist_coef
-        self.reward_coef = reward_coef
         self.minimize = minimize
         self.obs_shape = obs_shape
         self.obs_dtype = obs_dtype
@@ -523,6 +549,41 @@ class FractalTree(BaseFractalTree):
     @property
     def img(self):
         return self._img[: self.n_walkers]
+
+    def widgets(self) -> dict[str, pn.widgets.Widget]:
+        widgets = super().widgets()
+        curr_widgets = {
+            "dist_coef": pn.widgets.FloatInput(name="dist_coef", value=self.dist_coef, width=100),
+            "reward_coef": pn.widgets.FloatInput(
+                name="reward_coef", value=self.reward_coef, width=100
+            ),
+        }
+        return {**widgets, **curr_widgets}
+
+    def __panel__(self):
+        top_row_names = ["max_walkers", "start_walkers", "min_leafs", "n_walkers"]
+        top_widgets = {k: v for k, v in self.widgets().items() if k in top_row_names}
+        bot_row_names = ["dist_coef", "reward_coef"]
+        bot_widgets = {k: v for k, v in self.widgets().items() if k in bot_row_names}
+        return pn.Column(
+            pn.pane.Markdown("## Fractal Tree"),
+            pn.Row(
+                pn.Param(
+                    self,
+                    parameters=top_row_names,
+                    widgets=top_widgets,
+                    show_name=False,
+                    default_layout=pn.Row,
+                ),
+                pn.Param(
+                    self,
+                    parameters=bot_row_names,
+                    widgets=bot_widgets,
+                    show_name=False,
+                    default_layout=pn.Row,
+                ),
+            ),
+        )
 
     def reset_img(self):
         self.img_shape = self.img_shape if self.img_shape is not None else self.env.img_shape
@@ -598,15 +659,12 @@ class FractalTree(BaseFractalTree):
     def summary(self):
         return {
             "iteration": self.iteration,
+            "total_steps": self.total_steps,
+            "best_reward": self.best_reward,
             "leaf_nodes": self.is_leaf.sum().cpu().item(),
             "oobs": self.oobs.sum().cpu().item(),
-            "best_reward": self.best_reward,
-            "best_ix": self.best_ix,
             "will_clone": self.will_clone.sum().cpu().item(),
-            "total_steps": self.total_steps,
             "n_walkers": self.n_walkers,
-            "norm_reward_mean": self.scaled_reward.mean().cpu().item(),
-            "norm_reward_std": self.scaled_reward.std().cpu().item(),
         }
 
     def clone_data(self):
@@ -671,7 +729,7 @@ class FractalTree(BaseFractalTree):
         self.action_step = self.sample_actions(int(wc_np.sum()))
         try:
             logger.info("In step_walkers: %s, %s", self.observ.shape, self.action_step.shape)
-            new_states, observ, reward, oobs, _truncateds, infos = self.step_env()
+            new_states, observ, reward, oobs, truncateds, infos = self.step_env()
         except Exception as e:
             logger.error(
                 "Error in step_walkers %s %s %s %s",
@@ -691,7 +749,7 @@ class FractalTree(BaseFractalTree):
         self.state[wc_np] = new_states
         self.img[wc_np] = np.array([info["rgb"] for info in infos])
         self.action[self.will_clone] = self.action_step.to(self.action.dtype)
-        return new_states, observ, reward, oobs, _truncateds, infos
+        return new_states, observ, reward, oobs, truncateds, infos
 
     def calculate_other_reward(self):
         return 1.0
@@ -743,8 +801,8 @@ class FractalTree(BaseFractalTree):
         self.iteration += 1
 
     def reset_env(self):
-        state, _obs, _info = self.env.reset()
-        return state, _obs, _info
+        state, obs, info = self.env.reset()
+        return state, obs, info
 
     def reset(self):
         logger.info("reset start: %s %s", self.observ.shape, self._observ.shape)
@@ -756,14 +814,14 @@ class FractalTree(BaseFractalTree):
         start_action = self.sample_actions(self.start_walkers)
         self._action[: self.n_walkers] = start_action
 
-        state, _obs, _info = self.reset_env()
+        state, obs, info = self.reset_env()
         states = np.stack([state.copy() for _ in range(self.start_walkers)], axis=0)
         self._state[: self.n_walkers] = states
 
         self.state_step = self.state
         self.action_step = self.action
 
-        new_states, observ, reward, oobs, _truncateds, infos = self.step_env()
+        new_states, observ, reward, oobs, truncateds, infos = self.step_env()
         # here we set the first state to the one after reset. This state will act as the root
         # of the tree
         logger.info("INIT: %s %s", self.observ.shape, observ.shape)
@@ -787,7 +845,7 @@ class FractalTree(BaseFractalTree):
             logger.warning("cannot start image")
             # raise e
 
-        return (state, _obs, _info), new_states, observ, reward, oobs, _truncateds, infos
+        return (state, obs, info), new_states, observ, reward, oobs, truncateds, infos
 
 
 class FaiRunner(param.Parameterized):
@@ -803,14 +861,14 @@ class FaiRunner(param.Parameterized):
             name="Progress", value=0, width=600, max=n_steps, bar_color="primary"
         )
         self.sleep_val = pn.widgets.FloatInput(value=0.0, width=60)
-        self.report_interval = pn.widgets.IntInput(value=report_interval)
-        self.table = pn.widgets.Tabulator()
+        self.report_interval = pn.widgets.IntInput(value=report_interval, width=70)
+        self.table = pn.widgets.Tabulator(show_index=False)
         self.fai = fai
         self.n_steps = n_steps
         self.curr_step = 0
         self.plot = plot
         self.thread = None
-        self.erase_coef_val = pn.widgets.FloatInput(value=0.05, width=60, name="erase")
+        self.erase_coef_val = pn.widgets.FloatInput(value=0.05, width=75)
 
     @param.depends("erase_coef_val.value")
     def update_erase_coef(self):
@@ -882,20 +940,23 @@ class FaiRunner(param.Parameterized):
 
     def __panel__(self):
         # pn.state.add_periodic_callback(self.run, period=20)
-
+        buttons_row = pn.Row(
+            self.play_btn,
+            self.pause_btn,
+            self.reset_btn,
+            self.step_btn,
+            pn.pane.Markdown("**Sleep**"),
+            self.sleep_val,
+            pn.pane.Markdown("**Report Interval**"),
+            self.report_interval,
+            pn.pane.Markdown("**Erase coef**"),
+            self.erase_coef_val,
+        )
         return pn.Column(
+            self.fai,
             self.table,
             self.progress,
-            pn.Row(
-                self.play_btn,
-                self.pause_btn,
-                self.reset_btn,
-                self.step_btn,
-                pn.pane.Markdown("**Sleep**"),
-                self.sleep_val,
-                self.report_interval,
-                self.erase_coef_val,
-            ),
+            buttons_row,
             self.on_play_click,
             self.on_pause_click,
             self.on_reset_click,

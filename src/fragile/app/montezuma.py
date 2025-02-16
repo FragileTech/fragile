@@ -172,9 +172,9 @@ class MontezumaDisplay:
         best_room_ix = room_ix[best_ix]
         for ix in np.unique(room_ix):
             if ix not in self.visited_rooms:
-                #batch_ix =
+                # batch_ix =
                 room_img = fai.img[room_ix == ix][0][50:]
-                fai.env.gym_env.rooms[ix] = room_img #fai.env.gym_env.rooms.get(ix, room_img)
+                fai.env.gym_env.rooms[ix] = room_img  # fai.env.gym_env.rooms.get(ix, room_img)
                 self.visited_rooms.append(ix)
                 self.room_pipe.send(fai.env.gym_env)
                 self.rooms[ix] = process_frame(room_img, mode="L").copy()
@@ -208,16 +208,20 @@ def run_serve_montezuma(**kwargs):
         frameskip=3,
         check_death=True,
         episodic_life=False,
-        n_workers=50,
+        n_workers=5,
         ray=True,
     )
 
     n_walkers = 100000
     plot = MontezumaDisplay()
     fai = MontezumaTree(
-        max_walkers=n_walkers, env=env,
+        max_walkers=n_walkers,
+        env=env,
         dt_sampler=UniformDtSampler(min_dt=1, max_dt=5),
-        device="cpu", min_leafs=15000, start_walkers=15000, state_shape=(11,)
+        device="cpu",
+        min_leafs=15,
+        start_walkers=15,
+        state_shape=(11,),
     )
     runner = FaiRunner(fai, 1000000, plot=plot)
     dashboard = pn.panel(pn.Column(runner, plot))

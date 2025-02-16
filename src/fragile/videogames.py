@@ -99,21 +99,19 @@ class VideoGameTree(FractalTree):
 
     def step_walkers(self):
         wc_np = self.will_clone.cpu().numpy()
-        new_states, observ, reward, oobs, _truncateds, infos = super().step_walkers()
+        new_states, observ, reward, oobs, truncateds, infos = super().step_walkers()
         if new_states is None:
-            return new_states, observ, reward, oobs, _truncateds, infos
+            return new_states, observ, reward, oobs, truncateds, infos
         self.rgb[wc_np] = np.array([info["rgb"] for info in infos])
-        return new_states, observ, reward, oobs, _truncateds, infos
+        return new_states, observ, reward, oobs, truncateds, infos
 
     def reset(self):
-        (state, _obs, _info), new_states, observ, reward, oobs, _truncateds, infos = (
-            super().reset()
-        )
+        (state, obs, info), new_states, observ, reward, oobs, truncateds, infos = super().reset()
         self.rgb = np.zeros((self.start_walkers, *self.rgb_shape), dtype=np.uint8)
         self.env.set_state(state)
         self.rgb[0, :] = self.env.get_image()
         self.rgb[1:, :] = np.array([info["rgb"] for info in infos[1:]])
-        return (state, _obs, _info), new_states, observ, reward, oobs, _truncateds, infos
+        return (state, obs, info), new_states, observ, reward, oobs, truncateds, infos
 
 
 class MontezumaTree(FractalTree):
@@ -139,7 +137,6 @@ class MontezumaTree(FractalTree):
         distance_function: Callable[[torch.Tensor, torch.Tensor], torch.Tensor] = l2_norm,
         dist_coef: float = 1.0,
         reward_coef: float = 1.0,
-
     ):
         super().__init__(
             max_walkers=max_walkers,
@@ -171,19 +168,19 @@ class MontezumaTree(FractalTree):
         return data
 
     def step_walkers(self):
-        _new_states, observ, _reward, _oobs, _truncateds, _infos = super().step_walkers()
-        if _new_states is None:
-            return _new_states, observ, _reward, _oobs, _truncateds, _infos
+        new_states, observ, reward, oobs, truncateds, infos = super().step_walkers()
+        if new_states is None:
+            return new_states, observ, reward, oobs, truncateds, infos
         if self.count_visits:
             self.update_visits(np.array(observ, dtype=np.int64))
-        return _new_states, observ, _reward, _oobs, _truncateds, _infos
+        return new_states, observ, reward, oobs, truncateds, infos
 
     def reset(self):
-        _state, _new_states, observ, _reward, _oobs, _truncateds, _infos = super().reset()
+        state, new_states, observ, reward, oobs, truncateds, infos = super().reset()
         self.visits = np.zeros((24, 160, 160), dtype=np.float32)
         if self.count_visits:
             self.update_visits(np.array(observ, dtype=np.int64))
-        return _state, _new_states, observ, _reward, _oobs, _truncateds, _infos
+        return state, new_states, observ, reward, oobs, truncateds, infos
 
     def update_visits(self, observ):
         observ = observ.astype(np.float64)
