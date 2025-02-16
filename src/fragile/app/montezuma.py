@@ -7,13 +7,10 @@ import panel as pn
 import plangym
 from plangym.utils import process_frame
 
+from fragile.actions import UniformDtSampler
 from fragile.core import FaiRunner
 from fragile.shaolin.stream_plots import Image, RGB
 from fragile.videogames import aggregate_visits, MontezumaTree
-
-
-hv.extension("bokeh")
-pn.extension("tabulator", theme="dark")
 
 
 PYRAMID = [
@@ -69,8 +66,7 @@ def set_empty_rooms(all_rooms, empty_rooms=None, height=160, width=160):
 
 def draw_rooms(env, pyramid_layout=None, height=160, width=160):
     pyramid_layout = pyramid_layout if pyramid_layout is not None else get_pyramid_layout()
-    rooms = env.rooms
-    for n_room, room in rooms.items():
+    for n_room, room in env.rooms.items():
         i, j = env.get_room_xy(n_room)
         coord_x, coord_x1 = j * width, (j + 1) * width
         coord_y, coord_y1 = i * height, (i + 1) * height
@@ -164,7 +160,7 @@ class MontezumaDisplay:
 
     def send(self, fai):
         best_ix = fai.cum_reward.argmax().cpu().item()
-        best_rgb = fai.rgb[best_ix]
+        best_rgb = fai.img[best_ix]
         if best_ix != self._curr_best:
             self.best_rgb.send(best_rgb)
             self._curr_best = best_ix
@@ -173,14 +169,18 @@ class MontezumaDisplay:
         observ[:, 0] /= int(fai.env.gym_env._x_repeat)
         observ = observ.astype(np.int64)
         room_ix = observ[:, 2]
+        best_room_ix = room_ix[best_ix]
         for ix in np.unique(room_ix):
             if ix not in self.visited_rooms:
+                #batch_ix =
+                room_img = fai.img[room_ix == ix][0][50:]
+                fai.env.gym_env.rooms[ix] = room_img #fai.env.gym_env.rooms.get(ix, room_img)
                 self.visited_rooms.append(ix)
                 self.room_pipe.send(fai.env.gym_env)
-                batch_ix = np.argmax(room_ix == ix)
-                self.rooms[ix] = process_frame(fai.rgb[batch_ix][50:], mode="L").copy()
-        best_room_ix = room_ix[best_ix]
+                self.rooms[ix] = process_frame(room_img, mode="L").copy()
+
         self.room_grey.send(self.rooms[best_room_ix])
+
         visits = fai.visits[best_room_ix][None]
         visits = aggregate_visits(visits, block_size=fai.agg_block_size, upsample=True)[0]
         visits[visits == 0] = np.nan
@@ -198,7 +198,9 @@ class MontezumaDisplay:
         )
 
 
-def main():
+def run_serve_montezuma(**kwargs):
+    hv.extension("bokeh")
+    pn.extension("tabulator", theme="dark", throttled=True)
     env = plangym.make(
         "PlanMontezuma-v0",
         obs_type="coords",
@@ -206,14 +208,23 @@ def main():
         frameskip=3,
         check_death=True,
         episodic_life=False,
-        n_workers=10,
+        n_workers=50,
         ray=True,
     )
 
-    n_walkers = 10000
+    n_walkers = 100000
     plot = MontezumaDisplay()
     fai = MontezumaTree(
-        max_walkers=n_walkers, env=env, device="cpu", min_leafs=100, start_walkers=100
+        max_walkers=n_walkers, env=env,
+        dt_sampler=UniformDtSampler(min_dt=1, max_dt=5),
+        device="cpu", min_leafs=15000, start_walkers=15000, state_shape=(11,)
     )
     runner = FaiRunner(fai, 1000000, plot=plot)
-    pn.panel(pn.Column(runner, plot)).servable()
+    dashboard = pn.panel(pn.Column(runner, plot))
+    template = pn.template.BootstrapTemplate(
+        title="Montezuma's revenge",
+        main=pn.panel(dashboard),
+        # sidebar=pn.panel(app.plot_sidebar),
+        # main_layout=None,
+    ).servable()
+    return pn.serve(template, **kwargs)

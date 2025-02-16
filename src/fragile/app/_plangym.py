@@ -7,7 +7,7 @@ from fragile.shaolin.stream_plots import RGB
 
 
 hv.extension("bokeh")
-pn.extension("tabulator", theme="dark")
+pn.extension("tabulator")
 
 
 class PlanGymDisplay:
@@ -43,14 +43,17 @@ def main():
         obs_type="coords",
         return_image=True,
         frameskip=1,
-        # n_workers=10,
-        # ray=True,
+        n_workers=10,
+        ray=True,
     )
 
     n_walkers = 10000
     plot = PlanGymDisplay()
     fai = FractalTree(
-        max_walkers=n_walkers, env=env, device="cpu", min_leafs=250, start_walkers=250
+        max_walkers=n_walkers, env=env, device="cpu", min_leafs=500, start_walkers=500
     )
     runner = FaiRunner(fai, 1000000, plot=plot)
     pn.panel(pn.Column(runner, plot)).servable()
+
+
+#main()

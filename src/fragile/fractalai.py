@@ -24,12 +24,15 @@ def l2_norm(x: Tensor, y: Tensor) -> Tensor:
     return torch.norm(x - y, dim=1)
 
 
-def relativize(x: Tensor) -> Tensor:
+def relativize(
+    x: Tensor, std: float | Tensor | None = None, mean: float | Tensor | None = None
+) -> Tensor:
     """Normalize the data using a custom smoothing technique."""
-    std = x.std()
+    std = x.std() if std is None else std
     if std == 0 or torch.isnan(std) or torch.isinf(std):
         return torch.ones_like(x)
-    standard = (x - x.mean()) / std
+    mean = x.mean() if mean is None else mean
+    standard = (x - mean) / std
     return torch.where(standard > 0.0, torch.log(1.0 + standard) + 1.0, torch.exp(standard))
 
 
@@ -167,9 +170,7 @@ def calculate_clone(
         vir_rew,
         torch.tensor(eps, device=vir_rew.device),
     )
-    will_clone = clone_probs.flatten() > torch.randperm(
-        len(clone_probs), device=clone_probs.device
-    )
+    will_clone = clone_probs.flatten() > torch.rand(len(clone_probs), device=clone_probs.device)
     return compas_ix, will_clone, clone_probs
 
 

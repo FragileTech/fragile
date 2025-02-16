@@ -19,6 +19,7 @@ def is_bool_column(df, column_name):
 
 
 def normalize_array(array, min_val, max_val):
+    array, min_val, max_val = array.astype(float), float(min_val), float(max_val)
     return (array - min_val) / (max_val - min_val)
 
 

@@ -97,6 +97,9 @@ class OptimBenchmark:
     def sample(self, n_samples):
         return self.bounds.sample(n_samples)
 
+    def sample_action(self, n_samples=1):
+        return self.sample(n_samples)
+
     @property
     def shape(self) -> tuple[int, ...]:
         return self.bounds.shape
