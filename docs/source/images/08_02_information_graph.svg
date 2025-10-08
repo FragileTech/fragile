@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500" width="600" height="500">
+  <!-- Title -->
+  <text x="300" y="30" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#2c3e50">
+    Information Graph (IG)
+  </text>
+
+  <!-- Time slices labels -->
+  <text x="50" y="100" font-family="Arial, sans-serif" font-size="12" fill="#7f8c8d" font-style="italic">t = 1</text>
+  <text x="50" y="200" font-family="Arial, sans-serif" font-size="12" fill="#7f8c8d" font-style="italic">t = 2</text>
+  <text x="50" y="300" font-family="Arial, sans-serif" font-size="12" fill="#7f8c8d" font-style="italic">t = 3</text>
+
+  <!-- Time slice t=1: 4 episodes forming a clique -->
+  <circle cx="150" cy="100" r="10" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="150" y="85" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#2c3e50">e₀</text>
+
+  <circle cx="250" cy="100" r="10" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="250" y="85" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#2c3e50">e₁</text>
+
+  <circle cx="350" cy="100" r="10" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="350" y="85" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#2c3e50">e₂</text>
+
+  <circle cx="450" cy="100" r="10" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="450" y="85" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#2c3e50">e₃</text>
+
+  <!-- Clique edges at t=1 -->
+  <line x1="150" y1="100" x2="250" y2="100" stroke="#9b59b6" stroke-width="2" opacity="0.7"/>
+  <line x1="250" y1="100" x2="350" y2="100" stroke="#9b59b6" stroke-width="2" opacity="0.7"/>
+  <line x1="350" y1="100" x2="450" y2="100" stroke="#9b59b6" stroke-width="2" opacity="0.7"/>
+  <line x1="150" y1="100" x2="350" y2="100" stroke="#9b59b6" stroke-width="2" opacity="0.5"/>
+  <line x1="150" y1="100" x2="450" y2="100" stroke="#9b59b6" stroke-width="2" opacity="0.5"/>
+  <line x1="250" y1="100" x2="450" y2="100" stroke="#9b59b6" stroke-width="2" opacity="0.5"/>
+
+  <!-- Time slice t=2: 4 episodes -->
+  <circle cx="150" cy="200" r="10" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="150" y="185" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#2c3e50">e₀</text>
+
+  <circle cx="250" cy="200" r="10" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="250" y="185" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#2c3e50">e₁</text>
+
+  <circle cx="350" cy="200" r="10" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+  <text x="350" y="185" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#2c3e50">e₅</text>
+
+  <circle cx="450" cy="200" r="10" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="450" y="185" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#2c3e50">e₃</text>
+
+  <!-- Clique edges at t=2 -->
+  <line x1="150" y1="200" x2="250" y2="200" stroke="#9b59b6" stroke-width="2" opacity="0.7"/>
+  <line x1="250" y1="200" x2="350" y2="200" stroke="#9b59b6" stroke-width="2" opacity="0.7"/>
+  <line x1="350" y1="200" x2="450" y2="200" stroke="#9b59b6" stroke-width="2" opacity="0.7"/>
+  <line x1="150" y1="200" x2="350" y2="200" stroke="#9b59b6" stroke-width="2" opacity="0.5"/>
+  <line x1="150" y1="200" x2="450" y2="200" stroke="#9b59b6" stroke-width="2" opacity="0.5"/>
+  <line x1="250" y1="200" x2="450" y2="200" stroke="#9b59b6" stroke-width="2" opacity="0.5"/>
+
+  <!-- Time slice t=3: 4 episodes -->
+  <circle cx="150" cy="300" r="10" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+  <text x="150" y="285" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#2c3e50">e₄</text>
+
+  <circle cx="250" cy="300" r="10" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="250" y="285" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#2c3e50">e₁</text>
+
+  <circle cx="350" cy="300" r="10" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+  <text x="350" y="285" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#2c3e50">e₅</text>
+
+  <circle cx="450" cy="300" r="10" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="450" y="285" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#2c3e50">e₃</text>
+
+  <!-- Clique edges at t=3 -->
+  <line x1="150" y1="300" x2="250" y2="300" stroke="#9b59b6" stroke-width="2" opacity="0.7"/>
+  <line x1="250" y1="300" x2="350" y2="300" stroke="#9b59b6" stroke-width="2" opacity="0.7"/>
+  <line x1="350" y1="300" x2="450" y2="300" stroke="#9b59b6" stroke-width="2" opacity="0.7"/>
+  <line x1="150" y1="300" x2="350" y2="300" stroke="#9b59b6" stroke-width="2" opacity="0.5"/>
+  <line x1="150" y1="300" x2="450" y2="300" stroke="#9b59b6" stroke-width="2" opacity="0.5"/>
+  <line x1="250" y1="300" x2="450" y2="300" stroke="#9b59b6" stroke-width="2" opacity="0.5"/>
+
+  <!-- Annotation: Selection coupling -->
+  <rect x="100" y="370" width="400" height="80" fill="#ecf0f1" stroke="#95a5a6" stroke-width="1" rx="5"/>
+  <text x="110" y="390" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50" font-weight="bold">Selection Coupling:</text>
+  <text x="110" y="408" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">
+    At each cloning event (time t), all alive episodes form a complete graph
+  </text>
+  <text x="110" y="424" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">
+    (clique). They influence each other through normalized fitness weights:
+  </text>
+  <text x="110" y="440" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">
+    P(clone i) ∝ exp(Φ(xᵢ)/T) / Σⱼ exp(Φ(xⱼ)/T)
+  </text>
+
+  <!-- Legend -->
+  <g transform="translate(100, 460)">
+    <circle cx="8" cy="0" r="7" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+    <text x="20" y="5" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">Original episode</text>
+
+    <circle cx="150" cy="0" r="7" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+    <text x="162" y="5" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">New (cloned) episode</text>
+
+    <line x1="280" y1="0" x2="320" y2="0" stroke="#9b59b6" stroke-width="2" opacity="0.7"/>
+    <text x="330" y="5" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">IG edge (spacelike, undirected)</text>
+  </g>
+</svg>

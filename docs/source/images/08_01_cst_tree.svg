@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500" width="600" height="500">
+  <!-- Title -->
+  <text x="300" y="30" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#2c3e50">
+    Causal Spacetime Tree (CST)
+  </text>
+
+  <!-- Root node -->
+  <circle cx="300" cy="80" r="12" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+  <text x="300" y="110" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#2c3e50">root</text>
+
+  <!-- Generation 0 episodes (initial walkers) -->
+  <circle cx="150" cy="180" r="10" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="150" y="205" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#2c3e50">e₀</text>
+
+  <circle cx="250" cy="180" r="10" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="250" y="205" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#2c3e50">e₁</text>
+
+  <circle cx="350" cy="180" r="10" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="350" y="205" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#2c3e50">e₂</text>
+
+  <circle cx="450" cy="180" r="10" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="450" y="205" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#2c3e50">e₃</text>
+
+  <!-- Edges from root to generation 0 -->
+  <line x1="300" y1="92" x2="150" y2="168" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="300" y1="92" x2="250" y2="168" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="300" y1="92" x2="350" y2="168" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="300" y1="92" x2="450" y2="168" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Proper time labels on edges -->
+  <text x="210" y="125" font-family="Arial, sans-serif" font-size="10" fill="#7f8c8d">τ₀=2.1</text>
+  <text x="265" y="125" font-family="Arial, sans-serif" font-size="10" fill="#7f8c8d">τ₁=2.9</text>
+  <text x="330" y="125" font-family="Arial, sans-serif" font-size="10" fill="#7f8c8d">τ₂=1.4</text>
+  <text x="385" y="125" font-family="Arial, sans-serif" font-size="10" fill="#7f8c8d">τ₃=4.5</text>
+
+  <!-- Generation 1 episodes (children from cloning) -->
+  <circle cx="120" cy="290" r="10" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+  <text x="120" y="315" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#2c3e50">e₄</text>
+
+  <circle cx="350" cy="290" r="10" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+  <text x="350" y="315" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#2c3e50">e₅</text>
+
+  <circle cx="250" cy="290" r="10" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+  <text x="250" y="315" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#2c3e50">e₆</text>
+
+  <!-- Edges generation 0 to generation 1 -->
+  <line x1="150" y1="190" x2="120" y2="278" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="125" y="240" font-family="Arial, sans-serif" font-size="10" fill="#7f8c8d">τ₄=2.6</text>
+
+  <line x1="350" y1="190" x2="350" y2="278" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="365" y="240" font-family="Arial, sans-serif" font-size="10" fill="#7f8c8d">τ₅=2.2</text>
+
+  <line x1="250" y1="190" x2="250" y2="278" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="265" y="240" font-family="Arial, sans-serif" font-size="10" fill="#7f8c8d">τ₆=1.9</text>
+
+  <!-- Legend -->
+  <g transform="translate(50, 380)">
+    <circle cx="10" cy="0" r="8" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+    <text x="25" y="5" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Root (initial state)</text>
+
+    <circle cx="10" cy="30" r="8" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+    <text x="25" y="35" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Generation 0 (initial walkers)</text>
+
+    <circle cx="10" cy="60" r="8" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+    <text x="25" y="65" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Generation 1 (cloned episodes)</text>
+
+    <line x1="320" y1="390" x2="360" y2="390" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="375" y="395" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Parent → Child (weight = proper lifetime τ)</text>
+  </g>
+
+  <!-- Properties box -->
+  <rect x="50" y="440" width="500" height="45" fill="#ecf0f1" stroke="#95a5a6" stroke-width="1" rx="5"/>
+  <text x="60" y="460" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50" font-weight="bold">Key Properties:</text>
+  <text x="60" y="475" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">
+    • Tree structure (acyclic, each node has 1 parent) • Timelike edges (parent dies → child born)
+  </text>
+
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#7f8c8d"/>
+    </marker>
+  </defs>
+</svg>

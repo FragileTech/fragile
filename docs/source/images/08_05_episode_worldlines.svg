@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 550" width="700" height="550">
+  <!-- Title -->
+  <text x="350" y="30" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#2c3e50">
+    Episode Worldlines and Embedding Φ
+  </text>
+
+  <!-- Spacetime diagram -->
+  <rect x="80" y="60" width="540" height="380" fill="#f8f9fa" stroke="#34495e" stroke-width="2" rx="5"/>
+
+  <!-- Axes -->
+  <line x1="100" y1="420" x2="600" y2="420" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#axis-arrow)"/>
+  <line x1="100" y1="420" x2="100" y2="80" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#axis-arrow)"/>
+
+  <text x="350" y="455" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#2c3e50" font-style="italic">x (space)</text>
+  <text x="60" y="250" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#2c3e50" font-style="italic" transform="rotate(-90 60 250)">t (time)</text>
+
+  <!-- Episode e0: worldline from birth to death -->
+  <defs>
+    <marker id="axis-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#2c3e50"/>
+    </marker>
+    <marker id="death-marker" markerWidth="12" markerHeight="12" refX="6" refY="6">
+      <circle cx="6" cy="6" r="5" fill="#e74c3c" stroke="#c0392b" stroke-width="1.5"/>
+    </marker>
+  </defs>
+
+  <!-- Episode e0 worldline (curved path showing Langevin dynamics) -->
+  <path d="M 180 380 Q 200 330 220 280 Q 230 240 250 200 Q 260 160 270 130"
+        stroke="#3498db" stroke-width="3" fill="none" opacity="0.8"/>
+
+  <!-- Birth and death events for e0 -->
+  <circle cx="180" cy="380" r="5" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+  <text x="165" y="400" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">t^b_{e₀}</text>
+
+  <circle cx="270" cy="130" r="6" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+  <text x="280" y="135" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">Φ(e₀) = t^d_{e₀}</text>
+
+  <!-- Episode e1 worldline -->
+  <path d="M 350 380 Q 370 320 380 270 Q 390 210 400 160 Q 405 120 410 100"
+        stroke="#3498db" stroke-width="3" fill="none" opacity="0.8"/>
+
+  <circle cx="350" cy="380" r="5" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+  <text x="330" y="400" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">t^b_{e₁}</text>
+
+  <circle cx="410" cy="100" r="6" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+  <text x="420" y="105" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">Φ(e₁)</text>
+
+  <!-- Episode e2 (child of e0) -->
+  <path d="M 270 130 Q 280 170 300 210 Q 320 250 340 280"
+        stroke="#2ecc71" stroke-width="3" fill="none" opacity="0.8"/>
+
+  <circle cx="340" cy="280" r="6" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+  <text x="350" y="285" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">Φ(e₂)</text>
+
+  <!-- Cloning event annotation -->
+  <circle cx="270" cy="130" r="15" fill="none" stroke="#f39c12" stroke-width="2" stroke-dasharray="3,2"/>
+  <text x="210" y="125" font-family="Arial, sans-serif" font-size="10" fill="#f39c12" font-weight="bold">cloning</text>
+  <line x1="255" y1="120" x2="235" y2="115" stroke="#f39c12" stroke-width="1.5" marker-end="url(#orange-arrow)"/>
+
+  <defs>
+    <marker id="orange-arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#f39c12"/>
+    </marker>
+  </defs>
+
+  <!-- Proper lifetime arc -->
+  <path d="M 185 375 Q 200 320 220 270 Q 230 230 245 180"
+        stroke="#9b59b6" stroke-width="1.5" fill="none" stroke-dasharray="4,4" opacity="0.6"/>
+  <text x="210" y="270" font-family="Arial, sans-serif" font-size="11" fill="#9b59b6" font-style="italic">τ_{e₀}</text>
+
+  <!-- Episode e3 (separate trajectory) -->
+  <path d="M 500 360 Q 510 310 520 260 Q 525 200 530 150"
+        stroke="#3498db" stroke-width="3" fill="none" opacity="0.8"/>
+
+  <circle cx="500" cy="360" r="5" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+  <text x="480" y="378" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">t^b_{e₃}</text>
+
+  <circle cx="530" cy="150" r="6" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+  <text x="540" y="155" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">Φ(e₃)</text>
+
+  <!-- Info boxes -->
+  <rect x="80" y="455" width="540" height="80" fill="#ecf0f1" stroke="#95a5a6" stroke-width="1.5" rx="5"/>
+  <text x="95" y="477" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50" font-weight="bold">
+    Episode Structure:
+  </text>
+  <text x="95" y="495" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">
+    • Episode e = maximal alive interval with worldline γ_e: [t^b_e, t^d_e) → M
+  </text>
+  <text x="95" y="512" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">
+    • Embedding Φ(e) = death event location (spacetime point where walker exits)
+  </text>
+  <text x="95" y="529" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">
+    • Proper lifetime: τ_e = ∫ √(-g(γ̇_e, γ̇_e)) dt (timelike curve length)
+  </text>
+
+  <!-- Legend -->
+  <g transform="translate(100, 70)">
+    <rect x="0" y="0" width="160" height="90" fill="white" stroke="#95a5a6" stroke-width="1" rx="3" opacity="0.95"/>
+
+    <text x="10" y="18" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50" font-weight="bold">Components:</text>
+
+    <line x1="10" y1="35" x2="40" y2="35" stroke="#3498db" stroke-width="3"/>
+    <text x="45" y="39" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">Original episode</text>
+
+    <line x1="10" y1="55" x2="40" y2="55" stroke="#2ecc71" stroke-width="3"/>
+    <text x="45" y="59" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">Cloned episode</text>
+
+    <circle cx="15" cy="75" r="4" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+    <text x="25" y="79" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">Birth event t^b_e</text>
+
+    <circle cx="95" cy="75" r="5" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+    <text x="105" y="79" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">Death Φ(e)</text>
+  </g>
+</svg>

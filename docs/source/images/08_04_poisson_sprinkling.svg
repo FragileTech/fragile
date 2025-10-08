@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 500" width="700" height="500">
+  <!-- Title -->
+  <text x="350" y="30" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#2c3e50">
+    Poisson Sprinkling on Spacetime
+  </text>
+
+  <!-- Spacetime diagram background -->
+  <rect x="100" y="60" width="500" height="340" fill="#f8f9fa" stroke="#95a5a6" stroke-width="2" rx="5"/>
+
+  <!-- Axis labels -->
+  <text x="350" y="420" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#2c3e50" font-style="italic">x (space)</text>
+  <text x="70" y="230" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#2c3e50" font-style="italic" transform="rotate(-90 70 230)">t (time)</text>
+
+  <!-- Light cone structure (from a central event) -->
+  <defs>
+    <marker id="small-arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#e74c3c"/>
+    </marker>
+  </defs>
+
+  <line x1="350" y1="230" x2="470" y2="120" stroke="#e74c3c" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.5"/>
+  <line x1="350" y1="230" x2="230" y2="120" stroke="#e74c3c" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.5"/>
+  <line x1="350" y1="230" x2="470" y2="340" stroke="#3498db" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.5"/>
+  <line x1="350" y1="230" x2="230" y2="340" stroke="#3498db" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.5"/>
+
+  <!-- Past light cone shading -->
+  <path d="M 350 230 L 470 340 L 230 340 Z" fill="#3498db" opacity="0.08"/>
+  <text x="350" y="310" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#3498db" font-style="italic">J⁻(p)</text>
+
+  <!-- Future light cone shading -->
+  <path d="M 350 230 L 470 120 L 230 120 Z" fill="#e74c3c" opacity="0.08"/>
+  <text x="350" y="150" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#e74c3c" font-style="italic">J⁺(p)</text>
+
+  <!-- Central event -->
+  <circle cx="350" cy="230" r="6" fill="#2c3e50" stroke="#34495e" stroke-width="2"/>
+  <text x="370" y="235" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">p</text>
+
+  <!-- Poisson sprinkled events (random points) -->
+  <!-- Past light cone events -->
+  <circle cx="320" cy="270" r="4" fill="#3498db" opacity="0.8"/>
+  <circle cx="380" cy="280" r="4" fill="#3498db" opacity="0.8"/>
+  <circle cx="290" cy="310" r="4" fill="#3498db" opacity="0.8"/>
+  <circle cx="410" cy="295" r="4" fill="#3498db" opacity="0.8"/>
+  <circle cx="350" cy="320" r="4" fill="#3498db" opacity="0.8"/>
+  <circle cx="270" cy="330" r="4" fill="#3498db" opacity="0.8"/>
+  <circle cx="430" cy="315" r="4" fill="#3498db" opacity="0.8"/>
+
+  <!-- Future light cone events -->
+  <circle cx="310" cy="190" r="4" fill="#e74c3c" opacity="0.8"/>
+  <circle cx="390" cy="180" r="4" fill="#e74c3c" opacity="0.8"/>
+  <circle cx="280" cy="140" r="4" fill="#e74c3c" opacity="0.8"/>
+  <circle cx="420" cy="160" r="4" fill="#e74c3c" opacity="0.8"/>
+  <circle cx="360" cy="130" r="4" fill="#e74c3c" opacity="0.8"/>
+  <circle cx="250" cy="170" r="4" fill="#e74c3c" opacity="0.8"/>
+  <circle cx="450" cy="145" r="4" fill="#e74c3c" opacity="0.8"/>
+
+  <!-- Spacelike separated events -->
+  <circle cx="170" cy="230" r="4" fill="#95a5a6" opacity="0.6"/>
+  <circle cx="530" cy="230" r="4" fill="#95a5a6" opacity="0.6"/>
+  <circle cx="140" cy="200" r="4" fill="#95a5a6" opacity="0.6"/>
+  <circle cx="560" cy="260" r="4" fill="#95a5a6" opacity="0.6"/>
+  <circle cx="200" cy="100" r="4" fill="#95a5a6" opacity="0.6"/>
+  <circle cx="500" cy="360" r="4" fill="#95a5a6" opacity="0.6"/>
+  <circle cx="150" cy="340" r="4" fill="#95a5a6" opacity="0.6"/>
+  <circle cx="520" cy="110" r="4" fill="#95a5a6" opacity="0.6"/>
+
+  <!-- Additional random sprinkled events across spacetime -->
+  <circle cx="250" cy="250" r="4" fill="#9b59b6" opacity="0.5"/>
+  <circle cx="450" cy="210" r="4" fill="#9b59b6" opacity="0.5"/>
+  <circle cx="180" cy="150" r="4" fill="#9b59b6" opacity="0.5"/>
+  <circle cx="480" cy="270" r="4" fill="#9b59b6" opacity="0.5"/>
+  <circle cx="340" cy="90" r="4" fill="#9b59b6" opacity="0.5"/>
+  <circle cx="220" cy="380" r="4" fill="#9b59b6" opacity="0.5"/>
+
+  <!-- Info box -->
+  <rect x="100" y="415" width="500" height="70" fill="#ecf0f1" stroke="#95a5a6" stroke-width="1.5" rx="5"/>
+  <text x="115" y="435" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50" font-weight="bold">
+    Theorem 2.1 (Poisson Sprinkling):
+  </text>
+  <text x="115" y="453" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">
+    Episode death events {Φ(e)} form a Poisson point process with intensity ρ(x)dVol_g
+  </text>
+  <text x="115" y="470" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">
+    ⟹ Statistical independence + homogeneous density + Lorentz invariance
+  </text>
+
+  <!-- Legend at bottom -->
+  <g transform="translate(50, 50)">
+    <rect x="0" y="0" width="180" height="110" fill="white" stroke="#95a5a6" stroke-width="1" rx="3" opacity="0.95"/>
+
+    <text x="10" y="18" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50" font-weight="bold">Causal Relations:</text>
+
+    <circle cx="15" cy="35" r="4" fill="#e74c3c" opacity="0.8"/>
+    <text x="25" y="39" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">Future: p ≺ e</text>
+
+    <circle cx="15" cy="55" r="4" fill="#3498db" opacity="0.8"/>
+    <text x="25" y="59" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">Past: e ≺ p</text>
+
+    <circle cx="15" cy="75" r="4" fill="#95a5a6" opacity="0.6"/>
+    <text x="25" y="79" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">Spacelike: e ∦ p</text>
+
+    <circle cx="15" cy="95" r="4" fill="#9b59b6" opacity="0.5"/>
+    <text x="25" y="99" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">Other events</text>
+  </g>
+</svg>

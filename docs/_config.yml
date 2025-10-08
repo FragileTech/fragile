@@ -5,19 +5,19 @@
 
 #######################################################################################
 # Book settings
-title                       : "Fragile"  # The title of the book. Will be placed in the left navbar.
+title                       : "FractalAI Documentation"  # The title of the book. Will be placed in the left navbar.
 author                      : "Guillem Duran Ballester"  # The author of the book
-copyright                   : "2024"  # Copyright year to be placed in the footer
+copyright                   : "2025"  # Copyright year to be placed in the footer
 logo                        : "logo.png"  # A path to the book logo
 # Patterns to skip when building the book. Can be glob-style (e.g. "*skip.ipynb")
-exclude_patterns            : [_build, Thumbs.db, .DS_Store, "**.ipynb_checkpoints"]
+exclude_patterns            : [_build, Thumbs.db, .DS_Store, "**.ipynb_checkpoints", "**/empty.md", "**/2_neural_nets", "**/4_riemanian_gas", "**/5_relativistic_gas"]
 # Auto-exclude files not in the toc
 only_build_toc_files        : false
 
 #######################################################################################
 # Execution settings
 execute:
-  execute_notebooks         : auto  # Whether to execute notebooks at build time. Must be one of ("auto", "force", "cache", "off")
+  execute_notebooks         : off  # Whether to execute notebooks at build time. Must be one of ("auto", "force", "cache", "off")
   cache                     : ""    # A path to the jupyter cache that will be used to store execution artifacts. Defaults to `_build/.jupyter_cache/`
   exclude_patterns          : []    # A list of patterns to *skip* in execution (e.g. a notebook that takes a really long time)
   timeout                   : 30    # The maximum time (in seconds) each notebook cell is allowed to run.
@@ -41,28 +41,38 @@ parse:
     - smartquotes
     - substitution
     - tasklist
+    - attrs_inline
+    - attrs_block
+    - fieldlist
+    - strikethrough
+
   myst_url_schemes: [mailto, http, https] # URI schemes that will be recognised as external URLs in Markdown links
   myst_dmath_double_inline: true  # Allow display math ($$) within an inline context
+  myst_substitutions:
+    docname: "<project>"
+    release: "0.0.1"
 
 #######################################################################################
 # HTML-specific settings
 html:
   favicon                   : "favicon.png"  # A path to a favicon image
-  use_edit_page_button      : false  # Whether to add an "edit this page" button to pages. If `true`, repository information in repository: must be filled in
-  use_repository_button     : false  # Whether to add a link to your repository button
+  expand_sections: true
+  use_edit_page_button      : true  # Whether to add an "edit this page" button to pages. If `true`, repository information in repository: must be filled in
+  use_repository_button     : true  # Whether to add a link to your repository button
   use_issues_button         : false  # Whether to add an "open an issue" button
   use_multitoc_numbering    : true   # Continuous numbering across parts/chapters
   extra_footer              : ""  # Will be displayed underneath the footer.
-  google_analytics_id       : ""  # A GA id that can be used to track book views.
   home_page_in_navbar       : true  # Whether to include your home page in the left Navigation Bar
   baseurl                   : ""  # The base URL where your book will be hosted. Used for creating image previews and social links. e.g.: https://mypage.com/mybook/
   analytics:
     plausible_analytics_url: https://plausible.io/js/script.js
+    google_analytics_id       : ""  # A GA id that can be used to track book views.
 
   comments:
     hypothesis              : false
     utterances              : false
   announcement              : "" # A banner announcement at the top of the site.
+  extra_css                 : ["custom.css"]  # Custom CSS files
 
 #######################################################################################
 # LaTeX-specific settings
@@ -79,10 +89,11 @@ launch_buttons:
   thebe                     : false  # Add a thebe button to pages (requires the repository to run on Binder)
   colab_url                 : "" # The URL of Google Colab (https://colab.research.google.com)
 
+# Disable repository settings to avoid errors
 repository:
-  url                       : "https://github.com/FragileTech/fragile"  # The URL to your book's repository
-  path_to_book              : ""  # A path to your book's folder, relative to the repository root.
-  branch                    : "main"  # Which branch of the repository should be used when creating links
+   url                       : "https://github.com/FragileTech/FractalAI"  # The URL to your book's repository
+   path_to_book              : "docs"  # A path to your book's folder, relative to the repository root.
+   branch                    : "main"  # Which branch of the repository should be used when creating links
 
 #######################################################################################
 #######################################################################################
@@ -94,22 +105,74 @@ sphinx:
     - sphinx.ext.intersphinx
     - sphinx.ext.todo
     - sphinx.ext.coverage
-    - sphinx.ext.imgmath
     - sphinx.ext.viewcode
     - sphinx.ext.napoleon
     - sphinx.ext.autosectionlabel
     - sphinx.ext.autodoc.typehints
     - sphinx.ext.githubpages
     - sphinxcontrib.mermaid
-    - autoapi.extension
+    - sphinx_design
+    - sphinx_inline_tabs
+    - sphinx_math_dollar
+    - sphinxcontrib.bibtex
+    - sphinx_proof
   local_extensions          :   # A list of local extensions to load by sphinx specified by "name: path" items
+    math_structures: source/_ext
   recursive_update          : false # A boolean indicating whether to overwrite the Sphinx config (true) or recursively update (false)
   config                    : # key-value pairs to directly over-ride the Sphinx configuration
-    autoapi_dirs              : [ "../src" ]
+# Remove autoapi for now since it's causing issues
+    # autoapi_dirs              : [ "../src" ]
     napoleon_google_docstring : true
     napoleon_numpy_docstring  : false
     autodoc_typehints         : "description"
-    autoapi_add_toctree_entry : true
-    imgmath_latex             : /usr/bin/latex
-    version                   : "0.2.0"  # The version of the book
-    release                   : "0.2.0"  # The release of the book
+    # autoapi_add_toctree_entry : true
+    version                   : "0.0.1"  # The version of the book
+    release                   : "0.0.1"  # The release of the book
+    html_theme_options        :
+      use_download_button     : true
+      use_fullscreen_button   : true
+      use_repository_button   : false
+    autosectionlabel_prefix_document : true
+    myst_heading_anchors      : 3
+    suppress_warnings         :
+      - "autosectionlabel.*"
+      - "myst.header"
+      - "myst.directive_unknown"
+      - "myst.directive_parse"
+      - "toc.not_readable"
+      - "toc.circular"
+      - "document isn't included in any toctree"
+    mathjax_path: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+    mathjax3_config:
+      tex:
+        macros:
+          "argmin": "\\mathop{\\mathrm{arg\\,min}}"
+          "argmax": "\\mathop{\\mathrm{arg\\,max}}"
+      processEscapes: true
+      processEnvironments: true
+    mermaid_version           : "10.6.1"
+    html_static_path          : ["_static"]
+    html_css_files            : ["custom.css"]
+    # Bibliography configuration
+    bibtex_bibfiles           : ["source/references.bib"]
+    bibtex_reference_style    : "author_year"
+    # Enable figure, table, and equation numbering
+#    numfig: true
+#
+#    # Configure the numbering format for equations
+#    numfig_format:
+#      # The %s will be replaced by the section number
+#      math: 'Equation %s'
+#
+#    # Tell the math domain to use the numfig configuration
+#    math_numfig: true
+    mermaid_init_js: |
+      mermaid.initialize({
+        'theme': 'base',
+        'themeVariables': {
+          'primaryColor': '#f9f9f9',
+          'primaryTextColor': '#000',
+          'fontFamily': 'Arial',
+          'fontSize': '14px'
+        }
+      })
