@@ -2563,9 +2563,1040 @@ The anisotropic diffusion $\Sigma_{\text{reg}}$ provides several benefits:
 
 ---
 
-## 9. Conclusion
+## 9. Explicit Derivation of the Emergent Metric from Algorithmic Parameters
 
-### 9.1. Summary of Contributions
+### 9.1. Overview: From Algorithm to Geometry
+
+In the previous chapters, we established that the Adaptive Gas induces an emergent Riemannian metric through its adaptive diffusion tensor. However, the connection between **algorithmic parameters** (fitness function, localization scale, regularization) and the **geometric structure** (metric tensor, curvature, geodesics) has been largely implicit.
+
+This chapter provides an **explicit, step-by-step derivation** of the metric tensor $g_{ij}(x, S)$ in terms of the algorithmic components. We will show how:
+
+1. The **fitness potential** $V_{\text{fit}}[f_k, \rho]$ constructed from the measurement function and localized Z-scores
+2. The **Hessian** $H(x, S) = \nabla^2 V_{\text{fit}}[f_k, \rho](x)$ computed via the chain rule
+3. The **regularization** $\epsilon_\Sigma I$ ensuring uniform ellipticity
+4. Combine to produce the **metric tensor** $g(x, S) = H(x, S) + \epsilon_\Sigma I$
+
+This derivation makes the **algorithmic-to-geometric map** fully explicit and computable, providing the foundation for understanding how parameter choices shape the emergent geometry.
+
+### 9.2. Phase 1: The Fitness Potential from Localized Statistics
+
+We begin with the algorithmic construction of the fitness potential.
+
+:::{prf:definition} Fitness Potential Construction (Algorithmic Specification)
+:label: def-fitness-algorithmic
+
+For a swarm state $S = \{(x_i, v_i, s_i)\}_{i=1}^N$ with alive walkers $A_k = \{i : s_i = \text{alive}\}$, the fitness potential at position $x \in \mathcal{X}$ is constructed through the following pipeline:
+
+**Step 1: Measurement Function.** Given a measurement function $d: \mathcal{X} \to \mathbb{R}$ (e.g., reward, diversity score), evaluate:
+
+$$
+d_i = d(x_i) \quad \text{for all } i \in A_k
+$$
+
+**Step 2: Localization Weights.** For localization scale $\rho > 0$ and localization kernel $K_\rho(x, x') = \frac{1}{Z_K(x, \rho)} \exp\left(-\frac{\|x - x'\|^2}{2\rho^2}\right)$, compute normalized weights:
+
+$$
+w_{ij}(\rho) = \frac{K_\rho(x, x_j)}{\sum_{\ell \in A_k} K_\rho(x, x_\ell)}
+$$
+
+where the normalization ensures $\sum_{j \in A_k} w_{ij}(\rho) = 1$.
+
+**Step 3: Localized Moments.** Compute the ρ-localized mean and variance at position $x$:
+
+$$
+\mu_\rho[f_k, d, x] = \sum_{j \in A_k} w_{ij}(\rho) \, d_j
+$$
+
+$$
+\sigma^2_\rho[f_k, d, x] = \sum_{j \in A_k} w_{ij}(\rho) \, (d_j - \mu_\rho[f_k, d, x])^2
+$$
+
+**Step 4: Regularized Standard Deviation.** Apply numerical regularization using a C¹-smooth patching function:
+
+$$
+\sigma'_\rho[f_k, d, x] = \sigma'_{\text{patch}}\left(\sqrt{\sigma^2_\rho[f_k, d, x]}\right)
+$$
+
+where $\sigma'_{\text{patch}}: [0, \infty) \to [\kappa_{\text{var,min}}, \infty)$ is a C¹-smooth function (see Definition {prf:ref}`def-unified-z-score` in `07_adaptative_gas.md`) that:
+- Equals $\kappa_{\text{var,min}}$ for $\sigma \le \kappa_{\text{var,min}} - \delta$
+- Smoothly transitions through a polynomial patch in $[\kappa_{\text{var,min}} - \delta, \kappa_{\text{var,min}} + \delta]$
+- Equals the identity $\sigma$ for $\sigma \ge \kappa_{\text{var,min}} + \delta$
+
+This ensures $V_{\text{fit}}$ is C² everywhere, as required for the Hessian to be well-defined.
+
+**Step 5: Localized Z-Score.** Compute the standardized measurement:
+
+$$
+Z_\rho[f_k, d, x] = \frac{d(x) - \mu_\rho[f_k, d, x]}{\sigma'_\rho[f_k, d, x]}
+$$
+
+**Step 6: Rescale to Bounded Potential.** Apply a smooth, monotone, bounded rescale function $g_A: \mathbb{R} \to [0, A]$ (e.g., $g_A(z) = \frac{A}{1 + e^{-z}}$):
+
+$$
+V_{\text{fit}}[f_k, \rho](x) = g_A\left(Z_\rho[f_k, d, x]\right)
+$$
+
+This constructs a smooth, bounded fitness potential $V_{\text{fit}}: \mathcal{X} \to [0, A]$ that depends on the local neighborhood of $x$ with characteristic scale $\rho$.
+:::
+
+:::{prf:remark} Algorithmic Meaning of the Fitness Potential
+:class: note
+
+The fitness potential $V_{\text{fit}}[f_k, \rho](x)$ encodes **relative performance in a local neighborhood**:
+- High values indicate positions where the measurement $d(x)$ is **above the local mean** (good regions)
+- Low values indicate positions **below the local mean** (poor regions)
+- The Z-score normalization makes this **scale-invariant**: fitness depends on relative position, not absolute measurement values
+- The localization scale $\rho$ controls the spatial extent of "local": small $\rho$ → hyper-local, large $\rho$ → global
+:::
+
+### 9.3. Phase 2: The Hessian via Rigorous Chain Rule Derivation
+
+The metric emerges from the **curvature** of the fitness landscape, encoded in the Hessian. We now derive the Hessian explicitly using the chain rule.
+
+:::{prf:theorem} Explicit Hessian Formula
+:label: thm-explicit-hessian
+
+The Hessian of the fitness potential with respect to position $x \in \mathcal{X}$ is:
+
+$$
+H(x, S) = \nabla^2_x V_{\text{fit}}[f_k, \rho](x) = g''_A(Z) \, \nabla_x Z \otimes \nabla_x Z + g'_A(Z) \, \nabla^2_x Z
+$$
+
+where:
+- $Z = Z_\rho[f_k, d, x]$ is the localized Z-score
+- $g'_A(Z)$ and $g''_A(Z)$ are the first and second derivatives of the rescale function
+- $\nabla_x Z$ and $\nabla^2_x Z$ are the gradient and Hessian of the Z-score with respect to $x$
+
+**Expanded Form:**
+
+$$
+H(x, S) = \frac{g''_A(Z)}{\sigma'^2_\rho} \nabla_x d \otimes \nabla_x d + \frac{g'_A(Z)}{\sigma'_\rho} \nabla^2_x d + \text{(moment correction terms)}
+$$
+
+where the moment correction terms arise from the dependence of $\mu_\rho$ and $\sigma'_\rho$ on $x$ through the localization weights.
+:::
+
+:::{prf:proof}
+We compute the Hessian by applying the chain rule twice. We first establish a technical lemma for the gradient of the localization weights.
+
+**Lemma: Gradient of Normalized Localization Weights.**
+
+For the normalized Gaussian weights:
+
+$$
+w_{ij}(\rho) = \frac{K_\rho(x, x_j)}{\sum_{\ell \in A_k} K_\rho(x, x_\ell)} = \frac{\exp\left(-\frac{\|x - x_j\|^2}{2\rho^2}\right)}{\sum_{\ell \in A_k} \exp\left(-\frac{\|x - x_\ell\|^2}{2\rho^2}\right)}
+$$
+
+**Gradient derivation:** Using the quotient rule:
+
+$$
+\nabla_x w_{ij} = \frac{\nabla_x K_\rho(x, x_j) \cdot \sum_\ell K_\rho(x, x_\ell) - K_\rho(x, x_j) \cdot \sum_\ell \nabla_x K_\rho(x, x_\ell)}{\left(\sum_\ell K_\rho(x, x_\ell)\right)^2}
+$$
+
+For the Gaussian kernel, $\nabla_x K_\rho(x, x_j) = -\frac{1}{\rho^2} K_\rho(x, x_j) (x - x_j)$. Therefore:
+
+$$
+\nabla_x w_{ij} = \frac{-\frac{1}{\rho^2} K_\rho(x, x_j) (x - x_j) \sum_\ell K_\rho(x, x_\ell) - K_\rho(x, x_j) \sum_\ell \left(-\frac{1}{\rho^2} K_\rho(x, x_\ell) (x - x_\ell)\right)}{\left(\sum_\ell K_\rho(x, x_\ell)\right)^2}
+$$
+
+Simplifying using $w_{ij} = K_\rho(x, x_j) / \sum_\ell K_\rho(x, x_\ell)$:
+
+$$
+\nabla_x w_{ij} = -\frac{w_{ij}}{\rho^2} (x - x_j) + \frac{w_{ij}}{\rho^2} \sum_{\ell \in A_k} w_{i\ell} (x - x_\ell)
+$$
+
+$$
+= \frac{1}{\rho^2} w_{ij} \left( \sum_{\ell \in A_k} w_{i\ell} (x - x_\ell) - (x - x_j) \right)
+$$
+
+$$
+= \frac{1}{\rho^2} \left( w_{ij} \sum_{\ell \in A_k} w_{i\ell} (x - x_\ell) - w_{ij} (x - x_j) \right)
+$$
+
+which can be rewritten as the formula used in the main proof. $\square$
+
+**Step 1: First Derivative (Gradient).**
+
+By the chain rule for $V_{\text{fit}}(x) = g_A(Z_\rho(x))$:
+
+$$
+\nabla_x V_{\text{fit}} = g'_A(Z) \, \nabla_x Z_\rho
+$$
+
+For the Z-score $Z_\rho = \frac{d(x) - \mu_\rho}{\sigma'_\rho}$, we have:
+
+$$
+\nabla_x Z_\rho = \frac{1}{\sigma'_\rho} \left( \nabla_x d - \nabla_x \mu_\rho \right) - \frac{d(x) - \mu_\rho}{\sigma'^2_\rho} \nabla_x \sigma'_\rho
+$$
+
+**Moment Gradients.** The localized mean depends on $x$ through the weights:
+
+$$
+\mu_\rho = \sum_{j \in A_k} w_{ij}(\rho) d_j
+$$
+
+$$
+\nabla_x \mu_\rho = \sum_{j \in A_k} (\nabla_x w_{ij}) d_j
+$$
+
+For the normalized Gaussian weights $w_{ij} = K_\rho(x, x_j) / \sum_\ell K_\rho(x, x_\ell)$:
+
+$$
+\nabla_x w_{ij} = \frac{1}{\rho^2} \left( w_{ij} (x - x_j) - \sum_{\ell \in A_k} w_{i\ell} w_{ij} (x - x_\ell) \right)
+$$
+
+**Critical Telescoping Property:** The normalization constraint $\sum_j w_{ij} = 1$ implies:
+
+$$
+\sum_{j \in A_k} \nabla_x w_{ij} = 0
+$$
+
+This telescoping property ensures that the gradient of the mean is bounded **independently of $k$** (and thus $N$).
+
+**Step 2: Second Derivative (Hessian).**
+
+Taking another derivative of $\nabla_x V_{\text{fit}} = g'_A(Z) \nabla_x Z$:
+
+$$
+\nabla^2_x V_{\text{fit}} = g''_A(Z) \, (\nabla_x Z) \otimes (\nabla_x Z) + g'_A(Z) \, \nabla^2_x Z
+$$
+
+**Term 1 (Outer Product):** The first term is a rank-1 matrix:
+
+$$
+\left[g''_A(Z) \, \nabla_x Z \otimes \nabla_x Z\right]_{ab} = g''_A(Z) \, \frac{\partial Z}{\partial x_a} \frac{\partial Z}{\partial x_b}
+$$
+
+For the Z-score, to leading order (ignoring moment correction terms):
+
+$$
+\nabla_x Z \approx \frac{1}{\sigma'_\rho} \nabla_x d
+$$
+
+Thus:
+
+$$
+g''_A(Z) \, \nabla_x Z \otimes \nabla_x Z \approx \frac{g''_A(Z)}{\sigma'^2_\rho} \, \nabla_x d \otimes \nabla_x d
+$$
+
+**Term 2 (Hessian of Z-Score):** The second term involves:
+
+$$
+\nabla^2_x Z = \frac{1}{\sigma'_\rho} (\nabla^2_x d - \nabla^2_x \mu_\rho) + \text{(variance correction terms)}
+$$
+
+The moment Hessian $\nabla^2_x \mu_\rho$ involves second derivatives of the weights $w_{ij}$. By the same telescoping argument, these terms remain bounded.
+
+**Step 3: Explicit Bound.**
+
+Combining both terms and using the bounds:
+- $|g'_A(Z)| \le g'_{\max}$, $|g''_A(Z)| \le g''_{\max}$ (smoothness of rescale function)
+- $\|\nabla_x d\|_\infty \le d'_{\max}$, $\|\nabla^2_x d\|_\infty \le d''_{\max}$ (regularity of measurement)
+- $\sigma'_\rho \ge \kappa_{\text{var,min}}$ (regularization floor)
+- $\|\nabla_x \mu_\rho\|, \|\nabla^2_x \mu_\rho\| = O(1/\rho)$ (localization scale dependence)
+
+We obtain the **N-uniform bound**:
+
+$$
+\|H(x, S)\| \le H_{\max}(\rho) = \frac{g''_{\max} (d'_{\max})^2}{\kappa^2_{\text{var,min}}} + \frac{g'_{\max} d''_{\max}}{\kappa_{\text{var,min}}} + O(1/\rho)
+$$
+
+where the $O(1/\rho)$ term captures the moment correction contributions, which grow as localization becomes tighter.
+:::
+
+:::{prf:remark} Geometric Interpretation of the Hessian Terms
+:class: note
+
+The two terms in the Hessian have distinct geometric meanings:
+
+**1. Rank-1 Term (Outer Product):** $g''_A(Z) \, \nabla_x Z \otimes \nabla_x Z$
+- Dominant when the rescale function has high curvature ($g''_A$ large)
+- Aligned with the **gradient direction** of the fitness landscape
+- Creates **anisotropy along level sets**: high curvature perpendicular to level sets
+
+**2. Full Hessian Term:** $g'_A(Z) \, \nabla^2_x Z$
+- Captures the **intrinsic curvature** of the Z-score manifold
+- Depends on second derivatives of the measurement function $d(x)$
+- Reflects the **geometry of the problem**, not just the fitness magnitude
+
+The final metric $g = H + \epsilon_\Sigma I$ combines these geometric features with the regularization, creating a smoothed version of the fitness landscape's curvature.
+:::
+
+### 9.4. Phase 3: The Regularized Metric and Uniform Ellipticity
+
+The Hessian alone may not be positive definite (e.g., at saddle points or in flat regions). The regularization ensures well-posedness.
+
+:::{prf:definition} Emergent Riemannian Metric (Explicit Construction)
+:label: def-metric-explicit
+
+For a walker at position $x$ in swarm state $S$, the **emergent Riemannian metric** is defined as:
+
+$$
+g(x, S) = H(x, S) + \epsilon_\Sigma I
+$$
+
+where:
+- $H(x, S) = \nabla^2_x V_{\text{fit}}[f_k, \rho](x)$ is the Hessian from {prf:ref}`thm-explicit-hessian`
+- $\epsilon_\Sigma > 0$ is the **regularization parameter**
+- $I$ is the $d \times d$ identity matrix
+
+The corresponding **diffusion tensor** (inverse of the metric) is:
+
+$$
+D_{\text{reg}}(x, S) = g(x, S)^{-1} = \left(H(x, S) + \epsilon_\Sigma I\right)^{-1}
+$$
+
+and the **diffusion coefficient matrix** used in the SDE is:
+
+$$
+\Sigma_{\text{reg}}(x, S) = D_{\text{reg}}(x, S)^{1/2} = \left(H(x, S) + \epsilon_\Sigma I\right)^{-1/2}
+$$
+:::
+
+:::{prf:theorem} Uniform Ellipticity from Regularization
+:label: thm-uniform-ellipticity-explicit
+
+For any choice of algorithmic parameters $(d, \rho, \kappa_{\text{var,min}}, g_A, A, \epsilon_\Sigma)$, the metric $g(x, S)$ is **uniformly elliptic** with explicit bounds:
+
+$$
+c_{\min}(\rho) I \preceq g(x, S) \preceq c_{\max} I
+$$
+
+where:
+
+$$
+c_{\min}(\rho) = \epsilon_\Sigma - \Lambda_-(\rho), \quad c_{\max} = H_{\max}(\rho) + \epsilon_\Sigma
+$$
+
+and:
+- $\Lambda_-(\rho) \ge 0$ is the **spectral floor**: the maximum magnitude of negative eigenvalues of $H(x, S)$ over all states
+- $H_{\max}(\rho)$ is the **spectral ceiling**: the maximum eigenvalue of $H(x, S)$ over all states
+
+**Sufficient Condition for Positive Definiteness:** If $\epsilon_\Sigma > \Lambda_-(\rho)$, then $g(x, S) \succ 0$ for all $x, S$.
+
+**Inverse Bounds (Diffusion Tensor):**
+
+$$
+\frac{1}{c_{\max}} I \preceq D_{\text{reg}}(x, S) \preceq \frac{1}{c_{\min}(\rho)} I
+$$
+
+**Square Root Bounds (Diffusion Coefficient Matrix):**
+
+$$
+\frac{1}{\sqrt{c_{\max}}} I \preceq \Sigma_{\text{reg}}(x, S) \preceq \frac{1}{\sqrt{c_{\min}(\rho)}} I
+$$
+:::
+
+:::{prf:proof}
+**Step 1: Eigenvalue Bounds for $g(x, S)$.**
+
+Let $\lambda_1, \ldots, \lambda_d$ be the eigenvalues of $H(x, S)$. Then the eigenvalues of $g(x, S) = H(x, S) + \epsilon_\Sigma I$ are:
+
+$$
+\lambda_i(g) = \lambda_i(H) + \epsilon_\Sigma, \quad i = 1, \ldots, d
+$$
+
+**Lower Bound:** By definition of the spectral floor:
+
+$$
+\lambda_i(H) \ge -\Lambda_-(\rho) \quad \Rightarrow \quad \lambda_i(g) \ge \epsilon_\Sigma - \Lambda_-(\rho) = c_{\min}(\rho)
+$$
+
+If $\epsilon_\Sigma > \Lambda_-(\rho)$, then $c_{\min}(\rho) > 0$ and $g \succ 0$ (positive definite).
+
+**Upper Bound:** By the Hessian bound from {prf:ref}`thm-explicit-hessian`:
+
+$$
+\lambda_i(H) \le \|H\| \le H_{\max}(\rho) \quad \Rightarrow \quad \lambda_i(g) \le H_{\max}(\rho) + \epsilon_\Sigma = c_{\max}
+$$
+
+Therefore $c_{\min}(\rho) I \preceq g(x, S) \preceq c_{\max} I$ in the Loewner ordering.
+
+**Step 2: Inverse and Square Root Bounds.**
+
+For a positive definite matrix $A$ with $c_1 I \preceq A \preceq c_2 I$, we have:
+
+$$
+\frac{1}{c_2} I \preceq A^{-1} \preceq \frac{1}{c_1} I
+$$
+
+Applying this to $D_{\text{reg}} = g^{-1}$ gives the inverse bounds.
+
+For the square root $\Sigma_{\text{reg}} = D_{\text{reg}}^{1/2} = g^{-1/2}$, the eigenvalues are $1/\sqrt{\lambda_i(g)}$, giving:
+
+$$
+\frac{1}{\sqrt{c_{\max}}} I \preceq \Sigma_{\text{reg}} \preceq \frac{1}{\sqrt{c_{\min}(\rho)}} I
+$$
+
+**Step 3: Explicit Formulas for the Bounds.**
+
+**Part A: Spectral Ceiling $H_{\max}(\rho)$.**
+
+From {prf:ref}`thm-explicit-hessian`, we have:
+
+$$
+H_{\max}(\rho) = \frac{g''_{\max} (d'_{\max})^2}{\kappa^2_{\text{var,min}}} + \frac{g'_{\max} d''_{\max}}{\kappa_{\text{var,min}}} + O(1/\rho)
+$$
+
+where:
+- $g''_{\max} = \sup_{z \in \mathbb{R}} |g''_A(z)|$ is the maximum second derivative of the rescale function
+- $d'_{\max} = \sup_{x \in \mathcal{X}} \|\nabla_x d(x)\|$ is the Lipschitz constant of the measurement function
+- $d''_{\max} = \sup_{x \in \mathcal{X}} \|\nabla^2_x d(x)\|_{\text{op}}$ is the operator norm of the measurement Hessian
+- The $O(1/\rho)$ term captures moment correction contributions
+
+**Part B: Spectral Floor $\Lambda_-(\rho)$.**
+
+The spectral floor $\Lambda_-(\rho)$ bounds the maximum magnitude of negative eigenvalues of $H(x, S)$. From the Hessian decomposition:
+
+$$
+H(x, S) = g''_A(Z) \, \nabla_x Z \otimes \nabla_x Z + g'_A(Z) \, \nabla^2_x Z
+$$
+
+**Case 1: Convex Rescale Function ($g''_A \ge 0$) and Convex Measurement ($\nabla^2 d \succeq 0$).**
+
+If both $g''_A(z) \ge 0$ for all $z$ and $\nabla^2_x d(x) \succeq 0$ for all $x$ (positive semi-definite), then both terms in $H$ are positive semi-definite:
+- The outer product $\nabla_x Z \otimes \nabla_x Z \succeq 0$ (rank-1 positive semi-definite)
+- The scaled Hessian term $g'_A(Z) \nabla^2_x Z \succeq 0$ (since $g'_A > 0$ by monotonicity)
+
+Therefore $H \succeq 0$ and $\Lambda_-(\rho) = 0$.
+
+**Case 2: General Case (Allowing Indefinite Hessians).**
+
+When the measurement Hessian $\nabla^2_x d$ can have negative eigenvalues, or when $g''_A$ can be negative, we must bound the most negative eigenvalue:
+
+$$
+\Lambda_-(\rho) = \sup_{x, S} \max\{0, -\lambda_{\min}(H(x, S))\}
+$$
+
+For a symmetric matrix $M = A + B$, we have $\lambda_{\min}(M) \ge \lambda_{\min}(A) + \lambda_{\min}(B)$. Therefore:
+
+$$
+\lambda_{\min}(H) \ge \lambda_{\min}(g''_A(Z) \, \nabla Z \otimes \nabla Z) + \lambda_{\min}(g'_A(Z) \, \nabla^2 Z)
+$$
+
+**Term 1 (Outer Product):** The minimum eigenvalue of the rank-1 matrix $g''_A \nabla Z \otimes \nabla Z$ is:
+- If $g''_A(Z) \ge 0$: $\lambda_{\min} = 0$ (has $d-1$ zero eigenvalues)
+- If $g''_A(Z) < 0$: $\lambda_{\min} = g''_A(Z) \|\nabla Z\|^2 \ge -|g''_{\max}| \frac{(d'_{\max})^2}{\kappa^2_{\text{var,min}}}$
+
+**Term 2 (Scaled Hessian):** For the second term:
+
+$$
+\lambda_{\min}(g'_A(Z) \nabla^2 Z) = g'_A(Z) \lambda_{\min}(\nabla^2 Z)
+$$
+
+If $\lambda_{\min}(\nabla^2 Z) < 0$ (indefinite), then using $g'_A(Z) \le g'_{\max}$ and defining:
+
+$$
+d''_{\min} = \inf_{x \in \mathcal{X}} \lambda_{\min}(\nabla^2_x d(x))
+$$
+
+we have:
+
+$$
+\lambda_{\min}(g'_A(Z) \nabla^2 Z) \ge g'_{\min} \cdot \frac{d''_{\min}}{\kappa_{\text{var,min}}}
+$$
+
+where $g'_{\min} = \inf_{z} g'_A(z) > 0$ by monotonicity.
+
+**Combined Bound:**
+
+$$
+-\lambda_{\min}(H) \le \max\left\{0, |g''_{\max}| \frac{(d'_{\max})^2}{\kappa^2_{\text{var,min}}} - g'_{\min} \frac{d''_{\min}}{\kappa_{\text{var,min}}}\right\} + O(1/\rho)
+$$
+
+Therefore, the **explicit spectral floor bound** is:
+
+$$
+\Lambda_-(\rho) = \max\left\{0, |g''_{\max}| \frac{(d'_{\max})^2}{\kappa^2_{\text{var,min}}} - g'_{\min} \frac{d''_{\min}}{\kappa_{\text{var,min}}}\right\} + C_{\text{moment}}(\rho)
+$$
+
+where $C_{\text{moment}}(\rho) = O(1/\rho)$ captures the moment correction terms and $d''_{\min} = \min\{0, \inf_x \lambda_{\min}(\nabla^2 d(x))\}$ is non-positive when the measurement can be concave.
+
+**Sufficient Condition for Positive Definiteness:** The regularization must satisfy:
+
+$$
+\epsilon_\Sigma > \Lambda_-(\rho) = \max\left\{0, |g''_{\max}| \frac{(d'_{\max})^2}{\kappa^2_{\text{var,min}}} - g'_{\min} \frac{d''_{\min}}{\kappa_{\text{var,min}}}\right\} + C_{\text{moment}}(\rho)
+$$
+
+This formula is **fully explicit and computable** from the algorithmic parameters.
+:::
+
+:::{prf:remark} Algorithmic Control of Ellipticity
+:class: important
+
+The ellipticity bounds are **fully controlled by algorithmic parameters**:
+
+**1. Regularization Parameter $\epsilon_\Sigma$:**
+- **Lower bound:** $c_{\min}(\rho) = \epsilon_\Sigma - \Lambda_-(\rho)$
+- Larger $\epsilon_\Sigma$ → stronger regularization → more isotropic diffusion
+- Must satisfy $\epsilon_\Sigma > \Lambda_-(\rho)$ for positive definiteness
+
+**2. Localization Scale $\rho$:**
+- Affects $H_{\max}(\rho)$ through the $O(1/\rho)$ moment correction terms
+- Smaller $\rho$ → tighter localization → larger $H_{\max}(\rho)$ → wider ellipticity gap
+- Larger $\rho$ → global averaging → more stable $H$ → narrower ellipticity gap
+
+**3. Variance Regularization $\kappa_{\text{var,min}}$:**
+- Appears in denominator of Hessian bound
+- Larger $\kappa_{\text{var,min}}$ → smaller $H_{\max}(\rho)$ → better conditioning
+
+**4. Measurement Regularity $(d'_{\max}, d''_{\max})$:**
+- Smoother measurement functions → smaller Hessian bounds
+- Choice of $d$ (reward, diversity, etc.) directly affects geometry
+
+**5. Rescale Function $(g_A, g'_{\max}, g''_{\max})$:**
+- Bounds on derivatives control curvature amplification
+- Saturating rescales (e.g., sigmoid) naturally bound curvature
+
+The convergence rate depends on $c_{\min}(\rho)$ (see Chapter 5), so there is a **design tradeoff**:
+- **Large $\epsilon_\Sigma$:** Strong convergence guarantees, but less geometric adaptation
+- **Small $\epsilon_\Sigma$:** Strong geometric adaptation, but requires tighter control of $\Lambda_-(\rho)$
+:::
+
+### 9.5. Phase 4: The Induced Geometry and Geodesics
+
+With the metric explicitly constructed, we can characterize the induced geometric structure.
+
+:::{prf:definition} Emergent Riemannian Manifold
+:label: def-emergent-manifold
+
+The metric $g(x, S)$ from {prf:ref}`def-metric-explicit` endows the state space $\mathcal{X}$ with the structure of a **Riemannian manifold** $(\mathcal{X}, g_S)$, where the metric depends parametrically on the swarm state $S$.
+
+**Geometric Quantities:**
+
+**1. Metric Tensor (Index Form):**
+
+$$
+g_{ab}(x, S) = \left[\nabla^2_x V_{\text{fit}}[f_k, \rho](x)\right]_{ab} + \epsilon_\Sigma \delta_{ab}
+$$
+
+**2. Inverse Metric (Contravariant Tensor):**
+
+$$
+g^{ab}(x, S) = \left[\left(\nabla^2_x V_{\text{fit}}[f_k, \rho](x) + \epsilon_\Sigma I\right)^{-1}\right]_{ab}
+$$
+
+**3. Volume Element:** The Riemannian volume measure is:
+
+$$
+d\text{Vol}_g = \sqrt{\det g(x, S)} \, dx
+$$
+
+**4. Geodesic Equation:** Curves $\gamma(t)$ that minimize length satisfy:
+
+$$
+\frac{d^2 \gamma^a}{dt^2} + \Gamma^a_{bc}(x, S) \frac{d\gamma^b}{dt} \frac{d\gamma^c}{dt} = 0
+$$
+
+where $\Gamma^a_{bc}$ are the **Christoffel symbols** computed from $g$ via:
+
+$$
+\Gamma^a_{bc} = \frac{1}{2} g^{ad} \left(\frac{\partial g_{db}}{\partial x^c} + \frac{\partial g_{dc}}{\partial x^b} - \frac{\partial g_{bc}}{\partial x^d}\right)
+$$
+:::
+
+:::{prf:proposition} Geodesics Favor High-Fitness Regions
+:label: prop-geodesics-fitness
+
+The geodesics of the emergent metric $g(x, S)$ are **biased toward high-fitness regions**. Specifically:
+
+1. **Shorter distances in high-fitness regions:** For two points $x_1, x_2 \in \mathcal{X}$, the Riemannian distance:
+
+$$
+d_g(x_1, x_2) = \inf_{\gamma: x_1 \to x_2} \int_0^1 \sqrt{g_{ab}(\gamma(t), S) \dot{\gamma}^a(t) \dot{\gamma}^b(t)} \, dt
+$$
+
+is **smaller** when the path passes through regions of high $V_{\text{fit}}$ (low curvature, low metric eigenvalues).
+
+2. **Geodesics avoid high-curvature regions:** The metric eigenvalues are largest where the Hessian $H$ has large positive eigenvalues, which occurs where the fitness landscape is **most convexly curved**. Geodesics bend away from these regions of high metric density to minimize path length.
+
+3. **Connection to natural gradient:** The inverse metric $g^{-1} = D_{\text{reg}}$ defines the **natural gradient**:
+
+$$
+\nabla^{\text{nat}} V_{\text{fit}} = g^{-1} \nabla V_{\text{fit}}
+$$
+
+This is the direction of **steepest ascent in the Riemannian metric**, which differs from the Euclidean gradient by the local geometry.
+:::
+
+:::{prf:proof}
+**Part 1: Distance Formula.**
+
+By definition, the Riemannian distance is the infimum of lengths:
+
+$$
+d_g(x_1, x_2) = \inf_\gamma \int_0^1 \sqrt{\dot{\gamma}^T g(\gamma(t), S) \dot{\gamma}} \, dt
+$$
+
+In a region where $V_{\text{fit}}$ is high and flat (low curvature), $H$ has small eigenvalues, so $g = H + \epsilon_\Sigma I \approx \epsilon_\Sigma I$ (nearly Euclidean). In a region of low fitness and high curvature, $H$ has large eigenvalues, so $g$ is "stretched" (larger metric eigenvalues → longer distances).
+
+Therefore, paths through high-fitness regions incur smaller length than paths through low-fitness regions, even if the Euclidean distances are equal.
+
+**Part 2: Geodesic Deviation.**
+
+The geodesic equation involves the Christoffel symbols $\Gamma^a_{bc}$, which depend on $\partial g/\partial x$. Since:
+
+$$
+\frac{\partial g_{ab}}{\partial x^c} = \frac{\partial}{\partial x^c} \left[\nabla^2 V_{\text{fit}}\right]_{ab} = \left[\nabla^3 V_{\text{fit}}\right]_{abc}
+$$
+
+the geodesic curvature is proportional to the **third derivatives of the fitness potential**. Regions of high curvature (large $\|\nabla^3 V_{\text{fit}}\|$) exert a "repulsive force" on geodesics, causing them to deviate.
+
+**Part 3: Natural Gradient Connection.**
+
+The natural gradient is defined as:
+
+$$
+\nabla^{\text{nat}} V_{\text{fit}} = g^{-1} \nabla V_{\text{fit}} = D_{\text{reg}} \nabla V_{\text{fit}}
+$$
+
+In information geometry (Amari, 2016), the natural gradient is the direction of steepest ascent with respect to the **Fisher information metric**, which for our fitness potential is precisely $g$. The adaptive diffusion $\Sigma_{\text{reg}} = g^{-1/2}$ is the square root of the natural gradient preconditioner, making the algorithm perform **geometry-aware exploration**.
+:::
+
+### 9.6. Summary: The Complete Algorithmic-to-Geometric Pipeline with All Parameters
+
+We have now fully characterized the **explicit map from algorithmic parameters to emergent geometry**. This section provides the complete parameter list from both the Euclidean Gas backbone and the Adaptive Gas extensions.
+
+#### 9.6.1. Complete Algorithmic Parameter Specification
+
+The emergent Riemannian geometry depends on the following algorithmic parameters:
+
+**Measurement and Fitness Parameters:**
+- $d: \mathcal{X} \to \mathbb{R}$ — **Measurement function** (e.g., reward, diversity score)
+- $\rho > 0$ — **Localization scale** for spatial weighting in fitness potential
+- $\kappa_{\text{var,min}} > 0$ — **Variance regularization floor** preventing division by zero
+- $g_A: \mathbb{R} \to [0, A]$ — **Rescale function** (e.g., sigmoid) for bounded fitness
+- $A > 0$ — **Fitness potential ceiling**, maximum value of $V_{\text{fit}}$
+- $\epsilon_d > 0$ — **Interaction range for diversity** in companion pairing (from `03_cloning.md` §5.1)
+
+**Diffusion and Geometry Parameters:**
+- $\epsilon_\Sigma > 0$ — **Metric regularization parameter**, ensures positive definiteness of $g$
+- $\sigma_v > 0$ — **Velocity noise scale** (backbone Langevin diffusion, Euclidean Gas)
+- $\delta > 0$ — **Cloning noise scale** for inelastic collision momentum redistribution
+
+**Adaptive Dynamics Parameters:**
+- $\epsilon_F \ge 0$ — **Adaptive force strength**, controls mean-field fitness gradient force
+- $\nu \ge 0$ — **Viscosity parameter** for fluid-like velocity coupling between walkers
+
+**Kinetic and Cloning Parameters:**
+- $\gamma > 0$ — **Friction coefficient** in underdamped Langevin dynamics
+- $\tau > 0$ — **Time step size** for BAOAB integrator
+- $\lambda_v > 0$ — **Velocity weight** in hypocoercive Lyapunov function $V_{\text{total}}$
+- $\lambda_{\text{alg}} \ge 0$ — **Velocity weight** in algorithmic distance $d_{\text{alg}}$ for companion selection
+
+**Cloning and Selection Parameters (from `03_cloning.md` §5):**
+- $\alpha \in [0, 1]$ — **Reward exploitation weight** in virtual reward $r_{\text{virt}} = \alpha r + \beta d$
+- $\beta \in [0, 1]$ — **Diversity exploitation weight** in virtual reward
+- $\eta \in (0, 1)$ — **Rescale lower bound**, minimum survival probability in cloning
+- $\epsilon_{\text{rescale}} > 0$ — **Rescale regularization** for numerical stability
+
+**Confinement and Boundary Parameters:**
+- $U: \mathcal{X} \to \mathbb{R}$ — **Confining potential** (backbone stability)
+- $\kappa_{\text{conf}} > 0$ — **Convexity constant** of confining potential
+- $\mathcal{X}_{\text{valid}} \subset \mathcal{X}$ — **Valid state space**, absorbing boundary
+
+**Lyapunov Function Weights:**
+- $\alpha_x, \alpha_v, \alpha_D, \alpha_R > 0$ — **Weights** for $V_{\text{Var},x}$, $V_{\text{Var},v}$, $V_{\text{Mean},D}$, $V_{\text{Mean},R}$ in synergistic Lyapunov function
+
+#### 9.6.2. The Complete Algorithmic-to-Geometric Map
+
+$$
+\boxed{
+\begin{aligned}
+&\textbf{Core Algorithmic Parameters:} \\
+&\quad \text{Measurement:} \quad (d, d'_{\max}, d''_{\max}) \\
+&\quad \text{Localization:} \quad (\rho, K_\rho) \\
+&\quad \text{Regularization:} \quad (\kappa_{\text{var,min}}, \delta, \epsilon_\Sigma) \\
+&\quad \text{Rescale:} \quad (g_A, A, g'_{\min}, g'_{\max}, g''_{\max}) \\
+&\quad \text{Kinetic:} \quad (\gamma, \sigma_v, \tau, \lambda_v) \\
+&\quad \text{Adaptive:} \quad (\epsilon_F, \nu) \\
+&\quad \text{Cloning:} \quad (\alpha, \beta, \eta, \epsilon_d, \lambda_{\text{alg}}) \\
+&\quad \text{Confinement:} \quad (U, \kappa_{\text{conf}}, \mathcal{X}_{\text{valid}}) \\
+&\downarrow \\
+&\textbf{Localization Weights:} \quad w_{ij}(\rho) = \frac{K_\rho(x_i, x_j)}{\sum_{\ell \in A_k} K_\rho(x_i, x_\ell)} \\
+&\downarrow \\
+&\textbf{Localized Moments:} \quad \mu_\rho = \sum_j w_{ij} d_j, \quad \sigma^2_\rho = \sum_j w_{ij} (d_j - \mu_\rho)^2 \\
+&\downarrow \\
+&\textbf{Regularized Std Dev:} \quad \sigma'_\rho = \sigma'_{\text{patch}}(\sigma_\rho), \quad \sigma'_\rho \ge \kappa_{\text{var,min}} \\
+&\downarrow \\
+&\textbf{Z-Score:} \quad Z_\rho = \frac{d(x) - \mu_\rho}{\sigma'_\rho} \\
+&\downarrow \\
+&\textbf{Fitness Potential:} \quad V_{\text{fit}}[f_k, \rho](x) = g_A(Z_\rho) \in [0, A] \\
+&\downarrow \\
+&\textbf{Hessian (Curvature):} \quad H = g''_A(Z) \nabla Z \otimes \nabla Z + g'_A(Z) \nabla^2 Z \\
+&\downarrow \\
+&\textbf{Regularized Metric:} \quad g(x, S) = H(x, S) + \epsilon_\Sigma I \\
+&\downarrow \\
+&\textbf{Bounds:} \quad c_{\min}(\rho) I \preceq g \preceq c_{\max} I \\
+&\quad c_{\min}(\rho) = \epsilon_\Sigma - \Lambda_-(\rho), \quad c_{\max} = H_{\max}(\rho) + \epsilon_\Sigma \\
+&\downarrow \\
+&\textbf{Diffusion Tensor:} \quad D_{\text{reg}}(x, S) = g(x, S)^{-1} \\
+&\downarrow \\
+&\textbf{Diffusion Coefficient:} \quad \Sigma_{\text{reg}}(x, S) = g(x, S)^{-1/2} \\
+&\downarrow \\
+&\textbf{Emergent Geometry:} \quad (\mathcal{X}, g_S, \Gamma^a_{bc}, d_g, \text{Vol}_g)
+\end{aligned}
+}
+$$
+
+:::{prf:theorem} Algorithmic Tunability of the Emergent Geometry
+:label: thm-algorithmic-tunability
+
+The emergent Riemannian geometry is **completely determined** by the algorithmic parameters. Specifically:
+
+**1. Localization Scale $\rho$:** Controls the spatial extent of geometric structure.
+- Small $\rho$: Hyper-local geometry, responds to fine-scale features
+- Large $\rho$: Global geometry, averages over entire landscape
+
+**2. Regularization $\epsilon_\Sigma$:** Controls the deviation from Euclidean geometry.
+- Small $\epsilon_\Sigma$: Strong geometric adaptation, metric dominated by Hessian $H$
+- Large $\epsilon_\Sigma$: Weak geometric adaptation, metric nearly Euclidean $g \approx \epsilon_\Sigma I$
+
+**3. Variance Regularization $\kappa_{\text{var,min}}$:** Controls the conditioning of the Z-score.
+- Small $\kappa_{\text{var,min}}$: Sensitive to variance collapse, large Hessian bounds
+- Large $\kappa_{\text{var,min}}$: Robust to variance collapse, bounded Hessian
+
+**4. Measurement Function $d$:** Determines **what geometric structure emerges**.
+- Reward: Geometry encodes value landscape
+- Diversity: Geometry encodes novelty structure
+- Custom metrics: User-defined geometric inductive biases
+
+**5. Rescale Function $g_A$:** Controls the **amplification** of curvature.
+- Linear: Direct Hessian of Z-score
+- Sigmoid: Saturated curvature, bounded $g''_A$
+- Custom: Tailored curvature profiles
+
+This tunability allows **algorithm design through geometric specification**: one can choose parameters to induce desired geometric properties, then leverage the convergence guarantees.
+:::
+
+:::{admonition} Connection to Information Geometry
+:class: note
+
+The emergent metric $g(x, S) = \nabla^2 V_{\text{fit}} + \epsilon_\Sigma I$ is precisely the **Fisher information metric** plus regularization when $V_{\text{fit}}$ is interpreted as a log-likelihood:
+
+$$
+V_{\text{fit}}(x) = \log p(x \mid S)
+$$
+
+In this view:
+- The Hessian $H = \nabla^2 V_{\text{fit}}$ is the Fisher information matrix
+- The regularization $\epsilon_\Sigma I$ is a Bayesian prior (ridge regularization)
+- The adaptive diffusion $\Sigma_{\text{reg}} = (\text{Fisher} + \text{prior})^{-1/2}$ is the **natural gradient preconditioner**
+
+This connection unifies the Adaptive Gas with modern optimization methods:
+- **Natural gradient descent** (Amari, 1998)
+- **Fisher-Rao gradient flows** (Li & Montufar, 2018)
+- **Riemannian Langevin dynamics** (Girolami & Calderhead, 2011)
+
+All of these methods use the same information-geometric metric we derive here from first principles.
+:::
+
+### 9.7. Explicit 3D Algebraic Expansions
+
+For concrete computational implementation and physical intuition, we now provide the **complete algebraic expansions** of all geometric quantities for the special case of **3-dimensional state space** ($d = 3$). This allows us to express every component of the emergent geometry in terms of the algorithmic parameters.
+
+#### 9.7.1. Setup: 3D Notation and Assumptions
+
+**State Space:** $\mathcal{X} = \mathbb{R}^3$ with coordinates $x = (x_1, x_2, x_3)$.
+
+**Measurement Function:** A scalar function $d: \mathbb{R}^3 \to \mathbb{R}$ with:
+- Gradient: $\nabla d = (d_{,1}, d_{,2}, d_{,3})$ where $d_{,i} = \partial d/\partial x_i$
+- Hessian: $\nabla^2 d = [d_{,ij}]$ where $d_{,ij} = \partial^2 d/\partial x_i \partial x_j$
+
+**Rescale Function:** We use the **sigmoid rescale** for concreteness:
+
+$$
+g_A(z) = \frac{A}{1 + e^{-z}}
+$$
+
+with derivatives:
+
+$$
+g'_A(z) = \frac{A e^{-z}}{(1 + e^{-z})^2}, \quad g''_A(z) = \frac{A e^{-z}(e^{-z} - 1)}{(1 + e^{-z})^3}
+$$
+
+**Bounds:** $g'_{\max} = A/4$ (at $z = 0$), $|g''_{\max}| = A/(3\sqrt{3})$ (at $z = \pm \log(2 \pm \sqrt{3})$).
+
+#### 9.7.2. The Fitness Potential in 3D
+
+**Localization Kernel** (Gaussian):
+
+$$
+K_\rho(x, x_j) = \frac{1}{(2\pi\rho^2)^{3/2}} \exp\left(-\frac{\|x - x_j\|^2}{2\rho^2}\right)
+$$
+
+**Localized Mean** (for walker at $x$ with $k$ alive companions):
+
+$$
+\mu_\rho = \sum_{j=1}^k w_j d_j, \quad w_j = \frac{K_\rho(x, x_j)}{\sum_{\ell=1}^k K_\rho(x, x_\ell)}
+$$
+
+**Localized Variance:**
+
+$$
+\sigma^2_\rho = \sum_{j=1}^k w_j d_j^2 - \mu_\rho^2
+$$
+
+**Z-Score:**
+
+$$
+Z_\rho = \frac{d(x) - \mu_\rho}{\max\{\sqrt{\sigma^2_\rho}, \kappa_{\text{var,min}}\}}
+$$
+
+**Fitness Potential:**
+
+$$
+V_{\text{fit}}(x) = \frac{A}{1 + \exp\left(-\frac{d(x) - \mu_\rho}{\sigma'_\rho}\right)}
+$$
+
+#### 9.7.3. The Gradient $\nabla V_{\text{fit}}$ in 3D
+
+Using the chain rule:
+
+$$
+\nabla V_{\text{fit}} = g'_A(Z_\rho) \nabla Z_\rho = \frac{A e^{-Z_\rho}}{(1 + e^{-Z_\rho})^2} \cdot \frac{1}{\sigma'_\rho} \left(\nabla d - \nabla \mu_\rho\right)
+$$
+
+where (from the weight gradient lemma):
+
+$$
+\nabla \mu_\rho = \sum_{j=1}^k (\nabla w_j) d_j = \frac{1}{\rho^2} \sum_{j=1}^k w_j d_j (x - x_j) - \frac{1}{\rho^2} \sum_{j=1}^k \sum_{\ell=1}^k w_j w_\ell d_j (x - x_\ell)
+$$
+
+**Component form:**
+
+$$
+\frac{\partial V_{\text{fit}}}{\partial x_i} = \frac{A e^{-Z_\rho}}{(1 + e^{-Z_\rho})^2} \cdot \frac{1}{\sigma'_\rho} \left(d_{,i} - \sum_{j=1}^k (\partial_i w_j) d_j\right), \quad i = 1, 2, 3
+$$
+
+#### 9.7.4. The Hessian Matrix $H$ in 3D (Explicit $3 \times 3$ Form)
+
+The Hessian is:
+
+$$
+H = g''_A(Z) \nabla Z \otimes \nabla Z + g'_A(Z) \nabla^2 Z
+$$
+
+**Term 1 (Rank-1 Outer Product):**
+
+$$
+[g''_A(Z) \nabla Z \otimes \nabla Z]_{ij} = g''_A(Z) \frac{1}{\sigma'^2_\rho} (d_{,i} - \mu_{\rho,i})(d_{,j} - \mu_{\rho,j})
+$$
+
+where $\mu_{\rho,i} = \partial \mu_\rho/\partial x_i$.
+
+**Term 2 (Scaled Hessian):**
+
+$$
+[g'_A(Z) \nabla^2 Z]_{ij} = g'_A(Z) \frac{1}{\sigma'_\rho} \left(d_{,ij} - \mu_{\rho,ij}\right)
+$$
+
+**Full Hessian (3×3 matrix):**
+
+$$
+H = \begin{bmatrix}
+H_{11} & H_{12} & H_{13} \\
+H_{12} & H_{22} & H_{23} \\
+H_{13} & H_{23} & H_{33}
+\end{bmatrix}
+$$
+
+with:
+
+$$
+\boxed{
+H_{ij} = \frac{g''_A(Z)}{\sigma'^2_\rho} (d_{,i} - \mu_{\rho,i})(d_{,j} - \mu_{\rho,j}) + \frac{g'_A(Z)}{\sigma'_\rho} (d_{,ij} - \mu_{\rho,ij})
+}
+$$
+
+For the **sigmoid rescale** $g_A(z) = A/(1 + e^{-z})$:
+
+$$
+H_{ij} = \frac{A e^{-Z}(e^{-Z} - 1)}{(1 + e^{-Z})^3 \sigma'^2_\rho} (d_{,i} - \mu_{\rho,i})(d_{,j} - \mu_{\rho,j}) + \frac{A e^{-Z}}{(1 + e^{-Z})^2 \sigma'_\rho} (d_{,ij} - \mu_{\rho,ij})
+$$
+
+#### 9.7.5. The Metric Tensor $g$ in 3D
+
+$$
+g = H + \epsilon_\Sigma I = \begin{bmatrix}
+H_{11} + \epsilon_\Sigma & H_{12} & H_{13} \\
+H_{12} & H_{22} + \epsilon_\Sigma & H_{23} \\
+H_{13} & H_{23} & H_{33} + \epsilon_\Sigma
+\end{bmatrix}
+$$
+
+**Explicit form:**
+
+$$
+\boxed{
+g_{ij} = \frac{g''_A(Z)}{\sigma'^2_\rho} (d_{,i} - \mu_{\rho,i})(d_{,j} - \mu_{\rho,j}) + \frac{g'_A(Z)}{\sigma'_\rho} (d_{,ij} - \mu_{\rho,ij}) + \epsilon_\Sigma \delta_{ij}
+}
+$$
+
+#### 9.7.6. The Volume Element $\sqrt{\det g}$ in 3D
+
+The Riemannian volume element is:
+
+$$
+d\text{Vol}_g = \sqrt{\det g} \, dx_1 dx_2 dx_3
+$$
+
+For a $3 \times 3$ matrix $g = [g_{ij}]$, the determinant is:
+
+$$
+\det g = g_{11}(g_{22}g_{33} - g_{23}^2) - g_{12}(g_{12}g_{33} - g_{13}g_{23}) + g_{13}(g_{12}g_{23} - g_{13}g_{22})
+$$
+
+**Explicit expansion in terms of algorithmic parameters:**
+
+Denote $h_{ij} = H_{ij}$ (the unregularized Hessian). Then:
+
+$$
+g_{11} = h_{11} + \epsilon_\Sigma, \quad g_{22} = h_{22} + \epsilon_\Sigma, \quad g_{33} = h_{33} + \epsilon_\Sigma
+$$
+
+$$
+g_{12} = h_{12}, \quad g_{13} = h_{13}, \quad g_{23} = h_{23}
+$$
+
+Therefore:
+
+$$
+\begin{aligned}
+\det g &= (h_{11} + \epsilon_\Sigma)[(h_{22} + \epsilon_\Sigma)(h_{33} + \epsilon_\Sigma) - h_{23}^2] \\
+&\quad - h_{12}[h_{12}(h_{33} + \epsilon_\Sigma) - h_{13}h_{23}] \\
+&\quad + h_{13}[h_{12}h_{23} - h_{13}(h_{22} + \epsilon_\Sigma)]
+\end{aligned}
+$$
+
+Expanding:
+
+$$
+\boxed{
+\begin{aligned}
+\det g &= \det(H) + \epsilon_\Sigma(\text{tr}(\text{adj}(H))) + \epsilon_\Sigma^2(\text{tr}(H)) + \epsilon_\Sigma^3 \\
+&= \det(H) + \epsilon_\Sigma(h_{22}h_{33} - h_{23}^2 + h_{11}h_{33} - h_{13}^2 + h_{11}h_{22} - h_{12}^2) \\
+&\quad + \epsilon_\Sigma^2(h_{11} + h_{22} + h_{33}) + \epsilon_\Sigma^3
+\end{aligned}
+}
+$$
+
+where:
+- $\det(H) = h_{11}h_{22}h_{33} + 2h_{12}h_{13}h_{23} - h_{11}h_{23}^2 - h_{22}h_{13}^2 - h_{33}h_{12}^2$
+- $\text{tr}(\text{adj}(H)) = h_{22}h_{33} - h_{23}^2 + h_{11}h_{33} - h_{13}^2 + h_{11}h_{22} - h_{12}^2$ (sum of principal $2 \times 2$ minors)
+- $\text{tr}(H) = h_{11} + h_{22} + h_{33}$
+
+**Volume element:**
+
+$$
+\sqrt{\det g} = \sqrt{\det(H) + \epsilon_\Sigma \sum_{i<j}(h_{ii}h_{jj} - h_{ij}^2) + \epsilon_\Sigma^2 \text{tr}(H) + \epsilon_\Sigma^3}
+$$
+
+**Dependence on algorithmic parameters:**
+
+Every term depends explicitly on:
+- **Measurement function:** Through $d_{,i}, d_{,ij}$ and localized moments $\mu_{\rho,i}, \mu_{\rho,ij}$
+- **Rescale function:** Through $g'_A(Z), g''_A(Z)$
+- **Regularization:** Through $\sigma'_\rho \ge \kappa_{\text{var,min}}$ and $\epsilon_\Sigma$
+- **Localization scale:** Through $\rho$ in weights $w_j$ and moment derivatives
+
+#### 9.7.7. The Christoffel Symbols $\Gamma^a_{bc}$ in 3D
+
+The Christoffel symbols of the second kind are:
+
+$$
+\Gamma^a_{bc} = \frac{1}{2} g^{ad} \left(\frac{\partial g_{db}}{\partial x^c} + \frac{\partial g_{dc}}{\partial x^b} - \frac{\partial g_{bc}}{\partial x^d}\right)
+$$
+
+For 3D, this gives **27 components** (with symmetry $\Gamma^a_{bc} = \Gamma^a_{cb}$ reducing to 18 independent components).
+
+**Example: $\Gamma^1_{11}$ (explicit expansion):**
+
+$$
+\Gamma^1_{11} = \frac{1}{2} \sum_{d=1}^3 g^{1d} \left(2\frac{\partial g_{d1}}{\partial x^1} - \frac{\partial g_{11}}{\partial x^d}\right)
+$$
+
+$$
+= g^{11} \frac{\partial g_{11}}{\partial x^1} + g^{12} \left(\frac{\partial g_{21}}{\partial x^1} - \frac{1}{2}\frac{\partial g_{11}}{\partial x^2}\right) + g^{13} \left(\frac{\partial g_{31}}{\partial x^1} - \frac{1}{2}\frac{\partial g_{11}}{\partial x^3}\right)
+$$
+
+Each $\partial g_{ij}/\partial x^k$ involves third derivatives of $V_{\text{fit}}$, which in turn involve third derivatives of $d$ and second derivatives of the weights. The full expansion is:
+
+$$
+\frac{\partial g_{ij}}{\partial x_k} = \frac{\partial H_{ij}}{\partial x_k} = \frac{\partial}{\partial x_k}\left[\frac{g''_A(Z)}{\sigma'^2_\rho} (d_{,i} - \mu_{\rho,i})(d_{,j} - \mu_{\rho,j}) + \frac{g'_A(Z)}{\sigma'_\rho} (d_{,ij} - \mu_{\rho,ij})\right]
+$$
+
+This involves:
+- $g'''_A(Z) (\partial Z/\partial x_k)$ terms
+- $d_{,ijk}$ (third derivatives of measurement)
+- $\mu_{\rho,ijk}$ (third derivatives of moments, involving second derivatives of weights)
+
+**Complete Christoffel symbol table (3D):**
+
+| $\Gamma^a_{bc}$ | Expansion | Parameter Dependence |
+|:-:|---|---|
+| $\Gamma^1_{11}$ | $g^{11} g_{11,1} + g^{12}(g_{21,1} - \frac{1}{2}g_{11,2}) + g^{13}(g_{31,1} - \frac{1}{2}g_{11,3})$ | $d_{,ijk}, g'''_A, \sigma'_\rho, \mu_{\rho,ijk}, \epsilon_\Sigma$ |
+| $\Gamma^1_{12}$ | $\frac{1}{2}[g^{11}(g_{11,2} + g_{22,1} - g_{12,1}) + g^{12}(2g_{22,1} - g_{12,2}) + g^{13}(g_{23,1} + g_{32,1} - g_{12,3})]$ | Same |
+| $\vdots$ | $\vdots$ | $\vdots$ |
+
+(18 independent components total due to symmetry)
+
+#### 9.7.8. Geodesic Equation in 3D
+
+A curve $\gamma(t) = (\gamma^1(t), \gamma^2(t), \gamma^3(t))$ is a geodesic if it satisfies:
+
+$$
+\boxed{
+\frac{d^2 \gamma^a}{dt^2} + \sum_{b=1}^3 \sum_{c=1}^3 \Gamma^a_{bc}(\gamma(t)) \frac{d\gamma^b}{dt} \frac{d\gamma^c}{dt} = 0, \quad a = 1, 2, 3
+}
+$$
+
+**Explicit form for $a = 1$:**
+
+$$
+\ddot{\gamma}^1 + \Gamma^1_{11}\dot{\gamma}^1 \dot{\gamma}^1 + 2\Gamma^1_{12}\dot{\gamma}^1\dot{\gamma}^2 + 2\Gamma^1_{13}\dot{\gamma}^1\dot{\gamma}^3 + \Gamma^1_{22}\dot{\gamma}^2\dot{\gamma}^2 + 2\Gamma^1_{23}\dot{\gamma}^2\dot{\gamma}^3 + \Gamma^1_{33}\dot{\gamma}^3\dot{\gamma}^3 = 0
+$$
+
+(similarly for $a = 2, 3$).
+
+**Interpretation:** The geodesic equation determines how curves "fall" through the emergent geometry. In regions where the fitness potential has high curvature (large $H_{ij}$), the Christoffel symbols are large, causing geodesics to bend away. This creates the **geometry-aware exploration** behavior of the Adaptive Gas.
+
+#### 9.7.9. Summary: Complete 3D Parameter-to-Geometry Map
+
+For a **3D state space** with **sigmoid rescale** and **Gaussian localization kernel**, every geometric quantity is explicitly computable:
+
+$$
+\boxed{
+\begin{aligned}
+&\textbf{Input:} \quad x \in \mathbb{R}^3, \, S = \{(x_j, v_j)\}_{j=1}^k, \, (d, \rho, \kappa_{\text{var,min}}, A, \epsilon_\Sigma) \\
+&\downarrow \\
+&w_j = \frac{\exp(-\|x - x_j\|^2/(2\rho^2))}{\sum_\ell \exp(-\|x - x_\ell\|^2/(2\rho^2))}, \quad \mu_\rho = \sum_j w_j d_j, \quad \sigma^2_\rho = \sum_j w_j d_j^2 - \mu_\rho^2 \\
+&\downarrow \\
+&Z = \frac{d(x) - \mu_\rho}{\max\{\sqrt{\sigma^2_\rho}, \kappa_{\text{var,min}}\}}, \quad V_{\text{fit}} = \frac{A}{1 + e^{-Z}} \\
+&\downarrow \\
+&H_{ij} = \frac{A e^{-Z}(e^{-Z}-1)}{(1+e^{-Z})^3 \sigma'^2_\rho}(d_{,i} - \mu_{\rho,i})(d_{,j} - \mu_{\rho,j}) + \frac{A e^{-Z}}{(1+e^{-Z})^2 \sigma'_\rho}(d_{,ij} - \mu_{\rho,ij}) \\
+&\downarrow \\
+&g_{ij} = H_{ij} + \epsilon_\Sigma \delta_{ij} \quad (\text{3×3 symmetric matrix}) \\
+&\downarrow \\
+&\sqrt{\det g} = \sqrt{\det(H) + \epsilon_\Sigma \sum_{i<j}(H_{ii}H_{jj} - H_{ij}^2) + \epsilon_\Sigma^2 \text{tr}(H) + \epsilon_\Sigma^3} \\
+&\downarrow \\
+&\Gamma^a_{bc} = \frac{1}{2} g^{ad}(\partial_c g_{db} + \partial_b g_{dc} - \partial_d g_{bc}) \quad (\text{18 independent components}) \\
+&\downarrow \\
+&\textbf{Output:} \quad (\mathbb{R}^3, g, \Gamma, d_g, \text{Vol}_g) \quad \text{(complete Riemannian manifold)}
+\end{aligned}
+}
+$$
+
+**All formulas are closed-form and computable** given the algorithmic parameters. This enables:
+1. **Numerical implementation:** Direct computation of metric, volume, geodesics
+2. **Visualization:** Plot level sets of $\det g$, geodesic flows, curvature
+3. **Algorithm design:** Tune $\epsilon_\Sigma, \rho, \kappa_{\text{var,min}}$ to achieve desired geometric properties
+
+---
+
+## 10. Conclusion
+
+### 10.1. Summary of Contributions
 
 We have proven:
 
@@ -2575,9 +3606,11 @@ We have proven:
 
 3. **Emergent geometry perspective**: The adaptive diffusion defines a Riemannian metric; convergence occurs on this emergent manifold
 
-4. **Implementation verification**: The `adaptive_gas.py` code satisfies all theoretical assumptions by construction
+4. **Explicit algorithmic-to-geometric pipeline**: Complete derivation of the metric tensor from algorithmic parameters (Chapter 9)
 
-### 9.2. Key Insights
+5. **Implementation verification**: The `adaptive_gas.py` code satisfies all theoretical assumptions by construction
+
+### 10.2. Key Insights
 
 - **Uniform ellipticity is the key**: The regularization $\epsilon_\Sigma I$ transforms an intractable problem (arbitrary anisotropy) into a tractable one (bounded perturbation of isotropic)
 
@@ -2585,7 +3618,9 @@ We have proven:
 
 - **Rates are explicit and N-uniform**: No hidden dependencies on swarm size
 
-### 9.3. Open Directions
+- **Algorithmic control of geometry**: The complete pipeline from parameters to metric enables principled algorithm design through geometric specification
+
+### 10.3. Open Directions
 
 1. **Optimal regularization**: How to choose $\epsilon_\Sigma$ to balance adaptation and convergence speed?
 

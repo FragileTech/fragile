@@ -319,6 +319,8 @@ The Gemini reviewer will follow the protocol in [GEMINI.md](GEMINI.md) and provi
 4. Prioritized action plan
 5. Implementation checklist
 
+EXTREMELY IMPORTANT: YOU ARE ONLY ALLOWED TO USE GEMINI 2.5 PRO
+
 #### Step 3: Critical Evaluation of Gemini Feedback
 **IMPORTANT**: You must critically evaluate Gemini's feedback:
 - Cross-check suggestions against existing framework definitions

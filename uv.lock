@@ -676,6 +676,7 @@ dependencies = [
     { name = "ray" },
     { name = "shaolin" },
     { name = "streamz" },
+    { name = "sympy" },
     { name = "torch" },
 ]
 
@@ -752,6 +753,7 @@ requires-dist = [
     { name = "sphinxcontrib-mermaid", marker = "extra == 'docs'" },
     { name = "sphinxext-opengraph", marker = "extra == 'docs'" },
     { name = "streamz", specifier = ">=0.6.4" },
+    { name = "sympy", specifier = ">=1.14.0" },
     { name = "torch", specifier = ">=2.7.1" },
 ]
 provides-extras = ["docs"]
