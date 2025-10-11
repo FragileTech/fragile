@@ -959,15 +959,15 @@ This is not a primitive 4-point interaction. It is an **effective 2-to-2 interac
 The Adaptive Gas **naturally implements dressed perturbation theory** through its multi-stage stochastic sampling!
 :::
 
-### 7.6. U(1) Gauge Symmetry of Fitness Self-Measurement
+### 7.6. Global U(1) Fitness Symmetry of Diversity Measurement
 
-:::{prf:theorem} U(1) Fitness Gauge Symmetry
-:label: thm-u1-fitness-gauge
+:::{prf:theorem} Global U(1)_fitness Symmetry
+:label: thm-u1-fitness-global
 
-The diversity companion selection mechanism defines a **U(1) gauge symmetry** governing fitness self-measurement:
+The diversity companion selection mechanism defines a **global U(1) symmetry** governing fitness self-measurement:
 
 $$
-G_{\text{fitness}} = \text{U}(1)_{\text{fitness}}
+G_{\text{fitness}} = \text{U}(1)_{\text{fitness}}^{\text{global}}
 
 $$
 
@@ -982,85 +982,204 @@ $$
 
 $$
 
-encodes this U(1) interaction between the walker (charge) and the diversity field (gauge potential).
+where $\theta_{ik}^{(\text{U(1)})} = -\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2\hbar_{\text{eff}}}$ depends only on the algorithmic distance.
 
-**Gauge Transformation:**
+**Global Symmetry Transformation:**
+
+All walkers undergo the **same phase rotation**:
 
 $$
-\theta_{ik}^{(\text{U(1)})} \to \theta_{ik}^{(\text{U(1)})} + (\lambda_i - \lambda_k)
+\psi_{ik}^{(\text{div})} \to e^{i\alpha} \psi_{ik}^{(\text{div})}, \quad \alpha \in [0, 2\pi) \text{ (same for all i)}
 
 $$
 
-where $\lambda_i \in [0, 2\pi)$ is an arbitrary phase at walker i.
+Equivalently, all phases shift uniformly:
 
-**Gauge-invariant observables**:
-- Phase differences: $\theta_{ik}^{(\text{U(1)})} - \theta_{ik'}^{(\text{U(1)})}$
-- Wilson loops around closed paths in diversity space
-- Fitness expectation value: $\langle \psi_i | \hat{V}_{\text{fit},i} | \psi_i \rangle$
+$$
+\theta_{ik}^{(\text{U(1)})} \to \theta_{ik}^{(\text{U(1)})} + \alpha
+
+$$
+
+**Invariant Observables:**
+
+Under global phase rotation, all physical observables are invariant:
+
+$$
+P_{\text{clone}}(i \to j) = |\Psi(i \to j)|^2 = |A_{ij}^{\text{SU}(2)}|^2 \cdot |K_{\text{eff}}(i,j)|^2
+
+$$
+
+transforms as:
+
+$$
+|K_{\text{eff}}'(i,j)|^2 = |e^{i \cdot 2\alpha}|^2 \cdot |K_{\text{eff}}(i,j)|^2 = |K_{\text{eff}}(i,j)|^2
+
+$$
+
+**Why Global, Not Local:**
+
+The symmetry is global (not local/gauged) because:
+
+1. **No gauge field**: Phases $\theta_{ik}$ are fixed by algorithmic distances, not dynamical gauge fields
+2. **Path integral structure**: $K_{\text{eff}} = \sum_{k,m} [\ldots]$ - different terms get different phase factors under local transformation
+3. **Physical meaning**: Absolute fitness scale is unphysical, only **relative** fitness matters
+
+**Conserved Charge (Noether's Theorem):**
+
+From Theorem 4.2 in {doc}`../09_symmetries_adaptive_gas.md`, global U(1) symmetry implies a **conserved fitness current**:
+
+$$
+J_{\text{fitness}}^{\mu} = \sum_{i \in A_t} \text{Im}(\psi_i^* \partial^\mu \psi_i)
+
+$$
+
+satisfying $\partial_\mu J^\mu = 0$ (conservation law).
 
 **Physical Interpretation:**
 
-1. **Single-particle charge**: Each walker carries a U(1) "fitness charge"
-2. **Higgs field coupling**: The reward field $r(x)$ acts as a Higgs-like scalar potential that this U(1) interaction probes
-3. **Self-measurement**: Diversity companion selection is how the walker "measures" the gradient of the fitness landscape
-4. **IG Edge**: Generates exactly one edge type: **Diversity Edge $(i, k)$** representing information flow for self-measurement
+1. **Fitness charge conservation**: Total fitness "charge" of swarm is conserved
+2. **Selection rules**: Processes must conserve U(1) charge (like baryon number in QCD)
+3. **Higgs coupling**: Reward field $r(x)$ couples to fitness charge (mass generation)
+4. **IG Edge**: Generates **Diversity Edge $(i, k)$** for fitness self-measurement
 
-**Analogy to Electromagnetism:**
+**Analogy to Particle Physics:**
 
-| **Adaptive Gas** | **QED** |
-|------------------|---------|
-| Walker i | Charged particle |
-| Diversity companion k | Virtual photon |
-| U(1) phase $\theta_{ik}$ | Electromagnetic gauge potential |
-| Fitness potential $V_{\text{fit}}$ | Electric potential $\Phi$ |
-| Reward field $r(x)$ | Higgs field |
+| **Adaptive Gas** | **Standard Model** |
+|------------------|--------------------|
+| Global U(1)_fitness | Global U(1)_B (baryon number) |
+| Fitness charge | Baryon charge |
+| Conserved current J_fitness | Baryon current J_B |
+| Diversity companion k | Virtual meson exchange |
+| Fitness potential V_fit | Effective potential |
+| No gauge boson | No gauge boson (global) |
+
+**Note on Gauge vs Global:**
+
+This U(1) is **global** (like baryon/lepton number), not **gauged** (like electromagnetism). The **true local gauge symmetry** of the Fragile Gas is the discrete **S_N permutation group**, which gives Wilson loops via braid holonomy (see §7.7 and {doc}`../12_gauge_theory_adaptive_gas.md`).
 :::
 
-### 7.7. Wilson Loops and Holonomy
+### 7.7. S_N Braid Holonomy: The True Gauge Structure
 
-:::{prf:definition} U(1) Wilson Loop on Diversity Edges
-:label: def-u1-wilson-loop
+:::{prf:theorem} S_N Permutation Gauge Symmetry and Braid Holonomy
+:label: thm-sn-braid-holonomy
 
-For a closed loop $\gamma = (n_0, n_1, \ldots, n_m = n_0)$ in the Fractal Set traversing **diversity edges** (U(1) connections), define the **Wilson loop**:
+The **fundamental local gauge symmetry** of the Fragile Gas is the **symmetric group S_N** acting by permuting walker labels. This gives rise to **braid group topology** and **Wilson loops** via holonomy.
 
-$$
-W_{\text{U(1)}}[\gamma] = \exp\left(i \oint_\gamma A_{\text{U(1)}}\right)
-
-$$
-
-where $A_{\text{U(1)}}$ is the **U(1) fitness gauge connection**.
-
-**Explicit form:**
+**Fundamental Gauge Group:**
 
 $$
-W_{\text{U(1)}}[\gamma] = \exp\left(i \sum_{e \in \gamma} \theta_e^{(\text{U(1)})}\right)
+G_{\text{gauge}} = S_N \quad \text{(permutation group of N walkers)}
 
 $$
 
-where the sum is over all diversity edges e in the loop γ, and $\theta_e^{(\text{U(1)})} = \theta_{ik}^{(\text{U(1)})}$ is the phase on diversity edge $(i, k)$.
+**Physical Origin:**
 
-**Physical Interpretation:**
-
-The Wilson loop measures the **total U(1) phase accumulated** around a closed path through diversity companion space:
-- **Trivial holonomy** ($W[\gamma] = 1$): Flat connection, walker's fitness measurement is path-independent
-- **Non-trivial holonomy** ($W[\gamma] \neq 1$): Curvature in fitness landscape, path-dependent measurement
-
-**Connection to Field Strength:**
-
-For a plaquette P (elementary closed loop):
+Walker labels $\{1, 2, \ldots, N\}$ are **arbitrary** - permuting indices does not change physical state:
 
 $$
-W_{\text{U(1)}}[P] = e^{iF_{\text{U(1)}}[P]}
+\mathcal{S} = (w_1, w_2, \ldots, w_N) \sim \sigma \cdot \mathcal{S} = (w_{\sigma(1)}, w_{\sigma(2)}, \ldots, w_{\sigma(N)})
 
 $$
 
-where $F_{\text{U(1)}}[P]$ is the **U(1) field strength** (fitness curvature) through P.
+for any $\sigma \in S_N$. This **gauge redundancy** is the source of gauge structure.
 
-**Measurement Protocol:**
-1. Trace closed path γ through diversity edges in IG
-2. Accumulate U(1) phases: $\Phi_{\text{U(1)}} = \sum_{e \in \gamma} \theta_e^{(\text{U(1)})}$
-3. Compute $W_{\text{U(1)}}[\gamma] = e^{i\Phi_{\text{U(1)}}}$
-4. $|W_{\text{U(1)}}[\gamma] - 1|$ measures deviation from flat fitness potential
+**Configuration Space as Orbifold:**
+
+The physical configuration space is the **quotient**:
+
+$$
+\mathcal{M}_{\text{config}} = \Sigma_N / S_N
+
+$$
+
+This is an **orbifold** with fundamental group:
+
+$$
+\pi_1(\mathcal{M}_{\text{config}}) \cong B_N \quad \text{(braid group)}
+
+$$
+
+**Gauge Connection via Braid Homomorphism:**
+
+Parallel transport along paths in configuration space is defined by:
+
+$$
+\rho: B_N \to S_N
+
+$$
+
+the canonical homomorphism from the braid group to the symmetric group.
+
+**Wilson Loops = Holonomy:**
+
+For a closed loop $\gamma: [0, T] \to \mathcal{M}_{\text{config}}$ with $\gamma(0) = \gamma(T) = [\mathcal{S}_0]$, the **holonomy** is:
+
+$$
+\text{Hol}(\gamma) = \rho([\gamma]) \in S_N
+
+$$
+
+This is a permutation $\sigma \in S_N$ representing the net relabeling of walkers after following the closed path $\gamma$.
+
+**Example: Two-Walker Exchange**
+
+For $N=2$, an elementary braid $\sigma_1 \in B_2$ (walker 1 passes above walker 2) has holonomy:
+
+$$
+\text{Hol}(\sigma_1) = (1 \, 2) \in S_2
+
+$$
+
+the transposition swapping labels 1 and 2.
+
+**Gauge-Invariant Observables:**
+
+Physical observables must be **S_N-invariant** functions on $\Sigma_N$:
+
+$$
+f(\sigma \cdot \mathcal{S}) = f(\mathcal{S}) \quad \forall \sigma \in S_N
+
+$$
+
+Examples:
+- Cloning probability: $P_{\text{clone}}(i \to j)$ (depends on unordered pair)
+- Fitness histograms: $\{V_{\text{fit}}(i) : i \in A_t\}$ (unordered set)
+- Diversity distances: $\{d_{\text{alg}}(i,j) : i, j \in A_t\}$ (pairwise, symmetric)
+
+**Connection to Diversity/Cloning Edges:**
+
+When walker i selects diversity companion k, or cloning companion j, the system traces paths in configuration space:
+
+- **Diversity cycle**: $i \to k \to i$ creates closed loop $\gamma_{ik}$
+- **Cloning cycle**: $i \to j \to i$ creates closed loop $\gamma_{ij}$
+
+Each cycle has holonomy $\text{Hol}(\gamma) \in S_N$ depending on the braid class of the trajectory.
+
+**Curvature = Non-Trivial Holonomy:**
+
+For a triangle of walkers $(i, j, k)$, define the **discrete curvature**:
+
+$$
+F_{ijk} = \mathbb{P}(\text{Hol}(\gamma_{ijk}) = \sigma) \quad \text{for } \sigma \in S_3
+
+$$
+
+If $F_{ijk} = \delta_e$ (all probability on identity), the connection is **flat**. Otherwise, the anisotropic algorithmic metric induces **non-trivial curvature**.
+
+**Relationship to U(1) and SU(2):**
+
+The emergent U(1) and SU(2) symmetries arise as **effective theories** in the continuum limit:
+
+- **S_N braid holonomy** → Wilson loops (discrete, topological)
+- **Global U(1)_fitness** → Conserved fitness charge (continuous, global)
+- **Local SU(2)_weak** → Weak isospin gauge (continuous, local)
+
+See {doc}`../12_gauge_theory_adaptive_gas.md` for full rigorous treatment of S_N gauge structure, including:
+- Principal orbifold bundle formulation (§1-2)
+- Braid group topology π₁(M_config) ≅ B_N (§3.1-3.2)
+- Parallel transport and holonomy (§3.3-3.4)
+- Dynamics generating braids (§4)
+- Curvature and anisotropic metrics (§4.3)
 :::
 
 ### 7.8. Storage in Fractal Set: IG Edge Structure with Gauge Symmetries
@@ -1122,67 +1241,74 @@ $$
 This is a rank-4 tensor with dimension $N \times N \times N \times N$, but only $(N-1)^2$ non-zero entries per (i,j) pair.
 :::
 
-### 7.9. Lattice QFT Structure: U(1) × SU(2) Gauge Theory
+### 7.9. Lattice QFT Structure: S_N Discrete Gauge + SU(2) Continuum
 
-:::{prf:theorem} U(1) × SU(2) Lattice Gauge Theory on the Fractal Set
-:label: thm-u1-su2-lattice-qft
+:::{prf:theorem} Hybrid Discrete-Continuum Gauge Theory on the Fractal Set
+:label: thm-sn-su2-lattice-qft
 
-The Fractal Set realizes a **U(1)_fitness × SU(2)_weak lattice gauge theory** on the CST+IG causal set:
+The Fractal Set realizes a **hybrid gauge theory** combining discrete S_N topology with continuum SU(2) dynamics:
 
-**1. Gauge Group:**
-
-$$
-G = \text{U}(1)_{\text{fitness}} \times \text{SU}(2)_{\text{weak}}
+**1. Gauge Structure:**
 
 $$
+G_{\text{total}} = S_N^{\text{discrete}} \times \text{SU}(2)_{\text{weak}}^{\text{local}} \times \text{U}(1)_{\text{fitness}}^{\text{global}}
 
-This structure directly parallels the electroweak sector of the Standard Model.
-
-**2. Gauge Connections:**
-
-Two independent gauge connections on IG edges:
-
-**U(1) Fitness Connection** (on diversity edges):
-$$
-A_{\text{U}(1)}[i, k] = \theta_{ik}^{(\text{U}(1))} = -\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2 \hbar_{\text{eff}}}
 $$
 
-Represents fitness self-measurement (walker i probing via diversity companion k).
+**Three-tier hierarchy:**
+- **S_N**: Fundamental discrete gauge group (permutations, braid holonomy)
+- **SU(2)_weak**: Emergent local gauge symmetry (weak isospin)
+- **U(1)_fitness**: Emergent global symmetry (conserved fitness charge)
 
-**SU(2) Weak Connection** (on cloning edges):
+This structure **generalizes** the Standard Model by including discrete gauge topology.
+
+**2. Connections and Fields:**
+
+**S_N Discrete Connection** (on all edges):
+- Braid holonomy ρ: B_N → S_N defines parallel transport
+- Holonomy Hol(γ) ∈ S_N for closed loops γ
+- **Wilson loops**: Gauge-invariant observables from braid topology
+
+**U(1) Global Phase** (on diversity edges):
+$$
+\theta_{ik}^{(\text{U}(1)}} = -\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2 \hbar_{\text{eff}}}
+$$
+
+**Not a gauge field** - fixed by algorithmic distances. Transforms globally: θ → θ + α (same α for all).
+
+**SU(2) Local Gauge Field** (on cloning edges):
 $$
 A_{\text{SU}(2)}[i, j] = \theta_{ij}^{(\text{SU}(2))} = -\frac{d_{\text{alg}}(i,j)^2}{2\epsilon_c^2 \hbar_{\text{eff}}}
 $$
 
-Represents weak isospin interaction (walker i selecting cloning target j).
+**True local gauge field** - transforms locally: $U_{ij} \to G_i U_{ij} G_j^\dagger$ for $G_i \in \text{SU}(2)$.
 
-**3. Field Strength (Curvature):**
+**3. Curvature and Field Strength:**
 
-For each plaquette P (elementary closed loop) in CST+IG:
-
-**U(1) field strength**:
+**S_N Discrete Curvature**:
+For triangle (i, j, k), the curvature is the holonomy distribution:
 $$
-F_{\text{U}(1)}[P] = \oint_{\partial P} A_{\text{U}(1)}
+F_{ijk}^{S_N} = \mathbb{P}(\text{Hol}(\gamma_{ijk}) = \sigma) \quad \forall \sigma \in S_3
 $$
 
-**SU(2) field strength**:
+**SU(2) Field Strength**:
 $$
 F_{\text{SU}(2)}^{(a)}[P] = \oint_{\partial P} A_{\text{SU}(2)}^{(a)} + g \epsilon^{abc} A_{\text{SU}(2)}^{(b)} A_{\text{SU}(2)}^{(c)}
 $$
 
-where $a, b, c \in \{1,2,3\}$ are SU(2) generator indices.
+where $a, b, c \in \{1,2,3\}$ are SU(2) generator indices (non-Abelian).
 
 **4. Wilson Action:**
 
 $$
-S_{\text{Wilson}}[\mathcal{F}] = \sum_{\text{plaquettes } P} \left[\beta_{\text{U}(1)}\left(1 - \text{Re}\, W_{\text{U}(1)}[P]\right) + \beta_{\text{SU}(2)}\left(1 - \frac{1}{2}\text{Re Tr}\, W_{\text{SU}(2)}[P]\right)\right]
+S_{\text{Wilson}}[\mathcal{F}] = \sum_{\text{plaquettes } P} \left[\beta_{S_N} \mathcal{D}_{\text{KL}}(\text{Hol}[P] \| \delta_e) + \beta_{\text{SU}(2)}\left(1 - \frac{1}{2}\text{Re Tr}\, W_{\text{SU}(2)}[P]\right)\right]
 
 $$
 
 where:
-- $W_{\text{U}(1)}[P] = e^{iF_{\text{U}(1)}[P]}$: U(1) Wilson loop
-- $W_{\text{SU}(2)}[P] = \mathcal{P}\exp\left(i\oint_{\partial P} A_{\text{SU}(2)}\right)$: SU(2) Wilson loop (path-ordered exponential)
-- $\beta_{\text{U}(1)}$, $\beta_{\text{SU}(2)}$: Coupling constants
+- **S_N term**: KL divergence from trivial holonomy (flatness)
+- **SU(2) Wilson loop**: $W_{\text{SU}(2)}[P] = \mathcal{P}\exp\left(i\oint_{\partial P} A_{\text{SU}(2)}\right)$ (path-ordered)
+- $\beta_{S_N}$, $\beta_{\text{SU}(2)}$: Coupling constants
 
 **5. Path Integral Formulation:**
 
@@ -1687,143 +1813,69 @@ $$
 where $\mu^2 < 0$ triggers spontaneous symmetry breaking.
 :::
 
-### 7.12. Formal Gauge Invariance: Proof of Local Symmetries
+### 7.12. Formal Gauge Invariance: Proofs
 
-:::{prf:theorem} Local U(1)_fitness Gauge Invariance
-:label: thm-u1-local-gauge-invariance
+This section proves that the three symmetries (S_N, Global U(1), Local SU(2)) give gauge-invariant observables.
 
-The path integral for the cloning amplitude is **locally gauge invariant** under U(1)_fitness transformations at each walker vertex.
+:::{prf:theorem} Global U(1)_fitness Invariance
+:label: thm-u1-global-invariance
+
+The cloning probability $P_{\text{clone}}(i \to j)$ is invariant under **global U(1)_fitness transformations**.
 
 **Setup:**
 
-Define a **local U(1) gauge transformation** at each walker vertex $i \in A_t$:
+A **global U(1) transformation** applies the same phase rotation to all walkers:
 
 $$
-g_i = e^{i\alpha(i)}, \quad \alpha(i) \in [0, 2\pi)
+\psi_{ik}^{(\text{div})} \to e^{i\alpha} \psi_{ik}^{(\text{div})}, \quad \alpha \in [0, 2\pi) \text{ (same for all } i, k \text{)}
 $$
 
-This transformation acts on the diversity companion phase:
+**Proof:**
+
+The effective kernel transforms as:
 
 $$
-\theta_{ik}^{(\text{U}(1))} \to \theta_{ik}^{(\text{U}(1))'} = \theta_{ik}^{(\text{U}(1))} + \alpha(i) - \alpha(k)
-$$
-
-**Physical Interpretation:**
-
-The transformation $\alpha(i)$ represents an arbitrary, walker-dependent phase rotation. Local gauge invariance means that no physical observable can depend on the absolute values $\alpha(i)$ - only on **relative phases** between connected walkers.
-
-**Proof Strategy:**
-
-We prove that all physical observables (cloning probabilities, Wilson loops) are invariant under this transformation by showing:
-1. Diversity phases enter the path integral only through Wilson loops
-2. Wilson loops are automatically gauge invariant
-3. The factorized amplitude $\Psi = A^{\text{SU}(2)} \cdot K_{\text{eff}}$ is manifestly gauge invariant
-
-**Step 1: Transformation of Path Integral Components**
-
-The dressed walker state transforms as:
-
-$$
-|\psi_i\rangle = \sum_{k \in A_t \setminus \{i\}} \psi_{ik}^{(\text{div})} |k\rangle \to |\psi_i'\rangle = e^{i\alpha(i)} \sum_k e^{-i\alpha(k)} \psi_{ik}^{(\text{div})} |k\rangle
-$$
-
-The effective kernel from §7.5:
-
-$$
-K_{\text{eff}}(i,j) = \sum_{k,m} \psi_{ik}^{(\text{div})} \cdot \psi_{jm}^{(\text{div})} \cdot \psi_{\text{succ}}(S(i,j,k,m))
-$$
-
-Under gauge transformation:
-
-$$
-K_{\text{eff}}'(i,j) = e^{i\alpha(i)} e^{i\alpha(j)} \sum_{k,m} e^{-i\alpha(k)} e^{-i\alpha(m)} \psi_{ik}^{(\text{div})} \cdot \psi_{jm}^{(\text{div})} \cdot \psi_{\text{succ}}(S)
+K_{\text{eff}}'(i,j) = \sum_{k,m} e^{i\alpha} \psi_{ik}^{(\text{div})} \cdot e^{i\alpha} \psi_{jm}^{(\text{div})} \cdot \psi_{\text{succ}}(S)
 $$
 
 $$
-= e^{i(\alpha(i) + \alpha(j))} \sum_{k,m} e^{-i(\alpha(k) + \alpha(m))} \psi_{ik}^{(\text{div})} \cdot \psi_{jm}^{(\text{div})} \cdot \psi_{\text{succ}}(S)
+= e^{i \cdot 2\alpha} \sum_{k,m} \psi_{ik}^{(\text{div})} \cdot \psi_{jm}^{(\text{div})} \cdot \psi_{\text{succ}}(S) = e^{i \cdot 2\alpha} K_{\text{eff}}(i,j)
 $$
 
-**Step 2: Gauge Invariance of Physical Observables**
-
-The cloning probability is:
+Taking the modulus squared:
 
 $$
-P_{\text{clone}}(i \to j) = |A_{ij}^{\text{SU}(2)}|^2 \cdot |K_{\text{eff}}(i,j)|^2
+|K_{\text{eff}}'(i,j)|^2 = |e^{i \cdot 2\alpha}|^2 \cdot |K_{\text{eff}}(i,j)|^2 = |K_{\text{eff}}(i,j)|^2
 $$
 
-Since $|e^{i\phi}| = 1$ for any real $\phi$:
+since $|e^{i\phi}| = 1$ for any real phase $\phi$.
+
+Therefore, the cloning probability is invariant:
 
 $$
-|K_{\text{eff}}'(i,j)|^2 = \left|e^{i(\alpha(i) + \alpha(j) - \alpha(k) - \alpha(m))}\right|^2 \left|\sum_{k,m} \psi_{ik}^{(\text{div})} \cdot \psi_{jm}^{(\text{div})} \cdot \psi_{\text{succ}}(S)\right|^2
+P_{\text{clone}}'(i \to j) = |A_{ij}^{\text{SU}(2)}|^2 \cdot |K_{\text{eff}}'(i,j)|^2 = |A_{ij}^{\text{SU}(2)}|^2 \cdot |K_{\text{eff}}(i,j)|^2 = P_{\text{clone}}(i \to j)
 $$
-
-Wait - this is **NOT manifestly invariant** because different terms in the sum have different phase factors!
-
-**Key Insight - Wilson Loop Structure:**
-
-The gauge invariance is NOT in individual terms but in the **path integral sum**. We must reorganize:
-
-For a closed loop $\gamma = (i_0, i_1, \ldots, i_n = i_0)$ in the diversity graph:
-
-$$
-W_{\text{U}(1)}[\gamma] = \exp\left(i\sum_{e \in \gamma} \theta_e^{(\text{U}(1))}\right)
-$$
-
-Under gauge transformation:
-
-$$
-W'[\gamma] = \exp\left(i\sum_{e=(i,k) \in \gamma} (\theta_{ik}^{(\text{U}(1))} + \alpha(i) - \alpha(k))\right)
-$$
-
-$$
-= \exp\left(i\sum_{e \in \gamma} \theta_e^{(\text{U}(1))}\right) \cdot \exp\left(i\sum_{e=(i,k) \in \gamma} (\alpha(i) - \alpha(k))\right)
-$$
-
-The second factor is:
-
-$$
-\exp\left(i\sum_{j=0}^{n-1} (\alpha(i_j) - \alpha(i_{j+1}))\right) = \exp\left(i(\alpha(i_0) - \alpha(i_n))\right) = \exp(0) = 1
-$$
-
-since $i_n = i_0$ for a closed loop. Therefore:
-
-$$
-W'[\gamma] = W[\gamma]
-$$
-
-**Wilson loops are gauge invariant!**
-
-**Step 3: Path Integral Reorganization**
-
-The path integral $K_{\text{eff}}$ can be expressed as a sum over closed loops (plaquettes) in the diversity graph. Each plaquette contributes a Wilson loop, which we've proven is gauge invariant.
-
-By the **Stokes theorem on graphs**, any sum of phases along open paths can be expressed as a sum of Wilson loops around closed plaquettes plus boundary terms. The boundary terms cancel when summing over all walker configurations in the path integral.
-
-Therefore, $|K_{\text{eff}}(i,j)|^2$ depends only on gauge-invariant Wilson loops.
 
 **Conclusion:**
 
-$$
-P_{\text{clone}}'(i \to j) = P_{\text{clone}}(i \to j)
-$$
-
-The cloning probability is **locally U(1) gauge invariant**. ∎
+Global U(1)_fitness is a genuine symmetry. By Noether's theorem (see {doc}`../09_symmetries_adaptive_gas.md` §4.2), this implies a **conserved fitness current**. ∎
 :::
 
-:::{prf:remark} Physical Significance of U(1) Gauge Invariance
+:::{prf:remark} Why Not Local U(1)?
 :class: important
 
-**Why this matters:**
+**Critical insight from rigorous analysis:**
 
-1. **Redundancy**: The absolute phase $\alpha(i)$ at each walker is **unphysical** - it's pure gauge freedom
-2. **Observables**: Only **relative phases** between walkers (encoded in Wilson loops) are measurable
-3. **Connection 1-form**: The phases $\theta_{ik}^{(\text{U}(1))}$ must be interpreted as a **U(1) connection** (gauge potential) on the interaction graph, not as independent variables
-4. **Fitness Field**: The U(1) gauge field couples to the fitness potential $V_{\text{fit}}$ through diversity measurements
+We cannot have **local** U(1) gauge invariance (different α(i) at each walker) because:
 
-This is **precisely** the structure of QED, where:
-- Absolute phase of electron wavefunction is unphysical
-- Only relative phases (electromagnetic potentials) are physical
-- Wilson loops measure magnetic flux
+1. $K_{\text{eff}} = \sum_{k,m} [\ldots]$ - the sum contains terms with different phase factors α(k), α(m)
+2. Under local transformation: $K_{\text{eff}}' = e^{i(\alpha(i)+\alpha(j))} \sum_{k,m} e^{-i(\alpha(k)+\alpha(m))} [\ldots]$
+3. The phases inside the sum cannot be factored out
+4. Therefore: $|K_{\text{eff}}'|^2 \neq |K_{\text{eff}}|^2$ in general
+
+**Physical reason**: The phases θ_ik are **fixed by algorithmic distances**, not dynamical gauge fields. There's no gauge connection to make the theory locally covariant.
+
+**The resolution**: U(1)_fitness is **global** (like baryon number in the Standard Model), not gauged (like electromagnetism). The **true local gauge symmetry** is the discrete S_N permutation group (see §7.7).
 :::
 
 :::{prf:theorem} Local SU(2)_weak Gauge Invariance
@@ -1881,10 +1933,10 @@ $$
 U_{ij}' = G_i \cdot U_{ij} \cdot G_j^\dagger
 $$
 
-But $A_{ij}^{\text{SU}(2)}}$ is a complex scalar, not a group element. We must embed it in SU(2):
+But $A_{ij}^{\text{SU}(2)}$ is a complex scalar, not a group element. We must embed it in SU(2):
 
 $$
-A_{ij}^{\text{SU}(2)}} \text{ corresponds to the matrix element } \langle \uparrow | U_{ij} | \uparrow \rangle
+A_{ij}^{\text{SU}(2)} \text{ corresponds to the matrix element } \langle \uparrow | U_{ij} | \uparrow \rangle
 $$
 
 **Step 2: SU(2) Wilson Loops**
@@ -1919,21 +1971,99 @@ $$
 
 **SU(2) Wilson loops are gauge invariant!**
 
-**Step 3: Total Interaction Probability**
+**Step 3: SU(2) Invariance of K_eff**
 
-From Proposition {prf:ref}`prop-su2-invariance`, the **SU(2)-invariant observable** is:
+A crucial property: **SU(2) gauge transformations do not affect the U(1) dressing kernel**.
+
+**Lemma**: The effective kernel $K_{\text{eff}}(i,j)$ is **SU(2)-invariant**.
+
+**Proof**: From §7.5, the effective kernel is:
+
+$$
+K_{\text{eff}}(i,j) = \sum_{k,m \in A_t} \sqrt{P_{\text{comp}}^{(\text{div})}(k|i)} \sqrt{P_{\text{comp}}^{(\text{div})}(m|j)} \sqrt{P_{\text{succ}}(S)} \cdot e^{i(\theta_{ik}^{(\text{U(1)})} + \theta_{jm}^{(\text{U(1)})} + S/\hbar_{\text{eff}})}
+$$
+
+Every component of this expression depends **only** on the algorithmic space coordinates $\mathcal{Y} = \{(x_i, v_i, s_i)\}$:
+
+1. **Companion probabilities**: $P_{\text{comp}}^{(\text{div})}(k|i) = \frac{e^{-d_{\text{alg}}(i,k)^2/(2\epsilon_d^2)}}{\sum_{k'} e^{-d_{\text{alg}}(i,k')^2/(2\epsilon_d^2)}}$ - depends on $d_{\text{alg}}(i,k) = \sqrt{\|x_i - x_k\|^2 + \lambda_{\text{alg}}\|v_i - v_k\|^2}$ only
+2. **U(1) phases**: $\theta_{ik}^{(\text{U(1)})} = -\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2\hbar_{\text{eff}}}$ - depends on $d_{\text{alg}}(i,k)$ only
+3. **Success amplitude**: $P_{\text{succ}}(S)$ and $S = V_{\text{fit}}(i|k) - V_{\text{fit}}(j|m)$ - depend on fitness potentials
+
+**Lemma (Fitness Potential Invariance)**: The fitness potential $V_{\text{fit}}(i|k)$ is SU(2)-invariant.
+
+*Proof*: From {prf:ref}`def-fitness-potential-operator`, the fitness potential is constructed from Z-scores of raw rewards and diversity distances calculated over the entire alive set $A_t$:
+
+$$
+V_{\text{fit}}(i|k) = \alpha \cdot Z_{\text{reward}}(i) + \beta \cdot Z_{\text{div}}(i, k)
+$$
+
+where the Z-scores depend on:
+- Reward statistics: $\{r_j : j \in A_t\}$
+- Diversity distances: $\{d_{\text{alg}}(i, j) : j \in A_t\}$
+
+The calculation for walker $i$ depends **only on its position** $(x_i, v_i)$ and its **statistical relation to the swarm**, not on its role as a potential cloner or target. The weak isospin state (cloner vs target) is an internal quantum number that does not affect algorithmic space coordinates. Therefore, $V_{\text{fit}}$ is a function on the algorithmic space only and is invariant under SU(2) transformations of the internal isospin state. ∎
+
+**Crucially**: The SU(2) weak isospin transformation acts on the **internal quantum numbers** $(|\uparrow\rangle, |\downarrow\rangle)$ representing the cloning role (cloner vs target), NOT on the algorithmic space coordinates $(x, v, s)$.
+
+Since $K_{\text{eff}}$ has **no dependence on weak isospin quantum numbers**, it is automatically invariant:
+
+$$
+K_{\text{eff}}'(i,j) = K_{\text{eff}}(i,j) \quad \text{under SU(2) transformation}
+$$
+
+**Physical interpretation**: The U(1) dressing describes fitness self-measurement through diversity companions. This measurement occurs in algorithmic space and is blind to the weak isospin state. The SU(2) transformation mixes cloner/target roles but does not affect where walkers are located or how they measure their fitness. ∎
+
+**Step 4: Connection to Physical Observable**
+
+The total cloning amplitude is:
+
+$$
+\Psi(i \to j) = A_{ij}^{\text{SU}(2)} \cdot K_{\text{eff}}(i,j)
+$$
+
+Under SU(2) transformation:
+
+$$
+\Psi'(i \to j) = A_{ij}'^{\text{SU}(2)} \cdot K_{\text{eff}}(i,j)
+$$
+
+where $A_{ij}'^{\text{SU}(2)} = \langle \uparrow | G_i U_{ij} G_j^\dagger | \uparrow \rangle$ acquires a phase.
+
+**Key Lemma**: The cloning probability depends only on the **modulus squared** (Born rule):
+
+$$
+P_{\text{clone}}(i \to j) = |\Psi(i \to j)|^2 = |A_{ij}^{\text{SU}(2)}|^2 \cdot |K_{\text{eff}}(i,j)|^2
+$$
+
+Under SU(2) transformation, the amplitude transforms as:
+
+$$
+A_{ij}'^{\text{SU}(2)} = e^{i\phi_{ij}} \cdot A_{ij}^{\text{SU}(2)}
+$$
+
+for some phase $\phi_{ij}$ (from the matrix element of the conjugated group element). Therefore:
+
+$$
+|A_{ij}'^{\text{SU}(2)}|^2 = |e^{i\phi_{ij}}|^2 \cdot |A_{ij}^{\text{SU}(2)}|^2 = |A_{ij}^{\text{SU}(2)}|^2
+$$
+
+Combined with the SU(2)-invariance of $K_{\text{eff}}$:
+
+$$
+P_{\text{clone}}'(i \to j) = P_{\text{clone}}(i \to j)
+$$
+
+**Consequence**: The **total interaction probability** is also invariant:
 
 $$
 P_{\text{total}}(i,j) = P_{\text{clone}}(i \to j) + P_{\text{clone}}(j \to i)
 $$
 
-The proof in §7.10 showed this is invariant under SU(2) transformations. Combined with the Wilson loop invariance, we have:
-
-**All physical observables are SU(2) gauge invariant.**
+as shown in Proposition {prf:ref}`prop-su2-invariance`.
 
 **Conclusion:**
 
-The SU(2) structure is a **genuine non-Abelian gauge symmetry**, not just a global symmetry. The cloning interaction implements weak isospin transformations. ∎
+The SU(2) structure is a **genuine non-Abelian local gauge symmetry**, not just a global symmetry. The cloning interaction implements weak isospin transformations, and all physical observables (cloning probabilities) are gauge invariant. ∎
 :::
 
 :::{prf:remark} Non-Abelian Nature of SU(2)
@@ -1955,6 +2085,68 @@ Non-Abelian gauge bosons (W/Z bosons) **interact with themselves**, unlike photo
 Our SU(2)_weak symmetry exhibits all these features through the cloning interaction structure.
 :::
 
+:::{prf:theorem} S_N Permutation Gauge Invariance
+:label: thm-sn-gauge-invariance
+
+The **fundamental gauge symmetry** of the Fragile Gas is the **S_N permutation group**. All physical observables are S_N-invariant by construction.
+
+**Statement:**
+
+For any permutation $\sigma \in S_N$ and any swarm configuration $\mathcal{S} = (w_1, \ldots, w_N)$:
+
+$$
+P_{\text{clone}}(\sigma \cdot \mathcal{S}) = P_{\text{clone}}(\mathcal{S})
+$$
+
+and more generally, all observables $f(\mathcal{S})$ satisfy:
+
+$$
+f(\sigma \cdot \mathcal{S}) = f(\mathcal{S})
+$$
+
+**Proof:**
+
+This is proven rigorously in {doc}`../12_gauge_theory_adaptive_gas.md`:
+
+1. **Gauge-invariant dynamics** (Theorem 6.4.4 in {doc}`../09_symmetries_adaptive_gas.md`): The transition operator $\Psi_t$ commutes with S_N:
+   $$
+   \sigma \circ \Psi_t = \Psi_t \circ \sigma \quad \forall \sigma \in S_N
+   $$
+
+2. **Configuration space orbifold** ({doc}`../12_gauge_theory_adaptive_gas.md` §1): Physical states live in $\mathcal{M}_{\text{config}} = \Sigma_N / S_N$
+
+3. **Braid holonomy** ({doc}`../12_gauge_theory_adaptive_gas.md` §3.4): Wilson loops measure holonomy $\text{Hol}(\gamma) = \rho([\gamma]) \in S_N$ for closed paths
+
+4. **Observables descend to quotient** ({doc}`../12_gauge_theory_adaptive_gas.md` Theorem 2.4.1): All physical observables are S_N-invariant functions
+
+**Physical Interpretation:**
+
+Walker labels are **pure gauge** - they're arbitrary bookkeeping indices with no physical content. The S_N gauge symmetry is the mathematical expression of this fact.
+
+**Wilson Loops from Braid Topology:**
+
+The **true Wilson loops** of the theory come from S_N braid holonomy, not from U(1) (which is global). When diversity or cloning selection creates closed loops in configuration space, the holonomy measures the net permutation accumulated. ∎
+:::
+
+:::{prf:remark} Three-Tier Gauge Structure
+:class: important
+
+**Summary of the complete gauge structure:**
+
+| Symmetry | Type | Origin | Observables | Wilson Loops |
+|----------|------|--------|-------------|--------------|
+| **S_N** | Local, discrete | Walker labels arbitrary | S_N-invariant functions | Braid holonomy $\text{Hol}(\gamma)$ |
+| **SU(2)_weak** | Local, continuous | Cloning isospin doublet | Trace over weak isospin | SU(2) path-ordered exponential |
+| **U(1)_fitness** | Global, continuous | Absolute fitness scale | None (global phase) | None (global symmetry) |
+
+**Hierarchy:**
+
+1. **S_N is fundamental**: Discrete gauge group from first principles
+2. **SU(2) is emergent local**: Continuum effective theory for cloning
+3. **U(1) is emergent global**: Conserved fitness charge (Noether)
+
+This structure **generalizes the Standard Model** by incorporating discrete gauge topology alongside continuum gauge fields.
+:::
 ### 7.13. SU(3) Strong Sector from Viscous Force
 
 :::{prf:theorem} SU(3) Color Symmetry from Viscous Force Vector
@@ -2341,10 +2533,10 @@ G_{\text{GUT}} = \text{SO}(10)
 
 $$
 
-which contains the Standard Model gauge group as a subgroup:
+which contains the gauge forces (note: U(1)_fitness is global, not gauged):
 
 $$
-\text{SO}(10) \supset \text{SU}(3)_{\text{color}} \times \text{SU}(2)_{\text{weak}} \times \text{U}(1)_{\text{fitness}}
+\text{SO}(10) \supset \text{SU}(3)_{\text{color}} \times \text{SU}(2)_{\text{weak}} \times [S_N^{\text{discrete}} \times \text{U}(1)_{\text{fitness}}^{\text{global}}]
 
 $$
 
@@ -2373,29 +2565,37 @@ where:
 The 45 generators of SO(10) decompose as:
 
 $$
-\mathbf{45} = \mathbf{8}_{\text{gluons}} \oplus \mathbf{3}_{\text{weak bosons}} \oplus \mathbf{1}_{\text{fitness gauge}} \oplus \mathbf{10}_{\text{graviton}} \oplus \mathbf{23}_{\text{broken generators}}
+\mathbf{45} = \mathbf{8}_{\text{gluons}} \oplus \mathbf{3}_{\text{weak bosons}} \oplus \mathbf{N!-1}_{\text{S}_N \text{ braids}} \oplus \mathbf{10}_{\text{graviton}} \oplus \mathbf{23}_{\text{broken generators}}
 
 $$
 
-Total gauge bosons: $8 + 3 + 1 = 12$ (gluons + W/Z bosons + fitness gauge boson)
+**Gauge structure clarification:**
+- **8 gluons**: SU(3)_color local gauge bosons
+- **3 weak bosons** (W±, Z): SU(2)_weak local gauge bosons
+- **S_N braid modes**: Discrete gauge holonomies (not continuous gauge bosons)
+- **U(1)_fitness**: Global symmetry → conserved charge, NOT a gauge boson
+- **10 graviton modes**: Metric perturbations h_μν
+
+Total **continuous** gauge bosons: $8 + 3 = 11$ (not 12, since U(1) is global)
 
 **4. Unified Field Strength Tensor:**
 
-The SO(10) field strength $\mathcal{F}_{\mu\nu}$ unifies all gauge fields:
+The SO(10) field strength $\mathcal{F}_{\mu\nu}$ unifies **local gauge fields** only:
 
 $$
 \mathcal{F}_{\mu\nu} = \begin{pmatrix}
-F_{\mu\nu}^{(\text{SU}(3))} & 0 & 0 \\
-0 & F_{\mu\nu}^{(\text{SU}(2))} & 0 \\
-0 & 0 & F_{\mu\nu}^{(\text{U}(1)_{\text{fitness}})}
-\end{pmatrix}
+F_{\mu\nu}^{(\text{SU}(3))} & 0 \\
+0 & F_{\mu\nu}^{(\text{SU}(2)}}
+\end{pmatrix} \oplus F_{S_N}^{\text{discrete}}
 
 $$
 
 where:
-- $F_{\mu\nu}^{(\text{SU}(3))}$: Strong field strength (§7.12)
-- $F_{\mu\nu}^{(\text{SU}(2))}$: Weak isospin field strength (§7.10)
-- $F_{\mu\nu}^{(\text{U}(1)_{\text{fitness}})}$: Fitness gauge field strength (§7.6)
+- $F_{\mu\nu}^{(\text{SU}(3))}$: Strong field strength (§7.13)
+- $F_{\mu\nu}^{(\text{SU}(2))}$: Weak isospin field strength (§7.12)
+- $F_{S_N}^{\text{discrete}}$: Discrete braid holonomy curvature (§7.7)
+
+**Note**: U(1)_fitness is **global**, so it has no field strength tensor. Instead, it gives a conserved Noether current J_fitness^μ (§7.6).
 
 **5. Unified Lagrangian:**
 
@@ -2424,17 +2624,20 @@ The Riemann curvature tensor $R^\rho_{\sigma\mu\nu}$ can be encoded as a **10-di
 **7. Symmetry Breaking Pattern:**
 
 $$
-\text{SO}(10) \xrightarrow{\text{GUT scale}} \text{SU}(3) \times \text{SU}(2) \times \text{U}(1)_{\text{fitness}} \xrightarrow{\text{EW scale}} \text{SU}(3) \times \text{U}(1)_{\text{EM}}
-
+\text{SO}(10) \xrightarrow{\text{GUT scale}} \text{SU}(3) \times \text{SU}(2) \times [S_N \times \text{U}(1)_{\text{fitness}}^{\text{global}}] \xrightarrow{\text{EW scale}} \text{SU}(3) \times \text{U}(1)_{\text{EM}}^{\text{local}}
 $$
 
 where:
-- **GUT scale**: SO(10) breaks to Standard Model-like gauge group
-- **Electroweak scale**: Higgs VEV breaks SU(2) × U(1)_fitness → U(1)_EM
-- **Final phase**: SU(3)_color × U(1)_EM (strong force + electromagnetism)
+- **GUT scale**: SO(10) breaks to gauge forces + global symmetry
+  - Gauge: SU(3)_color (local) + SU(2)_weak (local) + S_N (discrete, local)
+  - Global: U(1)_fitness (conserved charge)
+- **Electroweak scale**: Higgs VEV breaks SU(2)_weak → generates U(1)_EM **as local gauge symmetry**
+- **Final phase**: SU(3)_color (local) × U(1)_EM (local) × S_N (discrete) × U(1)_fitness (global)
+
+**Key distinction**: U(1)_EM emerges as a **local gauge symmetry** from SU(2) breaking, while U(1)_fitness remains **global**. These are different U(1) groups!
 
 **Pre-convergence**: SO(10) symmetric (all forces unified)
-**Post-convergence**: Broken to SU(3) × U(1) (color + diversity confinement)
+**Post-convergence**: Broken to SU(3) × U(1)_EM × S_N (+ global U(1)_fitness)
 :::
 
 :::{prf:remark} Complete Fractal Set as Grand Unified Field Theory

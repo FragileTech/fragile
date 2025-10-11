@@ -600,6 +600,294 @@ The **Keystone Principle** ({prf:ref}`lem-quantitative-keystone`) guarantees tha
 
 **Fermionic interpretation:** The antisymmetry $V_{\text{clone}}(j \to i) = -V_{\text{clone}}(i \to j)$ becomes significant in the **emergent QFT limit** (cf. `13_D_fractal_set_emergent_qft_comprehensive.md`) where it enables antisymmetric Green's functions. But for convergence, it's just fitness-driven selection.
 
+### 6.3. Transfer of Symmetries and Conserved Quantities
+
+**Question:** Do the gauge symmetries and conserved quantities defined in the Fractal Set data structure ({prf:ref}`thm-u1-fitness-gauge`, {prf:ref}`thm-su2-interaction-symmetry`, {prf:ref}`thm-u1-su2-lattice-qft`) correspond to physical properties of the N-particle system?
+
+**Answer:** **Yes.** Every symmetry and quantity defined on the Fractal Set graph structure has a unique corresponding property in the N-particle Markov chain dynamics, and vice versa. This establishes **equivalence** between the Fractal Set representation and the algorithmic dynamics.
+
+:::{prf:theorem} Equivalence of Fractal Set and N-Particle Properties
+:label: thm-fractal-set-n-particle-equivalence
+
+Let $\mathcal{F} = (\mathcal{N}, E_{\text{CST}} \cup E_{\text{IG}})$ be the Fractal Set and let $\{Z_k\}_{k \geq 0}$ be the N-particle discrete-time Markov chain from {prf:ref}`def-swarm-state-vector`. Then:
+
+**1. Bijective correspondence of states:**
+
+For each node $n_{i,t} \in \mathcal{N}$, there exists a unique walker state $(x_i(t), v_i(t)) \in Z_t$, and conversely, each walker state at timestep $t$ corresponds to exactly one node in $\mathcal{N}$.
+
+**2. Reconstruction of phase space:**
+
+Given $\mathcal{F}$, the full phase space trajectory can be reconstructed via:
+
+$$
+x_i(t) = x_i(0) + \sum_{s=0}^{t-1} \text{spinor-to-vector}[\psi_{\Delta x}(n_{i,s}, n_{i,s+1})]
+
+$$
+
+$$
+v_i(t) = \text{spinor-to-vector}[\psi_{v,t}(n_{i,t-1}, n_{i,t})]
+
+$$
+
+where the spinor-to-vector map extracts the $\mathbb{R}^d$ vector from its spinor encoding $\psi \in \mathbb{C}^{2^{[d/2]}}$.
+
+**3. Transfer of gauge symmetries:**
+
+The U(1) × SU(2) gauge symmetries on $\mathcal{F}$ ({prf:ref}`thm-u1-su2-lattice-qft`) correspond to algorithmic symmetries of the N-particle system:
+
+**U(1) fitness symmetry** ↔ **Invariance of cloning probabilities under fitness shifts**:
+
+For IG diversity edges $(i, k) \in E_{\text{IG}}$ with phase $\theta_{ik}^{(\text{U(1)})} = -d_{\text{alg}}(i,k)^2/(2\epsilon_d^2 \hbar_{\text{eff}})$, the corresponding algorithmic property is:
+
+$$
+P_{\text{comp}}^{(\text{div})}(k|i) \propto \exp\left(-\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2}\right)
+
+$$
+
+is **invariant under global fitness shifts** $\Phi(x) \mapsto \Phi(x) + c$ because $d_{\text{alg}}$ depends only on **fitness differences**.
+
+**SU(2) weak isospin symmetry** ↔ **Approximate role exchange symmetry in cloning**:
+
+The SU(2) doublet structure $|\Psi_{ij}\rangle = |↑\rangle \otimes |\psi_i\rangle + |↓\rangle \otimes |\psi_j\rangle$ ({prf:ref}`thm-su2-interaction-symmetry`) corresponds to an **approximate algorithmic symmetry**:
+
+$$
+\frac{\Psi(i \to j)}{\Psi(j \to i)} \approx 1 + O(\Phi_j - \Phi_i)
+
+$$
+
+This becomes **exact** in the limit of vanishing fitness differences:
+
+$$
+\lim_{\Phi_j - \Phi_i \to 0} \frac{\Psi(i \to j)}{\Psi(j \to i)} = 1
+
+$$
+
+**4. Conserved and derived quantities:**
+
+**Energy conservation in BAOAB**: The total energy $H_{\text{total}}(Z_k) = \sum_i [E_{\text{kin},i} + U(x_i)]$ stored in nodes satisfies:
+
+$$
+\mathbb{E}[H_{\text{total}}(Z_{k+1}) | Z_k] = H_{\text{total}}(Z_k) + O(\Delta t)
+
+$$
+
+up to dissipation from friction and stochastic forcing.
+
+This corresponds to **energy flow balance** in the Fractal Set: Energy changes along CST edges equal the work done by forces stored in edge spinors:
+
+$$
+E_{\text{kin}}(n_{i,t+1}) - E_{\text{kin}}(n_{i,t}) = \int_{t}^{t+1} \text{spinor-to-vector}[\psi_{\mathbf{F}_{\text{total}}}] \cdot \text{spinor-to-vector}[\psi_{v}] \, ds
+
+$$
+
+**Derived statistical observables**: Localized statistical moments $\mu_\rho(n), \sigma_\rho(n)$ stored in nodes are **not conserved quantities** but rather **functionals of IG edge data**. They satisfy:
+
+$$
+\mu_\rho[f_k, \Phi, x_i(t)] = \frac{\sum_{j \in A_k(t)} w_{ij}(\rho) \Phi_j}{\sum_{j \in A_k(t)} w_{ij}(\rho)}
+
+$$
+
+where the localization weights $w_{ij}(\rho) = K_\rho(x_i - x_j)$ are stored in IG edges. The node scalars $\mu_\rho(n_{i,t})$ are **computed observables derived from** the empirical measure $f_k(t)$ encoded in the graph structure, not fundamental quantities. This establishes **correspondence** between node-stored statistics and the underlying N-particle distribution.
+
+**Proof:**
+
+**Part 1 (Bijection):** By construction ({prf:ref}`def-node-spacetime`), each node $n_{i,t}$ has unique walker ID $i$ and timestep $t$, establishing a one-to-one correspondence with $(x_i(t), v_i(t)) \in Z_t$.
+
+**Part 2 (Reconstruction):** Follows directly from {prf:ref}`thm-fractal-set-reconstruction` items 1-2. The position is obtained by integrating displacement spinors along CST edges, and velocity is directly stored in CST edge spinors.
+
+**Part 3 (Gauge symmetries):**
+
+**U(1) proof:** The diversity companion selection follows a Gibbs distribution. From the Fractal Set specification, the probability is:
+
+$$
+P_{\text{comp}}^{(\text{div})}(k|i) = \frac{\exp\left(-\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2}\right)}{\sum_{k' \in A_t \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}}(i,k')^2}{2\epsilon_d^2}\right)}
+
+$$
+
+The algorithmic distance is defined as:
+
+$$
+d_{\text{alg}}(i, k)^2 = \|x_i - x_k\|^2 + \lambda_v \|v_i - v_k\|^2
+
+$$
+
+where $\lambda_v$ is a constant weighting parameter. **Crucially, $d_{\text{alg}}$ depends only on positions and velocities, NOT on fitness values $\Phi(x_i), \Phi(x_k)$.**
+
+Under a global fitness shift $\Phi(x) \mapsto \Phi(x) + c$ for constant $c \in \mathbb{R}$:
+
+$$
+\begin{aligned}
+d_{\text{alg}}(i,k)^2 &= \|x_i - x_k\|^2 + \lambda_v \|v_i - v_k\|^2 \\
+&\quad \text{(unchanged, as positions and velocities are independent of fitness labeling)} \\
+\Rightarrow P_{\text{comp}}^{(\text{div})}(k|i) &= \frac{\exp(-d_{\text{alg}}^2/(2\epsilon_d^2))}{\sum_{k'} \exp(-d_{\text{alg}}(i,k')^2/(2\epsilon_d^2))} \\
+&\quad \text{(invariant)}
+\end{aligned}
+
+$$
+
+The U(1) phase $\theta_{ik}^{(\text{U(1)})} = -d_{\text{alg}}(i,k)^2/(2\epsilon_d^2 \hbar_{\text{eff}})$ is likewise invariant. Gauge transformations $\theta_{ik} \to \theta_{ik} + (\lambda_i - \lambda_k)$ correspond to redefining local fitness zero-points, which leave $d_{\text{alg}}$ unchanged and preserve all observable probabilities:
+
+$$
+\left|\psi_{ik}^{(\text{div})}\right|^2 = P_{\text{comp}}^{(\text{div})}(k|i) \quad \text{(gauge-invariant)}
+
+$$
+
+**SU(2) proof:** The cloning amplitude $\Psi(i \to j)$ factorizes ({prf:ref}`def-cloning-amplitude-factorization`) as:
+
+$$
+\Psi(i \to j) = A_{ij}^{\text{SU(2)}} \cdot K_{\text{eff}}(i, j)
+
+$$
+
+where $A_{ij}^{\text{SU(2)}} = \sqrt{P_{\text{comp}}^{(\text{clone})}(j|i)} e^{i\theta_{ij}^{(\text{SU(2)})}}$ is the bare SU(2) vertex and $K_{\text{eff}}$ is the U(1)-dressed effective kernel.
+
+An SU(2) transformation $U \in \text{SU}(2)$ acts on the isospin doublet $(|\psi_i\rangle, |\psi_j\rangle)^T$ as a rotation, mixing cloner and target roles. In the N-particle system, the amplitude ratio:
+
+$$
+\frac{\Psi(i \to j)}{\Psi(j \to i)} = \frac{A_{ij}^{\text{SU(2)}} \cdot K_{\text{eff}}(i, j)}{A_{ji}^{\text{SU(2)}} \cdot K_{\text{eff}}(j, i)}
+
+$$
+
+The SU(2) vertex satisfies $A_{ij}^{\text{SU(2)}} \propto \exp(i\theta_{ij}^{(\text{SU(2)})})$ where the phase depends on algorithmic distance, which is **symmetric** under $(i,j)$ exchange. However, the probability amplitude $\sqrt{P_{\text{comp}}^{(\text{clone})}(j|i)}$ contains **fitness asymmetry** through the cloning score $S(i,j,k,m) = V_{\text{fit}}(i|k) - V_{\text{fit}}(j|m)$.
+
+Therefore:
+
+$$
+\frac{\Psi(i \to j)}{\Psi(j \to i)} = \exp\left(\frac{i}{\hbar_{\text{eff}}} [S(i,j,k,m) - S(j,i,m,k)] + O(\Phi_j - \Phi_i)\right)
+
+$$
+
+In the limit $\Phi_j - \Phi_i \to 0$, the fitness differences vanish and the ratio approaches unity, establishing **exact SU(2) symmetry on the fitness-degenerate submanifold**.
+
+**Part 4 (Conserved and derived quantities):**
+
+**Energy conservation:** From the BAOAB O-step ({prf:ref}`def-baoab-kernel`), the velocity update includes stochastic forcing:
+
+$$
+v^{(2)} = e^{-\gamma \Delta t} v^{(1)} + \sqrt{\frac{1}{\gamma}(1 - e^{-2\gamma \Delta t})} \, \Sigma_{\text{reg}} \xi
+
+$$
+
+where $\xi \sim \mathcal{N}(0, I_d)$. The kinetic energy evolves as:
+
+$$
+\begin{aligned}
+E_{\text{kin}}(v_{k+1}) &= \frac{1}{2}\|v_{k+1}\|^2 \\
+&= \frac{1}{2}\|v_k + \Delta t \, \mathbf{F}_{\text{total}} + \sqrt{\Delta t} \, \Sigma_{\text{reg}} \tilde{\xi}\|^2 \\
+&\quad \text{(where } \tilde{\xi} \text{ is the rescaled noise)} \\
+&= \frac{1}{2}\|v_k\|^2 + \Delta t \, v_k \cdot \mathbf{F}_{\text{total}} + \sqrt{\Delta t} \, v_k \cdot \Sigma_{\text{reg}} \tilde{\xi} \\
+&\quad + \frac{\Delta t^2}{2}\|\mathbf{F}_{\text{total}}\|^2 + \frac{\Delta t}{2}\|\Sigma_{\text{reg}} \tilde{\xi}\|^2 + O(\Delta t^{3/2})
+\end{aligned}
+
+$$
+
+Taking expectations over the noise $\mathbb{E}[\tilde{\xi}] = 0, \mathbb{E}[\|\tilde{\xi}\|^2] = d$:
+
+$$
+\begin{aligned}
+\mathbb{E}[E_{\text{kin}}(v_{k+1}) | v_k] &= E_{\text{kin}}(v_k) + \Delta t \, v_k \cdot \mathbf{F}_{\text{total}} \\
+&\quad + \frac{\Delta t}{2} \text{Tr}(\Sigma_{\text{reg}} \Sigma_{\text{reg}}^T) + O(\Delta t^2)
+\end{aligned}
+
+$$
+
+The $O(\Delta t)$ terms are:
+- $v_k \cdot \mathbf{F}_{\text{total}}$: **Power from forces** (work done)
+- $\frac{1}{2}\text{Tr}(\Sigma_{\text{reg}}^2)$: **Stochastic heating**
+
+The $O(\Delta t^2)$ terms include friction dissipation $-\gamma \Delta t \|v_k\|^2$ and higher-order force-noise coupling. For the **total energy** $H_{\text{total}} = \sum_i [E_{\text{kin},i} + U(x_i)]$:
+
+$$
+\mathbb{E}[H_{\text{total}}(Z_{k+1}) | Z_k] = H_{\text{total}}(Z_k) + \Delta t \, (\text{heating} - \text{dissipation}) + O(\Delta t^2)
+
+$$
+
+where the $O(\Delta t)$ term represents the **balance between stochastic forcing and friction**, not exact conservation.
+
+The term $v_k \cdot \mathbf{F}_{\text{total}}$ equals:
+
+$$
+v_k \cdot \mathbf{F}_{\text{total}} = \text{spinor-to-vector}[\psi_v] \cdot \text{spinor-to-vector}[\psi_{\mathbf{F}_{\text{total}}}]
+
+$$
+
+using the spinor representation. The node scalars $E_{\text{kin}}(n_{i,t+1})$ and $E_{\text{kin}}(n_{i,t})$ store the energies, while the CST edge spinors $\psi_v, \psi_{\mathbf{F}_{\text{total}}}, \psi_{\Sigma_{\text{reg}}}$ enable computing the energy flow components.
+
+**Derived statistical observables:** The localized mean $\mu_\rho[f_k, \Phi, x_i]$ is computed from the empirical measure $f_k(t)$:
+
+$$
+f_k(t) = \frac{1}{k} \sum_{j \in A_k(t)} \delta_{(x_j(t), v_j(t))}
+
+$$
+
+where $A_k(t) = \{j : s(n_{j,t}) = 1\}$ is determined from node status flags. The localization kernel $K_\rho(x_i - x_j)$ stored in IG edges provides the weighting:
+
+$$
+\mu_\rho[f_k, \Phi, x_i] = \sum_{j \in A_k} w_{ij}(\rho) \Phi_j, \quad w_{ij}(\rho) = \frac{K_\rho(x_i - x_j)}{\sum_{m \in A_k} K_\rho(x_i - x_m)}
+
+$$
+
+The node scalar $\mu_\rho(n_{i,t})$ equals the right-hand side. This proves that localized statistics are **derived observables** (functionals of the N-particle configuration), not independent quantities or conservation laws. The correspondence establishes that node-stored moments accurately represent the algorithmic state's local statistical structure. ∎
+:::
+
+:::{prf:corollary} Fractal Set as Complete Algorithmic Representation
+:label: cor-fractal-set-complete-representation
+
+The Fractal Set $\mathcal{F}$ is **informationally and dynamically complete** for the N-particle Adaptive Gas algorithm:
+
+**1. Informational completeness**: Every scalar, spinor, and graph structure element in $\mathcal{F}$ corresponds to a unique quantity or operation in the N-particle system (Reconstruction Theorem {prf:ref}`thm-fractal-set-reconstruction`).
+
+**2. Dynamical completeness**: Every symmetry and conservation law in the N-particle system has a unique representation in $\mathcal{F}$ ({prf:ref}`thm-fractal-set-n-particle-equivalence`).
+
+**3. Convergence equivalence**: The discrete-time Markov chain generating $\mathcal{F}$ converges to the same long-term distribution as the continuous SDE, up to $O(\Delta t)$ discretization error ({prf:ref}`thm-fractal-set-ergodicity`, {prf:ref}`thm-weak-convergence-invariant`).
+
+**Practical implication**: Analyzing the Fractal Set graph structure is **equivalent** to analyzing the N-particle algorithm. Properties proven for $\mathcal{F}$ (gauge symmetries, lattice QFT structure, fermionic propagators) are **properties of the algorithm**, not artifacts of the representation.
+:::
+
+:::{prf:remark} Why Spinors Are Necessary
+:label: rem-spinors-necessary
+
+**Question:** Could we store vectors $v \in \mathbb{R}^d$ directly instead of spinors $\psi \in \mathbb{C}^{2^{[d/2]}}$?
+
+**Answer:** For **reconstruction** purposes, yes - vectors suffice. But for **gauge theory interpretation** and **emergent QFT formulation**, spinors are essential:
+
+1. **Frame independence**: Spinors transform covariantly under rotations without requiring a preferred basis.
+2. **Geometric naturalness**: Spinors are the fundamental representation of the Lorentz/rotation group.
+3. **Gauge connections**: The U(1) and SU(2) phases $\theta_{ik}^{(\text{U(1)})}, \theta_{ij}^{(\text{SU(2)})}$ act on spinor phases, not vector components.
+4. **Fermionic structure**: Spinors enable antisymmetric Green's functions in the continuum limit.
+5. **Clifford algebra**: Spinor formalism naturally encodes the geometric product structure underlying the viscous coupling.
+
+**For convergence analysis** (this document), vectors would suffice. **For the full framework** (gauge theory, QFT, emergent geometry), spinors are the natural choice.
+:::
+
+:::{prf:remark} Antisymmetric IG Edges and Fermionic Statistics
+:label: rem-antisymmetric-ig-fermionic
+
+The **directed antisymmetric** structure of IG edges:
+
+$$
+V_{\text{clone}}(i \to j) = \Phi_j - \Phi_i = -V_{\text{clone}}(j \to i)
+
+$$
+
+implies that IG edges are **oriented** by fitness differences. This has two interpretations:
+
+**1. Algorithmic interpretation (this document):** Cloning is driven by fitness gradients. Walkers with higher fitness attract cloning events.
+
+**2. QFT interpretation** (`13_D_fractal_set_emergent_qft_comprehensive.md`): The antisymmetry enables **fermionic Green's functions**:
+
+$$
+G_F(i, j) = \langle \psi(i) \bar{\psi}(j) \rangle = -G_F(j, i)
+
+$$
+
+where $\psi(i)$ is a fermionic field operator at node $n_i$.
+
+In the continuum limit $N \to \infty, \Delta t \to 0$, the antisymmetric IG structure becomes a **fermionic propagator** with Grassmann-valued path integral. This is a **precursor** to fermionic statistics, not full fermions (walkers are distinguishable).
+
+**Key point:** The antisymmetry is **not optional** - it is fundamental to both the algorithmic fitness-driven dynamics and the emergent fermionic structure.
+:::
+
 ---
 
 ## 7. Summary and Practical Implications

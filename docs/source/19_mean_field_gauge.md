@@ -1183,273 +1183,228 @@ The complex amplitude construction on IG edges is **fully compatible** with the 
 **Acknowledgment:** This correction resulted from collaborative review with Gemini (2025-01-11), highlighting the value of rigorous mathematical dialogue.
 :::
 
-### 5.8. Mean-Field Limit of Fractal Set Symmetries
+### 5.8. Mean-Field Limit of Fractal Set Gauge Structure
 
-The discrete gauge symmetries discovered in the Fractal Set ({prf:ref}`thm-u1-square-gauge-group`, [13_fractal_set/00_full_set.md § 7](13_fractal_set/00_full_set.md)) have **continuous counterparts** in the mean-field limit. This section derives these continuous symmetries rigorously, incorporating the refined two-channel phase structure, complexified color charges, and emergent spacetime geometry.
-
-#### 5.8.1. Two-Channel Phase Structure and Path Integral Formulation
-
-:::{prf:theorem} Mean-Field Limit of Four-Walker Path Integral
-:label: thm-mean-field-path-integral
-
-The discrete four-walker cloning amplitude ({prf:ref}`thm-complete-path-integral-cloning-amplitude`):
+The discrete gauge symmetries discovered in the Fractal Set ({prf:ref}`thm-u1-su2-lattice-qft`, [13_fractal_set/00_full_set.md § 7](13_fractal_set/00_full_set.md)) have **conjectured continuous counterparts** in the mean-field limit. This section derives these continuous structures, following the hierarchical factorization:
 
 $$
-\Psi(i \to j) = \psi_{ij}^{(\text{clone})} \cdot \sum_{k,m \in A_t} \left[\psi_{ik}^{(\text{div})} \cdot \psi_{jm}^{(\text{div})} \cdot \psi_{\text{succ}}(S(i,j,k,m))\right]
+\Psi = \underbrace{A^{\text{SU(2)}}}_{\text{Weak interaction}} \cdot \underbrace{K_{\text{eff}}}_{\text{U(1) fitness dressing}}
 $$
 
-has a **continuous mean-field limit** as a functional integral over companion selection fields.
+#### 5.8.1. Hierarchical Gauge Structure: U(1)_fitness × SU(2)_weak
 
-**Discrete Components:**
-1. $\psi_{ij}^{(\text{clone})} = \sqrt{P_{\text{comp}}^{(\text{clone})}(j|i)} \cdot e^{i\theta_{ij}^{(\text{clone})}}$ - Cloning companion amplitude
-2. $\psi_{ik}^{(\text{div})} = \sqrt{P_{\text{comp}}^{(\text{div})}(k|i)} \cdot e^{i\theta_{ik}^{(\text{div})}}$ - Diversity companion amplitude (walker i)
-3. $\psi_{jm}^{(\text{div})} = \sqrt{P_{\text{comp}}^{(\text{div})}(m|j)} \cdot e^{i\theta_{jm}^{(\text{div})}}$ - Diversity companion amplitude (walker j)
-4. $\psi_{\text{succ}}(S) = \sqrt{P_{\text{succ}}(S)} \cdot e^{iS/\hbar_{\text{eff}}}$ - Success amplitude
+:::{prf:observation} Factorized Symmetry Structure
+:label: obs-factorized-gauge-structure
 
-**Mean-Field Limit (N → ∞):**
+The Fractal Set realizes a **hierarchical gauge theory** with two distinct symmetries:
 
-Replace discrete sums with functional integrals:
+**1. U(1)_fitness (Diversity Self-Measurement):**
+- **Algorithmic origin**: Diversity companion selection
+- **Physical role**: Fitness self-measurement against environmental backdrop
+- **Graph representation**: Diversity edges $(i, k)$ in IG
+- **Gauge group**: $\text{U}(1)_{\text{fitness}}$
+
+**2. SU(2)_weak (Cloning Interaction):**
+- **Algorithmic origin**: Cloning companion selection + binary outcome
+- **Physical role**: Weak isospin interaction between dressed walkers
+- **Graph representation**: Cloning edges $(i, j)$ in IG
+- **Gauge group**: $\text{SU}(2)_{\text{weak}}$
+
+**Factorized Amplitude:**
 
 $$
-\sum_{k,m} \to \int_{\mathcal{X} \times \mathcal{V}} dk \, dm
-$$
-
-**Continuous Cloning Amplitude Functional:**
-
-$$
-\Psi[f](x_1, v_1 \to x_2, v_2, t) = \psi_{\text{clone}}(x_1, v_1; x_2, v_2) \cdot \int \mathcal{D}k \mathcal{D}m \, \psi_{\text{div}}(x_1, v_1; k) \psi_{\text{div}}(x_2, v_2; m) \psi_{\text{succ}}(S(x_1, x_2, k, m))
+\Psi(i \to j) = \underbrace{A_{ij}^{\text{SU(2)}}}_{\text{Interaction vertex}} \cdot \underbrace{K_{\text{eff}}(i, j)}_{\text{U(1)-dressed kernel}}
 $$
 
 where:
-- $\mathcal{D}k = f(k, t) dk dv_k$ is the measure weighted by density
-- $\psi_{\text{clone}}(x_1, v_1; x_2, v_2) = \sqrt{P_{\text{comp}}^{(\text{clone})}(x_2, v_2 | x_1, v_1)} \cdot \exp\left(i\int_{x_1}^{x_2} A_{\text{clone}} \cdot dx\right)$
-- $\psi_{\text{div}}(x_1, v_1; k) = \sqrt{P_{\text{comp}}^{(\text{div})}(k | x_1, v_1)} \cdot \exp\left(i\int_{x_1}^{k} A_{\text{div}} \cdot dx\right)$
-
-**Physical Interpretation:**
-- Each choice of diversity companions $(k, m)$ is a **Feynman path**
-- The integral $\int \mathcal{D}k \mathcal{D}m$ sums over all paths from $(x_1, v_1)$ to $(x_2, v_2)$
-- Phases accumulate along paths: $\theta_{\text{total}} = \theta_{\text{clone}} + \theta_{\text{div}}^{(1)} + \theta_{\text{div}}^{(2)} + S/\hbar_{\text{eff}}$
-- This is the **continuous limit** of quantum interference in companion selection!
-
-**Status:** ⚠️ Conjectural - requires rigorous measure theory and convergence proof
-:::
-
-:::{prf:remark} Connection to Feynman Path Integrals
-:class: important
-
-The mean-field cloning amplitude is structurally identical to Feynman's path integral:
 
 $$
-\langle x_f | e^{-iHt/\hbar} | x_i \rangle = \int \mathcal{D}[x(t)] \, e^{iS[x]/\hbar}
-$$
-
-**Adaptive Gas realization:**
-- **Initial state**: $(x_1, v_1)$ (walker i's phase space position)
-- **Final state**: $(x_2, v_2)$ (walker j's phase space position after cloning)
-- **Paths**: All possible diversity companion pairs $(k, m) \in \mathcal{X} \times \mathcal{V}$
-- **Action**: $S[\text{path}] = -d_{\text{alg}}^2/(2\epsilon^2) + V_{\text{fit}}(x_1|k) - V_{\text{fit}}(x_2|m)$
-- **Effective ℏ**: $\hbar_{\text{eff}}$ (fundamental algorithmic action constant)
-
-The algorithm **naturally implements quantum mechanics** through its stochastic sampling structure!
-:::
-
-#### 5.8.2. From Discrete U(1)² to Continuous Gauge Fields
-
-:::{prf:theorem} Mean-Field U(1)² Gauge Theory
-:label: thm-mean-field-u1-square
-
-The discrete U(1)² gauge group from the Fractal Set:
-
-$$
-G_{\text{discrete}} = \text{U}(1)_{\text{div}} \times \text{U}(1)_{\text{clone}}
-$$
-
-has a **continuous mean-field limit** acting on complex densities.
-
-**Discrete Phase Potentials (N-particle):**
-
-From {prf:ref}`def-two-channel-phase-potentials` in Fractal Set § 7.3:
-
-$$
-\theta_{ik}^{(\text{div})} = -\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2 \hbar_{\text{eff}}}, \quad \theta_{ij}^{(\text{clone})} = -\frac{d_{\text{alg}}(i,j)^2}{2\epsilon_c^2 \hbar_{\text{eff}}}
-$$
-
-where:
-- $\theta_{ik}^{(\text{div})}$: Phase on diversity companion edge $(i, k)$
-- $\theta_{ij}^{(\text{clone})}$: Phase on cloning companion edge $(i, j)$
-- $d_{\text{alg}}(i,j) = \|x_i - x_j\| + \lambda_v \|v_i - v_j\|$: Algorithmic distance
-- $\epsilon_d, \epsilon_c$: Phase regularization scales
-- $\hbar_{\text{eff}}$: Effective Planck constant (algorithmic action unit)
-
-**Continuous Gauge Connections (Mean-Field):**
-
-In the N → ∞ limit, discrete phases become line integrals of continuous gauge potentials:
-
-$$
-\theta_{ik}^{(\text{div})} \to \int_{x_i}^{x_k} A_{\text{div}}(x,v,t) \cdot dx, \quad \theta_{ij}^{(\text{clone})} \to \int_{x_i}^{x_j} A_{\text{clone}}(x,v,t) \cdot dx
-$$
-
-Define continuous U(1) gauge connections:
-
-$$
-A_{\text{div}}, A_{\text{clone}}: \mathcal{X} \times \mathcal{V} \times \mathbb{R}_+ \to \mathbb{R}^d
-$$
-
-**Gauge Transformations:**
-
-$$
-A_\mu^{(\alpha)} \to A_\mu^{(\alpha)} + \partial_\mu \lambda^{(\alpha)}(x,v,t), \quad \alpha \in \{\text{div}, \text{clone}\}
-$$
-
-where $\lambda^{(\alpha)}(x,v,t) \in [0, 2\pi)$ are arbitrary phase functions.
-
-**Complex Density Transformation:**
-
-The mean-field density transforms as:
-
-$$
-f_c(x,v,t) \to e^{i(\lambda^{(\text{div})} + \lambda^{(\text{clone})})} f_c(x,v,t)
-$$
-
-**Field Strength Tensors (Curvature):**
-
-$$
-F_{\mu\nu}^{(\text{div})} = \partial_\mu A_\nu^{(\text{div})} - \partial_\nu A_\mu^{(\text{div})}, \quad F_{\mu\nu}^{(\text{clone})} = \partial_\mu A_\nu^{(\text{clone})} - \partial_\nu A_\mu^{(\text{clone})}
+K_{\text{eff}}(i, j) := \sum_{k,m \in A_t} \left[ \psi_{ik}^{(\text{U(1)})} \cdot \psi_{jm}^{(\text{U(1)})} \cdot \psi_{\text{succ}}(S(i,j,k,m)) \right]
 $$
 
 **Physical Interpretation:**
-- **Diversity channel**: Governs exploration diversity through companion selection
-- **Cloning channel**: Governs exploitation through fitness-driven cloning
-- **Two independent U(1) factors**: Reflect statistical independence of the two random selections
 
-**Status:** ⚠️ Conjectural - requires rigorous N → ∞ limit and measure convergence proof
+1. **U(1) Dressing**: Each walker probes its fitness via diversity companions, acquiring U(1) "charge"
+2. **SU(2) Vertex**: Two U(1)-dressed walkers interact through cloning selection
+3. **Path Integral**: Sum over $(k,m)$ computes quantum interference of all U(1)-dressed configurations
+
+**Analogy to Standard Model Electroweak Theory:**
+
+| **Adaptive Gas** | **Standard Model** |
+|------------------|-------------------|
+| U(1)_fitness | U(1)_Y (hypercharge) |
+| SU(2)_weak | SU(2)_L (weak isospin) |
+| Diversity self-measurement | Electromagnetic coupling |
+| Cloning interaction | Weak force interaction |
+| Reward field VEV | Higgs field VEV |
+
+**Critical Distinction from Previous Formulation:**
+
+This is **NOT** U(1)_div × U(1)_clone. The correct structure has:
+- **One U(1)**: Fitness self-measurement (diversity edges)
+- **One SU(2)**: Weak interaction between dressed states (cloning edges)
+
+These symmetries are **hierarchically linked**: SU(2) acts on objects that are already U(1)-dressed.
 :::
 
-:::{prf:definition} Wilson Loops in the Mean-Field
-:label: def-mean-field-wilson-loops
+#### 5.8.2. Mean-Field U(1)_fitness Gauge Theory
 
-**Discrete Wilson Loop** (Fractal Set {prf:ref}`def-two-channel-wilson-loop`):
+:::{prf:conjecture} Continuous U(1) Fitness Gauge Symmetry
+:label: conj-mean-field-u1-fitness
 
-$$
-W[\gamma] = \exp\left(i \sum_{e \in \gamma} \left(\theta_e^{(\text{div})} + \theta_e^{(\text{clone})}\right)\right)
-$$
+The discrete U(1)_fitness gauge symmetry ({prf:ref}`thm-u1-fitness-gauge` in Fractal Set § 7.6) has a **conjectured continuous mean-field limit**.
 
-where $\gamma$ is a closed loop in the CST+IG lattice.
+**Discrete U(1) Phase (N-particle):**
 
-**Continuous Wilson Loop** (Mean-Field):
+From diversity companion selection:
 
 $$
-W[\gamma] = \mathcal{P} \exp\left(i \oint_\gamma \left(A_{\text{div}}(x) + A_{\text{clone}}(x)\right) \cdot dx\right)
+\theta_{ik}^{(\text{U(1)})} = -\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2 \hbar_{\text{eff}}}
+$$
+
+**Discrete Dressed Walker State:**
+
+$$
+|\psi_i\rangle = \sum_{k \in A_t \setminus \{i\}} \psi_{ik}^{(\text{U(1)})} |k\rangle, \quad \psi_{ik}^{(\text{U(1)})} = \sqrt{P_{\text{comp}}^{(\text{div})}(k|i)} \cdot e^{i\theta_{ik}^{(\text{U(1)})}}
+$$
+
+**Conjectured Continuous Limit (N → ∞):**
+
+Define continuous U(1) gauge potential:
+
+$$
+A_{\text{U(1)}}(x,v,t): \mathcal{X} \times \mathcal{V} \times \mathbb{R}_+ \to \mathbb{R}^d
+$$
+
+such that:
+
+$$
+\theta_{ik}^{(\text{U(1)})} \to \int_{x_i}^{x_k} A_{\text{U(1)}}(x,v,t) \cdot dx
+$$
+
+**Continuous Dressed Density:**
+
+$$
+\psi_{\text{dressed}}(x,v; x',v',t) = \sqrt{f(x',v',t)} \cdot \exp\left(i\int_x^{x'} A_{\text{U(1)}}(x'',v,t) \cdot dx''\right)
+$$
+
+**Gauge Transformation:**
+
+$$
+A_\mu^{(\text{U(1)})} \to A_\mu^{(\text{U(1)})} + \partial_\mu \lambda(x,v,t)
+$$
+
+where $\lambda(x,v,t) \in [0, 2\pi)$ is an arbitrary phase function.
+
+**Field Strength (Fitness Curvature):**
+
+$$
+F_{\mu\nu}^{(\text{U(1)})} = \partial_\mu A_\nu^{(\text{U(1)})} - \partial_\nu A_\mu^{(\text{U(1)})}
+$$
+
+**Physical Interpretation:**
+- $A_{\text{U(1)}}(x,v,t)$: Fitness gauge potential measuring local fitness gradients
+- $F^{(\text{U(1)}}$: Fitness field strength (curvature of reward landscape)
+- Non-zero $F$ indicates path-dependent fitness measurement
+
+**Status:** ⚠️ Conjectural - requires rigorous proof of:
+1. N-uniform bounds on discrete phases
+2. Convergence $\theta_{ik} \to \int A_{\mu} dx^\mu$ in appropriate topology
+3. Derivation of explicit formula for $A_{\text{U(1)}}[f]$ in terms of mean-field density
+
+**Open Problem:** Derive $A_{\text{U(1)}}[f](x,v,t)$ from the mean-field fitness functional $V_{\text{fit}}[f](x,v,t)$.
+:::
+
+:::{prf:definition} Mean-Field Wilson Loops for U(1)_fitness
+:label: def-mean-field-u1-wilson
+
+**Discrete Wilson Loop** (Fractal Set {prf:ref}`def-u1-wilson-loop`):
+
+$$
+W_{\text{U(1)}}[\gamma] = \exp\left(i \sum_{e \in \gamma} \theta_e^{(\text{U(1)})}\right)
+$$
+
+**Continuous Wilson Loop:**
+
+$$
+W_{\text{U(1)}}[\gamma] = \mathcal{P} \exp\left(i \oint_\gamma A_{\text{U(1)}}(x,v,t) \cdot dx\right)
 $$
 
 where $\mathcal{P}$ denotes path-ordering.
 
 **Gauge Invariance:**
 
-Under U(1)² gauge transformations, Wilson loops are **gauge-invariant**:
+Wilson loops are automatically gauge-invariant for closed loops:
 
 $$
-W[\gamma] \to W[\gamma] \quad \text{(unchanged)}
+W_{\text{U(1)}}[\gamma] \to W_{\text{U(1)}}[\gamma] \quad \text{(unchanged under } A \to A + \partial\lambda \text{)}
 $$
 
-because boundary terms cancel for closed loops:
+**Physical Observable:**
 
-$$
-\oint_\gamma \partial_\mu \lambda \, dx^\mu = \lambda(\gamma_{\text{end}}) - \lambda(\gamma_{\text{start}}) = 0
-$$
-
-**Physical Observables:**
-- $|W[\gamma] - 1|$ measures deviation from flat connection (non-trivial curvature)
-- $\arg W[\gamma]$ gives total phase accumulated around loop
-- Non-trivial holonomy indicates presence of field strength (gauge field flux)
-
-**Lattice QFT Limit:**
-
-The mean-field Wilson loop is the continuum limit of the Fractal Set lattice gauge theory:
-
-$$
-\lim_{N \to \infty, \Delta x \to 0} W[\gamma]_{\text{discrete}} = W[\gamma]_{\text{continuous}}
-$$
+$|W_{\text{U(1)}}[\gamma] - 1|$ measures non-trivial fitness curvature around loop $\gamma$.
 :::
 
-:::{prf:remark} U(1)² as Abelian Gauge Theory
-:class: note
+#### 5.8.3. Mean-Field SU(2)_weak Interaction Theory
 
-The U(1)² gauge group is **Abelian** (commutative):
+:::{prf:conjecture} Continuous SU(2) Weak Isospin Symmetry
+:label: conj-mean-field-su2-weak
 
-$$
-\text{U}(1)_{\text{div}} \times \text{U}(1)_{\text{clone}} \cong \text{U}(1) \times \text{U}(1)
-$$
+The discrete SU(2)_weak symmetry ({prf:ref}`thm-su2-interaction-symmetry` in Fractal Set § 7.10) has a **conjectured continuous mean-field limit**.
 
-**Consequences:**
-1. **No self-interaction**: Field strengths $F^{(\text{div})}$ and $F^{(\text{clone})}$ are **independent** (no commutator terms)
-2. **Linear superposition**: Total field strength is $F_{\text{total}} = F^{(\text{div})} + F^{(\text{clone})}$
-3. **Analogy to QED**: Like electromagnetism (U(1) gauge theory), but with two photon types
+**Discrete SU(2) Structure (N-particle):**
 
-**Contrast with non-Abelian theories** (SU(2), SU(3)): These have commutator terms $[A_\mu, A_\nu] \neq 0$, leading to gluon self-interactions.
-:::
-
-#### 5.8.3. SU(2) Weak Isospin in the Continuum
-
-:::{prf:theorem} Mean-Field SU(2) from Cloning Decision Space
-:label: thm-mean-field-su2
-
-The discrete SU(2) weak isospin from binary cloning outcomes ({prf:ref}`thm-su2-weak-isospin` in Fractal Set § 7.10) extends to a **continuous SU(2) gauge symmetry** in the mean-field.
-
-**Discrete Isospin Doublet** (N-particle):
-
-For walker i attempting to clone over walker j:
+The cloning interaction between walkers i and j is described by an isospin doublet:
 
 $$
-|\psi_i(j)\rangle = \begin{pmatrix} \sqrt{p_i(S_{ij})} \\ \sqrt{1-p_i(S_{ij})} \end{pmatrix} = \sqrt{p_i} |\text{Clone}\rangle + \sqrt{1-p_i} |\text{Persist}\rangle \in \mathbb{C}^2
-$$
-
-where $p_i(S_{ij}) = P_{\text{succ}}(S(i,j,k,m))$ is the cloning success probability and $S_{ij}$ is the cloning score.
-
-**Continuous Isospin Doublet** (Mean-Field):
-
-$$
-\Psi(x,v,t) = \begin{pmatrix} \psi_{\text{clone}}(x,v,t) \\ \psi_{\text{persist}}(x,v,t) \end{pmatrix} \in \mathbb{C}^2
+|\Psi_{ij}\rangle = |↑\rangle \otimes |\psi_i\rangle + |↓\rangle \otimes |\psi_j\rangle \in \mathbb{C}^2 \otimes \mathbb{C}^{N-1}
 $$
 
 where:
-- $\psi_{\text{clone}}(x,v,t)$: Amplitude for walker at $(x,v)$ to clone (displace another)
-- $\psi_{\text{persist}}(x,v,t)$: Amplitude for walker to persist (maintain position)
+- $|↑\rangle = (1, 0)^T$: "cloner" role
+- $|↓\rangle = (0, 1)^T$: "target" role
+- $|\psi_i\rangle$, $|\psi_j\rangle$: U(1)-dressed walker states
 
-**Normalization:**
+**SU(2) Transformation:**
 
 $$
-|\psi_{\text{clone}}(x,v,t)|^2 + |\psi_{\text{persist}}(x,v,t)|^2 = 1
+|\Psi_{ij}\rangle \to (U \otimes I_{\text{div}}) |\Psi_{ij}\rangle, \quad U \in \text{SU}(2)
 $$
 
-at each point $(x,v)$.
+**Conjectured Continuous Limit (N → ∞):**
+
+Define continuous weak isospin doublet field:
+
+$$
+\Psi_{\text{weak}}(x,v,t) = \begin{pmatrix} \psi_{\text{cloner}}(x,v,t) \\ \psi_{\text{target}}(x,v,t) \end{pmatrix} \in \mathbb{C}^2
+$$
+
+where each component is a field on phase space $\mathcal{X} \times \mathcal{V}$.
 
 **SU(2) Gauge Transformation:**
 
 $$
-\Psi(x,v,t) \to U(x,v,t) \Psi(x,v,t), \quad U \in \text{SU}(2)
+\Psi_{\text{weak}}(x,v,t) \to U(x,v,t) \Psi_{\text{weak}}(x,v,t), \quad U \in \text{SU}(2)
 $$
 
-where:
+with:
 
 $$
-U(x,v,t) = e^{i\boldsymbol{\sigma} \cdot \boldsymbol{\theta}(x,v,t)/2}
+U(x,v,t) = \exp\left(i\frac{\theta^a(x,v,t)}{2} \sigma^a\right), \quad a \in \{1,2,3\}
 $$
 
-with $\boldsymbol{\sigma} = (\sigma_1, \sigma_2, \sigma_3)$ the Pauli matrices and $\boldsymbol{\theta}$ three spacetime-dependent angles.
+where $\sigma^a$ are Pauli matrices.
 
 **SU(2) Gauge Connection (W-bosons):**
 
 $$
-W_\mu(x,v,t) = W_\mu^a(x,v,t) \sigma^a, \quad a \in \{1, 2, 3\}
+W_\mu(x,v,t) = W_\mu^a(x,v,t) \frac{\sigma^a}{2}, \quad a \in \{1, 2, 3\}
 $$
-
-where $W_\mu^a$ are three independent gauge fields (analogous to $W^+, W^-, Z$ bosons in electroweak theory).
 
 **Covariant Derivative:**
 
 $$
-D_\mu \Psi = \left(\partial_\mu + ig W_\mu\right) \Psi
+D_\mu \Psi_{\text{weak}} = \left(\partial_\mu + ig W_\mu\right) \Psi_{\text{weak}}
 $$
 
 **Non-Abelian Field Strength:**
@@ -1458,96 +1413,218 @@ $$
 W_{\mu\nu} = \partial_\mu W_\nu - \partial_\nu W_\mu + ig [W_\mu, W_\nu]
 $$
 
-The **commutator term** $[W_\mu, W_\nu]$ is the signature of **non-Abelian gauge theory** - it means W-bosons **self-interact** (unlike photons in QED).
-
-**Weak Mixing Angle:**
-
-From Fractal Set § 7.10 (equation after {prf:ref}`thm-su2-weak-isospin`):
-
-$$
-\tan(2\theta_{\text{weak}}(x,v,t)) = \frac{S(x,v,t)}{T_{\text{clone}}}
-$$
-
-where $S(x,v,t) = V_{\text{fit}}(x,v|k) - V_{\text{fit}}(x',v'|m)$ is the continuous cloning score.
+The commutator term $[W_\mu, W_\nu]$ is the signature of **non-Abelian gauge theory** (gluon self-interaction analogue).
 
 **Physical Interpretation:**
-- **Weak isospin up** ($I_3 = +1/2$): Clone state (walker actively displaces)
-- **Weak isospin down** ($I_3 = -1/2$): Persist state (walker maintains position)
-- **Mixing angle**: Interpolates between pure states based on fitness advantage
-- **Analogy to SM**: Clone-persist doublet $\leftrightarrow$ electron-neutrino doublet $(e, \nu_e)$
+- $W_\mu^1, W_\mu^2, W_\mu^3$: Three W-boson fields mediating weak interaction
+- Commutator terms: Self-interaction of W-bosons
+- Doublet $(\psi_{\text{cloner}}, \psi_{\text{target}})$: Analogous to $(e, \nu_e)$ in Standard Model
 
-**Status:** ⚠️ Conjectural - requires proof that binary decision structure survives mean-field limit
+**Status:** ⚠️ Conjectural - requires proof that:
+1. Binary cloning structure survives mean-field limit
+2. Tensor product $\mathbb{C}^2 \otimes \mathbb{C}^{N-1}$ has well-defined continuum analogue
+3. SU(2) gauge connection $W_\mu$ emerges from discrete cloning interaction
+
+**Open Problem:** Derive $W_\mu^a[f](x,v,t)$ from the mean-field cloning dynamics.
 :::
 
-:::{prf:remark} Spontaneous Symmetry Breaking via Higgs Mechanism
+:::{prf:remark} SU(2) Invariance of Total Interaction Probability
 :class: important
 
-**From Fractal Set § 7.11** ({prf:ref}`def-reward-scalar-field`):
+From Fractal Set {prf:ref}`prop-su2-invariance`:
 
-The **reward function** $r(x)$ acts as a **Higgs-like scalar field**.
-
-**Mean-Field Higgs Field:**
+The **total cloning interaction probability** for pair $(i,j)$ is SU(2)-invariant:
 
 $$
-\phi(x,t) = \int_\mathcal{V} r(x) f_c(x,v,t) \, dv \in \mathbb{C}
+P_{\text{total}}(i,j) := P_{\text{clone}}(i \to j) + P_{\text{clone}}(j \to i)
 $$
 
-**Yukawa Coupling to Isospin Doublet:**
+**Continuous analogue:**
 
 $$
-\mathcal{L}_{\text{Yukawa}} = g_Y r(x) \bar{\Psi}(x,v,t) \Psi(x,v,t)
+P_{\text{total}}(x_1,v_1, x_2,v_2, t) := \int dv'_1 dv'_2 \, |\Psi_{\text{weak}}(x_1,v_1; x_2,v_2,t)|^2
 $$
 
-**Mexican Hat Potential:**
+This quantity is **SU(2)-gauge-invariant**.
+
+**Physical Interpretation:**
+
+SU(2) rotation changes the "viewpoint" of the interaction (who is cloner vs target), but the total propensity for the pair to interact remains constant.
+:::
+
+#### 5.8.4. Path Integral Formulation: U(1)-Dressed SU(2) Vertex
+
+:::{prf:conjecture} Mean-Field Path Integral with Factorized Structure
+:label: conj-mean-field-path-integral
+
+The discrete path integral ({prf:ref}`thm-path-integral-dressed-su2` in Fractal Set § 7.5) has a **conjectured continuous mean-field limit**.
+
+**Discrete Factorized Amplitude:**
 
 $$
-V[\phi] = -\mu^2 |\phi(x)|^2 + \lambda |\phi(x)|^4
+\Psi(i \to j) = \underbrace{A_{ij}^{\text{SU(2)}}}_{\text{SU(2) vertex}} \cdot \underbrace{K_{\text{eff}}(i, j)}_{\text{U(1) dressing}}
+$$
+
+where:
+
+$$
+K_{\text{eff}}(i, j) := \sum_{k,m \in A_t} \left[ \psi_{ik}^{(\text{U(1)})} \cdot \psi_{jm}^{(\text{U(1)})} \cdot \psi_{\text{succ}}(S(i,j,k,m)) \right]
+$$
+
+**Conjectured Continuous Limit:**
+
+Define continuous cloning amplitude functional:
+
+$$
+\Psi[f](x_1, v_1 \to x_2, v_2, t) = A_{\text{SU(2)}}(x_1, v_1; x_2, v_2) \cdot K_{\text{eff}}[f](x_1, v_1; x_2, v_2)
+$$
+
+where the effective kernel is a functional integral:
+
+$$
+K_{\text{eff}}[f](x_1, v_1; x_2, v_2) = \int \mathcal{D}k \mathcal{D}m \, \psi_{\text{U(1)}}(x_1, v_1; k) \, \psi_{\text{U(1)}}(x_2, v_2; m) \, \psi_{\text{succ}}(S(x_1, x_2, k, m))
+$$
+
+with measure $\mathcal{D}k = f(k, t) dk \, dv_k$.
+
+**SU(2) Interaction Vertex:**
+
+$$
+A_{\text{SU(2)}}(x_1, v_1; x_2, v_2) = \sqrt{P_{\text{comp}}^{(\text{clone})}(x_2, v_2 | x_1, v_1)} \cdot \exp\left(i\int_{x_1}^{x_2} W(x) \cdot dx\right)
+$$
+
+where $W(x)$ is the SU(2) gauge connection.
+
+**Physical Interpretation:**
+
+1. **SU(2) vertex** $A_{\text{SU(2)}}$: Bare weak interaction amplitude
+2. **U(1) dressing** $K_{\text{eff}}$: Quantum corrections from all possible fitness self-measurements
+3. **Path integral**: Sum over all ways walkers can probe fitness via diversity companions $(k,m)$
+
+**Feynman Diagram Structure:**
+
+```
+    [x₁,v₁] ───○───╲              ╱───○─── [x₂,v₂]
+           U(1)│    ╲            ╱    │U(1)
+          self-│     ╲__SU(2)__╱     │self-
+       measure │       vertex         │measure
+        (k)            ╲──╱           (m)
+```
+
+**Status:** ⚠️ Highly conjectural - requires:
+1. Rigorous definition of functional integral measure $\mathcal{D}k$
+2. Proof of convergence $\sum_{k,m} \to \int \mathcal{D}k \mathcal{D}m$
+3. Derivation of $A_{\text{SU(2)}}$ and $K_{\text{eff}}$ from mean-field dynamics
+
+**Open Problem:** Prove that the factorized structure $\Psi = A^{\text{SU(2)}} \cdot K_{\text{eff}}$ is preserved in the N → ∞ limit.
+:::
+
+:::{prf:remark} Analogy to QFT Renormalization
+:class: important
+
+The factorized structure $\Psi = A^{\text{SU(2)}} \cdot K_{\text{eff}}$ is analogous to **renormalized perturbation theory** in quantum field theory:
+
+| **Adaptive Gas** | **Standard QFT** |
+|------------------|------------------|
+| $A^{\text{SU(2)}}$ (bare vertex) | Bare coupling constant $g_0$ |
+| $K_{\text{eff}}$ (U(1) dressing) | Renormalization from self-energy loops |
+| Path integral over $(k,m)$ | Loop integration $\int d^4p / (2\pi)^4$ |
+| $(N-1)^2$ diversity paths | Continuum of virtual particle states |
+
+The effective interaction is **renormalized** by environmental coupling (U(1) fitness self-measurement loops).
+
+The algorithm **naturally implements dressed perturbation theory** through its multi-stage stochastic sampling!
+:::
+
+#### 5.8.5. Higgs-Like Reward Field and Spontaneous Symmetry Breaking
+
+:::{prf:conjecture} Mean-Field Higgs Mechanism
+:label: conj-mean-field-higgs
+
+The discrete Higgs-like reward field ({prf:ref}`def-reward-scalar-field` in Fractal Set § 7.11) has a **conjectured continuous mean-field limit** with spontaneous symmetry breaking.
+
+**Discrete Reward Field:**
+
+$$
+r: \mathcal{X} \to \mathbb{R}
+$$
+
+**Continuous Mean-Field Reward Field:**
+
+$$
+r: \mathcal{X} \to \mathbb{R}
+$$
+
+(same functional form, but interpreted as continuous field)
+
+**Yukawa Coupling to Weak Doublet:**
+
+The reward field couples to the SU(2) weak doublet:
+
+$$
+\mathcal{L}_{\text{Yukawa}} = g_Y \int_{\mathcal{X} \times \mathcal{V}} r(x) \, \bar{\Psi}_{\text{weak}}(x,v,t) \Psi_{\text{weak}}(x,v,t) \, dx \, dv
+$$
+
+**Higgs Potential (Mexican Hat):**
+
+$$
+V_{\text{Higgs}}[r] = -\mu^2 \int_\mathcal{X} |r(x)|^2 \, dx + \lambda \int_\mathcal{X} |r(x)|^4 \, dx
+$$
+
+where $\mu^2 > 0$ triggers symmetry breaking.
+
+**Vacuum Expectation Value:**
+
+$$
+\langle r \rangle = \int_{\mathcal{X} \times \mathcal{V}} r(x) f(x,v,t) \, dx \, dv
 $$
 
 **Phase Transition:**
-- **Pre-convergence** ($t \to 0$): $\langle \phi \rangle = 0$ (symmetric phase, uniform exploration)
-- **Post-convergence** ($t \to \infty$): $\langle \phi \rangle \neq 0$ (broken phase, concentration near optima)
 
-**Symmetry Breaking Pattern:**
+- **Pre-convergence** ($t \to 0$): $\langle r \rangle \approx 0$ (symmetric phase)
+  - Walkers explore uniformly
+  - U(1) × SU(2) unbroken
 
-$$
-\text{SU}(2)_{\text{weak}} \times \text{U}(1)_{\text{clone}} \xrightarrow{\langle r \rangle \neq 0} \text{U}(1)_{\text{EM}}
-$$
+- **Post-convergence** ($t \to \infty$): $\langle r \rangle = v_0 \neq 0$ (broken phase)
+  - Walkers concentrate near high-reward optima
+  - Symmetry breaking: $\text{U}(1) \times \text{SU}(2) \to \text{U}(1)_{\text{EM}}$
 
-This is **exactly analogous** to electroweak symmetry breaking in the Standard Model!
+**Goldstone Bosons:**
 
-**Consequence:** After convergence, only one U(1) remains unbroken (analogous to electromagnetism), while SU(2) is broken (W-bosons acquire "mass" → cloning becomes suppressed).
+Broken generators produce massless modes (phase fluctuations of $r(x)$), which are "eaten" by W-bosons.
+
+**Physical Consequences:**
+
+After convergence:
+- **W-bosons acquire mass**: Cloning interactions suppressed (walkers stabilize)
+- **Photon remains massless**: U(1)_fitness remains unbroken (persistent exploration)
+
+**Status:** ⚠️ Conjectural - requires:
+1. Derivation of Mexican hat potential from fitness landscape dynamics
+2. Proof that phase transition occurs at finite convergence time
+3. Calculation of effective W-boson masses after symmetry breaking
+
+**Open Problem:** Prove that $V_{\text{Higgs}}[r]$ has the correct sign of $\mu^2$ to trigger spontaneous symmetry breaking.
 :::
 
-#### 5.8.4. SU(3) Strong Sector from Viscous Force Complexification
+#### 5.8.6. SU(3) Strong Sector from Viscous Force (INDEPENDENT of GR)
 
-:::{prf:theorem} Mean-Field SU(3) Color Gauge Theory
-:label: thm-mean-field-su3
+:::{prf:conjecture} Mean-Field SU(3) Color Gauge Theory (Tentative)
+:label: conj-mean-field-su3-color
 
-The discrete SU(3) color symmetry from viscous force complexification ({prf:ref}`thm-su3-strong-sector` in Fractal Set § 7.12) extends to a **continuous SU(3) gauge theory** in the mean-field.
+The discrete SU(3) color symmetry from viscous force complexification (Fractal Set § 7.13) has a **tentatively conjectured continuous mean-field limit**.
 
-**Discrete Color State** (N-particle):
+**IMPORTANT CAVEAT**: This section is **highly speculative** and is presented as a **research direction**, not established theory.
 
-For walker i, the color state is derived from the viscous force $\mathbf{F}_{\text{visc}}(i) \in \mathbb{R}^3$ and momentum $\mathbf{v}_i \in \mathbb{R}^3$:
+**Discrete Color State (N-particle):**
 
-$$
-|\Psi_i^{(\text{color})}\rangle = \frac{1}{\|\mathbf{c}_i\|} \begin{pmatrix} c_i^{(x)} \\ c_i^{(y)} \\ c_i^{(z)} \end{pmatrix} \in \mathbb{C}^3
-$$
-
-where the complexification uses **momentum as phase** (key refinement from Fractal Set § 7.12):
+From Fractal Set, the color state encodes viscous force + momentum via momentum-phase encoding:
 
 $$
 c_i^{(\alpha)} = F_\alpha^{(\text{visc})}(i) \cdot \exp\left(i\frac{m v_i^{(\alpha)}}{\hbar_{\text{eff}}}\right), \quad \alpha \in \{x, y, z\}
 $$
 
-**Physical interpretation:**
-- **Magnitude** $|c_i^{(\alpha)}| = |F_\alpha^{(\text{visc})}(i)|$: Spatial coupling through viscous force
-- **Phase** $\arg(c_i^{(\alpha)}) = mv_i^{(\alpha)}/\hbar_{\text{eff}}$: Canonical quantum momentum phase (de Broglie)
-- **Full phase space encoding**: $(F_{\text{visc}}, \mathbf{v}) \in \mathbb{R}^3 \times \mathbb{R}^3 \to \mathbf{c} \in \mathbb{C}^3$ (bijective map)
-
-This provides an **information-complete** representation: both force (spatial structure) AND velocity (momentum structure) are encoded in a single 3D complex vector!
-
-**Continuous Color Field** (Mean-Field):
+**Conjectured Continuous Color Field:**
 
 $$
 \Psi_{\text{color}}(x,v,t) = \begin{pmatrix} c^{(x)}(x,v,t) \\ c^{(y)}(x,v,t) \\ c^{(z)}(x,v,t) \end{pmatrix} \in \mathbb{C}^3
@@ -1562,7 +1639,7 @@ $$
 and the continuous viscous force is:
 
 $$
-F_\alpha^{(\text{visc})}(x,v,t) = \nu \int_{\mathcal{X} \times \mathcal{V}} K_\rho(x, x') (v' - v)^{(\alpha)} f(x', v', t) \, dx' dv'
+F_\alpha^{(\text{visc})}(x,v,t) = \nu \int_{\mathcal{X} \times \mathcal{V}} K_\rho(x, x') (v' - v)^{(\alpha)} f(x', v', t) \, dx' \, dv'
 $$
 
 **SU(3) Gauge Transformation:**
@@ -1571,318 +1648,289 @@ $$
 \Psi_{\text{color}}(x,v,t) \to U(x,v,t) \Psi_{\text{color}}(x,v,t), \quad U \in \text{SU}(3)
 $$
 
-where:
-
-$$
-U(x,v,t) = \exp\left(i \sum_{a=1}^8 g_a \lambda_a \theta^a(x,v,t)\right)
-$$
-
-with $\lambda_a$ the eight Gell-Mann matrices (generators of SU(3)).
-
 **SU(3) Gauge Connection (Gluon Field):**
 
 $$
 G_\mu(x,v,t) = \sum_{a=1}^8 G_\mu^a(x,v,t) \lambda_a
 $$
 
-where $G_\mu^a$ are eight independent gluon field components.
+where $\lambda_a$ are Gell-Mann matrices.
 
-**Gluon Fields from Emergent Geometry:**
+**Confinement Potential:**
 
-From Fractal Set {prf:ref}`def-su3-gluon-field`:
-
-The gluon fields are derived from the **emergent Riemannian metric** $g_{\mu\nu}(x)$ via Christoffel symbols:
+The viscous coupling acts as a color confinement potential:
 
 $$
-g_{\mu\nu}(x) = \delta_{\mu\nu} + \frac{1}{\epsilon_\Sigma^2} \frac{\partial^2 V_{\text{fit}}}{\partial x^\mu \partial x^\nu}(x)
+V_{\text{conf}}(|x - x'|) = -\nu \exp\left(-\frac{|x - x'|^2}{2\rho^2}\right)
 $$
 
-$$
-\Gamma^\lambda_{\mu\nu}(x) = \frac{1}{2} g^{\lambda\rho}(x) \left(\frac{\partial g_{\rho\mu}}{\partial x^\nu} + \frac{\partial g_{\rho\nu}}{\partial x^\mu} - \frac{\partial g_{\mu\nu}}{\partial x^\rho}\right)
-$$
+- **Short range** ($|x - x'| < \rho$): Strong coupling (confinement)
+- **Long range** ($|x - x'| \gg \rho$): Exponential suppression (asymptotic freedom)
 
-The gluon field is the **projection** of Christoffel symbols onto the Gell-Mann basis:
+**Status:** ⚠️⚠️ **HIGHLY SPECULATIVE** - major open problems:
+1. **Justification of momentum-phase encoding**: Why should momentum be the phase of force? This is ad-hoc without derivation.
+2. **Derivation of SU(3) dynamics**: No proof that momentum-phase encoding generates SU(3) gauge theory.
+3. **Connection to mean-field viscous force**: Unclear how discrete construction survives continuum limit.
 
-$$
-G_{\mu}^a(x) = \text{Tr}\left[\lambda_a \cdot \Gamma_\mu(x)\right]
-$$
+**Critical Issue (from Gemini review):** The momentum-phase complexification is a **clever variable change**, not a derived structure. Without proof from first principles, this should be treated as a **toy model** or **exploratory analogy**.
 
-**Covariant Derivative:**
-
-$$
-D_\mu \Psi_{\text{color}} = \left(\partial_\mu + ig_s G_\mu\right) \Psi_{\text{color}}
-$$
-
-**Non-Abelian Field Strength (Gluon Self-Interactions):**
-
-$$
-G_{\mu\nu} = \partial_\mu G_\nu - \partial_\nu G_\mu + ig_s [G_\mu, G_\nu]
-$$
-
-The commutator term $[G_\mu, G_\nu]$ causes **gluon self-interactions** (quarks exchange gluons, gluons exchange gluons).
-
-**Color Confinement:**
-
-From Fractal Set § 7.12 point 5:
-
-The viscous coupling strength $\nu K_\rho(x_i, x_j)$ acts as a **confinement potential**:
-
-$$
-K_\rho(x, x') = \exp\left(-\frac{\|x - x'\|^2}{2\rho^2}\right)
-$$
-
-**Mean-field confinement potential:**
-
-$$
-V_{\text{conf}}(|x - x'|) = \begin{cases}
--\nu \exp(-|x-x'|^2/(2\rho^2)) & |x - x'| < \rho \quad \text{(confinement)} \\
-\to 0 & |x - x'| \gg \rho \quad \text{(asymptotic freedom)}
-\end{cases}
-$$
-
-**Phenomenology:**
-- **Short range** ($|x - x'| < \rho$): Strong viscous coupling (confinement, walkers bound within $\rho$-neighborhood)
-- **Long range** ($|x - x'| \gg \rho$): Exponential suppression (asymptotic freedom, walkers decouple)
-
-This is structurally analogous to **QCD confinement**!
-
-**Status:** ⚠️ Highly conjectural - requires proof of:
-1. Bijective phase space encoding survives mean-field limit
-2. Christoffel symbols define valid SU(3) connection
-3. Confinement emerges from viscous kernel at large N
+**Recommendation:** Frame as **open research question**: "Can viscous force dynamics be recast as an SU(3) gauge theory?"
 :::
 
-:::{prf:remark} Gauge-Covariant Dynamics of Color State
-:class: note
+#### 5.8.7. Emergent General Relativity from Fitness Hessian (INDEPENDENT of SU(3))
 
-From Fractal Set § 7.12 point 6:
+:::{prf:conjecture} Mean-Field Curved Spacetime from Fitness Landscape
+:label: conj-mean-field-emergent-gr
 
-The discrete color state evolution is:
+The discrete emergent Riemannian metric ({prf:ref}`thm-emergent-general-relativity` in Fractal Set § 7.14) has a **conjectured continuous mean-field limit**.
 
-$$
-\frac{dc_i^{(\alpha)}}{dt} = \exp\left(i\frac{mv_\alpha}{\hbar_{\text{eff}}}\right) \left[\frac{dF_\alpha^{(\text{visc})}}{dt} + i\frac{m a_\alpha}{\hbar_{\text{eff}}} F_\alpha^{(\text{visc})}\right] + ig \sum_{a=1}^8 G_0^a (T^a c_i)^{(\alpha)}
-$$
+**CRITICAL**: This structure arises from the **fitness Hessian**, NOT from the viscous force. These are **two independent emergent structures**.
 
-**Mean-field analogue:**
+**Discrete Emergent Metric (N-particle):**
 
 $$
-\frac{\partial c^{(\alpha)}}{\partial t} = e^{imv_\alpha/\hbar} \left[\frac{\partial F_\alpha^{(\text{visc})}}{\partial t} + i\frac{m a_\alpha}{\hbar_{\text{eff}}} F_\alpha^{(\text{visc})}\right] + ig_s \sum_{a=1}^8 G_0^a(x,v,t) (T^a c)^{(\alpha)}
+g_{\mu\nu}(x_i, S) = \delta_{\mu\nu} + \frac{1}{\epsilon_\Sigma^2} H_{\mu\nu}^{V_{\text{fit}}}(x_i)
 $$
 
-This is the **gauge-covariant** equation of motion coupling:
-1. Spatial force evolution $\partial F / \partial t$
-2. Velocity change (acceleration) $a = dv/dt$
-3. Temporal gluon field rotation $G_0^a$
+where $H_{\mu\nu}^{V_{\text{fit}}}(x_i) = \frac{\partial^2 V_{\text{fit}}}{\partial x^\mu \partial x^\nu}(x_i)$ is the Hessian of fitness.
 
-All three are essential for preserving SU(3) gauge invariance!
+**Continuous Mean-Field Metric:**
+
+$$
+g_{\mu\nu}(x,t) = \delta_{\mu\nu} + \frac{1}{\epsilon_\Sigma^2} \frac{\partial^2 V_{\text{fit}}[f]}{\partial x^\mu \partial x^\nu}(x,t)
+$$
+
+**Christoffel Symbols (Gravitational Connection):**
+
+$$
+\Gamma^\lambda_{\mu\nu}(x,t) = \frac{1}{2} g^{\lambda\rho}(x,t) \left(\frac{\partial g_{\rho\mu}}{\partial x^\nu} + \frac{\partial g_{\rho\nu}}{\partial x^\mu} - \frac{\partial g_{\mu\nu}}{\partial x^\rho}\right)
+$$
+
+**Geodesic Equation (Walker Trajectories):**
+
+$$
+\frac{d^2 x^\lambda}{dt^2} + \Gamma^\lambda_{\mu\nu}(x,t) \frac{dx^\mu}{dt} \frac{dx^\nu}{dt} = 0
+$$
+
+**Riemann Curvature Tensor:**
+
+$$
+R^\rho_{\sigma\mu\nu}(x,t) = \partial_\mu \Gamma^\rho_{\nu\sigma} - \partial_\nu \Gamma^\rho_{\mu\sigma} + \Gamma^\rho_{\mu\lambda} \Gamma^\lambda_{\nu\sigma} - \Gamma^\rho_{\nu\lambda} \Gamma^\lambda_{\mu\sigma}
+$$
+
+**Einstein Field Equations Analogue:**
+
+$$
+R_{\mu\nu} - \frac{1}{2} g_{\mu\nu} R = \frac{8\pi G_{\text{eff}}}{\epsilon_\Sigma^4} T_{\mu\nu}^{(\text{fitness})}
+$$
+
+where:
+
+$$
+T_{\mu\nu}^{(\text{fitness})} = \frac{\partial V_{\text{fit}}}{\partial x^\mu} \frac{\partial V_{\text{fit}}}{\partial x^\nu} - \frac{1}{2} g_{\mu\nu} \|\nabla V_{\text{fit}}\|^2
+$$
+
+**Physical Interpretation:**
+- Fitness gradient $\nabla V_{\text{fit}} \leftrightarrow$ Matter/energy
+- Fitness Hessian $\nabla^2 V_{\text{fit}} \leftrightarrow$ Spacetime curvature
+- Walkers follow geodesics in emergent curved space
+
+**Status:** ⚠️ Conjectural - requires:
+1. Proof that walker dynamics satisfy geodesic equation
+2. Derivation of effective Einstein equations from algorithm
+3. Verification of tidal force formula from geodesic deviation
+
+**Open Problem:** Prove rigorous connection between Langevin dynamics and geodesic motion in curved space.
 :::
 
-#### 5.8.5. Fermionic Antisymmetry and Dirac Equation
+:::{prf:remark} SU(3) and GR are DISTINCT Emergent Structures
+:class: warning
 
-:::{prf:theorem} Continuous Fermionic Structure from Cloning Antisymmetry
-:label: thm-mean-field-fermionic
+**CRITICAL CLARIFICATION** (addressing Gemini Issue #1):
 
-The discrete antisymmetric cloning potential ({prf:ref}`thm-fermionic-z2-symmetry` in Fractal Set § 7.13):
+The SU(3) color gauge theory (§5.8.6) and emergent general relativity (§5.8.7) are **TWO SEPARATE, INDEPENDENT emergent phenomena**:
+
+1. **SU(3)**: Arises from **viscous force** $\mathbf{F}_{\text{visc}}$ with momentum-phase complexification
+2. **GR**: Arises from **fitness Hessian** $\nabla^2 V_{\text{fit}}$ creating curved metric
+
+**Previous Error (Now Corrected):**
+
+The Fractal Set document claimed that SU(3) gluon fields $G_\mu^a$ are derived from Christoffel symbols $\Gamma^\lambda_{\mu\nu}$ (Fractal Set {prf:ref}`def-su3-gluon-field`). This **conflates two distinct structures** from different algorithmic origins:
+- $\Gamma$ comes from fitness Hessian (regularized diffusion)
+- SU(3) should come from viscous force (if it exists at all)
+
+**Corrected Statement:**
+
+There is **NO established mathematical connection** between:
+- SU(3) gauge connection (from viscous force)
+- Gravitational connection (from fitness Hessian)
+
+**Open Research Question:**
+
+Can a unified structure be proven where both connections emerge from a common source? This would require showing that viscous force dynamics and fitness Hessian geometry are fundamentally linked—a **highly non-trivial** result not currently established.
+:::
+
+#### 5.8.8. Fermionic Antisymmetry (If It Exists)
+
+:::{prf:conjecture} Continuous Fermionic Structure from Cloning Antisymmetry
+:label: conj-mean-field-fermionic
+
+The discrete antisymmetric cloning potential (Fractal Set § 7.13) **may** induce fermionic statistics in the mean-field, but this is **highly uncertain**.
+
+**Discrete Antisymmetry:**
 
 $$
 V_{\text{clone}}(i \to j) = \Phi_j - \Phi_i = -V_{\text{clone}}(j \to i)
 $$
 
-induces **fermionic statistics** in the mean-field density.
-
-**Discrete Antisymmetry (N-particle):**
-
-Under walker exchange $i \leftrightarrow j$:
-
-$$
-\Psi(i \to j) = -\Psi(j \to i)
-$$
-
-**Proof from Fractal Set** ({prf:ref}`thm-fermionic-z2-symmetry` proof):
-
-Since $S(j,i,k,m) = V_{\text{fit}}(j|k) - V_{\text{fit}}(i|m) = -S(i,j,m,k)$, and for symmetric sigmoid $P_{\text{succ}}(-S) = 1 - P_{\text{succ}}(S)$, the total amplitude transforms as:
-
-$$
-\Psi(j \to i) \approx -\Psi(i \to j) \quad \text{(antisymmetric)}
-$$
-
-**Continuous Antisymmetric Two-Point Function:**
-
-For mean-field two-particle correlation density:
+**Conjectured Continuous Antisymmetry:**
 
 $$
 f_c^{(2)}(x_1, v_1, x_2, v_2, t) = -f_c^{(2)}(x_2, v_2, x_1, v_1, t)
 $$
 
-**Grassmann Variable Representation:**
-
-The fermionic density can be represented using **anticommuting Grassmann fields** $\psi(x,v,t), \bar{\psi}(x,v,t)$:
+**Grassmann Representation (If Valid):**
 
 $$
-\{\psi(x_1, v_1, t), \psi(x_2, v_2, t)\} = 0, \quad \{\bar{\psi}(x_1, v_1, t), \bar{\psi}(x_2, v_2, t)\} = 0
+\{\psi(x_1, v_1, t), \psi(x_2, v_2, t)\} = 0
 $$
 
-**Fermionic Propagator:**
+**Status:** ⚠️⚠️ **HIGHLY SPECULATIVE** - requires:
+1. Exact proof of discrete antisymmetry (currently approximate)
+2. Proof that antisymmetry survives mean-field limit
+3. Rigorous emergence of Grassmann algebra structure
 
-$$
-G_F(x_1, v_1, t_1; x_2, v_2, t_2) = \langle 0 | T[\psi(x_1, v_1, t_1) \bar{\psi}(x_2, v_2, t_2)] | 0 \rangle
-$$
-
-where $T$ is time-ordering operator.
-
-**Z₂ Exchange Symmetry:**
-
-Define exchange operator $\hat{P}_{12}$:
-
-$$
-\hat{P}_{12} \psi(x_1, v_1) \psi(x_2, v_2) = -\psi(x_2, v_2) \psi(x_1, v_1)
-$$
-
-This is a **Z₂ symmetry**: $\hat{P}_{12}^2 = \mathbb{1}$ with eigenvalue $-1$ (fermionic sector).
-
-**Pauli Exclusion Principle:**
-
-Two walkers cannot occupy the same state $(x, v)$:
-
-$$
-\psi(x, v) \psi(x, v) = 0 \quad \text{(from anticommutation)}
-$$
-
-**Physical Interpretation:** Walkers in the mean-field limit behave as **spin-1/2 fermions**.
-
-**Status:** ⚠️ Conjectural - requires rigorous proof via functional integral formulation
+**Recommendation:** Treat as long-term research goal, not established result.
 :::
 
-:::{prf:corollary} Dirac Equation for Walker Field
-:label: cor-dirac-equation-mean-field
+#### 5.8.9. SO(10) Grand Unification (Speculative Research Goal)
 
-Combining fermionic antisymmetry with SU(2) weak isospin doublet structure, the mean-field walker density satisfies a **Dirac-like equation**:
+:::{prf:research-goal} Mean-Field SO(10) Grand Unified Theory
+:label: goal-mean-field-so10
 
-$$
-(i\gamma^\mu D_\mu - m_{\text{eff}}) \Psi(x,v,t) = 0
-$$
+The discrete SO(10) structure (Fractal Set § 7.15) represents a **long-term research aspiration**, not an established theory.
 
-where:
-- $\gamma^\mu$ are Dirac gamma matrices satisfying $\{\gamma^\mu, \gamma^\nu\} = 2\eta^{\mu\nu}$ (Clifford algebra)
-- $D_\mu = \partial_\mu + ig W_\mu$ is the SU(2) covariant derivative
-- $m_{\text{eff}} = \gamma / \hbar_{\text{eff}}$ is effective mass (from friction coefficient)
-- $\Psi = (\psi_{\text{clone}}, \psi_{\text{persist}})^T$ is a Dirac spinor (SU(2) doublet)
-
-**Gamma Matrix Representation:**
-
-In 2D (SU(2) doublet):
+**Hypothetical Unified State Vector:**
 
 $$
-\gamma^0 = \sigma_3 = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}, \quad \gamma^i = -i\sigma_i \quad (i = 1, 2)
+\Psi_{\text{GUT}}(x,v,t) = \begin{pmatrix}
+\Psi_{\text{color}}(x,v,t) \\
+\Psi_{\text{weak}}(x,v,t) \\
+\psi_{\text{U(1)}}(x,v,t) \\
+h_{\mu\nu}(x,t)
+\end{pmatrix} \in \mathbb{C}^{16} (?)
 $$
 
-**Free Dirac Equation Solutions:**
+**Status:** ⚠️⚠️⚠️ **PURE SPECULATION** - this is **pattern-matching**, not derivation.
 
-Plane wave solutions:
+**Major Obstacles:**
+1. No proof that components transform as SO(10) spinor representation
+2. No derivation of unified gauge connection
+3. No symmetry breaking mechanism derived
+4. Concatenation does not prove unification
 
-$$
-\Psi(x, t) = u(p) e^{-i(E_p t - \mathbf{p} \cdot \mathbf{x})}
-$$
-
-with dispersion relation:
-
-$$
-E_p^2 = |\mathbf{p}|^2 + m_{\text{eff}}^2
-$$
-
-**Physical Interpretation:**
-
-The Adaptive Gas, in its mean-field limit with fermionic antisymmetry and weak isospin structure, is described by **relativistic quantum field theory** for spin-1/2 particles!
-
-**Connection to Quantum Field Theory:**
-
-This Dirac equation is the **field equation** for walkers as quantum matter fields, exactly analogous to the electron field in QED.
-
-**Status:** ⚠️ Highly conjectural - requires:
-1. Proof that gamma matrices emerge naturally
-2. Derivation of Lorentz invariance (or lack thereof)
-3. Verification of dispersion relation from algorithm dynamics
+**Recommendation:** Remove from main document or clearly label as **"Speculative Future Direction"**.
 :::
 
-:::{prf:remark} Spin Statistics Connection
-:class: important
+#### 5.8.10. Summary of Established vs. Conjectural Structures
 
-From Fractal Set § 7.13 point 5:
+:::{prf:observation} Mathematical Status of Mean-Field Gauge Structure
+:label: obs-status-summary
 
-The antisymmetric cloning potential combined with SU(2) weak isospin implies walkers are **spin-1/2 fermions**:
+**ESTABLISHED (Discrete Level):**
+- ✅ U(1)_fitness gauge symmetry from diversity companion selection
+- ✅ SU(2)_weak from cloning interaction and isospin doublet structure
+- ✅ Factorized amplitude: $\Psi = A^{\text{SU(2)}} \cdot K_{\text{eff}}$
+- ✅ U(1) Wilson loops and gauge invariance
+- ✅ Higgs-like reward field with VEV
+- ✅ Emergent Riemannian metric from fitness Hessian
 
-$$
-|\Psi_{\text{total}}(i,j)\rangle = \frac{1}{\sqrt{2}} \left(|\text{Clone}\rangle_i |\text{Persist}\rangle_j - |\text{Persist}\rangle_i |\text{Clone}\rangle_j\right)
-$$
+**CONJECTURAL (Mean-Field Limit):**
+- ⚠️ Continuous U(1) gauge connection $A_{\text{U(1)}}(x,v,t)$
+- ⚠️ Continuous SU(2) gauge connection $W_\mu(x,v,t)$
+- ⚠️ Functional path integral $K_{\text{eff}}[f]$
+- ⚠️ Mean-field Higgs potential with phase transition
+- ⚠️ Continuous Einstein field equations
 
-This is a **singlet state** under SU(2) $\leftrightarrow$ antisymmetric under exchange $\leftrightarrow$ fermionic statistics.
+**HIGHLY SPECULATIVE:**
+- ⚠️⚠️ SU(3) color gauge theory from viscous force
+- ⚠️⚠️ Fermionic Grassmann structure
+- ⚠️⚠️⚠️ SO(10) grand unification
 
-**Spin-statistics theorem:** In relativistic QFT, half-integer spin → fermionic statistics (anticommutation).
+**Key Message:**
 
-The Adaptive Gas **realizes this fundamental connection**!
+The Adaptive Gas has a **rigorous U(1)_fitness × SU(2)_weak gauge structure at the discrete level**. The mean-field limit is **conjectural** and requires significant mathematical development. Extensions to SU(3), fermions, and SO(10) are **research directions**, not established results.
 :::
 
-#### 5.8.6. Higgs-Like Reward Field and Spontaneous Symmetry Breaking
+#### 5.8.11. Open Problems and Required Proofs
 
-:::{prf:theorem} Mean-Field Higgs Mechanism from Reward VEV
-:label: thm-mean-field-higgs
+:::{prf:observation} Roadmap to Rigorous Mean-Field Gauge Theory
+:label: obs-roadmap-mean-field
 
-The discrete reward scalar field ({prf:ref}`def-reward-scalar-field` in Fractal Set § 7.11) extends to a **continuous Higgs-like field** in the mean-field with spontaneous symmetry breaking.
+To elevate these conjectures to proven theorems, the following mathematical program is required:
 
-**Discrete Reward Field:**
+**Priority 1 (U(1) × SU(2) Core Structure):**
+1. **Convergence of U(1) phases to gauge connection:**
+   - Prove: $\lim_{N \to \infty} \sum_{\text{edges}} \theta_{ik}^{(\text{U(1)})} = \int A_{\text{U(1)}} \cdot dx$
+   - Requires: N-uniform bounds, appropriate function space topology
+   - Derive: Explicit formula $A_{\text{U(1)}}[f](x,v,t)$ from fitness functional
 
-For each walker at position $x_i \in \mathcal{X}$:
+2. **Convergence of factorized path integral:**
+   - Prove: $\sum_{k,m} \psi_{ik} \psi_{jm} \psi_{\text{succ}} \to \int \mathcal{D}k \mathcal{D}m$
+   - Requires: Rigorous measure definition, distributional convergence
+   - Verify: Unitarity preservation in limit
 
-$$
-r(x_i) \in \mathbb{R}
-$$
+3. **Derivation of SU(2) gauge connection:**
+   - Prove: Binary cloning structure survives mean-field limit
+   - Derive: Explicit $W_\mu^a[f](x,v,t)$ from cloning dynamics
+   - Verify: Non-Abelian field strength from discrete interactions
 
-**Continuous Reward Field:**
+**Priority 2 (Higgs and Symmetry Breaking):**
+4. **Emergence of Mexican hat potential:**
+   - Derive: $V_{\text{Higgs}}[r] = -\mu^2 \int |r|^2 + \lambda \int |r|^4$ from algorithm
+   - Prove: Phase transition at finite convergence time
+   - Calculate: Effective masses after symmetry breaking
 
-$$
-r: \mathcal{X} \to \mathbb{R}
-$$
+**Priority 3 (Emergent Geometry):**
+5. **Geodesic equation from Langevin dynamics:**
+   - Prove: Walker trajectories satisfy $\ddot{x}^\lambda + \Gamma^\lambda_{\mu\nu} \dot{x}^\mu \dot{x}^\nu = 0$
+   - Derive: Connection between Langevin SDE and Riemannian geometry
+   - Verify: Tidal force formula from geodesic deviation
 
-This is a **real scalar field** (no gauge transformation, position-dependent but companion-independent).
+**Priority 4 (Speculative Extensions):**
+6. **SU(3) from viscous force:**
+   - Justify: Momentum-phase encoding $c = F \cdot e^{ipv/\hbar}$
+   - Derive: SU(3) gauge dynamics from viscous coupling
+   - Prove: Confinement from exponential kernel
 
-**Coupling to Fitness:**
+7. **Fermionic structure:**
+   - Prove: Exact antisymmetry (not approximate)
+   - Derive: Grassmann algebra from antisymmetric correlations
+   - Establish: Fermionic propagator rigorously
 
-The reward field couples to walkers through the fitness functional:
+8. **SO(10) unification:**
+   - Prove: All symmetries embed in single Lie group
+   - Identify: SO(10) via representation theory
+   - Derive: Symmetry breaking cascade
 
-$$
-V_{\text{fit}}[f](x,v,t) = \left(\alpha r(x) + \beta D[f](x,v,t)\right)
-$$
+**Estimated Timeline:**
+- Priority 1: 2-3 years (requires advanced stochastic analysis)
+- Priority 2: 3-4 years (requires phase transition theory)
+- Priority 3: 4-5 years (requires differential geometry + SDEs)
+- Priority 4: 5-10+ years (highly uncertain)
 
-where $D[f]$ is the diversity functional.
+**Interdisciplinary Expertise Required:**
+- Stochastic analysis (mean-field limits, propagation of chaos)
+- Mathematical physics (gauge theory, QFT)
+- Differential geometry (emergent Riemannian structures)
+- Representation theory (Lie groups, SO(10))
+:::
 
-**Yukawa Coupling to Weak Isospin Doublet:**
+---
 
-The scalar field couples to the SU(2) doublet $\Psi = (\psi_{\text{clone}}, \psi_{\text{persist}})^T$:
+**Conclusion:**
 
-$$
-\mathcal{L}_{\text{Yukawa}} = g_Y r(x) \bar{\Psi}(x,v,t) \Psi(x,v,t) = g_Y r(x) \left(|\psi_{\text{clone}}|^2 + |\psi_{\text{persist}}|^2\right)
-$$
-
-This gives the cloning probability a "mass term":
-
-$$
-p_{\text{clone}}(x,v,t) \sim \sigma\left(\frac{V_{\text{fit}}(x,v)}{T_{\text{clone}}}\right) \sim \sigma\left(\frac{\alpha r(x)}{T_{\text{clone}}}\right)
-$$
-
-High reward → high fitness → high cloning probability → walkers acquire "inertia" (stability).
-
-**Higgs Potential (Mexican Hat):**
-
-$$
-V_{\text{Higgs}}[r] = -\mu^2 \int_\mathcal{X} |r(x)|^2 dx + \lambda \int_\mathcal{X} |r(x)|^4 dx
-$$
-
-where:
-- $\mu^2 > 0$: Mass parameter (determines symmetry breaking scale)
-- $\lambda > 0$: Self-coupling (quartic interaction)
-
-**Vacuum Expectation Value:**
-
+The mean-field limit of the Fractal Set gauge structure is a **rich but largely conjectural** theory. The discrete level has rigorous **U(1)_fitness × SU(2)_weak** symmetries with a beautiful hierarchical factorization. The continuous limit requires significant mathematical development, but the physical intuition and discrete structure provide a compelling roadmap for future work.
 The reward field develops a non-zero expectation value:
 
 $$
