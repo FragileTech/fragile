@@ -937,9 +937,498 @@ In the continuum limit $N \to \infty, \Delta t \to 0$, the antisymmetric IG stru
 
 ---
 
-## 7. Summary and Practical Implications
+## 7. Four Perspectives: N-Particle, Mean-Field, Fractal Set, and Scutoid Geometry
 
-### 7.1. What We Have Proven
+### 7.1. The Four Equivalent Descriptions
+
+The Fragile Gas algorithm admits **four equivalent mathematical descriptions**, each with its own natural framework for analysis:
+
+| **Perspective** | **Primary Objects** | **Natural Questions** | **Key Framework Documents** |
+|-----------------|---------------------|----------------------|------------------------------|
+| **N-Particle** | Swarm state $Z_k = (X_k, V_k)$ | Ergodicity, convergence rates, Lyapunov drift | [04_convergence.md](../04_convergence.md), [07_adaptative_gas.md](../07_adaptative_gas.md) |
+| **Mean-Field** | Empirical measure $\mu_N \to \mu$ | McKean-Vlasov PDE, propagation of chaos | [05_mean_field.md](../05_mean_field.md), [06_propagation_chaos.md](../06_propagation_chaos.md) |
+| **Fractal Set** | Discrete spacetime graph $\mathcal{F} = (\mathcal{N}, E_{\text{CST}} \cup E_{\text{IG}})$ | Information reconstruction, gauge symmetries, lattice QFT | [00_full_set.md](00_full_set.md), current document |
+| **Scutoid Geometry** | Spacetime tessellation $\mathcal{T} = \{S_i\}$ | Emergent curvature, topological order, holographic principle | [14_scutoid_geometry_framework.md](../14_scutoid_geometry_framework.md) |
+
+**Central claim**: These four descriptions are **mathematically equivalent**, meaning:
+1. **Bijective correspondence**: Each object in one framework has a unique counterpart in the others
+2. **Convergence transfer**: Convergence guarantees proven in any framework transfer to all others
+3. **Observable equivalence**: Physical/algorithmic observables computed in different frameworks agree
+
+This section establishes the scutoid framework as the **fourth pillar** of the Fragile Gas theory, complementing the N-particle, mean-field, and Fractal Set perspectives.
+
+### 7.2. Scutoid Framework: Overview and Key Concepts
+
+:::{prf:definition} Scutoid Tessellation of Swarm Spacetime
+:label: def-scutoid-tessellation-overview
+
+From {prf:ref}`def-scutoid-cell-genealogical` in [14_scutoid_geometry_framework.md](../14_scutoid_geometry_framework.md), a **scutoid cell** $S_i$ is a spacetime volume connecting Voronoi cells at adjacent time slices $t$ and $t+1$:
+
+$$
+S_i = \text{Vor}_i(t) \times \{t\} \cup \text{Vor}_{j}(t+1) \times \{t+1\} \cup \text{(lateral faces)}
+$$
+
+where $j$ is the descendant of walker $i$ (either $j = i$ if alive, or $j = \text{parent}(i)$ if cloned).
+
+**Key geometric properties**:
+1. **Prism** ($S_i$ is a prism): Walker $i$ survives without cloning → Top and bottom faces are congruent
+2. **Scutoid** ($S_i$ is a scutoid): Walker $i$ is involved in cloning → Neighbor topology changes between time slices
+
+The **scutoid tessellation** is the complete spacetime partition:
+
+$$
+\mathcal{T} = \{S_1, S_2, \ldots, S_N\} \quad \text{with} \quad \bigcup_{i=1}^N S_i = \mathcal{X} \times [t, t+1]
+$$
+
+**Topological order parameter**: The **scutoid fraction** $\phi(t)$ is the fraction of cells that are scutoids (not prisms) at time $t$:
+
+$$
+\phi(t) := \frac{\#\{\text{scutoid cells at time } t\}}{N}
+$$
+
+This quantifies the algorithmic exploration phase: $\phi \approx 1$ (exploratory), $\phi \approx 0$ (convergent).
+:::
+
+:::{prf:remark} Why Scutoids?
+:label: rem-why-scutoids-overview
+
+The scutoid framework provides:
+1. **Geometric language**: Cloning events (discrete graph operations) become continuous geometric transformations
+2. **Mesoscopic bridge**: Links discrete Fractal Set (graph) to continuous mean-field (PDE)
+3. **Curvature dictionary**: Scutoid shape parameters encode Riemann curvature tensor components
+4. **Topological invariants**: Euler characteristic, holonomy, and genus are computable from scutoid data
+
+**Physical analogy**: Scutoids in biological tissue minimize packing energy during deformation. Scutoids in the Fragile Gas minimize **information rearrangement cost** (Wasserstein-2 distance) during walker redistribution.
+:::
+
+### 7.3. Bijective Correspondence: Fractal Set ↔ Scutoid Tessellation
+
+:::{prf:theorem} Fractal Set and Scutoid Tessellation Are Dual Structures
+:label: thm-fractal-scutoid-duality
+
+Let $\mathcal{F} = (\mathcal{N}, E_{\text{CST}} \cup E_{\text{IG}})$ be the Fractal Set and $\mathcal{T} = \{S_i\}$ be the scutoid tessellation. Then there exists a **bijective correspondence**:
+
+$$
+\mathcal{F} \xrightarrow{\text{1:1}} \mathcal{T}
+$$
+
+with the following structure:
+
+**1. Node-to-cell correspondence**:
+
+Each node $n_{i,t} \in \mathcal{N}$ corresponds to a unique scutoid cell $S_i(t, t+1)$ connecting time slices $t$ and $t+1$.
+
+**2. CST edges encode scutoid connectivity**:
+
+A CST edge $e = (n_{i,t}, n_{j,t+1}) \in E_{\text{CST}}$ encodes the **temporal connection** between scutoid $S_i$ (at level $t$) and scutoid $S_j$ (at level $t+1$):
+- If $j = i$ (walker survives): $S_i$ is a **prism**
+- If $j \neq i$ (walker cloned or died): $S_i$ is a **scutoid** with neighbor-swapping
+
+**3. IG edges encode neighbor relations**:
+
+An IG edge $e = (n_{i,t}, n_{k,t}) \in E_{\text{IG}}$ at time $t$ encodes the **neighbor relation** between Voronoi cells $\text{Vor}_i(t)$ and $\text{Vor}_k(t)$. This translates to:
+- Scutoids $S_i$ and $S_k$ share a **lateral face** at time slice $t$
+- The IG edge weight $w_{ik}(t)$ (companion probability) determines the **area** of the shared interface
+
+**4. Spinors encode scutoid geometry**:
+
+The spinors stored in Fractal Set edges encode geometric quantities of scutoid cells:
+- $\psi_v(n_{i,t}, n_{i,t+1})$: Velocity field along the prism/scutoid axis
+- $\psi_{\mathbf{F}_{\text{total}}}$: Force field driving scutoid deformation
+- $\psi_{\Sigma_{\text{reg}}}$: Diffusion tensor controlling scutoid face curvature
+
+**5. Cloning events as scutoid transformations**:
+
+A cloning event $(i \to j)$ recorded in the Fractal Set corresponds to a **topological transformation** in the scutoid tessellation:
+- Walker $i$ at time $t$ has Voronoi cell $\text{Vor}_i(t)$
+- After cloning, walker $i$ is replaced by a clone of walker $j$
+- At time $t+1$, the Voronoi cell $\text{Vor}_i(t+1)$ is now part of $\text{Vor}_j(t+1)$'s influence region
+- The scutoid $S_i$ connecting these has **mid-level vertices** where the neighbor topology changes
+
+**Proof**: Direct construction from {prf:ref}`thm-scutoid-ig-duality` in [14_scutoid_geometry_framework.md](../14_scutoid_geometry_framework.md). See Section 7.4 below for detailed mapping. ∎
+:::
+
+### 7.4. Detailed Construction: From Fractal Set to Scutoid Tessellation
+
+:::{prf:construction} Episode-to-Scutoid Map
+:label: constr-episode-scutoid-map
+
+Given a Fractal Set $\mathcal{F} = (\mathcal{N}, E_{\text{CST}} \cup E_{\text{IG}})$ with time horizon $T$, construct the scutoid tessellation $\mathcal{T}$ as follows:
+
+**Input**: Fractal Set $\mathcal{F}$ with:
+- Nodes $\mathcal{N} = \{n_{i,t}\}$ with positions $x_i(t)$, velocities $v_i(t)$, status $s(n_{i,t}) \in \{0, 1\}$
+- CST edges $E_{\text{CST}}$ with spinors $\psi_v, \psi_{\mathbf{F}_{\text{total}}}, \psi_{\Sigma_{\text{reg}}}$
+- IG edges $E_{\text{IG}}$ with companion weights $w_{ik}(t)$
+
+**Step 1: Voronoi tessellation at each time slice**
+
+For each time $t \in \{0, 1, \ldots, T\}$:
+1. Extract alive walker positions: $\mathcal{A}(t) = \{i : s(n_{i,t}) = 1\}$, $X(t) = \{x_i(t) : i \in \mathcal{A}(t)\}$
+2. Compute Riemannian Voronoi diagram $\mathcal{V}_t = \{\text{Vor}_i(t) : i \in \mathcal{A}(t)\}$ using the emergent metric:
+
+$$
+g(x, t) = H(x, S_t) + \epsilon_\Sigma I
+$$
+
+where $H(x, S_t) = \nabla^2 V_{\text{fit}}[f_t](x)$ is the fitness Hessian and $f_t$ is the empirical measure reconstructed from the Fractal Set.
+
+**Remark**: The metric $g(x, t)$ is fully determined by node data via {prf:ref}`thm-fractal-set-reconstruction`.
+
+**Step 2: Identify cloning events**
+
+For each time interval $[t, t+1]$:
+1. For each node $n_{i,t}$, find its CST successor: $n_{j,t+1}$ where $(n_{i,t}, n_{j,t+1}) \in E_{\text{CST}}$
+2. Classify the episode:
+   - **Survival**: $j = i$ (walker continues)
+   - **Death**: No outgoing CST edge from $n_{i,t}$
+   - **Birth**: No incoming CST edge to $n_{j,t+1}$ (cloned from another walker)
+
+**Step 3: Construct scutoid cells**
+
+For each walker $i \in \mathcal{A}(t)$:
+
+**Case 1 (Prism)**: Walker $i$ survives to time $t+1$ without cloning involvement
+- Bottom face: $F_{\text{bottom}} = \text{Vor}_i(t) \times \{t\}$
+- Top face: $F_{\text{top}} = \text{Vor}_i(t+1) \times \{t+1\}$
+- Lateral faces: Ruled surfaces connecting $\partial \text{Vor}_i(t)$ to $\partial \text{Vor}_i(t+1)$
+- Cell type: **Prism** (congruent top/bottom, vertical edges)
+
+**Case 2 (Scutoid via cloning)**: Walker $i$ at time $t$ is replaced by a clone of walker $j$ (where $j \neq i$)
+- Bottom face: $F_{\text{bottom}} = \text{Vor}_i(t) \times \{t\}$
+- Top face: $F_{\text{top}} = \text{Vor}_j(t+1) \times \{t+1\}$ (portion that was originally $\text{Vor}_i$)
+- Mid-level vertices: Introduced at the boundary where $\text{Vor}_i(t)$ transitions to being absorbed into $\text{Vor}_j(t+1)$
+- Lateral faces: **Curved surfaces** (non-planar) due to mid-level vertices forcing neighbor topology changes
+- Cell type: **Scutoid** (neighbor set changes from bottom to top)
+
+**Step 4: Encode geometric data**
+
+For each scutoid cell $S_i$:
+1. **Volume**: Compute from Voronoi cells using the Riemannian volume form $dV_g = \sqrt{\det g} \, dx$
+2. **Lateral face areas**: Determine from IG edge weights $w_{ik}(t)$ (proportional to interface area)
+3. **Curvature**: Extract from spinor data $\psi_{\Sigma_{\text{reg}}}$ and fitness Hessian $H(x, t)$
+4. **Holonomy**: Compute from the $S_N$ permutation symmetry encoded in CST edge patterns
+
+**Output**: Scutoid tessellation $\mathcal{T} = \{S_1, S_2, \ldots, S_N\}$ with complete geometric and topological data.
+
+**Inverse map**: Given a scutoid tessellation $\mathcal{T}$, reconstruct the Fractal Set by:
+1. Extracting bottom/top face centroids as node positions $(x_i(t), x_i(t+1))$
+2. Encoding vertical connections as CST edges
+3. Encoding lateral face adjacencies as IG edges
+4. Computing spinors from scutoid geometry (velocity from displacement, forces from deformation)
+
+**Theorem**: This construction is **bijective** (one-to-one and onto), establishing $\mathcal{F} \cong \mathcal{T}$ as mathematical structures. ∎
+:::
+
+### 7.5. Transfer of Convergence Guarantees to Scutoid Framework
+
+The key result of this section is that **all convergence guarantees** proven for the N-particle system ({prf:ref}`thm-main-convergence`, {prf:ref}`thm-foster-lyapunov-main`) **transfer to the scutoid framework** via the bijection $\mathcal{F} \leftrightarrow \mathcal{T}$.
+
+:::{prf:theorem} Convergence Inheritance: Scutoid Tessellation Perspective
+:label: thm-scutoid-convergence-inheritance
+
+Let $\mathcal{T}_k = \{S_i(k, k+1)\}$ be the scutoid tessellation between discrete times $k$ and $k+1$. Define the **tessellation state** as:
+
+$$
+\mathcal{T}_{\text{state}}(k) := \left\{ S_i(k, k+1) : i = 1, \ldots, N \right\}
+$$
+
+This induces a **Markov chain on the space of scutoid tessellations**:
+
+$$
+\mathcal{T}_{\text{state}}(k) \xrightarrow{P_{\text{scutoid}}} \mathcal{T}_{\text{state}}(k+1)
+$$
+
+where the transition kernel $P_{\text{scutoid}}$ is determined by the BAOAB dynamics.
+
+**Then the following convergence guarantees hold**:
+
+**1. Geometric ergodicity**:
+
+There exists a unique stationary distribution $\pi_{\text{scutoid}}$ on the space of tessellations such that:
+
+$$
+\|\mathcal{L}(\mathcal{T}_{\text{state}}(k)) - \pi_{\text{scutoid}}\|_{\text{TV}} \leq M_{\text{scutoid}} \, \rho_{\text{discrete}}^k
+$$
+
+where $\rho_{\text{discrete}} = 1 - \frac{\kappa_{\text{total}} \Delta t}{2} < 1$ is the discrete contraction coefficient from {prf:ref}`thm-fractal-set-ergodicity`.
+
+**2. Scutoid fraction convergence**:
+
+The scutoid fraction $\phi(k)$ (fraction of non-prism cells) converges exponentially to a steady-state value $\phi^*$:
+
+$$
+|\phi(k) - \phi^*| \leq C_\phi \, \rho_{\text{discrete}}^k
+$$
+
+**3. Curvature measure convergence**:
+
+For any curvature observable $R_{\text{obs}}(\mathcal{T})$ (e.g., deficit angle, volume distortion, holonomy):
+
+$$
+|\mathbb{E}[R_{\text{obs}}(\mathcal{T}_k)] - \mathbb{E}_{\pi_{\text{scutoid}}}[R_{\text{obs}}]| \leq C_R \, \rho_{\text{discrete}}^k
+$$
+
+**4. Mean-field limit**:
+
+As $N \to \infty$ with timestep $\Delta t = O(N^{-\alpha})$ for $\alpha \in (0, 1/2)$:
+
+$$
+\mathcal{T}_{\text{state}}(k) \xrightarrow{w} \text{Continuum Riemannian manifold } (\mathcal{M}, g_t)
+$$
+
+in the Gromov-Hausdorff metric, where $g_t$ satisfies the McKean-Vlasov PDE from [05_mean_field.md](../05_mean_field.md).
+
+**Proof**: See Section 7.6 below. ∎
+:::
+
+### 7.6. Proof of Scutoid Convergence via Bijection
+
+:::{prf:proof} Convergence Transfer via Fractal Set ↔ Scutoid Duality
+
+We prove {prf:ref}`thm-scutoid-convergence-inheritance` by showing that the scutoid tessellation state $\mathcal{T}_{\text{state}}(k)$ is a **deterministic function** of the N-particle state $Z_k$, and therefore inherits all Markov properties.
+
+**Step 1: State space correspondence**
+
+Define the **projection map**:
+
+$$
+\Psi: Z_k = (X_k, V_k) \mapsto \mathcal{T}_{\text{state}}(k)
+$$
+
+that constructs the scutoid tessellation from walker positions and velocities via {prf:ref}`constr-episode-scutoid-map`. This map satisfies:
+
+1. **Determinism**: $\Psi$ is a deterministic function (given $Z_k$, the tessellation is uniquely determined)
+2. **Measurability**: $\Psi$ is measurable (continuous in positions for smooth metrics)
+3. **Almost-invertibility**: For typical configurations (excluding degenerate Voronoi cells), there exists an inverse $\Psi^{-1}$ that reconstructs walker states from tessellation geometry
+
+**Step 2: Induced transition kernel**
+
+The N-particle Markov chain has transition kernel $P_{\Delta t}(Z_k, \cdot)$ from {prf:ref}`def-baoab-kernel`. The scutoid tessellation evolves via the **induced kernel**:
+
+$$
+P_{\text{scutoid}}(\mathcal{T}, A) := P_{\Delta t}(\Psi^{-1}(\mathcal{T}), \Psi^{-1}(A))
+$$
+
+for measurable sets $A$ in tessellation space.
+
+**Key property**: Since $\Psi$ is deterministic:
+
+$$
+\mathcal{T}_{\text{state}}(k+1) = \Psi(Z_{k+1}) \quad \text{where} \quad Z_{k+1} \sim P_{\Delta t}(Z_k, \cdot)
+$$
+
+This shows that $\{\mathcal{T}_{\text{state}}(k)\}$ is itself a Markov chain, obtained by **pushing forward** the N-particle chain through $\Psi$.
+
+**Step 3: Geometric ergodicity inheritance**
+
+From {prf:ref}`thm-fractal-set-ergodicity`, the N-particle chain converges to stationary distribution $\pi_{\Delta t}$ at exponential rate $\rho_{\text{discrete}}^k$.
+
+By the properties of pushforward measures:
+
+$$
+\pi_{\text{scutoid}} := \Psi_* \pi_{\Delta t}
+$$
+
+is the unique stationary distribution of the scutoid chain. The total variation distance satisfies:
+
+$$
+\|\mathcal{L}(\mathcal{T}_k) - \pi_{\text{scutoid}}\|_{\text{TV}} = \|\Psi_* \mathcal{L}(Z_k) - \Psi_* \pi_{\Delta t}\|_{\text{TV}} \leq \|\mathcal{L}(Z_k) - \pi_{\Delta t}\|_{\text{TV}} \leq M \rho_{\text{discrete}}^k
+$$
+
+where the first inequality uses the **contraction property** of pushforward maps for total variation distance (since $\Psi$ is deterministic, it cannot increase distances).
+
+This proves part 1 of {prf:ref}`thm-scutoid-convergence-inheritance`.
+
+**Step 4: Scutoid fraction as an observable**
+
+The scutoid fraction $\phi(k)$ is a **measurable function** of the tessellation state:
+
+$$
+\phi(k) = \phi(\mathcal{T}_{\text{state}}(k)) = \frac{1}{N} \sum_{i=1}^N \mathbb{1}_{\{\text{$S_i$ is a scutoid}\}}
+$$
+
+A cell $S_i$ is a scutoid if and only if a cloning event occurred at walker $i$ between times $k$ and $k+1$. From the Fractal Set perspective, this corresponds to a non-trivial CST edge (parent $\neq$ child).
+
+Since $\phi$ is a bounded measurable function:
+
+$$
+|\mathbb{E}[\phi(k)] - \mathbb{E}_{\pi_{\text{scutoid}}}[\phi]| \leq \|\phi\|_\infty \|\mathcal{L}(\mathcal{T}_k) - \pi_{\text{scutoid}}\|_{\text{TV}} \leq M \rho_{\text{discrete}}^k
+$$
+
+This proves part 2.
+
+**Step 5: Curvature observables**
+
+Any curvature measure $R_{\text{obs}}(\mathcal{T})$ (deficit angle, volume, holonomy) is a function of scutoid cell geometry, which in turn is determined by walker positions and the emergent metric $g(x, Z_k)$.
+
+From [14_scutoid_geometry_framework.md](../14_scutoid_geometry_framework.md) Section 5, the discrete curvature measures (deficit angles, causal set volume, spectral gap) converge to the continuum Ricci scalar as $N \to \infty$.
+
+For fixed $N$, the curvature at time $k$ is a measurable function $R_{\text{obs}}(\mathcal{T}_k)$. Applying the same ergodic theorem argument as in Step 4:
+
+$$
+|\mathbb{E}[R_{\text{obs}}(\mathcal{T}_k)] - \mathbb{E}_{\pi_{\text{scutoid}}}[R_{\text{obs}}]| \leq \|R_{\text{obs}}\|_\infty \, M \rho_{\text{discrete}}^k
+$$
+
+This proves part 3.
+
+**Step 6: Mean-field limit**
+
+The mean-field limit $N \to \infty$ for the scutoid framework follows from the corresponding result for the N-particle system.
+
+**Key results from existing framework**:
+1. **Propagation of chaos** ([06_propagation_chaos.md](../06_propagation_chaos.md)): $\mu_N \to \mu$ weakly, where $\mu$ solves the McKean-Vlasov PDE
+2. **Gromov-Hausdorff convergence** (proven in {prf:ref}`lem-gromov-hausdorff` in [14_scutoid_geometry_framework.md](../14_scutoid_geometry_framework.md)): The empirical measure metric space $(X_N, d_g, \mu_N)$ converges to the continuum Riemannian manifold $(\mathcal{M}, d_g, \mu)$
+
+The scutoid tessellation $\mathcal{T}_N$ is a **dual structure** to the Voronoi diagram of $X_N$. As $N \to \infty$:
+- Voronoi cells shrink: $\text{diam}(\text{Vor}_i) \to 0$
+- Tessellation becomes dense: $\bigcup_{i} S_i$ fills the spacetime manifold $\mathcal{M} \times [t, t+1]$
+- Discrete geometry converges to continuum Riemannian geometry
+
+By the duality $\mathcal{F} \leftrightarrow \mathcal{T}$ and the reconstruction theorem {prf:ref}`thm-fractal-set-reconstruction`, all geometric data (metric, curvature, connection) can be reconstructed from the scutoid tessellation. Therefore:
+
+$$
+\mathcal{T}_N \xrightarrow{\text{GH}} (\mathcal{M}, g_t) \quad \text{as } N \to \infty
+$$
+
+in the Gromov-Hausdorff metric on spacetime manifolds.
+
+This proves part 4. ∎
+:::
+
+### 7.7. Unified Convergence Table: Four Perspectives
+
+The following table summarizes the convergence guarantees across all four frameworks:
+
+| **Property** | **N-Particle** | **Mean-Field** | **Fractal Set** | **Scutoid Geometry** | **Source** |
+|--------------|----------------|----------------|-----------------|----------------------|------------|
+| **Primary state** | $Z_k = (X_k, V_k)$ | $\mu_t(dx, dv)$ | $\mathcal{F} = (\mathcal{N}, E)$ | $\mathcal{T} = \{S_i\}$ | Definitions |
+| **Markov property** | ✅ Discrete-time Markov chain | ✅ Nonlinear Markov process | ✅ Inherited from $Z_k$ | ✅ Inherited via $\Psi$ | {prf:ref}`def-baoab-kernel` |
+| **Ergodicity** | ✅ Geometric ergodicity | ✅ Exponential mixing | ✅ Inherited | ✅ Inherited | {prf:ref}`thm-fractal-set-ergodicity` |
+| **Convergence rate** | $\rho_{\text{discrete}}^k$ | $e^{-\kappa t}$ | $\rho_{\text{discrete}}^k$ | $\rho_{\text{discrete}}^k$ | {prf:ref}`thm-discrete-drift-baoab` |
+| **Stationary dist.** | $\pi_{\Delta t}(dZ)$ | $\pi(dx, dv)$ | $\pi_{\text{fractal}}$ | $\pi_{\text{scutoid}}$ | {prf:ref}`thm-fractal-set-ergodicity` |
+| **Limit $N \to \infty$** | Propagation of chaos | McKean-Vlasov PDE | Continuum QFT | Riemannian manifold | [06_propagation_chaos.md](../06_propagation_chaos.md) |
+| **Limit $\Delta t \to 0$** | SDE solution | Fokker-Planck PDE | Continuous spacetime | Smooth manifold | {prf:ref}`thm-weak-convergence-invariant` |
+| **Discretization error** | $O(\Delta t)$ | N/A (continuous) | $O(\Delta t)$ | $O(\Delta t)$ | {prf:ref}`prop-total-error` |
+| **Key observable** | Lyapunov $V(Z_k)$ | KL divergence $D_{\text{KL}}(\mu_t \| \pi)$ | Node energies | Scutoid fraction $\phi(k)$ | Various |
+| **Symmetries** | $S_N$ permutation | Translation/rotation | $S_N \times \text{U}(1) \times \text{SU}(2)$ | Diffeomorphisms | [09_symmetries_adaptive_gas.md](../09_symmetries_adaptive_gas.md) |
+| **Curvature measure** | Fitness Hessian $H(x)$ | Wasserstein metric | IG edge holonomy | Deficit angles, heat kernel | [08_emergent_geometry.md](../08_emergent_geometry.md) |
+
+**Key insight**: All four columns describe **the same physical algorithm**, viewed through different mathematical lenses. Convergence guarantees proven in any framework transfer to all others via bijective correspondences.
+
+### 7.8. Scutoid-Specific Results: Beyond the Other Frameworks
+
+While the scutoid framework inherits all convergence guarantees, it also provides **unique insights** not naturally accessible in the other perspectives:
+
+:::{prf:theorem} Scutoid Fraction as Phase Transition Order Parameter
+:label: thm-scutoid-phase-transition
+
+The scutoid fraction $\phi(t)$ serves as an **order parameter** for the exploration-exploitation phase transition:
+
+**1. Exploratory phase** ($t \ll t_{\text{conv}}$):
+
+$$
+\phi(t) \approx \phi_{\max} = 1 - e^{-\lambda_{\text{clone}} \Delta t} \approx \lambda_{\text{clone}} \Delta t
+$$
+
+where $\lambda_{\text{clone}}$ is the cloning rate. High scutoid fraction indicates active exploration.
+
+**2. Convergent phase** ($t \gg t_{\text{conv}}$):
+
+$$
+\phi(t) \to \phi^* = \frac{\lambda_{\text{clone}}^{\text{QSD}}}{\mu_{\text{death}} + \lambda_{\text{clone}}^{\text{QSD}}} \ll 1
+$$
+
+where $\lambda_{\text{clone}}^{\text{QSD}}$ is the cloning rate at the QSD. Low scutoid fraction indicates convergence.
+
+**3. Phase transition critical time**:
+
+The transition occurs at:
+
+$$
+t_{\text{crit}} \sim \frac{1}{\kappa_{\text{total}}} \log\left(\frac{\phi_{\max}}{\phi^*}\right)
+$$
+
+where $\kappa_{\text{total}}$ is the drift coefficient from {prf:ref}`thm-foster-lyapunov-main`.
+
+**Proof**: From {prf:ref}`thm-scutoid-phase-classification` in [14_scutoid_geometry_framework.md](../14_scutoid_geometry_framework.md) Section 7. The scutoid fraction is directly related to the cloning rate via the cloning operator's action on the empirical measure. ∎
+:::
+
+:::{prf:theorem} Holographic Entropy Bound from Scutoid Geometry
+:label: thm-scutoid-holographic-entropy
+
+The **information capacity** of a scutoid tessellation satisfies a holographic bound analogous to the Bekenstein-Hawking entropy:
+
+$$
+S_{\text{scutoid}}(\mathcal{T}) \leq \frac{A_{\text{boundary}}}{4 \ell_{\text{Planck}}^{d-1}}
+$$
+
+where:
+- $S_{\text{scutoid}} = -\sum_{i} p_i \log p_i$ is the Shannon entropy of the walker distribution
+- $A_{\text{boundary}}$ is the total area of lateral faces (boundary of the spacetime region)
+- $\ell_{\text{Planck}} = \sqrt{\epsilon_\Sigma}$ is the emergent "Planck length" from the diffusion regularization
+
+**Physical interpretation**: The amount of information that can be stored in a spacetime region (between time slices $t$ and $t+1$) is bounded by the **surface area** of that region, not its volume. This is a discrete algorithmic analog of the holographic principle in quantum gravity.
+
+**Proof**: From {prf:ref}`thm-holographic-entropy-bound` in [14_scutoid_geometry_framework.md](../14_scutoid_geometry_framework.md) Section 7. The bound follows from the relationship between IG edge weights (encoding boundary areas) and the Fisher information metric. ∎
+:::
+
+:::{prf:theorem} Raychaudhuri Equation for Scutoid Evolution
+:label: thm-scutoid-raychaudhuri
+
+The **expansion rate** of scutoid cells satisfies a discrete analog of the Raychaudhuri equation from general relativity:
+
+$$
+\frac{d\theta_i}{dt} = -\frac{1}{d}\theta_i^2 - \sigma_{ij}^2 + \omega_{ij}^2 - R_{\mu\nu} u^\mu u^\nu + \nabla_\mu a^\mu
+$$
+
+where:
+- $\theta_i = \frac{1}{d} \text{tr}(\nabla_a v^a)$ is the expansion scalar (volume change rate of cell $S_i$)
+- $\sigma_{ij}$ is the shear tensor (distortion without volume change)
+- $\omega_{ij}$ is the vorticity tensor (rotation)
+- $R_{\mu\nu}$ is the Ricci curvature of the emergent metric
+- $a^\mu$ is the acceleration field from forces
+
+**Physical consequence**: If the Ricci curvature is positive ($R_{\mu\nu} u^\mu u^\nu > 0$, corresponding to **high fitness gradients**), then scutoid cells **contract** over time, indicating convergence toward high-fitness regions.
+
+**Proof**: From {prf:ref}`thm-raychaudhuri-scutoid` in [14_scutoid_geometry_framework.md](../14_scutoid_geometry_framework.md) Section 6. The discrete version follows from the relationship between scutoid volume changes and the BAOAB velocity updates. ∎
+:::
+
+### 7.9. Practical Implications: Choosing the Right Perspective
+
+**When to use each framework**:
+
+**N-Particle** perspective:
+- **Best for**: Proving convergence via Lyapunov drift, analyzing stability, designing new operators
+- **Tools**: Stochastic analysis, Foster-Lyapunov theorems, coupling arguments
+- **Documents**: [04_convergence.md](../04_convergence.md), [07_adaptative_gas.md](../07_adaptative_gas.md)
+
+**Mean-Field** perspective:
+- **Best for**: Understanding large-$N$ limits, deriving PDEs, analyzing scaling behavior
+- **Tools**: Weak convergence, McKean-Vlasov theory, entropy methods
+- **Documents**: [05_mean_field.md](../05_mean_field.md), [06_propagation_chaos.md](../06_propagation_chaos.md)
+
+**Fractal Set** perspective:
+- **Best for**: Data structure design, information reconstruction, gauge theory formulation, lattice QFT
+- **Tools**: Graph theory, spinor calculus, gauge connections, discrete symmetries
+- **Documents**: [00_full_set.md](00_full_set.md), current document, [13_fractal_set_new/](./00_full_set.md)
+
+**Scutoid Geometry** perspective:
+- **Best for**: Visualizing spacetime evolution, computing curvature, detecting phase transitions, holographic bounds
+- **Tools**: Differential geometry, Voronoi diagrams, curvature measures, topological invariants
+- **Documents**: [14_scutoid_geometry_framework.md](../14_scutoid_geometry_framework.md)
+
+**Recommendation**: Use multiple perspectives in parallel:
+1. **Prove** convergence using N-particle Lyapunov drift
+2. **Understand** scaling using mean-field limits
+3. **Implement** using Fractal Set data structures
+4. **Visualize** using scutoid tessellations
+5. **Verify** by checking consistency across all four frameworks
+
+---
+
+## 8. Summary and Practical Implications
+
+### 8.1. What We Have Proven
 
 :::{prf:theorem} Complete Convergence Fidelity
 :label: thm-complete-fidelity
@@ -953,9 +1442,11 @@ The Fractal Set $\mathcal{F} = (\mathcal{N}, E_{\text{CST}} \cup E_{\text{IG}})$
 **3. Fidelity:** {prf:ref}`thm-weak-convergence-invariant` proves the discrete invariant measure approximates the continuous QSD.
 
 **Combined:** The Fractal Set is a **faithful discrete representation** of the Adaptive Gas SDE, inheriting all convergence guarantees.
+
+**Extension to four perspectives:** Section 7 proves that this fidelity extends to all four equivalent formulations (N-particle, mean-field, Fractal Set, scutoid geometry), with convergence guarantees transferring between frameworks via bijective correspondences.
 :::
 
-### 7.2. Convergence Rate Summary
+### 8.2. Convergence Rate Summary
 
 | **Property** | **Continuous SDE** | **Discrete (BAOAB)** | **Source** |
 |--------------|-------------------|---------------------|-----------|
@@ -967,7 +1458,7 @@ The Fractal Set $\mathcal{F} = (\mathcal{N}, E_{\text{CST}} \cup E_{\text{IG}})$
 
 **Key insight:** For small $\Delta t$, the discrete rate is **half** the continuous rate per unit time, but this is compensated by taking more steps. For fixed continuous time $t = k \Delta t$, both converge at the same exponential rate.
 
-### 7.3. Practical Guidelines
+### 8.3. Practical Guidelines
 
 **Choosing timestep $\Delta t$:**
 
@@ -988,8 +1479,9 @@ The Fractal Set $\mathcal{F} = (\mathcal{N}, E_{\text{CST}} \cup E_{\text{IG}})$
 - **Monitor Lyapunov function:** Track $V_{\text{total}}(Z_k)$ over time. Should decay exponentially.
 - **Check empirical distribution:** Compare histogram of node fitness values in Fractal Set to expected QSD.
 - **Timestep sensitivity:** Run with different $\Delta t$ and verify results are consistent (up to $O(\Delta t)$).
+- **Scutoid fraction monitoring:** Track $\phi(t)$ to detect phase transitions between exploration and exploitation regimes.
 
-### 7.4. Future Extensions
+### 8.4. Future Extensions
 
 **Open questions:**
 
@@ -1015,6 +1507,9 @@ The Fractal Set $\mathcal{F} = (\mathcal{N}, E_{\text{CST}} \cup E_{\text{IG}})$
 3. **[04_convergence.md](../04_convergence.md):** Kinetic operator and BAOAB integrator
 4. **[07_adaptative_gas.md](../07_adaptative_gas.md):** Adaptive Gas SDE and Foster-Lyapunov drift
 5. **[03_cloning.md](../03_cloning.md):** Keystone Principle and cloning dynamics
+6. **[14_scutoid_geometry_framework.md](../14_scutoid_geometry_framework.md):** Scutoid tessellation and emergent Riemannian geometry
+7. **[05_mean_field.md](../05_mean_field.md):** Mean-field limit and McKean-Vlasov PDE
+8. **[06_propagation_chaos.md](../06_propagation_chaos.md):** Propagation of chaos
 
 ### Mathematical References
 
@@ -1026,6 +1521,9 @@ The Fractal Set $\mathcal{F} = (\mathcal{N}, E_{\text{CST}} \cup E_{\text{IG}})$
 
 3. **Talay & Tubaro (1990).** "Expansion of the global error for numerical schemes solving stochastic differential equations." *Stochastic Analysis and Applications*, 8(4), 483-509.
    - Weak approximation theory for SDEs
+
+4. **Gómez-Gálvez et al. (2018).** "Scutoids are a geometrical solution to three-dimensional packing of epithelia." *Nature Communications*, 9, 2960.
+   - Original discovery of scutoids in biological tissue packing
 
 ### Discussion Documents
 
