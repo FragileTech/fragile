@@ -22,6 +22,7 @@ This document provides a comprehensive, searchable reference of all mathematical
 - [11_mean_field_convergence/](11_mean_field_convergence/) - Mean-field entropy production, explicit constants, QSD regularity, parameter analysis
 - [12_gauge_theory_adaptive_gas.md](12_gauge_theory_adaptive_gas.md) - Gauge theory and braid group topology
 - [13_fractal_set/](13_fractal_set/) - Episodes, CST, Information Graph, Fractal Set, discrete spacetime, causal set quantum gravity, lattice gauge theory, fermionic exclusion, QCD (condensed - see [00_D_fractal_set.md](00_D_fractal_set.md) for complete reference with 184 mathematical objects)
+- [18_hk_convergence.md](18_hk_convergence.md) - Hellinger-Kantorovich metric convergence, mass contraction, LSI-based structural variance contraction, kinetic Hellinger analysis
 
 Complete coverage from foundational axioms through N-particle and mean-field KL-convergence to discrete spacetime formulation.
 
@@ -48,6 +49,7 @@ Complete coverage from foundational axioms through N-particle and mean-field KL-
 - [Gauge Theory Formulation](#gauge-theory-formulation)
 - [KL-Divergence Convergence and Logarithmic Sobolev Inequalities](#kl-divergence-convergence-and-logarithmic-sobolev-inequalities)
 - [Mean-Field Entropy Production and Explicit Constants](#mean-field-entropy-production-and-explicit-constants)
+- [Hellinger-Kantorovich Metric Convergence](#hellinger-kantorovich-metric-convergence)
 - [Fractal Set Theory and Discrete Spacetime](#fractal-set-theory-and-discrete-spacetime)
 - [Key Inequalities and Bounds](#key-inequalities-and-bounds)
 
@@ -5368,6 +5370,250 @@ $$\frac{c_{\text{clone}}}{\delta^2 N} + \frac{\tau \alpha_{\text{net}}}{2\gamma}
 
 ---
 
+## Hellinger-Kantorovich Metric Convergence
+
+This section contains results on the exponential convergence of the Fragile Gas in the Hellinger-Kantorovich (HK) metric, which naturally handles hybrid continuous-discrete dynamics involving diffusion with birth/death processes. The theory establishes mass contraction via revival mechanisms, structural variance contraction via LSI machinery, and kinetic Hellinger contraction via hypocoercivity.
+
+### Hellinger-Kantorovich Metric
+
+**Type:** Definition
+**Label:** `def-hk-metric`
+**Source:** [18_hk_convergence.md § 0](18_hk_convergence.md)
+**Tags:** `hellinger-kantorovich`, `metric`, `optimal-transport`, `birth-death`
+
+**Statement:**
+For two sub-probability measures $\mu_1, \mu_2$ on a metric space $(\mathcal{X}, d)$, the **Hellinger-Kantorovich metric** is:
+
+$$
+d_{HK}^2(\mu_1, \mu_2) := d_H^2(\mu_1, \mu_2) + W_2^2(\tilde{\mu}_1, \tilde{\mu}_2)
+$$
+
+where:
+- $d_H^2(\mu_1, \mu_2) = \int \left( \sqrt{\frac{d\mu_1}{d\lambda}} - \sqrt{\frac{d\mu_2}{d\lambda}} \right)^2 d\lambda$ is the **Hellinger distance**
+- $W_2^2(\tilde{\mu}_1, \tilde{\mu}_2)$ is the **Wasserstein-2 distance** between normalized measures $\tilde{\mu}_i = \mu_i / \|\mu_i\|$
+- $\lambda$ is a common reference measure (e.g., Lebesgue measure)
+
+**Alternative form (Bhattacharyya):**
+
+$$
+d_H^2(\mu_1, \mu_2) = \|\mu_1\| + \|\mu_2\| - 2\int \sqrt{f_1 f_2} \, d\lambda
+$$
+
+where $f_i = d\mu_i / d\lambda$ and the integral is the **Bhattacharyya coefficient** $BC(\mu_1, \mu_2)$.
+
+**Related Results:** `thm-hk-convergence-main`, `lem-mass-contraction-revival-death`
+
+---
+
+### Exponential HK-Convergence of the Fragile Gas
+
+**Type:** Theorem
+**Label:** `thm-hk-convergence-main`
+**Source:** [18_hk_convergence.md § 1](18_hk_convergence.md)
+**Tags:** `hellinger-kantorovich`, `convergence`, `exponential`, `contraction`
+
+**Statement:**
+Let the Fragile Gas evolve under the composed operator $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ on the space of sub-probability measures representing the alive swarm. Let $\mu_t$ denote the empirical measure at time $t$ and $\pi_{\text{QSD}}$ denote the quasi-stationary distribution.
+
+Then $\Psi_{\text{total}}$ is a strict contraction in the Hellinger-Kantorovich metric. Specifically, there exist constants $\kappa_{HK} > 0$ and $C_{HK} < \infty$ such that:
+
+$$
+\mathbb{E}[d_{HK}^2(\mu_{t+1}, \pi_{\text{QSD}})] \leq (1 - \kappa_{HK}) d_{HK}^2(\mu_t, \pi_{\text{QSD}}) + C_{HK}
+$$
+
+**Implication (Exponential Convergence):**
+
+$$
+d_{HK}(\mu_t, \pi_{\text{QSD}}) \leq e^{-\kappa_{HK} t/2} \cdot d_{HK}(\mu_0, \pi_{\text{QSD}}) + \sqrt{\frac{C_{HK}}{\kappa_{HK}}}
+$$
+
+**Proof Dependency Structure:**
+- Part I: Wasserstein Component (PROVEN in existing framework via hypocoercivity and W₂ cloning contraction)
+- Part II: Hellinger Component (Lemmas A, B, C below)
+
+**Related Results:** `lem-mass-contraction-revival-death`, `lem-structural-variance-contraction`, `lem-kinetic-hellinger-contraction`
+
+---
+
+### Mass Contraction via Revival and Death
+
+**Type:** Lemma
+**Label:** `lem-mass-contraction-revival-death`
+**Source:** [18_hk_convergence.md § 2](18_hk_convergence.md)
+**Tags:** `mass-contraction`, `revival`, `boundary-death`, `lyapunov`
+
+**Statement:**
+Let $k_t = \|\mu_t\|$ denote the number of alive walkers at time $t$ (the total mass of the empirical measure). Let $k_* = \|\pi_{\text{QSD}}\|$ denote the equilibrium alive count under the QSD.
+
+Assume:
+1. **Birth Mechanism**: Total births $B_t = (N - k_t) + C_t$ where $\mathbb{E}[C_t | k_t] = \lambda_{\text{clone}}(k_t) k_t$
+2. **Death Mechanism**: $\mathbb{E}[D_t | k_t] = \bar{p}_{\text{kill}}(k_t) k_t$
+3. **QSD Equilibrium**: $(N - k_*) + \lambda_{\text{clone}}^* k_* = \bar{p}_{\text{kill}}^* k_*$
+4. **Lipschitz Continuity**: Both $\lambda_{\text{clone}}(k)$ and $\bar{p}_{\text{kill}}(k)$ are Lipschitz continuous
+
+Then there exist constants $\kappa_{\text{mass}} > 0$ and $C_{\text{mass}} < \infty$ such that:
+
+$$
+\mathbb{E}[(k_{t+1} - k_*)^2] \leq (1 - 2\kappa_{\text{mass}}) \mathbb{E}[(k_t - k_*)^2] + C_{\text{mass}}
+$$
+
+where:
+- $\kappa_{\text{mass}} = \frac{1 - \epsilon - \epsilon^2}{2}$ with $\epsilon = (1 + 2L_p N + \bar{p}_{\text{kill}}^*)(L_\lambda N + \lambda_{\text{clone}}^*)$
+- $C_{\text{mass}} = C_N \cdot N$ where $C_N = C_{\text{var}} + O(1/N)$
+- $C_{\text{var}} = \bar{p}_{\max}(1 + \lambda_{\max}) + 2(1 + L_g^{(1)})^2 \lambda_{\max} + \frac{1}{2}(L_g^{(2)})^2 \lambda_{\max}$
+
+**Assumptions:**
+1. $\epsilon^2 + \epsilon < 1$, requiring $\epsilon < \frac{\sqrt{5} - 1}{2} \approx 0.618$ (achieved when $L_p L_\lambda = O(1/N^2)$ for large $N$)
+2. $\bar{p}_{\text{kill}}(k')$ is twice continuously differentiable with $L_g^{(2)} = O(N^{-1})$
+
+**Related Results:** `thm-hk-convergence-main`, `lem-structural-variance-contraction`
+
+---
+
+### Exponential Contraction of Structural Variance
+
+**Type:** Lemma
+**Label:** `lem-structural-variance-contraction`
+**Source:** [18_hk_convergence.md § 3](18_hk_convergence.md)
+**Tags:** `structural-variance`, `wasserstein`, `kl-divergence`, `lsi`, `reverse-talagrand`, `path-dependent`
+
+**Statement:**
+Let $\mu_t$ be the law of the empirical measure at time $t$ and let $\pi_{\text{QSD}}$ be the quasi-stationary distribution. Assume $\pi_{\text{QSD}}$ is log-concave.
+
+Then for any initial measure $\mu_0$, the structural variance $V_{\text{struct}}(\mu_t, \pi_{\text{QSD}})$ contracts exponentially to zero:
+
+$$
+V_{\text{struct}}(\mu_t, \pi_{\text{QSD}}) \leq \frac{2}{\kappa_{\text{conf}}} \cdot D_{\text{KL}}(\mu_0 \| \pi_{\text{QSD}}) \cdot e^{-\lambda t}
+$$
+
+where:
+- $\lambda > 0$ is the exponential convergence rate from the LSI (see `thm-main-kl-convergence`)
+- $\kappa_{\text{conf}} > 0$ is the strong convexity constant of the confining potential
+- $D_{\text{KL}}(\mu_0 \| \pi_{\text{QSD}})$ is the initial KL-divergence from equilibrium
+
+**Explicit LSI constant:**
+
+$$
+\lambda = \frac{1}{C_{\text{LSI}}} = O(\gamma \kappa_{\text{conf}} \kappa_W \delta^2)
+$$
+
+where:
+- $\gamma > 0$ is the friction coefficient (kinetic operator parameter)
+- $\kappa_W > 0$ is the Wasserstein contraction rate of the cloning operator
+- $\delta^2 > 0$ is the cloning noise variance
+
+**Path-Dependence Note:** This is a **path-dependent convergence result**. The pre-factor depends on the initial measure $\mu_0$. For any initial measure $\mu_0$ with finite KL-divergence to $\pi_{\text{QSD}}$, the structural variance contracts exponentially at rate $\lambda$. The exponential rate $\lambda > 0$ is uniform and system-dependent, not path-dependent.
+
+**Proof Strategy:**
+1. KL-divergence contraction via LSI: $D_{\text{KL}}(\mu_t \| \pi) \leq e^{-\lambda t} D_{\text{KL}}(\mu_0 \| \pi)$
+2. Reverse Talagrand: $W_2^2(\mu, \pi) \leq (2/\kappa_{\text{conf}}) D_{\text{KL}}(\mu \| \pi)$
+3. Variance decomposition: $V_{\text{struct}} = W_2^2(\tilde{\mu}, \tilde{\pi}) \leq W_2^2(\mu, \pi)$
+
+**Related Results:** `thm-main-kl-convergence`, `prop-wasserstein-variance-decomposition`, `lem-kinetic-hellinger-contraction`
+
+---
+
+### Wasserstein Variance Decomposition
+
+**Type:** Proposition
+**Label:** `prop-wasserstein-variance-decomposition`
+**Source:** [18_hk_convergence.md § 3](18_hk_convergence.md)
+**Tags:** `wasserstein`, `variance-decomposition`, `optimal-transport`
+
+**Statement:**
+For any two probability measures $\mu$ and $\pi$ on $\mathbb{R}^d$ with finite second moments:
+
+$$
+W_2^2(\mu, \pi) = W_2^2(\tilde{\mu}, \tilde{\pi}) + \|m_\mu - m_\pi\|^2
+$$
+
+where:
+- $\tilde{\mu}$ is the centered version of $\mu$ (mean translated to origin)
+- $\tilde{\pi}$ is the centered version of $\pi$ (mean translated to origin)
+- $m_\mu := \mathbb{E}_{X \sim \mu}[X]$ is the mean of $\mu$
+- $m_\pi := \mathbb{E}_{Y \sim \pi}[Y]$ is the mean of $\pi$
+
+**Reference:** This is a standard result in optimal transport theory. For a proof, see Villani (2009), *Optimal Transport: Old and New*, Theorem 7.17, or Peyré & Cuturi (2019), *Computational Optimal Transport*, Section 2.3.
+
+**Related Results:** `lem-structural-variance-contraction`
+
+---
+
+### Kinetic Operator Hellinger Contraction
+
+**Type:** Lemma
+**Label:** `lem-kinetic-hellinger-contraction`
+**Source:** [18_hk_convergence.md § 4](18_hk_convergence.md)
+**Tags:** `kinetic-operator`, `hellinger`, `hypocoercivity`, `bounded-density`, `mass-shape-decomposition`
+
+**Statement:**
+Let $\mu_t$ be the empirical measure of alive walkers at time $t$ and let $\pi_{\text{QSD}}$ be the quasi-stationary distribution.
+
+**Assumption:** The normalized density ratio is uniformly bounded:
+
+$$
+\sup_{t \geq 0} \sup_{x \in \mathcal{X}_{\text{valid}}} \frac{d\tilde{\mu}_t}{d\tilde{\pi}_{\text{QSD}}}(x) \leq M < \infty
+$$
+
+where $\tilde{\mu}_t = \mu_t / \|\mu_t\|$ and $\tilde{\pi}_{\text{QSD}} = \pi_{\text{QSD}} / \|\pi_{\text{QSD}}\|$ are the normalized probability measures.
+
+Under this assumption and the kinetic operator $\Psi_{\text{kin}}$ (BAOAB + boundary killing), there exist constants $\kappa_{\text{kin}}(M) > 0$ and $C_{\text{kin}} < \infty$ such that:
+
+$$
+\mathbb{E}[d_H^2(\mu_{t+1}, \pi_{\text{QSD}}) | \mu_t] \leq (1 - \kappa_{\text{kin}}(M) \tau) d_H^2(\mu_t, \pi_{\text{QSD}}) + C_{\text{kin}} \tau^2
+$$
+
+where $\tau$ is the time step size.
+
+**Explicit constants:**
+
+**Contraction rate:**
+
+$$
+\kappa_{\text{kin}} = \min\left(2\lambda_{\text{mass}}, \alpha_{\text{shape}}\right) = \min\left(2(r_* + c_*), \frac{\alpha_{\text{eff}}}{C_{\text{rev}}(M)}\right)
+$$
+
+where:
+
+*Mass equilibration rate:*
+- $\lambda_{\text{mass}} = r_* + c_*$ combines:
+  - $r_* > 0$: equilibrium revival rate per empty slot
+  - $c_* = \bar{c}_{\text{kill}}(\pi_{\text{QSD}}) > 0$: equilibrium death rate at QSD
+
+*Shape contraction rate:*
+- $\alpha_{\text{shape}} = \alpha_{\text{eff}} / C_{\text{rev}}(M)$ where:
+  - $\alpha_{\text{eff}} = \min(\kappa_{\text{hypo}}, \alpha_U)$ is the effective hypocoercive rate
+    - $\kappa_{\text{hypo}} \sim \gamma$: hypocoercive coupling rate (proportional to friction)
+    - $\alpha_U > 0$: coercivity constant of potential $U$ in exterior region
+  - $C_{\text{rev}}(M) = O(M)$: reverse Pinsker constant for density bound $M$
+
+**Expansion constant:**
+
+$$
+C_{\text{kin}} = k_* K_H + C_{\text{cross}}
+$$
+
+where:
+- $k_* = \|\pi_{\text{QSD}}\|$: equilibrium alive mass
+- $K_H > 0$: BAOAB weak error constant (depends on potential smoothness, friction $\gamma$, noise strength $\sigma$)
+- $C_{\text{cross}} > 0$: bounds cross-terms from $O(\tau^2 d_H^2)$ remainder
+
+**Justification of Bounded Density Assumption:** The bounded density ratio is automatically satisfied when:
+1. The initial measure has bounded density: $d\mu_0/d\pi_{\text{QSD}} \leq M_0 < \infty$
+2. The cloning operator with Gaussian noise ($\delta^2 > 0$) provides immediate $L^\infty$ regularization
+3. The diffusive Langevin dynamics prevents singularity formation
+4. The confining potential ensures mass concentration where $\pi_{\text{QSD}} > 0$
+
+**Proof Strategy:**
+1. **Exact Hellinger decomposition** into mass and shape: $d_H^2(\mu_t, \pi) = (\sqrt{k_t} - \sqrt{k_*})^2 + \sqrt{k_t k_*} \cdot d_H^2(\tilde{\mu}_t, \tilde{\pi})$
+2. **Mass contraction** via boundary killing and revival: $\mathbb{E}[(\sqrt{k_{t+1}} - \sqrt{k_*})^2] \leq (1 - 2\tau \lambda_{\text{mass}}) (\sqrt{k_t} - \sqrt{k_*})^2$
+3. **Shape contraction** via hypocoercivity: $d_H^2(\tilde{\mu}_{t+1}, \tilde{\pi}) \leq (1 - \tau \alpha_{\text{shape}}) d_H^2(\tilde{\mu}_t, \tilde{\pi})$
+4. **BAOAB discretization error**: $O(\tau^2)$ weak error in Hellinger distance
+
+**Related Results:** `thm-hk-convergence-main`, `thm-hypocoercive-main`, `lem-mass-contraction-revival-death`
+
+---
+
 ## Fractal Set Theory and Discrete Spacetime
 
 This section contains the mathematical framework for viewing the Fragile Gas dynamics as a discrete spacetime structure ("Fractal Set") that emerges from episode trajectories. The theory connects to causal set quantum gravity, lattice gauge theory, and provides a discrete formulation of QFT on the walker genealogy graph.
@@ -5992,8 +6238,9 @@ Axioms (Ch 4) → State Space (Ch 2) → Lyapunov (Ch 3)
 - ✅ [08_emergent_geometry.md](08_emergent_geometry.md) - Anisotropic diffusion, emergent Riemannian geometry, hypocoercivity with state-dependent diffusion
 - ✅ [09_symmetries_adaptive_gas.md](09_symmetries_adaptive_gas.md) - Permutation invariance, Euclidean symmetries, emergent isometries, Noether's theorem, conservation laws
 - ✅ [12_gauge_theory_adaptive_gas.md](12_gauge_theory_adaptive_gas.md) - Gauge group, orbifold structure, braid group topology, holonomy, principal bundles
+- ✅ [18_hk_convergence.md](18_hk_convergence.md) - Hellinger-Kantorovich metric convergence with explicit constants, mass contraction via Lyapunov analysis, LSI-based structural variance contraction (path-dependent), kinetic Hellinger contraction via exact mass-shape decomposition and hypocoercivity
 
-**Coverage:** Complete convergence proof chain from N-particle dynamics to mean-field limit, including adaptive extensions with ρ-localized fitness, emergent geometric structure, symmetry analysis, and rigorous gauge-theoretic formulation
+**Coverage:** Complete convergence proof chain from N-particle dynamics to mean-field limit, including adaptive extensions with ρ-localized fitness, emergent geometric structure, symmetry analysis, rigorous gauge-theoretic formulation, and Hellinger-Kantorovich metric convergence for birth-death dynamics
 
 **Future Additions:**
 - [01_fragile_gas_framework.md](01_fragile_gas_framework.md) - Core framework axioms and definitions
