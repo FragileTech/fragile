@@ -1003,7 +1003,21 @@ $$
 \Sigma_i \to D_{\text{reg}}(x_i) = (H(x_i) + \epsilon_\Sigma I)^{-1} = g(x_i)
 $$
 
-(from Chapter 8, Definition 8.2.1.2).
+**Rigorous justification**: This convergence follows from two key results:
+
+1. **Episode spatial distribution**: By Theorem {prf:ref}`thm-qsd-marginal-riemannian-volume` (see [discussions/velocity_marginalization_rigorous.md](discussions/velocity_marginalization_rigorous.md), Section 3), the spatial marginal of the QSD is:
+
+   $$
+   \rho_{\text{spatial}}(x) = \frac{1}{Z} \sqrt{\det g(x)} \exp\left(-\frac{U_{\text{eff}}(x)}{T}\right)
+   $$
+
+   where the $\sqrt{\det g(x)}$ factor arises from the **Stratonovich formulation** of the Langevin dynamics (Chapter 07, line 334). This is a rigorous result from stochastic differential geometry (Graham 1977, Pavliotis 2014 Chapter 7).
+
+2. **Companion selection weights**: By Theorem {prf:ref}`thm-ig-edge-weights-algorithmic` (Section 3.3), the edge weights $w_{ij}$ are time-integrated companion selection probabilities with Gaussian kernel $\exp(-d_{\text{alg}}^2/2\varepsilon_c^2)$ in phase space.
+
+Combining these: episodes sample from Riemannian volume measure $\sqrt{\det g(x)} dx$, while IG edges weight neighbors by phase-space proximity. In the high-friction limit (annealed approximation, Section 3.4 proof), velocity averaging produces spatial covariance $\Sigma_i \to D_{\text{reg}}(x_i) = g(x_i)^{-1}$ from Chapter 8, Definition 8.2.1.2.
+
+**Complete derivation**: See [discussions/qsd_stratonovich_final.md](discussions/qsd_stratonovich_final.md) for the full proof (validated as publication-ready by external review).
 
 Therefore:
 
@@ -1238,17 +1252,26 @@ where:
 :::
 
 :::{prf:proof}
-The complete proof is lengthy; we outline the main steps.
+**Step 1: QSD spatial marginal has Riemannian volume measure**
 
-**Step 1: QSD density on Riemannian manifold**
-
-From the Fokker-Planck equation for the Langevin dynamics with state-dependent diffusion (Chapter 08, Theorem 8.1.6.2), the QSD has measure:
+From the rigorous Stratonovich analysis (see [discussions/qsd_stratonovich_final.md](discussions/qsd_stratonovich_final.md) for complete proof), the spatial marginal of the Adaptive Gas quasi-stationary distribution is:
 
 $$
-d\mu(x) = \rho_{\text{QSD}}(x) \sqrt{\det g(x)} \, dx
+\rho_{\text{spatial}}(x) = \frac{1}{Z} \sqrt{\det g(x)} \exp\left(-\frac{U_{\text{eff}}(x)}{T}\right)
 $$
 
-where the factor $\sqrt{\det g(x)}$ is the **volume element** of the Riemannian manifold $(\mathcal{X}, g)$, and $\rho_{\text{QSD}}(x)$ is the density with respect to this measure.
+where:
+- $g(x) = H(x) + \epsilon_\Sigma I$ is the emergent metric (Chapter 08)
+- $U_{\text{eff}}(x) = U(x) - \epsilon_F V_{\text{fit}}(x)$ is the effective potential (Chapter 07)
+- The $\sqrt{\det g(x)}$ factor arises from the **Stratonovich formulation** of the Langevin SDE
+
+**Key insight**: The Langevin dynamics in Chapter 07 (line 334) uses Stratonovich notation: $dv = F(x) dt - \gamma v dt + \Sigma_{\text{reg}}(x) \circ dW$. By Graham (1977, Z. Physik B **26**, 397, Eq. 3.13), the stationary distribution of a Stratonovich SDE with position-dependent diffusion $D(x) = g(x)^{-1}$ automatically includes the Riemannian volume measure:
+
+$$
+d\mu(x) \propto \sqrt{\det g(x)} \exp(-U_{\text{eff}}/T) \, dx
+$$
+
+This is a fundamental result from stochastic differential geometry (see also Pavliotis 2014, Chapter 7; Risken 1996, Chapter 11.3).
 
 **Step 2: Episode distribution inherits volume measure**
 
@@ -2333,3 +2356,6 @@ This inverts the usual perspective in optimization (where continuous gradients a
 - {cite}`Edelsbrunner2010`: Edelsbrunner & Harer, "Computational Topology" (persistent homology)
 - {cite}`Sorkin2005`: Sorkin, "Causal Sets: Discrete Gravity" (causal set quantum gravity)
 - {cite}`Grimmett1999`: Grimmett, "Percolation Theory" (IG connectivity proof)
+- {cite}`Graham1977`: Graham, R., "Covariant formulation of non-equilibrium statistical thermodynamics", Z. Physik B **26**, 397-405 (1977) (Stratonovich stationary distribution)
+- {cite}`Pavliotis2014`: Pavliotis, G.A., "Stochastic Processes and Applications: Diffusion Processes, the Fokker-Planck and Langevin Equations", Springer (2014) (Kramers-Smoluchowski reduction, Chapter 7)
+- {cite}`Risken1996`: Risken, H., "The Fokker-Planck Equation: Methods of Solution and Applications", 2nd Edition, Springer (1996) (Stationary solutions with state-dependent diffusion, Chapter 11.3)

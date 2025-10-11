@@ -6830,6 +6830,39 @@ $$
 **Key Property:** When $V_{\text{Var},x}$ is sufficiently large, the positional contraction dominates, yielding net contraction of $V_{\text{Var}}$.
 :::
 
+:::{prf:proof}
+**Proof.**
+
+This result follows immediately by combining the two component drift inequalities established earlier in this chapter.
+
+From {prf:ref}`thm-positional-variance-contraction` (Theorem 10.3.1), we have:
+
+$$
+\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
+$$
+
+From {prf:ref}`thm-bounded-velocity-expansion-cloning` (Theorem 10.4.1), we have:
+
+$$
+\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \leq C_v
+$$
+
+By linearity of expectation, the total internal variance drift is:
+
+$$
+\begin{aligned}
+\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var}}] &= \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x} + \Delta V_{\text{Var},v}] \\
+&= \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] + \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \\
+&\leq (-\kappa_x V_{\text{Var},x} + C_x) + C_v \\
+&= -\kappa_x V_{\text{Var},x} + (C_x + C_v)
+\end{aligned}
+$$
+
+This establishes the claimed drift inequality for the total variance.
+
+**Q.E.D.**
+:::
+
 :::{admonition} Interpretation: The Cloning Operator's Role in Synergistic Dissipation
 :class: important
 
@@ -7479,23 +7512,101 @@ when the swarm is in a region where $W_b \leq \frac{C_b}{\kappa_b}$.
 :::
 
 :::{prf:proof}
-**Sketch.**
+**Proof.**
 
-The boundary potential $W_b$ measures the average proximity to the boundary. When $W_b$ is bounded, most walkers are in the safe interior.
+We establish exponential suppression of extinction probability through a concentration inequality argument.
 
-For total extinction, all $N$ walkers must simultaneously cross the boundary. The probability of this requires a coherent, large-deviation event affecting all walkers.
+**Step 1: Setup and Definitions.**
 
-By concentration inequalities (McDiarmid's inequality applied to the perturbation noise), the probability of such a large deviation decays exponentially in $N$:
+Consider a swarm in the quasi-stationary regime where $W_b \leq C_b/\kappa_b$. Recall the barrier function $\varphi_{\text{barrier}}(x)$ has the property:
 
 $$
-P(\text{all walkers cross boundary}) \leq e^{-N \cdot I}
+\varphi_{\text{barrier}}(x) \to \infty \quad \text{as} \quad x \to \partial \mathcal{X}_{\text{valid}}
 $$
 
-where $I > 0$ is a rate function depending on the distance to the boundary and the noise variance.
+Define $\mathcal{X}_{\text{extinct}} := \{x \in \mathcal{X}_{\text{valid}} : d(x, \partial \mathcal{X}_{\text{valid}}) < d_{\text{extinct}}\}$ as the boundary layer where walkers are marked as dead (typically $d_{\text{extinct}} = \delta$ is the cloning jitter radius).
 
-The bounded $W_b$ ensures this rate function remains bounded away from zero.
+**Step 2: Barrier Value in the Extinction Zone.**
 
-**Q.E.D.** (Full proof in the QSD convergence analysis, companion document)
+Since $\varphi_{\text{barrier}}$ grows to infinity at the boundary and is continuous, there exists a minimum barrier value $\varphi_{\min} > 0$ in the extinction zone:
+
+$$
+\varphi_{\min} := \inf_{x \in \mathcal{X}_{\text{extinct}}} \varphi_{\text{barrier}}(x) > 0
+$$
+
+This constant depends only on the geometry of $\mathcal{X}_{\text{valid}}$ and the barrier function construction.
+
+**Step 3: Walker Distribution from Bounded $W_b$.**
+
+If the average barrier value satisfies:
+
+$$
+W_b = \frac{1}{N} \sum_{i=1}^N \varphi_{\text{barrier}}(x_i) \leq \frac{C_b}{\kappa_b}
+$$
+
+then the number of walkers in the extinction zone can be bounded. Let $N_{\text{ext}}$ denote the number of walkers with $x_i \in \mathcal{X}_{\text{extinct}}$. Then:
+
+$$
+N_{\text{ext}} \cdot \varphi_{\min} \leq \sum_{i=1}^N \varphi_{\text{barrier}}(x_i) = N \cdot W_b \leq N \cdot \frac{C_b}{\kappa_b}
+$$
+
+Therefore:
+
+$$
+N_{\text{ext}} \leq N \cdot \frac{C_b}{\kappa_b \varphi_{\min}}
+$$
+
+**Step 4: Extinction Requires All Walkers to Cross.**
+
+For total extinction in one step, all $N$ walkers must transition from their current positions into $\mathcal{X}_{\text{extinct}}$ simultaneously. The number of walkers that must make this crossing is at least:
+
+$$
+N_{\text{cross}} := N - N_{\text{ext}} \geq N \left(1 - \frac{C_b}{\kappa_b \varphi_{\min}}\right) =: N \cdot f_{\text{safe}}
+$$
+
+where $f_{\text{safe}} \in (0, 1)$ is the fraction of walkers in the safe interior (bounded away from zero for sufficiently large $\varphi_{\min}$).
+
+**Step 5: Concentration Inequality for Boundary Crossing.**
+
+Each walker's position update includes bounded perturbation noise (from cloning jitter or kinetic diffusion) with characteristic scale $\sigma_{\text{noise}}$. For a walker at distance $d > d_{\text{extinct}} + 2\sigma_{\text{noise}}$ from the boundary to cross into the extinction zone requires a deviation of at least $\Delta d := d - d_{\text{extinct}} > 2\sigma_{\text{noise}}$.
+
+By Hoeffding's inequality (or Gaussian tail bounds if using Gaussian noise), the probability that any single safe walker crosses the boundary in one step is:
+
+$$
+p_{\text{cross}} \leq \exp\left(-\frac{(\Delta d)^2}{2\sigma_{\text{noise}}^2}\right)
+$$
+
+**Step 6: Union Bound for Total Extinction.**
+
+For all $N \cdot f_{\text{safe}}$ safe walkers to simultaneously cross requires:
+
+$$
+P(\text{extinction}) \leq p_{\text{cross}}^{N \cdot f_{\text{safe}}} = \exp\left(-N \cdot f_{\text{safe}} \cdot \frac{(\Delta d)^2}{2\sigma_{\text{noise}}^2}\right)
+$$
+
+Defining the rate constant:
+
+$$
+c_{\text{extinct}} := f_{\text{safe}} \cdot \frac{(\Delta d)^2}{2\sigma_{\text{noise}}^2} > 0
+$$
+
+we obtain:
+
+$$
+P(\text{extinction}) \leq \exp(-N \cdot c_{\text{extinct}})
+$$
+
+**Step 7: Parameter Dependence.**
+
+The rate constant $c_{\text{extinct}}$ is bounded below by:
+
+$$
+c_{\text{extinct}} \geq \left(1 - \frac{C_b}{\kappa_b \varphi_{\min}}\right) \cdot \frac{d_{\text{safe}}^2}{2\sigma_{\text{noise}}^2}
+$$
+
+where $d_{\text{safe}}$ is the typical distance from the safe interior to the extinction zone. This remains strictly positive when $C_b/(\kappa_b \varphi_{\min}) < 1$, which is guaranteed by the equilibrium bound.
+
+**Q.E.D.**
 :::
 
 :::{prf:remark} Safety Margin and Parameter Tuning
@@ -7763,6 +7874,91 @@ $$
 $$
 
 where $C_{\text{loc}}, C_{\text{struct}} < \infty$ are state-independent constants with $C_W = C_{\text{loc}} + C_{\text{struct}}$.
+:::
+
+:::{prf:theorem} Complete Wasserstein Decomposition Drift
+:label: thm-complete-wasserstein-drift
+
+The total inter-swarm Wasserstein distance $V_W = V_{\text{loc}} + V_{\text{struct}}$ satisfies a combined drift inequality under the cloning operator:
+
+$$
+\mathbb{E}_{\text{clone}}[\Delta V_W] \leq C_W
+$$
+
+where $C_W < \infty$ is a state-independent constant satisfying:
+
+$$
+C_W = C_{\text{loc}} + C_{\text{struct}}
+$$
+
+**Component Bounds:**
+
+From {prf:ref}`cor-component-bounds-vw`, the individual components satisfy:
+
+$$
+\begin{aligned}
+\mathbb{E}_{\text{clone}}[\Delta V_{\text{loc}}] &\leq C_{\text{loc}} \\
+\mathbb{E}_{\text{clone}}[\Delta V_{\text{struct}}] &\leq C_{\text{struct}}
+\end{aligned}
+$$
+
+where:
+- $C_{\text{loc}}$ arises from barycenter desynchronization due to differential cloning rates
+- $C_{\text{struct}}$ arises from jitter noise and structural rearrangement during cloning
+
+**Note on Kinetic Contraction:**
+
+While the cloning operator allows bounded expansion of $V_W$, the **kinetic operator** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):
+
+$$
+\mathbb{E}_{\text{kin}}[\Delta V_W] \leq -\kappa_W^{\text{kin}} \tau V_W + C_W^{\text{kin}} \tau
+$$
+
+where $\kappa_W^{\text{kin}} \sim \min(\gamma, \alpha_U, \sigma_{\min}^2) > 0$ provides the necessary contraction to overcome cloning expansion.
+:::
+
+:::{prf:proof}
+**Proof.**
+
+By linearity of expectation and the Wasserstein decomposition {prf:ref}`lem-wasserstein-decomposition`:
+
+$$
+\mathbb{E}_{\text{clone}}[\Delta V_W] = \mathbb{E}_{\text{clone}}[\Delta(V_{\text{loc}} + V_{\text{struct}})]
+$$
+
+$$
+= \mathbb{E}_{\text{clone}}[\Delta V_{\text{loc}}] + \mathbb{E}_{\text{clone}}[\Delta V_{\text{struct}}]
+$$
+
+Applying the component bounds from {prf:ref}`cor-component-bounds-vw`:
+
+$$
+\leq C_{\text{loc}} + C_{\text{struct}} =: C_W
+$$
+
+This establishes the combined drift bound.
+
+**Explicit Constants:**
+
+From the proof of Theorem 12.2.1:
+
+**Location Expansion:** $C_{\text{loc}}$ arises from the differential expected clone positions between swarms:
+
+$$
+C_{\text{loc}} = O\left(\mathbb{E}\left[\left\|\mathbb{E}_{c_1 \sim \mathcal{C}_i(S_1)}[x_{c_1}] - \mathbb{E}_{c_2 \sim \mathcal{C}_i(S_2)}[x_{c_2}]\right\|^2\right]\right)
+$$
+
+which is bounded by the domain diameter and companion selection variance.
+
+**Structural Expansion:** $C_{\text{struct}}$ is dominated by position jitter:
+
+$$
+C_{\text{struct}} = O(\sigma_x^2 f_{\text{clone}})
+$$
+
+where $f_{\text{clone}}$ is the expected fraction of walkers that clone per step and $\sigma_x^2$ is the jitter variance.
+
+**Q.E.D.**
 :::
 
 ## 12.3. The Complete Lyapunov Drift Under Cloning

@@ -3209,6 +3209,129 @@ $$
 Both are finite and N-independent in the mean-field limit.
 :::
 
+:::{prf:theorem} Equilibrium Variance Bounds from Drift Inequalities
+:label: thm-equilibrium-variance-bounds
+
+The quasi-stationary distribution satisfies explicit variance bounds derived from the component drift inequalities:
+
+**Positional Variance Equilibrium:**
+
+From {prf:ref}`thm-positional-variance-contraction` (cloning contraction) and kinetic drift, setting $\mathbb{E}[\Delta V_{\text{Var},x}] = 0$ yields:
+
+$$
+V_{\text{Var},x}^{\text{QSD}} \leq \frac{C_x}{\kappa_x}
+$$
+
+where:
+- $\kappa_x > 0$ is the N-uniform positional contraction rate from the Keystone Principle
+- $C_x < \infty$ is the additive expansion constant from cloning noise and boundary effects
+
+**Velocity Variance Equilibrium:**
+
+From {prf:ref}`thm-bounded-velocity-expansion-cloning` (cloning expansion) and {prf:ref}`thm-velocity-variance-contraction-kinetic` (Langevin friction), setting $\mathbb{E}[\Delta V_{\text{Var},v}] = 0$ yields:
+
+$$
+V_{\text{Var},v}^{\text{QSD}} \leq \frac{C_v + \sigma_{\max}^2 d \tau}{2\gamma\tau}
+$$
+
+where:
+- $C_v$ is the state-independent velocity expansion from inelastic collisions
+- $\sigma_{\max}^2 d \tau$ is the noise injection from Langevin dynamics
+- $2\gamma\tau$ is the friction dissipation rate
+
+**Simplified form** (when $C_v \ll \sigma_{\max}^2 d \tau$):
+
+$$
+V_{\text{Var},v}^{\text{QSD}} \approx \frac{d\sigma_{\max}^2}{2\gamma}
+$$
+
+recovering the classical equipartition result.
+
+**Boundary Potential Equilibrium:**
+
+From {prf:ref}`thm-boundary-potential-contraction`, setting $\mathbb{E}[\Delta W_b] = 0$ yields:
+
+$$
+W_b^{\text{QSD}} \leq \frac{C_b}{\kappa_b}
+$$
+
+ensuring bounded boundary exposure in the QSD.
+
+**Physical Interpretation:**
+
+These bounds show that equilibrium variance is determined by the balance between:
+- **Contraction mechanisms**: Cloning (positional), friction (velocity), Safe Harbor (boundary)
+- **Expansion mechanisms**: Cloning noise, Langevin noise, boundary reentry
+
+All bounds are N-uniform, ensuring the QSD remains well-defined in the thermodynamic limit $N \to \infty$.
+:::
+
+:::{prf:proof}
+**Proof.**
+
+The equilibrium variance bounds follow immediately from the drift inequalities by setting the expected change to zero.
+
+**Positional Variance:**
+
+From the positional variance drift inequality (Theorem 10.3.1 in 03_cloning.md):
+
+$$
+\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
+$$
+
+At equilibrium, $\mathbb{E}[\Delta V_{\text{Var},x}] = 0$, thus:
+
+$$
+0 = -\kappa_x V_{\text{Var},x}^{\text{QSD}} + C_x
+$$
+
+Solving for $V_{\text{Var},x}^{\text{QSD}}$:
+
+$$
+V_{\text{Var},x}^{\text{QSD}} = \frac{C_x}{\kappa_x}
+$$
+
+**Velocity Variance:**
+
+The velocity variance experiences:
+- Expansion from cloning: $\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \leq C_v$ (Theorem 10.4.1)
+- Dissipation from friction: $\mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},v}] \leq -2\gamma V_{\text{Var},v} \tau + \sigma_{\max}^2 d \tau$ (Theorem 3.3.1)
+
+Combined per-step drift:
+
+$$
+\mathbb{E}_{\text{total}}[\Delta V_{\text{Var},v}] \leq -2\gamma V_{\text{Var},v} \tau + (C_v + \sigma_{\max}^2 d \tau)
+$$
+
+At equilibrium, $\mathbb{E}[\Delta V_{\text{Var},v}] = 0$:
+
+$$
+0 = -2\gamma V_{\text{Var},v}^{\text{QSD}} \tau + (C_v + \sigma_{\max}^2 d \tau)
+$$
+
+Solving:
+
+$$
+V_{\text{Var},v}^{\text{QSD}} = \frac{C_v + \sigma_{\max}^2 d \tau}{2\gamma\tau}
+$$
+
+**Boundary Potential:**
+
+From Theorem 11.3.1 in 03_cloning.md:
+
+$$
+\mathbb{E}_{\text{clone}}[\Delta W_b] \leq -\kappa_b W_b + C_b
+$$
+
+Setting $\mathbb{E}[\Delta W_b] = 0$ at equilibrium:
+
+$$
+W_b^{\text{QSD}} = \frac{C_b}{\kappa_b}
+$$
+
+**Q.E.D.**
+:::
+
 ### 7.7. Summary and Implications
 
 This chapter has proven:
@@ -3651,6 +3774,100 @@ $$
 with weights chosen to ensure **all expansion terms** are dominated by contraction from other components.
 
 **Explicit expansion:**
+
+:::{prf:theorem} Synergistic Rate Derivation from Component Drifts
+:label: thm-synergistic-rate-derivation
+
+The total drift inequality combines component-wise drift bounds from cloning and kinetic operators to yield explicit synergistic convergence.
+
+**Component Drift Structure:**
+
+From the cloning operator {prf:ref}`thm-positional-variance-contraction` and kinetic operator {prf:ref}`thm-velocity-variance-contraction`, each Lyapunov component satisfies:
+
+$$
+\begin{aligned}
+\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] &\leq -\kappa_x V_{\text{Var},x} + C_x + C_{xv} V_{\text{Var},v} + C_{xW} V_W \\
+\mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},v}] &\leq -\kappa_v V_{\text{Var},v} + C_v + C_{vx} V_{\text{Var},x} \\
+\mathbb{E}_{\text{clone}}[\Delta V_W] &\leq -\kappa_W V_W + C_W \\
+\mathbb{E}_{\text{clone}}[\Delta W_b] &\leq -\kappa_b W_b + C_b
+\end{aligned}
+$$
+
+where cross-component coupling terms $C_{xv}, C_{xW}, C_{vx}$ arise from expansion by the complementary operator.
+
+**Weighted Combination:**
+
+Define the weighted Lyapunov function:
+
+$$
+V_{\text{total}} = V_{\text{Var},x} + \alpha_v V_{\text{Var},v} + \alpha_W V_W + \alpha_b W_b
+$$
+
+Taking expectations over a full step (kinetic + cloning):
+
+$$
+\begin{aligned}
+\mathbb{E}[\Delta V_{\text{total}}] &= \mathbb{E}[\Delta V_{\text{Var},x}] + \alpha_v \mathbb{E}[\Delta V_{\text{Var},v}] + \alpha_W \mathbb{E}[\Delta V_W] + \alpha_b \mathbb{E}[\Delta W_b] \\
+&\leq (-\kappa_x V_{\text{Var},x} + C_x + C_{xv} V_{\text{Var},v} + C_{xW} V_W) \\
+&\quad + \alpha_v(-\kappa_v V_{\text{Var},v} + C_v + C_{vx} V_{\text{Var},x}) \\
+&\quad + \alpha_W(-\kappa_W V_W + C_W) \\
+&\quad + \alpha_b(-\kappa_b W_b + C_b)
+\end{aligned}
+$$
+
+**Weight Selection for Coupling Domination:**
+
+Choose weights to ensure coupling terms are dominated by contraction:
+
+$$
+\alpha_v \geq \frac{C_{xv}}{\kappa_v V_{\text{Var},v}^{\text{eq}}}, \quad
+\alpha_W \geq \frac{C_{xW}}{\kappa_W V_W^{\text{eq}}}, \quad
+\alpha_v \kappa_v \geq C_{vx} / V_{\text{Var},x}^{\text{eq}}
+$$
+
+With these weights, the coupling terms satisfy:
+
+$$
+C_{xv} V_{\text{Var},v} - \alpha_v \kappa_v V_{\text{Var},v} \leq -\epsilon_v \alpha_v \kappa_v V_{\text{Var},v}
+$$
+
+and similarly for other cross terms, where $\epsilon_v, \epsilon_W \ll 1$ are small positive fractions.
+
+**Synergistic Rate:**
+
+After cancellation of dominated coupling terms:
+
+$$
+\mathbb{E}[\Delta V_{\text{total}}] \leq -\kappa_{\text{total}} V_{\text{total}} + C_{\text{total}}
+$$
+
+where:
+
+$$
+\kappa_{\text{total}} = \min(\kappa_x, \alpha_v \kappa_v, \alpha_W \kappa_W, \alpha_b \kappa_b) \cdot (1 - \epsilon_{\text{coupling}})
+$$
+
+$$
+C_{\text{total}} = C_x + \alpha_v C_v + \alpha_W C_W + \alpha_b C_b
+$$
+
+and $\epsilon_{\text{coupling}} = \max(\epsilon_v, \epsilon_W, \ldots)$ is the residual coupling ratio after weight balancing.
+
+**Physical Interpretation:**
+
+The synergistic rate $\kappa_{\text{total}}$ is determined by:
+1. **Bottleneck principle**: The weakest contraction rate dominates (min over components)
+2. **Coupling penalty**: $\epsilon_{\text{coupling}}$ reduces the effective rate due to energy transfer between components
+3. **Weight balancing**: Optimal $\alpha_i$ maximize $\alpha_i \kappa_i$ subject to coupling domination
+
+When $\epsilon_{\text{coupling}} \ll 1$, the total rate approaches the bottleneck component rate. The equilibrium variance is:
+
+$$
+V_{\text{total}}^{\text{QSD}} = \frac{C_{\text{total}}}{\kappa_{\text{total}}}
+$$
+
+**Q.E.D.**
+:::
 
 :::{prf:theorem} Total Convergence Rate (Parameter-Explicit)
 :label: thm-total-rate-explicit

@@ -2703,6 +2703,62 @@ where $V_{\text{Var}} = V_{\text{Var},x} + \lambda_v V_{\text{Var},v}$.
 
 ---
 
+### Complete Wasserstein Decomposition Drift
+
+**Type:** Theorem
+**Label:** `thm-complete-wasserstein-drift`
+**Source:** [03_cloning.md § 11.1.3](03_cloning.md)
+**Tags:** `wasserstein-drift`, `location-error`, `structural-error`, `decomposition`
+
+**Statement:**
+
+The total inter-swarm Wasserstein distance $V_W = V_{\text{loc}} + V_{\text{struct}}$ satisfies a combined drift inequality under the cloning operator:
+
+$$
+\mathbb{E}_{\text{clone}}[\Delta V_W] \leq C_W
+$$
+
+where $C_W < \infty$ is a state-independent constant satisfying:
+
+$$
+C_W = C_{\text{loc}} + C_{\text{struct}}
+$$
+
+**Component Bounds:**
+
+From the decomposition $V_W^2 = V_{\text{loc}}^2 + V_{\text{struct}}^2$:
+
+**Location Error (Center-of-Mass):**
+
+$$
+\mathbb{E}_{\text{clone}}[\Delta V_{\text{loc}}] \leq C_{\text{loc}}
+$$
+
+where $C_{\text{loc}} = O(\delta^2)$ from cloning jitter.
+
+**Structural Error (Internal Geometry):**
+
+$$
+\mathbb{E}_{\text{clone}}[\Delta V_{\text{struct}}] \leq C_{\text{struct}}
+$$
+
+where $C_{\text{struct}} = O(\delta^2)$ from positional jitter.
+
+**N-Uniformity:** All constants are independent of swarm size $N$.
+
+**Physical Interpretation:**
+- Cloning alone provides **bounded drift** (no contraction) for Wasserstein distance
+- Contraction requires kinetic operator to reduce both location and structural errors
+- The decomposition allows separate analysis of center-of-mass vs internal geometry dynamics
+
+**Related Results:**
+- Combines: Location error drift ({prf:ref}`thm-location-drift`) and structural error drift ({prf:ref}`thm-structural-drift`)
+- Requires: Kinetic operator for contraction via {prf:ref}`thm-w2-kinetic-contraction`
+- Part of: Synergistic Lyapunov function ({prf:ref}`def-full-synergistic-lyapunov-function`)
+- Complements: Variance drift ({prf:ref}`thm-complete-variance-drift-cloning`)
+
+---
+
 ### Boundary Potential Component (Recall)
 
 **Type:** Definition
@@ -3230,6 +3286,162 @@ $$
 - Equilibrium: Balances cloning + kinetics
 - Realistic: Resembles physical systems
 - Predictable: Explicit parameter dependence
+
+---
+
+### Equilibrium Variance Bounds from Drift Inequalities
+
+**Type:** Theorem
+**Label:** `thm-equilibrium-variance-bounds`
+**Source:** [04_convergence.md § 8.4.1](04_convergence.md)
+**Tags:** `equilibrium-bounds`, `qsd-variance`, `foster-lyapunov`, `parameter-explicit`
+
+**Statement:**
+
+The quasi-stationary distribution satisfies explicit variance bounds derived from component drift inequalities.
+
+**Positional Variance Equilibrium:**
+
+From {prf:ref}`thm-positional-variance-contraction` (cloning contraction) and kinetic drift, setting $\mathbb{E}[\Delta V_{\text{Var},x}] = 0$ yields:
+
+$$
+V_{\text{Var},x}^{\text{QSD}} \leq \frac{C_x}{\kappa_x}
+$$
+
+where:
+- $C_x = O(\sigma_v^2 \tau^2 / (\gamma \lambda))$ is the expansion from kinetic operator
+- $\kappa_x = \lambda$ is the cloning contraction rate
+
+**Velocity Variance Equilibrium:**
+
+From {prf:ref}`thm-velocity-variance-contraction` (kinetic contraction) and cloning expansion:
+
+$$
+V_{\text{Var},v}^{\text{QSD}} \leq \frac{C_v + \sigma_{\max}^2 d \tau}{2\gamma\tau}
+$$
+
+where:
+- $C_v = O(\delta^2)$ is cloning jitter
+- $\sigma_{\max}^2 d \tau$ is kinetic noise injection
+- $2\gamma\tau$ is friction dissipation rate
+
+**Wasserstein Distance Equilibrium:**
+
+From {prf:ref}`thm-complete-wasserstein-drift` (cloning bounded drift) and {prf:ref}`thm-w2-kinetic-contraction`:
+
+$$
+V_W^{\text{QSD}} \leq \frac{C_W}{\kappa_W}
+$$
+
+where $\kappa_W = O(\gamma)$ is hypocoercive contraction rate.
+
+**Boundary Potential Equilibrium:**
+
+From {prf:ref}`thm-boundary-potential-contraction`:
+
+$$
+W_b^{\text{QSD}} \leq \frac{C_b}{\kappa_b}
+$$
+
+**Physical Interpretation:**
+- Each equilibrium variance is determined by **balance between expansion and contraction**
+- Setting $\mathbb{E}[\Delta V] = 0$ in drift inequality yields $V^{\text{QSD}} = C/\kappa$
+- Positional variance: Cloning contracts, kinetics expands
+- Velocity variance: Friction dissipates, noise injects
+- Wasserstein: Hypocoercivity contracts, jitter expands
+- Boundary: Fitness gradient repels, diffusion pushes
+
+**Related Results:**
+- Foundation: Foster-Lyapunov drift inequalities for each component
+- Uses: {prf:ref}`thm-positional-variance-contraction`, {prf:ref}`thm-velocity-variance-contraction`
+- Refines: {prf:ref}`prop-qsd-properties` with explicit parameter dependence
+- Part of: Complete equilibrium characterization
+
+---
+
+### Synergistic Rate Derivation from Component Drifts
+
+**Type:** Theorem
+**Label:** `thm-synergistic-rate-derivation`
+**Source:** [04_convergence.md § 8.5](04_convergence.md)
+**Tags:** `synergistic-convergence`, `hypocoercivity`, `component-coupling`, `weight-balancing`
+
+**Statement:**
+
+The total drift inequality combines component-wise drift bounds from cloning and kinetic operators to yield explicit synergistic convergence.
+
+**Component Drift Structure:**
+
+From cloning and kinetic operators, each Lyapunov component satisfies:
+
+$$
+\begin{aligned}
+\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] &\leq -\kappa_x V_{\text{Var},x} + C_x + C_{xv} V_{\text{Var},v} + C_{xW} V_W \\
+\mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},v}] &\leq -\kappa_v V_{\text{Var},v} + C_v + C_{vx} V_{\text{Var},x} \\
+\mathbb{E}_{\text{clone}}[\Delta V_W] &\leq -\kappa_W V_W + C_W \\
+\mathbb{E}_{\text{clone}}[\Delta W_b] &\leq -\kappa_b W_b + C_b
+\end{aligned}
+$$
+
+where cross-component coupling terms $C_{xv}, C_{xW}, C_{vx}$ arise from expansion by the complementary operator.
+
+**Weighted Combination:**
+
+Define the weighted Lyapunov function:
+
+$$
+V_{\text{total}} = V_{\text{Var},x} + \alpha_v V_{\text{Var},v} + \alpha_W V_W + \alpha_b W_b
+$$
+
+**Weight Selection for Coupling Domination:**
+
+Choose weights to ensure coupling terms are dominated by contraction:
+
+$$
+\alpha_v \geq \frac{C_{xv}}{\kappa_v V_{\text{Var},v}^{\text{eq}}}, \quad
+\alpha_W \geq \frac{C_{xW}}{\kappa_W V_W^{\text{eq}}}, \quad
+\alpha_v \kappa_v \geq C_{vx} / V_{\text{Var},x}^{\text{eq}}
+$$
+
+With these weights, coupling terms satisfy:
+
+$$
+C_{xv} V_{\text{Var},v} - \alpha_v \kappa_v V_{\text{Var},v} \leq -\epsilon_v \alpha_v \kappa_v V_{\text{Var},v}
+$$
+
+where $\epsilon_v, \epsilon_W \ll 1$ are small positive fractions.
+
+**Synergistic Rate:**
+
+After cancellation of dominated coupling terms:
+
+$$
+\mathbb{E}[\Delta V_{\text{total}}] \leq -\kappa_{\text{total}} V_{\text{total}} + C_{\text{total}}
+$$
+
+where:
+
+$$
+\kappa_{\text{total}} = \min(\kappa_x, \alpha_v \kappa_v, \alpha_W \kappa_W, \alpha_b \kappa_b) \cdot (1 - \epsilon_{\text{coupling}})
+$$
+
+$$
+C_{\text{total}} = C_x + \alpha_v C_v + \alpha_W C_W + \alpha_b C_b
+$$
+
+and $\epsilon_{\text{coupling}} = \max(\epsilon_v, \epsilon_W, \ldots)$ is the residual coupling ratio.
+
+**Physical Interpretation:**
+- **Bottleneck principle**: The weakest contraction rate dominates (min over components)
+- **Coupling penalty**: $\epsilon_{\text{coupling}}$ reduces effective rate due to energy transfer between components
+- **Weight balancing**: Optimal $\alpha_i$ maximize $\alpha_i \kappa_i$ subject to coupling domination
+- **Hypocoercivity**: No single component contracts alone, but weighted combination does
+
+**Related Results:**
+- Foundation: Component drift inequalities {prf:ref}`thm-positional-variance-contraction`, {prf:ref}`thm-velocity-variance-contraction`
+- Leads to: {prf:ref}`thm-total-rate-explicit` with parameter-explicit formulas
+- Uses: Foster-Lyapunov weight balancing technique
+- Part of: Complete convergence theory
 
 ---
 

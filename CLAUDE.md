@@ -39,13 +39,35 @@ All parameters use Pydantic models with validation:
 
 ### Mathematical Documentation
 
-The `markdown/` directory contains rigorous mathematical specifications:
-- `00_introduction.md` - Overview and core concepts
-- `01_convergence_proof.md` - Theoretical convergence guarantees
-- `02_general_algorithmic_search.md` - General framework
-- `03_fractal_tree.md` - Tree-based exploration structures
+The `docs/source/` directory contains rigorous mathematical specifications organized in two ways:
 
-Code implementation deliberately mirrors mathematical notation from these documents.
+**1. Comprehensive Mathematical Reference:**
+- **`00_reference.md`** - Complete searchable reference of all mathematical results (5,789+ lines)
+  - **Use this first** when you need to find definitions, theorems, or understand the framework
+  - Covers 13+ framework documents: foundational axioms, cloning, kinetic operator, mean-field limits, KL-convergence, symmetries, gauge theory, fractal set theory
+  - Organized by topic with cross-references and tags for searchability
+  - Each entry includes: type, label, source, tags, complete mathematical statement, related results
+  - Table of Contents provides quick navigation to specific topics
+
+**2. Detailed Framework Documents:**
+- `01_fragile_gas_framework.md` - Core axioms and foundational definitions
+- `02_euclidean_gas.md` - Euclidean Gas specification
+- `03_cloning.md` - Cloning operator and Keystone Principle
+- `04_convergence.md` - Kinetic operator and QSD convergence
+- `05_mean_field.md` - Mean-field limit and McKean-Vlasov PDE
+- `06_propagation_chaos.md` - Propagation of chaos
+- `07_adaptative_gas.md` - Adaptive Viscous Fluid Model
+- `08_emergent_geometry.md` - Emergent Riemannian geometry
+- `09_symmetries_adaptive_gas.md` - Symmetry structure
+- `10_kl_convergence/` - KL-divergence convergence and LSI theory
+- `11_mean_field_convergence/` - Mean-field entropy production
+- `12_gauge_theory_adaptive_gas.md` - Gauge theory formulation
+- `13_fractal_set/` - Discrete spacetime and lattice QFT
+
+**Workflow:**
+1. **For quick lookup**: Use `00_reference.md` to find definitions, theorems, constants
+2. **For deep understanding**: Read the full framework documents
+3. **For implementation**: Code mirrors mathematical notation from these documents
 
 ### Visualization and Analysis
 
@@ -299,13 +321,29 @@ Always inform the user when you make changes to GEMINI.md and explain your reaso
 
 When writing or reviewing mathematical documentation, **you MUST follow this workflow**:
 
+#### Step 0: Consult the Mathematical Reference (Prerequisite)
+**ALWAYS START HERE**: Before drafting or reviewing any mathematical content, consult `docs/source/00_reference.md` to:
+- Check if related definitions, theorems, or lemmas already exist
+- Understand how your work fits into the larger framework
+- Identify dependencies and cross-references
+- Ensure consistency with established notation and conventions
+- Search by tags (e.g., `wasserstein`, `kl-convergence`, `hypocoercivity`) to find relevant results
+
+**Example workflow:**
+- Writing about LSI? → Check "KL-Divergence Convergence and Logarithmic Sobolev Inequalities" section
+- Working on cloning? → Check "Measurement and Fitness Operators" and "Contraction and Stability Results"
+- Adding a theorem? → Search for related results using labels and tags
+
 #### Step 1: Draft or Modify Content
-- Read relevant sections of existing documents
+- Read relevant sections of existing documents (both framework docs and reference)
 - Draft new content or modifications following the style requirements above
 - Ensure all mathematical notation is consistent with framework conventions
+- Add proper labels and cross-references to entries in `00_reference.md`
 
 #### Step 2: Gemini Review via MCP
 **MANDATORY**: Before finalizing any mathematical content, submit it for review using the `mcp__gemini-cli__ask-gemini` tool:
+
+**NOTE**: Gemini will automatically consult `00_reference.md` as part of its review protocol (see GEMINI.md § 4).
 
 Request specific review types:
 - **Rigor check**: "Review this proof for mathematical rigor and completeness"

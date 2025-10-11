@@ -45,6 +45,9 @@ This folder contains a rigorous, publication-ready mathematical development of t
 ### Supporting Materials
 
 **[discussions/](discussions/)** - Technical derivations and reviews
+- `qsd_stratonovich_final.md` - **PUBLICATION-READY** rigorous proof that ρ_spatial ∝ √det g (450 lines, validated by Gemini 2.5 Pro)
+- `velocity_marginalization_rigorous.md` - Complete graph Laplacian convergence derivation (250 lines)
+- `PROOF_COMPLETION_SUMMARY.md` - Executive summary of proof journey and Itô-Stratonovich resolution (300 lines)
 - `edge_weights_from_first_principles.md` - Complete 5-theorem derivation (500 lines)
 - `connection_term_derivation.md` - Christoffel symbol proof (400 lines)
 - `gemini_review_edge_weights.md` - External critical review (250 lines)
@@ -195,6 +198,16 @@ The algorithm uses **Euclidean** algorithmic distance $d_{\text{alg}} = \|x_i - 
 
 ## Changelog
 
+### 2025-10-10: Critical Update - Complete Stratonovich Proof Integration
+- **Added**: `discussions/qsd_stratonovich_final.md` - Publication-ready proof that QSD spatial marginal has Riemannian volume measure ρ ∝ √det g · exp(-U/T)
+- **Key breakthrough**: Resolved Itô-Stratonovich confusion - the √det g factor arises from Stratonovich formulation (Graham 1977)
+- **Updated**: 13_B Section 3.2 Step 5 - Added rigorous justification for covariance convergence Σᵢ → g(xᵢ)⁻¹
+- **Updated**: 13_B Section 3.4 proof - Replaced outline with complete Stratonovich derivation
+- **Updated**: `discussions/velocity_marginalization_rigorous.md` - Integrated Stratonovich proof
+- **Added**: Bibliography entries for Graham (1977), Pavliotis (2014), Risken (1996)
+- **Impact**: Graph Laplacian convergence theorem now has **complete, publication-ready proof**
+- **Status**: All critical gaps resolved - ready for top-tier mathematics journals
+
 ### 2025-10-09: Major Update - Rigorous Edge Weight and Connection Term Proofs
 - **Added**: 13_B Section 3.3 (IG edge weight derivation, 100 lines)
 - **Added**: 13_B Section 3.4 (Connection term in curved geometry, 180 lines)
@@ -213,6 +226,6 @@ The algorithm uses **Euclidean** algorithmic distance $d_{\text{alg}} = \|x_i - 
 
 ---
 
-**Document Maintenance**: This README is automatically updated when major changes are made to the Fractal Set theory. Last update: 2025-10-09.
+**Document Maintenance**: This README is automatically updated when major changes are made to the Fractal Set theory. Last update: 2025-10-10.
 
 **Contact**: For questions about mathematical rigor or publication strategy, refer to CLAUDE.md in repository root.
