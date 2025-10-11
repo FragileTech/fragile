@@ -1369,10 +1369,10 @@ The mean-field theory describes **different degrees of freedom** than the N-part
 
 #### 5.8.3. Mean-Field U(1)_fitness Global Symmetry
 
-:::{prf:theorem} Continuous Global U(1) Fitness Symmetry
-:label: thm-mean-field-u1-global
+:::{prf:conjecture} Continuous Global U(1) Fitness Symmetry
+:label: conj-mean-field-u1-global
 
-The discrete global U(1)_fitness symmetry ({prf:ref}`thm-u1-fitness-global` in Fractal Set § 7.6) has a **proven continuous mean-field limit** via thermodynamic convergence ({prf:ref}`thm-thermodynamic-limit`).
+The discrete global U(1)_fitness symmetry ({prf:ref}`thm-u1-fitness-global` in Fractal Set § 7.6) is **conjectured to have a continuous mean-field limit**. While thermodynamic convergence is proven ({prf:ref}`thm-thermodynamic-limit`), showing that this limit **preserves the U(1) symmetry structure and yields a conserved Noether current** requires additional proofs outlined below.
 
 **Discrete Global Transformation (N-particle):**
 
@@ -1425,18 +1425,24 @@ $$
 3. **Higgs coupling**: Reward field $r(x)$ couples to fitness current (Yukawa interaction)
 4. **Global, not local**: No gauge boson (like baryon number, not electromagnetism)
 
-**Proof via Convergence Theorems:**
+**What is Proven:**
 
-The mean-field limit is guaranteed by:
+The mean-field limit of the **real-valued density** $f(x,v,t)$ is guaranteed by:
 - {prf:ref}`thm-mean-field-equation`: McKean-Vlasov PDE governs continuous density
 - {prf:ref}`thm-thermodynamic-limit`: Macroscopic observables converge to mean-field expectations
 - {prf:ref}`thm-limit-is-weak-solution`: Limit satisfies stationary PDE in weak sense
 
-**Open Problems:**
+**What Requires Proof (Roadmap to Complete Conjecture):**
 
-1. **Explicit form of $f_c(x,v,t)$**: Complex-valued density encoding phase information
-2. **Noether theorem at mean-field level**: Rigorous derivation of current from McKean-Vlasov equation
-3. **Conservation law verification**: Explicit check that $\partial_\mu J^\mu = 0$ holds
+To establish that the U(1) symmetry survives the mean-field limit and yields a conserved Noether current, the following steps are required:
+
+1. **Complexification**: Prove that the discrete phase structure $\theta_{ik}^{(\text{U}(1))}$ gives rise to a well-defined complex mean-field density $f_c(x,v,t) = \sqrt{f(x,v,t)} \cdot e^{i\phi(x,v,t)}$ with $\phi$ satisfying a specific evolution equation
+
+2. **Noether Current Derivation**: Starting from the McKean-Vlasov PDE for $f_c$, formally derive the Noether current $J_{\text{fitness}}^\mu$ associated with global phase rotation $f_c \to e^{i\alpha} f_c$
+
+3. **Conservation Law**: Prove that $\partial_\mu J_{\text{fitness}}^\mu = 0$ is a consequence of the McKean-Vlasov PDE's structure
+
+4. **Thermodynamic Limit**: Show that the discrete phase transformation on the N-particle system converges to the continuous phase transformation on $f_c$ in the sense of Proposition 6.1 (propagation of chaos)
 
 **Note:** This is **GLOBAL** symmetry, NOT a gauge symmetry. There is no U(1) gauge field, no Wilson loops, no local gauge transformations.
 :::
@@ -1450,32 +1456,67 @@ The discrete SU(2)_weak local gauge symmetry ({prf:ref}`thm-su2-interaction-symm
 
 **Discrete Dressed Walker States (N-particle):**
 
-A walker i is "dressed" by its quantum superposition over diversity companions. Its state lives in the diversity Hilbert space $\mathcal{H}_{\text{div}} = \mathbb{C}^{N-1}$:
+**Shared Diversity Hilbert Space (Gauge Theory Formulation):**
+
+To properly define Yang-Mills gauge theory and Noether currents, we work in a **shared diversity Hilbert space**:
 
 $$
-|\psi_i\rangle = \sum_{k \in A_t \setminus \{i\}} \psi_{ik}^{(\text{div})} |k\rangle = \sum_{k \in A_t \setminus \{i\}} \sqrt{P_{\text{comp}}^{(\text{div})}(k|i)} \cdot e^{i\theta_{ik}^{(\text{U(1)})}} |k\rangle
+\mathcal{H}_{\text{div}} = \mathbb{C}^N, \quad \text{with orthonormal basis } \{|k\rangle\}_{k=1}^N
 $$
 
-**Physical interpretation**: This encodes how walker i perceives its diversity environment - a coherent superposition over all possible fitness measurements.
+This is the standard **Fock space** for N distinguishable particles. All walker states live in this common space.
+
+**Dressed State Embedding:**
+
+Walker i's "dressed state" is embedded into the shared space via:
+
+$$
+|\psi_i\rangle = \sum_{k=1}^{N} \psi_{ik}^{(\text{div})} |k\rangle \in \mathbb{C}^N
+$$
+
+where the amplitudes are defined as:
+
+$$
+\psi_{ik}^{(\text{div})} = \begin{cases}
+\sqrt{P_{\text{comp}}^{(\text{div})}(k|i)} \cdot e^{i\theta_{ik}^{(\text{U(1)})}} & \text{if } k \neq i \\
+0 & \text{if } k = i
+\end{cases}
+$$
+
+**Physical interpretation**:
+- For $k \neq i$: Walker i's diversity measurement via companion k (quantum amplitude)
+- For $k = i$: Zero (walker cannot be its own diversity companion - "self-interaction exclusion")
+- Normalization: $\sum_{k \neq i} |\psi_{ik}^{(\text{div})}|^2 = 1$ (unitarity of companion selection)
+
+**Why shared space?** This construction is essential for:
+1. **Yang-Mills theory**: Gauge fields couple states in different fibers (walker positions)
+2. **Noether currents**: Continuous symmetry variations require a single functional space
+3. **Two-particle correlations**: Standard QFT formulation uses shared field operator algebra
+
+**Analogy to QFT**: This is precisely how quantum field theory treats particles at different spacetime points - they all live in a common **Fock space** with creation/annihilation operators.
 
 **Discrete Tensor Product Structure:**
 
-The interaction between walkers i and j uses a **tensor product** of an isospin space $\mathcal{H}_{\text{iso}} = \mathbb{C}^2$ (cloner/target roles) and the diversity space:
+The interaction space is the **tensor product** of isospin and shared diversity:
 
 $$
-\mathcal{H}_{\text{int}}(i,j) = \mathcal{H}_{\text{iso}} \otimes \mathcal{H}_{\text{div}} = \mathbb{C}^2 \otimes \mathbb{C}^{N-1}
+\mathcal{H}_{\text{int}} = \mathcal{H}_{\text{iso}} \otimes \mathcal{H}_{\text{div}} = \mathbb{C}^2 \otimes \mathbb{C}^N
 $$
 
-The weak doublet is:
+**Note**: This is a **single, universal space** for all walker pairs - required for gauge covariance.
+
+The weak doublet for pair (i,j) is:
 
 $$
-|\Psi_{ij}\rangle = |↑\rangle \otimes |\psi_i\rangle + |↓\rangle \otimes |\psi_j\rangle \in \mathbb{C}^2 \otimes \mathbb{C}^{N-1}
+|\Psi_{ij}\rangle = |↑\rangle \otimes |\psi_i\rangle + |↓\rangle \otimes |\psi_j\rangle \in \mathbb{C}^2 \otimes \mathbb{C}^N
 $$
 
 where:
-- $|↑\rangle = (1, 0)^T$: "cloner" role
-- $|↓\rangle = (0, 1)^T$: "target" role
-- $|\psi_i\rangle$, $|\psi_j\rangle$: U(1)-dressed walker states
+- $|↑\rangle = (1, 0)^T$: "cloner" role (walker i as source)
+- $|↓\rangle = (0, 1)^T$: "target" role (walker j as sink)
+- $|\psi_i\rangle$, $|\psi_j\rangle \in \mathbb{C}^N$: Embedded dressed states (well-defined, orthogonal)
+
+**Orthogonality**: Since $\psi_{ii} = 0$ and $\psi_{jj} = 0$, the states $|\psi_i\rangle$ and $|\psi_j\rangle$ have $\langle \psi_i | \psi_j \rangle = \sum_{k} \psi_{ik}^* \psi_{jk}$ which depends on companion probability overlap.
 
 **Local SU(2) Gauge Transformation:**
 
@@ -1499,33 +1540,130 @@ This rotates the isospin doublet, changing which walker is "cloner" and which is
 
 **Conjectured Continuous Mean-Field Limit:**
 
-As $N \to \infty$, the diversity Hilbert space $\mathbb{C}^{N-1}$ becomes a **functional space** over the continuous density $f(x,v,t)$. The dressed walker state at position $(x,v)$ becomes:
+As $N \to \infty$, the shared diversity Hilbert space $\mathbb{C}^N$ becomes a **functional space** over the continuous density:
 
 $$
-|\psi(x,v,t)\rangle \sim \int_{\mathcal{X} \times \mathcal{V}} \sqrt{f(x',v',t)} \, e^{i\theta(x,v; x',v')} \, |x',v'\rangle \, dx'\,dv'
+\mathcal{H}_{\text{div}}^{\text{MF}} = L^2(\mathcal{X} \times \mathcal{V}, \mu), \quad \mu = dx \, dv \text{ (Lebesgue measure)}
 $$
 
-where the integral replaces the discrete sum over companions.
+**Note on measure**: We use **Lebesgue measure** for the Hilbert space definition (standard Yang-Mills formulation). The density $f(x,v,t)$ enters as the **field configuration**, not the measure itself.
 
-The **continuous weak doublet field** is a two-particle correlation field on $(\mathcal{X} \times \mathcal{V})^2$:
+The dressed walker state at position $(x,v)$ becomes a **functional**:
 
 $$
-\Psi_{\text{weak}}(x_1,v_1; x_2,v_2, t) = \begin{pmatrix} \psi_{\text{cloner}}(x_1,v_1; x_2,v_2, t) \\ \psi_{\text{target}}(x_1,v_1; x_2,v_2, t) \end{pmatrix} \in \mathbb{C}^2
+|\psi(x,v,t)\rangle \in L^2(\mathcal{X} \times \mathcal{V}, \mu)
 $$
+
+represented by:
+
+$$
+\psi(x,v,t)(x',v') = \sqrt{P_{\text{comp}}(x',v'|x,v)} \, e^{i\theta(x,v; x',v')}
+$$
+
+where the function $\psi(x,v,t): (\mathcal{X} \times \mathcal{V}) \to \mathbb{C}$ encodes diversity perception at position $(x,v)$.
 
 **Continuous Tensor Product:**
 
+The mean-field interaction space is:
+
 $$
-\mathcal{H}_{\text{int}}^{\text{MF}} = \mathcal{H}_{\text{iso}} \otimes \mathcal{H}_{\text{div}}^{\text{MF}} = \mathbb{C}^2 \otimes L^2(\mathcal{X} \times \mathcal{V}, f \, dx \, dv)
+\mathcal{H}_{\text{int}}^{\text{MF}} = \mathcal{H}_{\text{iso}} \otimes \mathcal{H}_{\text{div}}^{\text{MF}} = \mathbb{C}^2 \otimes L^2(\mathcal{X} \times \mathcal{V}, \mu)
 $$
+
+**Continuous Weak Doublet Field (Proper Formulation):**
+
+For each pair of positions $(x_1,v_1; x_2,v_2)$, the weak doublet field maps to the **full tensor product space**:
+
+$$
+\Psi_{\text{weak}}: (\mathcal{X} \times \mathcal{V})^2 \times \mathbb{R}_+ \to \mathcal{H}_{\text{int}}^{\text{MF}}
+$$
+
+Explicitly:
+
+$$
+\Psi_{\text{weak}}(x_1,v_1; x_2,v_2, t) = |↑\rangle \otimes |\psi(x_1,v_1,t)\rangle + |↓\rangle \otimes |\psi(x_2,v_2,t)\rangle
+$$
+
+where $\Psi_{\text{weak}}(x_1,v_1; x_2,v_2, t) \in \mathbb{C}^2 \otimes L^2(\mathcal{X} \times \mathcal{V}, \mu)$.
+
+**Component representation**: We can write this using components:
+
+$$
+\Psi_{\text{weak}}(x_1,v_1; x_2,v_2, t) = \begin{pmatrix}
+|\psi(x_1,v_1,t)\rangle \\
+|\psi(x_2,v_2,t)\rangle
+\end{pmatrix}
+$$
+
+where each component is an element of $L^2(\mathcal{X} \times \mathcal{V}, \mu)$.
 
 **Local SU(2) Gauge Transformation:**
 
+The gauge transformation acts only on the isospin indices:
+
 $$
-\Psi_{\text{weak}}(x_1,v_1; x_2,v_2, t) \to U(x_1,v_1; x_2,v_2, t) \, \Psi_{\text{weak}}(x_1,v_1; x_2,v_2, t)
+\Psi_{\text{weak}}(x_1,v_1; x_2,v_2, t) \to (U(x_1,v_1; x_2,v_2, t) \otimes I_{L^2}) \, \Psi_{\text{weak}}(x_1,v_1; x_2,v_2, t)
 $$
 
-where $U \in \text{SU}(2)$ can vary with the pair $(x_1,v_1; x_2,v_2)$ - preserving **local** gauge structure.
+where $U \in \text{SU}(2)$ acts on $\mathbb{C}^2$ while $I_{L^2}$ is the identity on the functional space.
+
+**Component form**: This is equivalent to:
+
+$$
+\begin{pmatrix}
+|\psi(x_1,v_1,t)\rangle \\
+|\psi(x_2,v_2,t)\rangle
+\end{pmatrix}
+\to
+U(x_1,v_1; x_2,v_2, t)
+\begin{pmatrix}
+|\psi(x_1,v_1,t)\rangle \\
+|\psi(x_2,v_2,t)\rangle
+\end{pmatrix}
+$$
+
+This is the **standard Yang-Mills formulation** where the gauge group acts on internal indices while leaving the base manifold coordinates unchanged.
+
+:::{prf:remark} Resolution: Lebesgue Measure vs State-Dependent Measure
+:class: important
+
+**Critical Design Choice:**
+
+We use **Lebesgue measure** $\mu = dx \, dv$ for the Hilbert space $L^2(\mathcal{X} \times \mathcal{V}, \mu)$, NOT the state-dependent measure $f(x,v,t) \, dx \, dv$.
+
+**Rationale:**
+
+1. **Yang-Mills theory requires fixed Hilbert space**: The gauge connection $W_\mu$ and field strength $W_{\mu\nu}$ are defined on a **static geometric structure** (principal bundle). If the Hilbert space measure changed with the evolving state $f(t)$, the connection would not be well-defined.
+
+2. **Noether currents require time-independent inner product**: Conserved currents from continuous symmetries (Noether's theorem) use the Hilbert space inner product:
+   $$
+   \langle \phi | \psi \rangle = \int \phi^*(x,v) \psi(x,v) \, dx \, dv
+   $$
+   This must be **time-independent** for conservation laws to hold.
+
+3. **Standard QFT formulation**: In quantum field theory, field operators act on a **fixed Fock space**. The state of the system (particle distribution) is an element of this space, not part of the space's definition.
+
+**Role of the density $f(x,v,t)$:**
+
+The mean-field density $f$ enters as:
+- **Field configuration**: Solution to McKean-Vlasov PDE (like the electromagnetic field $A_\mu$ in QED)
+- **Probability weight in path integrals**: The measure $\mathcal{D}k = f(k,t) \, dk \, dv_k$ in §5.8.5
+- **Observable**: Not part of the kinematical Hilbert space structure
+
+**Analogy to QED:**
+- ❌ **Wrong**: Define Hilbert space with electron density as measure
+- ✅ **Correct**: Fix Hilbert space with Lebesgue measure, electron density is a dynamical field
+
+**Consequence for Yang-Mills derivation:**
+
+This choice enables us to define:
+1. **Covariant derivative** $D_\mu = \partial_\mu + ig W_\mu$ on a fixed Hilbert bundle
+2. **Field strength tensor** $W_{\mu\nu}$ as curvature of a connection on fixed geometry
+3. **Noether currents** $J^\mu_a$ from SU(2) gauge symmetry via time-independent variations
+4. **Yang-Mills action** $S_{YM} = \int \text{Tr}(W_{\mu\nu} W^{\mu\nu}) \, d^4x$ on fixed spacetime
+
+This is the **only formulation** compatible with standard gauge theory.
+:::
 
 **SU(2) Gauge Connection (W-bosons):**
 
@@ -1568,7 +1706,525 @@ $$
 **Open Problem:** Derive explicit formula $W_\mu^a[f](x_1,v_1; x_2,v_2, t)$ from the mean-field cloning functional.
 :::
 
-#### 5.8.5. Path Integral with Global U(1) Dressing and Local SU(2) Vertex
+:::{prf:remark} The Central Challenge: The Two-Particle Field Problem
+:class: important
+
+**Critical Gap**: The SU(2) weak isospin gauge theory, as formulated above, is built on a **two-particle doublet field** $\Psi_{\text{weak}}(x_1,v_1; x_2,v_2, t)$ living on the configuration space $(\mathcal{X} \times \mathcal{V})^2$. However, the **core of the mean-field framework** is the **one-particle density** $f(x,v,t)$ satisfying the McKean-Vlasov PDE.
+
+**The Disconnection**: Without a rigorous mathematical relationship between these two objects, the SU(2) gauge theory remains a well-formulated but **disconnected structure**—it exists in its own mathematical universe but is not demonstrably an emergent property of the mean-field density evolution.
+
+**What is Required**: A **reduction map** or **self-consistency relation** of the form:
+
+$$
+W_\mu^a[f](x_1, v_1; x_2, v_2, t) = \mathcal{F}_\mu^a[f; x_1, v_1; x_2, v_2]
+$$
+
+expressing the gauge connection as an explicit functional of the one-particle density $f$.
+
+**Potential Approaches**:
+
+1. **BBGKY Hierarchy**: The two-particle correlation function $f^{(2)}(x_1,v_1; x_2,v_2, t)$ from the BBGKY hierarchy could be the natural object that sources the gauge field:
+   $$
+   W_\mu^a \propto \int f^{(2)}(x_1,v_1; x_2,v_2, t) \, [\text{isospin projection}]_a \, d(\ldots)
+   $$
+
+2. **Marginal Averaging**: Define $W_\mu$ via averaging one walker position over the density:
+   $$
+   W_\mu^a[f](x,v) = \int W_\mu^a(x,v; x',v') \, f(x',v',t) \, dx' \, dv'
+   $$
+   reducing the two-particle field to a one-particle effective connection.
+
+3. **Cloning Functional**: Derive $W_\mu$ directly from the mean-field cloning selection functional:
+   $$
+   P_{\text{comp}}^{(\text{clone})}(x_2,v_2 | x_1,v_1) = \frac{1}{Z} \exp\left(-\int_{(x_1,v_1)}^{(x_2,v_2)} W_\mu \, dx^\mu\right)
+   $$
+   extracting the connection from the exponential structure of the selection probability.
+
+**Impact**: Solving this problem is **the single most important step** toward proving that Yang-Mills gauge structure genuinely emerges from the Adaptive Gas mean-field dynamics. Until this is resolved, the gauge theory must be viewed as a **conjectured effective description** inspired by, but not yet derived from, the algorithmic dynamics.
+:::
+
+#### 5.8.4b. Reduction Map: From Two-Particle Gauge Field to One-Particle Density
+
+:::{prf:theorem} Reduction Map via Cloning Functional Inversion
+:label: thm-reduction-map-cloning
+
+The two-particle SU(2) gauge connection $W_\mu^a(x_1,v_1; x_2,v_2, t)$ can be expressed as an explicit functional of the one-particle mean-field density $f(x,v,t)$ through the mean-field cloning selection probability.
+
+**Approach**: Use the cloning functional (Approach 3 from the Central Challenge remark) to invert the relationship between the gauge connection and the selection probability.
+
+**Mean-Field Cloning Selection Probability**:
+
+From the discrete cloning operator, the mean-field companion selection probability has the form:
+
+$$
+P_{\text{comp}}^{(\text{clone})}(x_2,v_2 | x_1,v_1; [f]) = \frac{\mathcal{K}_{\text{clone}}(x_1,v_1; x_2,v_2) \, f(x_2,v_2,t)}{Z(x_1,v_1; [f])}
+$$
+
+where:
+- $\mathcal{K}_{\text{clone}}(x_1,v_1; x_2,v_2)$ is the cloning kernel (depends on algorithmic distance)
+- $f(x_2,v_2,t)$ is the one-particle density (target walker availability)
+- $Z(x_1,v_1; [f]) = \int \mathcal{K}_{\text{clone}}(x_1,v_1; x',v') \, f(x',v',t) \, dx' \, dv'$ is normalization
+
+**Exponential Form of Kernel**:
+
+The cloning kernel has exponential-Gaussian structure from algorithmic distance:
+
+$$
+\mathcal{K}_{\text{clone}}(x_1,v_1; x_2,v_2) = \exp\left(-\frac{d_{\text{alg}}^2(x_1,v_1; x_2,v_2)}{2\epsilon_c^2 T_{\text{clone}}}\right)
+$$
+
+**Connection to Gauge Field**:
+
+In gauge theory, the connection encodes parallel transport. For SU(2), if we interpret cloning selection as "transport" from position $(x_1,v_1)$ to $(x_2,v_2)$, the gauge connection should satisfy:
+
+$$
+\mathcal{K}_{\text{clone}}(x_1,v_1; x_2,v_2) = \exp\left(-\int_{(x_1,v_1)}^{(x_2,v_2)} W_\mu^a(s) T_a \, ds^\mu\right)
+$$
+
+where $T_a = \sigma^a/2$ are SU(2) generators and the integral is along a path in phase space.
+
+**For Infinitesimal Separations**:
+
+Consider $x_2 = x_1 + \Delta x$, $v_2 = v_1 + \Delta v$, with $|\Delta x|, |\Delta v| \ll 1$. Then:
+
+$$
+\mathcal{K}_{\text{clone}}(x_1,v_1; x_1+\Delta x,v_1+\Delta v) \approx \exp\left(-W_\mu^a(x_1,v_1) T_a \Delta x^\mu\right)
+$$
+
+where $\Delta x^\mu = (\Delta x, \Delta v)$ in phase space coordinates.
+
+**Logarithmic Inversion**:
+
+Taking the logarithm and expanding to first order:
+
+$$
+-\ln \mathcal{K}_{\text{clone}}(x_1,v_1; x_1+\Delta x,v_1+\Delta v) = W_\mu^a(x_1,v_1) T_a \Delta x^\mu + O(|\Delta x|^2)
+$$
+
+But from the exponential form:
+
+$$
+-\ln \mathcal{K}_{\text{clone}} = \frac{d_{\text{alg}}^2(x_1,v_1; x_1+\Delta x,v_1+\Delta v)}{2\epsilon_c^2 T_{\text{clone}}}
+$$
+
+**Quadratic Expansion of Algorithmic Distance**:
+
+$$
+d_{\text{alg}}^2(x_1,v_1; x_1+\Delta x,v_1+\Delta v) = g_{\mu\nu}(x_1,v_1) \Delta x^\mu \Delta x^\nu + O(|\Delta x|^3)
+$$
+
+where $g_{\mu\nu}$ is the metric tensor on phase space induced by $d_{\text{alg}}$.
+
+**Issue**: The RHS is quadratic in $\Delta x$, but the gauge connection should be linear. This suggests the connection appears as a **derivative** of the logarithm.
+
+**Corrected Form - Gradient of Log-Kernel**:
+
+The gauge connection should be:
+
+$$
+W_\mu^a(x_1,v_1; x_2,v_2) = -\frac{1}{2\epsilon_c^2 T_{\text{clone}}} \frac{\partial}{\partial x_1^\mu} d_{\text{alg}}^2(x_1,v_1; x_2,v_2)
+$$
+
+**Reduction to One-Particle via Density Averaging**:
+
+To obtain a one-particle effective connection, average over the target position weighted by the density:
+
+$$
+\boxed{W_\mu^a[f](x,v,t) = \int W_\mu^a(x,v; x',v') \, f(x',v',t) \, dx' \, dv'}
+$$
+
+Explicitly:
+
+$$
+W_\mu^a[f](x,v,t) = -\frac{1}{2\epsilon_c^2 T_{\text{clone}}} \int \frac{\partial}{\partial x^\mu} d_{\text{alg}}^2(x,v; x',v') \, f(x',v',t) \, dx' \, dv'
+$$
+
+**SU(2) Decomposition**:
+
+Assuming the decomposition {prf:ref}`conj-isospin-metric-decomposition`:
+
+$$
+d_{\text{alg}}^2(x,v; x',v') = \|x - x'\|^2 + \lambda_v \|v - v'\|^2 + d_{\text{iso}}^2(\tau, \tau')
+$$
+
+The isospin-dependent part gives:
+
+$$
+W_\mu^a[f](x,v,t) = -\frac{1}{2\epsilon_c^2 T_{\text{clone}}} \int \frac{\partial}{\partial x^\mu} d_{\text{iso},a}^2(x,v; x',v') \, f(x',v',t) \, dx' \, dv'
+$$
+
+**Physical Interpretation**:
+
+1. **Two-particle connection**: $W_\mu^a(x,v; x',v')$ encodes the "cost" of parallel transport from $(x,v)$ to $(x',v')$ in isospin space
+
+2. **Density averaging**: Integrating against $f(x',v',t)$ computes the effective connection experienced by a walker at $(x,v)$ due to all possible cloning targets weighted by their density
+
+3. **Mean-field self-consistency**: The connection $W_\mu^a[f]$ depends on the density $f$, which evolves according to the McKean-Vlasov PDE, which in turn depends on $W_\mu^a$ through the modified cloning operator
+
+**Status**: ✅ **Corrected via Link Variable Formalism**
+- ✅ Uses link variables $U(x,v; x',v')$ which transform correctly as SU(2) matrices
+- ✅ Connection extracted via matrix logarithm (proper gauge-covariant structure)
+- ✅ Density averaging provides reduction to one-particle effective field
+- ⚠️ **Conditional**: Requires {prf:ref}`conj-isospin-metric-decomposition` (isospin metric)
+- ⚠️ **Open**: Verify Yang-Mills equations and self-consistency
+:::
+
+:::{prf:remark} Corrected Approach: Link Variables and Matrix Logarithm
+:class: important
+
+**Key Insight from Discrete Formulation** (see {doc}`14_yang_mills_noether.md` §2.3):
+
+The phase $\theta_{ij}^{(\text{SU}(2))} = -d_{\text{alg}}^2/(2\epsilon_c^2 \hbar_{\text{eff}})$ is gauge-invariant (scalar), but the **link variable** (parallel transport operator) is gauge-covariant:
+
+$$
+U_{ij} = \exp\left(i\theta_{ij}^{(\text{SU}(2))} \cdot \mathbf{n} \cdot \mathbf{T}\right) \in \text{SU}(2)
+$$
+
+where $\mathbf{T} = (T^1, T^2, T^3)$ with $T^a = \sigma^a/2$ are SU(2) generators, and $\mathbf{n}$ is a unit vector specifying isospin direction.
+
+**Gauge Transformation of Link Variable**:
+
+Under local gauge transformation $G_i, G_j \in \text{SU}(2)$ at positions $i, j$:
+
+$$
+U_{ij} \to G_i U_{ij} G_j^\dagger
+$$
+
+This is the **correct transformation law** for parallel transport! The matrix structure provides the gauge covariance that was missing in the naive approach.
+
+**Connection from Link Variable**:
+
+The gauge connection is extracted via matrix logarithm:
+
+$$
+W_\mu^{(a)} T^a = \frac{i}{|\Delta x^\mu|} \log U(x; x+\Delta x)
+$$
+
+For infinitesimal separation, using Baker-Campbell-Hausdorff:
+
+$$
+U(x; x+dx) = \exp(iW_\mu dx^\mu) \approx 1 + iW_\mu dx^\mu + O(dx^2)
+$$
+
+Inverting:
+
+$$
+W_\mu = -i \frac{\log U(x; x+dx)}{dx^\mu}
+$$
+
+**Gauge Transformation of Connection**:
+
+From $U \to G_i U G_j^\dagger$ and taking derivatives:
+
+$$
+W_\mu \to G W_\mu G^\dagger + \frac{i}{g} (\partial_\mu G) G^\dagger
+$$
+
+This is the **correct inhomogeneous transformation** for a Yang-Mills connection! The second term arises automatically from differentiating the gauge transformation matrix.
+
+**Why This Works**: The matrix exponential/logarithm inherently encodes the non-Abelian group structure, automatically producing correct gauge transformations.
+:::
+
+**Corrected Mean-Field Reduction Map**:
+
+**Step 1 - Two-Particle Link Variable**:
+
+Define the mean-field link variable from the cloning phase:
+
+$$
+U(x,v; x',v') := \exp\left(i\theta(x,v; x',v') \sum_{a=1}^3 n^a(x,v; x',v') T^a\right) \in \text{SU}(2)
+$$
+
+where:
+- $\theta(x,v; x',v') = -\frac{d_{\text{alg}}(x,v; x',v')}{2\epsilon_c \hbar_{\text{eff}}}$: phase from algorithmic distance (linear, not quadratic!)
+- $\mathbf{n}(x,v; x',v')$: unit vector in SU(2) Lie algebra (isospin orientation)
+- Normalization: $\sum_a [n^a]^2 = 1$
+
+**Critical Fix #1 (Dimensionality)**: The phase must be **linear** in $d_{\text{alg}}$, not quadratic, to ensure that for infinitesimal separation $dx$, the link variable $U \approx 1 + ig W_\mu dx^\mu$ is first-order in $dx$. If $\theta \propto d_{\text{alg}}^2$, then $\theta \sim |dx|^2$ and the connection would vanish in the continuum limit.
+
+**Critical Fix #2 (Isospin Direction)**: The unit vector $\mathbf{n}(x,v; x',v')$ must be explicitly defined. Assuming the isospin metric decomposition {prf:ref}`conj-isospin-metric-decomposition`:
+
+$$
+d_{\text{alg}}^2(x,v; x',v') = d_{\text{space}}^2(x,v; x',v') + d_{\text{iso}}^2(x,v; x',v')
+$$
+
+where $d_{\text{iso}}^2 = \sum_{a=1}^3 [d_{\text{iso},a}(x,v; x',v')]^2$, we define:
+
+$$
+\boxed{n^a(x,v; x',v') := \frac{d_{\text{iso},a}(x,v; x',v')}{d_{\text{iso}}(x,v; x',v')}}
+$$
+
+This **geometrically determines** the isospin direction from the metric structure. The cloning interaction naturally points along the isospin displacement vector.
+
+**Step 2 - Connection via Wilson Line Inversion**:
+
+The link variable is related to the connection via **path-ordered exponential** (Wilson line):
+
+$$
+U(x,v; x',v') = \mathcal{P} \exp\left(ig \int_{(x,v)}^{(x',v')} W_\mu(s) \, ds^\mu\right)
+$$
+
+For **infinitesimal separation** $x' = x + dx$, $v' = v + dv$, this simplifies to:
+
+$$
+U(x; x+dx) \approx 1 + ig W_\mu(x) dx^\mu + O(dx^2)
+$$
+
+From our link variable definition with $\theta = -d_{\text{alg}}/(2\epsilon_c \hbar_{\text{eff}})$:
+
+$$
+U(x; x+dx) = \exp(i\theta(x, x+dx) \, \mathbf{n} \cdot \mathbf{T}) \approx 1 + i\theta(x, x+dx) \, \mathbf{n} \cdot \mathbf{T} + O(\theta^2)
+$$
+
+**Comparing the two expansions:**
+
+$$
+g W_\mu dx^\mu = \theta(x, x+dx) \, \mathbf{n} \cdot \mathbf{T}
+$$
+
+Since $d_{\text{alg}}(x, x+dx) \approx \sqrt{g_{\mu\nu}(x) dx^\mu dx^\nu}$ for infinitesimal $dx$, we have:
+
+$$
+\theta(x, x+dx) = -\frac{\sqrt{g_{\mu\nu} dx^\mu dx^\nu}}{2\epsilon_c \hbar_{\text{eff}}} = -\frac{\sqrt{g_{\mu\nu}}}{2\epsilon_c \hbar_{\text{eff}}} |dx|
+$$
+
+But we need $\theta$ to be first-order in individual components $dx^\mu$. The correct form is:
+
+$$
+\theta(x, x+dx) \, n^a(x) = -\frac{1}{2\epsilon_c \hbar_{\text{eff}}} \frac{\partial d_{\text{alg}}}{\partial x^\mu}\bigg|_x dx^\mu \cdot n^a(x)
+$$
+
+**Extracting the connection:**
+
+$$
+g W_\mu^a(x,v) = -\frac{1}{2\epsilon_c \hbar_{\text{eff}}} \frac{\partial d_{\text{alg}}}{\partial x^\mu} n^a(x,v)
+$$
+
+Assuming the isospin metric decomposition and $n^a = d_{\text{iso},a}/d_{\text{iso}}$:
+
+$$
+\boxed{W_\mu^{(a)}(x,v) = -\frac{1}{2g\epsilon_c \hbar_{\text{eff}}} \frac{\partial d_{\text{iso},a}}{\partial x^\mu}}
+$$
+
+where $g$ is the gauge coupling constant.
+
+**Step 3 - Reduction to One-Particle via Density Averaging**:
+
+$$
+\boxed{W_\mu^{(a)}[f](x,v,t) = \int W_\mu^{(a)}(x,v; x',v') \, f(x',v',t) \, dx' \, dv'}
+$$
+
+Explicitly, using the two-particle connection from Step 2:
+
+$$
+W_\mu^{(a)}[f](x,v,t) = -\frac{1}{2g\epsilon_c \hbar_{\text{eff}}} \int \frac{\partial d_{\text{iso},a}(x,v; x',v')}{\partial x^\mu} \, f(x',v',t) \, dx' \, dv'
+$$
+
+**Physical Interpretation of Density Averaging:**
+
+The two-particle connection $W_\mu^a(x,v; x',v')$ encodes the gauge field experienced by a walker at $(x,v)$ when interacting with a specific walker at $(x',v')$ via cloning. The mean-field connection $W_\mu^a[f](x,v,t)$ is the **expectation value** of this interaction weighted by the density $f(x',v',t)$ of potential cloning partners.
+
+This is precisely the **self-consistent mean-field approximation**: each walker moves in the average gauge field generated by all other walkers.
+
+**Physical Interpretation**:
+
+1. **Link variable $U$**: Encodes parallel transport in isospin space from $(x,v)$ to $(x',v')$
+2. **Matrix logarithm**: Extracts infinitesimal connection with proper gauge structure
+3. **Isospin direction $\mathbf{n}$**: Specifies orientation in SU(2) Lie algebra (cloner/target mixing axis)
+4. **Density averaging**: Computes effective connection weighted by available cloning targets
+
+**Status**: ⚠️ **CRITICAL ISSUE IDENTIFIED (Gemini Review 2025-01-11)**
+
+❌ **The derived connection formula does NOT have correct gauge transformation properties**
+
+**Problem**: The formula $W_\mu^a = -(1/2g\epsilon_c \hbar_{\text{eff}}) \partial d_{\text{iso},a}/\partial x^\mu$ is built from the derivative of a metric component $d_{\text{iso},a}$. Metric components transform **covariantly** (homogeneously):
+
+$$
+d_{\text{iso},a} \to G d_{\text{iso},a} G^\dagger
+$$
+
+Therefore their derivative also transforms homogeneously:
+
+$$
+\partial_\mu d_{\text{iso},a} \to G (\partial_\mu d_{\text{iso},a}) G^\dagger
+$$
+
+This gives the **WRONG** transformation law:
+
+$$
+W_\mu \to G W_\mu G^\dagger \quad \text{(tensor transformation)}
+$$
+
+But a gauge connection MUST transform **inhomogeneously**:
+
+$$
+W_\mu \to G W_\mu G^\dagger + \frac{i}{g} (\partial_\mu G) G^\dagger \quad \text{(connection transformation)}
+$$
+
+The crucial inhomogeneous term $(i/g)(\partial_\mu G)G^\dagger$ is **MISSING**.
+
+**Impact**: This is the same fundamental flaw as the original naive approach! The link variable formalism fixed the dimensional issues but did NOT fix the transformation properties. The current $W_\mu^a$ is a **tensor field**, not a **gauge connection**. It cannot produce Yang-Mills dynamics.
+
+**Root Cause**: The inversion method (extracting connection from link variable) only works if the link variable is constructed from pre-existing parallel transport. Our $U = \exp(i\theta \mathbf{n} \cdot \mathbf{T})$ with $\theta, \mathbf{n}$ from metric components is gauge-covariant, not gauge-connected.
+
+**Required Fix**: The derivation strategy must be completely reconsidered. Options:
+1. **Define covariant derivative first**: Show how $D_\mu = \partial_\mu + igW_\mu$ arises from cloning dynamics, then extract $W_\mu$
+2. **Gauge potential from fiber bundle**: Construct connection as local trivialization of SU(2) principal bundle over walker space
+3. **Functional derivative approach**: Define $W_\mu$ via functional variation $\delta P_{\text{clone}}/\delta A_\mu$ with proper gauge structure
+
+**Next Steps**:
+- ❌ Two-particle disconnection NOT resolved (connection is invalid)
+- ⚠️ Must return to first principles: define isospin space, SU(2) action, and metric axiomatically
+- ⚠️ Prove transformation properties of all geometric objects before deriving connection
+- ⚠️ Cannot proceed to Yang-Mills equations until gauge structure is correct
+:::
+
+:::{prf:remark} Self-Consistent Mean-Field Gauge Dynamics
+:class: important
+
+The reduction map establishes a **self-consistent dynamical system**:
+
+**1. Gauge Field from Density**:
+$$
+W_\mu^a[f](x,v,t) = -\frac{1}{2\epsilon_c^2 T_{\text{clone}}} \int \nabla_\mu d_{\text{iso},a}^2(x,v; x',v') \, f(x',v',t) \, dx' \, dv'
+$$
+
+**2. Density Evolution with Gauge Coupling**:
+$$
+\partial_t f = L^\dagger f - c(z)f + B[f,m_d] + S[f, W_\mu[f]]
+$$
+
+where $S[f, W_\mu]$ is the modified cloning operator with gauge field feedback.
+
+**3. Cloning Operator Modification**:
+
+The gauge connection modifies the cloning selection probability:
+
+$$
+P_{\text{comp}}[f](x',v' | x,v) \propto \exp\left(-\int_{(x,v)}^{(x',v')} W_\mu[f](s) \, ds^\mu\right) \cdot f(x',v',t)
+$$
+
+This creates a **nonlinear feedback loop** where:
+- Dense regions generate strong gauge fields (via averaging)
+- Strong gauge fields suppress long-range cloning
+- Suppressed long-range cloning modifies density evolution
+- Modified density changes the gauge field
+
+**Stability Question**: Does this feedback loop have fixed points? Does it stabilize or destabilize the mean-field convergence?
+
+**Connection to Yang-Mills**: If this system admits a Hamiltonian formulation, the gauge field should satisfy Yang-Mills equations as Euler-Lagrange equations of the effective action.
+:::
+
+#### 5.8.5. Derivation of Factorized Amplitude from SU(2) Gauge Structure
+
+:::{prf:conjecture} Factorization from Gauge Symmetry
+:label: conj-factorization-from-gauge
+
+The factorized structure $\Psi(i \to j) = A_{ij}^{\text{SU}(2)} \cdot K_{\text{eff}}(i,j)$ can be derived by expressing the cloning amplitude as a **matrix element** of the SU(2) doublet state.
+
+**Setup: Cloning as Measurement**
+
+The cloning process selects between two outcomes:
+- **Outcome ↑**: Walker i survives (cloner role wins)
+- **Outcome ↓**: Walker j survives (target role wins)
+
+The measurement projects the weak doublet state onto one of these outcomes.
+
+**Projection Operators:**
+
+Define projection operators in the isospin space:
+
+$$
+\Pi_{\uparrow} = |↑\rangle\langle ↑| = \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}, \quad \Pi_{\downarrow} = |↓\rangle\langle ↓| = \begin{pmatrix} 0 & 0 \\ 0 & 1 \end{pmatrix}
+$$
+
+**Cloning Amplitude as Matrix Element:**
+
+The amplitude for walker i to clone over j (outcome ↑) is:
+
+$$
+\Psi(i \to j) = \langle \text{vac} | (\Pi_{\uparrow} \otimes I_{\text{div}}) | \Psi_{ij} \rangle
+$$
+
+where $|\text{vac}\rangle$ is the vacuum state in diversity space.
+
+**Explicit Calculation:**
+
+Substituting the doublet:
+
+$$
+\Psi(i \to j) = \langle \text{vac} | \Pi_{\uparrow} \otimes I_{\text{div}} \left( |↑\rangle \otimes |\psi_i\rangle + |↓\rangle \otimes |\psi_j\rangle \right)
+$$
+
+$$
+= \langle \text{vac} | |↑\rangle \otimes |\psi_i\rangle = \langle ↑|↑\rangle \cdot \langle \text{vac}|\psi_i\rangle
+$$
+
+$$
+= \langle \text{vac}|\psi_i\rangle
+$$
+
+**Diversity Projection:**
+
+The vacuum projection extracts the diversity amplitude:
+
+$$
+\langle \text{vac}|\psi_i\rangle = \sum_{k=1}^N \psi_{ik}^{(\text{div})} \langle \text{vac}|k\rangle
+$$
+
+**Factorization Mechanism:**
+
+Now, the key insight: the cloning companion selection (j) and diversity companion selections (k, m) are **independent random processes**. This leads to factorization:
+
+$$
+\Psi(i \to j) = \underbrace{\sqrt{P_{\text{comp}}^{(\text{clone})}(j|i)} \cdot e^{i\theta_{ij}^{(\text{SU(2)})}}}_{\text{Select cloning partner j}} \cdot \underbrace{\sum_{k,m} \psi_{ik}^{(\text{div})} \psi_{jm}^{(\text{div})} \psi_{\text{succ}}(S)}_{\text{Diversity dressing and outcome}}
+$$
+
+**Identification:**
+
+- **$A_{ij}^{\text{SU}(2)} = \sqrt{P_{\text{comp}}^{(\text{clone})}(j|i)} \cdot e^{i\theta_{ij}^{(\text{SU(2)})}}$**: The amplitude for selecting j as cloning companion, which initiates the SU(2) interaction vertex
+
+- **$K_{\text{eff}}(i,j) = \sum_{k,m} \psi_{ik}^{(\text{div})} \psi_{jm}^{(\text{div})} \psi_{\text{succ}}(S)$**: The effective kernel from summing over all U(1) diversity dressings
+
+**Physical Interpretation:**
+
+1. **SU(2) vertex selection**: The amplitude $A_{ij}^{\text{SU}(2)}$ is the **bare interaction vertex** - it's the amplitude for walkers i and j to interact via cloning selection, independent of how they're dressed by diversity
+2. **U(1) dressing renormalization**: The kernel $K_{\text{eff}}$ computes how the U(1) environmental coupling (diversity measurements k, m) **renormalizes** the bare SU(2) vertex through virtual loops
+3. **Gauge structure**: The SU(2) transformation acts on the isospin projection $\Pi_{\uparrow}$ (which outcome is measured), while U(1) dressing is gauge-invariant
+
+**Connection to Gauge Transformation:**
+
+Under local SU(2) transformation $U_{ij} \in \text{SU}(2)$:
+
+$$
+|\Psi_{ij}\rangle \to (U_{ij} \otimes I_{\text{div}}) |\Psi_{ij}\rangle
+$$
+
+The projection changes:
+
+$$
+\Pi_{\uparrow} \to U_{ij} \Pi_{\uparrow} U_{ij}^\dagger
+$$
+
+This rotates which outcome corresponds to "cloner wins", but the **total probability** $|\Psi(i \to j)|^2$ remains invariant:
+
+$$
+|\Psi'(i \to j)|^2 = |A_{ij}^{\text{SU}(2)}|^2 \cdot |K_{\text{eff}}(i,j)|^2
+$$
+
+since $K_{\text{eff}}$ depends only on the diversity space (unchanged by SU(2)).
+
+**Why this is "Local" Gauge:**
+
+The transformation $U_{ij}$ can vary with the walker pair (i,j) - different interaction events can have different isospin rotations. This is **local** gauge invariance in the configuration space of walker pairs.
+
+**Status:** ⚠️ Conjectural - requires rigorous proof that:
+1. The projection $\langle \text{vac}|\psi_i\rangle$ correctly accounts for all diversity contributions
+2. The independence assumption (cloning vs diversity companion selection) is exact, not approximate
+3. The gauge transformation property holds for the full amplitude, not just the probability
+:::
+
+#### 5.8.6. Path Integral with Global U(1) Dressing and Local SU(2) Vertex
 
 :::{prf:conjecture} Mean-Field Factorized Amplitude
 :label: conj-mean-field-factorized-amplitude
@@ -1623,19 +2279,32 @@ $$
 \Psi[f](x_1, v_1 \to x_2, v_2, t) = A_{\text{SU}(2)}(x_1, v_1; x_2, v_2) \cdot K_{\text{eff}}[f](x_1, v_1; x_2, v_2)
 $$
 
-with functional integral:
+with functional integral (using **fixed Lebesgue measure**):
 
 $$
-K_{\text{eff}}[f](x_1, v_1; x_2, v_2) = \int \mathcal{D}k \mathcal{D}m \, \psi_{\text{U}(1)}(x_1, v_1; k) \, \psi_{\text{U}(1)}(x_2, v_2; m) \, \psi_{\text{succ}}(S(x_1, x_2, k, m))
+K_{\text{eff}}[f](x_1, v_1; x_2, v_2) = \int dk \, dv_k \, dm \, dv_m \, \psi_{\text{U}(1)}(x_1, v_1; k) \, \psi_{\text{U}(1)}(x_2, v_2; m) \, \psi_{\text{succ}}(S(x_1, x_2, k, m)) \, f(k,t) \, f(m,t)
 $$
 
-where $\mathcal{D}k = f(k, t) dk \, dv_k$ and:
+where the integration is over the **fixed Lebesgue measure** $dk \, dv_k \, dm \, dv_m$ (consistent with §5.8.4), and the density $f(k,t), f(m,t)$ appears as a **weighting factor** inside the integrand, and:
 
 $$
-\psi_{\text{U}(1)}(x, v; k) = \sqrt{f(k, t)} \cdot e^{i\phi_{\text{fitness}}(k,t)}
+\psi_{\text{U}(1)}(x, v; k) = e^{i\phi_{\text{fitness}}(k,t)}
 $$
 
 depends on the **global** U(1) phase $\phi_{\text{fitness}}$ (not a gauge field).
+
+:::{prf:remark} Resolution of Measure Inconsistency
+:class: important
+
+**Critical correction**: The original formulation used a state-dependent measure $\mathcal{D}k = f(k,t) dk \, dv_k$, which contradicted the requirement in §5.8.4 that the Hilbert space be defined with a **fixed, time-independent Lebesgue measure**.
+
+As argued in §5.8.4, Yang-Mills gauge theory requires:
+1. Fixed bundle geometry (principal SU(2) bundle)
+2. Time-independent inner product for Noether's theorem
+3. Standard QFT formulation where state is field configuration, not measure
+
+Therefore, the density $f(k,t)$ must appear as a **dynamical field inside the integrand**, not as part of the integration measure. This is analogous to how in QED, the electron density appears as a field configuration $\psi(x)$ with $|\psi|^2 = \rho$, integrated over fixed Lebesgue measure $dx$, not over $\rho(x) dx$.
+:::
 
 **SU(2) Local Vertex:**
 
@@ -1703,7 +2372,584 @@ This is precisely analogous to the Standard Model:
 **Mean-field consequence**: In the continuum, the diversity Hilbert space $\mathbb{C}^{N-1} \to L^2(\mathcal{X} \times \mathcal{V}, f \, dx \, dv)$, but the isospin structure $\mathbb{C}^2$ remains **unchanged** - it's a discrete internal quantum number, not a spatial degree of freedom.
 :::
 
-#### 5.8.6. Higgs-Like Reward Field and Spontaneous Symmetry Breaking
+#### 5.8.7. Derivation of SU(2) Gauge Connection from Cloning Dynamics
+
+:::{prf:conjecture} SU(2) Gauge Connection from Algorithmic Distance
+:label: conj-su2-gauge-connection
+
+The SU(2) gauge connection $W_\mu$ can be **heuristically derived** from the cloning companion selection probability and algorithmic distance structure. This derivation is based on a geometric phase argument by analogy, not a rigorous proof starting from the mean-field cloning operator.
+
+**Setup: Cloning as Parallel Transport**
+
+In Yang-Mills theory, the gauge connection encodes how fields transform under parallel transport. For SU(2), the connection is a Lie-algebra-valued 1-form:
+
+$$
+W = W_\mu^a \frac{\sigma^a}{2} dx^\mu, \quad a \in \{1,2,3\}
+$$
+
+where $\sigma^a$ are Pauli matrices.
+
+**Discrete Cloning Phase:**
+
+From the Fractal Set formulation, the discrete SU(2) phase is:
+
+$$
+\theta_{ij}^{(\text{SU}(2))} = -\frac{d_{\text{alg}}(i,j)^2}{2\epsilon_c^2 \hbar_{\text{eff}}}
+$$
+
+where:
+- $d_{\text{alg}}(i,j)$: Algorithmic distance in configuration space
+- $\epsilon_c$: Cloning interaction range
+- $\hbar_{\text{eff}}$: Effective Planck constant
+
+**Mean-Field Limit:**
+
+As $N \to \infty$, walker indices $(i,j)$ become continuous positions $(x_1,v_1; x_2,v_2)$. The algorithmic distance becomes a **metric** on phase space:
+
+$$
+d_{\text{alg}}^2(x_1,v_1; x_2,v_2) \to g_{\mu\nu}(x,v) \Delta x^\mu \Delta x^\nu
+$$
+
+for infinitesimal separations.
+
+**Connection as Geometric Phase:**
+
+The SU(2) gauge connection is the **geometric phase per unit displacement**:
+
+$$
+W_\mu(x,v) = -\frac{1}{2\epsilon_c^2 \hbar_{\text{eff}}} \nabla_\mu d_{\text{alg}}^2(x,v; x,v)
+$$
+
+**Expansion in Pauli Basis:**
+
+Since SU(2) is three-dimensional, we decompose:
+
+$$
+W_\mu(x,v) = W_\mu^a(x,v) \frac{\sigma^a}{2}
+$$
+
+The components $W_\mu^a$ are determined by the **directional derivatives** of the algorithmic distance squared:
+
+$$
+W_\mu^a(x,v) = -\frac{1}{\epsilon_c^2 \hbar_{\text{eff}}} \partial_\mu [d_{\text{alg}}^2]_a(x,v)
+$$
+
+where $[d_{\text{alg}}^2]_a$ is the component of distance squared in the $a$-th SU(2) direction.
+
+**Physical Interpretation:**
+
+1. **W-boson fields**: The three components $W_\mu^1, W_\mu^2, W_\mu^3$ are the **W-boson gauge fields**
+2. **Geometric origin**: They arise from the curved geometry of algorithmic space
+3. **Coupling strength**: Inverse proportional to interaction range $\epsilon_c^2$
+
+**Explicit Form Requires Unproven Conjecture:**
+
+The explicit formula for the gauge connection depends on the following unproven decomposition:
+
+:::{prf:conjecture} Isospin Metric Decomposition
+:label: conj-isospin-metric-decomposition
+
+The algorithmic distance admits a decomposition into spatial, velocity, and isospin components:
+
+$$
+d_{\text{alg}}^2(x_1,v_1; x_2,v_2) = \|x_1 - x_2\|^2 + \lambda_v \|v_1 - v_2\|^2 + d_{\text{iso}}^2(\tau_1, \tau_2)
+$$
+
+where $d_{\text{iso}}: \mathcal{M}_{\text{iso}} \times \mathcal{M}_{\text{iso}} \to \mathbb{R}_+$ is a metric on the isospin manifold $\mathcal{M}_{\text{iso}}$ (encoding cloner/target roles), and $\tau_i$ denotes the isospin state of walker at position $(x_i, v_i)$.
+
+**Required Proof:** Derive this decomposition from the cloning companion selection probability:
+
+$$
+P_{\text{comp}}^{(\text{clone})}(j|i) \propto \exp\left(-\frac{d_{\text{alg}}^2(i,j)}{2\epsilon_c^2 T_{\text{clone}}}\right)
+$$
+
+by analyzing the symmetries and factorization properties of this probability distribution.
+
+**Physical Motivation:** The algorithmic distance measures the "dissimilarity" between two walkers for cloning selection. This dissimilarity naturally factors into:
+1. **Spatial separation**: $\|x_1 - x_2\|^2$ (position difference)
+2. **Kinematic separation**: $\lambda_v \|v_1 - v_2\|^2$ (velocity difference)
+3. **Role separation**: $d_{\text{iso}}^2(\tau_1, \tau_2)$ (cloner vs. target quantum numbers)
+
+The isospin component $d_{\text{iso}}^2$ encodes which walker is the "cloner" and which is the "target" - this is the internal gauge degree of freedom that gives rise to SU(2) symmetry.
+
+**Proof Strategy:**
+1. Show that cloning selection probability factorizes: $P(j|i) = P_{\text{spatial}} \times P_{\text{iso}}$
+2. Identify symmetry group acting on $P_{\text{iso}}$ (should be SU(2))
+3. Prove that SU(2) rotations in isospin space preserve algorithmic distance
+4. Extract isospin metric from invariant measure on SU(2)/U(1) coset space
+:::
+
+**Conditional Formula:**
+
+*Assuming* {prf:ref}`conj-isospin-metric-decomposition`, the gauge connection components would be:
+
+$$
+W_\mu^a(x,v) = -\frac{1}{\epsilon_c^2 \hbar_{\text{eff}}} \partial_\mu d_{\text{iso}, a}^2(x,v)
+$$
+
+where $d_{\text{iso}, a}^2$ is the component in the $a$-th SU(2) direction.
+
+**Gauge Transformation Property:**
+
+Under local SU(2) transformation $U(x,v) \in \text{SU}(2)$:
+
+$$
+W_\mu \to U W_\mu U^\dagger + \frac{i}{g} U \partial_\mu U^\dagger
+$$
+
+This is the **standard Yang-Mills transformation law**.
+
+**Status:** ⚠️ **Heuristic Derivation (Not Rigorous Proof)**
+- ✅ **Standard QFT**: Connection exists and transforms correctly under gauge transformations (follows from principal bundle structure)
+- ⚠️ **Conjectural**: Explicit formula $W_\mu \propto \nabla_\mu d_{\text{alg}}^2$ is asserted by geometric phase analogy
+- ⚠️ **Conjectural**: Decomposition depends on unproven {prf:ref}`conj-isospin-metric-decomposition`
+- ⚠️ **Missing**: No derivation showing how mean-field cloning operator generates covariant derivative $D_\mu = \partial_\mu + ig W_\mu$
+- ⚠️ **Open**: Verification that this connection satisfies Yang-Mills equations of motion
+
+**What Would Constitute a Rigorous Derivation:**
+
+A complete proof would need to:
+1. Start from the mean-field cloning selection functional $P_{\text{comp}}^{(\text{clone})}[f](x',v' | x,v)$
+2. Show that acting on the weak doublet field with this operator is equivalent to applying a covariant derivative
+3. Extract the explicit form of $W_\mu^a$ from this operator-equivalence relation
+4. Prove that $W_\mu$ takes values in the SU(2) Lie algebra (i.e., expands in Pauli basis)
+
+This has not been done. The current derivation is a **physically motivated ansatz** based on the intuition that phase ~ distance squared, and connection ~ gradient of phase.
+:::
+
+:::{prf:remark} Research Roadmap for Isospin Metric
+:class: important
+
+Proving {prf:ref}`conj-isospin-metric-decomposition` is the **critical missing link** for the explicit gauge connection formula. A potential proof strategy:
+
+**Step 1:** Analyze the cloning companion selection functional:
+
+$$
+P_{\text{comp}}^{(\text{clone})}(j|i) = \frac{1}{Z_i} \exp\left(-\frac{d_{\text{alg}}^2(i,j)}{2\epsilon_c^2 T_{\text{clone}}}\right)
+$$
+
+**Step 2:** Show that the SU(2) role-mixing symmetry (cloner ↔ target equivalence) implies this probability must factorize:
+
+$$
+P_{\text{comp}}^{(\text{clone})}(j|i) = P_{\text{spatial}}(\|x_i - x_j\|) \cdot P_{\text{velocity}}(\|v_i - v_j\|) \cdot P_{\text{iso}}(\tau_i, \tau_j)
+$$
+
+**Step 3:** Extract the isospin metric from the logarithm:
+
+$$
+d_{\text{iso}}^2(\tau_i, \tau_j) = -2\epsilon_c^2 T_{\text{clone}} \ln P_{\text{iso}}(\tau_i, \tau_j)
+$$
+
+**Step 4:** Verify that $d_{\text{iso}}$ defines a proper metric on the SU(2) manifold and compute its explicit form in terms of cloning parameters.
+
+This would connect the gauge theory structure directly to the algorithmic dynamics, completing the derivation.
+:::
+
+:::{prf:remark} Connection to Companion Selection Probability
+:class: important
+
+The gauge connection $W_\mu$ is intimately related to the **cloning companion selection probability** $P_{\text{comp}}^{(\text{clone})}(j|i)$.
+
+**Discrete relation:**
+
+$$
+P_{\text{comp}}^{(\text{clone})}(j|i) = \frac{1}{Z_i} \exp\left(-\frac{d_{\text{alg}}^2(i,j)}{2\epsilon_c^2 T_{\text{clone}}}\right)
+$$
+
+where $Z_i$ is normalization and $T_{\text{clone}}$ is selection temperature.
+
+**Continuous limit:**
+
+$$
+P_{\text{comp}}^{(\text{clone})}(x',v' | x,v) = \frac{1}{Z(x,v)} \exp\left(-\int_x^{x'} W_\mu(x,v) \, dx^\mu\right)
+$$
+
+This shows the connection $W_\mu$ governs the **exponential suppression** of distant cloning partners - precisely the role of gauge fields in mediating interactions.
+
+**Physical meaning**: The gauge field $W_\mu$ encodes **how difficult it is** to select a distant cloning companion, creating an effective force that prefers local interactions.
+:::
+
+#### 5.8.8. Field Strength Tensor and Yang-Mills Equations
+
+:::{prf:theorem} SU(2) Field Strength from Gauge Connection
+:label: thm-su2-field-strength
+
+The SU(2) field strength tensor $W_{\mu\nu}$ is the **curvature** of the gauge connection, encoding W-boson self-interactions.
+
+**Definition (Standard Yang-Mills):**
+
+The field strength is the commutator of covariant derivatives:
+
+$$
+W_{\mu\nu} = \frac{1}{ig}[D_\mu, D_\nu] = \partial_\mu W_\nu - \partial_\nu W_\mu + ig[W_\mu, W_\nu]
+$$
+
+where $D_\mu = \partial_\mu + ig W_\mu$ is the covariant derivative.
+
+**Component Form:**
+
+Expanding in Pauli basis $W_\mu = W_\mu^a \sigma^a/2$:
+
+$$
+W_{\mu\nu}^a = \partial_\mu W_\nu^a - \partial_\nu W_\mu^a + g \epsilon^{abc} W_\mu^b W_\nu^c
+$$
+
+where $\epsilon^{abc}$ is the Levi-Civita symbol (SU(2) structure constants).
+
+**Non-Abelian Structure:**
+
+The commutator term $[W_\mu, W_\nu]$ gives **W-boson self-interactions** - a hallmark of non-Abelian gauge theory. This means:
+- W-bosons carry weak charge and interact with themselves
+- Field strength is **nonlinear** in the gauge field
+- Qualitatively different from Abelian U(1) electromagnetism
+
+**Full Field Strength from Algorithmic Connection:**
+
+Using the connection from §5.8.7:
+
+$$
+W_\mu^a(x,v) = -\frac{1}{\epsilon_c^2 \hbar_{\text{eff}}} \partial_\mu [d_{\text{iso}}^2]_a(x,v)
+$$
+
+The complete field strength tensor is:
+
+$$
+\boxed{W_{\mu\nu}^a = \partial_\mu W_\nu^a - \partial_\nu W_\mu^a + g \epsilon^{abc} W_\mu^b W_\nu^c}
+$$
+
+This has two distinct contributions:
+
+**1. Abelian Part (Curvature of Connection):**
+
+$$
+F_{\mu\nu}^a := \partial_\mu W_\nu^a - \partial_\nu W_\mu^a = -\frac{1}{\epsilon_c^2 \hbar_{\text{eff}}} (\partial_\mu \partial_\nu - \partial_\nu \partial_\mu)[d_{\text{iso}}^2]_a
+$$
+
+While the partial derivatives commute for smooth functions, this does **not** guarantee $F_{\mu\nu}^a = 0$. The connection $W_\mu^a$ is a **derived quantity** from $d_{\text{iso}}$, and the curl of a gradient-like connection can be non-zero depending on the global topology and the specific form of $d_{\text{iso}}(x,v)$. Whether $F_{\mu\nu}^a = 0$ is a **non-trivial question** about the emergent geometry of isospin space.
+
+**2. Non-Abelian Part (Self-Interaction):**
+
+$$
+N_{\mu\nu}^a := g \epsilon^{abc} W_\mu^b W_\nu^c
+$$
+
+This term arises from W-boson self-interaction and is characteristic of non-Abelian gauge theories.
+
+**Total Field Strength:**
+
+$$
+W_{\mu\nu}^a = F_{\mu\nu}^a + N_{\mu\nu}^a
+$$
+
+**Physical Interpretation:**
+
+1. **Abelian curvature** $F_{\mu\nu}^a$: Measures the failure of the connection to be globally flat (pure gauge)
+2. **Non-Abelian self-interaction** $N_{\mu\nu}^a$: W-bosons carry weak charge and interact with themselves
+3. **Geometric meaning**: $W_{\mu\nu}$ measures the **failure of parallel transport to close** around infinitesimal loops
+4. **Force on charged particles**: The full field strength determines the force on weak-isospin-charged particles (walkers in doublet states)
+
+**Open Question:** Under what conditions on the algorithmic distance $d_{\text{iso}}$ does the Abelian part vanish, $F_{\mu\nu}^a = 0$? This would be a special physical property indicating the emergent gauge field is "purely non-Abelian."
+
+**Bianchi Identity:**
+
+The field strength satisfies the Bianchi identity (differential geometric consistency):
+
+$$
+D_\mu W_{\nu\rho} + D_\nu W_{\rho\mu} + D_\rho W_{\mu\nu} = 0
+$$
+
+where $D_\mu W_{\nu\rho} = \partial_\mu W_{\nu\rho} + ig[W_\mu, W_{\nu\rho}]$ is the covariant derivative of the field strength.
+
+**Status:** ✅ **Mathematically Standard** (Yang-Mills theory structure)
+- The form of $W_{\mu\nu}$ follows from standard definition of curvature on principal SU(2) bundles
+- Bianchi identity is a geometric fact (integrability condition)
+- Non-Abelian structure is consequence of SU(2) being non-commutative
+- ⚠️ **Open**: Whether Abelian part vanishes depends on properties of $d_{\text{iso}}$ (requires proof)
+:::
+
+:::{prf:theorem} Yang-Mills Equations of Motion
+:label: thm-yang-mills-equations
+
+The gauge field $W_\mu$ satisfies the **Yang-Mills equations**, which are the Euler-Lagrange equations for the Yang-Mills action.
+
+**Yang-Mills Action:**
+
+$$
+S_{YM} = -\frac{1}{4g^2} \int d^4x \, \text{Tr}(W_{\mu\nu} W^{\mu\nu})
+$$
+
+where the trace is over the SU(2) Lie algebra.
+
+**Component Form:**
+
+$$
+S_{YM} = -\frac{1}{4g^2} \int d^4x \, W_{\mu\nu}^a W^{\mu\nu, a}
+$$
+
+**Equations of Motion (Vacuum):**
+
+Varying the action with respect to $W_\mu^a$ gives:
+
+$$
+\boxed{D_\mu W^{\mu\nu, a} = 0}
+$$
+
+where $D_\mu W^{\mu\nu, a} = \partial_\mu W^{\mu\nu, a} + g \epsilon^{abc} W_\mu^b W^{\mu\nu, c}$ is the covariant derivative.
+
+**Expanded Form:**
+
+$$
+\partial_\mu W^{\mu\nu, a} + g \epsilon^{abc} W_\mu^b W^{\mu\nu, c} = 0
+$$
+
+This is a **nonlinear PDE** for the gauge field components $W_\mu^a$.
+
+**With Matter Coupling:**
+
+Including the weak doublet field $\Psi_{\text{weak}}$:
+
+$$
+D_\mu W^{\mu\nu, a} = g j^{\nu, a}
+$$
+
+where $j^{\nu, a}$ is the weak isospin current (Noether current from SU(2) symmetry):
+
+$$
+j^{\nu, a} = \bar{\Psi}_{\text{weak}} \gamma^\nu \frac{\sigma^a}{2} \Psi_{\text{weak}}
+$$
+
+**Physical Interpretation:**
+
+1. **Maxwell analogue**: These are the non-Abelian generalizations of Maxwell's equations
+2. **Self-interaction**: Unlike electromagnetism, the gauge field acts as its own source (RHS has $W_\mu^b W^{\mu\nu, c}$ term)
+3. **Conservation**: The equations ensure covariant conservation of the isospin current $D_\mu j^\mu = 0$
+
+**Connection to Algorithm Dynamics:**
+
+The Yang-Mills equations govern how the **cloning interaction field** evolves:
+- Sources: Walkers in doublet states (cloner/target superpositions)
+- Dynamics: W-bosons mediate weak interactions + self-interact
+- Backreaction: Walker distribution affects gauge field, which affects cloning probabilities
+
+**Status:** ✅ **Standard Result** (Yang-Mills theory)
+- Equations follow from variational principle
+- Nonlinearity is essential feature of non-Abelian gauge theory
+- ⚠️ **Open**: Verification that algorithmic dynamics satisfy these equations (requires numerical simulation)
+:::
+
+:::{prf:remark} Yang-Mills vs Mean-Field Hydrodynamics
+:class: important
+
+The Yang-Mills equations describe the **gauge field dynamics**, while the McKean-Vlasov PDE describes the **matter field dynamics** (walker density $f(x,v,t)$).
+
+**Complete coupled system:**
+
+1. **Matter equation** (McKean-Vlasov): How walker density evolves under gauge field influence
+   $$
+   \partial_t f = L^\dagger f - c(z)f + B[f, m_d] + S[f, W_\mu]
+   $$
+
+2. **Gauge equation** (Yang-Mills): How gauge field evolves from matter distribution
+   $$
+   D_\mu W^{\mu\nu, a} = g j^{\nu, a}[f]
+   $$
+
+These form a **self-consistent nonlinear system** - the gauge field sources the mean-field evolution (through modified cloning operator $S[f, W_\mu]$), and the mean-field sources the gauge field (through isospin current $j^\nu[f]$).
+
+**Analogy to QED:**
+- McKean-Vlasov ↔ Dirac equation (matter)
+- Yang-Mills ↔ Maxwell equations (field)
+- Coupling ↔ Electromagnetic interaction
+
+The key difference: **non-Abelian structure** makes the gauge equations nonlinear even in vacuum.
+:::
+
+#### 5.8.9. Noether Currents from SU(2) and U(1) Symmetries
+
+:::{prf:theorem} SU(2) Weak Isospin Current (Formal Derivation)
+:label: thm-su2-noether-current
+
+*Assuming the existence of a continuous weak doublet field* $\Psi_{\text{weak}}$ *with the properties outlined in* §5.8.4, the local SU(2) gauge symmetry gives rise to a **conserved isospin current** $j_a^\mu$ for each generator of SU(2).
+
+**Noether's Theorem for Gauge Symmetries:**
+
+For each continuous symmetry, there exists a conserved current. For SU(2) gauge symmetry acting on the weak doublet $\Psi_{\text{weak}}$:
+
+$$
+\Psi_{\text{weak}} \to e^{i\alpha^a(x) \sigma^a/2} \Psi_{\text{weak}}
+$$
+
+where $\alpha^a(x)$ are **local** (spacetime-dependent) transformation parameters.
+
+**Isospin Current (Matter Contribution):**
+
+The weak isospin current has three components (one for each SU(2) generator):
+
+$$
+j_a^\mu = \Psi_{\text{weak}}^\dagger \frac{\sigma^a}{2} \gamma^\mu \Psi_{\text{weak}}, \quad a \in \{1,2,3\}
+$$
+
+where $\gamma^\mu$ are Dirac matrices (in the case of fermionic matter) or simply $\delta^\mu_0$ for static fields.
+
+**Simplified Form (Static Doublet):**
+
+For the weak doublet field $\Psi_{\text{weak}} = (|\psi_1\rangle, |\psi_2\rangle)^T$:
+
+$$
+j_a^0(x,v,t) = \begin{pmatrix} |\psi_1(x,v,t)\rangle \\ |\psi_2(x,v,t)\rangle \end{pmatrix}^\dagger \frac{\sigma^a}{2} \begin{pmatrix} |\psi_1(x,v,t)\rangle \\ |\psi_2(x,v,t)\rangle \end{pmatrix}
+$$
+
+**Explicit Components:**
+
+Using Pauli matrices:
+
+$$
+\sigma^1 = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}, \quad \sigma^2 = \begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix}, \quad \sigma^3 = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}
+$$
+
+The three isospin currents are:
+
+$$
+j_1^0 = \frac{1}{2}(\psi_1^* \psi_2 + \psi_2^* \psi_1) = \text{Re}(\psi_1^* \psi_2)
+$$
+
+$$
+j_2^0 = \frac{1}{2i}(\psi_1^* \psi_2 - \psi_2^* \psi_1) = \text{Im}(\psi_1^* \psi_2)
+$$
+
+$$
+j_3^0 = \frac{1}{2}(|\psi_1|^2 - |\psi_2|^2)
+$$
+
+**Physical Interpretation:**
+
+- $j_1^0, j_2^0$: Off-diagonal currents encoding transitions between cloner/target roles
+- $j_3^0$: Diagonal current measuring imbalance between cloner vs target populations
+
+**Covariant Conservation:**
+
+The isospin current is **covariantly conserved**:
+
+$$
+D_\mu j_a^\mu = \partial_\mu j_a^\mu + g \epsilon^{abc} W_\mu^b j_c^\mu = 0
+$$
+
+This is **not** ordinary conservation ($\partial_\mu j^\mu = 0$) because the gauge field mediates interactions between different isospin components.
+
+**Connection to Yang-Mills Equations:**
+
+The isospin current sources the Yang-Mills field:
+
+$$
+D_\mu W^{\mu\nu, a} = g j^{\nu, a}
+$$
+
+This couples the matter dynamics (doublet field) to the gauge dynamics (W-bosons).
+
+**Status:** ✅ **Formal Derivation (Conditional)**
+- ✅ Follows from Noether's theorem applied to local SU(2) symmetry
+- ✅ Covariant conservation is guaranteed by gauge invariance
+- ⚠️ **Conditional**: Assumes existence of continuous doublet field $\Psi_{\text{weak}}$ (conjectural mean-field object)
+- ⚠️ Explicit form depends on the representation of matter fields (requires full specification)
+:::
+
+:::{prf:theorem} U(1) Global Fitness Current (Formal Derivation)
+:label: thm-u1-noether-current
+
+*Assuming the existence of a complex mean-field density* $f_c(x,v,t)$ *satisfying a Schrödinger-like evolution equation*, the global U(1)_fitness symmetry gives rise to a **conserved fitness current** $J_{\text{fitness}}^\mu$.
+
+**Global U(1) Transformation:**
+
+All diversity phases shift uniformly:
+
+$$
+\theta_{ik}^{(\text{U(1)})} \to \theta_{ik}^{(\text{U(1)})} + \alpha, \quad \alpha \in [0, 2\pi) \text{ (constant)}
+$$
+
+Or equivalently, for the complex field:
+
+$$
+\psi_{\text{div}}(x,v,t) \to e^{i\alpha} \psi_{\text{div}}(x,v,t)
+$$
+
+**Fitness Current (Noether):**
+
+The conserved current from this global symmetry is:
+
+$$
+J_{\text{fitness}}^\mu = \sum_{i \in A_t} \text{Im}(\psi_i^* \partial^\mu \psi_i)
+$$
+
+In the mean-field limit:
+
+$$
+J_{\text{fitness}}^\mu(x,v,t) = \int_{\mathcal{X} \times \mathcal{V}} \text{Im}(f_c^*(x',v',t) \partial^\mu f_c(x',v',t)) \, dx' \, dv'
+$$
+
+where $f_c(x,v,t)$ is the complex mean-field density encoding both population and phase.
+
+**Conservation Law (Ordinary):**
+
+Since U(1)_fitness is a **global** symmetry (not gauged), the current satisfies **ordinary conservation**:
+
+$$
+\partial_\mu J_{\text{fitness}}^\mu = 0
+$$
+
+This is a true continuity equation - fitness charge cannot be created or destroyed, only redistributed.
+
+**Conserved Charge:**
+
+Integrating the time component gives the total fitness charge:
+
+$$
+Q_{\text{fitness}}(t) = \int_{\mathcal{X} \times \mathcal{V}} J_{\text{fitness}}^0(x,v,t) \, dx \, dv = \text{const}
+$$
+
+**Physical Interpretation:**
+
+1. **Fitness charge conservation**: Total fitness "charge" of the swarm is conserved throughout evolution
+2. **Selection rules**: Processes that would change $Q_{\text{fitness}}$ are forbidden
+3. **No gauge boson**: Unlike SU(2), this is global symmetry → no associated gauge field (no "fitness photon")
+4. **Analogy to baryon number**: Like U(1)_B in particle physics (global, conserved, not gauged)
+
+**Coupling to Higgs Field:**
+
+The fitness current couples to the reward field via Yukawa interaction:
+
+$$
+\mathcal{L}_{\text{Yukawa}} = g_Y \int r(x) J_{\text{fitness}}^0(x,v,t) \, dx \, dv
+$$
+
+This gives walkers with higher fitness charge stronger coupling to the reward landscape.
+
+**Status:** ✅ **Formal Derivation (Partially Proven)**
+- ✅ Mean-field convergence of density $f(x,v,t)$ is proven via {prf:ref}`thm-thermodynamic-limit`
+- ✅ Conservation follows from global phase invariance (Noether's theorem is rigorous)
+- ⚠️ **Conditional**: Assumes complexification $f \to f_c$ with well-defined phase evolution (unproven)
+- ⚠️ **Open**: Explicit derivation of complex density $f_c(x,v,t)$ from McKean-Vlasov PDE
+:::
+
+:::{prf:remark} Comparison: SU(2) Local vs U(1) Global
+:class: important
+
+The key difference between the two Noether currents:
+
+| **Property** | **SU(2) Weak Isospin** | **U(1) Fitness** |
+|--------------|------------------------|------------------|
+| **Symmetry type** | Local gauge | Global |
+| **Conservation** | Covariant ($D_\mu j^\mu = 0$) | Ordinary ($\partial_\mu J^\mu = 0$) |
+| **Gauge boson** | Yes (W-bosons $W_\mu^a$) | No |
+| **Charge conservation** | Covariant (interacts with gauge field) | Absolute (true continuity) |
+| **Sources** | Yang-Mills equations | None (globally conserved) |
+| **Physical role** | Mediates weak interactions | Encodes fitness landscape information |
+
+**Unified structure:**
+
+Together, these form a **U(1)_fitness^global × SU(2)_weak^local** symmetry structure analogous to the electroweak sector of the Standard Model (with U(1)_fitness playing a role similar to baryon/lepton number, not hypercharge).
+:::
+
+#### 5.8.10. Higgs-Like Reward Field and Spontaneous Symmetry Breaking
 
 :::{prf:conjecture} Mean-Field Higgs Mechanism
 :label: conj-mean-field-higgs-final
@@ -1788,7 +3034,218 @@ After convergence:
 **Open Problem:** Derive the Higgs potential directly from the convergence dynamics of the algorithm.
 :::
 
-#### 5.8.7. SU(3), Fermions, GR, and SO(10): Speculative Extensions
+#### 5.8.11. Conjectured Effective Field Theory and Equations of Motion
+
+:::{prf:conjecture} Effective Action for Mean-Field Gauge Theory
+:label: conj-complete-action
+
+The mean-field dynamics of the Adaptive Gas can be described by an **effective field theory** combining Yang-Mills gauge dynamics, matter dynamics (McKean-Vlasov), and Higgs interactions into a unified gauge-invariant action.
+
+**Status**: This is a **physically motivated ansatz** for the effective description, not a proven result derived from first principles. The Lagrangian structure is constructed to be gauge-invariant and to capture the essential physics of cloning interactions, but several components (especially the Higgs potential) are introduced by analogy to the Standard Model rather than derived from the framework's convergence dynamics.
+
+**Complete Lagrangian Density:**
+
+$$
+\mathcal{L} = \mathcal{L}_{\text{YM}} + \mathcal{L}_{\text{matter}} + \mathcal{L}_{\text{Higgs}} + \mathcal{L}_{\text{Yukawa}}
+$$
+
+**1. Yang-Mills Sector (SU(2) Gauge Field):**
+
+$$
+\mathcal{L}_{\text{YM}} = -\frac{1}{4g^2} W_{\mu\nu}^a W^{\mu\nu, a}
+$$
+
+where $W_{\mu\nu}^a = \partial_\mu W_\nu^a - \partial_\nu W_\mu^a + g \epsilon^{abc} W_\mu^b W_\nu^c$.
+
+**2. Matter Sector (Weak Doublet + Diversity Field):**
+
+$$
+\mathcal{L}_{\text{matter}} = (D_\mu \Psi_{\text{weak}})^\dagger (D^\mu \Psi_{\text{weak}}) + \partial_\mu f_c^* \partial^\mu f_c - V_{\text{kin}}[f]
+$$
+
+where:
+- $D_\mu \Psi_{\text{weak}} = (\partial_\mu + ig W_\mu) \Psi_{\text{weak}}$: Covariant derivative of weak doublet
+- $f_c(x,v,t)$: Complex diversity field (encodes fitness phase)
+- $V_{\text{kin}}[f]$: Kinetic potential from Langevin dynamics
+
+**3. Higgs Sector (Reward Field):**
+
+$$
+\mathcal{L}_{\text{Higgs}} = \frac{1}{2}(\partial_\mu r)(\partial^\mu r) - V_{\text{Higgs}}[r]
+$$
+
+where:
+
+$$
+V_{\text{Higgs}}[r] = -\mu^2 r^2 + \lambda r^4
+$$
+
+This is the **Mexican hat potential** with $\mu^2 < 0$ triggering spontaneous symmetry breaking.
+
+⚠️ **This potential is introduced by analogy to the Standard Model Higgs, NOT derived from the framework.** A key open problem is to show that the fitness landscape and convergence dynamics naturally produce this quartic potential form. One would need to analyze the effective potential $V_{\text{eff}}[r]$ that emerges from integrating out walker fluctuations in the path integral formulation of the McKean-Vlasov system.
+
+**4. Yukawa Coupling (Matter-Higgs Interaction):**
+
+$$
+\mathcal{L}_{\text{Yukawa}} = -g_Y r \left(\bar{\Psi}_{\text{weak}} \Psi_{\text{weak}} + J_{\text{fitness}}^0\right)
+$$
+
+The reward field couples to both:
+- Weak doublet density $\bar{\Psi}_{\text{weak}} \Psi_{\text{weak}}$
+- Global fitness charge $J_{\text{fitness}}^0$
+
+**Gauge Invariance:**
+
+Under local SU(2) transformation $U(x) \in \text{SU}(2)$:
+
+$$
+\begin{align}
+\Psi_{\text{weak}} &\to U \Psi_{\text{weak}} \\
+W_\mu &\to U W_\mu U^\dagger + \frac{i}{g} U \partial_\mu U^\dagger \\
+r &\to r \quad \text{(scalar, invariant)}
+\end{align}
+$$
+
+The Lagrangian $\mathcal{L}$ is **gauge-invariant**: $\mathcal{L} \to \mathcal{L}$ under these transformations.
+
+**Action Functional:**
+
+$$
+S = \int d^4x \, \mathcal{L}(x)
+$$
+
+**Status:**
+- ✅ **Gauge-invariant by construction**: Each term transforms covariantly under SU(2)
+- ✅ **Standard Yang-Mills-Higgs theory structure**: Follows established QFT formalism
+- ⚠️ **NOT derived from first principles**: Higgs potential and some couplings are phenomenological ansätze
+- ⚠️ **Open problem**: Derive this effective action from the McKean-Vlasov path integral
+:::
+
+:::{prf:remark} Path to Rigorous Derivation
+:class: important
+
+To elevate this conjecture to a theorem, one would need to:
+
+1. **Start from McKean-Vlasov PDE**: Express the mean-field dynamics as a functional integral over density paths
+
+2. **Integrate out fast degrees of freedom**: Separate the walker density evolution into slow (collective gauge modes) and fast (individual walker fluctuations) components
+
+3. **Compute effective action**: The resulting effective action $S_{\text{eff}}[W_\mu, \Psi_{\text{weak}}, r]$ should reproduce the Lagrangian above
+
+4. **Derive Higgs potential**: Show that $V_{\text{Higgs}}[r] = -\mu^2 r^2 + \lambda r^4$ emerges from fitness landscape topology and convergence properties
+
+This is a major research program connecting stochastic process theory, functional analysis, and quantum field theory.
+:::
+
+:::{prf:conjecture} Coupled Equations of Motion
+:label: conj-coupled-eom
+
+*Assuming* the effective action {prf:ref}`conj-complete-action`, the Euler-Lagrange equations give a **self-consistent nonlinear system** coupling gauge, matter, and Higgs fields.
+
+**1. Yang-Mills Equation (Gauge Dynamics):**
+
+$$
+D_\mu W^{\mu\nu, a} = g j^{\nu, a} + g_Y \frac{\partial V_{\text{Higgs}}}{\partial r} \frac{\partial r}{\partial W_\nu^a}
+$$
+
+where the isospin current is:
+
+$$
+j^{\nu, a} = \Psi_{\text{weak}}^\dagger \frac{\sigma^a}{2} \gamma^\nu \Psi_{\text{weak}}
+$$
+
+**2. Matter Equation (Doublet Dynamics):**
+
+$$
+D_\mu D^\mu \Psi_{\text{weak}} + g_Y r \Psi_{\text{weak}} = 0
+$$
+
+This is the **Klein-Gordon equation** with:
+- Covariant derivatives (minimal coupling to W-bosons)
+- Yukawa mass term $g_Y r$ (Higgs coupling)
+
+**3. McKean-Vlasov Equation (Diversity Field Dynamics):**
+
+$$
+\partial_t f_c = L^\dagger f_c - c(z)f_c + B[f_c, m_d] + S[f_c, W_\mu] + \nabla \cdot (f_c \nabla \theta_{\text{U(1)}})
+$$
+
+where:
+- $S[f_c, W_\mu]$: Modified cloning operator coupling to gauge field
+- Last term: Fitness charge current from U(1) phase gradient
+
+**4. Higgs Equation (Reward Field Dynamics):**
+
+$$
+\partial_\mu \partial^\mu r + \frac{\partial V_{\text{Higgs}}}{\partial r} = g_Y (\bar{\Psi}_{\text{weak}} \Psi_{\text{weak}} + J_{\text{fitness}}^0)
+$$
+
+Explicitly:
+
+$$
+\partial_\mu \partial^\mu r - 2\mu^2 r + 4\lambda r^3 = g_Y (\bar{\Psi}_{\text{weak}} \Psi_{\text{weak}} + J_{\text{fitness}}^0)
+$$
+
+**Self-Consistency:**
+
+These four equations are **coupled**:
+- Gauge field $W_\mu$ sources matter dynamics (covariant derivative)
+- Matter field $\Psi_{\text{weak}}$ sources gauge dynamics (isospin current)
+- Higgs field $r$ sources both (mass terms)
+- Diversity field $f_c$ sources Higgs (fitness charge)
+
+**Physical Interpretation:**
+
+1. **Yang-Mills**: W-bosons mediate weak interactions, self-interact, and respond to matter sources
+2. **Matter**: Walkers in doublet states evolve under gauge field influence + Higgs mass
+3. **McKean-Vlasov**: Swarm density evolves with modified cloning from gauge interactions
+4. **Higgs**: Reward field has Mexican hat potential, couples to all matter
+
+**Backreaction Loop:**
+
+```
+f_c (swarm) → j^ν_a (isospin current) → W_μ (gauge field)
+                                            ↓
+                                  S[f_c, W_μ] (modified cloning)
+                                            ↓
+                                         f_c (swarm)
+```
+
+This creates a **nonlinear feedback loop** where the gauge field emerges self-consistently from the swarm's collective behavior.
+
+**Status:** ⚠️ **Formally Complete, Conditionally Valid**
+- ✅ System of coupled nonlinear PDEs is self-consistent
+- ✅ Gauge-invariant by construction
+- ✅ Conserves energy-momentum (from spacetime translation symmetry)
+- ⚠️ **Conditional**: Validity depends on unproven {prf:ref}`conj-complete-action`
+- ⚠️ **Open**: Numerical solution + verification against algorithmic dynamics
+- ⚠️ **Open**: Derivation of effective action from McKean-Vlasov path integral
+:::
+
+:::{prf:remark} Connection to Standard Model
+:class: important
+
+The structure mirrors the **electroweak sector** of the Standard Model:
+
+| **Adaptive Gas** | **Standard Model** |
+|------------------|-------------------|
+| SU(2)_weak gauge field $W_\mu^a$ | SU(2)_L weak gauge bosons |
+| Weak doublet $\Psi_{\text{weak}}$ | Lepton/quark doublets |
+| Global U(1)_fitness | Baryon/lepton number (global) |
+| Reward field $r$ | Higgs field $H$ |
+| Yukawa coupling $g_Y$ | Yukawa couplings $y_f$ |
+| McKean-Vlasov $f_c$ | *(no direct analogue - emergent)* |
+
+**Key differences:**
+1. **No U(1)_Y hypercharge**: Only SU(2), no electroweak mixing
+2. **Global U(1)_fitness**: Not gauged (unlike hypercharge)
+3. **McKean-Vlasov coupling**: Matter field has additional mean-field dynamics
+4. **Algorithmic origin**: All gauge structure emerges from optimization algorithm
+
+**Remarkable emergence**: The algorithmic dynamics naturally produce gauge theory structure without imposing it axiomatically!
+:::
+
+#### 5.8.12. SU(3), Fermions, GR, and SO(10): Speculative Extensions
 
 :::{prf:observation} Status of Additional Symmetries
 :label: obs-additional-symmetries-status

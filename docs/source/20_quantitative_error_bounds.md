@@ -167,17 +167,17 @@ The proof proceeds in two steps:
 Quantify the error introduced by the discrete-time BAOAB integrator compared to the continuous-time Langevin dynamics.
 
 :::{prf:theorem} Time Discretization Error for Invariant Measure (Target)
-:label: thm-time-discretization-error
+:label: thm-time-discretization-error-target
 
-Let $\nu_N^{\text{cont}}$ be the quasi-stationary distribution of the continuous-time Langevin dynamics and let $\nu_N^{\Delta t}$ be the QSD of the discrete-time BAOAB chain with step size $\Delta t$. For any Lipschitz observable $\phi$ with constant $L_\phi$, we have:
+Let $\nu_N^{\text{cont}}$ be the quasi-stationary distribution of the continuous-time Langevin dynamics and let $\nu_N^{\Delta t}$ be the QSD of the discrete-time BAOAB chain with step size $\Delta t$. For any observable $\phi \in C^4$, we have:
 
 $$
-\left| \mathbb{E}_{\nu_N^{\Delta t}} [\phi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\phi] \right| \leq C_{\text{disc}} \cdot L_\phi \cdot \Delta t
+\left| \mathbb{E}_{\nu_N^{\Delta t}} [\phi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\phi] \right| \leq C_{\text{disc}} \cdot \|\phi\|_{C^4} \cdot (\Delta t)^2
 $$
 
 where $C_{\text{disc}}$ depends on $\gamma$, $\sigma$, and the energy bounds.
 
-**Note**: For an ergodic SDE and a numerical integrator with weak order $p$, the error between invariant measures is of order $O((\Delta t)^{p-1})$. Since BAOAB has weak order 2, the invariant measure error is $O(\Delta t)$, not $O((\Delta t)^2)$.
+**Note**: The $O((\Delta t)^2)$ rate (not $O(\Delta t)$) follows from the **geometric symmetry** of the BAOAB splitting. For symmetric integrators applied to time-reversible SDEs, odd-order error terms cancel, giving second-order accuracy for the invariant measure (Leimkuhler & Matthews 2015, Theorem 7.4.3).
 :::
 
 ### Required Components
