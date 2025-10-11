@@ -24,6 +24,7 @@ This document provides a comprehensive, searchable reference of all mathematical
 - [13_fractal_set_new/](13_fractal_set_new/) - **Complete Fractal Set framework (210 mathematical objects)**: Discrete spacetime (CST nodes/edges, IG edges), spinor representations, complete gauge theory hierarchy (U(1)_fitness, SU(2)_weak, SU(3)_color, S_N permutation, SO(10) GUT), episode computational equivalence, BAOAB discretization, geometric ergodicity, lattice QFT with fermionic exclusion, Yang-Mills gauge theory, Noether currents, fundamental constants derivation, QSD-Stratonovich foundations, continuum limits, graph Laplacian→Laplace-Beltrami convergence, Riemannian volumes/areas/integration, Cayley-Menger determinants, fan triangulation algorithms, discrete divergence theorem, Wilson loops, gauge action, **causal set theory foundations** (Fractal Set as valid causal set, adaptive sprinkling, Poisson comparison, faithful discretization, d'Alembertian operator, Myrheim-Meyer dimension, Ricci scalar, Einstein equations emergence, testable predictions)
 - [14_yang_mills_noether.md](14_yang_mills_noether.md) - Yang-Mills gauge theory, Noether currents, effective field theory, fundamental constants from algorithmic parameters, UV safety, mass gap, renormalization group flow
 - [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md) - **Scutoid Geometry Framework (69 mathematical objects)**: Swarm spacetime manifolds, Riemannian Voronoi tessellations, scutoid volume cells, cloning as neighbor-swapping topology, genealogical transport plans, Hellinger-Kantorovich energy minimization, deficit angle convergence (Regge calculus), five unified curvature perspectives (deficit angles, spectral gap, emergent metric tensor, heat kernel asymptotics, causal set volume), Gromov-Hausdorff convergence, Γ-convergence of Dirichlet forms, discrete-to-continuum geometry bridges
+- [15_scutoid_curvature_raychaudhuri.md](15_scutoid_curvature_raychaudhuri.md) - **Scutoid Curvature and Raychaudhuri Equation (35 mathematical objects)**: Emergent Riemannian metric from fitness Hessian, scutoid-induced affine connection (Christoffel symbols from edge deformation), Riemann curvature tensor from plaquette holonomy, Ricci tensor and scalar curvature, Raychaudhuri equation governing volume evolution, geodesic congruences, expansion/shear/rotation decomposition, cloning events as curvature singularities, focusing theorem, emergent gravitational potential, geometric phase transitions, equivalence with information-theoretic phases
 - [18_hk_convergence.md](18_hk_convergence.md) - Hellinger-Kantorovich metric convergence, mass contraction, LSI-based structural variance contraction, kinetic Hellinger analysis
 - [20_A_quantitative_error_bounds.md](20_A_quantitative_error_bounds.md) - **Quantitative Error Bounds (21 mathematical objects)**: Explicit O(1/√N + Δt) convergence rates for discrete N-particle Fragile Gas to continuous mean-field limit, mean-field convergence with Fournier-Guillin bounds, BAOAB discretization analysis, N-uniform commutator bounds via propagation of chaos, total error decomposition, all constants independent of N and Δt
 
@@ -56,6 +57,7 @@ Complete coverage from foundational axioms through N-particle and mean-field KL-
 - [Fractal Set Theory and Discrete Spacetime](#fractal-set-theory-and-discrete-spacetime)
 - [Yang-Mills Gauge Theory and Noether Currents](#yang-mills-gauge-theory-and-noether-currents)
 - [Scutoid Geometry Framework](#scutoid-geometry-framework)
+- [Scutoid Curvature and Raychaudhuri Equation](#scutoid-curvature-and-raychaudhuri-equation)
 - [Quantitative Error Bounds and Convergence Rates](#quantitative-error-bounds-and-convergence-rates)
 - [Key Inequalities and Bounds](#key-inequalities-and-bounds)
 
@@ -18771,6 +18773,1040 @@ Taking the jump and expanding in small $t$ recovers the topological version.
 :::
 
 **Related Results:** See scutoid geometry framework results
+
+---
+
+## Scutoid Curvature and Raychaudhuri Equation
+
+This section establishes the rigorous connection between discrete scutoid tessellations and classical differential geometry. The **Raychaudhuri equation**—governing volume evolution in general relativity—emerges as a geometric identity from scutoid structure. Curvature is computed from plaquette holonomy, and cloning events manifest as curvature singularities.
+
+**Crown Jewel Theorems:**
+1. **Riemann-Scutoid Dictionary** ({prf:ref}`thm-riemann-scutoid-dictionary`): Riemann curvature from plaquette holonomy
+2. **Raychaudhuri-Scutoid Equation** ({prf:ref}`thm-raychaudhuri-scutoid`): Volume evolution governed by curvature
+
+### Emergent Spatial Metric
+
+**Type:** Definition
+**Label:** `def-emergent-metric-scutoid`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 1.1](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `emergent-metric`, `fitness-hessian`, `riemannian-geometry`, `regularization`
+
+**Statement:**
+For swarm state $S_t = \{(x_i(t), v_i(t))\}_{i=1}^N$ with fitness function $f: \mathcal{X} \to \mathbb{R}$, the **emergent spatial metric** at position $x \in \mathcal{X}$ is:
+
+$$
+g_{ab}(x, S_t) = H_{ab}(x) + \varepsilon I_{ab}
+$$
+
+where:
+- $H_{ab}(x) = \frac{\partial^2 f}{\partial x^a \partial x^b}$ is the Hessian of the fitness function
+- $\varepsilon > 0$ is the regularization parameter (thermal energy scale)
+- $I_{ab} = \delta_{ab}$ is the Euclidean metric
+
+The metric is **positive-definite** by construction.
+
+**Interpretation:** Unlike classical Riemannian geometry where the metric is independent, the emergent metric $g(x, S_t)$ depends dynamically on the walker configuration $S_t$. The geometry of the search space adapts as the swarm explores.
+
+**Related Results:** `def-scutoid-connection`, `prop-connection-computation`, Chapter 8 (Emergent Geometry)
+
+---
+
+### Geodesic Ruling (Scutoid Context)
+
+**Type:** Definition
+**Label:** `def-geodesic-ruling-scutoid`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 1.2](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `geodesic`, `parallel-transport`, `scutoid-ruling`, `boundary-correspondence`
+
+**Statement:**
+For a scutoid cell $\mathcal{C}_i$ between $t$ and $t + \Delta t$, let $\phi_k: \Gamma_{j,k}(t) \to \Gamma_{i,k}(t + \Delta t)$ be the boundary correspondence map for shared neighbor $k \in \mathcal{N}_{\text{shared}}$. The **geodesic ruling** is the family of geodesics:
+
+$$
+\{ \Gamma_{j,k}(t) \ni p \mapsto \text{geodesic}(p, \phi_k(p), \Delta t) \}
+$$
+
+where $\text{geodesic}(p, q, \Delta t)$ is the unique geodesic connecting $p \in \Gamma_{j,k}(t)$ to $q \in \Gamma_{i,k}(t + \Delta t)$ in the Riemannian scutoid structure.
+
+**Interpretation:** Each geodesic in the ruling represents the "straightest possible" path connecting a boundary point at time $t$ to its corresponding point at time $t + \Delta t$. In curved space, they curve due to the metric $g(x, S_t)$.
+
+**Related Results:** `def-scutoid-connection`, `def-edge-deformation`, Chapter 18 (Scutoid Geometry)
+
+---
+
+### Scutoid-Induced Affine Connection
+
+**Type:** Definition
+**Label:** `def-scutoid-connection`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 1.3](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `affine-connection`, `christoffel-symbols`, `levi-civita`, `geodesic-deviation`
+
+**Statement:**
+Let $\gamma(s) = (x^a(s), t(s))$ be a geodesic ruling in the scutoid cell $\mathcal{C}_i$, parameterized by arc-length $s \in [0, L]$ with $t(0) = t$ and $t(L) = t + \Delta t$. Let $V^a(s)$ be a tangent vector field along $\gamma(s)$ representing the **edge direction** of the Voronoi cell boundary.
+
+The **Christoffel symbols** $\Gamma^a_{bc}$ are defined by the **geodesic deviation equation**:
+
+$$
+\frac{D V^a}{ds} = \frac{dV^a}{ds} + \Gamma^a_{bc} \frac{dx^b}{ds} V^c = 0
+$$
+
+where $\frac{D}{ds}$ denotes **covariant derivative** along $\gamma(s)$. Solving for $\Gamma^a_{bc}$:
+
+$$
+\Gamma^a_{bc}(x) = \frac{1}{2} g^{ad} \left( \frac{\partial g_{db}}{\partial x^c} + \frac{\partial g_{dc}}{\partial x^b} - \frac{\partial g_{bc}}{\partial x^d} \right)
+$$
+
+This is the **Levi-Civita connection** compatible with the metric $g_{ab}(x, S_t)$.
+
+**Interpretation:** The Christoffel symbols $\Gamma^a_{bc}$ encode how much a vector "tilts" as it is parallel-transported through the curved fitness landscape. In flat space, $\Gamma^a_{bc} = 0$ (no tilting). Near fitness peaks: large $\Gamma^a_{bc}$ → strong curvature.
+
+**Related Results:** `prop-connection-computation`, `lem-connection-from-deformation`, `def-edge-deformation`
+
+---
+
+### Computational Formula for Connection
+
+**Type:** Proposition
+**Label:** `prop-connection-computation`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 1.3](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `christoffel-symbols`, `computation`, `emergent-metric`
+
+**Statement:**
+For the emergent metric $g_{ab}(x, S_t) = H_{ab}(x) + \varepsilon \delta_{ab}$, the Christoffel symbols are:
+
+$$
+\Gamma^a_{bc}(x) = \frac{1}{2} (H + \varepsilon I)^{-1}_{ad} \left( \frac{\partial H_{db}}{\partial x^c} + \frac{\partial H_{dc}}{\partial x^b} - \frac{\partial H_{bc}}{\partial x^d} \right)
+$$
+
+where $(H + \varepsilon I)^{-1}_{ad}$ denotes the inverse of the metric tensor.
+
+**Proof:** Direct application of the Levi-Civita formula. Since $\frac{\partial \delta_{ab}}{\partial x^c} = 0$ (Euclidean background is constant), only the Hessian contributes to the derivatives. $\square$
+
+**Related Results:** `def-scutoid-connection`, `def-emergent-metric-scutoid`
+
+---
+
+### Edge Deformation Tensor
+
+**Type:** Definition
+**Label:** `def-edge-deformation`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 1.4](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `edge-deformation`, `strain-tensor`, `boundary-rotation`, `voronoi-evolution`
+
+**Statement:**
+Consider a shared neighbor interface $k \in \mathcal{N}_{\text{shared}}$ with boundary segments $\Gamma_{j,k}(t)$ and $\Gamma_{i,k}(t + \Delta t)$. Let $\tau_a(s)$ be the unit tangent vector to $\Gamma_{j,k}(t)$ at arc-length parameter $s$, and let $\bar{\tau}_a(s)$ be the unit tangent vector to $\Gamma_{i,k}(t + \Delta t)$ at the corresponding point $\phi_k(\gamma_{j,k}(s))$.
+
+The **edge deformation tensor** is:
+
+$$
+D_{ab}(s) = \bar{\tau}_a(s) \otimes \tau_b(s) - \delta_{ab}
+$$
+
+where $\otimes$ denotes the tensor product. The tensor $D_{ab}$ measures the **change in orientation** of the edge from time $t$ to $t + \Delta t$.
+
+**Geometric Meaning:**
+- If $D_{ab} = 0$: Edge remains parallel (no rotation)
+- If $D_{ab} \neq 0$: Edge rotates or shears between time slices
+
+**Related Results:** `lem-connection-from-deformation`, `prop-ricci-from-deformation`, elasticity theory interpretation (§ 5.2)
+
+---
+
+### Connection from Edge Deformation
+
+**Type:** Lemma
+**Label:** `lem-connection-from-deformation`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 1.4](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `christoffel-symbols`, `discrete-approximation`, `boundary-integral`, `N-convergence`
+
+**Statement:**
+The Christoffel symbols can be expressed in terms of the edge deformation tensor:
+
+$$
+\Gamma^a_{bc} \Delta t = \frac{1}{|\mathcal{N}_{\text{shared}}|} \sum_{k \in \mathcal{N}_{\text{shared}}} \int_{\Gamma_{j,k}(t)} D^a_c(s) \, n_b(s) \, ds
+$$
+
+where $n_b(s)$ is the unit normal vector to $\Gamma_{j,k}(t)$ pointing outward from the Voronoi cell, and the integral is taken over the boundary segment.
+
+**Proof Sketch:** The Christoffel symbols encode the infinitesimal rotation of vectors under parallel transport. The edge deformation tensor $D_{ab}$ measures the finite rotation of boundary edges over time $\Delta t$. The lemma relates the two by averaging edge deformation over all shared neighbors and dividing by $\Delta t$ to obtain the rate of rotation. Full proof requires Stokes' theorem to relate the boundary integral to the volume integral of $\Gamma^a_{bc}$. See Chapter 8, Section 8.4. $\square$
+
+**Remark:** This is a **discrete approximation** to the continuous Levi-Civita connection. As $N \to \infty$ and $\Delta t \to 0$, the Voronoi tessellation becomes finer, and the discrete formula converges to the continuous Christoffel symbols (Chapter 11, Theorem 11.3.2).
+
+**Related Results:** `def-edge-deformation`, `def-scutoid-connection`, Chapter 8 (Emergent Geometry)
+
+---
+
+### Riemann Curvature Tensor (Classical)
+
+**Type:** Definition
+**Label:** `def-riemann-classical`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 2.1](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `curvature`, `riemann-tensor`, `parallel-transport`, `commutator`
+
+**Statement:**
+The **Riemann curvature tensor** $R^a_{bcd}$ is defined by the commutator of covariant derivatives acting on a vector field $V^a$:
+
+$$
+[\nabla_c, \nabla_d] V^a = R^a_{bcd} V^b
+$$
+
+where $\nabla_c$ denotes covariant derivative with respect to coordinate $x^c$. In terms of Christoffel symbols:
+
+$$
+R^a_{bcd} = \frac{\partial \Gamma^a_{bd}}{\partial x^c} - \frac{\partial \Gamma^a_{bc}}{\partial x^d} + \Gamma^a_{ec} \Gamma^e_{bd} - \Gamma^a_{ed} \Gamma^e_{bc}
+$$
+
+**Physical Interpretation:** If you parallel-transport a vector around a small closed loop, it comes back **rotated** by an amount proportional to the Riemann tensor and the area of the loop. In flat space, $R^a_{bcd} = 0$ (no rotation). In curved space, parallel transport depends on the path taken.
+
+**Symmetries:**
+1. **Antisymmetry**: $R_{abcd} = -R_{bacd} = -R_{abdc}$
+2. **First Bianchi identity**: $R_{abcd} + R_{acdb} + R_{adbc} = 0$
+3. **Differential Bianchi identity**: $\nabla_e R_{abcd} + \nabla_c R_{abde} + \nabla_d R_{abec} = 0$
+
+**Related Results:** `thm-riemann-scutoid-dictionary`, `def-scutoid-plaquette`, `def-ricci-scalar`
+
+---
+
+### Scutoid Plaquette
+
+**Type:** Definition
+**Label:** `def-scutoid-plaquette`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 2.2](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `plaquette`, `holonomy`, `closed-loop`, `wilson-loop`
+
+**Statement:**
+Let $\mathcal{C}_i$ be a scutoid cell with parent $j$ at time $t$ and child $i$ at time $t + \Delta t$. For a shared neighbor $k \in \mathcal{N}_{\text{shared}}$, the **scutoid plaquette** $\Pi_{i,k}$ is the closed quadrilateral in spacetime with vertices:
+
+$$
+\begin{aligned}
+p_1 &= (x_j(t), t) && \text{(parent position)} \\
+p_2 &= (x_j(t) + \delta x_{\text{edge}}(t), t) && \text{(point on } \Gamma_{j,k}(t)) \\
+p_3 &= (\phi_k(p_2), t + \Delta t) && \text{(corresponding point on } \Gamma_{i,k}(t + \Delta t)) \\
+p_4 &= (x_i(t + \Delta t), t + \Delta t) && \text{(child position)}
+\end{aligned}
+$$
+
+and edges:
+1. $p_1 \to p_2$: Boundary segment in $\Gamma_{j,k}(t)$
+2. $p_2 \to p_3$: Geodesic ruling (time evolution)
+3. $p_3 \to p_4$: Boundary segment in $\Gamma_{i,k}(t + \Delta t)$
+4. $p_4 \to p_1$: Walker trajectory (parent to child via cloning)
+
+The **area** of the plaquette is:
+
+$$
+A_{\Pi_{i,k}} = \|\delta x_{\text{edge}}(t)\| \cdot \|x_i(t + \Delta t) - x_j(t)\|
+$$
+
+where norms are computed in the emergent metric $g_{ab}$.
+
+**Geometric Picture:** A plaquette is a "tile" on the surface of a scutoid face. If space were flat, the four edges would form a perfect parallelogram. In curved space, the quadrilateral has **excess angle** (the sum of interior angles differs from $2\pi$), and this excess is proportional to the Riemann tensor.
+
+**Related Results:** `lem-discrete-stokes-plaquette`, `thm-riemann-scutoid-dictionary`, Chapter 12 (Gauge Theory - Wilson loops)
+
+---
+
+### Discrete Stokes' Theorem for Plaquette Holonomy
+
+**Type:** Lemma
+**Label:** `lem-discrete-stokes-plaquette`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 2.2](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `discrete-stokes`, `plaquette-holonomy`, `cross-product`, `area-element`
+
+**Statement:**
+For a scutoid plaquette with four vertices $p_1, p_2, p_3, p_4$ and edge displacement vectors $\delta x_1, \delta x_2, \delta x_3, \delta x_4$, the sum of position-displacement cross-products is:
+
+$$
+\sum_{i=1}^4 \Delta x_i^d \delta x_i^b = \epsilon^{db} T^d T^b A_{\Pi} + O(A_{\Pi}^{3/2})
+$$
+
+where:
+- $\Delta x_i^d = x_i^d - x_0^d$ is the displacement of vertex $i$ from the plaquette center $x_0$
+- $T^d$ and $T^b$ are the tangent vectors spanning the plaquette (one spatial, one temporal)
+- $\epsilon^{db}$ is the antisymmetric tensor (Levi-Civita symbol)
+- $A_{\Pi}$ is the plaquette area
+
+This is the discrete analog of Stokes' theorem: $\oint_{\partial \Pi} F \cdot dx = \int_{\Pi} (\nabla \times F) \cdot dA$.
+
+**Remark:** The $O(A_{\Pi}^{3/2})$ error comes from the curvature of the plaquette edges (they are not perfectly straight in the curved metric). As the plaquette shrinks, the edges approach geodesics, and the error vanishes faster than the leading term.
+
+**Related Results:** `thm-riemann-scutoid-dictionary`, `def-scutoid-plaquette`
+
+---
+
+### Riemann-Scutoid Dictionary (Crown Jewel 1)
+
+**Type:** Theorem
+**Label:** `thm-riemann-scutoid-dictionary`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 2.2](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `crown-jewel`, `riemann-curvature`, `plaquette-holonomy`, `lattice-gauge-theory`, `discrete-continuum`
+
+**Statement:**
+The Riemann curvature tensor can be computed from the holonomy around scutoid plaquettes. Specifically, let $V^a$ be a vector parallel-transported around the plaquette $\Pi_{i,k}$ with tangent directions $T^c$ and $T^d$ (the two independent edge directions). The vector returns to its starting point rotated by:
+
+$$
+\Delta V^a = R^a_{bcd}(x_j(t)) V^b T^c T^d A_{\Pi_{i,k}} + O(\Delta t^2, \|\delta x_{\text{edge}}\|^2)
+$$
+
+where $R^a_{bcd}(x_j(t))$ is the Riemann tensor evaluated at the parent position $x_j(t)$, and $A_{\Pi_{i,k}}$ is the area of the plaquette.
+
+Equivalently, the Riemann tensor is:
+
+$$
+R^a_{bcd}(x) = \lim_{\substack{A_{\Pi} \to 0 \\ \Pi \ni x}} \frac{\Delta V^a}{V^b T^c T^d A_{\Pi}}
+$$
+
+where the limit is taken over shrinking plaquettes containing $x$.
+
+**Proof:** Derived from discrete parallel transport on each edge using the edge deformation tensor and Discrete Stokes' Theorem. The continuous Riemann tensor emerges as the **limiting holonomy density** of discrete scutoid plaquettes with convergence rate $O(A_{\Pi}^{1/2})$. $\square$
+
+**Interpretation:** This theorem is the continuum analog of the **Wilson loop** construction in lattice gauge theory. The scutoid tessellation provides a natural adaptive lattice where plaquette sizes vary according to walker density and fitness landscape structure. See Chapter 12 for the full gauge-theoretic formulation.
+
+**Related Results:** `def-riemann-classical`, `def-scutoid-plaquette`, `lem-discrete-stokes-plaquette`, Chapter 12 (Gauge Theory)
+
+---
+
+### Ricci Tensor and Scalar Curvature
+
+**Type:** Definition
+**Label:** `def-ricci-scalar`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 2.3](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `ricci-tensor`, `scalar-curvature`, `volume-distortion`, `trace`
+
+**Statement:**
+The **Ricci curvature tensor** is the trace of the Riemann tensor over the first and third indices:
+
+$$
+R_{ac} = R^b_{abc} = g^{bd} R_{dbac}
+$$
+
+The **Ricci scalar** (scalar curvature) is the trace of the Ricci tensor:
+
+$$
+R = g^{ac} R_{ac}
+$$
+
+**Physical Interpretation:**
+- **Ricci tensor** $R_{ac}$: Measures the **volume distortion** of geodesic balls in the direction $a$ and $c$
+- **Ricci scalar** $R$: Measures the **total volume distortion** averaged over all directions
+- In general relativity: $R_{\mu\nu} - \frac{1}{2}g_{\mu\nu}R = 8\pi G T_{\mu\nu}$ (Einstein field equation)
+
+**Related Results:** `def-riemann-classical`, `prop-ricci-from-deformation`, `thm-raychaudhuri-scutoid`
+
+---
+
+### Ricci Tensor from Edge Deformation
+
+**Type:** Proposition
+**Label:** `prop-ricci-from-deformation`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 2.3](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `ricci-tensor`, `edge-deformation`, `boundary-integral`, `discrete-computation`
+
+**Statement:**
+The Ricci tensor for the emergent metric can be computed from the edge deformation tensor:
+
+$$
+R_{ac} \Delta t = \frac{1}{|\mathcal{N}_{\text{shared}}|} \sum_{k \in \mathcal{N}_{\text{shared}}} \int_{\Gamma_{j,k}(t)} \left( D_{ac}(s) - \frac{1}{d} \text{tr}(D) \, g_{ac} \right) ds
+$$
+
+where $d$ is the spatial dimension and $\text{tr}(D) = D^b_b$ is the trace of the edge deformation tensor.
+
+**Interpretation:** The Ricci tensor captures the **traceful** (volume-changing) part of edge deformation. The $-\frac{1}{d}\text{tr}(D)$ correction ensures that only volume-changing deformations contribute to Ricci curvature.
+
+**Related Results:** `def-edge-deformation`, `def-ricci-scalar`, cloning events create curvature jumps (§ 3.4)
+
+---
+
+### Sectional Curvature
+
+**Type:** Definition
+**Label:** `def-sectional-curvature`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 2.4](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `sectional-curvature`, `gaussian-curvature`, `2d-submanifold`
+
+**Statement:**
+Let $\Pi$ be a 2-dimensional plane in the tangent space $T_x \mathcal{X}$ spanned by orthonormal vectors $u^a$ and $v^b$. The **sectional curvature** of $\Pi$ is:
+
+$$
+K(u, v) = R_{abcd} u^a v^b u^c v^d
+$$
+
+For a 2D Riemannian manifold, the sectional curvature equals the **Gaussian curvature** $K$.
+
+**Geometric Meaning:** The sectional curvature measures how much geodesic triangles on the 2D plane $\Pi$ deviate from Euclidean triangles. For a sphere of radius $r$: $K = 1/r^2$ (positive). For a hyperbolic plane: $K = -1/r^2$ (negative).
+
+**Related Results:** `prop-gaussian-from-scutoid`, `def-riemann-classical`
+
+---
+
+### Gaussian Curvature from Scutoid Triangulation
+
+**Type:** Proposition
+**Label:** `prop-gaussian-from-scutoid`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 2.4](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `gaussian-curvature`, `angle-defect`, `gauss-bonnet`, `discrete-geometry`
+
+**Statement:**
+For a 2D slice of the scutoid tessellation, the Gaussian curvature at a vertex $x_i$ can be computed from the **angle defect**:
+
+$$
+K(x_i) = \frac{1}{A_i} \left( 2\pi - \sum_{k \in \mathcal{N}_i} \theta_k \right)
+$$
+
+where $\theta_k$ is the interior angle of the Voronoi cell at vertex $x_i$ corresponding to neighbor $k$, and $A_i$ is the area of the Voronoi cell.
+
+**Proof:** This is the discrete **Gauss-Bonnet theorem**. The angle defect $2\pi - \sum \theta_k$ measures the "excess angle" compared to a flat polygon. Dividing by the cell area gives the Gaussian curvature. As $A_i \to 0$ (finer tessellation), the discrete formula converges to the continuous Gaussian curvature. $\square$
+
+**Remark (Cloning Events):** At a cloning event, the number of neighbors changes abruptly: $|\mathcal{N}_i(t^+)| \neq |\mathcal{N}_j(t^-)|$. This induces a sudden change in the angle defect, manifesting as a **curvature singularity** at the mid-level vertices of scutoids. The singularity is integrable (the total curvature remains finite).
+
+**Related Results:** `def-sectional-curvature`, `thm-curvature-jump`, Chapter 14 (Deficit Angle Convergence)
+
+---
+
+### Geodesic Congruence
+
+**Type:** Definition
+**Label:** `def-geodesic-congruence`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 3.1](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `geodesic-congruence`, `velocity-field`, `affine-parameter`
+
+**Statement:**
+A **geodesic congruence** is a family of geodesics $\{\gamma_\alpha(t)\}_{\alpha \in A}$ indexed by a parameter $\alpha$, such that through each point $x \in \mathcal{X}$ passes exactly one geodesic. The **velocity field** $u^\mu(x)$ is the tangent vector field to the congruence:
+
+$$
+u^\mu(x) = \frac{dx^\mu}{dt}\Big|_{\gamma_\alpha(t) \ni x}
+$$
+
+where $t$ is the affine parameter along geodesics (proper time in general relativity).
+
+**Remark (Scutoid Geodesic Congruence):** In the Fragile Gas, the **walker trajectories** form a natural geodesic congruence. Each walker follows a path in spacetime from $(x_j(t), t)$ to $(x_i(t + \Delta t), t + \Delta t)$, composed of:
+1. **Cloning transition**: Instantaneous jump at $t + \Delta t/2$ (singular event)
+2. **Kinetic evolution**: Geodesic motion under Langevin dynamics in the emergent metric
+
+While cloning events create **singularities**, the geodesic structure between cloning events is well-defined. The Raychaudhuri equation governs the smooth evolution between singularities.
+
+**Related Results:** `def-expansion-shear-rotation`, `thm-raychaudhuri-classical`, `thm-raychaudhuri-scutoid`
+
+---
+
+### Expansion, Shear, and Rotation
+
+**Type:** Definition
+**Label:** `def-expansion-shear-rotation`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 3.1](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `kinematic-decomposition`, `expansion`, `shear`, `rotation`, `vorticity`
+
+**Statement:**
+The **kinematic decomposition** of a geodesic congruence splits the covariant derivative of the velocity field into three parts:
+
+$$
+\nabla_\mu u_\nu = \frac{1}{d}\theta \, g_{\mu\nu} + \sigma_{\mu\nu} + \omega_{\mu\nu}
+$$
+
+where:
+1. **Expansion scalar**: $\theta = \nabla_\mu u^\mu$ (trace part, measures volume growth rate)
+2. **Shear tensor**: $\sigma_{\mu\nu} = \frac{1}{2}(\nabla_\mu u_\nu + \nabla_\nu u_\mu) - \frac{1}{d}\theta \, g_{\mu\nu}$ (traceless symmetric part, measures distortion)
+3. **Rotation tensor**: $\omega_{\mu\nu} = \frac{1}{2}(\nabla_\mu u_\nu - \nabla_\nu u_\mu)$ (antisymmetric part, measures vorticity)
+
+**Physical Interpretation:**
+- **Expansion** $\theta > 0$: Geodesics are diverging (volume increasing)
+- **Expansion** $\theta < 0$: Geodesics are converging (volume decreasing)
+- **Shear** $\sigma_{\mu\nu} \neq 0$: Geodesics stretch in some directions and compress in others
+- **Rotation** $\omega_{\mu\nu} \neq 0$: Geodesics twist around each other (vortex-like motion)
+
+**Related Results:** `thm-raychaudhuri-classical`, `thm-raychaudhuri-scutoid`, `def-shear-rotation-regimes`
+
+---
+
+### Raychaudhuri Equation (Classical)
+
+**Type:** Theorem
+**Label:** `thm-raychaudhuri-classical`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 3.1](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `raychaudhuri-equation`, `volume-evolution`, `focusing`, `singularity-theorem`
+
+**Statement:**
+For a geodesic congruence with velocity field $u^\mu$ in a Riemannian manifold with Ricci tensor $R_{\mu\nu}$, the expansion scalar $\theta$ satisfies:
+
+$$
+\frac{d\theta}{dt} = -\frac{1}{d}\theta^2 - \sigma_{\mu\nu}\sigma^{\mu\nu} + \omega_{\mu\nu}\omega^{\mu\nu} - R_{\mu\nu}u^\mu u^\nu
+$$
+
+where:
+- $\sigma^{\mu\nu} = g^{\mu\alpha}g^{\nu\beta}\sigma_{\alpha\beta}$ (raising indices with metric)
+- $\omega^{\mu\nu} = g^{\mu\alpha}g^{\nu\beta}\omega_{\alpha\beta}$
+- $R_{\mu\nu}u^\mu u^\nu$ is the **Ricci focusing term**
+
+**Physical Interpretation:**
+1. **$-\frac{1}{d}\theta^2$ term**: Self-focusing due to expansion (always acts to reduce $|\theta|$)
+2. **$-\sigma_{\mu\nu}\sigma^{\mu\nu}$ term**: Shear increases focusing (always negative contribution)
+3. **$+\omega_{\mu\nu}\omega^{\mu\nu}$ term**: Rotation opposes focusing (always positive contribution)
+4. **$-R_{\mu\nu}u^\mu u^\nu$ term**: Curvature-induced focusing
+   - Positive Ricci curvature → focusing (geodesics converge)
+   - Negative Ricci curvature → defocusing (geodesics diverge)
+
+**Remark (Penrose-Hawking Singularity Theorems):** The Raychaudhuri equation is the key ingredient in proving that geodesics become incomplete in general relativity under certain energy conditions. In the Fragile Gas, this corresponds to **walker collapse** onto fitness peaks.
+
+**Related Results:** `def-expansion-shear-rotation`, `def-geodesic-congruence`, `thm-raychaudhuri-scutoid`
+
+---
+
+### Voronoi Cell Volume and Expansion
+
+**Type:** Definition
+**Label:** `def-volume-expansion`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 3.2](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `volume`, `expansion`, `voronoi-cell`, `metric-integration`
+
+**Statement:**
+For a walker $i$ at time $t$, let $V_i(t)$ denote the **volume** of its Voronoi cell $\text{Vor}_i(t)$ computed in the emergent metric $g_{ab}(x, S_t)$:
+
+$$
+V_i(t) = \int_{\text{Vor}_i(t)} \sqrt{\det g(x, S_t)} \, d^d x
+$$
+
+The **volume expansion rate** is:
+
+$$
+\theta_i = \frac{1}{V_i(t)} \frac{dV_i}{dt} = \lim_{\Delta t \to 0} \frac{V_i(t + \Delta t) - V_i(t)}{V_i(t) \, \Delta t}
+$$
+
+**Remark:** In the discrete Fragile Gas, volumes are computed at finite timesteps $\Delta t$. The continuous limit $\Delta t \to 0$ defines the expansion scalar $\theta_i$.
+
+**Related Results:** `lem-volume-from-boundary`, `prop-expansion-from-divergence`, `thm-raychaudhuri-scutoid`
+
+---
+
+### Volume Change from Boundary Deformation
+
+**Type:** Lemma
+**Label:** `lem-volume-from-boundary`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 3.2](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `reynolds-transport`, `boundary-integral`, `volume-rate`
+
+**Statement:**
+The volume change of a Voronoi cell from $t$ to $t + \Delta t$ can be expressed as a boundary integral:
+
+$$
+\frac{dV_i}{dt} = \int_{\partial \text{Vor}_i(t)} u^\mu n_\mu \, dA
+$$
+
+where $u^\mu$ is the velocity field of the geodesic ruling, $n_\mu$ is the outward unit normal to the boundary, and $dA$ is the surface area element.
+
+**Proof:** This is the **Reynolds transport theorem** (also called Leibniz integral rule for moving domains). The volume change is determined by how fast the boundary moves outward (positive $u^\mu n_\mu$) or inward (negative $u^\mu n_\mu$). Integrating over the entire boundary gives the total volume change rate. $\square$
+
+**Related Results:** `def-volume-expansion`, `prop-expansion-from-divergence`, `lem-reynolds-decomposition`
+
+---
+
+### Expansion from Geodesic Divergence
+
+**Type:** Proposition
+**Label:** `prop-expansion-from-divergence`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 3.2](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `expansion`, `divergence`, `gauss-theorem`
+
+**Statement:**
+The expansion scalar $\theta_i$ equals the divergence of the velocity field:
+
+$$
+\theta_i = \nabla_\mu u^\mu
+$$
+
+where $\nabla_\mu$ is the covariant derivative in the emergent metric.
+
+**Proof:** By Definition {prf:ref}`def-volume-expansion` and Lemma {prf:ref}`lem-volume-from-boundary`:
+
+$$
+\theta_i = \frac{1}{V_i(t)} \int_{\partial \text{Vor}_i(t)} u^\mu n_\mu \, dA
+$$
+
+Applying the **divergence theorem** (Gauss's theorem):
+
+$$
+\int_{\partial \text{Vor}_i(t)} u^\mu n_\mu \, dA = \int_{\text{Vor}_i(t)} \nabla_\mu u^\mu \, dV
+$$
+
+For small Voronoi cells (as $N \to \infty$), the divergence $\nabla_\mu u^\mu$ is approximately constant over $\text{Vor}_i(t)$, so $\theta_i \approx \nabla_\mu u^\mu$. In the continuous limit, this becomes an equality. $\square$
+
+**Related Results:** `def-volume-expansion`, `lem-volume-from-boundary`, `thm-raychaudhuri-scutoid`
+
+---
+
+### Raychaudhuri-Scutoid Equation (Crown Jewel 2)
+
+**Type:** Theorem
+**Label:** `thm-raychaudhuri-scutoid`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 3.3](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `crown-jewel`, `raychaudhuri-equation`, `volume-evolution`, `curvature-focusing`, `discrete-continuum`
+
+**Statement:**
+For a walker $i$ at time $t$ in the Fragile Gas with emergent metric $g_{ab}(x, S_t)$, the expansion scalar $\theta_i$ (measuring the volume growth rate of the Voronoi cell) satisfies the Raychaudhuri equation:
+
+$$
+\frac{d\theta_i}{dt} = -\frac{1}{d}\theta_i^2 - \sigma_{\mu\nu}\sigma^{\mu\nu} + \omega_{\mu\nu}\omega^{\mu\nu} - R_{\mu\nu}u^\mu u^\nu
+$$
+
+where:
+- $\theta_i = \frac{1}{V_i}\frac{dV_i}{dt}$ is the expansion scalar (volume growth rate)
+- $\sigma_{\mu\nu}$ is the shear tensor (traceless symmetric part of boundary deformation)
+- $\omega_{\mu\nu}$ is the rotation tensor (antisymmetric part of boundary deformation)
+- $R_{\mu\nu}$ is the Ricci tensor from scutoid plaquettes (Theorem {prf:ref}`thm-riemann-scutoid-dictionary`)
+- $u^\mu$ is the velocity field of walker trajectories
+
+**Physical Interpretation:** The volume evolution of Voronoi cells is governed by the same geometric equation that describes gravitational focusing in general relativity. The Ricci tensor $R_{\mu\nu}$, computed from scutoid plaquettes via Theorem {prf:ref}`thm-riemann-scutoid-dictionary`, acts as an **emergent gravitational field** focusing walkers toward high-fitness regions.
+
+**Proof:** Derived directly from discrete dynamics of Voronoi cell volumes using Reynolds transport theorem, kinematic decomposition, and Stokes' theorem. The continuous equation emerges in the limit $N \to \infty$, $\Delta t \to 0$. Rigorous justification provided in Chapter 11, Theorem 11.3.2. $\square$
+
+**Remark:** This theorem establishes that the discrete walker dynamics of the Fragile Gas **exactly** reproduce the continuous Raychaudhuri equation in the limit $N \to \infty$, $\Delta t \to 0$. The scutoid tessellation provides the **discrete scaffolding** on which the continuous geometry is built. This is not an analogy or approximation—it is a rigorous mathematical equivalence.
+
+**Related Results:** `thm-raychaudhuri-classical`, `thm-riemann-scutoid-dictionary`, `def-expansion-shear-rotation`, Chapter 11 (Mean-Field Convergence)
+
+---
+
+### Cloning Perturbation Axiom
+
+**Type:** Axiom
+**Label:** `axiom-cloning-perturbation`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 3.4](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `cloning`, `perturbation`, `spatial-scale`, `N-scaling`
+
+**Statement:**
+When a parent walker at position $x_j \in \mathbb{R}^d$ undergoes cloning at time $t$, it produces a child walker at position $x_i$ such that the displacement vector $\varepsilon := x_i - x_j$ satisfies:
+
+$$
+\mathbb{E}[|\varepsilon|] \leq \frac{K \ell_{\text{cell}}}{N^{1/d}}
+$$
+
+where:
+- $\ell_{\text{cell}} \sim (D^d/N)^{1/d}$ is the characteristic Voronoi cell size
+- $N$ is the total number of walkers
+- $D$ is the domain diameter
+- $K = O(1)$ is a dimensionless constant
+- The expectation is over the cloning mechanism's stochasticity
+
+**Physical Interpretation:** Cloning produces a child "near" the parent on the scale of inter-walker spacing. The $N^{-1/d}$ suppression reflects that cloning perturbations are local in physical space, not merely local relative to cell size. As $N \to \infty$, the perturbation becomes infinitesimal relative to the domain scale $D$.
+
+**Related Results:** `thm-well-spaced`, `lem-voronoi-regularity`, Chapter 2 (Cloning Operator)
+
+---
+
+### Well-Spaced Point Set Theorem
+
+**Type:** Theorem
+**Label:** `thm-well-spaced`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 3.4](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `asymptotic-regularity`, `walker-spacing`, `qsd-convergence`, `keystone-principle`
+
+**Statement:**
+The Fragile Gas dynamics with cloning and kinetic operators produce walker configurations that are **asymptotically well-spaced**: For any $\varepsilon > 0$, there exists $T_{\varepsilon} < \infty$ such that for all $t > T_{\varepsilon}$ and with probability at least $1 - \varepsilon$, the walker configuration satisfies:
+
+$$
+\delta_{\min}(\varepsilon) \left(\frac{D^d}{N}\right)^{1/d} \leq \min_{j \neq i} |x_i - x_j| \leq \text{diam}(\text{Vor}_i) \leq \delta_{\max}(\varepsilon) \left(\frac{D^d}{N}\right)^{1/d}
+$$
+
+for all walkers $i$, where $\text{Vor}_i$ is the Voronoi cell of walker $i$, and $\delta_{\min}(\varepsilon), \delta_{\max}(\varepsilon)$ are $\varepsilon$-dependent constants.
+
+**Consequence:** Well-spaced point sets have Voronoi tessellations with:
+- Bounded number of neighbors: $|\mathcal{N}_i| \leq C(d)$ for a constant $C(d)$ depending only on dimension
+- Regular cell geometry: volumes, facet areas, and diameters all scale uniformly as $\sim (D^d/N)^{(d-1)/d}$
+
+**Proof:** Uses the Keystone Principle (Chapter 3) and variance contraction theorems to show that the walker distribution converges to a quasi-stationary distribution (QSD) with bounded spatial variance. Convergence time $T_{\varepsilon} = \frac{\log(C/\varepsilon)}{\kappa_{\text{total}}}$. $\square$
+
+**Related Results:** `axiom-cloning-perturbation`, `lem-voronoi-regularity`, Chapter 3 (Keystone Principle)
+
+---
+
+### Voronoi Tessellation Regularity
+
+**Type:** Lemma
+**Label:** `lem-voronoi-regularity`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 3.4](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `voronoi-regularity`, `cell-bounds`, `neighbor-bounds`, `velocity-gradients`
+
+**Statement:**
+Under Theorem {prf:ref}`thm-well-spaced` (asymptotic well-spacing) and the **non-degeneracy condition** that no $d+2$ walkers lie on a common $(d-1)$-sphere, the Voronoi tessellation satisfies:
+
+1. **Cell size bounds**: Each Voronoi cell $V_i$ satisfies:
+
+$$
+\frac{C_1 D^d}{N} \leq \text{Vol}(V_i) \leq \frac{C_2 D^d}{N}
+$$
+
+where $C_1, C_2 > 0$ are dimension-dependent constants.
+
+2. **Neighbor count bounds**: Each walker has a bounded number of neighbors:
+
+$$
+n_{\min}(d) \leq |\mathcal{N}_i| \leq n_{\max}(d)
+$$
+
+where $n_{\min}(d) = d+1$ (simplex) and $n_{\max}(d) = C(d)$ depends only on dimension.
+
+3. **Facet area bounds**: Each facet $f$ of a Voronoi cell satisfies:
+
+$$
+\frac{C_3 D^{d-1}}{N^{(d-1)/d}} \leq \text{Area}(f) \leq \frac{C_4 D^{d-1}}{N^{(d-1)/d}}
+$$
+
+4. **Velocity gradient bounds**: Under smooth fitness landscape condition $\|\nabla^2 F\| \leq L_F$ (bounded Hessian), the emergent velocity field satisfies:
+
+$$
+\|\nabla u\| \leq L_u := C_5 L_F
+$$
+
+where $C_5 > 0$ depends on algorithm parameters.
+
+**Proof:** Part 1 uses pigeonhole principle and covering/packing radius bounds. Part 2 follows from Theorem {prf:ref}`thm-well-spaced`. Part 3 uses facet geometry. Part 4 uses Chapter 4, Lemma 4.2.3. $\square$
+
+**Related Results:** `thm-well-spaced`, `lem-reynolds-decomposition`, Chapter 3 (Keystone Principle)
+
+---
+
+### Integrated Curvature Jump from Cloning
+
+**Type:** Theorem
+**Label:** `thm-curvature-jump`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 3.4](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `curvature-singularity`, `cloning-event`, `neighbor-count`, `gauss-bonnet`
+
+**Statement:**
+At a cloning event in $d$-dimensional space where parent walker $j$ at time $t^-$ is replaced by child walker $i$ at time $t^+$, the **integrated Ricci scalar** over the affected $(d-1)$-dimensional Voronoi boundary undergoes a jump:
+
+$$
+\left[ \int_{\partial V} R \, d\sigma \right] = C_g(d) \, \Delta N + O(1/N)
+$$
+
+where:
+- $\Delta N := |\mathcal{N}_i(t^+)| - |\mathcal{N}_j(t^-)| \in \mathbb{Z}$ is the change in number of neighbors
+- $\partial V$ denotes the $(d-1)$-dimensional boundary of the Voronoi cell
+- $d\sigma$ is the $(d-1)$-dimensional surface measure
+- $C_g(d) > 0$ is a **dimensionless geometric constant**:
+
+$$
+C_g(d) = \frac{\Omega_{d-1}}{n^*(d)}
+$$
+
+where $\Omega_{d-1}$ is the volume of the unit $(d-1)$-sphere and $n^*(d)$ is the ideal coordination number for $d$-dimensional space.
+
+**Dimension-Specific Values:**
+- $d=2$: $\Omega_1 = 2\pi$, $n^*(2)=6$ → $C_g(2) = \pi/3$
+- $d=3$: $\Omega_2 = 4\pi$, $n^*(3)=14$ → $C_g(3) = 2\pi/7$
+
+**Physical Interpretation:** Cloning events that **increase** the number of neighbors ($\Delta N > 0$) create **positive integrated curvature** (focusing). Cloning events that **decrease** the number of neighbors ($\Delta N < 0$) create **negative integrated curvature** (defocusing). This follows from the discrete Gauss-Bonnet theorem.
+
+**Proof:** Uses discrete Gauss-Bonnet theorem combined with deficit angle convergence theorem from Chapter 14. $\square$
+
+**Related Results:** `prop-gaussian-from-scutoid`, Chapter 14 (Deficit Angle Convergence), Chapter 18 (Scutoid Formation)
+
+---
+
+### Reynolds Transport Decomposition for Cloning Events
+
+**Type:** Lemma
+**Label:** `lem-reynolds-decomposition`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 3.5](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `reynolds-transport`, `facet-decomposition`, `cloning-jump`
+
+**Statement:**
+Consider a cloning event in $d$-dimensional space where parent walker $j$ with Voronoi cell $V_j$ at time $t^-$ is replaced by child walker $i$ with Voronoi cell $V_i$ at time $t^+$. Let $\mathcal{F}_{\text{new}}$ denote the set of $\Delta N$ newly created boundary facets, and $\mathcal{F}_{\text{retained}}$ the set of facets retained from parent to child.
+
+Then the jump in volume rate decomposes as:
+
+$$
+\left[\frac{dV}{dt}\right] = \underbrace{\int_{\mathcal{F}_{\text{new}}} u_n \, d\sigma}_{\text{new facet contribution}} + \underbrace{\int_{\mathcal{F}_{\text{retained}}} [u_n] \, d\sigma}_{\text{retained facet contribution}} + O(1/N^2)
+$$
+
+Furthermore, under regularity conditions (Axiom {prf:ref}`axiom-cloning-perturbation`, Theorem {prf:ref}`thm-well-spaced`, Lemma {prf:ref}`lem-voronoi-regularity`), the retained-facet contribution satisfies:
+
+$$
+\mathbb{E}\left[\left| \int_{\mathcal{F}_{\text{retained}}} [u_n] \, d\sigma \right|\right] \leq C \cdot \frac{1}{N^{1/d}} \cdot \left| \int_{\mathcal{F}_{\text{new}}} u_n \, d\sigma \right|
+$$
+
+where $C = O(1)$ is a constant depending on tessellation geometry and algorithm parameters. For $d \geq 2$, this gives at least $O(1/\sqrt{N})$ suppression.
+
+**Proof:** Uses facet decomposition, velocity gradient bounds from Lemma {prf:ref}`lem-voronoi-regularity`, and spatial displacement bounds from Axiom {prf:ref}`axiom-cloning-perturbation`. $\square$
+
+**Related Results:** `lem-expansion-jump-cloning`, `lem-volume-from-boundary`, `thm-well-spaced`
+
+---
+
+### Expansion Jump at Cloning Events
+
+**Type:** Lemma
+**Label:** `lem-expansion-jump-cloning`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 3.5](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `expansion-jump`, `cloning-event`, `transport-coefficient`, `curvature-kinetics`
+
+**Statement:**
+At a cloning event in $d$-dimensional space where parent walker $j$ at time $t^-$ is replaced by child walker $i$ at time $t^+$, the expansion scalar undergoes a discrete jump:
+
+$$
+[\theta]_{\text{clone}} = \theta_i(t^+) - \theta_j(t^-) = -\mathcal{D}(d) \left[ \int_{\partial V} R \, d\sigma \right] + O(1/N)
+$$
+
+where:
+- $\left[ \int_{\partial V} R \, d\sigma \right]$ is the integrated Ricci scalar jump (Theorem {prf:ref}`thm-curvature-jump`)
+- $\mathcal{D}(d) > 0$ is a **transport coefficient** with dimensions $[1/T]$:
+
+$$
+\mathcal{D}(d) = \frac{|\langle u_n \rangle|}{C_g(d) \cdot \ell_{\text{cell}}}
+$$
+
+where:
+- $|\langle u_n \rangle|_{\text{in}}$ is the **average inward normal velocity** across newly created facets at a void-filling cloning event
+- $\ell_{\text{cell}} \sim V^{1/d}$ is the characteristic cell size
+- $C_g(d) > 0$ is the dimensionless geometric constant from Theorem {prf:ref}`thm-curvature-jump`
+
+**Physical Interpretation:** The negative sign ensures that a positive integrated curvature jump (increasing neighbors via void-filling) leads to a **decrease** in expansion (stronger contraction), while negative jumps (losing neighbors) weaken contraction. The transport coefficient $\mathcal{D}(d)$ quantifies how boundary kinematics mediate the coupling between integrated geometric curvature and volumetric expansion.
+
+**Proof:** Uses Reynolds transport theorem decomposition (Lemma {prf:ref}`lem-reynolds-decomposition`) and relates boundary velocity to integrated curvature via Theorem {prf:ref}`thm-curvature-jump`. $\square$
+
+**Related Results:** `thm-curvature-jump`, `lem-reynolds-decomposition`, `thm-focusing-fragile-gas`
+
+---
+
+### Focusing Theorem for Fragile Gas
+
+**Type:** Theorem
+**Label:** `thm-focusing-fragile-gas`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 3.5](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `focusing-theorem`, `volume-collapse`, `fitness-peaks`, `conditional-result`
+
+**Statement:**
+Assume the Fragile Gas operates in a domain $\Omega \subset \mathbb{R}^d$ with fitness function $f: \Omega \to \mathbb{R}$ satisfying:
+1. **Negative Hessian condition**: In a compact region $K \subset \Omega$, $H_{ab}(x) < -\lambda I_{ab}$ for all $x \in K$ with $\lambda > 0$
+2. **Low thermal energy**: $\varepsilon \ll \lambda$ (regularization parameter small compared to fitness curvature)
+3. **Negligible rotation**: $\omega_{\mu\nu}\omega^{\mu\nu} \ll \sigma_{\mu\nu}\sigma^{\mu\nu}$ (shear-dominated regime)
+
+Then there exists a **focusing time** $t_{\text{focus}} < \infty$ such that any walker starting in region $K$ at time $t = 0$ will have:
+
+$$
+\theta_i(t_{\text{focus}}) < -\theta_{\text{crit}}
+$$
+
+where $\theta_{\text{crit}} > 0$ is a critical threshold, indicating **strong volume contraction** (walker collapse onto fitness peaks).
+
+**Explicit Bound:**
+
+$$
+t_{\text{focus}} \leq \frac{d}{\theta_0} \left( 1 + \frac{\theta_0^2}{\lambda^2} \right)
+$$
+
+where $\theta_0 = |\theta_i(0)|$ is the initial expansion rate.
+
+**Remark:** This theorem is a **conditional result** assuming Theorems {prf:ref}`thm-well-spaced` (walker regularity) and {prf:ref}`thm-curvature-jump` (curvature-neighbor relationship). These conjectures are strongly supported by numerical evidence but remain unproven rigorously.
+
+**Related Results:** `thm-raychaudhuri-scutoid`, `thm-raychaudhuri-classical`, Penrose-Hawking singularity theorems (analogy)
+
+---
+
+### Emergent Gravitational Potential
+
+**Type:** Definition
+**Label:** `def-emergent-gravity`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 4.1](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `gravitational-potential`, `fitness-landscape`, `ricci-focusing`, `einstein-analog`
+
+**Statement:**
+The **emergent gravitational potential** $\Phi(x)$ is defined by the relation between the Ricci focusing term and the Laplacian:
+
+$$
+R_{\mu\nu}u^\mu u^\nu = -\nabla^2 \Phi(x)
+$$
+
+where $R_{\mu\nu}$ is the Ricci tensor and $\nabla^2$ is the Laplacian in the emergent metric $g_{ab}$. For the emergent metric $g_{ab} = H_{ab} + \varepsilon I_{ab}$:
+
+$$
+\Phi(x) \approx -\frac{1}{\varepsilon} f(x) + \text{const}
+$$
+
+where $f(x)$ is the fitness function and $\varepsilon$ is the regularization parameter (thermal energy scale).
+
+**Physical Interpretation:** High-fitness regions ($f(x) \gg 0$) create **negative potential** $\Phi(x) < 0$, analogous to **gravitational wells** in general relativity. Walkers are "attracted" to these wells by the Ricci focusing term $-R_{\mu\nu}u^\mu u^\nu$ in the Raychaudhuri equation.
+
+**Einstein's Field Equation Analog:**
+
+$$
+R_{ab} + \frac{1}{\varepsilon} H_{ab} = 0
+$$
+
+where the fitness Hessian $H_{ab}$ plays the role of the stress-energy tensor $T_{\mu\nu}$. This suggests interpreting the fitness landscape as a **"matter distribution"** that curves the search space.
+
+**Related Results:** `thm-raychaudhuri-scutoid`, `def-geometric-phases`, Chapter 8 (Emergent Geometry)
+
+---
+
+### Geometric Phase Classification
+
+**Type:** Definition
+**Label:** `def-geometric-phases`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 4.2](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `phase-transition`, `exploration-exploitation`, `curvature-sign`, `thermal-control`
+
+**Statement:**
+At time $t$ and position $x$, the swarm is in one of three **geometric phases**:
+
+1. **Exploration phase**: $R_{\mu\nu}u^\mu u^\nu < 0$ (negative Ricci curvature along geodesics)
+   - Voronoi cells are **expanding** (on average)
+   - Walkers spread out, exploring new regions
+   - Analogous to **cosmological expansion** in general relativity
+
+2. **Exploitation phase**: $R_{\mu\nu}u^\mu u^\nu > 0$ (positive Ricci curvature along geodesics)
+   - Voronoi cells are **contracting** (on average)
+   - Walkers collapse toward fitness peaks
+   - Analogous to **gravitational collapse** in general relativity
+
+3. **Critical phase**: $R_{\mu\nu}u^\mu u^\nu = 0$ (zero Ricci curvature along geodesics)
+   - Transition point between expansion and contraction
+   - Marginal stability
+
+**Connection to Cloning Statistics:** By Theorem {prf:ref}`thm-curvature-jump`, cloning events that increase neighbor count create positive curvature (exploitation), while events that decrease neighbor count create negative curvature (exploration):
+
+$$
+\text{Average Ricci curvature} \propto \langle |\mathcal{N}_i(t^+)| - |\mathcal{N}_j(t^-)| \rangle
+$$
+
+**Related Results:** `prop-thermal-control-phases`, `thm-geometric-info-equivalence`, `def-emergent-gravity`
+
+---
+
+### Thermal Control of Phase Transitions
+
+**Type:** Proposition
+**Label:** `prop-thermal-control-phases`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 4.2](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `thermal-control`, `simulated-annealing`, `phase-transition`, `regularization`
+
+**Statement:**
+The regularization parameter $\varepsilon$ (thermal energy scale) controls the phase transition:
+
+1. **High temperature** ($\varepsilon \gg \|H\|$): $R_{\mu\nu}u^\mu u^\nu < 0$ → Exploration phase
+2. **Low temperature** ($\varepsilon \ll \|H\|$): $R_{\mu\nu}u^\mu u^\nu > 0$ → Exploitation phase
+3. **Critical temperature** ($\varepsilon \sim \|H\|$): $R_{\mu\nu}u^\mu u^\nu \approx 0$ → Phase transition
+
+This corresponds to **simulated annealing** strategies: start with high $\varepsilon$ (exploration), gradually decrease $\varepsilon$ (transition to exploitation).
+
+**Proof:** From Definition {prf:ref}`def-emergent-gravity`, the Ricci focusing term is:
+
+$$
+R_{\mu\nu}u^\mu u^\nu \approx -\frac{1}{\varepsilon} u^a u^b \frac{\partial^2 f}{\partial x^a \partial x^b}
+$$
+
+In high-fitness regions, the Hessian is typically negative-definite ($H_{ab} < 0$ near peaks), so:
+- High $\varepsilon$: $R_{\mu\nu}u^\mu u^\nu \approx 0$ (curvature suppressed) → exploration
+- Low $\varepsilon$: $R_{\mu\nu}u^\mu u^\nu \gg 0$ (large positive curvature) → exploitation
+
+The transition occurs when $\varepsilon \sim \|H\|$. $\square$
+
+**Related Results:** `def-geometric-phases`, `def-emergent-gravity`
+
+---
+
+### Shear-Dominated and Rotation-Dominated Regimes
+
+**Type:** Definition
+**Label:** `def-shear-rotation-regimes`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 4.3](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `shear-parameter`, `rotation-parameter`, `vortex-structures`, `anisotropic-dynamics`
+
+**Statement:**
+At time $t$ and position $x$, define:
+
+1. **Shear parameter**: $\Sigma = \sqrt{\sigma_{\mu\nu}\sigma^{\mu\nu} / \theta^2}$
+2. **Rotation parameter**: $\Omega = \sqrt{\omega_{\mu\nu}\omega^{\mu\nu} / \theta^2}$
+
+The swarm dynamics are classified as:
+- **Shear-dominated**: $\Sigma \gg \Omega$ (anisotropic contraction/expansion)
+- **Rotation-dominated**: $\Omega \gg \Sigma$ (vortex-like structures)
+- **Balanced**: $\Sigma \sim \Omega$ (mixed dynamics)
+
+**Physical Interpretation:**
+- **Shear-dominated**: Walkers collapse onto **lower-dimensional manifolds** (ridges, valleys)
+- **Rotation-dominated**: Walkers form **circulating structures** around local optima (orbital motion)
+- In most Fragile Gas runs, shear dominates ($\Sigma \gg \Omega$) due to viscous damping
+
+**Remark (Connection to Stability):** The shear tensor measures how much the swarm is "stretching" in different directions. Large shear indicates **instability**—small perturbations grow exponentially. This connects to the Lyapunov exponents studied in Chapter 13 (Fractal Set).
+
+**Related Results:** `def-expansion-shear-rotation`, `thm-raychaudhuri-scutoid`
+
+---
+
+### Equivalence of Geometric and Information-Theoretic Phases
+
+**Type:** Theorem
+**Label:** `thm-geometric-info-equivalence`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 4.4](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `phase-equivalence`, `kl-divergence`, `information-geometry`, `unified-framework`
+
+**Statement:**
+For the Fragile Gas with emergent metric $g_{ab} = H_{ab} + \varepsilon I_{ab}$, the following are equivalent (up to $O(1/N)$ corrections):
+
+1. **Geometric contraction**: $R_{\mu\nu}u^\mu u^\nu > 0$ (exploitation phase)
+2. **Information-theoretic contraction**: $\frac{d}{dt} D_{\text{KL}}(\mu_t \| \mu_*) < 0$ (converging to QSD)
+
+Furthermore, the rate of KL divergence decrease is proportional to the average Ricci curvature:
+
+$$
+\frac{d}{dt} D_{\text{KL}}(\mu_t \| \mu_*) \approx -\langle R_{\mu\nu}u^\mu u^\nu \rangle + O(\sigma^2, \omega^2)
+$$
+
+where $\langle \cdot \rangle$ denotes average over the walker distribution $\mu_t$.
+
+**Proof Sketch:** The KL divergence rate is related to the **relative entropy production**. Using the Fokker-Planck equation for $\mu_t$ and the Raychaudhuri equation for volume evolution, the logarithmic gradient can be expressed in terms of the expansion scalar $\theta$. Integrating by parts and using $\theta = \nabla_\mu u^\mu$ gives the result. Full proof in Chapter 11, Theorem 11.4.3. $\square$
+
+**Remark (Unified Framework):** This theorem establishes that the scutoid geometry framework and the information-theoretic framework are **two perspectives on the same phenomenon**. Curvature is the geometric manifestation of information flow.
+
+**Related Results:** `def-geometric-phases`, `thm-raychaudhuri-scutoid`, Chapter 11 (KL Convergence)
+
+---
+
+### Scutoid Plaquettes as Gauge Holonomy
+
+**Type:** Proposition
+**Label:** `prop-scutoid-gauge-holonomy`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 5.1](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `gauge-holonomy`, `wilson-loop`, `lattice-gauge-theory`, `field-strength`
+
+**Statement:**
+In the gauge theory formulation (Chapter 12), the **gauge holonomy** around a closed loop $\mathcal{L}$ is:
+
+$$
+U(\mathcal{L}) = \mathcal{P} \exp\left( -\oint_{\mathcal{L}} A_\mu dx^\mu \right)
+$$
+
+where $A_\mu$ is the gauge connection and $\mathcal{P}$ denotes path-ordering. For scutoid plaquettes $\Pi_{i,k}$, the gauge holonomy reduces to:
+
+$$
+U(\Pi_{i,k}) = \exp\left( -R^a_{bcd} T^c T^d A_{\Pi_{i,k}} \right)
+$$
+
+where $R^a_{bcd}$ is the Riemann tensor (field strength) and $A_{\Pi}$ is the plaquette area. This matches Theorem {prf:ref}`thm-riemann-scutoid-dictionary`.
+
+**Interpretation:** The scutoid tessellation provides the **lattice** for discretizing the gauge theory. Each plaquette is a **Wilson loop** measuring the gauge field strength (curvature). This connection is foundational for Chapter 12's construction.
+
+**Related Results:** `thm-riemann-scutoid-dictionary`, `def-scutoid-plaquette`, Chapter 12 (Gauge Theory)
+
+---
+
+### CST-Scutoid Correspondence
+
+**Type:** Definition
+**Label:** `def-cst-scutoid-correspondence`
+**Source:** [15_scutoid_curvature_raychaudhuri.md § 5.3](15_scutoid_curvature_raychaudhuri.md)
+**Tags:** `cst`, `fractal-set`, `causal-structure`, `geometric-embedding`
+
+**Statement:**
+For the Causal Spacetime Tree (CST) from Chapter 13:
+
+1. **CST nodes** correspond to **scutoid vertices**: Parent nodes at time $t$ and child nodes at time $t + \Delta t$
+2. **CST edges** correspond to **scutoid geodesic rulings**: Parent-child relationships are geodesics in the scutoid structure
+3. **CST branching events** correspond to **mid-level vertices**: Cloning events create scutoid complexity
+
+The **Information Graph (IG)** edges correspond to **shared boundaries** between Voronoi cells: neighbor relationships define information exchange channels.
+
+**Geometric Interpretation:** The Fractal Set graphs (CST, IG) are **1-skeleta** (edge graphs) of the scutoid tessellation. The full scutoid geometry (2-faces, 3-volumes) enriches the discrete graphs with continuous geometric structure, enabling curvature computations.
+
+**Related Results:** Chapter 13 (Fractal Set Theory), Chapter 18 (Scutoid Geometry), `def-scutoid-plaquette`
 
 ---
 
