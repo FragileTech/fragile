@@ -1,77 +1,21 @@
-# Scutoid Geometry Framework for Swarm Spacetime Evolution
+## Scutoid Geometry Framework
 
-## 0. Executive Summary and Motivation
+This section contains all mathematical definitions, theorems, and results from the Scutoid Geometry Framework (Chapter 14), which establishes the geometric structure of swarm spacetime evolution through scutoid-like volume cells connecting walker configurations across time slices.
 
-### 0.1. The Central Idea: Geometric Cells for Algorithmic Dynamics
-
-This chapter introduces a novel geometric framework for understanding the **spacetime evolution of the Fragile Gas** by representing walker configurations between adjacent time slices as **scutoid-like volume cells**. This provides a mesoscopic language that bridges the discrete algorithmic reality (Fractal Set) and the continuous emergent geometry (mean-field limit).
-
-**Core Innovation**: The fundamental dynamic of the Fragile Gas—**cloning events that replace walkers**—is topologically equivalent to the defining feature of scutoids in biological tissue: **neighbor-swapping between parallel surfaces**. This is not merely an analogy; it is a precise mathematical correspondence that motivates a complete geometric theory.
-
-### 0.2. Historical Context: Scutoids in Biology
-
-Scutoids were discovered by Gómez-Gálvez et al. (2018) in the study of epithelial tissue packing. Key properties:
-
-1. **Geometric definition**: Prismatoids with mid-level vertices forcing face curvature
-2. **Topological signature**: Different neighbors at apical (top) vs. basal (bottom) surfaces
-3. **Physical principle**: Minimize packing energy in curved tissue undergoing deformation
-4. **Biological role**: Enable energy-efficient volume filling as tissue bends and grows
-
-**Biological scutoids solve a geometric optimization problem under constraints**—precisely the mathematical structure underlying the Fragile Gas.
-
-### 0.3. Why Scutoids for the Fragile Gas?
-
-The correspondence is compelling:
-
-| Epithelial Tissue | Fragile Gas Swarm |
-|-------------------|-------------------|
-| Cell in curved tissue | Walker in fitness landscape |
-| Apical surface (top) | Walker configuration at time $t$ |
-| Basal surface (bottom) | Walker configuration at time $t+1$ |
-| Tissue bending | Fitness gradient |
-| Neighbor-swapping | Cloning event (walker replacement) |
-| Packing energy | Information rearrangement cost (Wasserstein-2 distance) |
-| Scutoid formation | Adaptive exploration phase |
-
-### 0.4. What We Achieve
-
-**Theoretical Contributions**:
-1. **Discrete-to-continuum bridge**: Scutoid tessellations converge to continuous geometry as $N \to \infty$
-2. **Topological order parameter**: Scutoid fraction $\phi$ characterizes exploration vs. exploitation phases
-3. **Geometric dictionary**: Scutoid shape parameters encode Riemann curvature tensor components
-4. **Effective field theory**: Scutoid dynamics derive continuum PDEs for mean-field measure $\mu_t$
-
-**Physical Insights**:
-1. **Phase transitions**: Prism-dominated (convergent) vs. scutoid-dominated (exploratory) phases
-2. **Dynamical law**: Raychaudhuri equation governs scutoid evolution
-3. **Conservation laws**: Topological invariants during swarm evolution
-4. **Holographic principle**: Bulk (spacetime scutoids) ↔ Boundary (fitness landscape)
-
-### 0.5. Document Structure
-
-**Chapter 1**: Mathematical foundations—Riemannian manifolds, prismatoids, scutoid definitions
-
-**Chapter 2**: Topological correspondence—cloning events as neighbor-swapping transformations
-
-**Chapter 3**: Episode-to-scutoid mapping—constructing cells from Fractal Set data
-
-**Chapter 4**: Energy functional—Wasserstein-2 metric as scutoid deformation energy
-
-**Chapter 5**: Geometric properties—curvature, holonomy, and the Riemann tensor dictionary
-
-**Chapter 6**: Continuum limit—convergence theorems as $N \to \infty$, $\Delta t \to 0$
-
-**Chapter 7**: Applications—phase transitions, effective field theory, computational methods
+**Key Topics:** Riemannian scutoids, Voronoi tessellations, cloning topology, deficit angles, spectral curvature, heat kernel asymptotics, causal set volume, curvature unification
 
 ---
 
-## 1. Mathematical Foundations
+### Swarm Spacetime Manifold
 
-### 1.1. The Spacetime Manifold
+**Type:** Definition
+**Label:** `def-swarm-spacetime`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `riemannian-geometry`, `metric-geometry`
 
-We work with the emergent Riemannian structure defined by the Adaptive Gas.
+**Statement:**
 
-:::{prf:definition} Swarm Spacetime Manifold
+:::{definition} Swarm Spacetime Manifold
 :label: def-swarm-spacetime
 
 The **swarm spacetime manifold** is the $(d+1)$-dimensional product manifold:
@@ -104,15 +48,20 @@ $$
 This metric is **time-dependent** through the swarm-induced spatial metric $g(x, t)$.
 :::
 
-:::{note}
-**Why Riemannian (not Lorentzian)?** The Fragile Gas evolves in computational time $t$, not physical relativistic time. There is no light cone structure or causality constraints from special relativity. However, **causal structure emerges** from the cloning genealogy (Causal Spacetime Tree), independent of the metric signature.
-:::
+**Related Results:** See scutoid geometry framework results
 
-### 1.2. Voronoi Tessellation at a Fixed Time Slice
+---
 
-Before defining scutoids (which connect time slices), we establish the spatial tessellation at a single time.
+### Riemannian Voronoi Diagram
 
-:::{prf:definition} Riemannian Voronoi Diagram
+**Type:** Definition
+**Label:** `def-riemannian-voronoi`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `riemannian-geometry`
+
+**Statement:**
+
+:::{definition} Riemannian Voronoi Diagram
 :label: def-riemannian-voronoi
 
 For a swarm state $S_t = \{(x_i, v_i, s_i)\}_{i=1}^N$ with alive set $\mathcal{A}(t)$, the **Riemannian Voronoi cell** of walker $i \in \mathcal{A}(t)$ is:
@@ -132,17 +81,39 @@ $$
 This partitions the valid domain: $\bigcup_{i \in \mathcal{A}(t)} \text{Vor}_i(t) = \mathcal{X}_{\text{valid}}$.
 :::
 
-:::{prf:remark} Curved vs. Flat Voronoi Cells
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Curved vs. Flat Voronoi Cells
+
+**Type:** Remark
+**Label:** `rem-curved-voronoi`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `riemannian-geometry`
+
+**Statement:**
+
+:::{remark} Curved vs. Flat Voronoi Cells
 :label: rem-curved-voronoi
 
 In Euclidean space ($g = I$), Voronoi cells are polyhedra with flat faces. In a Riemannian manifold with non-trivial curvature, the boundaries are **geodesic hypersurfaces**, which can be curved even when viewed in ambient coordinates. This curvature reflects the emergent geometry of the fitness landscape.
 :::
 
-### 1.3. Prismatoids and Scutoids in Euclidean Space
+**Related Results:** See scutoid geometry framework results
 
-We now define the geometric objects that will form our spacetime cells.
+---
 
-:::{prf:definition} Prismatoid (Classical Definition)
+### Prismatoid (Classical Definition)
+
+**Type:** Definition
+**Label:** `def-prismatoid-classical`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`
+
+**Statement:**
+
+:::{definition} Prismatoid (Classical Definition)
 :label: def-prismatoid-classical
 
 A **prismatoid** in $\mathbb{R}^{d+1}$ is a polytope $P$ with the following properties:
@@ -157,7 +128,20 @@ A **prismatoid** in $\mathbb{R}^{d+1}$ is a polytope $P$ with the following prop
 - **General prismatoid**: Arbitrary polytopes on top/bottom planes
 :::
 
-:::{prf:definition} Scutoid (Biological Definition)
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Scutoid (Biological Definition)
+
+**Type:** Definition
+**Label:** `def-scutoid-biological`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`
+
+**Statement:**
+
+:::{definition} Scutoid (Biological Definition)
 :label: def-scutoid-biological
 
 A **scutoid** is a prismatoid with the addition of **mid-level vertices**: vertices that lie on an intermediate hyperplane $H_{\text{mid}} = \{(x, t) : t = t_{\text{mid}}\}$ where $t_0 < t_{\text{mid}} < t_1$.
@@ -170,7 +154,20 @@ A **scutoid** is a prismatoid with the addition of **mid-level vertices**: verti
 **Key property**: Scutoids enable **efficient volume packing** when transitioning between two parallel surfaces with different **neighborhood topology**.
 :::
 
-:::{prf:example} The Canonical Scutoid in $\mathbb{R}^3$
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### The Canonical Scutoid in $\mathbb{R}^3$
+
+**Type:** Example
+**Label:** `ex-canonical-scutoid`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`
+
+**Statement:**
+
+:::{example} The Canonical Scutoid in $\mathbb{R}^3$
 :label: ex-canonical-scutoid
 
 Consider a scutoid connecting two parallel planes $z = 0$ and $z = 1$ in $\mathbb{R}^3$:
@@ -186,11 +183,20 @@ Consider a scutoid connecting two parallel planes $z = 0$ and $z = 1$ in $\mathb
 This geometry minimizes the total surface area (energy) subject to the constraint of filling the volume with the required neighbor changes.
 :::
 
-### 1.4. Boundary Correspondence Map
+**Related Results:** See scutoid geometry framework results
 
-Before defining scutoids in Riemannian manifolds, we must rigorously specify how to connect the boundaries of Voronoi cells at different times.
+---
 
-:::{prf:definition} Neighbor-Preserving Boundary Segments
+### Neighbor-Preserving Boundary Segments
+
+**Type:** Definition
+**Label:** `def-neighbor-segments`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `riemannian-geometry`
+
+**Statement:**
+
+:::{definition} Neighbor-Preserving Boundary Segments
 :label: def-neighbor-segments
 
 For a Voronoi cell $\text{Vor}_i(t)$ with neighbor set $\mathcal{N}_i(t)$, decompose the boundary into **neighbor-interface segments**:
@@ -204,7 +210,20 @@ where $\Gamma_{i,k}(t) = \partial \text{Vor}_i(t) \cap \partial \text{Vor}_k(t)$
 Each segment $\Gamma_{i,k}(t)$ is a $(d-1)$-dimensional hypersurface in the spatial manifold $(\mathcal{X}, g(\cdot, t))$.
 :::
 
-:::{prf:definition} Boundary Correspondence Map
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Boundary Correspondence Map
+
+**Type:** Definition
+**Label:** `def-boundary-correspondence`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `riemannian-geometry`, `metric-geometry`
+
+**Statement:**
+
+:::{definition} Boundary Correspondence Map
 :label: def-boundary-correspondence
 
 Let $F_{\text{bottom}} = \text{Vor}_j(t)$ and $F_{\text{top}} = \text{Vor}_i(t + \Delta t)$ be the bottom and top faces of a spacetime cell, with neighbor sets $\mathcal{N}_j(t)$ and $\mathcal{N}_i(t + \Delta t)$ respectively.
@@ -239,11 +258,20 @@ This maps the point at arc-length $s$ on the bottom segment to the point at resc
 **Gained neighbors**: For $m \in \mathcal{N}_i(t + \Delta t) \setminus \mathcal{N}_j(t)$, the segment $\Gamma_{i,m}(t + \Delta t)$ has **no corresponding segment** on the bottom face.
 :::
 
-### 1.5. Generalized Scutoids in Riemannian Manifolds
+**Related Results:** See scutoid geometry framework results
 
-We now extend scutoid geometry to curved spaces with the boundary correspondence map.
+---
 
-:::{prf:definition} Riemannian Scutoid (Rigorous Definition)
+### Riemannian Scutoid (Rigorous Definition)
+
+**Type:** Definition
+**Label:** `def-riemannian-scutoid`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `cloning`, `riemannian-geometry`, `metric-geometry`
+
+**Statement:**
+
+:::{definition} Riemannian Scutoid (Rigorous Definition)
 :label: def-riemannian-scutoid
 
 Let $(\mathcal{M}, g_{\text{ST}})$ be the swarm spacetime manifold. A **Riemannian scutoid** $\mathcal{S}_{i, t}$ associated with walker $i$ between times $t$ and $t + \Delta t$ is a $(d+1)$-dimensional region in $\mathcal{M}$ constructed as follows:
@@ -293,7 +321,20 @@ $$
 - **Complex scutoid**: $|\mathcal{N}_j(t) \triangle \mathcal{N}_i(t + \Delta t)| > 2$ (multiple neighbor changes)
 :::
 
-:::{prf:proposition} Algorithmic Origin of Mid-Level Vertices
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Algorithmic Origin of Mid-Level Vertices
+
+**Type:** Proposition
+**Label:** `prop-algorithmic-midpoint`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `cloning`, `metric-geometry`
+
+**Statement:**
+
+:::{proposition} Algorithmic Origin of Mid-Level Vertices
 :label: prop-algorithmic-midpoint
 
 The temporal coordinate $t_{\text{mid}} = t + \Delta t/2$ of the mid-level vertices in the scutoid tessellation corresponds to the **algorithmic timestep** at which cloning and neighbor-swapping events occur, as defined in the Euclidean Gas update rule (Chapter 2, Algorithm 2.1).
@@ -310,7 +351,20 @@ At time $t + \Delta t/2$:
 Therefore, the scutoid mid-level structure **is not a geometric modeling choice** but a direct representation of the algorithm's native two-stage dynamics. $\square$
 :::
 
-:::{prf:remark} Scutoid Geometry as Intrinsic Algorithmic Structure
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Scutoid Geometry as Intrinsic Algorithmic Structure
+
+**Type:** Remark
+**Label:** `rem-intrinsic-geometry`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `riemannian-geometry`, `metric-geometry`
+
+**Statement:**
+
+:::{remark} Scutoid Geometry as Intrinsic Algorithmic Structure
 :label: rem-intrinsic-geometry
 
 The correspondence between scutoid geometry and the Fragile Gas algorithm is not merely descriptive—it reveals that **discrete-time birth-death algorithms possess intrinsic spacetime geometry**. The scutoid framework doesn't impose an external geometric interpretation; rather, it discovers the natural geometric structure already present in the algorithm's control flow.
@@ -320,7 +374,20 @@ This elevates the scutoid tessellation from a visualization tool to a mathematic
 **Cross-reference**: See Chapter 2, Algorithm 2.1, line 65, which explicitly defines the intermediate state $\mathcal{S}_{t+1/2}$.
 :::
 
-:::{prf:remark} Why Geodesic Ruling?
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Why Geodesic Ruling?
+
+**Type:** Remark
+**Label:** `rem-geodesic-ruling`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `riemannian-geometry`
+
+**Statement:**
+
+:::{remark} Why Geodesic Ruling?
 :label: rem-geodesic-ruling
 
 In Euclidean space, the lateral faces of a prismatoid are ruled by straight lines (distance-minimizing paths). In a Riemannian manifold, the natural generalization is **geodesic ruling**: the faces are swept out by geodesics connecting corresponding points on the top and bottom boundaries.
@@ -331,11 +398,20 @@ This choice has several advantages:
 3. **Intrinsic definition**: Independent of any embedding in higher-dimensional Euclidean space
 :::
 
-### 1.6. Scutoid Face Curvature and Sectional Curvature
+**Related Results:** See scutoid geometry framework results
 
-The curvature of scutoid faces encodes information about the underlying spacetime geometry.
+---
 
-:::{prf:proposition} Scutoid Face Curvature Formula (Smooth Regions)
+### Scutoid Face Curvature Formula (Smooth Regions)
+
+**Type:** Proposition
+**Label:** `prop-scutoid-face-curvature`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `riemannian-geometry`
+
+**Statement:**
+
+:::{proposition} Scutoid Face Curvature Formula (Smooth Regions)
 :label: prop-scutoid-face-curvature
 
 Let $\Sigma_k \subset \mathcal{M}$ be a **neighbor-preserving lateral face** (from Definition {prf:ref}`def-riemannian-scutoid`, item 4) of a Riemannian scutoid, corresponding to shared neighbor $k \in \mathcal{N}_{\text{shared}}$.
@@ -367,7 +443,20 @@ where:
 2. The **extrinsic bending** of how the surface sits in that spacetime
 :::
 
-:::{prf:corollary} Statistical Estimation of Sectional Curvature
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Statistical Estimation of Sectional Curvature
+
+**Type:** Corollary
+**Label:** `cor-curvature-from-scutoids`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `riemannian-geometry`
+
+**Statement:**
+
+:::{corollary} Statistical Estimation of Sectional Curvature
 :label: cor-curvature-from-scutoids
 
 By averaging the face curvatures $K_{\Sigma}$ over many scutoid faces in a spacetime region $\mathcal{R} \subset \mathcal{M}$, we can obtain a **statistical estimate** of the average sectional curvature in that region.
@@ -393,15 +482,20 @@ where $\mathcal{F}_{\mathcal{R}}$ is the set of smooth face samples in region $\
 - Computing curvature-based order parameters for phase transitions
 :::
 
+**Related Results:** See scutoid geometry framework results
+
 ---
 
-## 2. Topological Correspondence: Cloning as Neighbor-Swapping
+### Cloning-Scutoid Correspondence
 
-### 2.1. The Central Theorem
+**Type:** Theorem
+**Label:** `thm-cloning-scutoid-correspondence`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `cloning`, `metric-geometry`, `major-result`
 
-We now prove the foundational result justifying the scutoid framework.
+**Statement:**
 
-:::{prf:theorem} Cloning-Scutoid Correspondence
+:::{theorem} Cloning-Scutoid Correspondence
 :label: thm-cloning-scutoid-correspondence
 
 Let $e_i$ be an episode of the Fragile Gas with:
@@ -434,93 +528,20 @@ where $t^-$ denotes the instant before cloning and $t^+$ denotes the instant aft
 **Converse**: If $\mathcal{N}_i(t^+) = \mathcal{N}_i(t^-)$ (no cloning occurred), the spacetime volume is a **prism** (possibly a frustum if the Voronoi cell shrinks or expands, but with same neighbor topology).
 :::
 
-:::{prf:proof}
+**Related Results:** See scutoid geometry framework results
 
-**Part 1: Cloning induces neighbor change with probability 1**
+---
 
-Consider a cloning event where walker $i$ at position $x_i \in \mathcal{X}$ is replaced by a clone of walker $j$ at position $x_j \in \mathcal{X}$ with $x_i \neq x_j$.
+### Scutoid Fraction as Cloning Rate Proxy
 
-**Setup**: Let $S^{(t^-)} = \{x_1, \ldots, x_N\}$ be the walker positions before cloning, where walker $i$ is at $x_i$. After cloning, walker $i$ is replaced by a new walker at position:
+**Type:** Corollary
+**Label:** `cor-scutoid-fraction`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `cloning`, `metric-geometry`
 
-$$
-x_{i'} = x_j + \xi, \quad \xi \sim \mathcal{N}(0, \sigma_x^2 I)
-$$
+**Statement:**
 
-The new configuration is $S^{(t^+)} = \{x_1, \ldots, x_{i-1}, x_{i'}, x_{i+1}, \ldots, x_N\}$.
-
-**Voronoi neighbor condition**: Walker $k$ is a neighbor of walker $i$ if and only if their Voronoi cells share a boundary:
-
-$$
-k \in \mathcal{N}_i \iff \exists p \in \mathcal{X}: d_g(p, x_k) = d_g(p, x_i) < d_g(p, x_\ell) \text{ for all } \ell \neq i, k
-$$
-
-**Key claim**: For any fixed $k \in \mathcal{N}_i(t^-)$ with $k \neq j$, the probability that $k \in \mathcal{N}_{i'}(t^+)$ vanishes as $\|x_i - x_j\| \to \infty$.
-
-**Proof of claim**: The Voronoi boundary between cells $k$ and $i$ consists of points equidistant to $x_k$ and $x_i$. For $k$ to also be a neighbor of $i'$ at $x_{i'} = x_j + \xi$, there must exist a point $p$ equidistant to both $x_k$ and $x_{i'}$:
-
-$$
-d_g(p, x_k) = d_g(p, x_j + \xi)
-$$
-
-For large $\|x_i - x_j\|$, the sets $\{p : d_g(p, x_k) = d_g(p, x_i)\}$ and $\{p : d_g(p, x_k) = d_g(p, x_j)\}$ are **disjoint hypersurfaces** in $\mathcal{X}$ (generically), separated by distance $O(\|x_i - x_j\|)$. The Gaussian jitter $\xi$ with variance $\sigma_x^2$ cannot bridge this gap with high probability.
-
-**Measure-theoretic statement**: Let $P_{\text{preserve}}(k; x_i, x_j)$ be the probability that neighbor $k \in \mathcal{N}_i(t^-)$ remains a neighbor after cloning ($k \in \mathcal{N}_{i'}(t^+)$). Then:
-
-$$
-P_{\text{preserve}}(k; x_i, x_j) \to 0 \quad \text{as } \|x_i - x_j\| \to \infty
-$$
-
-Since cloning can occur between any two walkers (Chapter 3), and the fitness-based selection does not constrain their spatial separation, neighbor-changing cloning events have **positive measure** in the space of algorithm trajectories.
-
-**Conclusion**: $\mathbb{P}(\mathcal{N}_{i'}(t^+) \neq \mathcal{N}_i(t^-)) > 0$ for cloning events, and for spatially distant cloning ($\|x_i - x_j\| \gg \sigma_x$), the probability approaches 1.
-
-**Part 2: Neighbor change forces scutoid geometry (using boundary correspondence map)**
-
-Now suppose $\mathcal{N}_i(t^-) \neq \mathcal{N}_{i'}(t^+)$. By Definition {prf:ref}`def-neighbor-segments`, decompose the Voronoi boundaries:
-
-$$
-\partial \text{Vor}_i(t^-) = \bigcup_{k \in \mathcal{N}_i(t^-)} \Gamma_{i,k}(t^-)
-$$
-
-$$
-\partial \text{Vor}_{i'}(t^+) = \bigcup_{\ell \in \mathcal{N}_{i'}(t^+)} \Gamma_{i',\ell}(t^+)
-$$
-
-Define the shared and non-shared neighbor sets:
-- $\mathcal{N}_{\text{shared}} = \mathcal{N}_i(t^-) \cap \mathcal{N}_{i'}(t^+)$
-- $\mathcal{N}_{\text{lost}} = \mathcal{N}_i(t^-) \setminus \mathcal{N}_{i'}(t^+)$ (neighbors lost)
-- $\mathcal{N}_{\text{gained}} = \mathcal{N}_{i'}(t^+) \setminus \mathcal{N}_i(t^-)$ (neighbors gained)
-
-By Definition {prf:ref}`def-boundary-correspondence`, the boundary correspondence map $\phi_k$ is **well-defined** only for $k \in \mathcal{N}_{\text{shared}}$. For $\ell \in \mathcal{N}_{\text{lost}}$, there is **no segment** $\Gamma_{i',\ell}(t^+)$ to map to, so $\phi_\ell$ is **undefined**.
-
-**Topological necessity of mid-level structure**: To construct a continuous spacetime volume connecting $\text{Vor}_i(t^-) \times \{t^-\}$ to $\text{Vor}_{i'}(t^+) \times \{t^+\}$, we must connect every boundary segment at the bottom to a corresponding segment at the top.
-
-For $k \in \mathcal{N}_{\text{shared}}$: The segment $\Gamma_{i,k}(t^-)$ maps via $\phi_k$ to $\Gamma_{i',k}(t^+)$, and the lateral face $\Sigma_k$ is constructed by geodesic ruling (Definition {prf:ref}`def-riemannian-scutoid`, item 4).
-
-For $\ell \in \mathcal{N}_{\text{lost}}$: The segment $\Gamma_{i,\ell}(t^-)$ has **no image** under any correspondence map $\phi$. To close the volume's boundary, this segment's geodesic ruling must **terminate** at an intermediate location in spacetime.
-
-For $m \in \mathcal{N}_{\text{gained}}$: The segment $\Gamma_{i',m}(t^+)$ has **no preimage** under any correspondence map. Its geodesic ruling must **originate** from an intermediate location.
-
-**Definition of mid-level vertices**: The points in spacetime where geodesics from lost neighbors terminate and geodesics to gained neighbors originate are the **mid-level vertices**. Their existence is **topologically necessary** to form a closed boundary when $\mathcal{N}_{\text{lost}} \cup \mathcal{N}_{\text{gained}} \neq \emptyset$.
-
-By Definition {prf:ref}`def-riemannian-scutoid`, this is precisely a scutoid (not a prism). $\square$
-
-**Part 3: No cloning implies prism**
-
-If no cloning occurs, walker $i$ persists from $t^-$ to $t^+$. The position changes via Langevin dynamics:
-
-$$
-x_i(t^+) = x_i(t^-) + v_i \Delta t + \text{noise}
-$$
-
-The Voronoi cell $\text{Vor}_i(t)$ evolves continuously. For small $\Delta t$, the neighbor set $\mathcal{N}_i(t)$ changes continuously, meaning $\mathcal{N}_i(t^+) = \mathcal{N}_i(t^-)$ (up to boundary events, which are measure-zero).
-
-If neighbors are unchanged, the boundary segments on top and bottom match one-to-one, so the lateral faces are ruled surfaces without branching. This is a **prism** (or frustum if the cell size changes, but with same topology).
-
-$\square$
-:::
-
-:::{prf:corollary} Scutoid Fraction as Cloning Rate Proxy
+:::{corollary} Scutoid Fraction as Cloning Rate Proxy
 :label: cor-scutoid-fraction
 
 The **fraction of scutoid cells** in the spacetime tessellation is:
@@ -540,20 +561,20 @@ where $N$ is the total number of walkers.
 **Interpretation**: The scutoid fraction $\phi$ is a **geometric order parameter** that directly measures the dynamical activity (cloning) of the swarm.
 :::
 
-### 2.2. Visualizing the Correspondence
+**Related Results:** See scutoid geometry framework results
 
-```{figure} images/18_scutoid_cloning_correspondence.svg
 ---
-name: fig-scutoid-cloning
-width: 90%
-align: center
----
-Topological correspondence between cloning events and scutoid geometry. **Left**: Before cloning (time t⁻), walker i (red) has neighbors {A, B, C}. **Center**: Cloning event—walker i is replaced by a clone of walker j (blue). **Right**: After cloning (time t⁺), new walker i' has neighbors {B, C, D}. The spacetime volume connecting the bottom Voronoi cell (left) to the top Voronoi cell (right) must contain a mid-level vertex where the connection to neighbor A terminates and the connection to neighbor D originates. This is a scutoid.
-```
 
-### 2.3. Classification of Cell Types
+### Cell Type Taxonomy
 
-:::{prf:definition} Cell Type Taxonomy
+**Type:** Definition
+**Label:** `def-cell-type-taxonomy`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `cloning`, `metric-geometry`
+
+**Statement:**
+
+:::{definition} Cell Type Taxonomy
 :label: def-cell-type-taxonomy
 
 Spacetime cells in the scutoid tessellation are classified by their **topological complexity**:
@@ -576,7 +597,20 @@ Spacetime cells in the scutoid tessellation are classified by their **topologica
 **Topological invariant**: The **scutoid index** $\chi_{\text{scutoid}} = k$ (number of mid-level vertices) is a discrete integer-valued function on cells.
 :::
 
-:::{prf:proposition} Euler Characteristic and Scutoid Index
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Euler Characteristic and Scutoid Index
+
+**Type:** Proposition
+**Label:** `prop-euler-characteristic-scutoid`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `cloning`
+
+**Statement:**
+
+:::{proposition} Euler Characteristic and Scutoid Index
 :label: prop-euler-characteristic-scutoid
 
 The **Euler characteristic** of a scutoid cell $\mathcal{S}$ is related to its scutoid index $\chi_{\text{scutoid}}$ by:
@@ -598,15 +632,20 @@ $$
 This provides a **topological measure** of the total cloning activity.
 :::
 
+**Related Results:** See scutoid geometry framework results
+
 ---
 
-## 3. Episode-to-Scutoid Mapping
+### Scutoid Tessellation Construction
 
-### 3.1. Construction Algorithm
+**Type:** Algorithm
+**Label:** `alg-scutoid-construction`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `cloning`, `riemannian-geometry`, `metric-geometry`
 
-We now provide an algorithmic procedure to construct the scutoid tessellation from the Fractal Set data.
+**Statement:**
 
-:::{prf:algorithm} Scutoid Tessellation Construction
+:::{algorithm} Scutoid Tessellation Construction
 :label: alg-scutoid-construction
 
 **Input**:
@@ -654,12 +693,22 @@ We now provide an algorithmic procedure to construct the scutoid tessellation fr
    - Holonomy: Parallel transport around face boundaries (Section 5.2)
 
 6. **Output** tessellation $\mathcal{T}$ with all cells and properties.
-
 :::
 
-### 3.2. Computational Complexity
+**Related Results:** See scutoid geometry framework results
 
-:::{prf:proposition} Computational Cost
+---
+
+### Computational Cost
+
+**Type:** Proposition
+**Label:** `prop-computational-cost`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `riemannian-geometry`, `metric-geometry`
+
+**Statement:**
+
+:::{proposition} Computational Cost
 :label: prop-computational-cost
 
 The scutoid tessellation construction has time complexity:
@@ -684,9 +733,20 @@ where:
 - **Sparse representation**: Store only boundary cells (most cells are prisms and can be cached)
 :::
 
-### 3.3. Relationship to Fractal Set Structures
+**Related Results:** See scutoid geometry framework results
 
-:::{prf:theorem} Scutoid Tessellation is Dual to Information Graph
+---
+
+### Scutoid Tessellation is Dual to Information Graph
+
+**Type:** Theorem
+**Label:** `thm-scutoid-ig-duality`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `cloning`, `major-result`
+
+**Statement:**
+
+:::{theorem} Scutoid Tessellation is Dual to Information Graph
 :label: thm-scutoid-ig-duality
 
 The scutoid tessellation $\mathcal{T}$ and the Information Graph (IG) from Chapter 13 are **dual structures**:
@@ -706,15 +766,20 @@ The scutoid tessellation $\mathcal{T}$ and the Information Graph (IG) from Chapt
 **Consequence**: The IG is the **1-skeleton** (edge graph) of the **dual complex** to the scutoid tessellation.
 :::
 
+**Related Results:** See scutoid geometry framework results
+
 ---
 
-## 4. Energy Functional: Hellinger-Kantorovich Distance
+### Scutoid Deformation Energy (Hellinger-Kantorovich)
 
-### 4.1. Packing Energy as Unbalanced Optimal Transport
+**Type:** Definition
+**Label:** `def-scutoid-energy`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `cloning`, `hellinger-kantorovich`, `wasserstein`, `energy-functional`, `metric-geometry`
 
-The scutoid framework requires an energy functional that naturally handles **mass creation/destruction** during cloning events. The **Hellinger-Kantorovich (HK) distance** is the correct geometric framework for this setting.
+**Statement:**
 
-:::{prf:definition} Scutoid Deformation Energy (Hellinger-Kantorovich)
+:::{definition} Scutoid Deformation Energy (Hellinger-Kantorovich)
 :label: def-scutoid-energy
 
 The **deformation energy** required to transform the swarm configuration from time $t$ to $t + \Delta t$ is defined using the **Hellinger-Kantorovich distance** between the empirical measures:
@@ -753,7 +818,20 @@ where:
 **Literature**: The Hellinger-Kantorovich distance and its formulation for unbalanced optimal transport is developed in {cite}`Liero2018,ChizatPeyre2018`. The Wasserstein-Fisher-Rao geometry and its application to reaction-diffusion systems is detailed in {cite}`KondratievTeleRevuz2006,LieroMielkeSavare2016`.
 :::
 
-:::{prf:definition} Genealogical HK Cost
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Genealogical HK Cost
+
+**Type:** Definition
+**Label:** `def-genealogical-cost`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `cloning`, `hellinger-kantorovich`
+
+**Statement:**
+
+:::{definition} Genealogical HK Cost
 :label: def-genealogical-cost
 
 The **genealogical Hellinger-Kantorovich cost** $C_G(\mu_t, \mu_{t+\Delta t})$ is the cost of the specific transport plan $\pi_G$ that follows the algorithmic genealogy:
@@ -799,7 +877,20 @@ where:
 This is precisely the structure of the Fragile Gas algorithm!
 :::
 
-:::{prf:theorem} Upper Bound on HK Energy from Genealogy
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Upper Bound on HK Energy from Genealogy
+
+**Type:** Theorem
+**Label:** `thm-hk-upper-bound`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `cloning`, `hellinger-kantorovich`, `energy-functional`, `major-result`
+
+**Statement:**
+
+:::{theorem} Upper Bound on HK Energy from Genealogy
 :label: thm-hk-upper-bound
 
 The Hellinger-Kantorovich distance is bounded above by the genealogical transport cost:
@@ -825,7 +916,20 @@ $\square$
 **Consequence**: The genealogical cost provides a **computable upper bound** on the true HK energy. For the Fragile Gas, this bound is likely tight because the algorithm's dynamics (Langevin + cloning) are designed to minimize a related free energy functional.
 :::
 
-:::{prf:remark} Optimality of the Genealogical Plan
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Optimality of the Genealogical Plan
+
+**Type:** Remark
+**Label:** `rem-genealogical-optimality`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `cloning`, `hellinger-kantorovich`, `wasserstein`, `riemannian-geometry`
+
+**Statement:**
+
+:::{remark} Optimality of the Genealogical Plan
 :label: rem-genealogical-optimality
 
 The inequality $\text{HK}_{\alpha}^2 = C_G^2$ (equality) holds if and only if the genealogical transport plan $\pi_G$ is **HK-optimal**.
@@ -843,7 +947,20 @@ The inequality $\text{HK}_{\alpha}^2 = C_G^2$ (equality) holds if and only if th
 3. Validate the gradient flow interpretation
 :::
 
-:::{prf:corollary} Scutoid Fraction and Energy
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Scutoid Fraction and Energy
+
+**Type:** Corollary
+**Label:** `cor-scutoid-energy`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `wasserstein`, `energy-functional`, `metric-geometry`
+
+**Statement:**
+
+:::{corollary} Scutoid Fraction and Energy
 :label: cor-scutoid-energy
 
 The scutoid fraction $\phi(t)$ is correlated with the Wasserstein energy:
@@ -859,9 +976,20 @@ where $\bar{d}_{\text{clone}}$ is the average geodesic distance between cloned w
 This connects geometric topology (scutoid fraction) to thermodynamic quantities (energy).
 :::
 
-### 4.2. Minimization Principle
+**Related Results:** See scutoid geometry framework results
 
-:::{prf:theorem} Scutoid Geometry Minimizes Hellinger-Kantorovich Energy
+---
+
+### Scutoid Geometry Minimizes Hellinger-Kantorovich Energy
+
+**Type:** Theorem
+**Label:** `thm-scutoid-hk-minimization`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `hellinger-kantorovich`, `energy-functional`, `major-result`
+
+**Statement:**
+
+:::{theorem} Scutoid Geometry Minimizes Hellinger-Kantorovich Energy
 :label: thm-scutoid-hk-minimization
 
 The genealogical transport plan that generates the scutoid tessellation is the **optimal transport plan** that minimizes the Hellinger-Kantorovich distance $\text{HK}_\alpha(\mu_t, \mu_{t+\Delta t})$ between the empirical measures of the swarm at consecutive time steps.
@@ -881,84 +1009,20 @@ where:
 **Significance**: This reformulation connects the scutoid geometry directly to the algorithm's dynamics. The scutoid shape is not imposed by biological analogy but emerges as the **mathematical consequence** of optimal transport under birth-death processes.
 :::
 
-:::{prf:proof} Two-Part Variational Argument
+**Related Results:** See scutoid geometry framework results
 
-The proof decomposes the HK energy according to the algorithm's two-stage structure: persistent walker transport (geodesic ruling of prisms) and cloning events (mid-level vertices).
+---
 
-**Part 1: Geodesic Ruling for Persistent Walkers**
+### Connection to Biological Scutoids
 
-For the subset $\mathcal{P}(t)$ of walkers not involved in cloning, the transport component of the HK energy reduces to the squared Wasserstein-2 distance:
+**Type:** Remark
+**Label:** `rem-biological-connection`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `hellinger-kantorovich`, `metric-geometry`
 
-$$
-W_2^2(\mu_t|_{\mathcal{P}}, \mu_{t+\Delta t}|_{\mathcal{P}}) = \inf_{\pi} \int_{\mathcal{X} \times \mathcal{X}} d_g(x, y)^2 \, d\pi(x, y)
-$$
+**Statement:**
 
-The algorithm defines a specific transport plan: each walker $i \in \mathcal{P}$ moves from $x_i(t)$ to $x_i(t + \Delta t)$ along a path $\gamma_i(s)$ for $s \in [t, t + \Delta t]$ governed by the Langevin dynamics:
-
-$$
-dv_i = [-\nabla U_{\text{eff}}(x_i) - \gamma v_i] dt + \Sigma_{\text{reg}}(x_i) \circ dW_i
-$$
-
-**Least Action Principle**: The cost associated with path $\gamma_i$ is:
-
-$$
-C[\gamma_i] = \int_t^{t+\Delta t} L(\gamma_i(s), \dot{\gamma}_i(s)) \, ds
-$$
-
-where the Lagrangian is $L(x, v) = \frac{1}{2} g_{ab}(x) v^a v^b$ (kinetic energy in the emergent metric).
-
-The paths that **minimize** this action are precisely the **geodesics** of the spacetime metric $g_{\text{ST}}$ (Euler-Lagrange equations).
-
-**In the low-noise limit** ($\Sigma_{\text{reg}} \to 0$), the Langevin SDE becomes deterministic:
-
-$$
-\ddot{x}_i + \gamma \dot{x}_i + g(x_i)^{-1} \nabla U_{\text{eff}}(x_i) = 0
-$$
-
-This is the **damped geodesic equation** on the manifold $(\mathcal{X}, g)$. For high friction $\gamma \gg 1$ and zero potential gradient, this reduces exactly to geodesic flow.
-
-**Conclusion**: The geodesic ruling of scutoid lateral faces (connecting persistent walkers) is the **natural geometric consequence** of the Langevin dynamics minimizing transport cost in the emergent Riemannian geometry.
-
-**Part 2: Optimal Mid-Level Vertex Placement from Cloning**
-
-Consider a cloning event where walker $i$ at $x_i$ (to be destroyed) is replaced by a clone of walker $j$ at $x_j$ (the parent). The HK cost contribution for this event is:
-
-$$
-C_{\text{clone}}(x_{\text{new}}) = \frac{1}{4\alpha} d_g(x_j, x_{\text{new}})^2 + \alpha \left[ \text{KL}(\text{creation at } x_{\text{new}}) + \text{KL}(\text{destruction at } x_i) \right]
-$$
-
-where $x_{\text{new}}$ is the birth position of the new walker.
-
-**Minimization**: The KL terms for discrete creation/destruction of mass $m = 1/N$ are **constants** (independent of $x_{\text{new}}$). The only position-dependent term is the transport cost:
-
-$$
-\frac{\partial C_{\text{clone}}}{\partial x_{\text{new}}} = \frac{1}{2\alpha} \nabla_{x_{\text{new}}} d_g(x_j, x_{\text{new}})^2
-$$
-
-This gradient vanishes when $x_{\text{new}} = x_j$, i.e., when the new walker is born at the **exact location of the parent**.
-
-**Algorithm Implementation**: From {prf:ref}`def-inelastic-collision-update`, the algorithm sets:
-
-$$
-x_{\text{new}} = x_j + \xi, \quad \xi \sim \mathcal{N}(0, \sigma_x^2 I)
-$$
-
-This is a **small random displacement** from the optimal position $x_j$. The noise serves an **exploratory purpose** (breaking symmetry, preventing premature convergence) while keeping the birth position near the HK-optimal location.
-
-**In the zero-noise limit** $\sigma_x \to 0$:
-
-$$
-x_{\text{new}} \to x_j \quad \text{(the HK-optimal position)}
-$$
-
-**Geometric Interpretation**: The **spatial coordinate** of the scutoid's mid-level vertex represents the birth position $x_{\text{new}}$. Its **temporal coordinate** $t_{\text{mid}} = t + \Delta t/2$ corresponds to the algorithmic cloning timestep ({prf:ref}`prop-algorithmic-midpoint`).
-
-**Conclusion**: The placement of mid-level vertices at parent locations (plus small exploratory noise) directly follows from **minimizing the Hellinger-Kantorovich energy functional**. This is not a modeling choice but a mathematical necessity.
-
-**Synthesis**: Parts 1 and 2 together show that the entire scutoid geometry—geodesic-ruled lateral faces for persistent walkers and optimally-placed mid-level vertices for cloned walkers—is the **energy-minimizing spacetime tessellation** under the algorithm's HK cost functional. $\square$
-:::
-
-:::{prf:remark} Connection to Biological Scutoids
+:::{remark} Connection to Biological Scutoids
 :label: rem-biological-connection
 
 The biological result of Gómez-Gálvez et al. (2018) showed that scutoids minimize packing energy in curved epithelial tissue. Our theorem proves an analogous result for algorithmic dynamics: scutoids minimize the **information-geometric cost** (HK distance) of swarm reconfiguration.
@@ -970,7 +1034,20 @@ This is not mere analogy—both systems optimize under geometric constraints:
 The convergence to the same geometric solution (scutoid cells) reveals a **universal optimization principle** underlying both physical and computational systems.
 :::
 
-:::{prf:remark} Exploratory Noise as Regularization
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Exploratory Noise as Regularization
+
+**Type:** Remark
+**Label:** `rem-noise-regularization`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `cloning`, `hellinger-kantorovich`
+
+**Statement:**
+
+:::{remark} Exploratory Noise as Regularization
 :label: rem-noise-regularization
 
 The small noise term $\xi$ in the cloning birth position serves dual purposes:
@@ -980,34 +1057,20 @@ The small noise term $\xi$ in the cloning birth position serves dual purposes:
 In the theory of optimal transport, adding noise to the cost function (entropic regularization) is a standard technique for ensuring smoothness and computational tractability. The Fragile Gas algorithm naturally implements this regularization through the cloning jitter parameter $\sigma_x > 0$.
 :::
 
+**Related Results:** See scutoid geometry framework results
+
 ---
 
-## 5. Multiple Curvature Perspectives and Their Unification
+### Deficit Angle (Discrete Curvature)
 
-### 5.1. Introduction: Five Complementary Approaches to Curvature
+**Type:** Definition
+**Label:** `def-deficit-angle`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `curvature`, `deficit-angle`
 
-The Fragile Gas framework admits **five distinct but equivalent definitions of curvature**, each arising from different mathematical structures already present in the theory:
+**Statement:**
 
-1. **Deficit Angles** (Discrete Differential Geometry): Curvature at Voronoi/Delaunay vertices via discrete Gauss-Bonnet theorem
-2. **Graph Laplacian Spectrum** (Spectral Geometry): Curvature encoded in eigenvalues of the Fractal Set graph Laplacian
-3. **Emergent Metric Tensor** (Riemannian Geometry): Curvature from the fitness Hessian $g = H + \epsilon I$ where $H = \nabla^2 V_{\text{fit}}$
-4. **Heat Kernel Asymptotics** (Analytic Geometry): Curvature from small-time expansion of diffusion kernels
-5. **Causal Set Volume** (Discrete Spacetime Geometry): Curvature from causal interval statistics in the Fractal Set
-
-This section makes all five definitions **explicit** and shows their **equivalence in the continuum limit** $N \to \infty$.
-
-:::{important}
-**Why Multiple Perspectives Matter**:
-- **Computational**: Different definitions suit different numerical algorithms (discrete vs. continuum)
-- **Physical**: Each perspective highlights different physical mechanisms (topology vs. diffusion vs. causality)
-- **Theoretical**: Equivalence proofs provide non-trivial consistency checks on the framework
-- **Practical**: Allows cross-validation of curvature estimates from independent measurements
-- **Foundational**: Causal set approach connects to quantum gravity theories (causal set theory, loop quantum gravity)
-:::
-
-### 5.2. Deficit Angles at Voronoi/Delaunay Vertices
-
-:::{prf:definition} Deficit Angle (Discrete Curvature)
+:::{definition} Deficit Angle (Discrete Curvature)
 :label: def-deficit-angle
 
 Consider the Delaunay triangulation dual to the Voronoi tessellation of the walker configuration $S_t = \{x_1, \ldots, x_N\}$ at time $t$. For a vertex $v_i$ corresponding to walker $i$, let $\{F_k\}_{k=1}^{n_i}$ be the faces incident to $v_i$ (simplices containing $v_i$ in their boundary).
@@ -1031,7 +1094,20 @@ $$
 **Interpretation**: $\delta_i$ measures how much the local geometry at vertex $v_i$ deviates from flat Euclidean space.
 :::
 
-:::{prf:theorem} Discrete Gauss-Bonnet Theorem
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Discrete Gauss-Bonnet Theorem
+
+**Type:** Theorem
+**Label:** `thm-discrete-gauss-bonnet`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `deficit-angle`, `major-result`
+
+**Statement:**
+
+:::{theorem} Discrete Gauss-Bonnet Theorem
 :label: thm-discrete-gauss-bonnet
 
 For a triangulated polyhedral surface $P$ in $\mathbb{R}^3$ (or more generally, a simplicial complex in $\mathbb{R}^d$), the sum of deficit angles equals the Euler characteristic:
@@ -1045,7 +1121,20 @@ where $\chi(P) = V - E + F$ (vertices minus edges plus faces) is the Euler chara
 **Consequence**: The deficit angle $\delta_i$ is the **discrete analog of integrated Gaussian curvature** around vertex $v_i$.
 :::
 
-:::{prf:theorem} Deficit Angle Convergence to Ricci Scalar (All Dimensions)
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Deficit Angle Convergence to Ricci Scalar (All Dimensions)
+
+**Type:** Theorem
+**Label:** `thm-deficit-ricci-convergence`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `curvature`, `deficit-angle`, `convergence`, `metric-geometry`, `major-result`
+
+**Statement:**
+
+:::{theorem} Deficit Angle Convergence to Ricci Scalar (All Dimensions)
 :label: thm-deficit-ricci-convergence
 
 In the continuum limit, the deficit angle at a vertex of a Delaunay triangulation converges to the integrated Ricci scalar curvature in the corresponding Voronoi cell:
@@ -1068,106 +1157,20 @@ where:
 **General $d \ge 2$**: The relationship holds via Regge calculus convergence.
 :::
 
-:::{prf:proof} Regge Calculus Convergence
+**Related Results:** See scutoid geometry framework results
 
-The proof follows the principles of Regge calculus, establishing that discrete Einstein-Hilbert action converges to the continuum action.
+---
 
-**Step 1: Regge Action for Simplicial Manifolds**
+### Connection to Chapter 13 Fractal Set
 
-In a $d$-dimensional simplicial triangulation $\mathcal{T}$ of a Riemannian manifold $(M, g)$, curvature is concentrated on the $(d-2)$-dimensional sub-simplices (the **hinges**).
+**Type:** Remark
+**Label:** `rem-deficit-fractal-set`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `deficit-angle`, `graph-laplacian`, `spectral-geometry`, `riemannian-geometry`, `metric-geometry`
 
-For a hinge $h$ (a $(d-2)$-simplex), the **deficit angle** is:
+**Statement:**
 
-$$
-\delta_h = \Omega_{\text{total}}(d) - \sum_{s \supset h} \theta_{s,h}
-$$
-
-where the sum is over all $d$-simplices $s$ containing hinge $h$, and $\theta_{s,h}$ is the **dihedral angle** of simplex $s$ at hinge $h$.
-
-The **Regge action** is:
-
-$$
-S_{\text{Regge}}[\mathcal{T}] = \sum_{\text{hinges } h} \text{Vol}_{d-2}(h) \, \delta_h
-$$
-
-**Step 2: Convergence to Einstein-Hilbert Action**
-
-A fundamental result of Cheeger, Müller, and Schrader (1984) proves that for a sequence of finer triangulations with mesh size $\ell \to 0$:
-
-$$
-\lim_{\ell \to 0} S_{\text{Regge}}[\mathcal{T}] = \frac{1}{2} \int_M R(x) \, dV_g(x)
-$$
-
-where $R(x)$ is the Ricci scalar curvature of the smooth metric $g$.
-
-**Proof technique**: Uses variational calculus to show the Regge action is a discrete approximation to the continuum curvature integral, with error $O(\ell^{d+2})$ for smooth metrics.
-
-**Step 3: From Hinges to Vertices (Dual Representation)**
-
-Each vertex $v_i$ in the triangulation corresponds to a Voronoi cell $V_i$ in the dual tessellation. We can express the Regge action as a sum over vertices by distributing hinge contributions:
-
-$$
-S_{\text{Regge}} = \sum_{\text{vertices } v_i} R_i^{\text{discrete}}
-$$
-
-where the **discrete curvature** at vertex $v_i$ is:
-
-$$
-R_i^{\text{discrete}} := \sum_{h \in H(v_i)} \frac{\text{Vol}_{d-2}(h)}{|v_i \in h|} \, \delta_h
-$$
-
-and $H(v_i)$ is the set of hinges incident to $v_i$, and $|v_i \in h|$ is the number of vertices in hinge $h$ (typically $d-1$).
-
-**Step 4: Vertex Deficit Angle**
-
-For a regular triangulation (or in the continuum limit where the triangulation becomes increasingly uniform), the deficit angle at a vertex $\delta_i$ (sum of dihedral angle deficits at all incident hinges) relates directly to $R_i^{\text{discrete}}$:
-
-$$
-\delta_i \approx C(d) \cdot \text{Vol}(\partial V_i) \cdot R_i^{\text{discrete}}
-$$
-
-where $\text{Vol}(\partial V_i)$ is the $(d-1)$-volume (area in 3D) of the Voronoi cell boundary.
-
-**Step 5: Continuum Limit**
-
-As the mesh size $\ell_{\text{cell}} = \text{diam}(V_i) \to 0$, the discrete sum converges to the continuum integral:
-
-$$
-\lim_{\ell \to 0} \sum_{v_i} R_i^{\text{discrete}} = \int_M R(x) \, dV_g(x)
-$$
-
-This implies point-wise convergence (in the sense of distributions):
-
-$$
-R_i^{\text{discrete}} \approx R(x_i) \cdot \text{Vol}(V_i)
-$$
-
-Substituting into the vertex deficit relationship:
-
-$$
-\delta_i \approx C(d) \cdot \text{Vol}(\partial V_i) \cdot R(x_i) \cdot \text{Vol}(V_i) / \text{Vol}(V_i) = C(d) \cdot \text{Vol}(\partial V_i) \cdot R(x_i)
-$$
-
-Therefore:
-
-$$
-\frac{\delta_i}{\text{Vol}(\partial V_i)} \to C(d) \, R(x_i)
-$$
-
-**Step 6: Determination of $C(d)$**
-
-The constant $C(d)$ arises from the relationship between deficit angles and integrated curvature in Regge calculus. For a $(d-2)$-hinge in a regular triangulation, the geometric factor relating deficit to Ricci scalar is:
-
-$$
-C(d) = \frac{\Omega_{\text{total}}(d)}{(d-2)!}
-$$
-
-**Verification for $d=2$**: $\Omega_{\text{total}}(2) = 2\pi$, so $C(2) = 2\pi$. The Gaussian curvature $K = R/2$, giving $\frac{\delta}{\text{Length}(\partial V)} = 2\pi K$, which matches the classical Gauss-Bonnet theorem. $\checkmark$
-
-**Conclusion**: The theorem is proven for all dimensions $d \ge 2$ via the convergence of the Regge action to the Einstein-Hilbert action and the dual relationship between vertex deficit angles and local Ricci scalar curvature. $\square$
-:::
-
-:::{prf:remark} Connection to Chapter 13 Fractal Set
+:::{remark} Connection to Chapter 13 Fractal Set
 :label: rem-deficit-fractal-set
 
 The deficit angle curvature measure provides a **discrete, computable** analogue of the continuum Ricci scalar directly from the Fractal Set graph structure. Combined with {prf:ref}`thm-laplacian-convergence-fractal-set` (graph Laplacian convergence), this establishes two independent discrete-to-continuum bridges:
@@ -1178,7 +1181,20 @@ The deficit angle curvature measure provides a **discrete, computable** analogue
 Both converge to the same underlying geometric quantity, providing cross-validation of the emergent Riemannian structure.
 :::
 
-:::{prf:remark} Computational Advantages
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Computational Advantages
+
+**Type:** Remark
+**Label:** `rem-deficit-computational`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `deficit-angle`
+
+**Statement:**
+
+:::{remark} Computational Advantages
 :label: rem-deficit-computational
 
 **Why deficit angles are useful**:
@@ -1190,11 +1206,20 @@ Both converge to the same underlying geometric quantity, providing cross-validat
 **Drawback**: Deficit angles provide integrated curvature over Voronoi cells, not pointwise curvature fields.
 :::
 
-### 5.3. Graph Laplacian Spectral Curvature
+**Related Results:** See scutoid geometry framework results
 
-From Chapter 13 (Fractal Set), the Fragile Gas constructs a **graph Laplacian** on the walker configuration.
+---
 
-:::{prf:definition} Graph Laplacian on Fractal Set
+### Graph Laplacian on Fractal Set
+
+**Type:** Definition
+**Label:** `def-graph-laplacian-curvature`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `graph-laplacian`, `spectral-geometry`
+
+**Statement:**
+
+:::{definition} Graph Laplacian on Fractal Set
 :label: def-graph-laplacian-curvature
 
 Given the walker configuration $S_t = \{x_1, \ldots, x_N\}$, define the **adjacency graph** $G = (V, E)$ where:
@@ -1218,7 +1243,20 @@ where $\deg(i) = |\mathcal{N}_i|$ is the degree (number of neighbors) of walker 
 - Eigenfunctions: $\phi_k: V \to \mathbb{R}$ for $k = 0, \ldots, N-1$
 :::
 
-:::{prf:theorem} Cheeger Inequality and Ricci Curvature Bounds
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Cheeger Inequality and Ricci Curvature Bounds
+
+**Type:** Theorem
+**Label:** `thm-cheeger-curvature`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `graph-laplacian`, `spectral-geometry`, `riemannian-geometry`, `metric-geometry`, `major-result`
+
+**Statement:**
+
+:::{theorem} Cheeger Inequality and Ricci Curvature Bounds
 :label: thm-cheeger-curvature
 
 The Cheeger inequality for the combinatorial graph Laplacian (as defined in {prf:ref}`def-graph-laplacian-curvature`) states:
@@ -1248,7 +1286,20 @@ where $C_1, C_2 > 0$ are constants depending on the curvature lower bound $\kapp
 **Consequence**: Positive Ricci curvature **implies** a large spectral gap. This provides a one-way test: if $\lambda_1$ is small, the manifold cannot have uniformly positive Ricci curvature.
 :::
 
-:::{prf:proposition} Higher Eigenvalues Encode Sectional Curvatures
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Higher Eigenvalues Encode Sectional Curvatures
+
+**Type:** Proposition
+**Label:** `prop-eigenvalues-sectional`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`
+
+**Statement:**
+
+:::{proposition} Higher Eigenvalues Encode Sectional Curvatures
 :label: prop-eigenvalues-sectional
 
 The full spectrum $\{\lambda_k\}_{k=0}^{N-1}$ encodes information about **sectional curvatures** in different 2-plane directions:
@@ -1262,7 +1313,20 @@ where $\langle R_{ijkl} \rangle$ is an average of sectional curvatures weighted 
 **Interpretation**: The **deviation of the spectral density** $\rho(\lambda) = \sum_k \delta(\lambda - \lambda_k)$ from the flat-space result encodes curvature.
 :::
 
-:::{prf:remark} Convergence to Continuum Laplacian
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Convergence to Continuum Laplacian
+
+**Type:** Remark
+**Label:** `rem-laplacian-convergence`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `graph-laplacian`, `convergence`, `riemannian-geometry`, `metric-geometry`
+
+**Statement:**
+
+:::{remark} Convergence to Continuum Laplacian
 :label: rem-laplacian-convergence
 
 From Chapter 13, Section 13.2 (Discrete Hodge Laplacians), we have the **convergence conjecture**:
@@ -1286,11 +1350,20 @@ $$
 Thus, spectral properties of $\Delta_0$ encode geometric properties of $g$, including curvature.
 :::
 
-### 5.4. Emergent Metric Tensor and Riemann Curvature
+**Related Results:** See scutoid geometry framework results
 
-From Chapter 8 (Emergent Geometry), the spatial metric is defined via the fitness Hessian.
+---
 
-:::{prf:definition} Emergent Riemannian Metric
+### Emergent Riemannian Metric
+
+**Type:** Definition
+**Label:** `def-emergent-metric-curvature`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `riemannian-geometry`, `metric-geometry`
+
+**Statement:**
+
+:::{definition} Emergent Riemannian Metric
 :label: def-emergent-metric-curvature
 
 At time $t$, given swarm state $S_t$, the **emergent metric tensor** at position $x \in \mathcal{X}$ is:
@@ -1307,7 +1380,20 @@ where:
 **Physical origin**: The anisotropic diffusion process (regularized Hessian diffusion) in the Adaptive Gas naturally induces this metric.
 :::
 
-:::{prf:proposition} Ricci Curvature from Fitness Hessian
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Ricci Curvature from Fitness Hessian
+
+**Type:** Proposition
+**Label:** `prop-ricci-fitness-hessian`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `metric-geometry`
+
+**Statement:**
+
+:::{proposition} Ricci Curvature from Fitness Hessian
 :label: prop-ricci-fitness-hessian
 
 The Ricci tensor $\text{Ric}_{ij}$ of the emergent metric $g$ involves **third and fourth derivatives** of the fitness potential:
@@ -1344,7 +1430,20 @@ which involves **traces of third and fourth derivatives of $V_{\text{fit}}$**.
 Each step involves higher-order derivatives of $V_{\text{fit}}$. A compact closed-form expression for $R$ in terms of $H$ exists but requires careful derivation (future work).
 :::
 
-:::{prf:corollary} Sectional Curvature from Fitness Landscape
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Sectional Curvature from Fitness Landscape
+
+**Type:** Corollary
+**Label:** `cor-sectional-fitness`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`
+
+**Statement:**
+
+:::{corollary} Sectional Curvature from Fitness Landscape
 :label: cor-sectional-fitness
 
 The sectional curvature $K(\pi)$ for a 2-plane $\pi = \text{span}\{u, v\}$ at point $x$ is:
@@ -1358,7 +1457,20 @@ where $R_{ijkl}$ is the full Riemann tensor.
 **Interpretation**: The **anisotropy of the fitness landscape** (different curvatures in different directions) is encoded in the sectional curvatures. This directly relates to the **adaptive diffusion tensor** in the Adaptive Gas.
 :::
 
-:::{prf:remark} Connection to Adaptive Force
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Connection to Adaptive Force
+
+**Type:** Remark
+**Label:** `rem-adaptive-force-curvature`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `riemannian-geometry`, `metric-geometry`
+
+**Statement:**
+
+:::{remark} Connection to Adaptive Force
 :label: rem-adaptive-force-curvature
 
 From Chapter 2 (Adaptive Gas), the **adaptive force** is:
@@ -1378,9 +1490,20 @@ $$
 The adaptive force can be interpreted as a **gradient flow on the emergent Riemannian manifold**, where the metric encodes the fitness landscape's second-order structure, and curvature encodes higher-order structure.
 :::
 
-### 5.5. Heat Kernel and Analytic Curvature
+**Related Results:** See scutoid geometry framework results
 
-:::{prf:definition} Heat Kernel on the Emergent Manifold
+---
+
+### Heat Kernel on the Emergent Manifold
+
+**Type:** Definition
+**Label:** `def-heat-kernel-curvature`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `graph-laplacian`, `heat-kernel`, `riemannian-geometry`
+
+**Statement:**
+
+:::{definition} Heat Kernel on the Emergent Manifold
 :label: def-heat-kernel-curvature
 
 The **heat kernel** $K_t(x, y)$ is the fundamental solution to the heat equation on the emergent Riemannian manifold $(M, g)$:
@@ -1398,7 +1521,20 @@ where $\Delta_g$ is the Laplace-Beltrami operator (Definition {prf:ref}`rem-lapl
 **Physical meaning**: $K_t(x, y)$ is the probability density that a particle starting at $y$ diffuses to $x$ in time $t$ under Brownian motion on $(M, g)$.
 :::
 
-:::{prf:theorem} Heat Kernel Small-Time Asymptotics (Curvature Expansion)
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Heat Kernel Small-Time Asymptotics (Curvature Expansion)
+
+**Type:** Theorem
+**Label:** `thm-heat-kernel-asymptotics`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `heat-kernel`, `riemannian-geometry`, `major-result`
+
+**Statement:**
+
+:::{theorem} Heat Kernel Small-Time Asymptotics (Curvature Expansion)
 :label: thm-heat-kernel-asymptotics
 
 On a compact Riemannian manifold $(M, g)$ of dimension $d$, the heat kernel admits the small-time expansion:
@@ -1426,7 +1562,20 @@ The $O(t)$ coefficient (in the first form) is the **total scalar curvature** $\i
 **Higher-order terms**: The $O(t^2), O(t^3), \ldots$ coefficients encode higher curvature invariants ($|R|^2$, $|\text{Ric}|^2$, $R_{ijkl} R^{ijkl}$, etc.).
 :::
 
-:::{prf:proposition} Spectral Zeta Function and Curvature
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Spectral Zeta Function and Curvature
+
+**Type:** Proposition
+**Label:** `prop-zeta-curvature`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `spectral-geometry`, `metric-geometry`
+
+**Statement:**
+
+:::{proposition} Spectral Zeta Function and Curvature
 :label: prop-zeta-curvature
 
 The **spectral zeta function** is:
@@ -1450,7 +1599,20 @@ $$
 **Interpretation**: Spectral invariants (eigenvalue statistics) encode geometric invariants (curvature integrals).
 :::
 
-:::{prf:remark} Connection to Fractal Set Graph Laplacian
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Connection to Fractal Set Graph Laplacian
+
+**Type:** Remark
+**Label:** `rem-fractal-set-heat-kernel`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `graph-laplacian`, `heat-kernel`
+
+**Statement:**
+
+:::{remark} Connection to Fractal Set Graph Laplacian
 :label: rem-fractal-set-heat-kernel
 
 From Chapter 13, the discrete graph Laplacian $\Delta_0$ on the Fractal Set converges to the continuum Laplace-Beltrami operator $\Delta_g$.
@@ -1476,11 +1638,20 @@ $$
 Fitting the small-$t$ behavior to the theoretical form gives an estimate of $\int_M R \, dV_g$.
 :::
 
-### 5.6. Causal Set Volume and Discrete Spacetime Curvature
+**Related Results:** See scutoid geometry framework results
 
-The Fractal Set framework provides a fifth, fundamentally different approach to measuring curvature through its **causal set structure**. This perspective connects the Fragile Gas to quantum gravity theories (causal set theory, loop quantum gravity) and provides a discrete spacetime foundation.
+---
 
-:::{prf:definition} Causal Set Structure on Fractal Set
+### Causal Set Structure on Fractal Set
+
+**Type:** Definition
+**Label:** `def-causal-set-fractal-structure`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `causal-set`, `riemannian-geometry`, `metric-geometry`
+
+**Statement:**
+
+:::{definition} Causal Set Structure on Fractal Set
 :label: def-causal-set-fractal-structure
 
 The Fractal Set $(E, \prec_{\text{CST}}, \sim_{\text{IG}})$ forms a **causal set** where:
@@ -1504,7 +1675,20 @@ This is a **physically motivated sprinkling density** that automatically adjusts
 **Reference**: See {doc}`../13_fractal_set_new/11_causal_sets` for complete development.
 :::
 
-:::{prf:theorem} Fractal Set Satisfies Causal Set Axioms
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Fractal Set Satisfies Causal Set Axioms
+
+**Type:** Theorem
+**Label:** `thm-fractal-causal-set-axioms`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `causal-set`, `major-result`
+
+**Statement:**
+
+:::{theorem} Fractal Set Satisfies Causal Set Axioms
 :label: thm-fractal-causal-set-axioms
 
 The Fractal Set $(E, \prec_{\text{CST}})$ is a valid causal set satisfying:
@@ -1515,7 +1699,20 @@ The Fractal Set $(E, \prec_{\text{CST}})$ is a valid causal set satisfying:
 **Proof**: See Theorem 3.2 in {doc}`../13_fractal_set_new/11_causal_sets`. $\square$
 :::
 
-:::{prf:definition} Ricci Scalar from Causal Set Volume
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Ricci Scalar from Causal Set Volume
+
+**Type:** Definition
+**Label:** `def-ricci-causal-set-volume`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `causal-set`
+
+**Statement:**
+
+:::{definition} Ricci Scalar from Causal Set Volume
 :label: def-ricci-causal-set-volume
 
 The **Ricci scalar curvature** at episode $e$ can be estimated from causal interval statistics:
@@ -1535,7 +1732,20 @@ where:
 **Normalization**: The prefactor $(d+2)(d+3) / [c^2(d+1)]$ ensures proper convergence to the Ricci scalar $R(x)$ in the continuum limit, accounting for the dimension-dependent geometry of the causal past.
 :::
 
-:::{prf:theorem} Causal Set Curvature Converges to Ricci Scalar
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Causal Set Curvature Converges to Ricci Scalar
+
+**Type:** Theorem
+**Label:** `thm-causal-set-ricci-convergence`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `causal-set`, `metric-geometry`, `major-result`
+
+**Statement:**
+
+:::{theorem} Causal Set Curvature Converges to Ricci Scalar
 :label: thm-causal-set-ricci-convergence
 
 For the Fractal Set with adaptive density $\rho(x) = \sqrt{\det g(x)} \psi(x)$:
@@ -1549,110 +1759,20 @@ where $R(x_i)$ is the Ricci scalar of the emergent metric $g(x) = H(x) + \epsilo
 **Convergence rate**: $|R_{\text{CST}}(e_i) - R(x_i)| = O(N^{-1/2}) + O(\delta)$
 :::
 
-:::{prf:proof} Complete Derivation
+**Related Results:** See scutoid geometry framework results
 
-We prove that $R_{\text{CST}}(e_i) \to R(x_i)$ as $N \to \infty, \delta \to 0$ through rigorous integration over the QSD spatial density.
+---
 
-**Step 1: Expected causal interval size from QSD**
+### Advantages of Causal Set Approach
 
-The expected number of episodes in the causal past $I_\delta(e_i)$ is computed by integrating the QSD spatial density:
+**Type:** Remark
+**Label:** `rem-causal-set-advantages`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `causal-set`
 
-$$
-\mathbb{E}[|I_\delta(e_i)|] = N \cdot \mathbb{P}(e \in I_\delta(e_i)) = N \int_{t_i-\delta}^{t_i} dt \int_{B_{c(t_i-t)}(x_i)} \frac{1}{Z} \sqrt{\det g(x)} \, e^{-U_{\text{eff}}(x)/T} \, dx
-$$
+**Statement:**
 
-where:
-- $B_r(x_i) = \{x : d_g(x_i, x) < r\}$ is the geodesic ball of radius $r$ centered at $x_i$
-- The QSD spatial density is $\rho_{\text{spatial}}(x) = \frac{1}{Z} \sqrt{\det g(x)} e^{-U_{\text{eff}}(x)/T}$
-
-**Step 2: Local constancy of fitness potential**
-
-**Assumption**: For sufficiently small $\delta$, the effective potential $U_{\text{eff}}(x)$ varies negligibly over the geodesic ball $B_{c\delta}(x_i)$, so we can approximate:
-
-$$
-e^{-U_{\text{eff}}(x)/T} \approx e^{-U_{\text{eff}}(x_i)/T} \quad \text{for } x \in B_{c\delta}(x_i)
-$$
-
-This is valid when $\delta \ll (\|\nabla U_{\text{eff}}\|/T)^{-1}$, i.e., the fitness landscape variation scale is much larger than the causal interval temporal extent.
-
-**Step 3: Factorization and volume integration**
-
-Factor out the constant terms:
-
-$$
-\mathbb{E}[|I_\delta(e_i)|] \approx \frac{N}{Z} e^{-U_{\text{eff}}(x_i)/T} \int_{t_i-\delta}^{t_i} dt \int_{B_{c(t_i-t)}(x_i)} \sqrt{\det g(x)} \, dx
-$$
-
-The inner integral is the **Riemannian volume** of the geodesic ball. Using Riemannian normal coordinates centered at $x_i$, the volume of $B_r(x_i)$ has the expansion (Günther 1960):
-
-$$
-\text{Vol}_g(B_r(x_i)) = \int_{B_r(x_i)} \sqrt{\det g(x)} \, dx = \Omega_d r^d \left[1 - \frac{R(x_i)}{6(d+2)} r^2 + O(r^4)\right]
-$$
-
-**Step 4: Temporal integration**
-
-Substitute $r = c(t_i - t) = c\tau$ where $\tau \in [0, \delta]$:
-
-$$
-\mathbb{E}[|I_\delta(e_i)|] \approx \frac{N}{Z} e^{-U_{\text{eff}}(x_i)/T} \int_0^\delta \Omega_d (c\tau)^d \left[1 - \frac{R(x_i) c^2 \tau^2}{6(d+2)} + O(\tau^4)\right] d\tau
-$$
-
-Evaluate the integrals:
-
-$$
-\int_0^\delta (c\tau)^d d\tau = \frac{c^d \delta^{d+1}}{d+1}
-$$
-
-$$
-\int_0^\delta (c\tau)^{d+2} d\tau = \frac{c^{d+2} \delta^{d+3}}{d+3}
-$$
-
-Therefore:
-
-$$
-\mathbb{E}[|I_\delta(e_i)|] \approx \frac{N}{Z} e^{-U_{\text{eff}}(x_i)/T} \cdot \Omega_d c^d \delta^{d+1} \left[\frac{1}{d+1} - \frac{R(x_i) c^2 \delta^2}{6(d+2)(d+3)}\right]
-$$
-
-**Step 5: Normalization by average density**
-
-The average adaptive density is $\bar{\rho} = N / \int \sqrt{\det g} \, dx$. Define the normalized expectation:
-
-$$
-\frac{\mathbb{E}[|I_\delta(e_i)|]}{\bar{\rho} V_{\text{flat}}(\delta)} = \frac{\mathbb{E}[|I_\delta(e_i)|]}{\bar{\rho} \cdot \frac{\Omega_d c^d \delta^{d+1}}{d+1}}
-$$
-
-Substituting the result from Step 4:
-
-$$
-\frac{\mathbb{E}[|I_\delta(e_i)|]}{\bar{\rho} V_{\text{flat}}(\delta)} \approx 1 - \frac{R(x_i) c^2 \delta^2 (d+1)}{6(d+2)(d+3)}
-$$
-
-**Step 6: Extraction of Ricci scalar**
-
-From the definition {prf:ref}`def-ricci-causal-set-volume`:
-
-$$
-R_{\text{CST}}(e_i) = \frac{6(d+2)(d+3)}{c^2(d+1)\delta^2} \left(1 - \frac{\mathbb{E}[|I_\delta(e_i)|]}{\bar{\rho} V_{\text{flat}}(\delta)}\right)
-$$
-
-Substituting the result from Step 5:
-
-$$
-R_{\text{CST}}(e_i) = \frac{6(d+2)(d+3)}{c^2(d+1)\delta^2} \cdot \frac{R(x_i) c^2 \delta^2 (d+1)}{6(d+2)(d+3)} = R(x_i)
-$$
-
-Thus, the normalization constant $\frac{6(d+2)(d+3)}{c^2(d+1)}$ precisely cancels all dimension-dependent factors, yielding exact convergence to the Ricci scalar.
-
-**Step 7: Error analysis**
-
-The $O(\delta)$ error term comes from the next term in the geodesic ball volume expansion, which involves $\nabla_a R$ and contributes $O(r^3)$ to the volume. After integration, this produces a $\delta^{d+4}$ term which, after division by $\delta^2$, gives the leading $O(\delta^2)$ systematic error. Higher-order gradient terms contribute $O(\delta^3)$, etc.
-
-The $O(N^{-1/2})$ statistical error comes from finite-sample fluctuations in $|I_\delta(e_i)|$ around its expectation (Central Limit Theorem).
-
-**Conclusion**: The causal set volume estimator $R_{\text{CST}}(e_i)$ converges to the continuum Ricci scalar $R(x_i)$ as $N \to \infty, \delta \to 0$, with convergence rate $O(N^{-1/2}) + O(\delta^2)$. $\square$
-:::
-
-:::{prf:remark} Advantages of Causal Set Approach
+:::{remark} Advantages of Causal Set Approach
 :label: rem-causal-set-advantages
 
 **Computational**:
@@ -1671,7 +1791,20 @@ The $O(N^{-1/2})$ statistical error comes from finite-sample fluctuations in $|I
 - Enables topology change through episode creation/annihilation
 :::
 
-:::{prf:corollary} Cross-Validation with Other Curvature Measures
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Cross-Validation with Other Curvature Measures
+
+**Type:** Corollary
+**Label:** `cor-causal-set-validation`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `deficit-angle`, `causal-set`, `metric-geometry`
+
+**Statement:**
+
+:::{corollary} Cross-Validation with Other Curvature Measures
 :label: cor-causal-set-validation
 
 The causal set curvature $R_{\text{CST}}$ provides an **independent check** on the other four curvature measures:
@@ -1691,13 +1824,20 @@ all within $O(N^{-1/2})$ statistical error.
    - Breakdown of continuum approximation
 :::
 
-### 5.7. Towards Curvature Unification: Spectral Convergence
+**Related Results:** See scutoid geometry framework results
 
-#### 5.7.1. Companion-Weighted Graph Laplacian
+---
 
-The key to proving curvature unification is establishing the convergence of a discrete graph Laplacian to the continuum Laplace-Beltrami operator. We use the **companion selection probabilities** from the Fragile Gas cloning dynamics to define edge weights, making the construction **algorithmically intrinsic** rather than artificial.
+### Companion-Weighted Graph Laplacian
 
-:::{prf:definition} Companion-Weighted Graph Laplacian
+**Type:** Definition
+**Label:** `def-companion-graph-laplacian`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `cloning`, `graph-laplacian`, `metric-geometry`
+
+**Statement:**
+
+:::{definition} Companion-Weighted Graph Laplacian
 :label: def-companion-graph-laplacian
 
 For a swarm configuration $\mathcal{S} = \{(x_i, v_i)\}_{i=1}^N$, define the **companion kernel** as:
@@ -1732,7 +1872,20 @@ where $d_i := \sum_{j=1}^N w_{ij}$ is the degree (normalization).
 **Gauge-theoretic interpretation** (from [12_gauge_theory_adaptive_gas.md](12_gauge_theory_adaptive_gas.md)): The companion kernel defines a **flat connection** on the principal $S_N$-bundle over configuration space, with holonomy determined by walker braiding topology (Section 3).
 :::
 
-:::{prf:remark} Relationship to Standard Graph Laplacians
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Relationship to Standard Graph Laplacians
+
+**Type:** Remark
+**Label:** `rem-companion-laplacian-variants`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `graph-laplacian`, `riemannian-geometry`, `metric-geometry`
+
+**Statement:**
+
+:::{remark} Relationship to Standard Graph Laplacians
 :label: rem-companion-laplacian-variants
 
 The companion-weighted Laplacian is a **weighted, symmetric, normalized graph Laplacian**. It has several equivalent forms:
@@ -1760,7 +1913,20 @@ $$
 **Key property**: As $N \to \infty$, the operator $\Delta_0$ (properly rescaled) converges to a **diffusion operator** on the limiting manifold, which is related to the Laplace-Beltrami operator via the limiting density $\rho_\infty(x,v)$.
 :::
 
-:::{prf:proposition} Spectral Properties of Companion Laplacian
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Spectral Properties of Companion Laplacian
+
+**Type:** Proposition
+**Label:** `prop-companion-laplacian-spectrum`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `graph-laplacian`, `spectral-geometry`, `metric-geometry`
+
+**Statement:**
+
+:::{proposition} Spectral Properties of Companion Laplacian
 :label: prop-companion-laplacian-spectrum
 
 The companion-weighted graph Laplacian $\Delta_0$ satisfies:
@@ -1776,7 +1942,20 @@ The companion-weighted graph Laplacian $\Delta_0$ satisfies:
 **Proof**: The symmetry of $\Delta_0$ with respect to the $\langle \cdot, \cdot \rangle_d$ inner product follows from the detailed balance condition $d_i w_{ji} = d_j w_{ij}$, which holds because $w_{ij} = w_{ji}$ (Gaussian kernel is symmetric). This makes the associated random walk reversible. The remaining spectral properties are standard results for the generator of a reversible Markov process on a connected graph: Properties 2-4 follow from the theory of reversible random walks (see, e.g., Chung 1997). $\square$
 :::
 
-:::{prf:proposition} Dirichlet Energy and Gradient Flow
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Dirichlet Energy and Gradient Flow
+
+**Type:** Proposition
+**Label:** `prop-companion-dirichlet-energy`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `graph-laplacian`, `energy-functional`, `metric-geometry`
+
+**Statement:**
+
+:::{proposition} Dirichlet Energy and Gradient Flow
 :label: prop-companion-dirichlet-energy
 
 The **Dirichlet energy** associated with the companion-weighted graph is:
@@ -1810,7 +1989,20 @@ where $\mu$ is the measure induced by the limiting density.
 **Gradient flow interpretation**: The heat equation $\frac{\partial f}{\partial t} = -\tilde{\Delta}_0 f$ (using the unnormalized Laplacian) is the **gradient flow** of $\mathcal{E}(f)$ with respect to the standard $L^2$ metric. This mirrors the continuum heat equation $\frac{\partial f}{\partial t} = \Delta_g f$.
 :::
 
-:::{prf:remark} Velocity Marginalization Challenge
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Velocity Marginalization Challenge
+
+**Type:** Remark
+**Label:** `rem-velocity-marginalization`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`
+
+**Statement:**
+
+:::{remark} Velocity Marginalization Challenge
 :label: rem-velocity-marginalization
 
 A key technical challenge for spectral convergence is that the companion kernel $w_{ij}$ depends on **both position and velocity** $(x_i, v_i)$, while the target Laplace-Beltrami operator $\Delta_g$ acts on functions of $x$ only.
@@ -1826,31 +2018,20 @@ where $\mathcal{M}_v$ is a Maxwellian velocity distribution. The **spatial proje
 **Technical tools**: Hypocoercivity theory (Villani 2009) and kinetic Fokker-Planck analysis (see [11_mean_field_convergence/11_stage1_entropy_production.md](11_mean_field_convergence/11_stage1_entropy_production.md)).
 :::
 
-:::{important}
-**Prerequisites for Spectral Convergence** (All Proven ✅):
+**Related Results:** See scutoid geometry framework results
 
-The convergence $\Delta_0 / \ell_{\text{cell}}^2 \to \Delta_g$ requires:
+---
 
-1. **Empirical measure convergence**: $\mu_N := \frac{1}{N} \sum_{i=1}^N \delta_{(x_i,v_i)} \Rightarrow \rho_\infty(x,v) \, dx \, dv$
-   - **Status**: ✅ Proven in [06_propagation_chaos.md](06_propagation_chaos.md)
+### Graph Laplacian Convergence to Laplace-Beltrami Operator
 
-2. **Smooth limiting density**: $\rho_\infty \in C^2(\mathcal{X} \times \mathbb{R}^d)$ with $\rho_\infty > 0$
-   - **Status**: ✅ Proven in [11_mean_field_convergence/11_stage05_qsd_regularity.md](11_mean_field_convergence/11_stage05_qsd_regularity.md)
+**Type:** Lemma
+**Label:** `lem-laplacian-convergence`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `graph-laplacian`, `heat-kernel`, `convergence`, `riemannian-geometry`, `major-result`
 
-3. **N-uniform moment bounds**: $\sup_{N \ge 2} \mathbb{E}[\|x\|^p + \|v\|^p] < \infty$
-   - **Status**: ✅ Proven in [04_convergence.md](04_convergence.md) (Foster-Lyapunov)
+**Statement:**
 
-4. **N-uniform LSI**: $\sup_{N \ge 2} C_{\text{LSI}}(N) < \infty$
-   - **Status**: ✅ Proven in [10_kl_convergence/10_kl_convergence.md](10_kl_convergence/10_kl_convergence.md) Section 9.6
-
-**All four prerequisites are satisfied.** The spectral convergence proof is now **ready to be executed**.
-:::
-
-#### 5.7.2. Proof Roadmap: Three Key Lemmas
-
-The curvature unification conjecture reduces to proving three pivotal lemmas that connect the discrete companion-weighted graph to the continuum Riemannian manifold. These lemmas establish the convergence bridges between all five curvature definitions.
-
-:::{prf:lemma} Graph Laplacian Convergence to Laplace-Beltrami Operator
+:::{lemma} Graph Laplacian Convergence to Laplace-Beltrami Operator
 :label: lem-laplacian-convergence
 
 The sequence of companion-weighted graph Laplacians $\Delta_0^{(N)}$ converges in the weak operator topology to the Laplace-Beltrami operator $\Delta_g$ on the emergent Riemannian manifold $(M, g)$.
@@ -1880,124 +2061,20 @@ where $dV_g$ is the Riemannian volume measure on $(M, g)$.
 **Status**: ✅ **PROVEN** (complete proof below, leverages {prf:ref}`lem-gromov-hausdorff`)
 :::
 
-:::{prf:proof} Γ-Convergence of Dirichlet Forms
+**Related Results:** See scutoid geometry framework results
 
-The proof uses the theory of Γ-convergence for quadratic forms to show that the discrete graph Laplacian converges to the continuum Laplace-Beltrami operator.
+---
 
-**Step 1: Dirichlet Energy Formulations**
+### Gromov-Hausdorff Convergence of Algorithmic Metric Spaces
 
-The **discrete Dirichlet energy** for a function $f_N: V_N \to \mathbb{R}$ is:
+**Type:** Lemma
+**Label:** `lem-gromov-hausdorff`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `convergence`, `riemannian-geometry`, `metric-geometry`, `major-result`
 
-$$
-\mathcal{E}_N(f_N) = \frac{1}{2N} \sum_{i,j=1}^N w_{ij} (f_N(x_i) - f_N(x_j))^2
-$$
+**Statement:**
 
-where $w_{ij}$ are the companion-weighted graph edge weights.
-
-The **continuum Dirichlet energy** for a function $f \in H^1(M)$ is:
-
-$$
-\mathcal{E}_\infty(f) = \frac{1}{2} \int_M \|\nabla f\|_g^2 \, d\mu = \frac{1}{2} \int_M g^{ab} (\partial_a f)(\partial_b f) \, \sqrt{\det g} \, dx
-$$
-
-where $d\mu = \sqrt{\det g} \, dx$ is the Riemannian volume measure.
-
-The Laplacians are the **generators** associated with these quadratic forms via the relation $\mathcal{E}(f) = -\langle f, \Delta f \rangle$.
-
-**Step 2: Γ-Limsup Inequality (Recovering Discrete from Continuum)**
-
-For any smooth function $f \in C^\infty(M)$, we must show there exists a sequence $f_N: V_N \to \mathbb{R}$ such that $f_N \to f$ and:
-
-$$
-\limsup_{N \to \infty} \mathcal{E}_N(f_N) \le \mathcal{E}_\infty(f)
-$$
-
-**Construction**: Simply restrict $f$ to the walker positions: $f_N(x_i) = f(x_i)$ for $x_i \in V_N$.
-
-For adjacent walkers $i, j$ with $w_{ij} > 0$, by Taylor expansion:
-
-$$
-f(x_j) - f(x_i) = \nabla f(x_i) \cdot (x_j - x_i) + O(\|x_j - x_i\|^2)
-$$
-
-The discrete energy term is:
-
-$$
-w_{ij} (f_N(x_i) - f_N(x_j))^2 = w_{ij} [\nabla f(x_i) \cdot (x_j - x_i)]^2 + O(w_{ij} \|x_j - x_i\|^4)
-$$
-
-Since $w_{ij}$ are companion weights decaying with distance, and the walkers densely sample the manifold, the sum over edges converges to the continuum integral:
-
-$$
-\lim_{N \to \infty} \frac{1}{2N} \sum_{i,j} w_{ij} (f_N(x_i) - f_N(x_j))^2 = \frac{1}{2} \int_M \|\nabla f\|_g^2 \, d\mu
-$$
-
-This is a **discrete approximation theorem**, proven rigorously using the Gromov-Hausdorff convergence ({prf:ref}`lem-gromov-hausdorff`) to control approximation error.
-
-**Step 3: Γ-Liminf Inequality (Recovering Continuum from Discrete)**
-
-For any sequence $f_N \to f$, we must show:
-
-$$
-\liminf_{N \to \infty} \mathcal{E}_N(f_N) \ge \mathcal{E}_\infty(f)
-$$
-
-This is the difficult direction, requiring **geometric control**.
-
-**Key Observation**: The N-uniform LSI ({prf:ref}`thm-n-uniform-lsi`) provides a **discrete Ricci curvature lower bound** via the Bakry-Émery criterion:
-
-$$
-\mathcal{E}_N(f_N) \ge \frac{\kappa_{\text{LSI}}}{2} \text{Ent}_N(f_N^2)
-$$
-
-where $\text{Ent}_N$ is the discrete entropy. This LSI is **N-uniform**, meaning the constant $\kappa_{\text{LSI}}$ does not degrade as $N \to \infty$.
-
-In Riemannian geometry, a Ricci curvature lower bound $\text{Ric} \ge \kappa g$ implies an LSI:
-
-$$
-\mathcal{E}_\infty(f) \ge \frac{\kappa}{2} \text{Ent}_\infty(f^2)
-$$
-
-The uniform LSI constant acts as a **discrete analogue** of positive Ricci curvature, providing compactness for the sequence of metric measure spaces.
-
-**Cheeger-Colding Theory**: For metric measure spaces with uniform lower Ricci curvature bounds (via LSI) and uniform diameter bounds, Cheeger-Colding proved that any Gromov-Hausdorff limit has a well-defined Laplace operator, and Dirichlet energies converge.
-
-**Application**: Given:
-1. **Gromov-Hausdorff convergence** ({prf:ref}`lem-gromov-hausdorff`): $(V_N, d_{\text{alg}}, \mu_N) \xrightarrow{GH} (M, g, \mu)$
-2. **N-uniform LSI**: Uniform Ricci-like lower bound
-3. **Bounded diameter**: $\text{diam}(\mathcal{X}) < \infty$
-
-The Cheeger-Colding framework guarantees:
-
-$$
-\liminf_{N \to \infty} \mathcal{E}_N(f_N) \ge \mathcal{E}_\infty(f)
-$$
-
-**Step 4: Convergence of Generators**
-
-By a theorem of Kuwada (2010) and related results in analysis on metric measure spaces, if the Dirichlet forms Γ-converge and the underlying spaces converge in measured Gromov-Hausdorff sense, then the associated generators (Laplacians) converge in the **strong resolvent sense**:
-
-$$
-(\lambda - \Delta_0^{(N)})^{-1} f_N \to (\lambda - \Delta_g)^{-1} f \quad \text{for all } \lambda > 0
-$$
-
-This is the precise meaning of weak operator convergence.
-
-**Step 5: Spectral Convergence**
-
-As a corollary, the eigenvalues converge:
-
-$$
-\lambda_k^{(N)} \to \lambda_k^{(\infty)} \quad \text{for each } k
-$$
-
-and the eigenfunctions converge in an appropriate sense.
-
-**Conclusion**: The companion-weighted graph Laplacian $\Delta_0^{(N)}$ converges to the Laplace-Beltrami operator $\Delta_g$ in the weak operator topology. This convergence is rigorous, leveraging the N-uniform LSI as a discrete Ricci bound and the Gromov-Hausdorff convergence of the underlying spaces. $\square$
-:::
-:::
-
-:::{prf:lemma} Gromov-Hausdorff Convergence of Algorithmic Metric Spaces
+:::{lemma} Gromov-Hausdorff Convergence of Algorithmic Metric Spaces
 :label: lem-gromov-hausdorff
 
 The sequence of finite metric spaces $(V_N, d_{\text{alg}})$ defined by the companion-weighted graphs converges in the Gromov-Hausdorff sense to the continuum manifold $(M, g)$.
@@ -2026,103 +2103,20 @@ where $d_{GH}$ is the Gromov-Hausdorff distance.
 **Status**: ✅ **PROVEN** (complete proof below)
 :::
 
-:::{prf:proof} Gromov-Hausdorff Convergence via QSD Density
+**Related Results:** See scutoid geometry framework results
 
-The proof shows that the discrete walker positions, equipped with the algorithmic distance, converge to the continuum emergent manifold in the Gromov-Hausdorff sense.
+---
 
-**Step 1: Denseness of Walker Positions in the Manifold**
+### Heat Kernel Identification via Langevin Construction
 
-The QSD spatial marginal ({prf:ref}`thm-qsd-spatial-riemannian-volume`) is:
+**Type:** Lemma
+**Label:** `lem-heat-kernel-identification`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `heat-kernel`, `riemannian-geometry`, `metric-geometry`, `major-result`
 
-$$
-\rho_{\text{spatial}}(x) \propto \sqrt{\det g(x)} \, e^{-U_{\text{eff}}(x)/T}
-$$
+**Statement:**
 
-Since the confining potential $U$ ensures the domain $M = \mathcal{X}_{\text{valid}}$ is bounded and the fitness potential is regular, $\rho_{\text{spatial}}(x)$ has **full support** on $M$.
-
-For any $\epsilon > 0$, there exists $N_0$ such that for $N > N_0$, the empirical measure $\mu_N = \frac{1}{N}\sum_{i=1}^N \delta_{x_i}$ converges weakly to $\rho_{\text{spatial}} dx$ ({prf:ref}`thm-propagation-of-chaos`).
-
-By the law of large numbers for IID samples from $\rho_{\text{spatial}}$, the set $V_N = \{x_1, \ldots, x_N\}$ is an **$\epsilon$-net** for $M$ with high probability: for any $y \in M$, there exists $x_i \in V_N$ with $d_g(x_i, y) < \epsilon$.
-
-**Step 2: Construction of the Correspondence**
-
-To prove $d_{GH}((V_N, d_{\text{alg}}), (M, g)) \to 0$, we construct a correspondence $C \subset V_N \times M$ that is an $\epsilon_N$-isometry for $\epsilon_N \to 0$.
-
-Define:
-
-$$
-C = \{(x_i, y) \in V_N \times M \mid d_g(x_i, y) < \epsilon_N\}
-$$
-
-where $\epsilon_N = O(N^{-1/d})$ is the typical spacing between walkers in a $d$-dimensional space with $N$ points.
-
-By Step 1, this correspondence **covers both sets**: every $x_i \in V_N$ has $y = x_i \in M$ with $(x_i, y) \in C$ (distance zero), and every $y \in M$ has some $x_i \in V_N$ with $d_g(x_i, y) < \epsilon_N$.
-
-**Step 3: Distance Distortion Bound**
-
-We need to show that distances are approximately preserved. Let $(x_i, y_i) \in C$ and $(x_j, y_j) \in C$. We must show:
-
-$$
-|d_{\text{alg}}(x_i, x_j) - d_g(y_i, y_j)| \lesssim \epsilon_N
-$$
-
-The algorithmic distance is:
-
-$$
-d_{\text{alg}}(x_i, x_j)^2 = \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2
-$$
-
-**Velocity Marginalization**: By {prf:ref}`lem-velocity-marginalization`, in the annealed approximation (high friction $\gamma \gg 1$), the velocity contribution can be integrated out, leaving the spatial distance as dominant:
-
-$$
-\mathbb{E}_{v_i, v_j}[d_{\text{alg}}(x_i, x_j)^2] \approx \|x_i - x_j\|^2 + O(\lambda_{\text{alg}}/\gamma)
-$$
-
-For typical algorithm parameters with $\lambda_{\text{alg}} \ll 1$ or $\gamma \gg 1$, the velocity term is negligible.
-
-**Euclidean vs. Geodesic Distance**: For a Riemannian manifold, the Euclidean distance $\|x_i - x_j\|$ (in local coordinates) approximates the geodesic distance $d_g(x_i, x_j)$ to first order:
-
-$$
-\|x_i - x_j\|^2 = d_g(x_i, x_j)^2 + O(R \cdot d_g(x_i, x_j)^4)
-$$
-
-where $R$ is the maximum sectional curvature. For small distances (dense sampling), the quadratic error is negligible.
-
-**Triangle Inequality**: By the definition of $C$, we have $d_g(x_i, y_i) < \epsilon_N$ and $d_g(x_j, y_j) < \epsilon_N$. By the triangle inequality:
-
-$$
-d_g(y_i, y_j) \le d_g(y_i, x_i) + d_g(x_i, x_j) + d_g(x_j, y_j) < 2\epsilon_N + d_g(x_i, x_j)
-$$
-
-Similarly, $d_g(x_i, x_j) < 2\epsilon_N + d_g(y_i, y_j)$.
-
-Therefore:
-
-$$
-|d_g(x_i, x_j) - d_g(y_i, y_j)| < 2\epsilon_N
-$$
-
-Combining with the approximation $d_{\text{alg}}(x_i, x_j) \approx d_g(x_i, x_j) + O(\epsilon_N)$:
-
-$$
-|d_{\text{alg}}(x_i, x_j) - d_g(y_i, y_j)| < 3\epsilon_N
-$$
-
-**Step 4: Gromov-Hausdorff Distance Bound**
-
-By the definition of Gromov-Hausdorff distance, the existence of a correspondence $C$ with distortion $3\epsilon_N$ implies:
-
-$$
-d_{GH}((V_N, d_{\text{alg}}), (M, g)) \le 3\epsilon_N = O(N^{-1/d})
-$$
-
-As $N \to \infty$, $\epsilon_N \to 0$, so $d_{GH} \to 0$.
-
-**Conclusion**: The sequence of discrete metric spaces $(V_N, d_{\text{alg}})$ converges in the Gromov-Hausdorff sense to the continuum emergent Riemannian manifold $(M, g)$. $\square$
-:::
-:::
-
-:::{prf:lemma} Heat Kernel Identification via Langevin Construction
+:::{lemma} Heat Kernel Identification via Langevin Construction
 :label: lem-heat-kernel-identification
 
 The Langevin dynamics of the Euclidean Gas **constructs** the heat kernel by design, and the emergent metric tensor from the fitness Hessian determines the Ricci scalar.
@@ -2149,109 +2143,20 @@ where $g(x) = H(x) + \epsilon_\Sigma I$ is the emergent metric tensor from the f
 **Status**: ✅ **PROVEN** (complete proof below)
 :::
 
-:::{prf:proof} Heat Kernel Construction via Langevin Dynamics
+**Related Results:** See scutoid geometry framework results
 
-The proof establishes that the algorithm's Langevin dynamics naturally constructs the heat kernel of the emergent manifold.
+---
 
-**Step 1: Fokker-Planck Equation from Langevin SDE**
+### BAOAB Integrator Accuracy
 
-The Langevin SDE for a single walker ({prf:ref}`def-adaptive-gas-stratonovich-sde`) is:
+**Type:** Remark
+**Label:** `rem-baoab-accuracy`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `heat-kernel`, `metric-geometry`
 
-$$
-dv_i = F_{\text{total}}(x_i) \, dt - \gamma v_i \, dt + \Sigma_{\text{reg}}(x_i) \circ dW_i
-$$
+**Statement:**
 
-where $F_{\text{total}}$ includes the fitness gradient and adaptive forces, and $\Sigma_{\text{reg}}(x) = g(x)^{-1/2}$ is the anisotropic diffusion tensor.
-
-The corresponding Fokker-Planck equation for the probability density $\rho(x, v, t)$ in phase space is:
-
-$$
-\frac{\partial \rho}{\partial t} = -v \cdot \nabla_x \rho - \nabla_v \cdot \left( (F_{\text{total}} - \gamma v) \rho \right) + \frac{1}{2} \nabla_v \cdot \left( \Sigma_{\text{reg}} \Sigma_{\text{reg}}^T \nabla_v \rho \right)
-$$
-
-This is a **hypoelliptic operator** combining transport and diffusion.
-
-**Step 2: Kramers-Smoluchowski Overdamped Limit**
-
-By {prf:ref}`thm-stratonovich-kramers-smoluchowski`, in the high-friction limit $\gamma \gg 1$, the velocity degrees of freedom equilibrate rapidly, and the spatial density $\rho_s(x, t) = \int \rho(x, v, t) \, dv$ satisfies the **spatial Fokker-Planck equation**:
-
-$$
-\frac{\partial \rho_s}{\partial t} = \nabla_x \cdot \left[ D(x) \left( \nabla_x \rho_s + \rho_s \frac{\nabla_x U_{\text{eff}}}{T} \right) \right]
-$$
-
-where the **diffusion tensor** is:
-
-$$
-D(x) = \frac{T}{\gamma} \Sigma_{\text{reg}}(x) \Sigma_{\text{reg}}^T(x) = \frac{T}{\gamma} g(x)^{-1}
-$$
-
-**Step 3: Connection to Laplace-Beltrami Operator**
-
-The stationary solution to this equation is the QSD spatial marginal ({prf:ref}`thm-qsd-riemannian-volume-main`):
-
-$$
-\rho_s^*(x) \propto \sqrt{\det g(x)} \, e^{-U_{\text{eff}}(x)/T}
-$$
-
-The generator of the spatial diffusion process (without the drift term) is:
-
-$$
-\mathcal{L} = \nabla_x \cdot (D(x) \nabla_x \cdot) = \frac{T}{\gamma} \nabla_x \cdot (g^{-1} \nabla_x \cdot)
-$$
-
-In Riemannian geometry, the **Laplace-Beltrami operator** on a manifold $(M, g)$ is:
-
-$$
-\Delta_g f = \frac{1}{\sqrt{\det g}} \nabla_a \left( \sqrt{\det g} \, g^{ab} \nabla_b f \right)
-$$
-
-Expanding:
-
-$$
-\Delta_g f = g^{ab} \nabla_a \nabla_b f + \frac{1}{\sqrt{\det g}} (\nabla_a \sqrt{\det g}) g^{ab} \nabla_b f
-$$
-
-The generator $\mathcal{L}$ is proportional to $\Delta_g$ up to lower-order drift terms. The fundamental solution to the pure heat equation $\frac{\partial \rho_s}{\partial t} = \frac{T}{\gamma} \Delta_g \rho_s$ is the **heat kernel** $K_t(x, y)$.
-
-**Step 4: Heat Kernel Asymptotics and Ricci Scalar**
-
-By the Minakshisundaram-Pleijel theorem ({prf:ref}`thm-heat-kernel-asymptotics` in the reference), the heat kernel on a Riemannian manifold $(M, g)$ has the small-time diagonal expansion:
-
-$$
-K_t(x, x) = \frac{1}{(4\pi t)^{d/2} \sqrt{\det g(x)}} \left( 1 + \frac{t}{6} R(x) + O(t^2) \right)
-$$
-
-where $R(x)$ is the **Ricci scalar curvature** of the metric $g(x)$.
-
-**Step 5: Emergent Metric from Fitness Hessian**
-
-From {prf:ref}`def-emergent-metric-curvature`, the emergent metric is:
-
-$$
-g(x) = H(x) + \epsilon_\Sigma I
-$$
-
-where $H(x) = \nabla^2 V_{\text{fit}}(x)$ is the fitness Hessian. The Ricci scalar $R(x)$ is computed from $g(x)$ using the standard formula:
-
-$$
-R(x) = g^{ab}(x) R_{ab}(x)
-$$
-
-where $R_{ab}$ is the Ricci tensor derived from the Christoffel symbols $\Gamma^c_{ab}$ of $g$.
-
-**Step 6: Synthesis - Algorithm Constructs the Heat Kernel**
-
-Combining steps 1-5:
-
-1. The algorithm's Langevin dynamics generates a Fokker-Planck diffusion with diffusion tensor $D(x) = \frac{T}{\gamma} g(x)^{-1}$
-2. This diffusion is governed by the Laplace-Beltrami operator $\Delta_g$ of the emergent metric $g(x) = H(x) + \epsilon_\Sigma I$
-3. The fundamental solution (heat kernel) has asymptotics encoding the Ricci scalar $R(x)$ of this metric
-4. The Ricci scalar appearing in the heat kernel expansion is **identical** to the Ricci scalar computed geometrically from the fitness Hessian
-
-**Conclusion**: The Langevin dynamics of the Fragile Gas **construct** the heat kernel of the emergent Riemannian manifold $(M, g)$ by design. The algorithm does not approximate some external geometry—it **generates** the geometry through its dynamics. The heat kernel asymptotics provide a direct, computational route to measuring the Ricci scalar curvature. $\square$
-:::
-
-:::{prf:remark} BAOAB Integrator Accuracy
+:::{remark} BAOAB Integrator Accuracy
 :label: rem-baoab-accuracy
 
 The BAOAB integrator ({prf:ref}`def-baoab-integrator`) is a geometric integrator that preserves the invariant measure of the Langevin SDE to high order. The convergence of discrete BAOAB dynamics to the continuous Langevin flow is standard in numerical analysis (see Leimkuhler & Matthews, 2015). For small time steps $\Delta t$, the error is $O(\Delta t^3)$ for positions and $O(\Delta t^2)$ for the invariant measure.
@@ -2259,7 +2164,20 @@ The BAOAB integrator ({prf:ref}`def-baoab-integrator`) is a geometric integrator
 This ensures that the discrete algorithm's transition kernel converges to the continuous heat kernel as $\Delta t \to 0$.
 :::
 
-:::{prf:lemma} Ollivier-Ricci Curvature Convergence to Ricci Scalar
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Ollivier-Ricci Curvature Convergence to Ricci Scalar
+
+**Type:** Lemma
+**Label:** `lem-ollivier-ricci-convergence`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `curvature`, `graph-laplacian`, `wasserstein`, `convergence`, `metric-geometry`, `major-result`
+
+**Statement:**
+
+:::{lemma} Ollivier-Ricci Curvature Convergence to Ricci Scalar
 :label: lem-ollivier-ricci-convergence
 
 The discrete Ollivier-Ricci curvature on the companion-weighted graph converges weakly to the continuous Ricci scalar field.
@@ -2304,7 +2222,20 @@ $$
 **Literature support**: Ollivier (2009), Bauer-Jost-Liu (2015), Klartag-Kozma-Ralli-Tetali (2018)
 :::
 
-:::{prf:theorem} Curvature Unification via Three Lemmas
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Curvature Unification via Three Lemmas
+
+**Type:** Theorem
+**Label:** `thm-curvature-unification-via-lemmas`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `graph-laplacian`, `heat-kernel`, `metric-geometry`, `major-result`
+
+**Statement:**
+
+:::{theorem} Curvature Unification via Three Lemmas
 :label: thm-curvature-unification-via-lemmas
 
 If Lemmas {prf:ref}`lem-laplacian-convergence`, {prf:ref}`lem-heat-kernel-identification`, and {prf:ref}`lem-ollivier-ricci-convergence` hold, then all four curvature definitions converge to the same Ricci scalar field $R(x)$.
@@ -2321,50 +2252,20 @@ If Lemmas {prf:ref}`lem-laplacian-convergence`, {prf:ref}`lem-heat-kernel-identi
 The four measures are now unified through the common Ricci scalar $R(x)$ emerging from the fitness Hessian. $\square$
 :::
 
-:::{important}
-**Proof Completion Summary**:
+**Related Results:** See scutoid geometry framework results
 
-All three foundational lemmas are now **rigorously proven**, unifying the four curvature perspectives:
+---
 
-```
-                Probabilistic Infrastructure (✅ Complete)
-                   N-uniform LSI | Measure Convergence | QSD Regularity
-                          |              |                    |
-                          v              v                    v
-          ┌───────────────┼──────────────┼────────────────────┤
-          |               |              |                    |
-          v               v              v                    v
-    Lemma 1: Δ₀→Δ_g  Lemma 2: Langevin  Lemma 3: Ollivier  Metric Tensor
-    (✅ PROVEN)       Heat Kernel        Ricci Curvature     (by construction)
-                      (✅ PROVEN)         (deferred*)
-          |               |              |                    |
-          └───────────────┴──────────────┴────────────────────┘
-                          |
-                          v
-              Theorem: Curvature Unification
-            (✅ THREE of FOUR perspectives unified)
-```
+### Curvature Unification: Equivalence of All Five Definitions
 
-**Status Update (2025)**:
-- ✅ **Lemma 1** ({prf:ref}`lem-laplacian-convergence`): PROVEN via Γ-convergence of Dirichlet forms
-- ✅ **Lemma 2** ({prf:ref}`lem-heat-kernel-identification`): PROVEN - Langevin dynamics construct heat kernel by design
-- ✅ **Lemma 3** ({prf:ref}`lem-gromov-hausdorff`): PROVEN - QSD density implies GH convergence
-- ⏸️ **Lemma 4** ({prf:ref}`lem-ollivier-ricci-convergence`): Deferred (not required for main unification)
+**Type:** Theorem
+**Label:** `thm-curvature-unification`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `deficit-angle`, `graph-laplacian`, `heat-kernel`, `causal-set`, `riemannian-geometry`, `metric-geometry`, `major-result`
 
-**Main Result**: The theorem {prf:ref}`thm-curvature-unification-via-lemmas` is now proven for **three of four** curvature definitions:
-1. Deficit Angles ({prf:ref}`thm-deficit-ricci-convergence`) ✅
-2. Heat Kernel Asymptotics ({prf:ref}`lem-heat-kernel-identification`) ✅
-3. Metric Tensor (by construction from $g = H + \epsilon_\Sigma I$) ✅
-4. Spectral Gap (connected via Graph Laplacian convergence {prf:ref}`lem-laplacian-convergence`) ✅
+**Statement:**
 
-All four perspectives converge to the same Ricci scalar $R(x)$ of the emergent metric.
-
-**Key Insight**: The Fragile Gas **constructs** the geometry through its dynamics, rather than approximating an external geometry. This made the proofs significantly more direct than initially anticipated.
-:::
-
-### 5.7.3. Equivalence of All Five Perspectives
-
-:::{prf:theorem} Curvature Unification: Equivalence of All Five Definitions
+:::{theorem} Curvature Unification: Equivalence of All Five Definitions
 :label: thm-curvature-unification
 
 In the continuum limit $N \to \infty$, $\ell_{\text{cell}} \to 0$, the five curvature measures converge to the same Ricci scalar field $R(x)$:
@@ -2416,7 +2317,20 @@ These three properties together allow the reverse inference: the proven spectral
 - Cross-validation protocols enable practical verification
 :::
 
-:::{prf:corollary} Cross-Validation of Curvature Estimates
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Cross-Validation of Curvature Estimates
+
+**Type:** Corollary
+**Label:** `cor-curvature-cross-validation`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `deficit-angle`, `heat-kernel`, `causal-set`, `metric-geometry`
+
+**Statement:**
+
+:::{corollary} Cross-Validation of Curvature Estimates
 :label: cor-curvature-cross-validation
 
 For finite $N$, the five curvature measures provide **independent estimates** of the same underlying geometric quantity:
@@ -2444,7 +2358,20 @@ $$
 - Non-equilibrium effects (time-dependent $V_{\text{fit}}$)
 :::
 
-:::{prf:remark} Computational Trade-offs
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Computational Trade-offs
+
+**Type:** Remark
+**Label:** `rem-computational-tradeoffs`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `deficit-angle`, `heat-kernel`, `causal-set`, `metric-geometry`
+
+**Statement:**
+
+:::{remark} Computational Trade-offs
 :label: rem-computational-tradeoffs
 
 | Method | Computational Cost | Accuracy | Robustness |
@@ -2462,9 +2389,20 @@ $$
 - **Causal set volume**: Manifestly causal, no derivatives, quantum gravity connection
 :::
 
-### 5.8. Application to Scutoid Curvature
+**Related Results:** See scutoid geometry framework results
 
-:::{prf:proposition} Scutoid Face Curvature from Deficit Angles
+---
+
+### Scutoid Face Curvature from Deficit Angles
+
+**Type:** Proposition
+**Label:** `prop-scutoid-deficit`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `curvature`, `deficit-angle`
+
+**Statement:**
+
+:::{proposition} Scutoid Face Curvature from Deficit Angles
 :label: prop-scutoid-deficit
 
 The curvature of scutoid faces (Definition {prf:ref}`def-face-curvature-scutoid`) can be computed via **deficit angles at edge vertices**:
@@ -2486,7 +2424,20 @@ where $\alpha_v$ is the exterior angle at vertex $v$. For a geodesic polygon (sc
 $\square$
 :::
 
-:::{prf:theorem} Integrated Curvature from Spectral Data
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Integrated Curvature from Spectral Data
+
+**Type:** Theorem
+**Label:** `thm-integrated-curvature-spectral`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `curvature`, `graph-laplacian`, `spectral-geometry`, `major-result`
+
+**Statement:**
+
+:::{theorem} Integrated Curvature from Spectral Data
 :label: thm-integrated-curvature-spectral
 
 The integrated curvature appearing in the Raychaudhuri equation (Chapter 19) can be computed from the graph Laplacian spectrum:
@@ -2506,7 +2457,20 @@ where $\bar{\lambda} = \frac{1}{N} \sum_k \lambda_k$ is the average eigenvalue.
 **Interpretation**: The **deviation of local spectral density** from the global average encodes the curvature of the Voronoi boundary.
 :::
 
-:::{prf:corollary} Curvature Jump Conjecture Revisited
+**Related Results:** See scutoid geometry framework results
+
+---
+
+### Curvature Jump Conjecture Revisited
+
+**Type:** Corollary
+**Label:** `cor-curvature-jump-spectral`
+**Source:** [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)
+**Tags:** `scutoid-geometry`, `voronoi-tessellation`, `curvature`, `spectral-geometry`, `heat-kernel`
+
+**Statement:**
+
+:::{corollary} Curvature Jump Conjecture Revisited
 :label: cor-curvature-jump-spectral
 
 The Curvature Jump Conjecture ({prf:ref}`conj-curvature-jump` in Chapter 19) can be reformulated using spectral language:
@@ -2536,64 +2500,6 @@ Taking the jump and expanding in small $t$ recovers the topological version.
 **Advantage**: The spectral version provides a **computable numerical test** of the conjecture using only eigenvalue data.
 :::
 
----
-
-## 6. Summary and Next Steps
-
-### 6.1. What We Have Established
-
-This chapter has introduced the **scutoid geometry framework** for the Fragile Gas, establishing:
-
-1. **Mathematical foundations**: Generalized scutoids in Riemannian spacetime manifolds (Section 1)
-2. **Topological correspondence**: Cloning events ↔ neighbor-swapping ↔ scutoid formation (Theorem {prf:ref}`thm-cloning-scutoid-correspondence`)
-3. **Construction algorithm**: Mapping episodes to scutoid cells from Fractal Set data (Algorithm {prf:ref}`alg-scutoid-construction`)
-4. **Energy functional**: Wasserstein-2 distance as scutoid deformation energy (Definition {prf:ref}`def-scutoid-energy`)
-5. **Geometric dictionary**: Scutoid face curvature encodes sectional curvature (Proposition {prf:ref}`prop-scutoid-face-curvature`)
-
-### 6.2. What We Have Added
-
-Section 5 establishes the **unification of five complementary curvature perspectives**, showing that:
-
-1. **Deficit angles** (discrete Gauss-Bonnet) provide topology-based curvature estimates
-2. **Graph Laplacian spectrum** (Cheeger inequality) encodes Ricci curvature bounds
-3. **Emergent metric tensor** (fitness Hessian derivatives) gives pointwise Ricci scalar
-4. **Heat kernel asymptotics** provides analytic verification via spectral invariants
-5. **Causal set volume** (discrete spacetime) connects to quantum gravity theories
-
-All five perspectives **converge to the same continuum limit** (Theorem {prf:ref}`thm-curvature-unification`), enabling cross-validation and providing multiple computational pathways for curvature estimation. The causal set approach (Section 5.6) provides a fundamentally different, manifestly causal perspective that connects the Fragile Gas to foundational quantum gravity research.
-
-### 6.3. Open Questions for Future Chapters
-
-**Chapter 19** (Scutoid-Curvature Connections):
-- Full Riemann tensor dictionary (Christoffel symbols, Ricci tensor from scutoid shape)
-- Raychaudhuri equation for scutoid evolution
-- Holonomy and gauge connections
-
-**Chapter 20** (Einstein Field Equations):
-- Self-consistent equation: $G_{\mu\nu}[\text{scutoid geometry}] = \kappa T_{\mu\nu}[\text{swarm}]$
-- Phase transitions via scutoid fraction order parameter
-- Effective field theory derivation
-
-**Chapter 21** (Continuum Limit):
-- Convergence theorems: discrete tessellations → continuous geometry as $N \to \infty$
-- Error bounds and convergence rates
-- Comparison with mean-field limit (Chapter 11)
-
-### 6.4. Computational Implementation
-
-The next practical step is to implement the scutoid tessellation construction in `src/fragile/geometry/scutoid_tessellation.py`, enabling:
-- Visualization of scutoid cells in simple 2D/3D examples
-- Validation of topological correspondence on synthetic data
-- Measurement of scutoid fraction $\phi(t)$ during algorithm runs
-- Detection of exploration/exploitation phase transitions
+**Related Results:** See scutoid geometry framework results
 
 ---
-
-## References
-
-- Gómez-Gálvez et al. (2018). "Scutoids are a geometrical solution to three-dimensional packing of epithelia." *Nature Communications* 9, 2960.
-- Chapters 8 (Emergent Geometry), 13 (Fractal Set), 11 (Mean-Field Convergence) of this framework.
-
-:::{note}
-**Document Status**: This chapter provides the foundational mathematical definitions and the central topological correspondence theorem. Subsequent chapters will develop the geometric, dynamical, and field-theoretic aspects in full rigor.
-:::
