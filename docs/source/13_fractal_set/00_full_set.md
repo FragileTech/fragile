@@ -1555,53 +1555,96 @@ $$
 
 This operator measures the total propensity for the pair to interact via cloning (in either direction).
 
-**Step 4: Show Operator Sum is SU(2)-Invariant**
+**Step 4: Mutual Pairing Constraint and Physical Observable**
 
-Under SU(2) transformation $U \otimes I_{\text{div}}$:
+**Critical Physical Constraint:**
 
-$$
-\hat{\Pi}'(i \to j) = (U \otimes I) \hat{\Pi}(i \to j) (U^\dagger \otimes I)
+The cloning companion selection algorithm (see {doc}`../03_cloning.md` §3) uses a **random matching algorithm** that enforces **mutual pairing**:
 
-$$
+**Definition**: If walker i selects walker j as its cloning companion, then walker j selects walker i as its cloning companion. This creates symmetric pairs $(i,j)$ where both $i \in \mathcal{C}_j$ and $j \in \mathcal{C}_i$.
 
-$$
-\hat{\Pi}'(j \to i) = (U \otimes I) \hat{\Pi}(j \to i) (U^\dagger \otimes I)
+**Consequence for Fitness Scores:**
 
-$$
-
-**Key observation**: The sum of projection operators satisfies:
+For mutually paired walkers $(i,j)$:
 
 $$
-\hat{\Pi}'(i \to j) + \hat{\Pi}'(j \to i) = (U \otimes I) \left[\hat{\Pi}(i \to j) + \hat{\Pi}(j \to i)\right] (U^\dagger \otimes I)
-
+s_i = \frac{V_{\text{fit}}(j) - V_{\text{fit}}(i)}{V_{\text{fit}}(i) + \epsilon}, \quad s_j = \frac{V_{\text{fit}}(i) - V_{\text{fit}}(j)}{V_{\text{fit}}(j) + \epsilon}
 $$
 
-This follows from linearity of the conjugation operation.
+**Key observation**: The numerators, $V_{\text{fit}}(j) - V_{\text{fit}}(i)$ and $V_{\text{fit}}(i) - V_{\text{fit}}(j)$, are **exact opposites**.
 
-**Step 5: Apply Trace Cyclicity**
+The denominators, $V_{\text{fit}}(i) + \epsilon$ and $V_{\text{fit}}(j) + \epsilon$, are **strictly positive**, as the fitness potential $V_{\text{fit}}$ is bounded below by $\eta^{(\alpha+\beta)} > 0$ (see {prf:ref}`lem-potential-bounds`).
 
-The transformed probability is:
+Therefore, $s_i$ and $s_j$ must have **opposite signs** (assuming $V_{\text{fit}}(i) \neq V_{\text{fit}}(j)$).
+
+**Physical Implication:**
+
+Since $s_i$ and $s_j$ have opposite signs, exactly one fitness score is positive. Therefore:
+
+$$
+\Theta(s_i) + \Theta(s_j) = 1 \quad \text{(exactly one equals 1, the other equals 0)}
+$$
+
+This means:
+
+$$
+\hat{\Pi}_{\text{interaction}} = \hat{\Pi}(i \to j) + \hat{\Pi}(j \to i) = \begin{cases}
+\hat{P}_{\uparrow} \otimes I & \text{if } s_i > 0 \text{ (lower fitness j clones to higher fitness i)} \\
+\hat{P}_{\downarrow} \otimes I & \text{if } s_j > 0 \text{ (lower fitness i clones to higher fitness j)}
+\end{cases}
+$$
+
+The cloning direction is **deterministically determined by fitness**: the walker with lower fitness always clones to the walker with higher fitness.
+
+**Physical Interpretation of $P_{\text{total}}(i,j)$:**
+
+Due to mutual pairing, $P_{\text{total}}(i,j)$ is **NOT** "sum of two independent probabilities." It is:
+
+$$
+P_{\text{total}}(i,j) = P_{\text{interaction}}(\{i,j\}) = \text{probability that the mutually paired walkers } \{i,j\} \text{ interact via cloning}
+$$
+
+This is a **single physical quantity** representing the interaction of the symmetric pair, independent of our choice of which basis state we call $|\uparrow\rangle$ (cloner) vs $|\downarrow\rangle$ (target).
+
+**Step 5: SU(2) Gauge Invariance Proof**
+
+Under local SU(2) gauge transformation at vertices i and j:
+- State transforms: $|\Psi'_{ij}\rangle = (G_i \otimes G_j \otimes I_{\text{div}})|\Psi_{ij}\rangle$
+- Operator transforms: $\hat{\Pi}'_{\text{interaction}} = (G_i \otimes G_j \otimes I) \hat{\Pi}_{\text{interaction}} (G_i^\dagger \otimes G_j^\dagger \otimes I)$
+
+The transformed observable is:
 
 $$
 P'_{\text{total}}(i,j) = \langle \Psi'_{ij} | \hat{\Pi}'_{\text{interaction}} | \Psi'_{ij} \rangle
-
 $$
 
-Substituting $|\Psi'_{ij}\rangle = (U \otimes I)|\Psi_{ij}\rangle$ and $\hat{\Pi}'_{\text{interaction}} = (U \otimes I) \hat{\Pi}_{\text{interaction}} (U^\dagger \otimes I)$:
+Substituting the transformations:
 
 $$
-P'_{\text{total}}(i,j) = \langle \Psi_{ij} | (U^\dagger \otimes I)(U \otimes I) \hat{\Pi}_{\text{interaction}} (U^\dagger \otimes I)(U \otimes I) | \Psi_{ij} \rangle
-
+P'_{\text{total}}(i,j) = \langle \Psi_{ij} | (G_i^\dagger \otimes G_j^\dagger \otimes I)(G_i \otimes G_j \otimes I) \hat{\Pi}_{\text{interaction}} (G_i^\dagger \otimes G_j^\dagger \otimes I)(G_i \otimes G_j \otimes I) | \Psi_{ij} \rangle
 $$
 
-Using $(U^\dagger \otimes I)(U \otimes I) = (U^\dagger U) \otimes I = I \otimes I = I$:
+Using unitarity of $G_i$ and $G_j$: $(G_i^\dagger \otimes G_j^\dagger)(G_i \otimes G_j) = (G_i^\dagger G_i) \otimes (G_j^\dagger G_j) = I \otimes I = I$:
 
 $$
 P'_{\text{total}}(i,j) = \langle \Psi_{ij} | \hat{\Pi}_{\text{interaction}} | \Psi_{ij} \rangle = P_{\text{total}}(i,j)
-
 $$
 
-Therefore, $P_{\text{total}}(i,j)$ is **SU(2)-invariant**. ∎
+Therefore, $P_{\text{total}}(i,j)$ is **SU(2) gauge invariant**.
+
+**Physical Interpretation:**
+
+The gauge invariance of $P_{\text{total}}(i,j)$ reflects the physical content of the SU(2) symmetry:
+
+1. **Mutual pairing defines a single physical observable**: The quantity $P_{\text{total}}(i,j)$ represents the interaction probability for the symmetric pair $\{i,j\}$, not a sum of two independent processes
+
+2. **The projector encodes deterministic cloning**: Due to mutual pairing, $\hat{\Pi}_{\text{interaction}}$ projects onto the realized cloning direction (determined by fitness), which is a physical event
+
+3. **SU(2) transformations represent gauge freedom**: The transformations relabel basis states ($|\uparrow\rangle \leftrightarrow |\downarrow\rangle$) without changing the underlying physics
+
+4. **Invariance expresses physical consistency**: Relabeling the mathematical description (gauge transformation) cannot change the probability of a physical event (cloning interaction)
+
+This structure characterizes a genuine gauge theory: unphysical gauge freedom combined with physically meaningful gauge-invariant observables. ∎
 :::
 
 :::{prf:remark} Connection to U(1)_fitness Symmetry
@@ -1866,16 +1909,99 @@ Global U(1)_fitness is a genuine symmetry. By Noether's theorem (see {doc}`../09
 
 **Critical insight from rigorous analysis:**
 
-We cannot have **local** U(1) gauge invariance (different α(i) at each walker) because:
+We cannot have **local** U(1) gauge invariance (different α(i) at each walker) because the U(1) phases are **not dynamical gauge fields** - they are **fixed by algorithmic distances**.
 
-1. $K_{\text{eff}} = \sum_{k,m} [\ldots]$ - the sum contains terms with different phase factors α(k), α(m)
-2. Under local transformation: $K_{\text{eff}}' = e^{i(\alpha(i)+\alpha(j))} \sum_{k,m} e^{-i(\alpha(k)+\alpha(m))} [\ldots]$
-3. The phases inside the sum cannot be factored out
-4. Therefore: $|K_{\text{eff}}'|^2 \neq |K_{\text{eff}}|^2$ in general
+**Step-by-step demonstration:**
 
-**Physical reason**: The phases θ_ik are **fixed by algorithmic distances**, not dynamical gauge fields. There's no gauge connection to make the theory locally covariant.
+Recall from §7.5 that the companion link amplitudes are:
 
-**The resolution**: U(1)_fitness is **global** (like baryon number in the Standard Model), not gauged (like electromagnetism). The **true local gauge symmetry** is the discrete S_N permutation group (see §7.7).
+$$
+\psi_{ik} = \sqrt{P_{\text{comp}}(k|i)} \cdot e^{i\theta_{ik}^{(\text{U}(1))}}
+$$
+
+where the phase is determined by algorithmic distance:
+
+$$
+\theta_{ik}^{(\text{U}(1))} = -\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2 \hbar_{\text{eff}}}
+$$
+
+**Attempt a local U(1) transformation:**
+
+Consider transforming each companion link amplitude:
+
+$$
+\psi_{ik} \to \psi_{ik}' = e^{i\alpha(i)} \psi_{ik} = \sqrt{P_{\text{comp}}(k|i)} \cdot e^{i(\theta_{ik}^{(\text{U}(1))} + \alpha(i))}
+$$
+
+This would correspond to shifting the phase:
+
+$$
+\theta_{ik}^{(\text{U}(1))} \to \theta_{ik}^{(\text{U}(1))} + \alpha(i)
+$$
+
+**Why this fails:**
+
+For this to be a **gauge transformation**, we would need a **gauge connection** $A_i$ such that:
+
+$$
+\theta_{ik}^{(\text{U}(1))} \to \theta_{ik}^{(\text{U}(1))} + \alpha(i) - \alpha(k)
+$$
+
+(analogous to the covariant derivative $\partial_\mu + iA_\mu$ in standard gauge theory).
+
+However, the phases θ_ik^(U(1)) are **NOT free gauge degrees of freedom** - they are **fixed by the algorithmic distance metric**:
+
+$$
+\theta_{ik}^{(\text{U}(1))} = f(d_{\text{alg}}(i,k))
+$$
+
+where $f(d) = -d^2/(2\epsilon_d^2 \hbar_{\text{eff}})$ is a **deterministic function** of the algorithmic distance.
+
+**The contradiction:**
+
+If we perform a local transformation $\theta_{ik} \to \theta_{ik} + \alpha(i)$, the transformed phase is **no longer consistent** with the algorithmic distance structure:
+
+$$
+\theta_{ik}' = -\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2 \hbar_{\text{eff}}} + \alpha(i) \neq f(d_{\text{alg}}(i,k))
+$$
+
+unless $\alpha(i) = 0$ for all $i$ (the trivial transformation).
+
+**Physical interpretation:**
+
+1. **Standard gauge theory**: Gauge fields (like the photon field $A_\mu$ in QED) are **dynamical** - they can be freely transformed by gauge transformations, and the physics (observables) remains unchanged.
+
+2. **Our U(1) phases**: The phases θ_ik^(U(1)) are **kinematic** - they are completely determined by the swarm's algorithmic geometry. They cannot be independently transformed without breaking the consistency with the distance metric.
+
+**Why global U(1) works:**
+
+A **global** transformation (same α for all walkers):
+
+$$
+\psi_{ik} \to e^{i\alpha} \psi_{ik} \quad \text{for all } i,k
+$$
+
+preserves all observables because:
+
+$$
+K_{\text{eff}}'(i,j) = \sum_{k,m} (e^{i\alpha} \psi_{ik})(e^{i\alpha} \psi_{jm})^* \cdot f(d_{\text{alg}}(k,m)) = |e^{i\alpha}|^2 K_{\text{eff}}(i,j) = K_{\text{eff}}(i,j)
+$$
+
+The global phase cancels in all probability amplitudes: $|K_{\text{eff}}'|^2 = |K_{\text{eff}}|^2$.
+
+**The resolution:**
+
+U(1)_fitness is a **global symmetry** (like baryon number conservation in the Standard Model), **not a local gauge symmetry** (like electromagnetism). The phases are **background geometric data**, not dynamical gauge fields.
+
+The **true local gauge symmetry** is the discrete S_N permutation group, which acts by relabeling walker indices - a transformation that is consistent with the permutation invariance of the algorithmic distance metric (see §7.7).
+
+**Analogy:**
+
+This situation is analogous to:
+- **Flat spacetime special relativity**: Global Poincaré symmetry (translations/rotations apply uniformly)
+- **General relativity**: Local diffeomorphism symmetry (can transform differently at each point)
+
+Our U(1)_fitness is like the global Poincaré group - it's a **rigid symmetry**, not a **local gauge symmetry**.
 :::
 
 :::{prf:theorem} Local SU(2)_weak Gauge Invariance
@@ -2013,57 +2139,172 @@ $$
 
 **Physical interpretation**: The U(1) dressing describes fitness self-measurement through diversity companions. This measurement occurs in algorithmic space and is blind to the weak isospin state. The SU(2) transformation mixes cloner/target roles but does not affect where walkers are located or how they measure their fitness. ∎
 
-**Step 4: Connection to Physical Observable**
+**Step 4: Gauge-Invariant Observable - Total Interaction Probability from Mutual Pairing**
 
-The total cloning amplitude is:
+**Physical Principle: Mutual Pairing Constraint**
 
-$$
-\Psi(i \to j) = A_{ij}^{\text{SU}(2)} \cdot K_{\text{eff}}(i,j)
-$$
+The cloning companion selection algorithm (see {doc}`../03_cloning.md` §3) uses a **random matching algorithm** that creates **mutually selected symmetric pairs**:
 
-Under SU(2) transformation:
+**Definition (Mutual Pairing)**:
+- If walker i selects walker j as its cloning companion, then walker j selects walker i as its cloning companion
+- This creates symmetric pairs $(i,j)$ where both $i \in \mathcal{C}_j$ and $j \in \mathcal{C}_i$
+- The pairing is symmetric: the pair $\{i, j\}$ is a single physical entity, not two separate directional relationships
 
-$$
-\Psi'(i \to j) = A_{ij}'^{\text{SU}(2)} \cdot K_{\text{eff}}(i,j)
-$$
+**Consequence for Fitness Scores:**
 
-where $A_{ij}'^{\text{SU}(2)} = \langle \uparrow | G_i U_{ij} G_j^\dagger | \uparrow \rangle$ acquires a phase.
-
-**Key Lemma**: The cloning probability depends only on the **modulus squared** (Born rule):
+For mutually paired walkers $(i,j)$, the relative fitness scores are:
 
 $$
-P_{\text{clone}}(i \to j) = |\Psi(i \to j)|^2 = |A_{ij}^{\text{SU}(2)}|^2 \cdot |K_{\text{eff}}(i,j)|^2
+s_i = \frac{V_{\text{fit}}(j) - V_{\text{fit}}(i)}{V_{\text{fit}}(i) + \epsilon}, \quad s_j = \frac{V_{\text{fit}}(i) - V_{\text{fit}}(j)}{V_{\text{fit}}(j) + \epsilon}
 $$
 
-Under SU(2) transformation, the amplitude transforms as:
+**Key properties:**
+1. The numerators are **exact opposites**: $V_{\text{fit}}(j) - V_{\text{fit}}(i) = -(V_{\text{fit}}(i) - V_{\text{fit}}(j))$
+2. The denominators are **strictly positive**: $V_{\text{fit}}(i) + \epsilon > 0$ and $V_{\text{fit}}(j) + \epsilon > 0$ (fitness potential bounded below by $\eta^{(\alpha+\beta)} > 0$)
+3. Therefore, $s_i$ and $s_j$ have **opposite signs**: if $s_i > 0$, then $s_j < 0$ (mutually exclusive)
+4. **Fitness determines direction**: The walker with lower fitness clones to the walker with higher fitness
+
+**Physical Interpretation:**
+
+The cloning direction is **deterministically determined by fitness**, not probabilistic:
+- If $V_{\text{fit}}(i) > V_{\text{fit}}(j)$: walker j clones to i (direction: $j \to i$)
+- If $V_{\text{fit}}(j) > V_{\text{fit}}(i)$: walker i clones to j (direction: $i \to j$)
+- **Exactly one direction occurs physically**
+
+**Why Individual P_clone(i→j) is NOT SU(2) Invariant:**
+
+Under SU(2) transformation $G_i, G_j \in \text{SU}(2)$, the amplitude transforms as:
 
 $$
-A_{ij}'^{\text{SU}(2)} = e^{i\phi_{ij}} \cdot A_{ij}^{\text{SU}(2)}
+A_{ij}'^{\text{SU}(2)} = \langle \uparrow | G_i U_{ij} G_j^\dagger | \uparrow \rangle
 $$
 
-for some phase $\phi_{ij}$ (from the matrix element of the conjugated group element). Therefore:
+For general $G_i, G_j$, the transformation **mixes** the $|\uparrow\rangle$ (cloner) and $|\downarrow\rangle$ (target) basis states:
 
 $$
-|A_{ij}'^{\text{SU}(2)}|^2 = |e^{i\phi_{ij}}|^2 \cdot |A_{ij}^{\text{SU}(2)}|^2 = |A_{ij}^{\text{SU}(2)}|^2
+G_i | \uparrow \rangle = \alpha_i |\uparrow\rangle + \beta_i |\downarrow\rangle
 $$
 
-Combined with the SU(2)-invariance of $K_{\text{eff}}$:
+Therefore, the matrix element changes:
 
 $$
-P_{\text{clone}}'(i \to j) = P_{\text{clone}}(i \to j)
+|A_{ij}'^{\text{SU}(2)}|^2 \neq |A_{ij}^{\text{SU}(2)}|^2 \quad \text{in general}
 $$
 
-**Consequence**: The **total interaction probability** is also invariant:
+The directional cloning probability $P_{\text{clone}}(i \to j)$ is **NOT gauge invariant** because it depends on which basis state we label as "cloner" ($|\uparrow\rangle$) vs "target" ($|\downarrow\rangle$).
+
+**The Gauge-Invariant Observable:**
+
+Due to mutual pairing, the physical observable is **not** "probability of i→j" or "probability of j→i" separately. The physical observable is:
+
+$$
+P_{\text{total}}(i,j) := P_{\text{interaction}}(\{i,j\}) = \text{probability that the mutually paired walkers } \{i,j\} \text{ interact via cloning}
+$$
+
+This is a **single physical quantity** representing the interaction of the symmetric pair, independent of our choice of basis labels.
+
+Mathematically, this is computed as:
 
 $$
 P_{\text{total}}(i,j) = P_{\text{clone}}(i \to j) + P_{\text{clone}}(j \to i)
 $$
 
-as shown in Proposition {prf:ref}`prop-su2-invariance`.
+but the physical interpretation is: "probability that pair $\{i,j\}$ undergoes a cloning interaction (in the direction determined by fitness)".
+
+**Theorem**: $P_{\text{total}}(i,j)$ is SU(2) gauge invariant.
+
+**Proof (Method 1: State and Operator Transformation)**:
+
+The composite state for mutually paired walkers is:
+
+$$
+|\Psi_{ij}\rangle = |\uparrow\rangle \otimes |\psi_i\rangle + |\downarrow\rangle \otimes |\psi_j\rangle
+$$
+
+where $|\psi_i\rangle, |\psi_j\rangle$ are the U(1) diversity dressing states (SU(2)-invariant, as shown in Step 3).
+
+The projection operator onto the interaction subspace is:
+
+$$
+\hat{\Pi}_{\text{interaction}} = \hat{\Pi}(i \to j) + \hat{\Pi}(j \to i)
+$$
+
+where:
+
+$$
+\hat{\Pi}(i \to j) = \Theta(\hat{S}_{ij}) \cdot \hat{P}_{\uparrow} \otimes I, \quad \hat{\Pi}(j \to i) = \Theta(-\hat{S}_{ij}) \cdot \hat{P}_{\downarrow} \otimes I
+$$
+
+**Due to mutual pairing**: $s_i$ and $s_j$ have opposite signs, so $\Theta(s_i) + \Theta(s_j) = 1$ (exactly one is 1, the other is 0).
+
+Therefore:
+
+$$
+\hat{\Pi}_{\text{interaction}} = \begin{cases}
+\hat{P}_{\uparrow} \otimes I & \text{if } s_i > 0 \text{ (i clones j)} \\
+\hat{P}_{\downarrow} \otimes I & \text{if } s_j > 0 \text{ (j clones i)}
+\end{cases}
+$$
+
+The observable is:
+
+$$
+P_{\text{total}}(i,j) = \langle \Psi_{ij} | \hat{\Pi}_{\text{interaction}} | \Psi_{ij} \rangle
+$$
+
+Under local SU(2) gauge transformation at vertices i and j:
+- State transforms: $|\Psi_{ij}'\rangle = (G_i \otimes G_j \otimes I_{\text{div}})|\Psi_{ij}\rangle$
+- Operator transforms: $\hat{\Pi}'_{\text{interaction}} = (G_i \otimes G_j \otimes I_{\text{div}}) \hat{\Pi}_{\text{interaction}} (G_i^\dagger \otimes G_j^\dagger \otimes I_{\text{div}})$
+
+The transformed observable is:
+
+$$
+P'_{\text{total}}(i,j) = \langle \Psi'_{ij} | \hat{\Pi}'_{\text{interaction}} | \Psi'_{ij} \rangle
+$$
+
+Substituting the transformations:
+
+$$
+P'_{\text{total}}(i,j) = \langle \Psi_{ij} | (G_i^\dagger \otimes G_j^\dagger \otimes I) (G_i \otimes G_j \otimes I) \hat{\Pi}_{\text{interaction}} (G_i^\dagger \otimes G_j^\dagger \otimes I)(G_i \otimes G_j \otimes I) | \Psi_{ij} \rangle
+$$
+
+Using unitarity of $G_i$ and $G_j$: $(G_i^\dagger \otimes G_j^\dagger)(G_i \otimes G_j) = (G_i^\dagger G_i) \otimes (G_j^\dagger G_j) = I \otimes I = I$:
+
+$$
+P'_{\text{total}}(i,j) = \langle \Psi_{ij} | \hat{\Pi}_{\text{interaction}} | \Psi_{ij} \rangle = P_{\text{total}}(i,j)
+$$
+
+Therefore, $P_{\text{total}}(i,j)$ is **SU(2) gauge invariant**. ∎
+
+**Physical Interpretation:**
+
+The gauge invariance of $P_{\text{total}}(i,j)$ encodes the physical content of the SU(2) symmetry:
+
+1. **Mutual pairing defines a single physical observable**: The quantity $P_{\text{total}}(i,j)$ represents the interaction probability for the symmetric pair $\{i,j\}$, not a sum of two independent processes
+
+2. **The projector encodes deterministic cloning**: Due to mutual pairing, $\hat{\Pi}_{\text{interaction}}$ projects onto the realized cloning direction (determined by fitness), which is a physical event
+
+3. **SU(2) transformations represent gauge freedom**: The transformations relabel basis states ($|\uparrow\rangle \leftrightarrow |\downarrow\rangle$) without changing the underlying physics
+
+4. **Invariance expresses physical consistency**: Relabeling the mathematical description (gauge transformation) cannot change the probability of a physical event (cloning interaction)
+
+This structure characterizes a genuine gauge theory: unphysical gauge freedom combined with physically meaningful gauge-invariant observables.
 
 **Conclusion:**
 
-The SU(2) structure is a **genuine non-Abelian local gauge symmetry**, not just a global symmetry. The cloning interaction implements weak isospin transformations, and all physical observables (cloning probabilities) are gauge invariant. ∎
+The SU(2) structure is a **genuine non-Abelian local gauge symmetry** arising from the mutual pairing structure of the cloning algorithm. The **symmetric interaction probability** $P_{\text{total}}(i,j)$ is the physical gauge-invariant observable.
+
+Individual directional probabilities $P_{\text{clone}}(i \to j)$ depend on the gauge choice (the choice of basis for isospin states), but the **total interaction probability for the mutually paired walkers** is gauge-invariant.
+
+**Physical Meaning:**
+
+The SU(2) gauge freedom represents the arbitrary choice of which basis states we call $|\uparrow\rangle$ (cloner) vs $|\downarrow\rangle$ (target) in our mathematical description. Physics doesn't care about this labeling - the mutual pairing constraint ensures that:
+
+1. The pair $\{i, j\}$ is a single physical entity (symmetric partners)
+2. Fitness determines which direction actually occurs (deterministic)
+3. The probability of interaction is independent of our choice of basis labels (gauge-invariant)
+
+This is precisely analogous to weak interactions in the Standard Model: the "left-handed" vs "right-handed" decomposition is gauge-dependent, but physical observables (like total cross-sections) are gauge-invariant and combine contributions from both chiralities. ∎
 :::
 
 :::{prf:remark} Non-Abelian Nature of SU(2)

@@ -602,9 +602,13 @@ The **Keystone Principle** ({prf:ref}`lem-quantitative-keystone`) guarantees tha
 
 ### 6.3. Transfer of Symmetries and Conserved Quantities
 
-**Question:** Do the gauge symmetries and conserved quantities defined in the Fractal Set data structure ({prf:ref}`thm-u1-fitness-gauge`, {prf:ref}`thm-su2-interaction-symmetry`, {prf:ref}`thm-u1-su2-lattice-qft`) correspond to physical properties of the N-particle system?
+**Question:** Do the symmetries and conserved quantities defined in the Fractal Set data structure correspond to physical properties of the N-particle system?
 
 **Answer:** **Yes.** Every symmetry and quantity defined on the Fractal Set graph structure has a unique corresponding property in the N-particle Markov chain dynamics, and vice versa. This establishes **equivalence** between the Fractal Set representation and the algorithmic dynamics.
+
+:::{note}
+The symmetry theorems referenced here ({prf:ref}`thm-sn-braid-holonomy`, {prf:ref}`thm-u1-fitness-global`, {prf:ref}`thm-su2-interaction-symmetry`, {prf:ref}`thm-sn-su2-lattice-qft`) are formally established in [00_full_set.md](00_full_set.md) (Section 7). These definitions may need to be added to [00_reference.md](../00_reference.md) for central indexing.
+:::
 
 :::{prf:theorem} Equivalence of Fractal Set and N-Particle Properties
 :label: thm-fractal-set-n-particle-equivalence
@@ -631,36 +635,67 @@ $$
 
 where the spinor-to-vector map extracts the $\mathbb{R}^d$ vector from its spinor encoding $\psi \in \mathbb{C}^{2^{[d/2]}}$.
 
-**3. Transfer of gauge symmetries:**
+**3. Transfer of symmetries:**
 
-The U(1) × SU(2) gauge symmetries on $\mathcal{F}$ ({prf:ref}`thm-u1-su2-lattice-qft`) correspond to algorithmic symmetries of the N-particle system:
-
-**U(1) fitness symmetry** ↔ **Invariance of cloning probabilities under fitness shifts**:
-
-For IG diversity edges $(i, k) \in E_{\text{IG}}$ with phase $\theta_{ik}^{(\text{U(1)})} = -d_{\text{alg}}(i,k)^2/(2\epsilon_d^2 \hbar_{\text{eff}})$, the corresponding algorithmic property is:
+The symmetry structure on $\mathcal{F}$ ({prf:ref}`thm-sn-su2-lattice-qft`) corresponds to algorithmic symmetries of the N-particle system. The Fractal Set has a three-tier symmetry hierarchy:
 
 $$
-P_{\text{comp}}^{(\text{div})}(k|i) \propto \exp\left(-\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2}\right)
+G_{\text{total}} = S_N^{\text{discrete}} \times \text{SU}(2)_{\text{weak}}^{\text{local}} \times \text{U}(1)_{\text{fitness}}^{\text{global}}
 
 $$
 
-is **invariant under global fitness shifts** $\Phi(x) \mapsto \Phi(x) + c$ because $d_{\text{alg}}$ depends only on **fitness differences**.
+where $S_N$ (permutation group) is the **fundamental discrete gauge symmetry**, while SU(2) and U(1) are **emergent** symmetries in the continuum limit.
 
-**SU(2) weak isospin symmetry** ↔ **Approximate role exchange symmetry in cloning**:
+**S_N permutation symmetry** ↔ **Walker indistinguishability**:
 
-The SU(2) doublet structure $|\Psi_{ij}\rangle = |↑\rangle \otimes |\psi_i\rangle + |↓\rangle \otimes |\psi_j\rangle$ ({prf:ref}`thm-su2-interaction-symmetry`) corresponds to an **approximate algorithmic symmetry**:
-
-$$
-\frac{\Psi(i \to j)}{\Psi(j \to i)} \approx 1 + O(\Phi_j - \Phi_i)
+The **fundamental gauge symmetry** of the algorithm is invariance under walker label permutations. For any permutation $\sigma \in S_N$:
 
 $$
-
-This becomes **exact** in the limit of vanishing fitness differences:
-
-$$
-\lim_{\Phi_j - \Phi_i \to 0} \frac{\Psi(i \to j)}{\Psi(j \to i)} = 1
+\mathcal{S} = (w_1, w_2, \ldots, w_N) \sim \sigma \cdot \mathcal{S} = (w_{\sigma(1)}, w_{\sigma(2)}, \ldots, w_{\sigma(N)})
 
 $$
+
+This discrete gauge symmetry gives rise to **braid group topology** $\pi_1(\mathcal{M}_{\text{config}}) \cong B_N$ ({prf:ref}`thm-sn-braid-holonomy`). Closed loops in configuration space have **discrete holonomy** $\text{Hol}(\gamma) \in S_N$, representing the net permutation of walkers after traversing the loop.
+
+**Physical consequence**: All algorithmic observables must be $S_N$-invariant - they depend on unordered sets of walkers, not specific labels. The $S_N$ holonomy is the **fundamental discrete gauge observable**, analogous to how Wilson loops probe continuous gauge connections (but distinct from them - $S_N$ holonomy is a permutation, not a matrix trace).
+
+**Global U(1) fitness symmetry** ↔ **Fitness conservation**:
+
+The **global** (not gauged) U(1) symmetry ({prf:ref}`thm-u1-fitness-global`) acts by uniform phase rotation on all diversity amplitudes:
+
+$$
+\psi_{ik}^{(\text{div})} \to e^{i\alpha} \psi_{ik}^{(\text{div})}, \quad \alpha \in [0, 2\pi) \text{ (same } \alpha \text{ for all i)}
+
+$$
+
+This corresponds to **invariance under global fitness shifts** $\Phi(x) \mapsto \Phi(x) + c$ in the N-particle system. The diversity companion probability:
+
+$$
+P_{\text{comp}}^{(\text{div})}(k|i) = \frac{\exp\left(-\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2}\right)}{\sum_{k'} \exp\left(-\frac{d_{\text{alg}}(i,k')^2}{2\epsilon_d^2}\right)}
+
+$$
+
+depends only on positions and velocities (via $d_{\text{alg}}$), **not** on absolute fitness values, making it invariant under global fitness shifts.
+
+**Conserved charge (Noether)**: Global U(1) symmetry implies conservation of fitness current $J_{\text{fitness}}^\mu = \sum_i \text{Im}(\psi_i^* \partial^\mu \psi_i)$, analogous to baryon number conservation in particle physics.
+
+**Local SU(2) weak isospin symmetry** ↔ **Approximate role exchange in cloning**:
+
+The SU(2) doublet structure $|\Psi_{ij}\rangle = |↑\rangle \otimes |\psi_i\rangle + |↓\rangle \otimes |\psi_j\rangle$ ({prf:ref}`thm-su2-interaction-symmetry`) corresponds to an **approximate algorithmic symmetry** where the cloning dynamics are nearly invariant under exchange of cloner and target roles. This near-invariance is quantified by the ratio:
+
+$$
+\frac{P_{\text{clone}}(i \to j)}{P_{\text{clone}}(j \to i)} \approx 1 + O(\Phi_j - \Phi_i)
+
+$$
+
+The symmetry becomes **exact** in the limit of vanishing fitness differences:
+
+$$
+\lim_{\Phi_j - \Phi_i \to 0} \frac{P_{\text{clone}}(i \to j)}{P_{\text{clone}}(j \to i)} = 1
+
+$$
+
+**Physical meaning**: On the fitness-degenerate submanifold, walkers are interchangeable with respect to weak isospin transformations, and the dynamics exhibit exact SU(2) invariance under mixing of cloner and target roles.
 
 **4. Conserved and derived quantities:**
 
@@ -695,9 +730,19 @@ where the localization weights $w_{ij}(\rho) = K_\rho(x_i - x_j)$ are stored in 
 
 **Part 2 (Reconstruction):** Follows directly from {prf:ref}`thm-fractal-set-reconstruction` items 1-2. The position is obtained by integrating displacement spinors along CST edges, and velocity is directly stored in CST edge spinors.
 
-**Part 3 (Gauge symmetries):**
+**Part 3 (Symmetries):**
 
-**U(1) proof:** The diversity companion selection follows a Gibbs distribution. From the Fractal Set specification, the probability is:
+**S_N permutation proof:** The N-particle algorithm treats walkers as **indistinguishable particles** with arbitrary labels. Any physical observable must be invariant under label permutations $\sigma \in S_N$. For example:
+
+- Cloning probability depends on walker states, not labels: $P_{\text{clone}}(\sigma(i) \to \sigma(j) | \sigma \cdot \mathcal{S}) = P_{\text{clone}}(i \to j | \mathcal{S})$
+- Fitness histogram is an unordered set: $\{V_{\text{fit}}(i) : i \in A_t\}$ is $S_N$-invariant
+- Diversity distances are symmetric: $d_{\text{alg}}(i, j) = d_{\text{alg}}(j, i)$
+
+In the Fractal Set, this fundamental gauge redundancy manifests as **braid holonomy**. When walkers exchange positions during dynamics, their worldlines form braids in spacetime. Closed loops $\gamma$ in configuration space have holonomy $\text{Hol}(\gamma) \in S_N$, measuring the net permutation acquired.
+
+**Discrete holonomy**: For a closed path in CST+IG, the holonomy is computed via the braid homomorphism $\rho: B_N \to S_N$. This **discrete gauge structure** is fundamental - all other symmetries (U(1), SU(2)) are emergent in the continuum limit. Unlike continuous Wilson loops (which are matrix traces), the $S_N$ holonomy is a discrete permutation, making this a hybrid discrete-continuous gauge theory.
+
+**Global U(1) proof:** The diversity companion selection follows a Gibbs distribution. From the Fractal Set specification, the probability is:
 
 $$
 P_{\text{comp}}^{(\text{div})}(k|i) = \frac{\exp\left(-\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2}\right)}{\sum_{k' \in A_t \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}}(i,k')^2}{2\epsilon_d^2}\right)}
@@ -725,12 +770,14 @@ d_{\text{alg}}(i,k)^2 &= \|x_i - x_k\|^2 + \lambda_v \|v_i - v_k\|^2 \\
 
 $$
 
-The U(1) phase $\theta_{ik}^{(\text{U(1)})} = -d_{\text{alg}}(i,k)^2/(2\epsilon_d^2 \hbar_{\text{eff}})$ is likewise invariant. Gauge transformations $\theta_{ik} \to \theta_{ik} + (\lambda_i - \lambda_k)$ correspond to redefining local fitness zero-points, which leave $d_{\text{alg}}$ unchanged and preserve all observable probabilities:
+The U(1) phase $\theta_{ik}^{(\text{U(1)})} = -d_{\text{alg}}(i,k)^2/(2\epsilon_d^2 \hbar_{\text{eff}})$ is likewise invariant. **Global** phase transformations $\psi_{ik}^{(\text{div})} \to e^{i\alpha} \psi_{ik}^{(\text{div})}$ (same $\alpha$ for all $i, k$) leave all observables invariant:
 
 $$
-\left|\psi_{ik}^{(\text{div})}\right|^2 = P_{\text{comp}}^{(\text{div})}(k|i) \quad \text{(gauge-invariant)}
+\left|\psi_{ik}^{(\text{div})}\right|^2 = P_{\text{comp}}^{(\text{div})}(k|i) \quad \text{(global U(1) invariant)}
 
 $$
+
+This is **not a gauge symmetry** - there is no dynamical gauge field. The phases $\theta_{ik}$ are fixed by algorithmic distances. It's a **global symmetry** like baryon number conservation, giving a conserved Noether current $J_{\text{fitness}}^\mu$.
 
 **SU(2) proof:** The cloning amplitude $\Psi(i \to j)$ factorizes ({prf:ref}`def-cloning-amplitude-factorization`) as:
 
