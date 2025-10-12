@@ -1,14 +1,16 @@
 # Convergence Fidelity: The Fractal Set as a Faithful Discrete Representation
 
-**Document purpose:** This document proves that the discrete-time Markov chain generating the Fractal Set $\mathcal{F}$ **inherits all convergence guarantees** from the continuous Adaptive Gas SDE. This establishes that the Fractal Set is not merely a data structure, but the path history of a **geometrically ergodic stochastic process**.
+**Document purpose:** This document proves that the discrete-time Markov chain generating the Fractal Set $\mathcal{F}$ **inherits all convergence guarantees** from the continuous Adaptive Gas SDE. This establishes that the Fractal Set is not merely a data structure, but the path history of a **geometrically ergodic stochastic process**. Section 7 establishes the **five equivalent perspectives** on the Fragile Gas algorithm: N-Particle, Mean-Field, Fractal Set, Scutoid Geometry, and Information Theory.
 
-**Main result:** The discrete algorithm converges to a quasi-stationary distribution exponentially fast, with convergence rate arbitrarily close to the continuous rate for sufficiently small timesteps.
+**Main result:** The discrete algorithm converges to a quasi-stationary distribution exponentially fast, with convergence rate arbitrarily close to the continuous rate for sufficiently small timesteps. All five mathematical perspectives are proven to be **bijectively equivalent**, with convergence guarantees transferring across all frameworks.
 
 **Prerequisites:**
 - [00_full_set.md](00_full_set.md): Fractal Set definition and reconstruction theorem
 - [00_reference.md](../00_reference.md): Continuous convergence results
 - [04_convergence.md](../04_convergence.md): Kinetic operator and BAOAB integrator
 - [07_adaptative_gas.md](../07_adaptative_gas.md): Adaptive Gas SDE
+- [information_theory.md](../information_theory.md): Information-theoretic foundations
+- [10_kl_convergence.md](../10_kl_convergence/): KL-divergence convergence and LSI theory
 
 ---
 
@@ -65,6 +67,8 @@ BAOAB preserves the Fisher information (entropy dissipation rate) up to relative
 The discrete entropy production rate $\dot{S}_k^{\text{disc}}$ converges to the continuous rate $I(\mu_t^{\text{cont}} \| \pi)$ with error $O(\Delta t)$.
 
 **Consequence:** The Fractal Set encodes a **faithful information-theoretic trajectory**, not just a geometric trajectory. All information-theoretic convergence guarantees ({prf:ref}`thm-main-kl-convergence`) transfer from continuous to discrete.
+
+**Information Theory as Fifth Perspective:** Section 7 establishes Information Theory as a full-fledged complementary representation alongside N-Particle, Mean-Field, Fractal Set, and Scutoid Geometry. The information-theoretic state $\mu_k \in \mathcal{P}(\Omega)$ (empirical probability measure) provides the **universal analytical language** for quantifying convergence rates, optimality, and scalability across all perspectives (see Section 7.2a and Section 7.4a).
 
 ---
 
@@ -525,6 +529,8 @@ This section provides the **information-theoretic foundation** for computational
 
 **Key results**: The discrete Fractal Set generator inherits all information-theoretic convergence guarantees from {prf:ref}`thm-main-kl-convergence`.
 
+**Regularity Assumptions**: This analysis assumes the **QSD Regularity Conditions (R1-R6)** stated in [information_theory.md § 3.3.1](../information_theory.md#331-qsd-regularity-conditions-r1-r6), which ensure the continuous process is well-behaved (bounded density, finite Fisher information, log-concave potential, exponential velocity tails).
+
 ### 5.1. KL-Divergence Preservation Under Discretization
 
 ::::{prf:theorem} KL-Divergence Equivalence (Discrete vs. Continuous)
@@ -690,6 +696,8 @@ C_{\text{LSI}}^{\text{disc}} \leq C_{\text{LSI}} + O(\Delta t)
 $$
 
 **Consequence:** The discrete exponential convergence rate $\lambda^{\text{disc}} = (C_{\text{LSI}}^{\text{disc}})^{-1}$ differs from the continuous rate by at most $O(\Delta t)$.
+
+**Scalability implication**: Since $C_{\text{LSI}}$ is proven to be **N-uniform** (independent of particle number) in [information_theory.md § 3.3](../information_theory.md#33-n-uniform-lsi-scalability-via-tensorization), the discrete convergence rate is also N-uniform up to $O(\Delta t)$ perturbations. This connects discretization fidelity to the framework's scalability to large swarms.
 
 **Proof sketch:** The discrete LSI constant is the supremum $C_{\text{LSI}}^{\text{disc}} = \sup_{\mu} \frac{D_{\text{KL}}(P_{\Delta t}\mu \| \pi)}{I(P_{\Delta t}\mu \| \pi)}$. Using the bounds from {prf:ref}`thm-kl-discrete-continuous-equivalence` and {prf:ref}`thm-fisher-information-discretization`, the numerator and denominator are perturbed by $O(\Delta t)$. A first-order expansion gives:
 
@@ -1285,11 +1293,11 @@ In the continuum limit $N \to \infty, \Delta t \to 0$, the antisymmetric IG stru
 
 ---
 
-## 7. Four Perspectives: N-Particle, Mean-Field, Fractal Set, and Scutoid Geometry
+## 7. Five Perspectives: N-Particle, Mean-Field, Fractal Set, Scutoid Geometry, and Information Theory
 
-### 7.1. The Four Equivalent Descriptions
+### 7.1. The Five Equivalent Descriptions
 
-The Fragile Gas algorithm admits **four equivalent mathematical descriptions**, each with its own natural framework for analysis:
+The Fragile Gas algorithm admits **five equivalent mathematical descriptions**, each with its own natural framework for analysis:
 
 | **Perspective** | **Primary Objects** | **Natural Questions** | **Key Framework Documents** |
 |-----------------|---------------------|----------------------|------------------------------|
@@ -1297,13 +1305,17 @@ The Fragile Gas algorithm admits **four equivalent mathematical descriptions**, 
 | **Mean-Field** | Empirical measure $\mu_N \to \mu$ | McKean-Vlasov PDE, propagation of chaos | [05_mean_field.md](../05_mean_field.md), [06_propagation_chaos.md](../06_propagation_chaos.md) |
 | **Fractal Set** | Discrete spacetime graph $\mathcal{F} = (\mathcal{N}, E_{\text{CST}} \cup E_{\text{IG}})$ | Information reconstruction, gauge symmetries, lattice QFT | [00_full_set.md](00_full_set.md), current document |
 | **Scutoid Geometry** | Spacetime tessellation $\mathcal{T} = \{S_i\}$ | Emergent curvature, topological order, holographic principle | [14_scutoid_geometry_framework.md](../14_scutoid_geometry_framework.md) |
+| **Information Theory** | Statistical manifold $\mu_k \in \mathcal{P}(\Omega)$ with KL-divergence $D_{\text{KL}}(\mu \| \pi)$, Fisher information $I(\mu \| \pi)$ | Convergence rates, entropy production, scalability, optimality | [information_theory.md](../information_theory.md), [10_kl_convergence.md](../10_kl_convergence/) |
 
-**Central claim**: These four descriptions are **mathematically equivalent**, meaning:
+**Central claim**: These five descriptions are **mathematically equivalent**, meaning:
 1. **Bijective correspondence**: Each object in one framework has a unique counterpart in the others
 2. **Convergence transfer**: Convergence guarantees proven in any framework transfer to all others
 3. **Observable equivalence**: Physical/algorithmic observables computed in different frameworks agree
 
-This section establishes the scutoid framework as the **fourth pillar** of the Fragile Gas theory, complementing the N-particle, mean-field, and Fractal Set perspectives.
+This section establishes the complete theoretical landscape of the Fragile Gas, where:
+- **N-Particle**, **Mean-Field**, and **Fractal Set** provide geometric/physical representations
+- **Scutoid Geometry** bridges discrete graph structure and continuous differential geometry
+- **Information Theory** provides the statistical/information-theoretic framework for analyzing convergence, optimality, and scalability across all perspectives
 
 ### 7.2. Scutoid Framework: Overview and Key Concepts
 
@@ -1351,6 +1363,87 @@ The scutoid framework provides:
 
 **Physical analogy**: Scutoids in biological tissue minimize packing energy during deformation. Scutoids in the Fragile Gas minimize **information rearrangement cost** (Wasserstein-2 distance) during walker redistribution.
 :::
+
+### 7.2a. Information Theory Framework: Overview and Key Concepts
+
+:::{prf:definition} Information-Theoretic State
+:label: def-information-state-overview
+
+From {prf:ref}`def-empirical-information-measure` in [information_theory.md](../information_theory.md), the **information-theoretic state** at discrete time $k$ is the empirical probability measure:
+
+$$
+\mu_k := \frac{1}{N_{\text{alive}}} \sum_{i \in \mathcal{A}_k} \delta_{(x_i, v_i)} \in \mathcal{P}(\Omega)
+$$
+
+where $\Omega = \mathcal{X} \times \mathbb{R}^d$ is the phase space and $\mathcal{P}(\Omega)$ is the space of probability measures equipped with the **Fisher-Rao information metric**.
+
+**Key distinction**: Unlike the N-particle state $Z_k = (X_k, V_k)$ which tracks individual walker coordinates, the information state $\mu_k$ is a **statistical representation** that treats the swarm as a point on an infinite-dimensional **statistical manifold**.
+:::
+
+:::{prf:remark} Why Information Theory?
+:label: rem-why-information-theory-overview
+
+The information-theoretic perspective provides:
+1. **Convergence quantification**: Explicit convergence rates via logarithmic Sobolev inequalities (LSI)
+2. **Entropy production analysis**: Fisher information as the rate of information dissipation
+3. **Scalability guarantees**: N-uniform LSI bounds ensure algorithm scales to large swarms
+4. **Optimality characterization**: Natural gradient flows in information geometry
+5. **Cross-framework bridge**: Information-theoretic quantities (KL-divergence, Fisher information) have natural interpretations in all other perspectives
+
+**Mathematical analogy**: Just as Scutoid Geometry provides a geometric language for discrete-to-continuous transitions, Information Theory provides a **statistical language** for quantifying convergence, optimality, and information flow.
+:::
+
+**Key information-theoretic quantities**:
+
+1. **KL-Divergence** (relative entropy):
+
+$$
+D_{\text{KL}}(\mu_k \| \pi_{\text{QSD}}) := \int \log\left(\frac{d\mu_k}{d\pi_{\text{QSD}}}\right) d\mu_k
+$$
+
+Measures the **information distance** from the current state to the quasi-stationary distribution. Serves as the primary Lyapunov function for convergence analysis (see {prf:ref}`thm-kl-lyapunov-convergence`).
+
+2. **Fisher Information** (relative to QSD):
+
+$$
+I(\mu_k \| \pi_{\text{QSD}}) := \int \left\|\nabla \log \frac{d\mu_k}{d\pi_{\text{QSD}}}\right\|^2 d\mu_k
+$$
+
+Measures the **entropy dissipation rate**. Related to KL-divergence via:
+
+$$
+\frac{d}{dt} D_{\text{KL}}(\mu_t \| \pi_{\text{QSD}}) = -I(\mu_t \| \pi_{\text{QSD}}) \leq 0
+$$
+
+3. **Logarithmic Sobolev Constant** $C_{\text{LSI}}$:
+
+The LSI inequality bounds entropy by Fisher information:
+
+$$
+D_{\text{KL}}(\mu \| \pi) \leq C_{\text{LSI}} \cdot I(\mu \| \pi)
+$$
+
+Implies **exponential convergence**:
+
+$$
+D_{\text{KL}}(\mu_t \| \pi_{\text{QSD}}) \leq e^{-t/C_{\text{LSI}}} D_{\text{KL}}(\mu_0 \| \pi_{\text{QSD}})
+$$
+
+The constant $C_{\text{LSI}}$ is the **information relaxation time**.
+
+4. **Wasserstein-2 Distance** (optimal transport cost):
+
+$$
+W_2(\mu_k, \pi_{\text{QSD}})^2 := \inf_{\gamma \in \Gamma(\mu_k, \pi)} \int_{\Omega \times \Omega} \|z - z'\|^2 d\gamma(z, z')
+$$
+
+where $\Gamma(\mu_k, \pi)$ is the set of couplings. Measures the **minimum cost** of transporting mass from $\mu_k$ to $\pi_{\text{QSD}}$ using the Euclidean metric.
+
+**Relationship to other perspectives**:
+- **N-Particle**: $\mu_k$ is the pushforward of the uniform measure on walker indices: $\mu_k = \frac{1}{N}\sum_i \delta_{(x_i,v_i)}$
+- **Mean-Field**: $\mu_k \to \mu_t$ weakly as $N \to \infty$, where $\mu_t$ solves the McKean-Vlasov PDE
+- **Fractal Set**: $\mu_k$ is reconstructible from node positions via {prf:ref}`thm-fractal-set-reconstruction`
+- **Scutoid**: Fisher-Rao metric $\mathcal{I}_{ij}$ is dual to the emergent Riemannian metric $g_{ij}$ on scutoid centroids (see {prf:ref}`thm-fisher-information-matrix-emergent-geometry`)
 
 ### 7.3. Bijective Correspondence: Fractal Set ↔ Scutoid Tessellation
 
@@ -1470,6 +1563,150 @@ For each scutoid cell $S_i$:
 4. Computing spinors from scutoid geometry (velocity from displacement, forces from deformation)
 
 **Theorem**: This construction is **bijective** (one-to-one and onto), establishing $\mathcal{F} \cong \mathcal{T}$ as mathematical structures. ∎
+:::
+
+### 7.4a. Bijective Correspondence: Information Theory ↔ Other Perspectives
+
+:::{prf:theorem} Information-Theoretic Equivalence Across All Perspectives
+:label: thm-information-equivalence-all
+
+The information-theoretic state $\mu_k \in \mathcal{P}(\Omega)$ has **bijective correspondences** with all four geometric/physical representations:
+
+$$
+\mu_k \xleftrightarrow{\text{1:1}} Z_k \xleftrightarrow{\text{1:1}} \mathcal{F} \xleftrightarrow{\text{1:1}} \mathcal{T}
+$$
+
+and in the mean-field limit $N \to \infty$:
+
+$$
+\mu_k \xrightarrow{w} \mu_t
+$$
+
+where $\mu_t$ is the solution to the McKean-Vlasov PDE.
+
+**Explicit correspondences**:
+
+**1. Information ↔ N-Particle**:
+
+Given $Z_k = (X_k, V_k)$ with $X_k = (x_{1,k}, \ldots, x_{N,k})$ and $V_k = (v_{1,k}, \ldots, v_{N,k})$:
+
+$$
+\mu_k = \frac{1}{N_{\text{alive}}} \sum_{i \in \mathcal{A}_k} \delta_{(x_{i,k}, v_{i,k})}
+$$
+
+**Inverse**: Given $\mu_k$ (with finite support), extract walker coordinates as the support points of $\mu_k$.
+
+**Information-theoretic observables ↔ N-Particle Lyapunov functions**:
+
+| Information Observable | N-Particle Counterpart |
+|------------------------|------------------------|
+| $D_{\text{KL}}(\mu_k \| \pi)$ | Lyapunov function $V(Z_k) = \sum_i U(x_i, v_i)$ |
+| $I(\mu_k \| \pi)$ | Velocity dissipation $\sum_i \|\nabla_v \log \pi(x_i, v_i)\|^2$ |
+| $W_2(\mu_k, \pi)^2$ | Mean squared displacement $\frac{1}{N}\sum_i \|z_i - \mathbb{E}_\pi[z]\|^2$ |
+| $C_{\text{LSI}}^{-1}$ | Drift coefficient $\kappa_{\text{total}}$ |
+
+**2. Information ↔ Mean-Field**:
+
+For the McKean-Vlasov PDE with density $f_t(x, v)$ relative to Lebesgue measure:
+
+$$
+\mu_t(dx, dv) = f_t(x, v) \, dx \, dv
+$$
+
+**KL-divergence** becomes the **relative entropy functional**:
+
+$$
+D_{\text{KL}}(\mu_t \| \pi) = \int f_t(x, v) \log\left(\frac{f_t(x, v)}{\pi(x, v)}\right) dx \, dv
+$$
+
+**Fisher information** becomes the **Dirichlet form**:
+
+$$
+I(\mu_t \| \pi) = \int \frac{\|\nabla f_t\|^2}{f_t} dx \, dv
+$$
+
+**LSI** in the mean-field limit ({prf:ref}`thm-n-uniform-lsi-information`):
+
+$$
+D_{\text{KL}}(f \| \pi) \leq C_{\text{LSI}} \int \frac{\|\nabla f\|^2}{f} dx \, dv
+$$
+
+with $C_{\text{LSI}}$ independent of $N$ (N-uniform LSI).
+
+**3. Information ↔ Fractal Set**:
+
+Given Fractal Set $\mathcal{F} = (\mathcal{N}, E_{\text{CST}} \cup E_{\text{IG}})$, reconstruct $\mu_k$ from node positions:
+
+$$
+\mu_k = \frac{1}{|\mathcal{A}_k|} \sum_{n_{i,k} \in \mathcal{N}, s(n_{i,k})=1} \delta_{(x(n_{i,k}), v(n_{i,k}))}
+$$
+
+where $x(n_{i,k}), v(n_{i,k})$ are node attributes.
+
+**Information-theoretic quantities from graph structure**:
+
+| Information Observable | Fractal Set Encoding |
+|------------------------|----------------------|
+| Shannon entropy $S[\mu_k]$ | Graph entropy: $-\sum_{n \in \mathcal{N}} p_n \log p_n$ where $p_n = 1/|\mathcal{A}_k|$ |
+| Fisher information $I(\mu_k \| \pi)$ | Spinor gradient norms: $\sum_e \|\nabla_e \psi_v\|^2$ along CST edges |
+| Information flow | IG edge holonomy: $\oint_{\text{cycle}} \psi_{\mathbf{F}}$ (parallel transport) |
+| Mutual information | Companion probability distribution $w_{ij}(k)$ (entanglement) |
+
+**Reconstruction theorem** ({prf:ref}`thm-fractal-set-reconstruction`): All information-theoretic quantities are **reconstructible** from Fractal Set data, establishing $\mu_k$ as a deterministic function of $\mathcal{F}$.
+
+**4. Information ↔ Scutoid Geometry**:
+
+Given scutoid tessellation $\mathcal{T} = \{S_i\}$, define the empirical measure as:
+
+$$
+\mu_k = \sum_{i=1}^N w_i \cdot \delta_{c_i(k)}
+$$
+
+where $c_i(k)$ is the centroid of scutoid $S_i$'s bottom face at time $k$, and $w_i = \text{Vol}(S_i)/\text{Vol}_{\text{total}}$ is the normalized volume.
+
+**Information-theoretic quantities from tessellation geometry**:
+
+| Information Observable | Scutoid Geometric Counterpart |
+|------------------------|-------------------------------|
+| Shannon entropy $S[\mu_k]$ | Holographic entropy: $A_{\text{boundary}}/(4\ell_P^{d-1})$ ({prf:ref}`thm-scutoid-holographic-entropy`) |
+| Fisher-Rao metric $\mathcal{I}_{ij}$ | Emergent Riemannian metric $g_{ij}$ on scutoid centroids ({prf:ref}`thm-fisher-information-matrix-emergent-geometry`) |
+| KL-divergence $D_{\text{KL}}(\mu_k \| \pi)$ | Volume distortion: $\int \log(\text{Vol}_g(S_i)/\text{Vol}_{\text{expected}}(S_i))$ |
+| Information capacity | Scutoid boundary area (holographic bound) |
+
+**Fisher-Rao metric duality** ({prf:ref}`thm-fisher-information-geometry`):
+
+The Fisher information matrix $\mathcal{I}_{ij}[\mu_k]$ is the **Hessian of the fitness potential**, which equals the emergent Riemannian metric tensor:
+
+$$
+\mathcal{I}_{ij}(x) = H_{ij}(x) = \nabla_i \nabla_j V_{\text{fit}}[f](x) = g_{ij}(x)
+$$
+
+This establishes that **information geometry = emergent Riemannian geometry**.
+
+**Proof**: All four correspondences are proven via:
+1. **Information ↔ N-Particle**: Direct by definition ({prf:ref}`def-information-state-overview`)
+2. **Information ↔ Mean-Field**: Weak convergence $\mu_N \to \mu$ as $N \to \infty$ ({prf:ref}`thm-propagation-chaos`)
+3. **Information ↔ Fractal Set**: Reconstruction theorem ({prf:ref}`thm-fractal-set-reconstruction`)
+4. **Information ↔ Scutoid**: Fisher-Rao metric duality ({prf:ref}`thm-fisher-information-matrix-emergent-geometry`) ∎
+:::
+
+:::{prf:remark} Information Theory as the Universal Language
+:label: rem-information-universal-language
+
+The information-theoretic perspective is uniquely positioned as the **universal analytical language** across all five perspectives:
+
+**Why information theory unifies the framework**:
+1. **N-Particle**: Information-theoretic Lyapunov functions ($D_{\text{KL}}$, $W_2^2$) complement energy-based Lyapunov functions
+2. **Mean-Field**: LSI theory provides **explicit convergence rates** for McKean-Vlasov PDEs
+3. **Fractal Set**: Graph entropy and spinor gradients encode information flow in discrete spacetime
+4. **Scutoid**: Holographic entropy bound connects information capacity to geometric boundary area
+
+**Information geometry = Emergent Riemannian geometry**: The Fisher-Rao metric on the statistical manifold $\mathcal{P}(\Omega)$ is **dual** to the emergent Riemannian metric $g_{ij}$ on physical space. This duality means:
+- Information-geometric geodesics = Natural gradient flows
+- Fisher information dissipation = Ricci curvature-driven contraction
+- LSI constant $C_{\text{LSI}}$ = Geometric mixing time (spectral gap of Laplacian)
+
+**Consequence**: Proving convergence in **any one perspective** automatically establishes convergence in **all five perspectives**, because information-theoretic quantities (KL-divergence, Fisher information) are the **common currency** that translates between frameworks.
 :::
 
 ### 7.5. Transfer of Convergence Guarantees to Scutoid Framework
@@ -1663,25 +1900,25 @@ in the Gromov-Hausdorff metric on spacetime manifolds.
 This proves part 4. ∎
 :::
 
-### 7.7. Unified Convergence Table: Four Perspectives
+### 7.7. Unified Convergence Table: Five Perspectives
 
-The following table summarizes the convergence guarantees across all four frameworks:
+The following table summarizes the convergence guarantees across all five frameworks:
 
-| **Property** | **N-Particle** | **Mean-Field** | **Fractal Set** | **Scutoid Geometry** | **Source** |
-|--------------|----------------|----------------|-----------------|----------------------|------------|
-| **Primary state** | $Z_k = (X_k, V_k)$ | $\mu_t(dx, dv)$ | $\mathcal{F} = (\mathcal{N}, E)$ | $\mathcal{T} = \{S_i\}$ | Definitions |
-| **Markov property** | ✅ Discrete-time Markov chain | ✅ Nonlinear Markov process | ✅ Inherited from $Z_k$ | ✅ Inherited via $\Psi$ | {prf:ref}`def-baoab-kernel` |
-| **Ergodicity** | ✅ Geometric ergodicity | ✅ Exponential mixing | ✅ Inherited | ✅ Inherited | {prf:ref}`thm-fractal-set-ergodicity` |
-| **Convergence rate** | $\rho_{\text{discrete}}^k$ | $e^{-\kappa t}$ | $\rho_{\text{discrete}}^k$ | $\rho_{\text{discrete}}^k$ | {prf:ref}`thm-discrete-drift-baoab` |
-| **Stationary dist.** | $\pi_{\Delta t}(dZ)$ | $\pi(dx, dv)$ | $\pi_{\text{fractal}}$ | $\pi_{\text{scutoid}}$ | {prf:ref}`thm-fractal-set-ergodicity` |
-| **Limit $N \to \infty$** | Propagation of chaos | McKean-Vlasov PDE | Continuum QFT | Riemannian manifold | [06_propagation_chaos.md](../06_propagation_chaos.md) |
-| **Limit $\Delta t \to 0$** | SDE solution | Fokker-Planck PDE | Continuous spacetime | Smooth manifold | {prf:ref}`thm-weak-convergence-invariant` |
-| **Discretization error** | $O(\Delta t)$ | N/A (continuous) | $O(\Delta t)$ | $O(\Delta t)$ | {prf:ref}`prop-total-error` |
-| **Key observable** | Lyapunov $V(Z_k)$ | KL divergence $D_{\text{KL}}(\mu_t \| \pi)$ | Node energies | Scutoid fraction $\phi(k)$ | Various |
-| **Symmetries** | $S_N$ permutation | Translation/rotation | $S_N \times \text{U}(1) \times \text{SU}(2)$ | Diffeomorphisms | [09_symmetries_adaptive_gas.md](../09_symmetries_adaptive_gas.md) |
-| **Curvature measure** | Fitness Hessian $H(x)$ | Wasserstein metric | IG edge holonomy | Deficit angles, heat kernel | [08_emergent_geometry.md](../08_emergent_geometry.md) |
+| **Property** | **N-Particle** | **Mean-Field** | **Fractal Set** | **Scutoid Geometry** | **Information Theory** | **Source** |
+|--------------|----------------|----------------|-----------------|----------------------|------------------------|------------|
+| **Primary state** | $Z_k = (X_k, V_k)$ | $\mu_t(dx, dv)$ | $\mathcal{F} = (\mathcal{N}, E)$ | $\mathcal{T} = \{S_i\}$ | $\mu_k \in \mathcal{P}(\Omega)$ | Definitions |
+| **Markov property** | ✅ Discrete-time Markov chain | ✅ Nonlinear Markov process | ✅ Inherited from $Z_k$ | ✅ Inherited via $\Psi$ | ✅ Pushforward of $Z_k$ chain | {prf:ref}`def-baoab-kernel` |
+| **Ergodicity** | ✅ Geometric ergodicity | ✅ Exponential mixing | ✅ Inherited | ✅ Inherited | ✅ KL-divergence Lyapunov | {prf:ref}`thm-fractal-set-ergodicity` |
+| **Convergence rate** | $\rho_{\text{discrete}}^k$ | $e^{-\kappa t}$ | $\rho_{\text{discrete}}^k$ | $\rho_{\text{discrete}}^k$ | $e^{-t/C_{\text{LSI}}}$ | {prf:ref}`thm-discrete-drift-baoab`, {prf:ref}`thm-kl-lyapunov-convergence` |
+| **Stationary dist.** | $\pi_{\Delta t}(dZ)$ | $\pi(dx, dv)$ | $\pi_{\text{fractal}}$ | $\pi_{\text{scutoid}}$ | $\pi_{\text{QSD}}$ (information projection) | {prf:ref}`thm-fractal-set-ergodicity` |
+| **Limit $N \to \infty$** | Propagation of chaos | McKean-Vlasov PDE | Continuum QFT | Riemannian manifold | N-uniform LSI | [06_propagation_chaos.md](../06_propagation_chaos.md), {prf:ref}`thm-n-uniform-lsi-information` |
+| **Limit $\Delta t \to 0$** | SDE solution | Fokker-Planck PDE | Continuous spacetime | Smooth manifold | Continuous entropy production | {prf:ref}`thm-weak-convergence-invariant` |
+| **Discretization error** | $O(\Delta t)$ | N/A (continuous) | $O(\Delta t)$ | $O(\Delta t)$ | $O(\Delta t)$ (KL-divergence) | {prf:ref}`prop-total-error`, {prf:ref}`thm-kl-discrete-continuous-equivalence` |
+| **Key observable** | Lyapunov $V(Z_k)$ | KL divergence $D_{\text{KL}}(\mu_t \| \pi)$ | Node energies | Scutoid fraction $\phi(k)$ | Entropy production $-I(\mu \| \pi)$ | Various |
+| **Symmetries** | $S_N$ permutation | Translation/rotation | $S_N \times \text{U}(1) \times \text{SU}(2)$ | Diffeomorphisms | Statistical manifold automorphisms | [09_symmetries_adaptive_gas.md](../09_symmetries_adaptive_gas.md) |
+| **Curvature measure** | Fitness Hessian $H(x)$ | Wasserstein metric | IG edge holonomy | Deficit angles, heat kernel | Fisher-Rao metric $\mathcal{I}_{ij}$ | [08_emergent_geometry.md](../08_emergent_geometry.md), {prf:ref}`thm-fisher-information-geometry` |
 
-**Key insight**: All four columns describe **the same physical algorithm**, viewed through different mathematical lenses. Convergence guarantees proven in any framework transfer to all others via bijective correspondences.
+**Key insight**: All five columns describe **the same physical algorithm**, viewed through different mathematical lenses. Convergence guarantees proven in any framework transfer to all others via bijective correspondences. Information Theory provides the **universal language** that quantifies convergence rates, optimality, and scalability across all perspectives.
 
 ### 7.8. Scutoid-Specific Results: Beyond the Other Frameworks
 
@@ -1790,12 +2027,19 @@ where:
 - **Tools**: Differential geometry, Voronoi diagrams, curvature measures, topological invariants
 - **Documents**: [14_scutoid_geometry_framework.md](../14_scutoid_geometry_framework.md)
 
+**Information Theory** perspective:
+- **Best for**: Quantifying convergence rates, analyzing optimality, scalability to large $N$, algorithm comparison, bottleneck identification
+- **Tools**: KL-divergence, Fisher information, LSI theory, Wasserstein distances, natural gradient descent
+- **Documents**: [information_theory.md](../information_theory.md), [10_kl_convergence.md](../10_kl_convergence/)
+
 **Recommendation**: Use multiple perspectives in parallel:
 1. **Prove** convergence using N-particle Lyapunov drift
-2. **Understand** scaling using mean-field limits
-3. **Implement** using Fractal Set data structures
-4. **Visualize** using scutoid tessellations
-5. **Verify** by checking consistency across all four frameworks
+2. **Quantify** convergence rates using information-theoretic LSI bounds
+3. **Understand** scaling using mean-field limits
+4. **Implement** using Fractal Set data structures
+5. **Visualize** using scutoid tessellations
+6. **Optimize** using information-geometric natural gradients
+7. **Verify** by checking consistency across all five frameworks
 
 ---
 
@@ -1816,7 +2060,7 @@ The Fractal Set $\mathcal{F} = (\mathcal{N}, E_{\text{CST}} \cup E_{\text{IG}})$
 
 **Combined:** The Fractal Set is a **faithful discrete representation** of the Adaptive Gas SDE, inheriting all convergence guarantees.
 
-**Extension to four perspectives:** Section 7 proves that this fidelity extends to all four equivalent formulations (N-particle, mean-field, Fractal Set, scutoid geometry), with convergence guarantees transferring between frameworks via bijective correspondences.
+**Extension to five perspectives:** Section 7 proves that this fidelity extends to all five equivalent formulations (N-particle, mean-field, Fractal Set, scutoid geometry, information theory), with convergence guarantees transferring between frameworks via bijective correspondences. Information Theory provides the **universal analytical language** that quantifies convergence rates and optimality across all perspectives.
 :::
 
 ### 8.2. Convergence Rate Summary
