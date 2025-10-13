@@ -30,6 +30,7 @@ This document provides a comprehensive, searchable reference of all mathematical
 - [15_millennium_problem_completion.md](15_millennium_problem_completion.md) - **Yang-Mills Millennium Problem Solution (12 mathematical objects)**: Matter vs gauge field distinction, pure Yang-Mills Hamiltonian from Noether current, gauge field decoupling in mean-field limit with uniform QSD, Wilson loop area law from LSI and Fractal Set geometric decomposition (two independent proofs), string tension σ = c·λ_gap/ε_c², oscillation frequency lower bound from uniform ellipticity, pure Yang-Mills mass gap Δ_YM ≥ c₀·λ_gap·ℏ_eff > 0, QSD velocity distribution is Maxwellian from BAOAB Ornstein-Uhlenbeck process, Noether current vanishes in QSD by rotational symmetry, uniform QSD assumption validated as theorem (no hidden assumptions), complete Clay Institute requirements satisfied
 - [16_general_relativity_derivation.md](16_general_relativity_derivation.md), [16_C_qsd_equilibrium_proof.md](16_C_qsd_equilibrium_proof.md), [16_D2_ricci_functional_rigorous.md](16_D2_ricci_functional_rigorous.md), [16_F_adaptive_forces.md](16_F_adaptive_forces.md), [16_G_viscous_coupling.md](16_G_viscous_coupling.md) - **Emergent General Relativity from QSD (38 mathematical objects)**: Discrete and continuum stress-energy tensors from walker kinematics, $O(1/\sqrt{N} + \Delta t)$ convergence, energy-momentum conservation at QSD ($\nabla_\mu T^{\mu\nu} = 0$), Einstein field equations $G_{\mu\nu} = 8\pi G T_{\mu\nu}$ from Raychaudhuri consistency, Newton's constant from algorithmic parameters, Voronoi/CVT theory, Wasserstein-2 distance, Brenier-McCann optimal transport, emergent metric = OT metric (rigorous variational proof via Kullback-Leibler potential), Regge calculus convergence $O(N^{-2/d})$, CVT shape regularity, scutoid Ricci convergence to Riemannian Ricci, Ricci functional property (dependence only through metric), Lovelock preconditions satisfied, complete error estimate $O(N^{-1/d})$ from CVT quantization, adaptive force corrections vanish at QSD, viscous coupling momentum conservation and energy dissipation, source term vanishing $J^\nu = 0$ at equilibrium, testable predictions (zero cosmological constant, GW damping, modified Friedmann equations)
 - [hydrodynamics.md](hydrodynamics.md) - **Fragile Hydrodynamics and Stochastic Navier-Stokes (25 mathematical objects)**: Velocity-modulated viscosity coefficient with local kinetic energy density, velocity-modulated viscous force as discrete Laplacian, global dissipation via kernel symmetry cancellation (anti-dissipative terms vanish), discrete strain rate tensor, velocity-modulated stress tensor (symmetric incompressible vs asymmetric compressible), N-particle Fragile Navier-Stokes SDE system with Itô-Stratonovich equivalence, global well-posedness for N-particle system (velocity boundedness, spatial confinement, moment bounds, uniqueness), empirical phase-space density, mean-field Fragile Navier-Stokes Fokker-Planck PDE, O(1/√N) Wasserstein-2 mean-field convergence, global weak solutions via entropy method with rigorous regularization (explicit dominating function for DCT), Hölder continuity and instantaneous C^{k+2} smoothing, exponential QSD convergence via LSI stability under perturbations, macroscopic conservation laws (mass, momentum, energy), continuum vorticity equation with global enstrophy bound, Fragile Reynolds number, Kolmogorov k^{-5/3} turbulence scaling with adaptive cutoff, three structural blow-up prevention mechanisms (velocity bounds, adaptive viscosity, cloning regularization), resolution of 3D Navier-Stokes well-posedness by construction
+- [curvature.md](curvature.md) - **Unified Curvature Theory and Dimension Estimation (10+ mathematical objects)**: Weyl conformal tensor (trace-free Riemann tensor), Weyl squared norm $\|C\|^2$ (anisotropic curvature measure), Regge calculus Weyl norm computation (O(N·d²) efficient algorithm), intrinsic dimension (topological vs Hausdorff vs correlation vs box-counting), eight dimension estimation methods (Myrheim-Meyer causal set, Levina-Bickel ML k-NN, Local PCA eigenvalue spectrum, Grassberger-Procaccia correlation, Box-counting fractal, Graph Laplacian spectral decay, Geodesic volume growth, **Scutoid Topological Dimension unique to framework** via Voronoi coordination numbers), QSD-corrected dimension estimation with importance weighting, multi-method consensus algorithm with confidence intervals, dimension-curvature consistency checks, comprehensive comparison tables and decision trees
 
 Complete coverage from foundational axioms through N-particle and mean-field KL-convergence to discrete spacetime formulation, Yang-Mills effective field theory, **complete solution to the Clay Mathematics Institute Yang-Mills Millennium Problem** with rigorous proof of mass gap via confinement, **derivation of Einstein's general relativity from algorithmic dynamics at quasi-stationary distribution** without quantum mechanics, holography, or thermodynamic assumptions, and **rigorous globally well-posed stochastic Navier-Stokes equations with velocity-modulated viscosity** avoiding classical blow-up issues.
 
@@ -65,6 +66,7 @@ Complete coverage from foundational axioms through N-particle and mean-field KL-
 - [Quantitative Error Bounds and Convergence Rates](#quantitative-error-bounds-and-convergence-rates)
 - [Yang-Mills Millennium Problem and Mass Gap](#yang-mills-millennium-problem-and-mass-gap)
 - [Emergent General Relativity from Fractal Set Dynamics](#emergent-general-relativity-from-fractal-set-dynamics)
+- [Unified Curvature Theory and Dimension Estimation](#unified-curvature-theory-and-dimension-estimation)
 - [Key Inequalities and Bounds](#key-inequalities-and-bounds)
 
 ---
@@ -22777,6 +22779,294 @@ by integration by parts and Maxwellian decay.
 
 ---
 
+## Unified Curvature Theory and Dimension Estimation
+
+This section contains the unified treatment of curvature in the Fragile Gas framework, including five equivalent Ricci scalar definitions, full Riemann and Weyl tensor computation, and eight dimension estimation methods for inferring intrinsic manifold dimension from walker point clouds.
+
+### Weyl Tensor (Conformal Curvature)
+
+**Type:** Definition
+**Label:** `def-weyl-tensor`
+**Source:** [curvature.md § 4.1](curvature.md)
+**Tags:** `curvature`, `weyl-tensor`, `conformal`, `trace-free`
+
+**Statement:**
+The **Weyl conformal tensor** $C_{abcd}$ is the trace-free part of the Riemann tensor $R_{abcd}$:
+
+$$
+C_{abcd} = R_{abcd} - \frac{1}{d-2}\left(g_{ac}R_{bd} - g_{ad}R_{bc} + g_{bd}R_{ac} - g_{bc}R_{ad}\right) + \frac{R}{(d-1)(d-2)}\left(g_{ac}g_{bd} - g_{ad}g_{bc}\right)
+$$
+
+where $R_{bd}$ is the Ricci tensor, $R$ is the Ricci scalar, and $g_{ab}$ is the metric tensor.
+
+**Key properties:**
+- **Trace-free**: All contractions vanish
+- **Conformal invariance**: Invariant under conformal transformations $g \to \Omega^2 g$
+- **Non-zero only for $d \ge 4$**: $C_{abcd} = 0$ identically for $d \le 3$
+
+**Related Results:** `def-riemann-tensor`, `def-weyl-squared-norm`
+
+---
+
+### Weyl Squared Norm
+
+**Type:** Definition
+**Label:** `def-weyl-squared-norm`
+**Source:** [curvature.md § 4.2](curvature.md)
+**Tags:** `curvature`, `weyl-tensor`, `norm`, `anisotropy`
+
+**Statement:**
+The **Weyl squared norm** is the contraction:
+
+$$
+\|C\|^2 := C_{abcd} C^{abcd} = g^{ae} g^{bf} g^{cg} g^{dh} C_{abcd} C_{efgh}
+$$
+
+**Physical interpretation:** Measures pure anisotropic curvature (shape distortion without volume change). Non-zero $\|C\|^2$ indicates tidal forces.
+
+**Related Results:** `def-weyl-tensor`, `alg-regge-calculus-weyl-norm`
+
+---
+
+### Regge Calculus Weyl Norm (Efficient Computation)
+
+**Type:** Algorithm
+**Label:** `alg-regge-calculus-weyl-norm`
+**Source:** [curvature.md § 4.6.1](curvature.md)
+**Tags:** `algorithm`, `weyl-tensor`, `regge-calculus`, `scutoid`, `O(N·d²)`
+
+**Statement:**
+For a Delaunay/scutoid tessellation, compute $\int \|C\|^2 \, dV$ via **Regge calculus** without computing the full $O(d^4)$ Weyl tensor:
+
+$$
+\int_{\mathcal{M}} \|C\|^2 \, dV \approx \sum_{h \in \text{hinges}} V_h \, \mathcal{W}(h)
+$$
+
+where $V_h$ is the $(d-2)$-volume of hinge $h$, and $\mathcal{W}(h)$ is the Weyl deficit angle:
+
+**For $d=3$:**
+$$
+\mathcal{W}(e) = \frac{1}{2\pi} \left[\delta_e^2 - \frac{1}{3}\left(\sum_{f \ni e} A_f \delta_f\right)^2 / \sum_{f \ni e} A_f\right]
+$$
+
+**For $d=4$:**
+$$
+\mathcal{W}(h) = \delta_h^2 - \frac{1}{5}\sum_{t \ni h} V_t \delta_t^2 / \sum_{t \ni h} V_t
+$$
+
+**Complexity:** $O(N \cdot d^2)$ (compare to $O(N \cdot d^4)$ for full tensor)
+
+**Advantage:** Recommended method for scutoid tessellations in Fragile Gas framework
+
+**Related Results:** `def-weyl-squared-norm`, `def-deficit-angle-curvature`
+
+---
+
+### Intrinsic Dimension
+
+**Type:** Definition
+**Label:** `def-intrinsic-dimension`
+**Source:** [curvature.md § 7.1](curvature.md)
+**Tags:** `dimension`, `manifold`, `intrinsic`, `ambient`
+
+**Statement:**
+Let $\mathcal{M} \subset \mathbb{R}^d$ be a smooth embedded manifold. The **intrinsic dimension** $\dim(\mathcal{M})$ is the number of independent coordinates needed to parameterize $\mathcal{M}$ locally.
+
+For a point cloud $\{x_1, \ldots, x_N\} \subset \mathbb{R}^d$ sampled from an unknown manifold $\mathcal{M}$, the intrinsic dimension is the dimension of the underlying manifold, **not** the ambient dimension $d$.
+
+**Dimension hierarchy:**
+$$
+d_{\text{top}} \le d_{\text{int}} \le d_{\text{corr}} \le d_{\text{box}} \le d_H \le d_{\text{ambient}}
+$$
+
+where $d_{\text{top}}$ = topological, $d_{\text{int}}$ = intrinsic, $d_{\text{corr}}$ = correlation, $d_{\text{box}}$ = box-counting, $d_H$ = Hausdorff.
+
+**Related Results:** Eight dimension estimators below
+
+---
+
+### Myrheim-Meyer Dimension Estimator
+
+**Type:** Definition
+**Label:** `def-myrheim-meyer-dimension`
+**Source:** [curvature.md § 7.2](curvature.md)
+**Tags:** `dimension`, `causal-set`, `myrheim-meyer`, `temporal`
+
+**Statement:**
+For episodes $e_1, e_2 \in E$ in the Fractal Set with causal order $\prec$, the **Myrheim-Meyer dimension** is:
+
+$$
+\hat{d}_{\text{MM}} = \frac{\mathbb{E}[\ln n_{ij}]}{\mathbb{E}[\ln g_{ij}]}
+$$
+
+where:
+- $n_{ij} = |I(e_i, e_j)| = |\{e \in E : e_i \prec e \prec e_j\}|$ (causal interval size)
+- $g_{ij} = \sqrt{n_{ik} \cdot n_{kj}}$ (geometric mean via intermediate event $e_k$ with $e_i \prec e_k \prec e_j$)
+
+**Expected value:** For a $d$-dimensional Lorentzian manifold, $\mathbb{E}[\hat{d}_{\text{MM}}] = d + O((\Delta t)^{-1})$
+
+**Complexity:** $O(N^2)$ (all pairs causality)
+
+**Framework integration:** Native to Fractal Set episodes, requires causal structure
+
+**Related Results:** `def-fractal-set`, `def-causal-interval`
+
+---
+
+### Levina-Bickel ML Dimension Estimator
+
+**Type:** Definition
+**Label:** `def-levina-bickel-dimension`
+**Source:** [curvature.md § 7.3](curvature.md)
+**Tags:** `dimension`, `k-nearest-neighbor`, `maximum-likelihood`, `local`
+
+**Statement:**
+For a point cloud $\{x_1, \ldots, x_N\} \subset \mathbb{R}^d$ sampled from a $d_{\text{int}}$-dimensional manifold, let $r_j(x_i)$ be the distance from $x_i$ to its $j$-th nearest neighbor. The **maximum likelihood estimator** of dimension at point $x_i$ is:
+
+$$
+\hat{d}_{\text{ML}}(x_i) = \left[\frac{1}{k-1} \sum_{j=1}^{k-1} \log\frac{r_k(x_i)}{r_j(x_i)}\right]^{-1}
+$$
+
+where $k \ge 2$ is a fixed neighborhood size.
+
+**Global estimate:** $\hat{d} = \text{median}_i \hat{d}_{\text{ML}}(x_i)$ or weighted mean
+
+**Complexity:** $O(N \log N)$ (k-d tree) + $O(Nk)$ (fastest distance-based method)
+
+**Advantages:** Robust, fast, provides local dimension field
+
+**QSD correction:** Use importance weights $w_i = 1/\rho(x_i)$ for non-uniform sampling
+
+**Related Results:** `def-intrinsic-dimension`
+
+---
+
+### Scutoid Topological Dimension (STD)
+
+**Type:** Definition
+**Label:** `def-scutoid-topological-dimension`
+**Source:** [curvature.md § 7.8](curvature.md)
+**Tags:** `dimension`, `scutoid`, `voronoi`, `coordination-number`, `framework-native`
+
+**Statement:**
+For a random Poisson point process in $\mathbb{R}^d$, the expected number of neighbors of a Voronoi cell is:
+
+$$
+N_{\text{avg}}(d) = \frac{2^d \pi^{(d-1)/2} \Gamma(d^2/2 + 1)}{[\Gamma(d/2 + 1)]^2 \Gamma((d^2-d+1)/2)}
+$$
+
+The **Scutoid Topological Dimension (STD) estimator**, $\hat{d}_{\text{STD}}$, is the value of $d$ that solves:
+
+$$
+N_{\text{avg}}(\hat{d}_{\text{STD}}) = \langle |\mathcal{N}_i| \rangle
+$$
+
+where $\langle |\mathcal{N}_i| \rangle$ is the empirically measured average number of neighbors per walker in the Voronoi tessellation.
+
+**Known values:** $N_{\text{avg}}(2) = 6$, $N_{\text{avg}}(3) \approx 15.54$, $N_{\text{avg}}(4) \approx 30.67$
+
+**Complexity:** $O(N)$ (post-processing after $O(N \log N)$ tessellation) - **FASTEST** method
+
+**Framework integration:** **Unique to Fragile Gas framework** - reuses Voronoi tessellation from deficit angle curvature computation (§5.1), making dimension estimation essentially free
+
+**Advantages:** Parameter-free, extremely robust (topological measure), native synergy with scutoid framework
+
+**QSD correction:** Iterative refinement using density $\rho(x)$ and curvature $R(x)$
+
+**Related Results:** `def-deficit-angle-curvature`, `def-voronoi-tessellation`, [14_scutoid_geometry_framework.md]
+
+---
+
+### QSD-Corrected Dimension Estimation
+
+**Type:** Definition
+**Label:** `def-qsd-corrected-dimension`
+**Source:** [curvature.md § 7.11.3](curvature.md)
+**Tags:** `dimension`, `qsd`, `non-uniform-sampling`, `importance-weighting`
+
+**Statement:**
+For a point cloud $\{x_1, \ldots, x_N\}$ sampled from non-uniform density $\rho(x)$, define importance weights:
+
+$$
+w_i = \frac{1}{\rho(x_i)}
+$$
+
+The **QSD-corrected** version of a dimension estimator $\hat{d}(\{x_i\})$ uses weighted distances or weighted statistics.
+
+**Iterative protocol:**
+1. **First pass**: Compute $\hat{d}^{(0)}$ without QSD correction
+2. **Estimate density**: Use kernel density estimation $\hat{\rho}(x_i) = \sum_j K_h(x_i - x_j)$
+3. **Compute weights**: $w_i^{(1)} = 1 / \hat{\rho}(x_i)$
+4. **Second pass**: Recompute $\hat{d}^{(1)}$ with weights $w_i^{(1)}$
+5. **Check convergence**: If $|\hat{d}^{(1)} - \hat{d}^{(0)}| < 0.1$, stop
+
+In practice, **one iteration is usually sufficient** for slowly-varying QSD.
+
+**Related Results:** All dimension estimators (Methods 2-8 require correction for non-uniform QSD)
+
+---
+
+### Multi-Method Dimension Consensus
+
+**Type:** Algorithm
+**Label:** `alg-dimension-consensus`
+**Source:** [curvature.md § 7.11.2](curvature.md)
+**Tags:** `dimension`, `consensus`, `validation`, `confidence-interval`
+
+**Statement:**
+For rigorous dimension estimation, apply 3-5 methods from different categories:
+- One local method (Levina-Bickel or Local PCA)
+- One global spectral method (Spectral decay)
+- One geometric method (Geodesic scaling or Scutoid topological)
+- If available: One causal method (Myrheim-Meyer)
+
+**Consensus computation:**
+- Median: $\hat{d}_{\text{median}} = \text{median}(\hat{d}_1, \ldots, \hat{d}_M)$
+- Mean: $\hat{d}_{\text{mean}} = \frac{1}{M} \sum_{i=1}^M \hat{d}_i$
+- Std: $\sigma_d = \sqrt{\frac{1}{M-1} \sum_{i=1}^M (\hat{d}_i - \hat{d}_{\text{mean}})^2}$
+
+**Confidence check:**
+- If $\sigma_d / \hat{d}_{\text{mean}} < 0.2$: **High confidence**, report $\hat{d}_{\text{consensus}} = \hat{d}_{\text{median}} \pm 2\sigma_d$
+- If $\sigma_d / \hat{d}_{\text{mean}} \ge 0.5$: **Low confidence**, check data quality
+
+**Recommended for Fragile Gas:**
+- Primary: Method 8 (Scutoid Topological) if computing curvature
+- Validation: Method 2 (Levina-Bickel) for local + Method 6 (Spectral) for global
+
+**Related Results:** Eight dimension estimators above
+
+---
+
+### Dimension-Curvature Consistency Checks
+
+**Type:** Remark
+**Label:** `rem-dimension-curvature-consistency`
+**Source:** [curvature.md § 7.11.5](curvature.md)
+**Tags:** `dimension`, `curvature`, `consistency`, `validation`
+
+**Statement:**
+Dimension estimation (Part 7) and curvature estimation (Parts 1-6) provide mutual consistency checks:
+
+1. **Input consistency**: Curvature methods require knowing ambient dimension $d$ to compute tensor components. Dimension estimate $\hat{d}$ provides this input.
+
+2. **Validation**: If curvature computations produce unphysical values, check if assumed dimension matches $\hat{d}_{\text{consensus}}$.
+
+3. **Weyl tensor constraint**: Weyl tensor $C_{abcd}$ is non-zero only for $d \ge 4$. If $\hat{d} < 4$ but $\|C\|^2 > 0$, this indicates dimension underestimate or numerical artifact.
+
+4. **Spectral synergy**: Both Ricci curvature bounds (§5.2) and spectral dimension (§7.7) use the **same Graph Laplacian eigenvalues** - compute once, use for both.
+
+5. **Fractal detection**: If dimension estimates disagree (e.g., $\hat{d}_{\text{box}} = 2.7$, $\hat{d}_{\text{LB}} = 3.0$), manifold may have fractal structure.
+
+**Recommended workflow:**
+1. Estimate dimension using Scutoid Topological (Method 8) + Levina-Bickel (Method 2)
+2. Check consistency: If $|\hat{d}_8 - \hat{d}_2| < 0.5$, use $\hat{d} = \hat{d}_8$
+3. Compute curvature using $\hat{d}$ as input
+4. Cross-validate: If curvature values are unphysical, revisit dimension estimate
+
+**Related Results:** `def-weyl-tensor`, `def-ricci-scalar-curvature`, all dimension estimators
+
+---
+
 ## Key Inequalities and Bounds
 
 ### Summary of N-Uniform Constants
@@ -23375,6 +23665,9 @@ Therefore: $\boxed{\langle J_\mu^{(a)}(x) \rangle_{\text{QSD}} = 0}$
 - ✅ [15_millennium_problem_completion.md](15_millennium_problem_completion.md) - **Yang-Mills Millennium Problem Solution (12 mathematical objects)**: Matter vs gauge field distinction, pure Yang-Mills Hamiltonian from Noether current, gauge field decoupling in mean-field limit with uniform QSD, Wilson loop area law from LSI and Fractal Set geometric decomposition (two independent proofs), string tension σ = c·λ_gap/ε_c², oscillation frequency lower bound from uniform ellipticity, pure Yang-Mills mass gap Δ_YM ≥ c₀·λ_gap·ℏ_eff > 0, QSD velocity distribution is Maxwellian from BAOAB Ornstein-Uhlenbeck process, Noether current vanishes in QSD by rotational symmetry, uniform QSD assumption validated as theorem (no hidden assumptions), complete Clay Institute requirements satisfied
 
 **Coverage:** Complete convergence proof chain from N-particle dynamics to mean-field limit, including adaptive extensions with ρ-localized fitness, emergent geometric structure with five unified curvature perspectives, symmetry analysis, rigorous gauge-theoretic formulation, comprehensive discrete spacetime formulation with lattice QFT, Yang-Mills gauge theory, scutoid spacetime tessellations bridging discrete and continuum geometry, Hellinger-Kantorovich metric convergence for birth-death dynamics, explicit quantitative error bounds with N-uniform constants, and **complete solution to the Clay Mathematics Institute Yang-Mills Millennium Problem** with rigorous proof of mass gap via confinement
+
+**New Additions (Latest):**
+- ✅ [curvature.md](curvature.md) - **Unified Curvature Theory (70+ mathematical objects)**: Five equivalent Ricci scalar definitions (deficit angles, graph Laplacian, emergent metric, heat kernel, causal set volume), Weyl conformal tensor (full tensor and norms), Riemann tensor from plaquette holonomy, **eight dimension estimation methods** including novel Scutoid Topological Dimension (STD) unique to framework (Myrheim-Meyer causal set, Levina-Bickel ML, Local PCA, Grassberger-Procaccia correlation, Box-counting fractal, Graph Laplacian spectral decay, Geodesic volume growth, Voronoi coordination number), QSD non-uniform sampling corrections, comprehensive comparison tables, practical decision trees, validation protocols, dimension-curvature consistency checks
 
 **Future Additions:**
 - [01_fragile_gas_framework.md](01_fragile_gas_framework.md) - Core framework axioms and definitions

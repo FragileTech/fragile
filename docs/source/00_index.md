@@ -3995,3 +3995,63 @@ Total Entries: 665
 - **Label:** `sum-millennium-problem-complete`
 - **Tags:** millennium-problem, clay-institute, completion-status, yang-mills, mass-gap
 - **Source:** [15_millennium_problem_completion.md § 18](15_millennium_problem_completion.md)
+
+### Weyl Tensor (Conformal Curvature)
+- **Type:** Definition
+- **Label:** `def-weyl-tensor`
+- **Tags:** curvature, weyl-tensor, conformal, trace-free
+- **Source:** [curvature.md § 4.1](curvature.md)
+
+### Weyl Squared Norm
+- **Type:** Definition
+- **Label:** `def-weyl-squared-norm`
+- **Tags:** curvature, weyl-tensor, norm, anisotropy
+- **Source:** [curvature.md § 4.2](curvature.md)
+
+### Regge Calculus Weyl Norm (Efficient Computation)
+- **Type:** Algorithm
+- **Label:** `alg-regge-calculus-weyl-norm`
+- **Tags:** algorithm, weyl-tensor, regge-calculus, scutoid, O(N·d²)
+- **Source:** [curvature.md § 4.6.1](curvature.md)
+
+### Intrinsic Dimension
+- **Type:** Definition
+- **Label:** `def-intrinsic-dimension`
+- **Tags:** dimension, manifold, intrinsic, ambient
+- **Source:** [curvature.md § 7.1](curvature.md)
+
+### Myrheim-Meyer Dimension Estimator
+- **Type:** Definition
+- **Label:** `def-myrheim-meyer-dimension`
+- **Tags:** dimension, causal-set, myrheim-meyer, temporal
+- **Source:** [curvature.md § 7.2](curvature.md)
+
+### Levina-Bickel ML Dimension Estimator
+- **Type:** Definition
+- **Label:** `def-levina-bickel-dimension`
+- **Tags:** dimension, k-nearest-neighbor, maximum-likelihood, local
+- **Source:** [curvature.md § 7.3](curvature.md)
+
+### Scutoid Topological Dimension (STD)
+- **Type:** Definition
+- **Label:** `def-scutoid-topological-dimension`
+- **Tags:** dimension, scutoid, voronoi, coordination-number, framework-native
+- **Source:** [curvature.md § 7.8](curvature.md)
+
+### QSD-Corrected Dimension Estimation
+- **Type:** Definition
+- **Label:** `def-qsd-corrected-dimension`
+- **Tags:** dimension, qsd, non-uniform-sampling, importance-weighting
+- **Source:** [curvature.md § 7.11.3](curvature.md)
+
+### Multi-Method Dimension Consensus
+- **Type:** Algorithm
+- **Label:** `alg-dimension-consensus`
+- **Tags:** dimension, consensus, validation, confidence-interval
+- **Source:** [curvature.md § 7.11.2](curvature.md)
+
+### Dimension-Curvature Consistency Checks
+- **Type:** Remark
+- **Label:** `rem-dimension-curvature-consistency`
+- **Tags:** dimension, curvature, consistency, validation
+- **Source:** [curvature.md § 7.11.5](curvature.md)
