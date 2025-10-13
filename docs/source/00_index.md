@@ -1,8 +1,8 @@
 # Mathematical Reference Index
 
-Compressed index of all 665 mathematical entries from 00_reference.md
+Compressed index of all 677 mathematical entries from 00_reference.md
 
-Total Entries: 665
+Total Entries: 677
 
 ---
 
@@ -4055,3 +4055,75 @@ Total Entries: 665
 - **Label:** `rem-dimension-curvature-consistency`
 - **Tags:** dimension, curvature, consistency, validation
 - **Source:** [curvature.md § 7.11.5](curvature.md)
+
+### Importance Weight for Geometric Analysis
+- **Type:** Definition
+- **Label:** `def-importance-weight-geometric`
+- **Tags:** importance-sampling, reweighting, geometric-measure, qsd, unbiased-estimation
+- **Source:** [19_geometric_sampling_reweighting.md § 1.3](19_geometric_sampling_reweighting.md)
+
+### Asymptotic Error Bound for Reweighted Geometric Observables
+- **Type:** Theorem
+- **Label:** `thm-reweighting-error-bound`
+- **Tags:** importance-sampling, error-bounds, central-limit-theorem, delta-method, asymptotic-normality
+- **Source:** [19_geometric_sampling_reweighting.md § 2.1](19_geometric_sampling_reweighting.md)
+
+### Effective Sample Size (ESS)
+- **Type:** Definition
+- **Label:** `def-ess-geometric`
+- **Tags:** importance-sampling, effective-sample-size, weight-variance, diagnostic, quality-metric
+- **Source:** [19_geometric_sampling_reweighting.md § 2.3](19_geometric_sampling_reweighting.md)
+
+### ESS-Guided Parameter Tuning Algorithm
+- **Type:** Algorithm
+- **Label:** `alg-ess-parameter-tuning`
+- **Tags:** parameter-tuning, ess, workflow, beta-channel, temperature, quality-control
+- **Source:** [19_geometric_sampling_reweighting.md § 2.4](19_geometric_sampling_reweighting.md)
+
+### Gamma-Channel Augmented Potential
+- **Type:** Definition
+- **Label:** `def-gamma-channel-potential`
+- **Tags:** gamma-channel, geometric-optimization, curvature-reward, self-referential-geometry, ricci-scalar, weyl-tensor
+- **Source:** [19_geometric_sampling_reweighting.md § 3.2](19_geometric_sampling_reweighting.md)
+
+### Gamma Channel Drives Toward Log-Concavity
+- **Type:** Theorem
+- **Label:** `thm-gamma-drives-log-concavity`
+- **Tags:** gamma-channel, log-concavity, lsi, spectral-gap, exponential-convergence, kl-divergence, geometric-regularization
+- **Source:** [19_geometric_sampling_reweighting.md § 3.3.1](19_geometric_sampling_reweighting.md)
+
+### Dual-Metric Importance Reweighting
+- **Type:** Theorem
+- **Label:** `thm-reweighting-gamma`
+- **Tags:** gamma-channel, dual-metric, importance-sampling, volume-ratio, geometric-reweighting
+- **Source:** [19_geometric_sampling_reweighting.md § 4.1](19_geometric_sampling_reweighting.md)
+
+### Geometric Annealing Algorithm
+- **Type:** Algorithm
+- **Label:** `alg-geometric-annealing`
+- **Tags:** gamma-channel, geometric-annealing, optimization-strategy, annealing-schedule, curvature-optimization
+- **Source:** [19_geometric_sampling_reweighting.md § 4.2](19_geometric_sampling_reweighting.md)
+
+### Complexity of Geometric Curvature Computation
+- **Type:** Theorem
+- **Label:** `thm-complexity-curvature`
+- **Tags:** computational-complexity, delaunay-triangulation, regge-calculus, curvature-computation, dimension-dependency
+- **Source:** [19_geometric_sampling_reweighting.md § 5.1](19_geometric_sampling_reweighting.md)
+
+### Computational Phase Transition at d = 4
+- **Type:** Observation
+- **Label:** `obs-dimension-phase-transition`
+- **Tags:** computational-complexity, phase-transition, dimensionality, tractability, efficiency-boundary
+- **Source:** [19_geometric_sampling_reweighting.md § 5.2](19_geometric_sampling_reweighting.md)
+
+### Fragile Gas Anthropic Principle (Conjecture)
+- **Type:** Conjecture
+- **Label:** `conj-fragile-anthropic-dimensionality`
+- **Tags:** anthropic-principle, dimensionality, computational-universe, conjecture, speculative, open-problem
+- **Source:** [19_geometric_sampling_reweighting.md § 5.3](19_geometric_sampling_reweighting.md)
+
+### QSD-Corrected ESS with Importance Reweighting
+- **Type:** Remark
+- **Label:** `rem-qsd-corrected-ess`
+- **Tags:** ess, qsd-correction, importance-sampling, geometric-analysis, beta-channel
+- **Source:** [19_geometric_sampling_reweighting.md § 2.3](19_geometric_sampling_reweighting.md)

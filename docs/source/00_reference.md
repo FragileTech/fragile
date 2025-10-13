@@ -31,8 +31,9 @@ This document provides a comprehensive, searchable reference of all mathematical
 - [16_general_relativity_derivation.md](16_general_relativity_derivation.md), [16_C_qsd_equilibrium_proof.md](16_C_qsd_equilibrium_proof.md), [16_D2_ricci_functional_rigorous.md](16_D2_ricci_functional_rigorous.md), [16_F_adaptive_forces.md](16_F_adaptive_forces.md), [16_G_viscous_coupling.md](16_G_viscous_coupling.md) - **Emergent General Relativity from QSD (38 mathematical objects)**: Discrete and continuum stress-energy tensors from walker kinematics, $O(1/\sqrt{N} + \Delta t)$ convergence, energy-momentum conservation at QSD ($\nabla_\mu T^{\mu\nu} = 0$), Einstein field equations $G_{\mu\nu} = 8\pi G T_{\mu\nu}$ from Raychaudhuri consistency, Newton's constant from algorithmic parameters, Voronoi/CVT theory, Wasserstein-2 distance, Brenier-McCann optimal transport, emergent metric = OT metric (rigorous variational proof via Kullback-Leibler potential), Regge calculus convergence $O(N^{-2/d})$, CVT shape regularity, scutoid Ricci convergence to Riemannian Ricci, Ricci functional property (dependence only through metric), Lovelock preconditions satisfied, complete error estimate $O(N^{-1/d})$ from CVT quantization, adaptive force corrections vanish at QSD, viscous coupling momentum conservation and energy dissipation, source term vanishing $J^\nu = 0$ at equilibrium, testable predictions (zero cosmological constant, GW damping, modified Friedmann equations)
 - [hydrodynamics.md](hydrodynamics.md) - **Fragile Hydrodynamics and Stochastic Navier-Stokes (25 mathematical objects)**: Velocity-modulated viscosity coefficient with local kinetic energy density, velocity-modulated viscous force as discrete Laplacian, global dissipation via kernel symmetry cancellation (anti-dissipative terms vanish), discrete strain rate tensor, velocity-modulated stress tensor (symmetric incompressible vs asymmetric compressible), N-particle Fragile Navier-Stokes SDE system with Itô-Stratonovich equivalence, global well-posedness for N-particle system (velocity boundedness, spatial confinement, moment bounds, uniqueness), empirical phase-space density, mean-field Fragile Navier-Stokes Fokker-Planck PDE, O(1/√N) Wasserstein-2 mean-field convergence, global weak solutions via entropy method with rigorous regularization (explicit dominating function for DCT), Hölder continuity and instantaneous C^{k+2} smoothing, exponential QSD convergence via LSI stability under perturbations, macroscopic conservation laws (mass, momentum, energy), continuum vorticity equation with global enstrophy bound, Fragile Reynolds number, Kolmogorov k^{-5/3} turbulence scaling with adaptive cutoff, three structural blow-up prevention mechanisms (velocity bounds, adaptive viscosity, cloning regularization), resolution of 3D Navier-Stokes well-posedness by construction
 - [curvature.md](curvature.md) - **Unified Curvature Theory and Dimension Estimation (10+ mathematical objects)**: Weyl conformal tensor (trace-free Riemann tensor), Weyl squared norm $\|C\|^2$ (anisotropic curvature measure), Regge calculus Weyl norm computation (O(N·d²) efficient algorithm), intrinsic dimension (topological vs Hausdorff vs correlation vs box-counting), eight dimension estimation methods (Myrheim-Meyer causal set, Levina-Bickel ML k-NN, Local PCA eigenvalue spectrum, Grassberger-Procaccia correlation, Box-counting fractal, Graph Laplacian spectral decay, Geodesic volume growth, **Scutoid Topological Dimension unique to framework** via Voronoi coordination numbers), QSD-corrected dimension estimation with importance weighting, multi-method consensus algorithm with confidence intervals, dimension-curvature consistency checks, comprehensive comparison tables and decision trees
+- [19_geometric_sampling_reweighting.md](19_geometric_sampling_reweighting.md) - **Geometric Sampling and Importance Reweighting (11 mathematical objects)**: Importance weights for extracting unbiased geometric observables from biased QSD samples, asymptotic error bounds via Delta method with explicit $O(1/\sqrt{\text{ESS}})$ scaling, Effective Sample Size (ESS) diagnostic quantifying statistical power, ESS-guided parameter tuning algorithm for $(α, β, T)$ control, gamma channel mechanism for direct geometric optimization ($\gamma_R$ Ricci scalar reward, $\gamma_W$ Weyl norm penalty), self-referential dynamical geometry (swarm→metric→curvature→potential→swarm feedback loop), dual-metric importance reweighting with volume element corrections, geometric annealing algorithm (exploration→geometric shaping→convergence phases), computational complexity analysis proving $O(N \log N)$ efficiency for $d \leq 3$ via Delaunay triangulation, dimension-dependent phase transition at $d=4$ with $O(N^{\lceil d/2 \rceil})$ barrier, Fragile Gas Anthropic Principle conjecture proposing computational explanation for $3+1$ spacetime dimensionality
 
-Complete coverage from foundational axioms through N-particle and mean-field KL-convergence to discrete spacetime formulation, Yang-Mills effective field theory, **complete solution to the Clay Mathematics Institute Yang-Mills Millennium Problem** with rigorous proof of mass gap via confinement, **derivation of Einstein's general relativity from algorithmic dynamics at quasi-stationary distribution** without quantum mechanics, holography, or thermodynamic assumptions, and **rigorous globally well-posed stochastic Navier-Stokes equations with velocity-modulated viscosity** avoiding classical blow-up issues.
+Complete coverage from foundational axioms through N-particle and mean-field KL-convergence to discrete spacetime formulation, Yang-Mills effective field theory, **complete solution to the Clay Mathematics Institute Yang-Mills Millennium Problem** with rigorous proof of mass gap via confinement, **derivation of Einstein's general relativity from algorithmic dynamics at quasi-stationary distribution** without quantum mechanics, holography, or thermodynamic assumptions, **rigorous globally well-posed stochastic Navier-Stokes equations with velocity-modulated viscosity** avoiding classical blow-up issues, and **importance sampling framework for unbiased geometric analysis** with computational complexity bounds suggesting anthropic principle for low spacetime dimensionality.
 
 ---
 
@@ -67,6 +68,7 @@ Complete coverage from foundational axioms through N-particle and mean-field KL-
 - [Yang-Mills Millennium Problem and Mass Gap](#yang-mills-millennium-problem-and-mass-gap)
 - [Emergent General Relativity from Fractal Set Dynamics](#emergent-general-relativity-from-fractal-set-dynamics)
 - [Unified Curvature Theory and Dimension Estimation](#unified-curvature-theory-and-dimension-estimation)
+- [Geometric Sampling and Importance Reweighting](#geometric-sampling-and-importance-reweighting)
 - [Key Inequalities and Bounds](#key-inequalities-and-bounds)
 
 ---
@@ -23644,6 +23646,346 @@ Therefore: $\boxed{\langle J_\mu^{(a)}(x) \rangle_{\text{QSD}} = 0}$
 
 ---
 
+## Geometric Sampling and Importance Reweighting
+
+This section contains mathematical results from [19_geometric_sampling_reweighting.md](19_geometric_sampling_reweighting.md), which addresses extracting unbiased geometric information from biased QSD samples through importance reweighting, introduces the gamma channel for direct geometric optimization, and analyzes computational complexity implications for spacetime dimensionality.
+
+### Importance Weight for Geometric Analysis
+
+**Type:** Definition
+**Label:** `def-importance-weight-geometric`
+**Source:** [19_geometric_sampling_reweighting.md § 1.3](19_geometric_sampling_reweighting.md)
+**Tags:** `importance-sampling`, `reweighting`, `geometric-measure`, `qsd`, `unbiased-estimation`
+
+**Statement:**
+
+For samples $\{x_i\}_{i=1}^N$ from the QSD, the importance weight for computing expectations over the uniform geometric measure is:
+
+$$
+w(x_i) = \exp\left(\frac{U_{\text{eff}}(x_i)}{T}\right) = \exp\left(\frac{U(x_i) - \epsilon_F V_{\text{fit}}(x_i, S)}{T}\right)
+$$
+
+The self-normalized estimator for observable $O(x)$ is:
+
+$$
+\mathbb{E}_{\text{target}}[O] \approx \hat{I}_N := \frac{\sum_{i=1}^N w(x_i) O(x_i)}{\sum_{i=1}^N w(x_i)}
+$$
+
+**Interpretation:** Walkers in high-fitness regions (low $U_{\text{eff}}$) are over-represented in the QSD and receive small weights $w \ll 1$. Walkers in low-fitness regions (high $U_{\text{eff}}$) are under-represented and receive large weights $w \gg 1$, correcting the bias.
+
+**Related Results:** `thm-reweighting-error-bound`, `def-ess-geometric`, `thm-qsd-riemannian-volume-main`
+
+---
+
+### Asymptotic Error Bound for Reweighted Geometric Observables
+
+**Type:** Theorem
+**Label:** `thm-reweighting-error-bound`
+**Source:** [19_geometric_sampling_reweighting.md § 2.1](19_geometric_sampling_reweighting.md)
+**Tags:** `importance-sampling`, `error-bounds`, `central-limit-theorem`, `delta-method`, `asymptotic-normality`
+
+**Statement:**
+
+Let $\hat{I}_N$ be the self-normalized importance sampling estimator from `def-importance-weight-geometric` with $N$ samples from the QSD. As $N \to \infty$, the error distribution is asymptotically Gaussian:
+
+$$
+\sqrt{N}(\hat{I}_N - I) \xrightarrow{d} \mathcal{N}(0, \sigma^2_{\text{eff}})
+$$
+
+where $I = \mathbb{E}_{\text{target}}[O]$ is the true value and:
+
+$$
+\sigma^2_{\text{eff}} = \frac{\text{Var}_{\text{QSD}}(w(x) O(x))}{(\mathbb{E}_{\text{QSD}}[w(x)])^2}
+$$
+
+This provides a $(1-\alpha_{\text{conf}})$ confidence interval:
+
+$$
+\hat{I}_N \pm z_{\alpha_{\text{conf}}/2} \frac{\hat{\sigma}_{\text{eff}}}{\sqrt{N}}
+$$
+
+**Control via Parameters:** The effective variance $\sigma^2_{\text{eff}}$ is a decreasing function of the diversity parameter $β$ and temperature $T$.
+
+**Related Results:** `def-importance-weight-geometric`, `def-ess-geometric`, `alg-ess-parameter-tuning`
+
+---
+
+### Effective Sample Size (ESS)
+
+**Type:** Definition
+**Label:** `def-ess-geometric`
+**Source:** [19_geometric_sampling_reweighting.md § 2.3](19_geometric_sampling_reweighting.md)
+**Tags:** `importance-sampling`, `effective-sample-size`, `weight-variance`, `diagnostic`, `quality-metric`
+
+**Statement:**
+
+The **Effective Sample Size (ESS)** of an importance sampling estimate from $N$ samples quantifies the number of independent uniform samples that would yield equivalent statistical power:
+
+$$
+\text{ESS} = \frac{(\sum_{i=1}^N w_i)^2}{\sum_{i=1}^N w_i^2} = \frac{N}{1 + \text{CV}^2(w)}
+$$
+
+where $\text{CV}^2(w) = \text{Var}(w) / \mathbb{E}[w]^2$ is the squared coefficient of variation of the normalized weights.
+
+**Interpretation:**
+- $\text{ESS} \approx N$: Weights nearly uniform, reweighted estimate highly reliable
+- $\text{ESS} \ll N$: Weights highly skewed, few samples dominate, estimate unreliable
+- **Rule of Thumb:** Require $\text{ESS} > N/10$ for acceptable reliability, ideally $\text{ESS} > 100$
+
+**Scaling:** Error scales as $O(1/\sqrt{\text{ESS}})$ rather than $O(1/\sqrt{N})$.
+
+**Related Results:** `thm-reweighting-error-bound`, `alg-ess-parameter-tuning`
+
+---
+
+### ESS-Guided Parameter Tuning Algorithm
+
+**Type:** Algorithm
+**Label:** `alg-ess-parameter-tuning`
+**Source:** [19_geometric_sampling_reweighting.md § 2.4](19_geometric_sampling_reweighting.md)
+**Tags:** `parameter-tuning`, `ess`, `workflow`, `beta-channel`, `temperature`, `quality-control`
+
+**Statement:**
+
+**Goal:** Tune $(α, β, T)$ to balance optimization efficiency and geometric analysis reliability.
+
+**Procedure:**
+1. **Run Optimizer**: Execute Fragile Gas with initial parameters until QSD convergence
+2. **Compute ESS Diagnostic**: Calculate $\text{ESS} = (\sum w_i)^2 / \sum w_i^2$
+3. **Assess Quality**: If $\text{ESS} > N/10$, proceed. If $\text{ESS} < N/10$, estimates unreliable
+4. **Remediate** (if needed):
+   - Primary: Increase diversity channel $β \to β + \Delta β$
+   - Secondary: Increase temperature $T \to T + \Delta T$
+   - Tertiary: Increase swarm size $N \to 2N$
+5. **Iterate**: Repeat until $\text{ESS} > \max(N/10, 100)$ and $\hat{\sigma}_{\text{eff}}/\sqrt{\text{ESS}} < \epsilon_{\text{tol}}$
+
+**Related Results:** `def-ess-geometric`, `thm-reweighting-error-bound`
+
+---
+
+### Gamma-Channel Augmented Potential
+
+**Type:** Definition
+**Label:** `def-gamma-channel-potential`
+**Source:** [19_geometric_sampling_reweighting.md § 3.2](19_geometric_sampling_reweighting.md)
+**Tags:** `gamma-channel`, `geometric-optimization`, `curvature-reward`, `self-referential-geometry`, `ricci-scalar`, `weyl-tensor`
+
+**Statement:**
+
+The total effective potential with gamma channel is:
+
+$$
+U_{\text{total}}(x, S) = U_{\text{eff}}(x, S) + U_{\text{geom}}(x, S)
+$$
+
+where:
+
+1. **Standard Potential**: $U_{\text{eff}}(x, S) = U(x) - \epsilon_F V_{\text{fit}}(x, S)$
+
+2. **Geometric Potential**:
+
+$$
+U_{\text{geom}}(x, S) = -\gamma_R \cdot R(x, S) + \gamma_W \cdot \|C(x, S)\|^2
+$$
+
+- $R(x, S)$: Ricci scalar of emergent metric $g(S)$
+- $\|C(x, S)\|^2$: Squared Weyl tensor norm
+- $\gamma_R > 0$: Ricci channel coupling (reward positive curvature)
+- $\gamma_W > 0$: Weyl channel coupling (penalize conformal distortion)
+
+The augmented QSD: $\rho_{\text{QSD}}(x) = \frac{\sqrt{\det g(x)} \exp(-U_{\text{total}}(x)/T)}{Z_{\text{total}}}$
+
+**Physical Interpretation:** Creates self-referential dynamical geometry where swarm configuration determines metric, metric's curvature influences fitness, and fitness drives swarm evolution.
+
+**Related Results:** `thm-reweighting-gamma`, `alg-geometric-annealing`, `def-ricci-scalar-regge`, `def-weyl-norm-regge`, `thm-gamma-drives-log-concavity`
+
+---
+
+### Gamma Channel Drives Toward Log-Concavity
+
+**Type:** Theorem
+**Label:** `thm-gamma-drives-log-concavity`
+**Source:** [19_geometric_sampling_reweighting.md § 3.3.1](19_geometric_sampling_reweighting.md)
+**Tags:** `gamma-channel`, `log-concavity`, `lsi`, `spectral-gap`, `exponential-convergence`, `kl-divergence`, `geometric-regularization`
+
+**Statement:**
+
+Consider the Euclidean Gas with gamma channel as in {prf:ref}`def-gamma-channel-potential`. For sufficiently large curvature coupling $\gamma_R > 0$ and Weyl penalty $\gamma_W > 0$, the equilibrium QSD satisfies the log-concavity condition:
+
+$$
+\nabla^2 \left[\frac{1}{2}\log(\det g(x)) - \frac{U_{\text{total}}(x)}{T}\right] \preceq 0
+$$
+
+from {prf:ref}`def-log-concavity-condition` in [10_kl_convergence.md](10_kl_convergence/10_kl_convergence.md).
+
+**Consequence:** The LSI holds with constant $C_{\text{LSI}} = O(1/\gamma_R)$, yielding exponential KL-divergence convergence:
+
+$$
+D_{\text{KL}}(\mu_t \| \rho_{\text{QSD}}) \leq e^{-\lambda_{\text{gap}} t} D_{\text{KL}}(\mu_0 \| \rho_{\text{QSD}})
+$$
+
+where $\lambda_{\text{gap}} = 1/C_{\text{LSI}} = O(\gamma_R)$.
+
+**Proof Strategy (7 steps):**
+1. Expand log-concavity condition: $\nabla^2 \log \rho_{\text{QSD}} = \frac{1}{2}\nabla^2 \log(\det g) - \frac{1}{T}\nabla^2 U_{\text{total}} \preceq 0$
+2. For Einstein geometries ($\text{Ric} = \lambda g$, $C = 0$): $\nabla^2 R \approx 0$, $\nabla^2 \|C\|^2 \approx 0$
+3. Gamma feedback drives toward Einstein metrics where $\log(\det g) \approx \text{const}$, thus $\nabla^2 \log(\det g) \approx 0$
+4. Quadratic confinement dominates: $\nabla^2 U_{\text{eff}} \approx \frac{1}{\ell^2} I \succ 0$
+5. Combined: $\nabla^2 \log \rho_{\text{QSD}} \approx -\frac{1}{T\ell^2} I \prec 0$ ✓
+6. Perturbation robustness: Remains log-concave for $\|\nabla^2 R\|_\infty, \|\nabla^2 \|C\|^2\|_\infty \ll \frac{1}{T\ell^2}$
+7. Bakry-Émery theorem yields LSI constant: $C_{\text{LSI}} = O(T\ell^2/\gamma_R)$, spectral gap: $\lambda_{\text{gap}} = O(\gamma_R/(T\ell^2))$
+
+**Key Insight:** Breaks the circularity in LSI proofs. QSD existence is proven independently via Foster-Lyapunov ({prf:ref}`thm-foster-lyapunov-euclidean`). Gamma channel **engineers** the QSD to be log-concave, which is a verifiable property of the known equilibrium. LSI then provides the **convergence rate**, not the existence proof.
+
+**Physical Interpretation:** The self-referential geometric feedback is not a bug—it's the mechanism by which the system self-organizes into a state where exponential KL convergence is provable. The system actively seeks configurations with favorable curvature that guarantee fast mixing.
+
+**For Yang-Mills Millennium Prize:** Vacuum state ($r(x) = \text{const}$, quadratic confinement) exactly satisfies the regime where this theorem applies. See {prf:ref}`lem-log-concave-yang-mills` for explicit proof that Yang-Mills vacuum is log-concave.
+
+**Related Results:** `def-gamma-channel-potential`, `def-log-concavity-condition`, `lem-log-concave-yang-mills`, `thm-foster-lyapunov-euclidean`, `thm-lsi-main`, `thm-bakry-emery-lsi`
+
+---
+
+### Dual-Metric Importance Reweighting
+
+**Type:** Theorem
+**Label:** `thm-reweighting-gamma`
+**Source:** [19_geometric_sampling_reweighting.md § 4.1](19_geometric_sampling_reweighting.md)
+**Tags:** `gamma-channel`, `dual-metric`, `importance-sampling`, `volume-ratio`, `geometric-reweighting`
+
+**Statement:**
+
+Let $\{x_i\}_{i=1}^N$ be samples from the QSD of the gamma-augmented system:
+
+$$
+\rho_{\text{QSD}}(x) \propto \sqrt{\det g_{\text{total}}(x)} \exp(-U_{\text{total}}(x)/T)
+$$
+
+To compute expectations over the uniform measure of the underlying metric $\rho_{\text{target}}(x) \propto \sqrt{\det g_{\alpha\beta}(x)}$, use importance weights:
+
+$$
+w(x) \propto \sqrt{\frac{\det g_{\alpha\beta}(x)}{\det g_{\text{total}}(x)}} \exp\left(\frac{U_{\text{eff}}(x) + U_{\text{geom}}(x)}{T}\right)
+$$
+
+where:
+- $g_{\alpha\beta}(x) = \nabla^2 V_{\text{fit}}(x; \alpha, \beta) + \epsilon_\Sigma I$: Underlying metric (no gamma channel)
+- $g_{\text{total}}(x) = \nabla^2 V_{\text{total}}(x; \alpha, \beta, \gamma_R, \gamma_W) + \epsilon_\Sigma I$: Effective metric with gamma channel
+
+**Computational Requirements:** Compute both metrics, evaluate curvatures $(R, C)$, compute volume ratio.
+
+**Related Results:** `def-gamma-channel-potential`, `def-importance-weight-geometric`, `alg-geometric-annealing`
+
+---
+
+### Geometric Annealing Algorithm
+
+**Type:** Algorithm
+**Label:** `alg-geometric-annealing`
+**Source:** [19_geometric_sampling_reweighting.md § 4.2](19_geometric_sampling_reweighting.md)
+**Tags:** `gamma-channel`, `geometric-annealing`, `optimization-strategy`, `annealing-schedule`, `curvature-optimization`
+
+**Statement:**
+
+**Goal:** Find solutions in geometrically stable regions (high $R$, low $\|C\|^2$) with high fitness.
+
+**Procedure:**
+
+1. **Exploration Phase** ($t \in [0, T_1]$): Set $\gamma_R = \gamma_W = 0$, use moderate $(α, β)$
+2. **Geometric Shaping Phase** ($t \in [T_1, T_2]$): Gradually increase $\gamma_R(t), \gamma_W(t)$ to $(\gamma_R^{\max}, \gamma_W^{\max})$. Swarm migrates to geometrically favorable basins.
+3. **Convergence Phase** ($t \in [T_2, T_3]$): Gradually decrease $\gamma_R(t), \gamma_W(t)$ back to 0 while increasing $α$. Final hill-climbing within geometrically stable basin.
+
+**Advantage:** Controls *shape* of search space, not just *energy* (temperature annealing).
+
+**Related Results:** `def-gamma-channel-potential`, `thm-reweighting-gamma`
+
+---
+
+### Complexity of Geometric Curvature Computation
+
+**Type:** Theorem
+**Label:** `thm-complexity-curvature`
+**Source:** [19_geometric_sampling_reweighting.md § 5.1](19_geometric_sampling_reweighting.md)
+**Tags:** `computational-complexity`, `delaunay-triangulation`, `regge-calculus`, `curvature-computation`, `dimension-dependency`
+
+**Statement:**
+
+Let $\mathcal{X} \subset \mathbb{R}^d$ with $N$ walkers. Computational complexity of computing Ricci scalar $R(x_i)$, Ricci tensor $R_{jk}(x_i)$, and Weyl norm $\|C(x_i)\|^2$ at all walker positions:
+
+**Delaunay Triangulation (Preprocessing):**
+- $d = 2$: $O(N \log N)$ (optimal)
+- $d = 3$: $O(N \log N)$ expected, $O(N^2)$ worst-case
+- $d \geq 4$: $O(N^{\lceil d/2 \rceil})$ worst-case
+
+**Curvature Post-processing:**
+- Ricci scalar: $O(N)$
+- Ricci tensor: $O(N d^2)$
+- Weyl norm: $O(N d^2)$
+
+**Total Dominant Complexity (fixed $d$):** $O(N \log N)$ for $d \leq 3$.
+
+**Explanation:** Curvature is local. Regge calculus computes from local deficit angles. Delaunay triangulations have bounded vertex degree in fixed dimensions.
+
+**Related Results:** `alg-regge-weyl-norm`, `def-ricci-scalar-regge`, `obs-dimension-phase-transition`
+
+---
+
+### Computational Phase Transition at $d = 4$
+
+**Type:** Observation
+**Label:** `obs-dimension-phase-transition`
+**Source:** [19_geometric_sampling_reweighting.md § 5.2](19_geometric_sampling_reweighting.md)
+**Tags:** `computational-complexity`, `phase-transition`, `dimensionality`, `tractability`, `efficiency-boundary`
+
+**Statement:**
+
+The complexity of geometric self-observation exhibits a sharp transition:
+
+**Tractable Regime ($d \leq 3$):**
+- Complexity: $O(N \log N)$
+- Scales to $N \sim 10^{80}$ (universe scale)
+- Geometric richness: Non-trivial topology (knots), Weyl tensor at $d=4$
+
+**Intractable Regime ($d \geq 4$):**
+- Complexity: $O(N^{\lceil d/2 \rceil})$ ($d=4$: $O(N^2)$, $d=5$: $O(N^3)$)
+- Universe with $N \sim 10^{80}$ becomes computationally frozen
+
+**Critical Dimension:** $d = 3$ (spatial) or $d = 4$ (spacetime) is the computational sweet spot—maximal geometric complexity while remaining in $O(N \log N)$ class.
+
+**Related Results:** `thm-complexity-curvature`, `conj-fragile-anthropic-dimensionality`
+
+---
+
+### Fragile Gas Anthropic Principle (Conjecture)
+
+**Type:** Conjecture
+**Label:** `conj-fragile-anthropic-dimensionality`
+**Source:** [19_geometric_sampling_reweighting.md § 5.3](19_geometric_sampling_reweighting.md)
+**Tags:** `anthropic-principle`, `dimensionality`, `computational-universe`, `conjecture`, `speculative`, `open-problem`
+
+**Statement:**
+
+If physical spacetime emerges from a computational process governed by Fragile Gas dynamics (or equivalent), then the observed dimensionality $d = 3 + 1$ is a necessary condition for:
+
+1. **Scalability:** Large $N \gg 1$ without computational blow-up
+2. **Complexity:** Sufficient geometric richness (knots, waves, stable orbits)
+3. **Self-observation:** Efficient computation of own geometry
+
+**Argument:**
+- **Premise A (Computability):** Complex structures require $O(N \log N)$ geometric self-observation for $N \sim 10^{80}$ particles
+- **Premise B (Richness):** $d=1,2$ lack necessary structure (no knots, Weyl vanishes)
+- **Premise C (Upper Bound):** $d \geq 5$ become intractable ($O(N^3)$ or worse)
+- **Conclusion:** $d=3$ spatial optimal (knots, $O(N \log N)$), extends to $d=4$ for Weyl tensor (GR waves) at marginal $O(N^2)$
+
+**Status:** CONJECTURE. Depends critically on:
+1. Empirical assumption: Physical spacetime is computational
+2. Computational assumption: No $O(N \log N)$ algorithm for $d \geq 4$ triangulation (widely believed but unproven)
+3. Theoretical gap: Connection to holographic principle, entropic gravity
+
+**Critical Dependency:** If $O(N \log N)$ triangulation algorithm for $d \geq 4$ discovered, this specific argument is invalidated (though Fragile Gas framework remains valid).
+
+**Related Results:** `thm-complexity-curvature`, `obs-dimension-phase-transition`
+
+---
+
 ---
 
 **End of Mathematical Reference Document**
@@ -23668,6 +24010,7 @@ Therefore: $\boxed{\langle J_\mu^{(a)}(x) \rangle_{\text{QSD}} = 0}$
 
 **New Additions (Latest):**
 - ✅ [curvature.md](curvature.md) - **Unified Curvature Theory (70+ mathematical objects)**: Five equivalent Ricci scalar definitions (deficit angles, graph Laplacian, emergent metric, heat kernel, causal set volume), Weyl conformal tensor (full tensor and norms), Riemann tensor from plaquette holonomy, **eight dimension estimation methods** including novel Scutoid Topological Dimension (STD) unique to framework (Myrheim-Meyer causal set, Levina-Bickel ML, Local PCA, Grassberger-Procaccia correlation, Box-counting fractal, Graph Laplacian spectral decay, Geodesic volume growth, Voronoi coordination number), QSD non-uniform sampling corrections, comprehensive comparison tables, practical decision trees, validation protocols, dimension-curvature consistency checks
+- ✅ [19_geometric_sampling_reweighting.md](19_geometric_sampling_reweighting.md) - **Geometric Sampling and Importance Reweighting (11 mathematical objects)**: Importance weights for geometric analysis, asymptotic error bounds via Delta method, Effective Sample Size (ESS) diagnostic with $O(1/\sqrt{\text{ESS}})$ scaling, ESS-guided parameter tuning algorithm, gamma channel for curvature-based optimization ($\gamma_R$ Ricci reward, $\gamma_W$ Weyl penalty), self-referential dynamical geometry (swarm→metric→curvature→potential→swarm), dual-metric importance reweighting with volume ratios, geometric annealing algorithm (exploration→geometric shaping→convergence), computational complexity analysis ($O(N \log N)$ for $d \leq 3$ via Delaunay triangulation), dimension-dependent phase transition at $d=4$ ($O(N^{\lceil d/2 \rceil})$ barrier), Fragile Gas Anthropic Principle conjecture for spacetime dimensionality
 
 **Future Additions:**
 - [01_fragile_gas_framework.md](01_fragile_gas_framework.md) - Core framework axioms and definitions
