@@ -215,15 +215,21 @@ $$
 \rho_{\text{QSD}}(x, v) = \frac{\sqrt{\det g(x)}}{Z} \exp(-\beta H_{\text{eff}}(x, v))
 $$
 
-**Step 3: N-particle extension.**
+**Step 3: N-particle extension (Mean-Field Approximation).**
 
-For the N-particle system, walkers evolve independently in the kinetic phase (Chapter 4, Theorem 4.3), so the joint distribution factorizes:
+For the N-particle system, the joint distribution factorizes in the **mean-field limit** $N \to \infty$:
 
 $$
-\rho_{\text{QSD}}(x_1, \ldots, x_N, v_1, \ldots, v_N) = \prod_{i=1}^N \rho_{\text{QSD},i}(x_i, v_i)
+\rho_{\text{QSD}}(x_1, \ldots, x_N, v_1, \ldots, v_N) \approx \prod_{i=1}^N \rho_{\text{QSD},i}(x_i, v_i)
 $$
 
-The partition function is the product of single-walker partition functions, which converges to the integral over configuration space in the continuum limit.
+**Justification**: Although $V_{\text{fit}}(x, S)$ creates interaction between walkers through the collective state $S$, in the limit $N \to \infty$ each walker experiences the **average field** created by all others. This is the standard mean-field approximation in statistical mechanics. For finite $N$, correlations exist but become negligible as $O(1/N)$ (Chapter 5, Proposition 5.2 on propagation of chaos).
+
+The partition function is the product of single-walker partition functions in this approximation:
+
+$$
+Z \approx \prod_{i=1}^N Z_i \quad \text{where } Z_i = \int \sqrt{\det g(x)} e^{-\beta H_{\text{eff}}(x,v)} dx dv
+$$
 
 **Step 4: Verify canonical ensemble properties.**
 
@@ -447,7 +453,7 @@ $$
 \frac{\partial^2 U}{\partial S^2} \geq 0 \quad \text{(positive temperature)}
 $$
 
-**3. Free Energy is Convex in Temperature:**
+**3. Free Energy is Concave in Temperature:**
 
 $$
 \frac{\partial^2 F}{\partial T^2} \leq 0 \quad \text{(positive heat capacity)}
@@ -2607,53 +2613,73 @@ where the relationship holds component-wise in the appropriate coordinate system
 
 ::::{prf:proof}
 
-**Step 1**: Express both metrics in the same coordinates.
+We prove the conformal relationship $g_W = T \cdot g_R$ by explicit calculation for the diagonal component, then cite the standard result for the full tensor.
 
-The Weinhold metric is naturally defined in entropy representation $(S, V, N)$:
+**Step 1**: Legendre transform identities.
 
-$$
-g_W^{SS} = \frac{\partial^2 U}{\partial S^2} = \frac{T}{C_V}
-$$
-
-The Ruppeiner metric is naturally defined in energy representation $(U, V, N)$:
+From the First Law $dU = T dS - P dV + \mu dN$, the Legendre conjugate variables satisfy:
 
 $$
-g_R^{UU} = -\frac{\partial^2 S}{\partial U^2} = \frac{1}{T^2 C_V}
+\frac{\partial U}{\partial S}\Big|_{V,N} = T, \quad \frac{\partial S}{\partial U}\Big|_{V,N} = \frac{1}{T}
 $$
 
-**Step 2**: Transform Weinhold to energy representation.
+**Step 2**: Compute metrics in their natural coordinates.
 
-To compare, we need both in the same coordinates. Transform $g_W^{SS}$ to energy space using the Jacobian:
+Weinhold metric in $(S, V, N)$ coordinates:
+
+$$
+g_W^{SS} = \frac{\partial^2 U}{\partial S^2}\Big|_{V,N} = \frac{\partial T}{\partial S}\Big|_{V,N} = \frac{T}{C_V}
+$$
+
+using $dS = (C_V/T) dT$ at constant $V, N$.
+
+Ruppeiner metric in $(U, V, N)$ coordinates:
+
+$$
+g_R^{UU} = -\frac{\partial^2 S}{\partial U^2}\Big|_{V,N} = \frac{1}{T^2} \frac{\partial T}{\partial U}\Big|_{V,N} = \frac{1}{T^2 C_V}
+$$
+
+using $(\partial S/\partial U)|_{V,N} = 1/T$ and $C_V = (\partial U/\partial T)_{V,N}$.
+
+**Notational note**: We use upper indices (e.g., $g_W^{SS}$, $g_R^{UU}$) following standard physics convention for metric components derived from Hessians, even though Hessians are formally covariant tensors. The transformation laws in Step 3 treat these correctly as covariant components.
+
+**Step 3**: Transform Weinhold to energy coordinates.
+
+Under the coordinate change $(S, V, N) \to (U, V, N)$, the metric transforms via the Jacobian:
 
 $$
 g_W^{UU} = \left(\frac{\partial S}{\partial U}\right)^2 g_W^{SS} = \left(\frac{1}{T}\right)^2 \cdot \frac{T}{C_V} = \frac{1}{T \cdot C_V}
 $$
 
-using $\partial S / \partial U = 1/T$ (First Law).
-
-**Step 3**: Verify the conformal relationship.
+**Step 4**: Verify conformal relationship for diagonal component.
 
 Now both metrics are in $(U, V, N)$ coordinates:
 
 $$
-\frac{g_W^{UU}}{g_R^{UU}} = \frac{1/(T C_V)}{1/(T^2 C_V)} = \frac{T^2 C_V}{T C_V} = T
+\frac{g_W^{UU}}{g_R^{UU}} = \frac{1/(T C_V)}{1/(T^2 C_V)} = T
 $$
 
-Therefore:
+Therefore: $g_W^{UU} = T \cdot g_R^{UU}$ ✓
+
+**Step 5**: Generalize to full metric tensor.
+
+The relationship $g_W = T \cdot g_R$ for the **full metric tensor** (all components) follows from the general properties of Legendre transformations in thermodynamics. The complete proof requires:
+
+1. **Tensor transformation laws** for Hessians under coordinate changes
+2. **Maxwell relations** connecting mixed second derivatives
+3. **Legendre duality** relating Hessians of conjugate potentials
+
+The full derivation is standard in geometrothermodynamics literature (see Ruppeiner, G. "Riemannian geometry in thermodynamic fluctuation theory", *Rev. Mod. Phys.* **67**, 605 (1995); Salamon, P. & Berry, R.S. "Thermodynamic length and dissipated availability", *Phys. Rev. Lett.* **51**, 1127 (1983)).
+
+**Key result**: After transforming both metrics to the same coordinate system $(U, V, N)$, the conformal factor $T$ appears universally for all components:
 
 $$
-g_W^{UU} = T \cdot g_R^{UU}
+g_W^{ij}(U, V, N) = T \cdot g_R^{ij}(U, V, N) \quad \forall i, j
 $$
 
-**Step 4**: Generalize to full metric tensor.
+**Physical interpretation**: Temperature acts as a **conformal scaling** between energy-based (Weinhold) and entropy-based (Ruppeiner) geometric descriptions of thermodynamic fluctuations
 
-The relationship extends to all components. For mixed terms like $(U,V)$:
-
-$$
-g_W^{UV} = T \cdot g_R^{UV}
-$$
-
-The conformal factor $T$ is universal because it arises from the Legendre transform structure relating energy and entropy representations. $\square$
+$\square$
 :::
 
 :::{prf:remark} Geometric Interpretation
@@ -2879,22 +2905,22 @@ $$
 :::{prf:example} Ideal Gas Has Zero Curvature
 :class: tip
 
-For an ideal gas, the Ruppeiner metric is:
+For an ideal gas with $S = Nk_B \ln V + C_V \ln T + \text{const}$ (where $C_V = \frac{3}{2}Nk_B$ for monatomic gas), the Ruppeiner metric in $(T, V)$ coordinates is:
 
 $$
 g_R = \begin{pmatrix}
-\frac{Nk_B}{T^2} & 0 \\
-0 & 0
+\frac{C_V}{T^2} & 0 \\
+0 & \frac{Nk_B}{V^2}
 \end{pmatrix}
 $$
 
-This metric is degenerate (det = 0), but taking the non-degenerate subspace and computing curvature yields:
+This metric is **non-degenerate** (det $\neq$ 0). Computing the scalar curvature for this 2D metric yields:
 
 $$
 R_{\text{ideal}} = 0
 $$
 
-**Physical meaning**: Ideal gas particles don't interact, so there are no thermodynamic correlations—hence flat geometry.
+**Physical meaning**: Ideal gas particles don't interact, so there are no thermodynamic correlations—hence flat geometry despite having a non-trivial metric.
 :::
 
 ## 6.2 Phase Transitions as Curvature Singularities
@@ -2929,43 +2955,45 @@ $$
 
 where $\alpha$ is the critical exponent for heat capacity.
 
-**Step 2**: Metric components contain $C_V$.
+**Step 2**: Metric components in $(T,V)$ coordinates.
 
-From Theorem {prf:ref}`thm-ruppeiner-fisher-connection`:
-
-$$
-g_R^{TT} = \frac{1}{T^2 C_V}
-$$
-
-As $T \to T_c$, we have $C_V \to \infty$, so:
+In $(T, V)$ coordinates (natural for canonical ensemble), the Ruppeiner metric is:
 
 $$
-g_R^{TT} \to 0 \quad \text{(metric component vanishes)}
+g_R^{TT} = -\frac{\partial^2 S}{\partial T^2} = \frac{C_V}{T^2}
 $$
 
-**Step 3**: Curvature involves second derivatives of metric.
-
-The scalar curvature formula involves terms like:
+As $T \to T_c$, we have $C_V \to \infty$ (heat capacity diverges at phase transition), so:
 
 $$
-R \sim \frac{\partial^2 g_{ij}}{\partial x^k \partial x^l} \cdot (g^{-1})^{mn}
+g_R^{TT} \to \infty \quad \text{(metric component diverges)}
 $$
 
-When a metric component $g_{ij} \sim (T - T_c)^\beta$ vanishes, its second derivative scales as:
+Similarly, other response functions (compressibility, susceptibility) diverge, causing other metric components to diverge.
+
+**Step 3**: Inverse metric components vanish.
+
+While the metric components diverge, the **inverse metric** components vanish:
 
 $$
-\frac{\partial^2 g_{ij}}{\partial T^2} \sim \beta(\beta-1)(T - T_c)^{\beta-2}
+(g_R^{-1})_{TT} = \frac{T^2}{C_V} \to 0 \quad \text{as } C_V \to \infty
 $$
 
-**Step 4**: Combine with inverse metric.
+**Step 4**: Curvature formula combines both.
 
-The inverse metric has divergent components:
+The scalar curvature formula involves both metric $g_{ij}$ and inverse metric $(g^{-1})^{ij}$:
 
 $$
-(g^{-1})^{ij} \sim (T - T_c)^{-\beta}
+R \sim g^{kl} \frac{\partial^2 g_{ij}}{\partial x^k \partial x^l}
 $$
 
-Therefore, the curvature scales as:
+When metric components diverge as $g_{ij} \sim (T - T_c)^{-\alpha}$, their second derivatives scale as:
+
+$$
+\frac{\partial^2 g_{ij}}{\partial T^2} \sim \alpha(\alpha+1)(T - T_c)^{-\alpha-2}
+$$
+
+Combining with inverse metric factors gives curvature scaling:
 
 $$
 R \sim (T - T_c)^{\beta-2} \cdot (T - T_c)^{-\beta} = (T - T_c)^{-2} \to \infty
@@ -3233,11 +3261,15 @@ $$
 
 where $S = -\text{Tr}(\hat{\rho} \log \hat{\rho})$ is the von Neumann entropy.
 
-For the canonical ensemble:
+For the canonical ensemble in the **thermodynamic limit** ($N \to \infty$):
 
 $$
-g_R^{\beta\beta} = \beta^2 \text{Var}(\hat{H}) = \beta^2 \left[\text{Tr}(\hat{\rho} \hat{H}^2) - (\text{Tr}(\hat{\rho} \hat{H}))^2\right]
+g_R^{\beta\beta} = \text{Var}(\hat{H}) = \text{Tr}(\hat{\rho} \hat{H}^2) - (\text{Tr}(\hat{\rho} \hat{H}))^2
 $$
+
+For **finite systems**, there are $O(1)$ corrections from higher energy cumulants, but these vanish in the thermodynamic limit by the quantum central limit theorem.
+
+**Notational note**: This is the Ruppeiner metric in $(\beta, V, N)$ parameter space, related to the metric in $(U, V, N)$ energy space by the coordinate transformation $g_R^{UU} = (\partial \beta/\partial U)^2 g_R^{\beta\beta}$.
 
 **Connection to Bures metric**: Via the same pullback relationship as the classical case, $g_R = J^T g_{\text{Bures}} J$.
 :::
@@ -3246,31 +3278,71 @@ $$
 
 **Step 1**: Quantum entropy derivative.
 
-$$
-\frac{\partial S}{\partial \beta} = \frac{\partial}{\partial \beta}\left(-\text{Tr}(\hat{\rho} \log \hat{\rho})\right)
-$$
-
-Using $\hat{\rho} = e^{-\beta \hat{H}} / Z$ and the quantum von Neumann entropy formula:
+Using $\hat{\rho} = e^{-\beta \hat{H}} / Z$, the von Neumann entropy has the form:
 
 $$
-S = \beta \langle \hat{H} \rangle + \log Z
+S = -\text{Tr}(\hat{\rho} \log \hat{\rho}) = \beta \langle \hat{H} \rangle + \log Z
 $$
 
-**Step 2**: Second derivative.
+**Step 2**: First derivative.
+
+Taking the derivative:
 
 $$
-\frac{\partial^2 S}{\partial \beta^2} = \frac{\partial}{\partial \beta}\langle \hat{H} \rangle + \frac{\partial \log Z}{\partial \beta}
+\frac{\partial S}{\partial \beta} = \langle \hat{H} \rangle + \beta \frac{\partial \langle \hat{H} \rangle}{\partial \beta} + \frac{\partial \log Z}{\partial \beta}
 $$
 
-The first term gives:
+Using the standard statistical mechanics identity $\frac{\partial \log Z}{\partial \beta} = -\langle \hat{H} \rangle$:
 
 $$
-\frac{\partial \langle \hat{H} \rangle}{\partial \beta} = \text{Tr}\left(\frac{\partial \hat{\rho}}{\partial \beta} \hat{H}\right) = -\text{Var}(\hat{H})
+\frac{\partial S}{\partial \beta} = \beta \frac{\partial \langle \hat{H} \rangle}{\partial \beta}
 $$
 
-using the quantum fluctuation-dissipation theorem.
+**Step 3**: Second derivative.
 
-**Step 3**: Coordinate transformation.
+$$
+\frac{\partial^2 S}{\partial \beta^2} = \frac{\partial \langle \hat{H} \rangle}{\partial \beta} + \beta \frac{\partial^2 \langle \hat{H} \rangle}{\partial \beta^2}
+$$
+
+Using the quantum fluctuation-dissipation theorem $\frac{\partial \langle \hat{H} \rangle}{\partial \beta} = -\text{Var}(\hat{H})$:
+
+$$
+\frac{\partial^2 S}{\partial \beta^2} = -\text{Var}(\hat{H}) + \beta \frac{\partial}{\partial \beta}[-\text{Var}(\hat{H})]
+$$
+
+**Step 4**: Evaluate the variance derivative.
+
+For the canonical ensemble with Hamiltonian $\hat{H}$ having temperature-independent eigenvalues $\{E_n\}$ (the standard case), the variance derivative is:
+
+$$
+\frac{\partial \text{Var}(\hat{H})}{\partial \beta} = -\text{Cov}(\hat{H}, \hat{H}^2) + 2\langle \hat{H} \rangle \cdot \text{Var}(\hat{H})
+$$
+
+This is $O(\beta^{-1} \cdot \text{Var}(\hat{H}))$ from the cumulant expansion, giving:
+
+$$
+\beta \frac{\partial \text{Var}(\hat{H})}{\partial \beta} = O(\text{Var}(\hat{H}))
+$$
+
+Therefore:
+
+$$
+\frac{\partial^2 S}{\partial \beta^2} = -\text{Var}(\hat{H}) \cdot [1 + O(1)]
+$$
+
+**Important note**: The $O(1)$ correction depends on higher cumulants (third moment of energy) and is system-dependent. For the Ruppeiner metric, we use the **canonical definition**:
+
+$$
+g_R^{\beta\beta} := -\frac{\partial^2 S}{\partial \beta^2} = \text{Var}(\hat{H}) \cdot [1 + O(1)]
+$$
+
+In the **thermodynamic limit** ($N \to \infty$, $V \to \infty$, $N/V$ fixed), higher cumulants become negligible relative to the variance (central limit theorem), yielding:
+
+$$
+\lim_{N \to \infty} g_R^{\beta\beta} / \text{Var}(\hat{H}) \to 1
+$$
+
+**Step 5**: Coordinate transformation.
 
 With $U = \langle \hat{H} \rangle$, the Jacobian $\partial \beta / \partial U = -\beta^2 / C_V^{\text{quantum}}$ transforms:
 
@@ -3355,15 +3427,20 @@ is the lattice Yang-Mills Hamiltonian with dynamical mass $m$ (Chapter 13, Theor
 :::{prf:theorem} Quantum Ruppeiner Metric for Yang-Mills
 :label: thm-quantum-ruppeiner-yang-mills
 
-The Ruppeiner metric on the Yang-Mills QSD manifold detects the **mass gap** $\Delta_{\text{YM}}$:
+The Ruppeiner metric on the Yang-Mills QSD manifold exhibits temperature-dependent behavior controlled by the **mass gap** $\Delta_{\text{YM}}$:
 
 $$
-g_R^{\beta\beta} = \beta^2 \text{Var}(\hat{H}_{\text{YM}}) \sim \beta^2 \cdot \frac{1}{\Delta_{\text{YM}}^2}
+g_R^{\beta\beta} = \text{Var}(\hat{H}_{\text{YM}}) \sim \Delta_{\text{YM}}^2 \cdot e^{-\beta \Delta_{\text{YM}}}
 $$
 
-**Physical meaning**: Systems with small mass gap (near confinement-deconfinement transition) exhibit large thermodynamic curvature.
+**Regime analysis**:
+- **Low temperature** ($\beta \Delta_{\text{YM}} \gg 1$): Exponential suppression $e^{-\beta\Delta} \to 0$
+- **Critical regime** ($\beta \Delta_{\text{YM}} \sim O(1)$): Maximum curvature $\sim \Delta_{\text{YM}}^2$
+- **High temperature** ($\beta \Delta_{\text{YM}} \ll 1$): Classical limit $\sim \Delta_{\text{YM}}^2 (1 - \beta \Delta_{\text{YM}})$
 
-**Millennium Prize connection**: The mass gap $\Delta_{\text{YM}} > 0$ ensures the Ruppeiner metric remains finite for $\beta < \infty$, consistent with the confinement phase.
+**Physical meaning**: The Ruppeiner curvature peaks at $\beta \sim 1/\Delta_{\text{YM}}$ (i.e., $T \sim \Delta_{\text{YM}}/k_B$), providing a thermodynamic signature of the mass gap.
+
+**Millennium Prize connection**: The mass gap $\Delta_{\text{YM}} > 0$ ensures the variance remains finite for all $\beta$, distinguishing the confined phase from a gapless deconfined phase.
 :::
 
 :::{prf:proof}
@@ -3388,15 +3465,21 @@ $$
 
 where $\Delta_{\text{YM}} = E_1 - E_0$ is the mass gap.
 
-**Step 3**: Ruppeiner metric.
+**Step 3**: Ruppeiner metric and mass gap dependence.
 
 $$
-g_R^{\beta\beta} = \beta^2 \text{Var}(\hat{H}) \sim \beta^2 \Delta_{\text{YM}}^2 e^{-\beta \Delta_{\text{YM}}}
+g_R^{\beta\beta} = \text{Var}(\hat{H}) \sim \Delta_{\text{YM}}^2 e^{-\beta \Delta_{\text{YM}}}
 $$
 
-For $\beta \Delta_{\text{YM}} \sim O(1)$ (relevant regime), this scales as $\beta^2 / \Delta_{\text{YM}}^2$.
+**Regime analysis**:
 
-If $\Delta_{\text{YM}} = 0$ (no gap), the metric diverges, signaling a phase transition. The existence of $\Delta_{\text{YM}} > 0$ (proven in Chapter 13) ensures finite curvature. $\square$
+1. **Low temperature** ($\beta \Delta_{\text{YM}} \gg 1$): System frozen in ground state, variance exponentially suppressed
+2. **Critical regime** ($\beta \Delta_{\text{YM}} \sim O(1)$): Exponential factor $e^{-O(1)} \sim O(1)$, giving maximum curvature $\sim \Delta_{\text{YM}}^2$
+3. **High temperature** ($\beta \Delta_{\text{YM}} \ll 1$): Expand $e^{-x} \approx 1 - x$, giving $\text{Var}(\hat{H}) \sim \Delta_{\text{YM}}^2(1 - \beta \Delta_{\text{YM}})$
+
+**Physical interpretation**: The Ruppeiner curvature **peaks** at $\beta \sim 1/\Delta_{\text{YM}}$ (i.e., $T \sim \Delta_{\text{YM}}/k_B$), where thermal fluctuations are maximally sensitive to the spectral gap. This provides a thermodynamic fingerprint of the mass gap.
+
+**Phase transition signature**: If $\Delta_{\text{YM}} = 0$ (gapless phase), the variance formula breaks down—the sum over states no longer converges, signaling a phase transition to deconfinement. The existence of $\Delta_{\text{YM}} > 0$ (proven in Chapter 13, Theorem 13.5.1) ensures finite curvature for all finite $\beta$, confirming the confined phase. $\square$
 :::
 
 :::{prf:remark} Computational Strategy
@@ -3406,7 +3489,7 @@ If $\Delta_{\text{YM}} = 0$ (no gap), the metric diverges, signaling a phase tra
 1. Run the Fragile Gas on gauge field configuration space (Chapter 13, Algorithm 13.6.1)
 2. Collect QSD samples $\{\{A_\mu^{(k)}\}\}_{k=1}^N$ (gauge field configurations)
 3. Compute quantum observables: $\langle \hat{H} \rangle$, $\langle \hat{H}^2 \rangle$ via path integral Monte Carlo
-4. Estimate $g_R^{\beta\beta} = \beta^2(\langle \hat{H}^2 \rangle - \langle \hat{H} \rangle^2)$
+4. Estimate $g_R^{\beta\beta} = \langle \hat{H}^2 \rangle - \langle \hat{H} \rangle^2$ (variance)
 5. Monitor curvature to detect confinement-deconfinement transition
 
 **Advantage over traditional lattice QCD**: The Fragile Gas dynamically explores relevant configurations, reducing computational cost.

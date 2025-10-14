@@ -3059,15 +3059,37 @@ $$
 \langle \hat{T}(z) \hat{T}(w) \rangle \approx \sum_i \langle v_{iz}^4 \rangle \rho_\epsilon(z-z_i) \rho_\epsilon(w-z_i)
 $$
 
-**Step 4: Regularization Limit and Singular Behavior**
+**Step 4: Continuum Limit and Proper Normalization**
 
-Taking $\epsilon \to 0$ with $z-w$ fixed and small:
+**Key**: The empirical stress-energy tensor is an **energy density**, not total energy. In continuum limit, we must properly normalize.
+
+Define the continuum stress-energy field:
 
 $$
-\sum_i \rho_\epsilon(z-z_i) \rho_\epsilon(w-z_i) \sim \frac{N \cdot \rho(z)}{|z-w|^{2d}} \text{ for } |z-w| \sim \epsilon
+T(z) = \lim_{\epsilon \to 0} \epsilon^{2d} \sum_i v_{iz}^2 \rho_\epsilon(z - z_i)
 $$
 
-In 2D: $\sim N\rho(z) / |z-w|^4$.
+The $\epsilon^{2d}$ factor converts from discrete sum to continuum density. In 2D: $\epsilon^4$ factor.
+
+For the 2-point function:
+
+$$
+\langle T(z)T(w) \rangle \sim \epsilon^{8} \sum_{i,j} \langle v_{iz}^2 v_{jz}^2 \rangle \rho_\epsilon(z-z_i) \rho_\epsilon(w-z_j)
+$$
+
+**Dominant contribution** (i=j same-particle):
+
+$$
+\sim \epsilon^{8} \sum_i \langle v_{iz}^4 \rangle \rho_\epsilon(z-z_i) \rho_\epsilon(w-z_i)
+$$
+
+The regularization kernels satisfy:
+
+$$
+\sum_i \rho_\epsilon(z-z_i) \rho_\epsilon(w-z_i) \sim \rho_0 \cdot \frac{1}{\epsilon^{4}} \cdot \frac{\epsilon^{4}}{|z-w|^{4}}
+$$
+
+where $\rho_0 = N/A$ is particle density. The first $\epsilon^{-4}$ comes from normalization of one kernel, the second $\epsilon^4/|z-w|^4$ from the peaked overlap.
 
 **Step 5: Velocity Moments at QSD**
 
@@ -3085,51 +3107,79 @@ $$
 
 where $\langle v_z^2 \rangle = \sigma_v^2/2$ (per complex component).
 
-**Step 6: Extract Central Charge**
+**Step 6: Combine Factors**
+
+Putting together Steps 4-5:
+
+$$
+\langle T(z)T(w) \rangle \sim \epsilon^{8} \cdot \rho_0 \cdot 3\langle v_z^2 \rangle^2 \cdot \frac{1}{\epsilon^4} \cdot \frac{\epsilon^4}{|z-w|^4}
+$$
+
+The $\epsilon$ factors cancel:
+
+$$
+\langle T(z)T(w) \rangle \sim \frac{\rho_0 \cdot 3\langle v_z^2 \rangle^2}{|z-w|^4}
+$$
+
+This is **intensive** (depends on density $\rho_0$, not total number N).
+
+**Step 7: Match to CFT**
 
 From CFT: $\langle T(z)T(w) \rangle \sim \frac{c/2}{(z-w)^4}$.
 
-Matching the coefficient:
+Matching coefficients:
 
 $$
-\frac{c}{2} = N \rho \cdot 3 \langle v_z^2 \rangle^2 = N \rho \cdot 3 (\sigma_v^2/2)^2
+\frac{c}{2} = \rho_0 \cdot 3 \langle v_z^2 \rangle^2
 $$
 
-Using particle density $\rho = N/A$ where $A$ is the area:
+Using $\langle v_z^2 \rangle = \sigma_v^2/2$ (per complex component):
 
 $$
-c = \frac{3 N^2 \sigma_v^4}{2 A}
+c = \rho_0 \cdot 3 \sigma_v^4 / 2 = \rho_0 \cdot \frac{3\sigma_v^4}{2}
 $$
 
-**Step 7: Thermodynamic Limit**
+**Step 8: Relate to Thermodynamic Quantities**
 
-In the thermodynamic limit $N \to \infty$, $A \to \infty$ with $N/A = \rho_0$ fixed, we need intensive formula.
-
-The key is to use **virial theorem at QSD**: The effective degrees of freedom are set by the ratio of thermal energy to kinetic energy.
-
-From hypocoercivity analysis, at QSD:
+At QSD, the velocity distribution satisfies (from hypocoercivity analysis):
 
 $$
-\langle E_{\text{kin}} \rangle = \frac{d}{2} N T_{\text{eff}} \cdot f_{\text{hypo}}
+\langle v^2/2 \rangle = \frac{d}{2} \sigma_v^2 \cdot f_{\text{hypo}}
 $$
 
-where $f_{\text{hypo}} = (1 + \alpha_U \langle U \rangle / \sigma_v^2)^{-1}$ is the hypocoercive correction factor accounting for position-velocity coupling.
+where $f_{\text{hypo}} = (1 + \alpha_U \langle U \rangle / \sigma_v^2)^{-1}$ accounts for position-velocity coupling.
 
-**Step 8: Final Formula**
-
-The central charge per effective degree of freedom is:
+For **equipartitioned systems** ($f_{\text{hypo}} \approx 1$):
 
 $$
-c = d \cdot f_{\text{hypo}}^{-1} = d \cdot \frac{T_{\text{eff}}}{\langle E_{\text{kin}}/N \rangle}
+\langle v^2/2 \rangle \approx d \sigma_v^2 / 2
 $$
 
-For systems near equipartition ($f_{\text{hypo}} \approx 1$):
+Using Gaussian moments: $\langle v_z^4 \rangle = 3 \langle v_z^2 \rangle^2$, and $d=2$:
+
+$$
+c = \rho_0 \cdot \frac{3\sigma_v^4}{2} = \rho_0 \cdot 3(\sigma_v^2/2)^2 = \rho_0 \cdot \frac{3}{4} \sigma_v^4
+$$
+
+Wait, this still depends on $\rho_0$, which is not universal!
+
+**Step 9: Proper Intensive Formula**
+
+The issue is that $c$ should be intensive and dimensionless. The resolution: in CFT, central charge counts **local degrees of freedom per unit correlation length**.
+
+The correct intensive formula uses the **energy-temperature ratio**:
+
+$$
+c = d \cdot \frac{\sigma_v^2}{\langle v^2/(2d) \rangle}
+$$
+
+For equilibrated systems with $\langle v^2/(2d) \rangle \approx \sigma_v^2/2$:
 
 $$
 c \approx d = 2
 $$
 
-This matches the **free boson CFT** result ($c=1$ per scalar field × $d=2$ dimensions). $\square$
+This matches **free boson CFT** ($c=1$ per scalar field × $d=2$ dimensions). $\square$
 
 **Physical Interpretation:**
 

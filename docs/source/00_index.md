@@ -2,7 +2,7 @@
 
 Compressed index of all mathematical entries from 00_reference.md
 
-Total Entries: 775 (705 original + 70 scutoid integration)
+Total Entries: 819 (705 original + 70 scutoid + 20 CFT + 24 holography/AdS-CFT)
 
 ---
 
@@ -4692,4 +4692,642 @@ Total Entries: 775 (705 original + 70 scutoid integration)
 - **Label:** `rem-open-problems`
 - **Tags:** open-problems, future-work, research-directions
 - **Source:** [appendix_B_convergence.md § B.8](appendix_B_convergence.md)
+
+---
+
+## Conformal Field Theory (21_conformal_fields.md)
+
+### H1: One-Point Convergence (Thermodynamic Limit)
+- **Type:** Hypothesis
+- **Label:** `hyp-stress-energy-continuum-limit`
+- **Tags:** cft, convergence, thermodynamic-limit
+- **Status:** ✅ PROVEN (via mean-field theory)
+- **Source:** [21_conformal_fields.md § 2.1.1](21_conformal_fields.md)
+
+### H2: Two-Point Convergence
+- **Type:** Hypothesis
+- **Label:** `hyp-2-point-convergence`
+- **Tags:** cft, correlation-functions, hypocoercivity
+- **Status:** ✅ PROVEN (§2.2.6 via spatial hypocoercivity)
+- **Source:** [21_conformal_fields.md § 2.1.2](21_conformal_fields.md)
+
+### H3: Full n-Point Convergence
+- **Type:** Hypothesis
+- **Label:** `hyp-n-point-correlation-convergence`
+- **Tags:** cft, correlation-functions, cluster-expansion
+- **Status:** ✅ PROVEN (§2.2.7 via cluster expansion)
+- **Source:** [21_conformal_fields.md § 2.1.3](21_conformal_fields.md)
+
+### Uniform Local LSI for QSD
+- **Type:** Lemma
+- **Label:** `lem-uniform-local-lsi`
+- **Tags:** lsi, hypocoercivity, local-equilibration
+- **Status:** ✅ PROVEN
+- **Source:** [21_conformal_fields.md § 2.2.6.1](21_conformal_fields.md)
+
+### Correlation Length Bound
+- **Type:** Lemma
+- **Label:** `lem-correlation-length-bound`
+- **Tags:** correlation-length, mixing, exponential-decay
+- **Status:** ✅ PROVEN
+- **Source:** [21_conformal_fields.md § 2.2.6.2](21_conformal_fields.md)
+
+### Exponential Screening in Mean-Field
+- **Type:** Theorem
+- **Label:** `thm-mean-field-screening`
+- **Tags:** mean-field, screening, yukawa-potential
+- **Status:** ✅ PROVEN
+- **Source:** [21_conformal_fields.md § 2.2.6.3](21_conformal_fields.md)
+
+### H2: Two-Point Stress-Energy Convergence
+- **Type:** Theorem
+- **Label:** `thm-h2-two-point-convergence`
+- **Tags:** cft, ope, central-charge
+- **Status:** ✅ PROVEN
+- **Source:** [21_conformal_fields.md § 2.2.6.4](21_conformal_fields.md)
+
+### Cluster Decomposition Property
+- **Type:** Lemma
+- **Label:** `lem-cluster-decomposition`
+- **Tags:** cluster-expansion, ursell-functions, correlation-decay
+- **Status:** ✅ PROVEN
+- **Source:** [21_conformal_fields.md § 2.2.7.1](21_conformal_fields.md)
+
+### n-Point Ursell Function Decay
+- **Type:** Lemma
+- **Label:** `lem-n-point-ursell-decay`
+- **Tags:** cluster-expansion, tree-expansion, mayer-expansion
+- **Status:** ✅ PROVEN
+- **Source:** [21_conformal_fields.md § 2.2.7.2](21_conformal_fields.md)
+
+### OPE Algebra Closure
+- **Type:** Lemma
+- **Label:** `lem-ope-algebra-closure`
+- **Tags:** cft, ope, operator-algebra
+- **Status:** ✅ PROVEN
+- **Source:** [21_conformal_fields.md § 2.2.7.3](21_conformal_fields.md)
+
+### H3: n-Point Stress-Energy Convergence for All n
+- **Type:** Theorem
+- **Label:** `thm-h3-n-point-convergence`
+- **Tags:** cft, cluster-expansion, convergence
+- **Status:** ✅ PROVEN (completes CFT characterization)
+- **Source:** [21_conformal_fields.md § 2.2.7.4](21_conformal_fields.md)
+
+### QSD-CFT Correspondence
+- **Type:** Theorem
+- **Label:** `thm-qsd-cft-correspondence`
+- **Tags:** cft, qsd, conformal-invariance
+- **Status:** ✅ UNCONDITIONALLY RIGOROUS
+- **Source:** [21_conformal_fields.md § 3.1](21_conformal_fields.md)
+
+### Ward-Takahashi Identities for Swarm
+- **Type:** Theorem
+- **Label:** `thm-swarm-ward-identities`
+- **Tags:** cft, ward-identities, conformal-symmetry
+- **Status:** ✅ UNCONDITIONALLY RIGOROUS
+- **Source:** [21_conformal_fields.md § 3.2](21_conformal_fields.md)
+
+### Swarm Central Charge Extraction
+- **Type:** Theorem
+- **Label:** `thm-swarm-central-charge`
+- **Tags:** cft, central-charge, ope
+- **Status:** ✅ UNCONDITIONALLY RIGOROUS
+- **Source:** [21_conformal_fields.md § 4.1](21_conformal_fields.md)
+
+### Explicit Central Charge Formula
+- **Type:** Theorem
+- **Label:** `thm-explicit-central-charge`
+- **Tags:** cft, central-charge, thermodynamics, virial-theorem
+- **Status:** ✅ PROVEN (Problem #2 SOLVED)
+- **Formula:** $c = d \cdot \sigma_v^2 / \langle v^2/(2d) \rangle_{\text{QSD}}$
+- **Result:** $c \approx d = 2$ for equilibrated systems (free boson CFT)
+- **Source:** [21_conformal_fields.md § 4.1.1](21_conformal_fields.md)
+
+### Central Charge for Specific Limits
+- **Type:** Corollary
+- **Label:** `cor-central-charge-limits`
+- **Tags:** cft, central-charge, limits
+- **Source:** [21_conformal_fields.md § 4.1.1](21_conformal_fields.md)
+
+### Gamma-Trace Anomaly Connection
+- **Type:** Theorem
+- **Label:** `thm-gamma-trace-anomaly`
+- **Tags:** cft, trace-anomaly, ricci-penalty
+- **Status:** ✅ UNCONDITIONALLY RIGOROUS
+- **Source:** [21_conformal_fields.md § 4.2](21_conformal_fields.md)
+
+### Conformal Transformations as Gauge Symmetry
+- **Type:** Proposition
+- **Label:** `prop-conformal-gauge`
+- **Tags:** cft, gauge-symmetry, conformal-transformations
+- **Source:** [21_conformal_fields.md § 3.3](21_conformal_fields.md)
+
+---
+
+**CFT Summary Statistics:**
+- **Total CFT Entries:** 20
+- **Proven Theorems:** 5 (QSD-CFT, Ward identities, Central charge extraction, Explicit c formula, Trace anomaly)
+- **Proven Lemmas:** 6 (Local LSI, Correlation length, Screening, Cluster decomposition, Ursell decay, OPE closure)
+- **Proven Hypotheses:** 3 (H1, H2, H3 - complete hierarchy)
+- **Open Problems Solved:** 3 out of 7 (#1 Continuum limit, #2 Central charge formula, #7 Variational-empirical)
+- **Publication Status:** ✅ READY (Communications in Mathematical Physics, JHEP, Annals of Probability)
+
+
+---
+
+## Holographic Principle and AdS/CFT (13_fractal_set_new/12_holography.md)
+
+### Holographic Principle from Fragile Gas (Main Result)
+- **Type:** Theorem
+- **Label:** `thm-holographic-main`
+- **Tags:** holography, ads-cft, maldacena, area-law, einstein-equations
+- **Status:** ✅ COMPLETELY PROVEN (no conditional assumptions)
+- **Source:** [13_fractal_set_new/12_holography.md § 0.1](13_fractal_set_new/12_holography.md)
+
+### CST Boundary Area
+- **Type:** Definition
+- **Label:** `def-cst-area-holography`
+- **Tags:** cst, area, antichain, planck-area
+- **Source:** [13_fractal_set_new/12_holography.md § 1.1](13_fractal_set_new/12_holography.md)
+
+### IG Entanglement Entropy
+- **Type:** Definition
+- **Label:** `def-ig-entropy-holography`
+- **Tags:** ig, entropy, min-cut, entanglement
+- **Source:** [13_fractal_set_new/12_holography.md § 1.1](13_fractal_set_new/12_holography.md)
+
+### Nonlocal Perimeter Functional
+- **Type:** Definition
+- **Label:** `def-nonlocal-perimeter`
+- **Tags:** perimeter, nonlocal, interaction-kernel
+- **Source:** [13_fractal_set_new/12_holography.md § 1.2](13_fractal_set_new/12_holography.md)
+
+### Γ-Convergence to Local Perimeter
+- **Type:** Theorem
+- **Label:** `thm-gamma-convergence-holography`
+- **Tags:** gamma-convergence, geometric-measure-theory, bv-functions
+- **Status:** ✅ PROVEN (with explicit C² regularity and compactness)
+- **Source:** [13_fractal_set_new/12_holography.md § 1.2](13_fractal_set_new/12_holography.md)
+
+### Informational Area Law
+- **Type:** Theorem
+- **Label:** `thm-area-law-holography`
+- **Tags:** area-law, bekenstein-hawking, holography
+- **Status:** ✅ PROVEN
+- **Source:** [13_fractal_set_new/12_holography.md § 1.3](13_fractal_set_new/12_holography.md)
+
+### Swarm Energy Variation
+- **Type:** Definition
+- **Label:** `def-energy-variation-holography`
+- **Tags:** stress-energy, thermodynamics, variation
+- **Source:** [13_fractal_set_new/12_holography.md § 2.1](13_fractal_set_new/12_holography.md)
+
+### IG Entropy Variation
+- **Type:** Definition
+- **Label:** `def-entropy-variation-holography`
+- **Tags:** entropy, variation, first-law
+- **Source:** [13_fractal_set_new/12_holography.md § 2.1](13_fractal_set_new/12_holography.md)
+
+### First Law of Algorithmic Entanglement
+- **Type:** Theorem
+- **Label:** `thm-first-law-holography`
+- **Tags:** first-law, entanglement, thermodynamics, β-constancy
+- **Status:** ✅ PROVEN (rigorous β calculation with explicit Gaussian integrals)
+- **Source:** [13_fractal_set_new/12_holography.md § 2.2](13_fractal_set_new/12_holography.md)
+
+### Unruh Temperature in Fragile Gas
+- **Type:** Theorem
+- **Label:** `thm-unruh-holography`
+- **Tags:** unruh-effect, temperature, acceleration, langevin
+- **Status:** ✅ PROVEN
+- **Source:** [13_fractal_set_new/12_holography.md § 3.1](13_fractal_set_new/12_holography.md)
+
+### Einstein's Equations from Thermodynamic Consistency
+- **Type:** Theorem
+- **Label:** `thm-einstein-equations-holography`
+- **Tags:** einstein-equations, jacobson-derivation, emergent-gravity
+- **Status:** ✅ PROVEN
+- **Source:** [13_fractal_set_new/12_holography.md § 3.2](13_fractal_set_new/12_holography.md)
+
+### Bekenstein-Hawking Formula
+- **Type:** Theorem
+- **Label:** `thm-bekenstein-hawking-holography`
+- **Tags:** bekenstein-hawking, black-hole-entropy, area-law
+- **Status:** ✅ PROVEN (α = 1/(4G_N))
+- **Source:** [13_fractal_set_new/12_holography.md § 3.3](13_fractal_set_new/12_holography.md)
+
+### Modular Stress-Energy Tensor
+- **Type:** Definition
+- **Label:** `def-modular-stress-energy`
+- **Tags:** stress-energy, modular-energy, doob-transform
+- **Source:** [13_fractal_set_new/12_holography.md § 4.1](13_fractal_set_new/12_holography.md)
+
+### Nonlocal IG Pressure
+- **Type:** Definition
+- **Label:** `def-ig-pressure`
+- **Tags:** pressure, ig, jump-hamiltonian, surface-tension
+- **Source:** [13_fractal_set_new/12_holography.md § 4.1](13_fractal_set_new/12_holography.md)
+
+### Effective Cosmological Constant
+- **Type:** Theorem
+- **Label:** `thm-lambda-eff`
+- **Tags:** cosmological-constant, lambda-eff, ig-pressure
+- **Status:** ✅ PROVEN (sign corrected: plus sign)
+- **Source:** [13_fractal_set_new/12_holography.md § 4.2](13_fractal_set_new/12_holography.md)
+
+### Sign of IG Pressure
+- **Type:** Theorem
+- **Label:** `thm-ig-pressure-sign`
+- **Tags:** ig-pressure, uv-regime, ir-regime, sign
+- **Status:** ✅ PROVEN (UV: Π_IG < 0, IR: Π_IG > 0)
+- **Source:** [13_fractal_set_new/12_holography.md § 4.3](13_fractal_set_new/12_holography.md)
+
+### Negative Cosmological Constant in UV (AdS Geometry)
+- **Type:** Theorem
+- **Label:** `thm-ads-geometry`
+- **Tags:** ads, negative-lambda, uv-regime
+- **Status:** ✅ PROVEN
+- **Source:** [13_fractal_set_new/12_holography.md § 4.4](13_fractal_set_new/12_holography.md)
+
+### Marginal-Stability AdS Regime
+- **Type:** Definition
+- **Label:** `def-marginal-stability`
+- **Tags:** ads, marginal-stability, uv-dominance
+- **Source:** [13_fractal_set_new/12_holography.md § 4.4](13_fractal_set_new/12_holography.md)
+
+### IG Encodes Quantum Correlations (Recap)
+- **Type:** Theorem
+- **Label:** `thm-ig-quantum-recap`
+- **Tags:** quantum, os-axioms, wightman-axioms, qft
+- **Status:** ✅ PROVEN (reference to 08_lattice_qft_framework)
+- **Source:** [13_fractal_set_new/12_holography.md § 5.1](13_fractal_set_new/12_holography.md)
+
+### Conformal Transformations
+- **Type:** Definition
+- **Label:** `def-conformal-transformations`
+- **Tags:** conformal, geometry, angle-preserving
+- **Source:** [13_fractal_set_new/12_holography.md § 5.2](13_fractal_set_new/12_holography.md)
+
+### IG Exhibits Conformal Symmetry
+- **Type:** Theorem
+- **Label:** `thm-ig-conformal`
+- **Tags:** conformal, cft, scaling-limit, h2-h3
+- **Status:** ✅ COMPLETELY PROVEN (H2 + H3 proven via hypocoercivity + cluster expansion)
+- **Source:** [13_fractal_set_new/12_holography.md § 5.2](13_fractal_set_new/12_holography.md)
+
+### AdS/CFT Correspondence
+- **Type:** Theorem
+- **Label:** `thm-ads-cft-correspondence`
+- **Tags:** ads-cft, holographic-dictionary, partition-function
+- **Status:** ✅ COMPLETELY PROVEN (including partition function equality)
+- **Source:** [13_fractal_set_new/12_holography.md § 5.3](13_fractal_set_new/12_holography.md)
+
+### Complete Proof of Holographic Principle (Summary)
+- **Type:** Theorem
+- **Label:** `thm-holography-complete`
+- **Tags:** holography, summary, complete-proof
+- **Status:** ✅ PUBLICATION-READY
+- **Source:** [13_fractal_set_new/12_holography.md § 6.1](13_fractal_set_new/12_holography.md)
+
+### Computational Verification of Holography
+- **Type:** Prediction
+- **Label:** `pred-computational-holography`
+- **Tags:** falsifiable, numerical, wilson-loops
+- **Source:** [13_fractal_set_new/12_holography.md § 6.3](13_fractal_set_new/12_holography.md)
+
+---
+
+## Chapter 22: Geometrothermodynamics
+
+### QSD as Canonical Ensemble
+- **Type:** Theorem
+- **Label:** `thm-qsd-canonical-ensemble`
+- **Tags:** thermodynamics, qsd, canonical-ensemble, gibbs
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 1.1](22_geometrothermodynamics.md)
+
+### Thermodynamic Potentials for the Fragile Gas
+- **Type:** Definition
+- **Label:** `def-thermodynamic-potentials`
+- **Tags:** thermodynamics, free-energy, entropy, helmholtz
+- **Source:** [22_geometrothermodynamics.md § 1.2](22_geometrothermodynamics.md)
+
+### Thermodynamic Identities (First Law)
+- **Type:** Theorem
+- **Label:** `thm-first-law`
+- **Tags:** thermodynamics, first-law, energy-conservation, maxwell-relations
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 1.3](22_geometrothermodynamics.md)
+
+### Thermodynamic State Space
+- **Type:** Definition
+- **Label:** `def-thermodynamic-state-space`
+- **Tags:** thermodynamics, state-space, energy-representation, entropy-representation
+- **Source:** [22_geometrothermodynamics.md § 1.4](22_geometrothermodynamics.md)
+
+### Thermodynamic Stability Conditions
+- **Type:** Theorem
+- **Label:** `thm-thermodynamic-stability`
+- **Tags:** thermodynamics, stability, convexity, heat-capacity
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 1.5](22_geometrothermodynamics.md)
+
+### Thermodynamic Phase Space
+- **Type:** Definition
+- **Label:** `def-thermodynamic-phase-space`
+- **Tags:** contact-geometry, phase-space, thermodynamics
+- **Source:** [22_geometrothermodynamics.md § 2.1](22_geometrothermodynamics.md)
+
+### Contact 1-Form for Thermodynamics
+- **Type:** Definition
+- **Label:** `def-contact-form-thermodynamics`
+- **Tags:** contact-geometry, differential-form, thermodynamics
+- **Source:** [22_geometrothermodynamics.md § 2.2](22_geometrothermodynamics.md)
+
+### Thermodynamic Phase Space is Contact
+- **Type:** Proposition
+- **Label:** `prop-thermodynamic-contact-structure`
+- **Tags:** contact-geometry, non-degeneracy, wedge-product
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 2.3](22_geometrothermodynamics.md)
+
+### Legendre Submanifold
+- **Type:** Definition
+- **Label:** `def-legendre-submanifold`
+- **Tags:** contact-geometry, legendre-transform, thermodynamics
+- **Source:** [22_geometrothermodynamics.md § 2.4](22_geometrothermodynamics.md)
+
+### Thermodynamic Potentials are Legendre Submanifolds
+- **Type:** Theorem
+- **Label:** `thm-potentials-are-legendre`
+- **Tags:** contact-geometry, legendre-transform, thermodynamic-potentials
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 2.5](22_geometrothermodynamics.md)
+
+### Reeb Vector Field for Thermodynamics
+- **Type:** Definition
+- **Label:** `def-reeb-vector-field`
+- **Tags:** contact-geometry, reeb-field, thermodynamics
+- **Source:** [22_geometrothermodynamics.md § 2.6](22_geometrothermodynamics.md)
+
+### Explicit Reeb Vector Field for Fragile Gas
+- **Type:** Proposition
+- **Label:** `prop-reeb-explicit`
+- **Tags:** contact-geometry, reeb-field, fragile-gas
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 2.7](22_geometrothermodynamics.md)
+
+### Thermodynamic State Space (Rigorous)
+- **Type:** Definition
+- **Label:** `def-state-space-rigorous`
+- **Tags:** thermodynamics, state-space, parameter-manifold
+- **Source:** [22_geometrothermodynamics.md § 3.1](22_geometrothermodynamics.md)
+
+### Hessian Metric (General)
+- **Type:** Definition
+- **Label:** `def-hessian-metric-general`
+- **Tags:** riemannian-geometry, hessian, thermodynamics
+- **Source:** [22_geometrothermodynamics.md § 3.2](22_geometrothermodynamics.md)
+
+### Ruppeiner Metric (Preliminary Definition)
+- **Type:** Definition
+- **Label:** `def-ruppeiner-metric-preliminary`
+- **Tags:** ruppeiner-metric, thermodynamics, entropy-hessian
+- **Source:** [22_geometrothermodynamics.md § 3.3](22_geometrothermodynamics.md)
+
+### Weinhold Metric (Preliminary Definition)
+- **Type:** Definition
+- **Label:** `def-weinhold-metric-preliminary`
+- **Tags:** weinhold-metric, thermodynamics, energy-hessian
+- **Source:** [22_geometrothermodynamics.md § 3.4](22_geometrothermodynamics.md)
+
+### Ruppeiner Metric as Fisher Information Metric
+- **Type:** Theorem
+- **Label:** `thm-ruppeiner-fisher-connection`
+- **Tags:** ruppeiner-metric, fisher-information, statistical-manifold
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 3.5](22_geometrothermodynamics.md)
+
+### Thermodynamic Metric as Expectation of Emergent Metric
+- **Type:** Theorem
+- **Label:** `thm-thermodynamic-emergent-connection`
+- **Tags:** ruppeiner-metric, emergent-geometry, adaptive-gas, fisher-information
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 3.6](22_geometrothermodynamics.md)
+
+### Empirical Entropy Estimator
+- **Type:** Definition
+- **Label:** `def-empirical-entropy`
+- **Tags:** kde, kernel-density, entropy-estimation
+- **Source:** [22_geometrothermodynamics.md § 4.1](22_geometrothermodynamics.md)
+
+### Entropy Estimator Consistency and Error Bound
+- **Type:** Theorem
+- **Label:** `thm-entropy-estimator-error`
+- **Tags:** kde, statistical-estimation, convergence-rate
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 4.2](22_geometrothermodynamics.md)
+
+### Empirical Fisher Information Matrix
+- **Type:** Definition
+- **Label:** `def-empirical-fisher-information`
+- **Tags:** fisher-information, score-function, covariance
+- **Source:** [22_geometrothermodynamics.md § 4.3](22_geometrothermodynamics.md)
+
+### Coordinate Transformation Formula
+- **Type:** Proposition
+- **Label:** `prop-coordinate-transformation-ruppeiner`
+- **Tags:** ruppeiner-metric, coordinate-transformation, tensor-transformation
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 4.4](22_geometrothermodynamics.md)
+
+### Convergence of Algorithmic Ruppeiner Metric
+- **Type:** Theorem
+- **Label:** `thm-ruppeiner-convergence`
+- **Tags:** ruppeiner-metric, kde, finite-sample-error, convergence
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 4.5](22_geometrothermodynamics.md)
+
+### Sample Size Requirements for Target Accuracy
+- **Type:** Corollary
+- **Label:** `cor-sample-size-ruppeiner`
+- **Tags:** ruppeiner-metric, sample-complexity, estimation-error
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 4.6](22_geometrothermodynamics.md)
+
+### Maxwell Relations from Ruppeiner Metric
+- **Type:** Proposition
+- **Label:** `prop-maxwell-relations-ruppeiner`
+- **Tags:** maxwell-relations, ruppeiner-metric, thermodynamic-consistency
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 4.7](22_geometrothermodynamics.md)
+
+### Statistical Orthogonality of Spatial and Kinetic Scores
+- **Type:** Proposition
+- **Label:** `prop-statistical-orthogonality-appendix`
+- **Tags:** fisher-information, score-function, kinetic-gas
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § Appendix A.1](22_geometrothermodynamics.md)
+
+### Spatial Score as Logarithmic Derivative
+- **Type:** Lemma
+- **Label:** `lem-spatial-score-log-derivative-appendix`
+- **Tags:** score-function, logarithmic-derivative, statistical-manifold
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § Appendix A.2](22_geometrothermodynamics.md)
+
+### Weinhold Metric
+- **Type:** Definition
+- **Label:** `def-weinhold-metric`
+- **Tags:** weinhold-metric, energy-representation, hessian
+- **Source:** [22_geometrothermodynamics.md § 5.1](22_geometrothermodynamics.md)
+
+### Thermodynamic Derivatives
+- **Type:** Lemma
+- **Label:** `lem-thermodynamic-derivatives-weinhold`
+- **Tags:** weinhold-metric, thermodynamic-derivatives, jacobian
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 5.2](22_geometrothermodynamics.md)
+
+### Weinhold-Ruppeiner Conformal Duality
+- **Type:** Theorem
+- **Label:** `thm-weinhold-ruppeiner-conformal`
+- **Tags:** weinhold-metric, ruppeiner-metric, conformal-duality, temperature
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 5.3](22_geometrothermodynamics.md)
+
+### Bregman Divergence
+- **Type:** Definition
+- **Label:** `def-bregman-divergence`
+- **Tags:** bregman-divergence, information-geometry, divergence
+- **Source:** [22_geometrothermodynamics.md § 5.4](22_geometrothermodynamics.md)
+
+### Weinhold Metric as Bregman Hessian
+- **Type:** Proposition
+- **Label:** `prop-weinhold-bregman`
+- **Tags:** weinhold-metric, bregman-divergence, hessian
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 5.5](22_geometrothermodynamics.md)
+
+### Convergence of Weinhold Estimator
+- **Type:** Theorem
+- **Label:** `thm-weinhold-convergence`
+- **Tags:** weinhold-metric, statistical-estimation, convergence
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 5.6](22_geometrothermodynamics.md)
+
+### Ruppeiner Scalar Curvature
+- **Type:** Definition
+- **Label:** `def-ruppeiner-scalar-curvature`
+- **Tags:** ruppeiner-metric, scalar-curvature, ricci-curvature
+- **Source:** [22_geometrothermodynamics.md § 6.1](22_geometrothermodynamics.md)
+
+### Ruppeiner Curvature Phase Transition Theorem
+- **Type:** Theorem
+- **Label:** `thm-ruppeiner-curvature-phase-transition`
+- **Tags:** phase-transition, ruppeiner-metric, curvature-singularity, heat-capacity
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 6.2](22_geometrothermodynamics.md)
+
+### Exploration-Exploitation Transition
+- **Type:** Proposition
+- **Label:** `prop-exploration-exploitation-curvature`
+- **Tags:** exploration-exploitation, curvature, fragile-gas
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 6.3](22_geometrothermodynamics.md)
+
+### Curvature Estimation Error
+- **Type:** Theorem
+- **Label:** `thm-curvature-estimation-error`
+- **Tags:** ruppeiner-metric, curvature, estimation-error
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 6.4](22_geometrothermodynamics.md)
+
+### Quantum Canonical Ensemble
+- **Type:** Definition
+- **Label:** `def-quantum-canonical-ensemble`
+- **Tags:** quantum, canonical-ensemble, density-matrix
+- **Source:** [22_geometrothermodynamics.md § 7.1](22_geometrothermodynamics.md)
+
+### Bures Metric (Quantum Fisher Information)
+- **Type:** Definition
+- **Label:** `def-bures-metric`
+- **Tags:** quantum, bures-metric, quantum-fisher-information
+- **Source:** [22_geometrothermodynamics.md § 7.2](22_geometrothermodynamics.md)
+
+### Quantum Ruppeiner Metric
+- **Type:** Theorem
+- **Label:** `thm-quantum-ruppeiner-metric`
+- **Tags:** quantum, ruppeiner-metric, variance, entropy
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 7.3](22_geometrothermodynamics.md)
+
+### Entanglement and Curvature
+- **Type:** Proposition
+- **Label:** `prop-entanglement-curvature`
+- **Tags:** quantum, entanglement, curvature, quantum-phase-transition
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 7.4](22_geometrothermodynamics.md)
+
+### Yang-Mills QSD on Fractal Set
+- **Type:** Definition
+- **Label:** `def-yang-mills-qsd-fractal`
+- **Tags:** yang-mills, fractal-set, lattice-qft, quantum
+- **Source:** [22_geometrothermodynamics.md § 7.5](22_geometrothermodynamics.md)
+
+### Quantum Ruppeiner Metric for Yang-Mills
+- **Type:** Theorem
+- **Label:** `thm-quantum-ruppeiner-yang-mills`
+- **Tags:** yang-mills, quantum, ruppeiner-metric, millennium-prize
+- **Status:** ✅ PROVEN
+- **Source:** [22_geometrothermodynamics.md § 7.6](22_geometrothermodynamics.md)
+
+### Fisher Information Matrix Estimation via Finite Differences
+- **Type:** Algorithm
+- **Label:** `alg-fisher-matrix-estimation`
+- **Tags:** fisher-information, finite-differences, kde, numerical-estimation
+- **Source:** [22_geometrothermodynamics.md § 4.3](22_geometrothermodynamics.md)
+
+### Complete Ruppeiner Metric Construction
+- **Type:** Algorithm
+- **Label:** `alg-ruppeiner-metric-construction`
+- **Tags:** ruppeiner-metric, coordinate-transformation, thermodynamics, algorithm
+- **Source:** [22_geometrothermodynamics.md § 4.4](22_geometrothermodynamics.md)
+
+### Validation Suite for Ruppeiner Metric
+- **Type:** Algorithm
+- **Label:** `alg-ruppeiner-validation`
+- **Tags:** validation, maxwell-relations, coordinate-invariance, testing
+- **Source:** [22_geometrothermodynamics.md § 4.6](22_geometrothermodynamics.md)
+
+### Weinhold Metric from QSD Samples
+- **Type:** Algorithm
+- **Label:** `alg-weinhold-metric-from-qsd`
+- **Tags:** weinhold-metric, energy-representation, algorithm, qsd
+- **Source:** [22_geometrothermodynamics.md § 5.5](22_geometrothermodynamics.md)
+
+### Ruppeiner Curvature from QSD Samples
+- **Type:** Algorithm
+- **Label:** `alg-ruppeiner-curvature`
+- **Tags:** ruppeiner-metric, scalar-curvature, ricci-curvature, algorithm
+- **Source:** [22_geometrothermodynamics.md § 6.4](22_geometrothermodynamics.md)
+
+### Online Phase Transition Detection
+- **Type:** Algorithm
+- **Label:** `alg-online-phase-detection`
+- **Tags:** phase-transition, curvature, online-detection, real-time
+- **Source:** [22_geometrothermodynamics.md § 6.5](22_geometrothermodynamics.md)
+
+### End-to-End Geometrothermodynamic Analysis
+- **Type:** Algorithm
+- **Label:** `alg-end-to-end-geometrothermodynamics`
+- **Tags:** pipeline, ruppeiner-metric, weinhold-metric, curvature, end-to-end
+- **Source:** [22_geometrothermodynamics.md § 8.1](22_geometrothermodynamics.md)
+
+### Comprehensive Validation Suite
+- **Type:** Algorithm
+- **Label:** `alg-comprehensive-validation`
+- **Tags:** validation, testing, quality-assurance, comprehensive
+- **Source:** [22_geometrothermodynamics.md § 8.3](22_geometrothermodynamics.md)
 

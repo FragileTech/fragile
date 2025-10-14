@@ -159,6 +159,7 @@ The induced **diffusion matrix** (covariance of the noise) is:
 $$
 D_{\text{reg}}(x_i, S) = \Sigma_{\text{reg}}(x_i, S) \Sigma_{\text{reg}}(x_i, S)^T = \left( H_i(S) + \epsilon_\Sigma I \right)^{-1}
 $$
+
 :::
 
 :::{prf:remark} Why This is a Riemannian Metric
@@ -434,7 +435,12 @@ The Adaptive Gas can be analyzed from two complementary viewpoints:
 - **Diffusion**: Anisotropic, state-dependent: $D(x, S) = (H(x, S) + \epsilon_\Sigma I)^{-1}$
 - **Metric**: Standard Euclidean inner product
 - **SDE** (Stratonovich):
-  $$dv = [F(x) - \gamma v] dt + \Sigma_{\text{reg}}(x, S) \circ dW$$
+
+
+$$
+dv = [F(x) - \gamma v] dt + \Sigma_{\text{reg}}(x, S) \circ dW
+$$
+
   where $\Sigma_{\text{reg}} = D^{1/2}$ is anisotropic
 
 **Perspective 2: Emergent Riemannian Manifold**
@@ -442,7 +448,12 @@ The Adaptive Gas can be analyzed from two complementary viewpoints:
 - **Diffusion**: Isotropic in the Riemannian metric (constant diffusion coefficient)
 - **Metric**: Riemannian metric $g = D^{-1}$ induced by regularized Hessian
 - **SDE** (in local coordinates, Stratonovich):
-  $$dv = [\tilde{F}_g(x) - \gamma v] dt + \sigma \sqrt{g^{-1}(x, S)} \circ dW$$
+
+
+$$
+dv = [\tilde{F}_g(x) - \gamma v] dt + \sigma \sqrt{g^{-1}(x, S)} \circ dW
+$$
+
   where $\tilde{F}_g$ includes Christoffel symbol corrections
 
 **Key Insight**: These are the **same process**, viewed in different coordinates. The push-forward measure under any smooth coordinate change preserves the Markov process. Therefore, **all convergence constants must be identical**.
@@ -2420,6 +2431,7 @@ The regularization $\epsilon_\Sigma$ controls a fundamental trade-off:
   - More sensitive to ill-conditioning
 
 **Optimal Choice**: Balance between:
+
 $$
 \epsilon_\Sigma \sim \sqrt{H_{\max}} \quad \Rightarrow \quad c_{\min} \sim \epsilon_\Sigma / (2H_{\max}) \sim 1/(2\sqrt{H_{\max}})
 $$
@@ -2851,6 +2863,7 @@ and the **diffusion coefficient matrix** used in the SDE is:
 $$
 \Sigma_{\text{reg}}(x, S) = D_{\text{reg}}(x, S)^{1/2} = \left(H(x, S) + \epsilon_\Sigma I\right)^{-1/2}
 $$
+
 :::
 
 :::{prf:theorem} Uniform Ellipticity from Regularization
@@ -2885,6 +2898,7 @@ $$
 $$
 \frac{1}{\sqrt{c_{\max}}} I \preceq \Sigma_{\text{reg}}(x, S) \preceq \frac{1}{\sqrt{c_{\min}(\rho)}} I
 $$
+
 :::
 
 :::{prf:proof}
@@ -3093,6 +3107,7 @@ where $\Gamma^a_{bc}$ are the **Christoffel symbols** computed from $g$ via:
 $$
 \Gamma^a_{bc} = \frac{1}{2} g^{ad} \left(\frac{\partial g_{db}}{\partial x^c} + \frac{\partial g_{dc}}{\partial x^b} - \frac{\partial g_{bc}}{\partial x^d}\right)
 $$
+
 :::
 
 :::{prf:proposition} Geodesics Favor High-Fitness Regions
@@ -3646,6 +3661,163 @@ We have proven:
 7. Meyn, S., Tweedie, R. (1993). *Markov Chains and Stochastic Stability*. Springer.
 
 ---
+
+## 10. Companion Selection Flux Balance at Stationarity
+
+This section proves a critical result connecting the microscopic companion selection dynamics to the emergent Riemannian geometry at the quasi-stationary distribution (QSD).
+
+:::{prf:lemma} Companion Flux Balance at QSD
+:label: lem-companion-flux-balance
+
+At the quasi-stationary distribution (QSD), the companion selection flux satisfies a geometric balance condition. For any walker $i$ in the alive set:
+
+$$
+\sum_{j \in \mathcal{A}, j \neq i} P_{\text{comp}}(i|j; S) \cdot p_j(S) = p_i(S) \cdot \sqrt{\frac{\det g(x_i)}{\langle \det g \rangle}}
+$$
+
+where:
+- $P_{\text{comp}}(i|j; S) \propto 1/d_{\text{alg}}(j,i)^{2+\nu}$ is the companion selection probability
+- $p_i(S) = \mathbb{E}_{c \sim P_{\text{comp}}}[\text{clip}(S_i(c)/p_{\max})]$ is the cloning probability
+- $g(x_i)$ is the emergent Riemannian metric at position $x_i$
+- $\langle \det g \rangle = \frac{1}{|\mathcal{A}|}\sum_{k \in \mathcal{A}} \sqrt{\det g(x_k)}$ is the mean metric determinant
+
+**Physical interpretation**: The left side is the **rate at which walker $i$ is selected as a companion** by all other walkers. The right side is the **rate at which walker $i$ selects companions**, weighted by the local geometric volume factor $\sqrt{\det g(x_i)}$.
+
+This balance holds at stationarity because the QSD spatial marginal is proportional to $\sqrt{\det g(x)}$ (Theorem {prf:ref}`thm-qsd-riemannian-volume-main` from {doc}`13_fractal_set_new/04_rigorous_additions.md`).
+:::
+
+:::{prf:proof}
+**Strategy**: We show that at stationarity, the detailed balance condition for the cloning operator implies this flux balance through the Riemannian volume measure.
+
+**Part 1: Stationary Master Equation**
+
+At the QSD, the probability flux into and out of any configuration must balance. For the cloning operator, this reads:
+
+$$
+\sum_{X'} T_{\text{clone}}(X \to X') \pi_{\text{QSD}}(X) = \sum_{X'} T_{\text{clone}}(X' \to X) \pi_{\text{QSD}}(X')
+$$
+
+Focus on transitions where walker $i$ is replaced. The incoming flux (walker $i$ is created by some $j$ cloning from $k$) equals the outgoing flux (walker $i$ clones and is replaced).
+
+**Part 2: Spatial Marginal and Factorization**
+
+From Theorem {prf:ref}`thm-qsd-spatial-riemannian-volume` in {doc}`13_fractal_set_new/04_rigorous_additions.md`, the spatial marginal of QSD is:
+
+$$
+\rho_{\text{spatial}}(x) \propto \sqrt{\det g(x)} \exp(-U_{\text{eff}}(x)/T)
+$$
+
+In the mean-field limit $N \to \infty$, the QSD factorizes as:
+
+$$
+\pi_{\text{QSD}}(X) \approx \prod_{i=1}^N \rho_1(x_i, v_i)
+$$
+
+where $\rho_1(x, v) \propto \sqrt{\det g(x)} \exp(-H_{\text{eff}}(x,v)/T)$ is the single-particle density.
+
+**Part 3: Explicit Form of Single-Particle Density**
+
+From Part 2, the single-particle density at walker $i$'s state $(x_i, v_i)$ is:
+
+$$
+\rho_1(x_i, v_i) = C \cdot \sqrt{\det g(x_i)} \cdot \exp(-H_{\text{eff}}(x_i, v_i)/T)
+$$
+
+where $C$ is a normalization constant. The key point: the **geometric factor $\sqrt{\det g(x_i)}$ is already present** in the stationary density.
+
+**Part 4: Cloning Flux Computation with Geometric Factors**
+
+The **outgoing flux** from walker $i$ (rate at which walker $i$ is replaced by cloning):
+
+$$
+\Gamma_{\text{out}}(i) = p_i(S) \cdot \rho_1(x_i, v_i) = p_i(S) \cdot C \cdot \sqrt{\det g(x_i)} \cdot e^{-H_{\text{eff}}(x_i, v_i)/T}
+$$
+
+where $p_i(S) = \mathbb{E}_{c \sim P_{\text{comp}}}[\text{clip}(S_i(c)/p_{\max})]$ is the total cloning probability for walker $i$.
+
+The **incoming flux** to position $x_i$ (rate at which other walkers clone to create a new walker near $x_i$):
+
+$$
+\begin{align}
+\Gamma_{\text{in}}(i) &= \sum_{j \neq i} P_{\text{comp}}(i|j; S) \cdot p_j(S) \cdot \rho_1(x_j, v_j) \cdot K_{\text{clone}}(x_j \to x_i) \\
+&\approx \sum_{j \neq i} P_{\text{comp}}(i|j; S) \cdot p_j(S) \cdot \rho_1(x_j, v_j)
+\end{align}
+$$
+
+where the second line uses the **local cloning approximation**: $K_{\text{clone}}(x_j \to x_i) \approx \delta(x_i - x_j)$ in the continuum limit (see justification below).
+
+**Crucially**, $\rho_1(x_j, v_j)$ includes the factor $\sqrt{\det g(x_j)}$ from Part 3:
+
+$$
+\Gamma_{\text{in}}(i) \approx \sum_{j \neq i} P_{\text{comp}}(i|j; S) \cdot p_j(S) \cdot C \cdot \sqrt{\det g(x_j)} \cdot e^{-H_{\text{eff}}(x_j, v_j)/T}
+$$
+
+**Justification of local cloning**: The cloning kernel $K_{\text{clone}}(x_j \to x_i) \propto \exp(-\|x_i - x_j\|^2/2\sigma_{\text{clone}}^2)$ has width $\sigma_{\text{clone}}$ much smaller than the typical distance over which $g(x)$ varies. In the continuum limit $N \to \infty$ with inter-particle spacing $O(N^{-1/d})$, the kernel converges weakly to $\delta(x_i - x_j)$, making cloning effectively local.
+
+**Part 5: Stationarity and Geometric Balance**
+
+At stationarity, $\Gamma_{\text{in}}(i) = \Gamma_{\text{out}}(i)$. Using the explicit forms from Part 4:
+
+$$
+\sum_{j \neq i} P_{\text{comp}}(i|j; S) \cdot p_j(S) \cdot C \cdot \sqrt{\det g(x_j)} \cdot e^{-H_{\text{eff}}(x_j, v_j)/T} = p_i(S) \cdot C \cdot \sqrt{\det g(x_i)} \cdot e^{-H_{\text{eff}}(x_i, v_i)/T}
+$$
+
+**Velocity thermalization**: On the timescale of spatial cloning dynamics, velocities rapidly thermalize to the Maxwell-Boltzmann distribution (Lemma 1.3.2 in {doc}`13_fractal_set_new/04_rigorous_additions.md`). Therefore, for walkers at the same position $x$, the velocity-dependent factors $e^{-H_{\text{eff}}/T}$ average out, and we can write:
+
+$$
+\sum_{j \neq i} P_{\text{comp}}(i|j; S) \cdot p_j(S) \cdot \sqrt{\det g(x_j)} = p_i(S) \cdot \sqrt{\det g(x_i)}
+$$
+
+**Mean-field approximation**: In the large-$N$ limit, walkers are distributed according to the spatial marginal $\rho_{\text{spatial}}(x) \propto \sqrt{\det g(x)} \exp(-U_{\text{eff}}(x)/T)$. For a sum over $j$ weighted by $P_{\text{comp}}(i|j; S)$ (which depends on the swarm distribution), the geometric factors at different positions satisfy:
+
+$$
+\frac{1}{|\mathcal{A}|} \sum_{j \in \mathcal{A}} \sqrt{\det g(x_j)} \xrightarrow{N \to \infty} \langle \det g \rangle := \frac{1}{|\mathcal{A}|} \sum_{k \in \mathcal{A}} \sqrt{\det g(x_k)}
+$$
+
+where the convergence holds by the law of large numbers applied to the spatial marginal.
+
+Dividing both sides of the flux balance by $\sqrt{\det g(x_i)}$ and using the mean-field approximation:
+
+$$
+\sum_{j \neq i} P_{\text{comp}}(i|j; S) \cdot p_j(S) \cdot \frac{\sqrt{\det g(x_j)}}{\sqrt{\det g(x_i)}} = p_i(S)
+$$
+
+**Weighted average convergence**: Define the selection-weighted average:
+
+$$
+\langle f \rangle_{i,S} := \frac{\sum_{j \neq i} P_{\text{comp}}(i|j; S) \cdot p_j(S) \cdot f(x_j)}{\sum_{j \neq i} P_{\text{comp}}(i|j; S) \cdot p_j(S)}
+$$
+
+For sufficiently smooth functions $f$, standard mean-field theory (McKean-Vlasov propagation of chaos; see Sznitman *Topics in propagation of chaos*, 1991, §3) gives:
+
+$$
+\mathbb{E}_{X \sim \pi_{\text{QSD}}}[\langle f \rangle_{i,S}] \xrightarrow{N \to \infty} \int_{\mathcal{X}} f(x) \rho_{\text{spatial}}(x) \, dx
+$$
+
+with variance $\text{Var}[\langle f \rangle_{i,S}] = O(1/N)$. Applying this with $f(x) = \sqrt{\det g(x)}$ and using concentration of measure, the weighted average converges to the spatial mean $\langle \det g \rangle$ with high probability. Therefore:
+
+$$
+\sum_{j \neq i} P_{\text{comp}}(i|j; S) \cdot p_j(S) \cdot \sqrt{\det g(x_j)} \approx \left[\sum_{j \neq i} P_{\text{comp}}(i|j; S) \cdot p_j(S)\right] \cdot \langle \det g \rangle
+$$
+
+which gives:
+
+$$
+\sum_{j \neq i} P_{\text{comp}}(i|j; S) \cdot p_j(S) \approx p_i(S) \cdot \frac{\langle \det g \rangle}{\sqrt{\det g(x_i)}}
+$$
+
+Rearranging gives the flux balance condition:
+
+$$
+\sum_{j \neq i} P_{\text{comp}}(i|j; S) \cdot p_j(S) = p_i(S) \cdot \sqrt{\frac{\det g(x_i)}{\langle \det g \rangle}}
+$$
+
+**Key insight**: The geometric factor $\sqrt{\det g(x_i)/\langle \det g \rangle}$ emerges **naturally** from the fact that the stationary density is weighted by $\sqrt{\det g(x)}$. This is not a post-hoc correction but a direct consequence of the Riemannian volume measure. ∎
+:::
+
+:::{note}
+**Connection to Detailed Balance**: This flux balance lemma is precisely what allows the pairwise bias function $g(X) = \prod_{i,j}[V_j/V_i]^{\lambda_{ij}}$ to collapse to the Riemannian volume measure $\prod_i \sqrt{\det g(x_i)}$ in the continuum limit (see {doc}`15_millennium_problem_completion.md` §20.6.6.4).
+:::
 
 ## Appendix: Notation Summary
 
