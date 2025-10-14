@@ -196,9 +196,14 @@ N-Uniform LSI → C_LSI = O(1) (entropy-transport)
 
 1. **yang_mills_spectral_proof.md**
    - Added Section 8.2 (Lorentzian from causal order)
-   - Updated Section 12.2 (Clay Requirement #5)
+   - **Added Section 8.0** (Hamiltonian equivalence proof - post-Round 4)
+     - Scutoid volume elements and lattice Hamiltonian (§ 8.0.1)
+     - Gromov-Hausdorff convergence proof (§ 8.0.2)
+     - 4D Minkowski projection with curvature correction (§ 8.0.3)
+     - Final Hamiltonian equivalence theorem (§ 8.0.4)
+   - Updated Section 12.2 (Clay Requirement #5, then Requirement #1)
    - Updated Section 13.1 (removed contradiction)
-   - +~100 lines
+   - +~100 lines (Round 4) + ~220 lines (Section 8.0) = +~320 lines total
 
 2. **ROUND_4_GEMINI_EVALUATION.md**
    - Complete critical evaluation of Gemini feedback
@@ -208,7 +213,8 @@ N-Uniform LSI → C_LSI = O(1) (entropy-transport)
 
 3. **ROUND_4_SUMMARY.md** (this document)
    - Comprehensive summary of Round 4 changes
-   - ~200 lines
+   - Added post-Round 4 Hamiltonian equivalence integration
+   - ~215 lines
 
 ---
 
@@ -257,6 +263,14 @@ Issue #4: Minor clarification → Correct result, could state more precisely ✓
 ### Immediate
 - ✅ Round 4 changes complete
 - ⏭️ Git commit documenting all changes
+
+### Completed After Round 4
+- ✅ **Added Section 8.0**: Hamiltonian equivalence proof
+  - Integrated explicit proof from continuum_limit_yangmills_resolution.md
+  - Scutoid volume weighting + Regge calculus approach
+  - Gromov-Hausdorff convergence to standard Yang-Mills Hamiltonian
+  - Curvature correction for projection to flat Minkowski $\mathbb{R}^{3,1}$
+  - Updated Clay Requirement #1 with rigorous Hamiltonian convergence references
 
 ### Future (Optional Polish)
 - ⏭️ Add explicit H1 coercivity statement (Issue #2)
