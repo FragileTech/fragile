@@ -42,12 +42,15 @@ All parameters use Pydantic models with validation:
 The `docs/source/` directory contains rigorous mathematical specifications organized in two ways:
 
 **1. Comprehensive Mathematical Reference:**
-- **`00_reference.md`** - Complete searchable reference of all mathematical results (5,789+ lines)
+- **`00_index.md`** - Compressed index of all 677 mathematical entries (quick navigation)
   - **Use this first** when you need to find definitions, theorems, or understand the framework
-  - Covers 13+ framework documents: foundational axioms, cloning, kinetic operator, mean-field limits, KL-convergence, symmetries, gauge theory, fractal set theory
+  - Provides: entry type, label, tags, and source document references
   - Organized by topic with cross-references and tags for searchability
+  - Fast lookup for navigating the framework structure
+- **`00_reference.md`** - Complete detailed reference of all mathematical results (5,789+ lines)
+  - Use this when you need full mathematical statements and detailed proofs
   - Each entry includes: type, label, source, tags, complete mathematical statement, related results
-  - Table of Contents provides quick navigation to specific topics
+  - Covers 13+ framework documents: foundational axioms, cloning, kinetic operator, mean-field limits, KL-convergence, symmetries, gauge theory, fractal set theory
 
 **2. Detailed Framework Documents:**
 - `01_fragile_gas_framework.md` - Core axioms and foundational definitions
@@ -65,9 +68,10 @@ The `docs/source/` directory contains rigorous mathematical specifications organ
 - `13_fractal_set/` - Discrete spacetime and lattice QFT
 
 **Workflow:**
-1. **For quick lookup**: Use `00_reference.md` to find definitions, theorems, constants
-2. **For deep understanding**: Read the full framework documents
-3. **For implementation**: Code mirrors mathematical notation from these documents
+1. **For quick lookup**: Use `00_index.md` to find definitions, theorems, constants by tags/labels
+2. **For detailed statements**: Use `00_reference.md` for full mathematical proofs and statements
+3. **For deep understanding**: Read the full framework documents
+4. **For implementation**: Code mirrors mathematical notation from these documents
 
 ### Visualization and Analysis
 
@@ -321,18 +325,19 @@ Always inform the user when you make changes to GEMINI.md and explain your reaso
 
 When writing or reviewing mathematical documentation, **you MUST follow this workflow**:
 
-#### Step 0: Consult the Mathematical Reference (Prerequisite)
-**ALWAYS START HERE**: Before drafting or reviewing any mathematical content, consult `docs/source/00_reference.md` to:
-- Check if related definitions, theorems, or lemmas already exist
+#### Step 0: Consult the Mathematical Index (Prerequisite)
+**ALWAYS START HERE**: Before drafting or reviewing any mathematical content, consult `docs/source/00_index.md` to:
+- Check if related definitions, theorems, or lemmas already exist (search by tags/labels)
 - Understand how your work fits into the larger framework
 - Identify dependencies and cross-references
+- Navigate quickly to relevant source documents
 - Ensure consistency with established notation and conventions
-- Search by tags (e.g., `wasserstein`, `kl-convergence`, `hypocoercivity`) to find relevant results
+- For full mathematical statements, refer to `docs/source/00_reference.md` or the source documents
 
 **Example workflow:**
-- Writing about LSI? → Check "KL-Divergence Convergence and Logarithmic Sobolev Inequalities" section
-- Working on cloning? → Check "Measurement and Fitness Operators" and "Contraction and Stability Results"
-- Adding a theorem? → Search for related results using labels and tags
+- Writing about LSI? → Search `00_index.md` for entries tagged with `kl-convergence` or `lsi`
+- Working on cloning? → Search for tags like `cloning`, `measurement`, `fitness`
+- Adding a theorem? → Search for related results using labels and tags, then check full statements in `00_reference.md`
 
 #### Step 1: Draft or Modify Content
 - Read relevant sections of existing documents (both framework docs and reference)
@@ -343,7 +348,7 @@ When writing or reviewing mathematical documentation, **you MUST follow this wor
 #### Step 2: Gemini Review via MCP
 **MANDATORY**: Before finalizing any mathematical content, submit it for review using the `mcp__gemini-cli__ask-gemini` tool:
 
-**NOTE**: Gemini will automatically consult `00_reference.md` as part of its review protocol (see GEMINI.md § 4).
+**NOTE**: Gemini will automatically consult `00_index.md` (and `00_reference.md` when needed) as part of its review protocol (see GEMINI.md § 4).
 
 Request specific review types:
 - **Rigor check**: "Review this proof for mathematical rigor and completeness"

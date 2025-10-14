@@ -782,6 +782,17 @@ This is the stated formula. The volume ratio $\sqrt{\det g_{\alpha\beta} / \det 
 
 ## Part III: Computational Complexity and Dimensionality
 
+:::{important} **Forward Reference to Fragile QFT**
+This section analyzes the computational complexity of geometric analysis in the Fragile Gas framework, focusing on the Delaunay triangulation bottleneck for **batch processing** (computing the triangulation from scratch).
+
+For the **complete Fragile QFT pipeline** with online triangulation updates, which achieves **O(N) amortized complexity per timestep**, see [fragile_lqcd.md](fragile_lqcd.md). That document synthesizes:
+1. The five optimizations for linear-time QFT simulation
+2. The full O(N) algorithm combining online updates, Regge calculus, curvature-corrected diffusion, and adaptive sampling
+3. The refined **O(N) Universe Hypothesis**: $d=4$ is the highest dimension achieving O(N) time complexity
+
+The analysis below provides the foundation for understanding the dimension-dependent complexity barrier.
+:::
+
 ### 5. The $O(N \log N)$ Universe Hypothesis
 
 #### 5.1. The Delaunay Bottleneck

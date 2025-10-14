@@ -1,8 +1,8 @@
 # Mathematical Reference Index
 
-Compressed index of all 677 mathematical entries from 00_reference.md
+Compressed index of all mathematical entries from 00_reference.md
 
-Total Entries: 677
+Total Entries: 775 (705 original + 70 scutoid integration)
 
 ---
 
@@ -4127,3 +4127,569 @@ Total Entries: 677
 - **Label:** `rem-qsd-corrected-ess`
 - **Tags:** ess, qsd-correction, importance-sampling, geometric-analysis, beta-channel
 - **Source:** [19_geometric_sampling_reweighting.md § 2.3](19_geometric_sampling_reweighting.md)
+## Fragile QFT - Lattice QCD with O(N) Complexity
+
+### Fragile QFT Linear-Time Complexity Theorem
+- **Type:** Theorem
+- **Label:** `thm-fragile-qft-linear-time`
+- **Tags:** complexity, lattice-qcd, online-triangulation, linear-time, regge-calculus
+- **Source:** [fragile_lqcd.md § XV.1](fragile_lqcd.md)
+
+### Fixed-Node Scutoid Tessellation
+- **Type:** Definition
+- **Label:** `def-fixed-node-scutoid`
+- **Tags:** tessellation, cvt, fixed-node, multiscale, coarse-graining
+- **Source:** [fragile_lqcd.md § XV.1.3](fragile_lqcd.md)
+
+### Five Optimizations Synthesis
+- **Type:** Observation
+- **Label:** `obs-five-optimizations`
+- **Tags:** optimization, synthesis, virtuous-cycle, lattice-qcd
+- **Source:** [fragile_lqcd.md § XV.2](fragile_lqcd.md)
+
+### Fragile QFT Adaptive Lattice
+- **Type:** Definition
+- **Label:** `def-fragile-qft-lattice`
+- **Tags:** lattice-qft, delaunay-triangulation, adaptive-lattice, gauge-fields
+- **Source:** [fragile_lqcd.md § XV.3](fragile_lqcd.md)
+
+### Fragile Lattice Properties
+- **Type:** Proposition
+- **Label:** `prop-fragile-lattice-properties`
+- **Tags:** lattice-properties, bounded-degree, simplicial-complex
+- **Source:** [fragile_lqcd.md § XV.3](fragile_lqcd.md)
+
+### Fixed-Node Lattice Maintenance Algorithm
+- **Type:** Algorithm
+- **Label:** `alg-fixed-node-lattice`
+- **Tags:** cvt, lloyd-algorithm, online-triangulation, fixed-node
+- **Source:** [fragile_lqcd.md § XV.3.1](fragile_lqcd.md)
+
+### CVT Approximation Error
+- **Type:** Theorem
+- **Label:** `thm-cvt-approximation-error`
+- **Tags:** cvt, error-bound, spatial-discretization, convergence
+- **Source:** [fragile_lqcd.md § XV.3.1](fragile_lqcd.md)
+
+### Regge Curvature Complexity (Fixed-Node)
+- **Type:** Theorem
+- **Label:** `thm-regge-curvature-complexity-fixed-node`
+- **Tags:** regge-calculus, curvature, complexity, deficit-angle
+- **Source:** [fragile_lqcd.md § XV.3.2](fragile_lqcd.md)
+
+### CCD Update Algorithm for Fragile QFT
+- **Type:** Algorithm
+- **Label:** `alg-ccd-update-fragile-qft`
+- **Tags:** ccd, langevin-dynamics, metropolis-hastings, riemannian-geometry
+- **Source:** [fragile_lqcd.md § XV.3.3](fragile_lqcd.md)
+
+### Predictor-Corrector CCD
+- **Type:** Algorithm
+- **Label:** `alg-predictor-corrector-ccd`
+- **Tags:** ccd, predictor-corrector, geometric-time-lag, high-accuracy
+- **Source:** [fragile_lqcd.md § XV.3.3.1](fragile_lqcd.md)
+
+### Choosing n_cell for Fixed-Node Simulations
+- **Type:** Algorithm
+- **Label:** `alg-choosing-n-cell`
+- **Tags:** fixed-node, parameter-selection, accuracy-vs-cost, cvt
+- **Source:** [fragile_lqcd.md § XV.3.3.2](fragile_lqcd.md)
+
+### Voronoi Volume Estimates Metric Determinant
+- **Type:** Proposition
+- **Label:** `prop-voronoi-volume-determinant`
+- **Tags:** voronoi-cell, metric-determinant, approximation, qsd
+- **Source:** [fragile_lqcd.md § XV.3.4](fragile_lqcd.md)
+
+### Voronoi Volume Approximation Error Bound
+- **Type:** Theorem
+- **Label:** `thm-voronoi-approx-error`
+- **Tags:** voronoi-approximation, error-bound, detailed-balance, mcmc
+- **Source:** [fragile_lqcd.md § XV.3.4.1](fragile_lqcd.md)
+
+### Stationary Distribution Bias from Voronoi Approximation
+- **Type:** Proposition
+- **Label:** `prop-stationary-distribution-bias`
+- **Tags:** mcmc, bias, stationary-distribution, detailed-balance-violation
+- **Source:** [fragile_lqcd.md § XV.3.4.1](fragile_lqcd.md)
+
+### Hybrid Metropolis with Periodic Exact Correction
+- **Type:** Algorithm
+- **Label:** `alg-hybrid-metropolis`
+- **Tags:** mcmc, hybrid-method, bias-reduction, metropolis-hastings
+- **Source:** [fragile_lqcd.md § XV.3.4.2](fragile_lqcd.md)
+
+### Delayed Rejection Metropolis
+- **Type:** Algorithm
+- **Label:** `alg-delayed-rejection-metropolis`
+- **Tags:** mcmc, delayed-rejection, exact-detailed-balance, rigorous
+- **Source:** [fragile_lqcd.md § XV.3.4.2](fragile_lqcd.md)
+
+### Adaptive Sampling Mechanisms
+- **Type:** Observation
+- **Label:** `obs-adaptive-sampling-mechanisms`
+- **Tags:** adaptive-sampling, virtual-reward, cloning, mean-field
+- **Source:** [fragile_lqcd.md § XV.3.5](fragile_lqcd.md)
+
+### Gamma Channel Potential (Fragile QFT)
+- **Type:** Definition
+- **Label:** `def-gamma-channel-fragile-qft`
+- **Tags:** gamma-channel, curvature-reward, ricci-scalar, weyl-tensor
+- **Source:** [fragile_lqcd.md § XV.3.6](fragile_lqcd.md)
+
+### Tournament Selection Cloning
+- **Type:** Algorithm
+- **Label:** `alg-tournament-selection-cloning`
+- **Tags:** cloning, tournament-selection, exploration-exploitation, linear-time
+- **Source:** [fragile_lqcd.md § XV.3.6.2](fragile_lqcd.md)
+
+### Fragile QFT Timestep (Fixed-Node Variant)
+- **Type:** Algorithm
+- **Label:** `alg-fragile-qft-timestep`
+- **Tags:** complete-algorithm, fixed-node, timestep, cvt, gauge-fields
+- **Source:** [fragile_lqcd.md § XV.4.1](fragile_lqcd.md)
+
+### LQCD vs. Fragile QFT Complexity Comparison
+- **Type:** Observation
+- **Label:** `obs-lqcd-vs-fragile-qft`
+- **Tags:** lattice-qcd, complexity-comparison, speedup, adaptive-lattice
+- **Source:** [fragile_lqcd.md § XV.4.2](fragile_lqcd.md)
+
+### QFT Lower Bound (Information-Theoretic)
+- **Type:** Theorem
+- **Label:** `thm-qft-lower-bound`
+- **Tags:** lower-bound, information-theory, optimality, omega-n
+- **Source:** [fragile_lqcd.md § XV.4.3](fragile_lqcd.md)
+
+### Dimension-Dependent Cost for Fixed Accuracy
+- **Type:** Theorem
+- **Label:** `thm-dimension-accuracy-cost`
+- **Tags:** dimensionality, accuracy-cost, curse-of-dimensionality, scaling
+- **Source:** [fragile_lqcd.md § XV.5.1](fragile_lqcd.md)
+
+### Accuracy-Cost Phase Transition
+- **Type:** Observation
+- **Label:** `obs-accuracy-cost-phase-transition`
+- **Tags:** phase-transition, accuracy-cost, dimensionality, d=4-marginal
+- **Source:** [fragile_lqcd.md § XV.5.2](fragile_lqcd.md)
+
+### O(N) Universe Hypothesis (Refined)
+- **Type:** Conjecture
+- **Label:** `conj-on-universe-hypothesis`
+- **Tags:** anthropic-principle, dimensionality, computational-complexity, accuracy-cost, speculative
+- **Source:** [fragile_lqcd.md § XV.5.3](fragile_lqcd.md)
+
+## Scutoid Integration Framework
+
+### Riemannian Scutoid (Recall)
+- **Type:** Definition
+- **Label:** `def-scutoid-recall`
+- **Tags:** scutoid, spacetime, tessellation, geometry
+- **Source:** [scutoid_integration.md § 2.1](scutoid_integration.md)
+
+### Scutoid Simplicial Decomposition
+- **Type:** Definition
+- **Label:** `def-scutoid-simplicial-decomposition`
+- **Tags:** scutoid, simplicial-complex, decomposition
+- **Source:** [scutoid_integration.md § 2.1](scutoid_integration.md)
+
+### Spacetime Metric and Volume Element
+- **Type:** Definition
+- **Label:** `def-spacetime-metric-volume`
+- **Tags:** metric, spacetime, volume-element, riemannian
+- **Source:** [scutoid_integration.md § 2.2](scutoid_integration.md)
+
+### Temporal Scale Factor Convention
+- **Type:** Remark
+- **Label:** `rem-temporal-scale`
+- **Tags:** temporal-scale, convention, velocity-scale
+- **Source:** [scutoid_integration.md § 2.2](scutoid_integration.md)
+
+### Induced Metrics on Faces
+- **Type:** Definition
+- **Label:** `def-induced-metrics-faces`
+- **Tags:** induced-metric, faces, submanifold
+- **Source:** [scutoid_integration.md § 2.3](scutoid_integration.md)
+
+### Constant Metric Approximation
+- **Type:** Proposition
+- **Label:** `prop-constant-metric-approx`
+- **Tags:** approximation, metric, error-bounds
+- **Source:** [scutoid_integration.md § 2.4](scutoid_integration.md)
+
+### (d+1)-Simplex Definition
+- **Type:** Definition
+- **Label:** `def-d-plus-1-simplex`
+- **Tags:** simplex, spacetime, geometry
+- **Source:** [scutoid_integration.md § 3.1](scutoid_integration.md)
+
+### Compute Spacetime Simplex Volume
+- **Type:** Algorithm
+- **Label:** `alg-simplex-volume-spacetime`
+- **Tags:** volume, simplex, gram-determinant
+- **Source:** [scutoid_integration.md § 3.1](scutoid_integration.md)
+
+### Compute Total Scutoid Volume
+- **Type:** Algorithm
+- **Label:** `alg-scutoid-total-volume`
+- **Tags:** volume, scutoid, decomposition
+- **Source:** [scutoid_integration.md § 3.2](scutoid_integration.md)
+
+### Delaunay Decomposition for Voronoi Cells
+- **Type:** Remark
+- **Label:** `rem-delaunay-decomposition`
+- **Tags:** delaunay, voronoi, triangulation
+- **Source:** [scutoid_integration.md § 3.2](scutoid_integration.md)
+
+### Discrete Expansion Scalar
+- **Type:** Definition
+- **Label:** `def-discrete-expansion-scalar`
+- **Tags:** expansion, scalar, logarithmic
+- **Source:** [scutoid_integration.md § 3.3](scutoid_integration.md)
+
+### Compute Expansion Scalar
+- **Type:** Algorithm
+- **Label:** `alg-compute-expansion-scalar`
+- **Tags:** expansion, computation, algorithm
+- **Source:** [scutoid_integration.md § 3.3](scutoid_integration.md)
+
+### Average Expansion from Discrete Scutoids
+- **Type:** Proposition
+- **Label:** `prop-average-expansion`
+- **Tags:** expansion, averaging, convergence
+- **Source:** [scutoid_integration.md § 3.3](scutoid_integration.md)
+
+### Ruled Surface (Lateral Face)
+- **Type:** Definition
+- **Label:** `def-ruled-surface-lateral`
+- **Tags:** ruled-surface, lateral-face, geometry
+- **Source:** [scutoid_integration.md § 4.1](scutoid_integration.md)
+
+### Compute Lateral Face Area
+- **Type:** Algorithm
+- **Label:** `alg-lateral-face-area`
+- **Tags:** area, lateral-face, computation
+- **Source:** [scutoid_integration.md § 4.1](scutoid_integration.md)
+
+### Flux Through Scutoid Face
+- **Type:** Definition
+- **Label:** `def-flux-scutoid-face`
+- **Tags:** flux, vector-field, integration
+- **Source:** [scutoid_integration.md § 4.2](scutoid_integration.md)
+
+### Compute Flux Through Simplicial Face
+- **Type:** Algorithm
+- **Label:** `alg-flux-through-face`
+- **Tags:** flux, d-simplex, normal-vector
+- **Source:** [scutoid_integration.md § 4.2](scutoid_integration.md)
+
+### Outward Normal Orientation for Star-Convex Scutoids
+- **Type:** Lemma
+- **Label:** `lem-outward-normal-orientation`
+- **Tags:** normal-vector, orientation, star-convexity
+- **Source:** [scutoid_integration.md § 4.2](scutoid_integration.md)
+
+### Compute Oriented Normal Vector
+- **Type:** Algorithm
+- **Label:** `alg-compute-oriented-normal`
+- **Tags:** normal-vector, svd, orientation
+- **Source:** [scutoid_integration.md § 4.2](scutoid_integration.md)
+
+### Discrete Divergence Theorem for Scutoid
+- **Type:** Theorem
+- **Label:** `thm-discrete-divergence-scutoid`
+- **Tags:** divergence-theorem, conservation, integration
+- **Source:** [scutoid_integration.md § 4.3](scutoid_integration.md)
+
+### Naive Divergence Approximation (Warning)
+- **Type:** Remark
+- **Label:** `rem-naive-divergence-approximation`
+- **Tags:** divergence, approximation-error, warning
+- **Source:** [scutoid_integration.md § 4.3](scutoid_integration.md)
+
+### Validate Divergence Theorem
+- **Type:** Algorithm
+- **Label:** `alg-validate-divergence-theorem`
+- **Tags:** validation, testing, numerical-verification
+- **Source:** [scutoid_integration.md § 4.3](scutoid_integration.md)
+
+### Discrete Fitness Derivatives
+- **Type:** Definition
+- **Label:** `def-discrete-fitness-derivatives`
+- **Tags:** fitness, gradient, finite-difference
+- **Source:** [scutoid_integration.md § 5.1](scutoid_integration.md)
+
+### Christoffel Symbols via Finite Differences
+- **Type:** Algorithm
+- **Label:** `alg-christoffel-finite-difference`
+- **Tags:** christoffel-symbols, finite-difference, connection
+- **Source:** [scutoid_integration.md § 5.1](scutoid_integration.md)
+
+### Discrete Parallel Transport
+- **Type:** Definition
+- **Label:** `def-discrete-parallel-transport`
+- **Tags:** parallel-transport, connection, geodesic
+- **Source:** [scutoid_integration.md § 5.2](scutoid_integration.md)
+
+### Parallel Transport Along Edge
+- **Type:** Algorithm
+- **Label:** `alg-parallel-transport-edge`
+- **Tags:** parallel-transport, algorithm, edge
+- **Source:** [scutoid_integration.md § 5.2](scutoid_integration.md)
+
+### Holonomy Around Plaquette
+- **Type:** Definition
+- **Label:** `def-holonomy-plaquette`
+- **Tags:** holonomy, plaquette, curvature
+- **Source:** [scutoid_integration.md § 5.3](scutoid_integration.md)
+
+### Compute Holonomy Around Plaquette
+- **Type:** Algorithm
+- **Label:** `alg-holonomy-plaquette`
+- **Tags:** holonomy, computation, loop
+- **Source:** [scutoid_integration.md § 5.3](scutoid_integration.md)
+
+### Riemann Curvature from Holonomy (Computational)
+- **Type:** Theorem
+- **Label:** `thm-riemann-from-holonomy-computational`
+- **Tags:** riemann-tensor, holonomy, curvature-extraction
+- **Source:** [scutoid_integration.md § 5.3](scutoid_integration.md)
+
+### Estimate Riemann Curvature Tensor
+- **Type:** Algorithm
+- **Label:** `alg-estimate-riemann-curvature`
+- **Tags:** riemann-tensor, algorithm, full-basis
+- **Source:** [scutoid_integration.md § 5.3](scutoid_integration.md)
+
+### Three Sources of Error
+- **Type:** Definition
+- **Label:** `def-three-error-sources`
+- **Tags:** error-analysis, systematic-error, statistical-error
+- **Source:** [scutoid_integration.md § 6.1](scutoid_integration.md)
+
+### Volume Convergence Theorem
+- **Type:** Theorem
+- **Label:** `thm-convergence-volumes`
+- **Tags:** convergence, volume, error-bounds
+- **Source:** [scutoid_integration.md § 6.2](scutoid_integration.md)
+
+### Curvature Convergence Theorem (Main)
+- **Type:** Theorem
+- **Label:** `thm-convergence-curvature`
+- **Tags:** convergence, curvature, n-power-law
+- **Source:** [scutoid_integration.md § 6.2](scutoid_integration.md)
+
+### Numerical Stability Considerations
+- **Type:** Remark
+- **Label:** `rem-numerical-stability-scutoid`
+- **Tags:** numerical-stability, conditioning, svd
+- **Source:** [scutoid_integration.md § 6.3](scutoid_integration.md)
+
+## Appendix A: Scutoid Decomposition Algorithms
+
+### Scutoid as Simplicial Complex
+- **Type:** Definition
+- **Label:** `def-scutoid-simplicial-complex`
+- **Tags:** simplicial-complex, topology, scutoid
+- **Source:** [appendix_A_decomposition.md § A.1](appendix_A_decomposition.md)
+
+### Scutoid Star-Convexity
+- **Type:** Lemma
+- **Label:** `lem-scutoid-convexity`
+- **Tags:** star-convexity, geometry, decomposition
+- **Source:** [appendix_A_decomposition.md § A.2](appendix_A_decomposition.md)
+
+### Triangulate Lateral Face
+- **Type:** Algorithm
+- **Label:** `alg-triangulate-lateral-face`
+- **Tags:** triangulation, lateral-face, algorithm
+- **Source:** [appendix_A_decomposition.md § A.3.1](appendix_A_decomposition.md)
+
+### Face Triangulation Coverage
+- **Type:** Lemma
+- **Label:** `lem-face-triangulation-coverage`
+- **Tags:** triangulation, coverage, correctness
+- **Source:** [appendix_A_decomposition.md § A.3.1](appendix_A_decomposition.md)
+
+### Prism Decomposition via Vertex Fan
+- **Type:** Algorithm
+- **Label:** `alg-prism-decomposition`
+- **Tags:** prism, fan-decomposition, simplices
+- **Source:** [appendix_A_decomposition.md § A.3.3](appendix_A_decomposition.md)
+
+### Prism Fan Decomposition Correctness
+- **Type:** Theorem
+- **Label:** `thm-prism-decomposition-correctness`
+- **Tags:** prism, correctness, barycentric-coordinates
+- **Source:** [appendix_A_decomposition.md § A.3.3](appendix_A_decomposition.md)
+
+### Prism Decomposition Complexity
+- **Type:** Remark
+- **Label:** `rem-prism-complexity`
+- **Tags:** complexity, delaunay, o-n-log-n
+- **Source:** [appendix_A_decomposition.md § A.3.3](appendix_A_decomposition.md)
+
+### General Scutoid Simplex Decomposition
+- **Type:** Algorithm
+- **Label:** `alg-scutoid-simplex-decomposition`
+- **Tags:** scutoid, general-decomposition, centroid-fan
+- **Source:** [appendix_A_decomposition.md § A.3.4](appendix_A_decomposition.md)
+
+### Scutoid Simplex Decomposition Correctness
+- **Type:** Theorem
+- **Label:** `thm-scutoid-simplex-decomposition`
+- **Tags:** scutoid, correctness, coverage
+- **Source:** [appendix_A_decomposition.md § A.3.4](appendix_A_decomposition.md)
+
+### Compute Mid-Level Vertices
+- **Type:** Algorithm
+- **Label:** `alg-mid-level-vertices`
+- **Tags:** mid-level, topology, computation
+- **Source:** [appendix_A_decomposition.md § A.3.5](appendix_A_decomposition.md)
+
+### Mid-Level Topology Characterization
+- **Type:** Remark
+- **Label:** `rem-mid-level-topology`
+- **Tags:** mid-level, topology, complexity
+- **Source:** [appendix_A_decomposition.md § A.3.5](appendix_A_decomposition.md)
+
+### Decomposition Computational Complexity
+- **Type:** Theorem
+- **Label:** `thm-decomposition-complexity`
+- **Tags:** complexity, computational-cost, scaling
+- **Source:** [appendix_A_decomposition.md § A.4](appendix_A_decomposition.md)
+
+### Degenerate Simplex Definition
+- **Type:** Definition
+- **Label:** `def-degenerate-simplex`
+- **Tags:** degeneracy, numerical-stability, rank
+- **Source:** [appendix_A_decomposition.md § A.5.1](appendix_A_decomposition.md)
+
+### Handle Degenerate Simplices
+- **Type:** Algorithm
+- **Label:** `alg-degeneracy-handling`
+- **Tags:** degeneracy, robustness, svd
+- **Source:** [appendix_A_decomposition.md § A.5.1](appendix_A_decomposition.md)
+
+### Degeneracy is Rare for Generic Configurations
+- **Type:** Lemma
+- **Label:** `lem-degeneracy-rare`
+- **Tags:** degeneracy, probability, generic
+- **Source:** [appendix_A_decomposition.md § A.5.1](appendix_A_decomposition.md)
+
+### Validate Simplicial Decomposition
+- **Type:** Algorithm
+- **Label:** `alg-validate-decomposition`
+- **Tags:** validation, testing, decomposition
+- **Source:** [appendix_A_decomposition.md § A.5.2](appendix_A_decomposition.md)
+
+### Decomposition Error Convergence
+- **Type:** Theorem
+- **Label:** `thm-decomposition-error-convergence`
+- **Tags:** error-convergence, decomposition, bounds
+- **Source:** [appendix_A_decomposition.md § A.6](appendix_A_decomposition.md)
+
+## Appendix B: Curvature Convergence Analysis
+
+### Smooth Manifold Assumptions
+- **Type:** Definition
+- **Label:** `def-smooth-manifold-convergence`
+- **Tags:** manifold, smoothness, regularity
+- **Source:** [appendix_B_convergence.md § B.1](appendix_B_convergence.md)
+
+### Discrete Curvature (Convergence Setting)
+- **Type:** Definition
+- **Label:** `def-discrete-curvature-convergence`
+- **Tags:** discrete-curvature, holonomy, approximation
+- **Source:** [appendix_B_convergence.md § B.2](appendix_B_convergence.md)
+
+### Total Error Decomposition
+- **Type:** Definition
+- **Label:** `def-total-error`
+- **Tags:** error-decomposition, systematic, statistical
+- **Source:** [appendix_B_convergence.md § B.2](appendix_B_convergence.md)
+
+### Continuum Holonomy Comparison
+- **Type:** Lemma
+- **Label:** `lem-continuum-holonomy`
+- **Tags:** holonomy, continuum-limit, approximation
+- **Source:** [appendix_B_convergence.md § B.3.1](appendix_B_convergence.md)
+
+### Systematic Error Bound
+- **Type:** Theorem
+- **Label:** `thm-systematic-error`
+- **Tags:** systematic-error, spatial-temporal, bounds
+- **Source:** [appendix_B_convergence.md § B.3.2](appendix_B_convergence.md)
+
+### Optimal Time Step for Balanced Error
+- **Type:** Corollary
+- **Label:** `cor-optimal-timestep`
+- **Tags:** optimal-timestep, error-balancing, n-power-law
+- **Source:** [appendix_B_convergence.md § B.3.3](appendix_B_convergence.md)
+
+### Voronoi Cell Volume Concentration
+- **Type:** Lemma
+- **Label:** `lem-voronoi-concentration`
+- **Tags:** voronoi, concentration, stochastic-geometry
+- **Source:** [appendix_B_convergence.md § B.4.1](appendix_B_convergence.md)
+
+### Statistical Error Bound
+- **Type:** Theorem
+- **Label:** `thm-statistical-error`
+- **Tags:** statistical-error, concentration, n-power-d-squared
+- **Source:** [appendix_B_convergence.md § B.4.2](appendix_B_convergence.md)
+
+### Variance of Local Geometric Functionals
+- **Type:** Proposition
+- **Label:** `prop-variance-local-functionals`
+- **Tags:** variance, local-functionals, stochastic-geometry
+- **Source:** [appendix_B_convergence.md § B.4.2](appendix_B_convergence.md)
+
+### Discrete Curvature is a Local Functional
+- **Type:** Lemma
+- **Label:** `lem-discrete-curvature-local`
+- **Tags:** local-functional, curvature, locality
+- **Source:** [appendix_B_convergence.md § B.4.2](appendix_B_convergence.md)
+
+### Statistical vs Systematic Error Comparison
+- **Type:** Remark
+- **Label:** `rem-statistical-vs-systematic`
+- **Tags:** error-comparison, dominance, convergence-rate
+- **Source:** [appendix_B_convergence.md § B.4.2](appendix_B_convergence.md)
+
+### Discrete Curvature Convergence (Main Theorem)
+- **Type:** Theorem
+- **Label:** `thm-main-convergence`
+- **Tags:** main-result, convergence, n-minus-d-plus-1-over-d-squared
+- **Source:** [appendix_B_convergence.md § B.5](appendix_B_convergence.md)
+
+### Ricci and Scalar Curvature Convergence
+- **Type:** Theorem
+- **Label:** `thm-ricci-scalar-convergence`
+- **Tags:** ricci-curvature, scalar-curvature, convergence
+- **Source:** [appendix_B_convergence.md § B.6.1](appendix_B_convergence.md)
+
+### Time-Dependent Curvature Convergence
+- **Type:** Theorem
+- **Label:** `thm-time-dependent-convergence`
+- **Tags:** time-dependent, evolution, convergence
+- **Source:** [appendix_B_convergence.md § B.6.2](appendix_B_convergence.md)
+
+### L^p Convergence of Curvature Fields
+- **Type:** Theorem
+- **Label:** `thm-lp-convergence`
+- **Tags:** lp-convergence, function-spaces, integration
+- **Source:** [appendix_B_convergence.md § B.6.3](appendix_B_convergence.md)
+
+### Summary of Convergence Results
+- **Type:** Summary
+- **Label:** `summary-convergence`
+- **Tags:** summary, convergence-rates, overview
+- **Source:** [appendix_B_convergence.md § B.7](appendix_B_convergence.md)
+
+### Open Problems in Scutoid Convergence
+- **Type:** Remark
+- **Label:** `rem-open-problems`
+- **Tags:** open-problems, future-work, research-directions
+- **Source:** [appendix_B_convergence.md § B.8](appendix_B_convergence.md)
+

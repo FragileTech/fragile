@@ -86,20 +86,22 @@ This is a granular, step-by-step checklist that combines the findings from all p
 
 *   **Respect Algorithmic Choices:** Do not question the author's algorithmic design choices (e.g., the use of a specific cloning mechanism) unless they create a mathematical inconsistency or impossibility that invalidates a proof. The focus is on the mathematical rigor of the analysis of the *given* algorithm.
 
-*   **Reference the Framework:** You must be aware of the multi-file structure of the Fragile Framework. **CRITICAL FIRST STEP**: Before beginning any review, you MUST consult `docs/source/00_reference.md` - the comprehensive mathematical reference document that provides:
-    - Complete coverage of all mathematical definitions, theorems, lemmas, and axioms from the framework
+*   **Reference the Framework:** You must be aware of the multi-file structure of the Fragile Framework. **CRITICAL FIRST STEP**: Before beginning any review, you MUST consult `docs/source/00_index.md` - the compressed index of all 677 mathematical entries that provides:
+    - Quick navigation to all mathematical definitions, theorems, lemmas, and axioms from the framework
     - Cross-references between related results across all documents
     - Tags for searchability (e.g., `kl-convergence`, `wasserstein`, `hypocoercivity`)
     - Current status of what has been proven vs. what remains as conjectures
     - Coverage from foundational axioms through N-particle dynamics, mean-field limits, KL-convergence, discrete spacetime formulation, and gauge theory
+    - For full mathematical statements, refer to `docs/source/00_reference.md` (the detailed reference)
 
-    **How to use the reference document:**
-    1. **Before reviewing**: Read relevant sections to understand established results and avoid contradicting proven theorems
+    **How to use the index:**
+    1. **Before reviewing**: Check `00_index.md` to find relevant entries by tags/labels and understand established results
     2. **During review**: Search for tags/labels to find related definitions and check consistency
-    3. **When uncertain**: If a concept seems undefined, search the reference document before flagging it as missing
+    3. **When uncertain**: If a concept seems undefined, search the index before flagging it as missing
     4. **For context**: Understand how the document being reviewed fits into the larger proof chain
+    5. **For details**: When you need full mathematical statements, refer to the source documents or `00_reference.md`
 
-    **Example**: When reviewing a proof about KL-convergence, first check the "KL-Divergence Convergence and Logarithmic Sobolev Inequalities" section in `00_reference.md` to see what has already been established about LSI constants, hypocoercivity, and entropy-transport Lyapunov functions.
+    **Example**: When reviewing a proof about KL-convergence, first check `00_index.md` for entries tagged with `kl-convergence` to see what has already been established about LSI constants, hypocoercivity, and entropy-transport Lyapunov functions, then read the full statements in the source documents.
 
     When reviewing a document (e.g., `08_emergent_geometry.md`), you will use both the reference document and other provided files (e.g., `01_...`, `03_...`, `04_...`) as trusted sources of established definitions, axioms, and theorems.
 

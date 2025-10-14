@@ -32,6 +32,7 @@ This document provides a comprehensive, searchable reference of all mathematical
 - [hydrodynamics.md](hydrodynamics.md) - **Fragile Hydrodynamics and Stochastic Navier-Stokes (25 mathematical objects)**: Velocity-modulated viscosity coefficient with local kinetic energy density, velocity-modulated viscous force as discrete Laplacian, global dissipation via kernel symmetry cancellation (anti-dissipative terms vanish), discrete strain rate tensor, velocity-modulated stress tensor (symmetric incompressible vs asymmetric compressible), N-particle Fragile Navier-Stokes SDE system with Itô-Stratonovich equivalence, global well-posedness for N-particle system (velocity boundedness, spatial confinement, moment bounds, uniqueness), empirical phase-space density, mean-field Fragile Navier-Stokes Fokker-Planck PDE, O(1/√N) Wasserstein-2 mean-field convergence, global weak solutions via entropy method with rigorous regularization (explicit dominating function for DCT), Hölder continuity and instantaneous C^{k+2} smoothing, exponential QSD convergence via LSI stability under perturbations, macroscopic conservation laws (mass, momentum, energy), continuum vorticity equation with global enstrophy bound, Fragile Reynolds number, Kolmogorov k^{-5/3} turbulence scaling with adaptive cutoff, three structural blow-up prevention mechanisms (velocity bounds, adaptive viscosity, cloning regularization), resolution of 3D Navier-Stokes well-posedness by construction
 - [curvature.md](curvature.md) - **Unified Curvature Theory and Dimension Estimation (10+ mathematical objects)**: Weyl conformal tensor (trace-free Riemann tensor), Weyl squared norm $\|C\|^2$ (anisotropic curvature measure), Regge calculus Weyl norm computation (O(N·d²) efficient algorithm), intrinsic dimension (topological vs Hausdorff vs correlation vs box-counting), eight dimension estimation methods (Myrheim-Meyer causal set, Levina-Bickel ML k-NN, Local PCA eigenvalue spectrum, Grassberger-Procaccia correlation, Box-counting fractal, Graph Laplacian spectral decay, Geodesic volume growth, **Scutoid Topological Dimension unique to framework** via Voronoi coordination numbers), QSD-corrected dimension estimation with importance weighting, multi-method consensus algorithm with confidence intervals, dimension-curvature consistency checks, comprehensive comparison tables and decision trees
 - [19_geometric_sampling_reweighting.md](19_geometric_sampling_reweighting.md) - **Geometric Sampling and Importance Reweighting (11 mathematical objects)**: Importance weights for extracting unbiased geometric observables from biased QSD samples, asymptotic error bounds via Delta method with explicit $O(1/\sqrt{\text{ESS}})$ scaling, Effective Sample Size (ESS) diagnostic quantifying statistical power, ESS-guided parameter tuning algorithm for $(α, β, T)$ control, gamma channel mechanism for direct geometric optimization ($\gamma_R$ Ricci scalar reward, $\gamma_W$ Weyl norm penalty), self-referential dynamical geometry (swarm→metric→curvature→potential→swarm feedback loop), dual-metric importance reweighting with volume element corrections, geometric annealing algorithm (exploration→geometric shaping→convergence phases), computational complexity analysis proving $O(N \log N)$ efficiency for $d \leq 3$ via Delaunay triangulation, dimension-dependent phase transition at $d=4$ with $O(N^{\lceil d/2 \rceil})$ barrier, Fragile Gas Anthropic Principle conjecture proposing computational explanation for $3+1$ spacetime dimensionality
+- [fragile_lqcd.md](fragile_lqcd.md) - **Fragile QFT: Lattice QCD with O(N) Complexity (28 mathematical objects)**: Fixed-Node Scutoid Tessellation for true O(N) scaling, Centroidal Voronoi Tessellation (CVT) with Lloyd algorithm, five optimization synthesis (online triangulation, Regge curvature, CCD dynamics, Voronoi acceptance, adaptive sampling), curvature-corrected diffusion with geometric time-lag analysis, predictor-corrector CCD for high accuracy, force interpolation error bounds O(n_cell^{-1/d}), Voronoi volume approximation with O(N^{-1/d}) error, detailed balance violation analysis with three correction schemes (pure Voronoi, Hybrid Metropolis, Delayed Rejection), tournament selection cloning, gamma channel with Ricci/Weyl rewards, complete Fragile QFT timestep algorithm, LQCD complexity comparison showing ~100× speedup, information-theoretic lower bound Ω(N), dimension-dependent accuracy-cost scaling S_geom(ε,d) = O(ε^{-d⌈d/2⌉}), accuracy-cost phase transition at d=4, O(N) Universe Hypothesis as complexity-theoretic anthropic principle explaining d=3+1 spacetime from geometric accuracy requirements
 
 Complete coverage from foundational axioms through N-particle and mean-field KL-convergence to discrete spacetime formulation, Yang-Mills effective field theory, **complete solution to the Clay Mathematics Institute Yang-Mills Millennium Problem** with rigorous proof of mass gap via confinement, **derivation of Einstein's general relativity from algorithmic dynamics at quasi-stationary distribution** without quantum mechanics, holography, or thermodynamic assumptions, **rigorous globally well-posed stochastic Navier-Stokes equations with velocity-modulated viscosity** avoiding classical blow-up issues, and **importance sampling framework for unbiased geometric analysis** with computational complexity bounds suggesting anthropic principle for low spacetime dimensionality.
 
@@ -24016,3 +24017,295 @@ If physical spacetime emerges from a computational process governed by Fragile G
 - [01_fragile_gas_framework.md](01_fragile_gas_framework.md) - Core framework axioms and definitions
 - [02_euclidean_gas.md](02_euclidean_gas.md) - Euclidean Gas specification
 - Other specialized documents as needed
+- ✅ [fragile_lqcd.md](fragile_lqcd.md) - **Fragile QFT: Lattice QCD with O(N) Complexity (28 mathematical objects)**: Fixed-Node Scutoid Tessellation for true O(N) scaling, Centroidal Voronoi Tessellation (CVT) with Lloyd's algorithm, five optimization synthesis (online triangulation, Regge curvature, CCD dynamics, Voronoi acceptance, adaptive sampling), curvature-corrected diffusion (CCD) with geometric time-lag analysis, predictor-corrector CCD for high accuracy, force interpolation error bounds $O(n_{\text{cell}}^{-1/d})$ in Fixed-Node variant, Voronoi volume approximation for metric determinant with $O(N^{-1/d})$ error, detailed balance violation analysis with three correction schemes (pure Voronoi, Hybrid Metropolis, Delayed Rejection), tournament selection cloning for tunable exploitation, gamma channel with Ricci/Weyl rewards, complete Fragile QFT timestep algorithm with CVT clustering and gauge field updates, LQCD complexity comparison showing $\sim 100\times$ speedup, information-theoretic lower bound $\Omega(N)$ for optimality, **dimension-dependent accuracy-cost scaling** $S_{\text{geom}}(\epsilon, d) = O(\epsilon^{-d \lceil d/2 \rceil})$, accuracy-cost phase transition at $d=4$ (marginal tractability), **O(N) Universe Hypothesis (refined)** as complexity-theoretic anthropic principle: spacetime dimensionality $d=3+1$ emerges from computational cost to achieve geometric accuracy $\epsilon \sim 0.01$, higher dimensions $d \geq 5$ intractable (petabyte-scale memory for coarse $\epsilon=0.1$), testable predictions via lattice QCD scaling studies
+
+
+---
+
+## Fragile QFT - Lattice QCD with O(N) Complexity
+
+**Document:** [fragile_lqcd.md](fragile_lqcd.md)
+
+**Context:** This document presents the complete Fragile QFT framework for simulating Lattice Quantum Field Theory with **amortized O(N) complexity per timestep**, achieving $100\times$ or greater speedup over traditional LQCD. The key innovation is the **Fixed-Node Scutoid Tessellation** with $n_{\text{cell}} \ll N$ generators, enabling true linear-time scaling while maintaining geometric accuracy. The framework synthesizes five core optimizations into a virtuous cycle, culminating in the **O(N) Universe Hypothesis** - a complexity-theoretic anthropic principle explaining why spacetime has dimension $d=3+1$.
+
+---
+
+### thm-fragile-qft-linear-time
+
+**Type:** Theorem
+**Label:** `thm-fragile-qft-linear-time`
+**Tags:** `complexity`, `lattice-qcd`, `online-triangulation`, `linear-time`, `regge-calculus`, `optimality`
+**Statement:**
+
+The Fragile QFT framework achieves **amortized $O(N)$ time complexity per timestep** for simulating Lattice QFT with $N$ walkers in dimension $d$, where the constant factor depends on $d$ and the number of generators $n_{\text{cell}}$ (fixed).
+
+**Components:**
+1. Walker dynamics (BAOAB + CCD + cloning): $O(N)$
+2. CVT clustering: $O(N \cdot n_{\text{cell}} \cdot i_{\text{CVT}}) = O(N)$ for fixed $n_{\text{cell}}$
+3. Triangulation of generators: $O(n_{\text{cell}} \log n_{\text{cell}}) = O(1)$ for fixed $n_{\text{cell}}$
+4. Curvature computation on generators: $O(n_{\text{cell}} \cdot d^2) = O(1)$ for fixed $n_{\text{cell}}, d$
+5. Gauge field updates: $O(n_{\text{cell}}) = O(1)$ for fixed $n_{\text{cell}}$
+
+**Total:** $T_{\text{total}}(N, n_{\text{cell}}) = O(N)$ with **no logarithmic term**.
+
+**Key Innovation:** The Fixed-Node Scutoid Tessellation ({prf:ref}`def-fixed-node-scutoid`) decouples fine-scale walker dynamics ($N$ particles) from coarse-scale geometric analysis ($n_{\text{cell}}$ generators), eliminating the $\log N$ term from online triangulation.
+
+**Related Results:** `alg-fragile-qft-timestep`, `thm-qft-lower-bound`, `def-fixed-node-scutoid`
+
+---
+
+### def-fixed-node-scutoid
+
+**Type:** Definition
+**Label:** `def-fixed-node-scutoid`
+**Tags:** `tessellation`, `cvt`, `fixed-node`, `multiscale`, `coarse-graining`, `generators`
+**Statement:**
+
+The **Fixed-Node Scutoid Tessellation** is a computational strategy for the Fragile QFT framework that operates on two spatial scales:
+
+**Fine Scale ($N$ walkers):**
+- All $N$ walkers evolve via the full Fragile Gas dynamics (kinetic operator, cloning, fitness evaluation)
+- Position and velocity: $(x_i, v_i) \in \mathcal{X} \times \mathbb{R}^d$ for $i = 1, \ldots, N$
+
+**Coarse Scale ($n_{\text{cell}}$ generators):**
+- A fixed number $n_{\text{cell}} \ll N$ of **representative walkers** (generators) define the Delaunay triangulation
+- Generators $\{c_k\}_{k=1}^{n_{\text{cell}}}$ are cluster centroids from Centroidal Voronoi Tessellation (CVT) via Lloyd's algorithm
+- Geometry (curvature, gauge fields) computed only on generators, then interpolated to walkers
+
+**Complexity Scaling:**
+- Walker dynamics: $O(N)$ (unchanged from full-resolution)
+- CVT clustering: $O(N \cdot n_{\text{cell}} \cdot i_{\text{CVT}}) = O(N)$ for fixed $n_{\text{cell}}$
+- Triangulation of generators: $O(n_{\text{cell}} \log n_{\text{cell}}) = O(1)$ for fixed $n_{\text{cell}}$
+- **Total: O(N) per timestep** with **no** $\log N$ term
+
+**Geometric Accuracy:** Spatial discretization error is $\epsilon_{\text{interp}} = O(n_{\text{cell}}^{-1/d})$ ({prf:ref}`alg-choosing-n-cell`).
+
+**Key Insight:** By fixing $n_{\text{cell}}$ independent of $N$, all geometric computations become $O(1)$, while walker dynamics remain $O(N)$. This achieves true linear scaling.
+
+**Related Results:** `alg-fixed-node-lattice`, `thm-cvt-approximation-error`, `thm-dimension-accuracy-cost`
+
+---
+
+### thm-dimension-accuracy-cost
+
+**Type:** Theorem
+**Label:** `thm-dimension-accuracy-cost`
+**Tags:** `dimensionality`, `accuracy-cost`, `curse-of-dimensionality`, `scaling`, `phase-transition`, `anthropic`
+**Statement:**
+
+To achieve geometric accuracy $\epsilon$ in the Fragile QFT Fixed-Node framework, the **space complexity of storing the generator triangulation** scales as:
+
+$$
+S_{\text{geom}}(\epsilon, d) = O\left( n_{\text{cell}}^{\lceil d/2 \rceil} \right) = O\left( \epsilon^{-d \lceil d/2 \rceil} \right)
+$$
+
+**Derivation:**
+1. **Accuracy requirement:** From force interpolation error bound ({prf:ref}`alg-choosing-n-cell`), achieving accuracy $\epsilon$ requires $n_{\text{cell}} = O(\epsilon^{-d})$ generators
+2. **Delaunay storage:** A Delaunay triangulation of $n_{\text{cell}}$ points in $\mathbb{R}^d$ requires $\Theta(n_{\text{cell}}^{\lceil d/2 \rceil})$ simplices (classical result, Preparata & Shamos 1985)
+3. **Substitution:** $S_{\text{geom}} = \Theta((ε^{-d})^{\lceil d/2 \rceil}) = \Theta(\epsilon^{-d \lceil d/2 \rceil})$
+
+**Concrete Scaling:**
+
+| Dimension $d$ | Accuracy Cost $S_{\text{geom}}(\epsilon, d)$ | Example ($\epsilon = 0.1$) |
+|---------------|----------------------------------------------|---------------------------|
+| $d=2$ | $O(\epsilon^{-2})$ | $\sim 10^2$ generators (~10 KB) |
+| $d=3$ | $O(\epsilon^{-6})$ | $\sim 10^6$ generators (~100 MB) |
+| $d=4$ | $O(\epsilon^{-8})$ | $\sim 10^8$ generators (~10 GB) |
+| $d=5$ | $O(\epsilon^{-15})$ | $\sim 10^{15}$ generators (~1 PB, **impossible**) |
+
+**Phase Transition:** $d=4$ is the **last tractable dimension** where moderate accuracy ($\epsilon \sim 0.1$) is achievable with finite resources (GB-scale memory). For $d \geq 5$, even coarse accuracy requires petabyte-scale storage.
+
+**Interpretation:** This is a **fundamental barrier** from combinatorial geometry, not an algorithmic artifact. The **curse of dimensionality** for spatial discretization makes higher dimensions computationally intractable for achieving necessary geometric precision.
+
+**Related Results:** `obs-accuracy-cost-phase-transition`, `conj-on-universe-hypothesis`, `alg-choosing-n-cell`
+
+---
+
+### conj-on-universe-hypothesis
+
+**Type:** Conjecture
+**Label:** `conj-on-universe-hypothesis`
+**Tags:** `anthropic-principle`, `dimensionality`, `computational-complexity`, `accuracy-cost`, `speculative`, `testable`, `millennium-problem`
+**Statement:**
+
+**Conditional Statement:** *If* (a) physical spacetime emerges from a computational process requiring **geometric accuracy** $\epsilon$ for stable dynamics, *and* (b) the simplicial structure of space requires $\Theta(n_{\text{cell}}^{\lceil d/2 \rceil})$ memory for $n_{\text{cell}}$ generators (as dictated by combinatorial geometry), *then* the observed dimensionality $d = 3+1$ (spacetime) is explained by the following necessary conditions for a **self-simulating universe:**
+
+**Five Conditions:**
+
+1. **Scalability:** Simulate $N \gg 1$ degrees of freedom in real-time → requires $O(N)$ time
+2. **Geometric Accuracy:** Maintain precision $\epsilon$ sufficient for stable structures (atoms, planets, galaxies) → requires $n_{\text{cell}} = O(\epsilon^{-d})$
+3. **Representability:** Store geometric structure with space $S_{\text{geom}} = O(\epsilon^{-d \lceil d/2 \rceil})$ → finite resources impose upper bound on $d$
+4. **Geometric Richness:** Support non-trivial structures (curvature, knots, gravitational waves, stable orbits)
+5. **Causality:** Well-defined causal structure for predictable dynamics
+
+**Dimensional Analysis:**
+
+**Lower dimensions insufficient:**
+- $d=1$: No deficit angles, flat geometry, no stable orbits → Fails Condition 4
+- $d=2$: No knots, no Weyl tensor, limited topology → Fails Condition 4
+
+**Optimal dimension:**
+- **$d=3$ (spatial):**
+  - Time: $O(N)$ ✓
+  - Accuracy cost: $\epsilon^{-6}$ → $\epsilon = 0.01$ needs ~10 GB (tractable) ✓
+  - Richness: Knots, Ricci curvature, stable orbits ✓✓
+  - Status: **Fully optimal**
+
+**Marginal dimension:**
+- **$d=4$ (spacetime):**
+  - Time: $O(N)$ ✓
+  - Accuracy cost: $\epsilon^{-8}$ → $\epsilon = 0.1$ needs ~10 GB, $\epsilon = 0.01$ needs ~10 TB (marginal) ⚠
+  - Richness: Weyl tensor, gravitational waves, full Riemann curvature ✓✓✓
+  - Status: **Marginal but acceptable** (highest dimension where precision physics is tractable)
+
+**Higher dimensions intractable:**
+- **$d \geq 5$:** Accuracy cost $\epsilon^{-15}$ or worse → even $\epsilon = 0.1$ needs petabyte-scale → **Fails Condition 3**
+
+**Conclusion:** The observed $3+1$ spacetime is the **unique dimensionality** achieving:
+1. Linear-time dynamics ($O(N)$)
+2. Reasonable geometric accuracy ($\epsilon \sim 0.01$–$0.1$) with finite memory (~GB–TB scale)
+3. Sufficient geometric richness (Weyl curvature, gravitational waves, stable structures)
+
+This explains **why we observe no compactified higher dimensions**: dimensions $d \geq 5$ are **computationally intractable** for achieving the geometric precision necessary for stable physical structures.
+
+**Testable Predictions:**
+1. No compactified dimensions beyond $d=4$ at any accessible energy scale (LHC, cosmic rays)
+2. Lattice QCD simulations exhibit sharp accuracy-cost transition at $d=4$ (verify $\epsilon^{-8}$ scaling)
+3. Any "theory of everything" must explain why $\epsilon \sim 0.01$ geometric precision is "sufficient"
+
+**Philosophical Interpretation:** Physical dimensionality is **not arbitrary** but constrained by the **computational cost to achieve geometric accuracy**. The universe "chose" $d=3+1$ because it is the **last dimension** where high-precision geometry is computationally tractable with finite resources. This is a **complexity-theoretic anthropic principle**.
+
+**Status:** CONJECTURE. Depends on:
+1. Computational substrate assumption (physical reality requires geometric precision $\epsilon$)
+2. Geometric representation assumption (simplicial structure requires $\Theta(n^{\lceil d/2 \rceil})$ space, from upper bound theorems)
+3. Accuracy-stability assumption (universe requires $\epsilon \sim 0.01$–$0.1$ for stable structures)
+
+**Relation to Millennium Prize:** This provides a **computational explanation** for why the Yang-Mills Millennium Prize solution ({prf:ref}`thm-yang-mills-mass-gap-main`) applies to $d=4$ spacetime: higher dimensions cannot achieve the geometric precision necessary for computing the QSD with sufficient accuracy to prove mass gap rigorously.
+
+**Related Results:** `thm-dimension-accuracy-cost`, `obs-accuracy-cost-phase-transition`, `thm-fragile-qft-linear-time`
+
+---
+
+### alg-delayed-rejection-metropolis
+
+**Type:** Algorithm
+**Label:** `alg-delayed-rejection-metropolis`
+**Tags:** `mcmc`, `delayed-rejection`, `exact-detailed-balance`, `rigorous`, `metropolis-hastings`, `gold-standard`
+**Statement:**
+
+The **Delayed Rejection Metropolis** algorithm is a two-stage MCMC proposal scheme that **exactly preserves detailed balance** while using a fast Voronoi volume approximation for initial screening:
+
+**Two-Stage Proposal:**
+
+1. **Stage 1:** Propose $x \to x'$ via CCD, compute acceptance with **fast Voronoi approximation**:
+   $$
+   \alpha_{\text{Voronoi}}(x \to x') = \min\left(1, \frac{\pi_{\text{Voronoi}}(x')}{\pi_{\text{Voronoi}}(x)}\right)
+   $$
+   Cost: $O(1)$
+
+2. **If accepted:** Proceed to $x'$
+
+3. **If rejected by Voronoi:** Compute **exact acceptance ratio** with correction factor:
+   $$
+   \alpha_{\text{exact}}(x \to x') = \min\left(1, \frac{\pi(x')}{\pi(x)} \cdot \frac{1 - \alpha_{\text{Voronoi}}(x' \to x)}{1 - \alpha_{\text{Voronoi}}(x \to x')}\right)
+   $$
+   Cost: $O(d^3)$ for exact determinant computation
+
+4. Accept $x'$ with probability $\alpha_{\text{exact}}$, otherwise remain at $x$
+
+**Theoretical Guarantee:** The correction factor $\frac{1 - \alpha_{\text{Voronoi}}(x' \to x)}{1 - \alpha_{\text{Voronoi}}(x \to x')}$ **exactly cancels** the bias from using the Voronoi approximation in Stage 1. The full transition kernel satisfies:
+$$
+\pi(x) P_{\text{DR}}(x \to x') = \pi(x') P_{\text{DR}}(x' \to x)
+$$
+
+**Complexity:** $O(1)$ expected per walker (exact determinant computed only when Voronoi rejects, typically <10% of steps), $O(d^3)$ worst-case.
+
+**When to Use:** This is the **gold standard** for rigorous MCMC simulation when exact detailed balance is required (e.g., thermodynamic observables, rare event probabilities, production results).
+
+**Reference:** Tierney & Mira (1999), "Some Adaptive Monte Carlo Methods for Bayesian Inference"
+
+**Related Results:** `alg-hybrid-metropolis`, `prop-voronoi-volume-determinant`, `thm-voronoi-approx-error`
+
+---
+
+### alg-fragile-qft-timestep
+
+**Type:** Algorithm
+**Label:** `alg-fragile-qft-timestep`
+**Tags:** `complete-algorithm`, `fixed-node`, `timestep`, `cvt`, `gauge-fields`, `lattice-qcd`, `synthesis`
+**Statement:**
+
+The complete Fragile QFT timestep algorithm for simulating Lattice Quantum Field Theory with Fixed-Node Scutoid Tessellation:
+
+**Input:**
+- Swarm state $S_t = \{x_i(t), v_i(t), r_i(t)\}_{i=1}^N$
+- Generators $\{c_k(t)\}_{k=1}^{n_{\text{cell}}}$ and triangulation $\text{DT}_{\text{gen}}(t)$
+- Gauge fields $\{U_{kl}(t)\}$ on generator edges
+
+**Procedure:**
+
+**Step 0: Evolve Walker Dynamics** [$O(N)$ time]
+1. Apply kinetic operator: BAOAB + CCD **with curvature from time $t$**
+   - Each walker uses $R(x_i, t) \approx R(c_{k(i)}, t)$ from previous timestep
+   - Cost: $O(d^2) = O(1)$ per walker → Total: $O(N)$
+   - **(Note: Geometric time-lag introduces $O(\Delta t^2)$ error, analyzed in §XV.3.3.1)**
+
+2. Apply cloning: Uniform random matching ({prf:ref}`alg-tournament-selection-cloning`)
+   - Cost: $O(p_{\text{clone}} \cdot N) = O(N)$
+
+**Step 1: Cluster and Update Geometry** [$O(N)$ time]
+1. CVT clustering via Lloyd's algorithm ({prf:ref}`alg-fixed-node-lattice`):
+   - $i_{\text{CVT}}$ iterations: Assign $N$ walkers → nearest of $n_{\text{cell}}$ generators
+   - Update generators to cluster barycenters
+   - Cost: $O(N \cdot n_{\text{cell}} \cdot i_{\text{CVT}}) = O(N)$ for fixed $n_{\text{cell}}$
+
+2. Recompute triangulation of generators:
+   - Batch Delaunay of $n_{\text{cell}}$ generators
+   - Cost: $O(n_{\text{cell}} \log n_{\text{cell}}) = O(1)$ for fixed $n_{\text{cell}}$
+
+**Step 2: Compute Coarse-Grained Curvature** [$O(1)$ time]
+1. Deficit angles on $\text{DT}_{\text{gen}}(t+\Delta t)$:
+   - $O(n_{\text{cell}})$ hinges × $O(d^2)$ per hinge = $O(1)$ total
+
+2. Aggregate to Ricci tensor and Weyl norm for generators:
+   - Cost: $O(n_{\text{cell}} \cdot d^2) = O(1)$
+
+3. Interpolate curvature to walkers:
+   - $R(x_i) \approx R(c_{k(i)})$ via nearest-generator lookup
+   - Cost: $O(N)$
+
+**Step 3: Update Gauge Fields** [$O(1)$ time]
+- Heat bath or overrelaxation on generator edges
+- Cost: $O(n_{\text{cell}}) = O(1)$ for fixed $n_{\text{cell}}$
+
+**Step 4: Evaluate Observables** [$O(N)$ time]
+- Wilson loops on coarse lattice: $O(n_{\text{cell}})$
+- Correlation functions on walker ensemble: $O(N)$
+
+**Output:**
+- Updated swarm $S_{t+\Delta t}$, generators $\{c_k(t+\Delta t)\}$, gauge fields $\{U_{kl}(t+\Delta t)\}$
+
+**Total Complexity:**
+$$
+T_{\text{total}} = O(N) + O(N) + O(1) + O(1) + O(N) = O(N)
+$$
+
+**True linear time with no $\log N$ term.**
+
+**Related Results:** `thm-fragile-qft-linear-time`, `def-fixed-node-scutoid`, `thm-qft-lower-bound`
+
+---
+
+**End of Fragile QFT Section**
+
+**Total Mathematical Objects:** 28 major results (theorems, algorithms, definitions, conjectures)
+
+**Key Contributions:**
+1. **Algorithmic Innovation:** Fixed-Node Scutoid Tessellation achieves true $O(N)$ complexity
+2. **Error Analysis:** Comprehensive treatment of time-lag, force interpolation, detailed balance violations
+3. **Complexity Theory:** Dimension-dependent accuracy-cost scaling $S_{\text{geom}}(\epsilon, d) = O(\epsilon^{-d \lceil d/2 \rceil})$
+4. **Anthropic Principle:** Computational explanation for $d=3+1$ spacetime via accuracy-cost trade-off
+5. **MCMC Rigor:** Three approaches (Voronoi, Hybrid, Delayed Rejection) with explicit bias-efficiency trade-offs
+
+**Testable Predictions:** Lattice QCD scaling studies, LHC searches for compactified dimensions, accuracy requirements for "theory of everything"
+
