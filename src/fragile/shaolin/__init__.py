@@ -5,13 +5,14 @@ from fragile.shaolin.adaptive_gas_params import (
     create_adaptive_param_selector,
 )
 from fragile.shaolin.euclidean_gas_params import (
-    EuclideanGasParamSelector,
     create_param_selector,
+    EuclideanGasParamSelector,
 )
 
+
 __all__ = [
-    "EuclideanGasParamSelector",
-    "create_param_selector",
     "AdaptiveGasParamSelector",
+    "EuclideanGasParamSelector",
     "create_adaptive_param_selector",
+    "create_param_selector",
 ]

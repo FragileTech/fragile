@@ -9,6 +9,7 @@ This script shows:
 """
 
 import torch
+
 from fragile.ricci_gas import RicciGas, RicciGasParams, SwarmState
 
 
@@ -24,7 +25,7 @@ def main():
         force_mode="pull",
         reward_mode="inverse",
         x_min=-4.0,  # Lower bound
-        x_max=4.0,   # Upper bound
+        x_max=4.0,  # Upper bound
     )
 
     gas = RicciGas(params, device=device)
@@ -41,7 +42,7 @@ def main():
     print("=" * 70)
     print("Ricci Gas: Boundary Enforcement and Revival Demonstration")
     print("=" * 70)
-    print(f"\nParameters:")
+    print("\nParameters:")
     print(f"  Walkers: {N}")
     print(f"  Boundaries: [{params.x_min}, {params.x_max}]")
     print(f"  Epsilon clone: {params.epsilon_clone}")
@@ -73,7 +74,9 @@ def main():
         # Print periodic updates
         if step % 20 == 0:
             pos_std = state.x.std(dim=0).mean().item()
-            out_of_bounds = ((state.x < params.x_min) | (state.x > params.x_max)).any(dim=-1).sum().item()
+            out_of_bounds = (
+                ((state.x < params.x_min) | (state.x > params.x_max)).any(dim=-1).sum().item()
+            )
 
             print(f"  Step {step:3d}:")
             print(f"    Alive: {int(curr_alive):3d}/{N}")
@@ -89,14 +92,14 @@ def main():
     print("\n" + "=" * 70)
     print("Results:")
     print("=" * 70)
-    print(f"\nPopulation dynamics:")
+    print("\nPopulation dynamics:")
     print(f"  Initial alive:  {N}")
     print(f"  Final alive:    {int(final_alive)}")
     print(f"  Min alive:      {int(min_alive)}")
     print(f"  Max alive:      {int(max_alive)}")
     print(f"  Mean alive:     {mean_alive:.1f}")
 
-    print(f"\nEvents:")
+    print("\nEvents:")
     print(f"  Death events:   {death_events} (steps where population decreased)")
     print(f"  Revival events: {revival_events} (steps where population increased)")
 
@@ -105,8 +108,10 @@ def main():
     alive_x = state.x[alive_mask]
 
     if alive_x.shape[0] > 0:
-        within_bounds = ((alive_x >= params.x_min) & (alive_x <= params.x_max)).all(dim=-1).sum().item()
-        print(f"\nBoundary compliance:")
+        within_bounds = (
+            ((alive_x >= params.x_min) & (alive_x <= params.x_max)).all(dim=-1).sum().item()
+        )
+        print("\nBoundary compliance:")
         print(f"  Alive walkers: {alive_x.shape[0]}")
         print(f"  Within bounds: {within_bounds}")
         print(f"  Compliance rate: {100 * within_bounds / alive_x.shape[0]:.1f}%")
@@ -139,16 +144,18 @@ def main():
     final_no_clone = alive_no_clone[-1]
     min_no_clone = min(alive_no_clone)
 
-    print(f"\nWithout cloning:")
+    print("\nWithout cloning:")
     print(f"  Final alive:  {int(final_no_clone)}")
     print(f"  Min alive:    {int(min_no_clone)}")
 
-    print(f"\nWith cloning:")
+    print("\nWith cloning:")
     print(f"  Final alive:  {int(final_alive)}")
     print(f"  Min alive:    {int(min_alive)}")
 
-    print(f"\nImprovement:")
-    print(f"  Final: +{int(final_alive - final_no_clone)} walkers ({100 * (final_alive - final_no_clone) / N:.0f}%)")
+    print("\nImprovement:")
+    print(
+        f"  Final: +{int(final_alive - final_no_clone)} walkers ({100 * (final_alive - final_no_clone) / N:.0f}%)"
+    )
     print(f"  Min:   +{int(min_alive - min_no_clone)} walkers")
 
     print("\n" + "=" * 70)

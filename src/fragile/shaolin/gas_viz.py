@@ -8,14 +8,11 @@ This module provides streaming visualization of swarm dynamics with:
 - Real-time updates using HoloViews streaming
 """
 
-import holoviews as hv
 import pandas as pd
 import panel as pn
-import torch
-from holoviews.streams import Pipe
 
 from fragile.euclidean_gas import SwarmState
-from fragile.shaolin.stream_plots import Scatter, VectorField, Curve
+from fragile.shaolin.stream_plots import Curve, Scatter, VectorField
 
 
 class GasVisualization:
@@ -146,8 +143,8 @@ class GasVisualization:
             "x0": x_np[:, 0],
             "y0": x_np[:, 1] if x_np.shape[1] > 1 else x_np[:, 0],
             "x1": x_np[:, 0] + v_np[:, 0] * self.velocity_scale,
-            "y1": (x_np[:, 1] if x_np.shape[1] > 1 else x_np[:, 0]) +
-                  (v_np[:, 1] if v_np.shape[1] > 1 else v_np[:, 0]) * self.velocity_scale,
+            "y1": (x_np[:, 1] if x_np.shape[1] > 1 else x_np[:, 0])
+            + (v_np[:, 1] if v_np.shape[1] > 1 else v_np[:, 0]) * self.velocity_scale,
         })
         self.velocity_stream.send(vel_data)
 
@@ -188,7 +185,7 @@ class GasVisualization:
             xlim = (self.bounds.low[0].item(), self.bounds.high[0].item())
             ylim = (
                 self.bounds.low[1].item() if len(self.bounds.low) > 1 else xlim[0],
-                self.bounds.high[1].item() if len(self.bounds.high) > 1 else xlim[1]
+                self.bounds.high[1].item() if len(self.bounds.high) > 1 else xlim[1],
             )
             main_plot = main_plot.opts(xlim=xlim, ylim=ylim)
 
@@ -196,14 +193,16 @@ class GasVisualization:
         if self.track_alive:
             # Overlay alive and cloned curves
             alive_plot = (self.alive_stream.plot * self.cloned_stream.plot).opts(
-                legend_position='top_right',
+                legend_position="top_right",
             )
 
             layout = pn.Column(
                 pn.pane.Markdown("# Euclidean Gas Visualization"),
                 main_plot,
                 pn.pane.Markdown("---"),
-                pn.pane.Markdown("**Green (solid)** = Alive walkers | **Red (dashed)** = Cloned walkers"),
+                pn.pane.Markdown(
+                    "**Green (solid)** = Alive walkers | **Red (dashed)** = Cloned walkers"
+                ),
                 alive_plot,
             )
         else:
@@ -281,10 +280,7 @@ class BoundaryGasVisualization(GasVisualization):
         n_alive = in_bounds.sum().item()
 
         # Create position data with colors
-        colors = [
-            self.in_bounds_color if ib else self.out_bounds_color
-            for ib in in_bounds_np
-        ]
+        colors = [self.in_bounds_color if ib else self.out_bounds_color for ib in in_bounds_np]
 
         pos_data = pd.DataFrame({
             "x": x_np[:, 0],
@@ -297,8 +293,10 @@ class BoundaryGasVisualization(GasVisualization):
         # Update color column mapping
         self.position_stream.plot = self.position_stream.plot.opts(
             color="color",
-            cmap={self.in_bounds_color: self.in_bounds_color,
-                  self.out_bounds_color: self.out_bounds_color}
+            cmap={
+                self.in_bounds_color: self.in_bounds_color,
+                self.out_bounds_color: self.out_bounds_color,
+            },
         )
 
         # Update velocities (only for in-bounds walkers)
@@ -307,8 +305,9 @@ class BoundaryGasVisualization(GasVisualization):
             "x0": x_np[in_bounds_mask, 0],
             "y0": x_np[in_bounds_mask, 1] if x_np.shape[1] > 1 else x_np[in_bounds_mask, 0],
             "x1": x_np[in_bounds_mask, 0] + v_np[in_bounds_mask, 0] * self.velocity_scale,
-            "y1": (x_np[in_bounds_mask, 1] if x_np.shape[1] > 1 else x_np[in_bounds_mask, 0]) +
-                  (v_np[in_bounds_mask, 1] if v_np.shape[1] > 1 else v_np[in_bounds_mask, 0]) * self.velocity_scale,
+            "y1": (x_np[in_bounds_mask, 1] if x_np.shape[1] > 1 else x_np[in_bounds_mask, 0])
+            + (v_np[in_bounds_mask, 1] if v_np.shape[1] > 1 else v_np[in_bounds_mask, 0])
+            * self.velocity_scale,
         })
         self.velocity_stream.send(vel_data)
 

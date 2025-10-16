@@ -2626,10 +2626,10 @@ $$
 **Step 4: Regularized Standard Deviation.** Apply numerical regularization using a C¹-smooth patching function:
 
 $$
-\sigma'_\rho[f_k, d, x] = \sigma'_{\text{patch}}\left(\sqrt{\sigma^2_\rho[f_k, d, x]}\right)
+\sigma'_\rho[f_k, d, x] = \sigma\'_{\text{reg}}\left(\sqrt{\sigma^2_\rho[f_k, d, x]}\right)
 $$
 
-where $\sigma'_{\text{patch}}: [0, \infty) \to [\kappa_{\text{var,min}}, \infty)$ is a C¹-smooth function (see Definition {prf:ref}`def-unified-z-score` in `07_adaptative_gas.md`) that:
+where $\sigma\'_{\text{reg}}: [0, \infty) \to [\kappa_{\text{var,min}}, \infty)$ is a C¹-smooth function (see Definition {prf:ref}`def-unified-z-score` in `07_adaptative_gas.md`) that:
 - Equals $\kappa_{\text{var,min}}$ for $\sigma \le \kappa_{\text{var,min}} - \delta$
 - Smoothly transitions through a polynomial patch in $[\kappa_{\text{var,min}} - \delta, \kappa_{\text{var,min}} + \delta]$
 - Equals the identity $\sigma$ for $\sigma \ge \kappa_{\text{var,min}} + \delta$
@@ -3232,7 +3232,7 @@ $$
 &\downarrow \\
 &\textbf{Localized Moments:} \quad \mu_\rho = \sum_j w_{ij} d_j, \quad \sigma^2_\rho = \sum_j w_{ij} (d_j - \mu_\rho)^2 \\
 &\downarrow \\
-&\textbf{Regularized Std Dev:} \quad \sigma'_\rho = \sigma'_{\text{patch}}(\sigma_\rho), \quad \sigma'_\rho \ge \kappa_{\text{var,min}} \\
+&\textbf{Regularized Std Dev:} \quad \sigma'_\rho = \sigma\'_{\text{reg}}(\sigma_\rho), \quad \sigma'_\rho \ge \kappa_{\text{var,min}} \\
 &\downarrow \\
 &\textbf{Z-Score:} \quad Z_\rho = \frac{d(x) - \mu_\rho}{\sigma'_\rho} \\
 &\downarrow \\

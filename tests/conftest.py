@@ -11,6 +11,7 @@ from fragile.euclidean_gas import (
     SimpleQuadraticPotential,
 )
 
+
 # Trigger Pydantic model rebuild to resolve forward references
 EuclideanGasParams.model_rebuild()
 
@@ -42,22 +43,14 @@ def simple_potential():
 @pytest.fixture
 def langevin_params():
     """Standard Langevin parameters."""
-    return LangevinParams(
-        gamma=1.0,
-        beta=1.0,
-        delta_t=0.01,
-        integrator="baoab"
-    )
+    return LangevinParams(gamma=1.0, beta=1.0, delta_t=0.01, integrator="baoab")
 
 
 @pytest.fixture
 def cloning_params():
     """Standard cloning parameters."""
     return CloningParams(
-        sigma_x=0.1,
-        lambda_alg=1.0,
-        alpha_restitution=0.5,
-        use_inelastic_collision=True
+        sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.5, use_inelastic_collision=True
     )
 
 
@@ -71,7 +64,7 @@ def euclidean_gas_params(simple_potential, langevin_params, cloning_params, devi
         langevin=langevin_params,
         cloning=cloning_params,
         device=device,
-        dtype=dtype
+        dtype=dtype,
     )
 
 
@@ -85,7 +78,7 @@ def small_swarm_params(simple_potential, langevin_params, cloning_params, device
         langevin=langevin_params,
         cloning=cloning_params,
         device=device,
-        dtype=dtype
+        dtype=dtype,
     )
 
 
@@ -99,13 +92,17 @@ def large_swarm_params(simple_potential, langevin_params, cloning_params, device
         langevin=langevin_params,
         cloning=cloning_params,
         device=device,
-        dtype=dtype
+        dtype=dtype,
     )
 
 
-@pytest.fixture(params=["cpu"])
+@pytest.fixture(params=["cpu", "cuda"])
 def test_device(request):
-    """Parametrized device fixture for cross-device testing."""
+    """Parametrized device fixture for cross-device testing.
+
+    Tests will run on both CPU and CUDA (if available).
+    CUDA tests are automatically skipped if CUDA is not available.
+    """
     device = request.param
     if device == "cuda" and not torch.cuda.is_available():
         pytest.skip("CUDA not available")
@@ -121,7 +118,7 @@ def test_dtype(request):
 @pytest.fixture
 def adaptive_params(euclidean_gas_params):
     """Standard adaptive gas parameters."""
-    from fragile.adaptive_gas import AdaptiveGasParams, AdaptiveParams  # noqa: PLC0415
+    from fragile.adaptive_gas import AdaptiveGasParams, AdaptiveParams
 
     return AdaptiveGasParams(
         euclidean=euclidean_gas_params,

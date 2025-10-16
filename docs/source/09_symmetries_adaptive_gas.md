@@ -183,7 +183,7 @@ Z_\rho[f_k, Q, z] = \frac{Q(z) - \mu_\rho[f_k, Q, z]}{\sigma'_\rho[f_k, Q, z]}
 
 $$
 
-- $\mu_\rho, \sigma'_\rho$ are the ρ-localized mean and patched standard deviation (see `07_adaptative_gas.md`, §1.0.3)
+- $\mu_\rho, \sigma'_\rho$ are the ρ-localized mean and regularized standard deviation (see `07_adaptative_gas.md`, §1.0.3)
 :::
 
 :::{prf:definition} Emergent Riemannian Metric

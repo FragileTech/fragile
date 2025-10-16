@@ -37,7 +37,13 @@ def test_boundary_enforcement_kills_walkers(device, params_with_bounds):
     # Create state with some walkers out of bounds
     x = torch.zeros(N, d, device=device)
     x[:10] = torch.randn(10, d, device=device) * 2.0  # In bounds [-4, 4]
-    x[10:15] = torch.tensor([[5.0, 0.0], [0.0, 5.0], [-5.0, 0.0], [0.0, -5.0], [6.0, 6.0]])  # Out of bounds
+    x[10:15] = torch.tensor([
+        [5.0, 0.0],
+        [0.0, 5.0],
+        [-5.0, 0.0],
+        [0.0, -5.0],
+        [6.0, 6.0],
+    ])  # Out of bounds
     x[15:] = torch.randn(5, d, device=device) * 2.0  # In bounds
 
     v = torch.randn(N, d, device=device) * 0.1
@@ -230,18 +236,21 @@ def test_boundary_enforcement_is_per_dimension(device):
     N, d = 10, 2
 
     # Create specific test cases
-    x = torch.tensor([
-        [0.0, 0.0],      # In bounds
-        [2.0, 2.0],      # In bounds
-        [3.5, 0.0],      # Out in x
-        [0.0, 3.5],      # Out in y
-        [-3.5, 0.0],     # Out in x
-        [0.0, -3.5],     # Out in y
-        [3.5, 3.5],      # Out in both
-        [-3.5, -3.5],    # Out in both
-        [2.9, 2.9],      # In bounds (near edge)
-        [-2.9, -2.9],    # In bounds (near edge)
-    ], device=device)
+    x = torch.tensor(
+        [
+            [0.0, 0.0],  # In bounds
+            [2.0, 2.0],  # In bounds
+            [3.5, 0.0],  # Out in x
+            [0.0, 3.5],  # Out in y
+            [-3.5, 0.0],  # Out in x
+            [0.0, -3.5],  # Out in y
+            [3.5, 3.5],  # Out in both
+            [-3.5, -3.5],  # Out in both
+            [2.9, 2.9],  # In bounds (near edge)
+            [-2.9, -2.9],  # In bounds (near edge)
+        ],
+        device=device,
+    )
 
     v = torch.zeros(N, d, device=device)
     s = torch.ones(N, device=device)
@@ -250,7 +259,9 @@ def test_boundary_enforcement_is_per_dimension(device):
     state_bounded = gas.apply_boundary_enforcement(state)
 
     # Check expected alive/dead status
-    expected_alive = torch.tensor([1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0], device=device)
+    expected_alive = torch.tensor(
+        [1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0], device=device
+    )
     assert torch.allclose(state_bounded.s, expected_alive)
 
 

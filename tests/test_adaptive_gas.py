@@ -148,7 +148,9 @@ class TestMeanFieldOps:
 
         # Create two clusters: one at origin, one far away
         x1 = torch.randn(10, d, device=device, dtype=dtype) * 0.1  # Tight cluster at origin
-        x2 = torch.randn(10, d, device=device, dtype=dtype) * 0.1 + 10.0  # Tight cluster at (10, 10)
+        x2 = (
+            torch.randn(10, d, device=device, dtype=dtype) * 0.1 + 10.0
+        )  # Tight cluster at (10, 10)
         x = torch.cat([x1, x2], dim=0)
 
         v = torch.randn(N, d, device=device, dtype=dtype)
@@ -170,8 +172,12 @@ class TestMeanFieldOps:
         fitness_cluster2 = V_fit[10:]
 
         # Check within-cluster consistency (measurements are constant within cluster)
-        assert torch.std(fitness_cluster1) < 0.01 or torch.allclose(fitness_cluster1, fitness_cluster1[0] * torch.ones_like(fitness_cluster1), atol=0.01)
-        assert torch.std(fitness_cluster2) < 0.01 or torch.allclose(fitness_cluster2, fitness_cluster2[0] * torch.ones_like(fitness_cluster2), atol=0.01)
+        assert torch.std(fitness_cluster1) < 0.01 or torch.allclose(
+            fitness_cluster1, fitness_cluster1[0] * torch.ones_like(fitness_cluster1), atol=0.01
+        )
+        assert torch.std(fitness_cluster2) < 0.01 or torch.allclose(
+            fitness_cluster2, fitness_cluster2[0] * torch.ones_like(fitness_cluster2), atol=0.01
+        )
 
     def test_fitness_gradient_shape(self, adaptive_params, simple_potential):
         """Test that fitness gradient returns correct shape."""
@@ -326,7 +332,7 @@ class TestViscousForce:
         nu = 0.1
         l_viscous = 1.0  # Large length scale for strong interaction
 
-        F_viscous = ViscousForce.compute(state, nu, l_viscous)
+        ViscousForce.compute(state, nu, l_viscous)
 
         # Viscous force should reduce kinetic energy of relative motion
         # This is a soft constraint, not always true for all configurations
@@ -681,7 +687,7 @@ class TestAdaptiveMechanisms:
 
         # Trajectories should differ due to adaptive force
         # Compute mean squared difference
-        mse = torch.mean((results_with["x"] - results_without["x"])**2)
+        mse = torch.mean((results_with["x"] - results_without["x"]) ** 2)
         assert mse > 1e-3, f"Adaptive force has negligible effect: MSE={mse}"
 
     def test_viscous_force_effect(self, euclidean_gas_params, adaptive_params):

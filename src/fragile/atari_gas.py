@@ -4,8 +4,8 @@ from collections.abc import Sequence
 from typing import Any, Callable
 
 import numpy as np
-import torch
 from pydantic import BaseModel, Field
+import torch
 from torch import Tensor
 
 from fragile.euclidean_gas import CloningParams, SwarmState, VectorizedOps
@@ -109,7 +109,9 @@ class AtariSwarmState(SwarmState):
             self.truncated[idx] = other.truncated[idx]
             self.actions[idx] = other.actions[idx]
             self.dts[idx] = other.dts[idx]
-            self.infos[idx] = other.infos[idx].copy() if hasattr(other.infos[idx], "copy") else other.infos[idx]
+            self.infos[idx] = (
+                other.infos[idx].copy() if hasattr(other.infos[idx], "copy") else other.infos[idx]
+            )
 
 
 class AtariGasParams(BaseModel):
@@ -185,9 +187,9 @@ class AtariCloningOperator:
 
         if self.params.sigma_x > 0:
             jitter = torch.randn_like(x_clone, device=self.device) * self.params.sigma_x
-            x_clone = x_clone + jitter
+            x_clone += jitter
 
-        cloned_state = AtariSwarmState(
+        return AtariSwarmState(
             x=x_clone,
             v=state.v[companions].clone(),
             env_states=env_states,
@@ -200,7 +202,6 @@ class AtariCloningOperator:
             dts=state.dts[companions].clone(),
             infos=[state.infos[i] for i in comp_idx],
         )
-        return cloned_state
 
 
 class RandomActionOperator:
@@ -434,18 +435,16 @@ class AtariGas:
         env_states = np.asarray(
             [self._copy_state(base_state) for _ in range(self.params.N)], dtype=object
         )
-        observations = self.kinetic_op.transform_observations(
-            [self._copy_observation(observation) for _ in range(self.params.N)]
-        )
+        observations = self.kinetic_op.transform_observations([
+            self._copy_observation(observation) for _ in range(self.params.N)
+        ])
         x_init = observations.reshape(self.params.N, -1)
         v_init = torch.zeros_like(x_init, device=self.device, dtype=self.dtype)
         rewards = torch.zeros(self.params.N, device=self.device, dtype=self.dtype)
         step_rewards = torch.zeros(self.params.N, device=self.device, dtype=self.dtype)
         dones = torch.zeros(self.params.N, device=self.device, dtype=torch.bool)
         truncated = torch.zeros(self.params.N, device=self.device, dtype=torch.bool)
-        actions = torch.full(
-            (self.params.N,), fill_value=-1, device=self.device, dtype=torch.long
-        )
+        actions = torch.full((self.params.N,), fill_value=-1, device=self.device, dtype=torch.long)
         dts = torch.ones(self.params.N, device=self.device, dtype=torch.long)
 
         infos = [info.copy() if hasattr(info, "copy") else info for _ in range(self.params.N)]
@@ -464,9 +463,7 @@ class AtariGas:
             infos=infos,
         )
 
-    def step(
-        self, state: AtariSwarmState
-    ) -> tuple[AtariSwarmState, AtariSwarmState, Tensor]:
+    def step(self, state: AtariSwarmState) -> tuple[AtariSwarmState, AtariSwarmState, Tensor]:
         """Run one cloning + random action iteration.
 
         Returns:
@@ -483,7 +480,8 @@ class AtariGas:
         cloned_state = self.cloning_op.apply(state)
         companions = self.cloning_op.last_companions
         if companions is None:
-            raise RuntimeError("Cloning operator did not produce companion indices.")
+            msg = "Cloning operator did not produce companion indices."
+            raise RuntimeError(msg)
         if freeze_mask is not None and freeze_mask.any():
             cloned_state.copy_from(reference_state, freeze_mask)
         next_state = self.kinetic_op.apply(cloned_state)
@@ -509,9 +507,7 @@ class AtariGas:
         obs_shape = state.obs_shape
 
         x_traj = torch.zeros(n_steps + 1, N, d, device=self.device, dtype=self.dtype)
-        obs_traj = torch.zeros(
-            (n_steps + 1, N, *obs_shape), device=self.device, dtype=self.dtype
-        )
+        obs_traj = torch.zeros((n_steps + 1, N, *obs_shape), device=self.device, dtype=self.dtype)
         cumulative_rewards = torch.zeros(n_steps, N, device=self.device, dtype=self.dtype)
         step_rewards = torch.zeros(n_steps, N, device=self.device, dtype=self.dtype)
         actions = torch.zeros(n_steps, N, device=self.device, dtype=torch.long)
@@ -527,7 +523,7 @@ class AtariGas:
         termination_reason = ""
 
         for t in range(n_steps):
-            cloned_state, state, companion_idx = self.step(state)
+            _cloned_state, state, companion_idx = self.step(state)
             x_traj[t + 1] = state.x
             obs_traj[t + 1] = state.observations
             cumulative_rewards[t] = state.rewards

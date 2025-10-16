@@ -17,15 +17,14 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-from torch import Tensor
 
 from fragile.ricci_gas import (
-    RicciGas,
-    RicciGasParams,
-    SwarmState,
     create_ricci_gas_variants,
     double_well_3d,
     rastrigin_3d,
+    RicciGas,
+    RicciGasParams,
+    SwarmState,
 )
 
 
@@ -103,7 +102,7 @@ def experiment_phase_transition(
 
         for t in range(T):
             # Compute geometry
-            R, H = gas.compute_curvature(state, cache=True)
+            _R, _H = gas.compute_curvature(state, cache=True)
 
             # Measure statistics
             stats = measure_swarm_statistics(state)
@@ -114,18 +113,20 @@ def experiment_phase_transition(
             # Simple Langevin step (no cloning for simplicity)
             force = gas.compute_force(state)
             state.v = state.v * 0.9 + force * 0.1 + torch.randn_like(state.v) * 0.05
-            state.x = state.x + state.v * 0.1
+            state.x += state.v * 0.1
 
             # Status refresh
             state = gas.apply_singularity_regulation(state)
 
             if t % 100 == 0:
-                print(f"  t={t}: var={stats['variance']:.3f}, "
-                      f"entropy={stats['entropy']:.3f}, "
-                      f"R_max={stats['max_curvature']:.3f}")
+                print(
+                    f"  t={t}: var={stats['variance']:.3f}, "
+                    f"entropy={stats['entropy']:.3f}, "
+                    f"R_max={stats['max_curvature']:.3f}"
+                )
 
     # Plot results
-    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+    _fig, axes = plt.subplots(2, 2, figsize=(12, 10))
 
     for alpha in alpha_values:
         data = results[alpha]
@@ -169,7 +170,7 @@ def experiment_phase_transition(
     final_variance = [results[alpha][-1]["variance"] for alpha in alpha_values]
     final_entropy = [results[alpha][-1]["entropy"] for alpha in alpha_values]
 
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    _fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 
     axes[0].plot(alpha_values, final_variance, "o-")
     axes[0].set_xlabel("Feedback Strength α")
@@ -204,7 +205,7 @@ def experiment_ablation(output_dir: Path, N: int = 150, T: int = 500):
         state = initialize_swarm(N=N, d=3)
 
         for t in range(T):
-            R, H = gas.compute_curvature(state, cache=True)
+            _R, _H = gas.compute_curvature(state, cache=True)
             stats = measure_swarm_statistics(state)
             stats["variant"] = name
             stats["t"] = t
@@ -213,14 +214,14 @@ def experiment_ablation(output_dir: Path, N: int = 150, T: int = 500):
             # Simple dynamics
             force = gas.compute_force(state)
             state.v = state.v * 0.9 + force * 0.1 + torch.randn_like(state.v) * 0.05
-            state.x = state.x + state.v * 0.1
+            state.x += state.v * 0.1
             state = gas.apply_singularity_regulation(state)
 
             if t % 100 == 0:
                 print(f"  t={t}: var={stats['variance']:.3f}")
 
     # Plot comparison
-    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+    _fig, axes = plt.subplots(2, 2, figsize=(12, 10))
 
     for name in variants:
         data = results[name]
@@ -279,13 +280,12 @@ def experiment_toy_problems(output_dir: Path):
         trajectory = []
 
         for t in range(500):
-            R, H = gas.compute_curvature(state, cache=True)
+            _R, _H = gas.compute_curvature(state, cache=True)
 
             # Evaluate potential
             V = potential_fn(state.x[state.s.bool()])
             V_min = V.min().item()
-            if V_min < best_V:
-                best_V = V_min
+            best_V = min(V_min, best_V)
 
             trajectory.append({
                 "t": t,
@@ -297,7 +297,7 @@ def experiment_toy_problems(output_dir: Path):
             # Dynamics
             force = gas.compute_force(state)
             state.v = state.v * 0.9 + force * 0.1 + torch.randn_like(state.v) * 0.05
-            state.x = state.x + state.v * 0.1
+            state.x += state.v * 0.1
 
             if t % 100 == 0:
                 print(f"  t={t}: V_min={V_min:.4f}, V_mean={V.mean().item():.4f}")
@@ -334,19 +334,19 @@ def visualize_curvature_heatmap(output_dir: Path):
 
     # Run for a bit to let structure form
     for _ in range(200):
-        R, H = gas.compute_curvature(state, cache=True)
+        _R, _H = gas.compute_curvature(state, cache=True)
         force = gas.compute_force(state)
         state.v = state.v * 0.9 + force * 0.2 + torch.randn_like(state.v) * 0.05
-        state.x = state.x + state.v * 0.1
+        state.x += state.v * 0.1
 
     # Compute final curvature
-    R, H = gas.compute_curvature(state, cache=True)
+    _R, _H = gas.compute_curvature(state, cache=True)
 
     # Generate heatmap
     viz_data = gas.visualize_curvature(state, grid_resolution=60, zlevel=0.0)
 
     # Plot
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    _fig, axes = plt.subplots(1, 2, figsize=(14, 6))
 
     # Curvature heatmap
     im = axes[0].contourf(
@@ -407,16 +407,16 @@ def main():
 
     args = parser.parse_args()
 
-    if args.experiment in ["phase_transition", "all"]:
+    if args.experiment in {"phase_transition", "all"}:
         experiment_phase_transition(args.output_dir / "phase_transition")
 
-    if args.experiment in ["ablation", "all"]:
+    if args.experiment in {"ablation", "all"}:
         experiment_ablation(args.output_dir / "ablation")
 
-    if args.experiment in ["toy_problems", "all"]:
+    if args.experiment in {"toy_problems", "all"}:
         experiment_toy_problems(args.output_dir / "toy_problems")
 
-    if args.experiment in ["heatmap", "all"]:
+    if args.experiment in {"heatmap", "all"}:
         visualize_curvature_heatmap(args.output_dir / "visualization")
 
     print("\n=== All experiments complete ===")

@@ -14,11 +14,11 @@ Key concepts:
 
 from __future__ import annotations
 
-from typing import Callable, Literal
+import math
+from typing import Literal
 
-import torch
-import torch.nn.functional as F
 from pydantic import BaseModel, Field
+import torch
 from torch import Tensor
 
 
@@ -49,7 +49,9 @@ class RicciGasParams(BaseModel):
     )
 
     # Cloning parameters
-    epsilon_clone: float = Field(default=0.3, gt=0.0, description="Cloning interaction range (ε_c)")
+    epsilon_clone: float = Field(
+        default=0.3, gt=0.0, description="Cloning interaction range (ε_c)"
+    )
     sigma_clone: float = Field(default=0.1, gt=0.0, description="Positional jitter scale (σ_c)")
 
     # Boundary parameters
@@ -62,7 +64,9 @@ class RicciGasParams(BaseModel):
     # Numerical stability
     gradient_clip: float | None = Field(default=10.0, description="Max gradient norm")
     use_tree_kde: bool = Field(default=False, description="Use tree-based KDE (faster)")
-    truncation_radius: float | None = Field(default=None, description="KDE truncation (in units of ℓ)")
+    truncation_radius: float | None = Field(
+        default=None, description="KDE truncation (in units of ℓ)"
+    )
 
     class Config:
         arbitrary_types_allowed = True
@@ -96,7 +100,7 @@ def gaussian_kernel(x: Tensor, bandwidth: float = 1.0) -> Tensor:
     d = x.shape[-1]
     norm_sq = (x / bandwidth).pow(2).sum(dim=-1)
     # Use torch.tensor to ensure pi is on the correct device
-    pi = torch.tensor(3.14159265358979323846, device=x.device, dtype=x.dtype)
+    pi = torch.tensor(math.pi, device=x.device, dtype=x.dtype)
     normalizer = (2 * pi * bandwidth**2) ** (-d / 2)
     return normalizer * torch.exp(-0.5 * norm_sq)
 
@@ -129,17 +133,15 @@ def compute_kde_density(
     # Apply truncation if requested
     if truncation is not None:
         dist = diff.norm(dim=-1)
-        weights = weights * (dist < truncation * bandwidth).float()
+        weights *= (dist < truncation * bandwidth).float()
 
     # Mask dead walkers
     if alive_mask is not None:
-        weights = weights * alive_mask.unsqueeze(0)
+        weights *= alive_mask.unsqueeze(0)
 
     # Normalize
     N_alive = alive_mask.sum() if alive_mask is not None else x.shape[0]
-    rho = weights.sum(dim=1) / N_alive
-
-    return rho
+    return weights.sum(dim=1) / N_alive
 
 
 def compute_kde_hessian(
@@ -245,7 +247,7 @@ def compute_ricci_gradient(
     Returns:
         grad_R: Gradient of Ricci at each walker [N, d]
     """
-    N, d = x.shape
+    _N, d = x.shape
     grad_R = torch.zeros_like(x)
 
     # Finite difference step size (fraction of bandwidth)
@@ -393,10 +395,7 @@ class RicciGas:
         # Clip gradient for numerical stability
         if self.params.gradient_clip is not None:
             grad_norm = grad_R.norm(dim=-1, keepdim=True)
-            grad_R = grad_R * torch.clamp(
-                grad_norm / self.params.gradient_clip,
-                max=1.0,
-            )
+            grad_R *= torch.clamp(grad_norm / self.params.gradient_clip, max=1.0)
 
         # Apply force direction
         if self.params.force_mode == "pull":
@@ -409,9 +408,7 @@ class RicciGas:
             raise ValueError(f"Unknown force_mode: {self.params.force_mode}")
 
         # Zero force for dead walkers
-        force = force * alive.unsqueeze(-1).float()
-
-        return force
+        return force * alive.unsqueeze(-1).float()
 
     def apply_cloning(self, state: SwarmState) -> SwarmState:
         """Apply distance-based cloning operator.
@@ -441,10 +438,10 @@ class RicciGas:
 
         # Mask self-selection by setting diagonal to inf
         dist_sq_masked = dist_sq.clone()
-        dist_sq_masked.fill_diagonal_(float('inf'))
+        dist_sq_masked.fill_diagonal_(float("inf"))
 
         # Mask dead walkers: they can't be chosen as companions
-        dist_sq_masked[:, ~alive] = float('inf')
+        dist_sq_masked[:, ~alive] = float("inf")
 
         # Compute Gaussian spatial weights: w_ij = exp(-d²_ij / (2ε²))
         epsilon = self.params.epsilon_clone
@@ -485,9 +482,7 @@ class RicciGas:
         s_new = torch.ones(N, device=self.device, dtype=state.s.dtype)
 
         # Update state
-        state_new = SwarmState(x=x_new, v=v_new, s=s_new)
-
-        return state_new
+        return SwarmState(x=x_new, v=v_new, s=s_new)
 
     def apply_boundary_enforcement(self, state: SwarmState) -> SwarmState:
         """Kill walkers that leave the boundary region.
@@ -511,7 +506,7 @@ class RicciGas:
             out_of_bounds |= (state.x > self.params.x_max).any(dim=-1)
 
         # Kill out-of-bounds walkers
-        state.s = state.s * (~out_of_bounds).float()
+        state.s *= (~out_of_bounds).float()
 
         return state
 
@@ -534,7 +529,7 @@ class RicciGas:
 
         # Kill walkers with R > R_crit
         high_curv_mask = state.R > self.params.R_crit
-        state.s = state.s * (~high_curv_mask).float()
+        state.s *= (~high_curv_mask).float()
 
         return state
 
@@ -586,9 +581,7 @@ class RicciGas:
         state_new = self.apply_boundary_enforcement(state_new)
 
         # Step 6: Apply singularity regulation (kill high-curvature walkers)
-        state_new = self.apply_singularity_regulation(state_new)
-
-        return state_new
+        return self.apply_singularity_regulation(state_new)
 
     def visualize_curvature(
         self,
@@ -617,11 +610,14 @@ class RicciGas:
         xx, yy = torch.meshgrid(x_grid, y_grid, indexing="ij")
 
         # Evaluation points (include z=zlevel)
-        x_eval = torch.stack([
-            xx.flatten(),
-            yy.flatten(),
-            torch.full_like(xx.flatten(), zlevel),
-        ], dim=-1)
+        x_eval = torch.stack(
+            [
+                xx.flatten(),
+                yy.flatten(),
+                torch.full_like(xx.flatten(), zlevel),
+            ],
+            dim=-1,
+        )
 
         # Compute Hessian and Ricci on grid
         H_grid = compute_kde_hessian(
@@ -684,6 +680,7 @@ def create_ricci_gas_variants() -> dict[str, RicciGasParams]:
 
 # Example toy problems
 
+
 def double_well(x: Tensor) -> Tensor:
     """Double-well potential (works in any dimension).
 
@@ -699,10 +696,9 @@ def double_well(x: Tensor) -> Tensor:
     """
     if x.shape[-1] == 1:
         # 1D case
-        return (x[:, 0]**2 - 1) ** 2
-    else:
-        # Multi-dimensional case
-        return (x[:, 0]**2 - 1) ** 2 + (x[:, 1:]**2).sum(dim=-1)
+        return (x[:, 0] ** 2 - 1) ** 2
+    # Multi-dimensional case
+    return (x[:, 0] ** 2 - 1) ** 2 + (x[:, 1:] ** 2).sum(dim=-1)
 
 
 def rastrigin(x: Tensor) -> Tensor:
@@ -718,7 +714,7 @@ def rastrigin(x: Tensor) -> Tensor:
     """
     A = 10
     d = x.shape[-1]
-    pi = torch.tensor(3.14159265358979323846, device=x.device, dtype=x.dtype)
+    pi = torch.tensor(math.pi, device=x.device, dtype=x.dtype)
     return A * d + (x**2 - A * torch.cos(2 * pi * x)).sum(dim=-1)
 
 

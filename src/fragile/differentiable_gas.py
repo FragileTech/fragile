@@ -26,10 +26,10 @@ from __future__ import annotations
 
 from typing import Callable, Literal
 
-import torch
-import torch.nn.functional as F
 from pydantic import BaseModel, ConfigDict, Field
+import torch
 from torch import Tensor
+import torch.nn.functional as F
 
 
 class DifferentiableGasParams(BaseModel):
@@ -54,7 +54,9 @@ class DifferentiableGasParams(BaseModel):
     )
     tau_init: float = Field(default=1.0, gt=0.0, description="Initial Gumbel temperature")
     tau_min: float = Field(default=0.1, gt=0.0, description="Minimum temperature")
-    tau_anneal: float = Field(default=0.999, ge=0.0, le=1.0, description="Temperature decay per step")
+    tau_anneal: float = Field(
+        default=0.999, ge=0.0, le=1.0, description="Temperature decay per step"
+    )
 
     # Selection weights (for combined mode)
     alpha_fitness: float = Field(default=1.0, ge=0.0, description="Fitness weight")
@@ -66,8 +68,12 @@ class DifferentiableGasParams(BaseModel):
     sigma_clone: float = Field(default=0.05, gt=0.0, description="Clone position noise")
 
     # Cloning control
-    clone_rate: float = Field(default=0.1, ge=0.0, le=1.0, description="Fraction of walkers to clone")
-    elite_fraction: float = Field(default=0.2, ge=0.0, le=1.0, description="Top performers to use as parents")
+    clone_rate: float = Field(
+        default=0.1, ge=0.0, le=1.0, description="Fraction of walkers to clone"
+    )
+    elite_fraction: float = Field(
+        default=0.2, ge=0.0, le=1.0, description="Top performers to use as parents"
+    )
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -193,9 +199,7 @@ def compute_combined_logits(
     diversity_logits = compute_diversity_logits(x, x_query, bandwidth)
 
     # Combine
-    logits = alpha_fitness * fitness_logits + alpha_diversity * diversity_logits
-
-    return logits
+    return alpha_fitness * fitness_logits + alpha_diversity * diversity_logits
 
 
 class DifferentiableGas:
@@ -301,9 +305,7 @@ class DifferentiableGas:
             logits = logits.unsqueeze(0).expand(num_clones, -1)
 
         elif self.params.selection_mode == "diversity":
-            logits = compute_diversity_logits(
-                state.x, x_clone, bandwidth=1.0
-            )
+            logits = compute_diversity_logits(state.x, x_clone, bandwidth=1.0)
 
         elif self.params.selection_mode == "combined":
             logits = compute_combined_logits(
@@ -318,9 +320,7 @@ class DifferentiableGas:
             raise ValueError(f"Unknown selection_mode: {self.params.selection_mode}")
 
         # Gumbel-softmax sampling
-        weights = gumbel_softmax_sample(logits, tau=self.tau, hard=False, dim=-1)
-
-        return weights
+        return gumbel_softmax_sample(logits, tau=self.tau, hard=False, dim=-1)
 
     def soft_clone(
         self,
@@ -344,8 +344,8 @@ class DifferentiableGas:
         v_new = torch.matmul(weights, state.v)  # [M, d]
 
         # Add noise for exploration
-        x_new = x_new + torch.randn_like(x_new) * self.params.sigma_clone
-        v_new = v_new + torch.randn_like(v_new) * self.params.sigma_v
+        x_new += torch.randn_like(x_new) * self.params.sigma_clone
+        v_new += torch.randn_like(v_new) * self.params.sigma_v
 
         return x_new, v_new
 

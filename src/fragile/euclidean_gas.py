@@ -10,14 +10,22 @@ All tensors are vectorized with the first dimension being the number of walkers 
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-import torch
 from pydantic import BaseModel, Field
+import torch
 from torch import Tensor
 
+from fragile.bounds import TorchBounds
+from fragile.companion_selection import (
+    select_companions_for_cloning,
+    select_companions_softmax,
+    select_companions_uniform,
+)
+
+
 if TYPE_CHECKING:
-    from fragile.bounds import Bounds, TorchBounds, NumpyBounds
+    from fragile.bounds import Bounds
 
 
 class PotentialParams(BaseModel):
@@ -35,7 +43,8 @@ class PotentialParams(BaseModel):
         Returns:
             Potential values [N]
         """
-        raise NotImplementedError("Subclasses must implement evaluate")
+        msg = "Subclasses must implement evaluate"
+        raise NotImplementedError(msg)
 
 
 class SimpleQuadraticPotential(PotentialParams):
@@ -73,20 +82,36 @@ class CloningParams(BaseModel):
     Mathematical notation:
     - sigma_x (σ_x): Positional jitter scale
     - lambda_alg (λ_alg): Velocity weight in algorithmic distance
+    - epsilon_c (ε_c): Companion selection range
+
+    Companion selection methods (see fragile.companion_selection):
+    - "hybrid": Alive walkers use softmax (distance-dependent), dead walkers use uniform
+    - "softmax": All walkers use distance-dependent softmax selection
+    - "uniform": All walkers use uniform random selection
     """
 
     model_config = {"arbitrary_types_allowed": True}
 
     sigma_x: float = Field(gt=0, description="Positional jitter scale (σ_x)")
-    lambda_alg: float = Field(gt=0, description="Velocity weight in algorithmic distance (λ_alg)")
+    lambda_alg: float = Field(ge=0, description="Velocity weight in algorithmic distance (λ_alg)")
+    epsilon_c: float | None = Field(
+        None,
+        description="Companion selection range (ε_c). If None, defaults to sigma_x"
+    )
+    companion_selection_method: str = Field(
+        "hybrid",
+        description="Companion selection method: 'hybrid', 'softmax', or 'uniform'"
+    )
     alpha_restitution: float = Field(
-        ge=0,
-        le=1,
-        description="Coefficient of restitution [0,1]: 0=fully inelastic, 1=elastic"
+        ge=0, le=1, description="Coefficient of restitution [0,1]: 0=fully inelastic, 1=elastic"
     )
     use_inelastic_collision: bool = Field(
         True, description="Use momentum-conserving inelastic collision for velocity reset"
     )
+
+    def get_epsilon_c(self) -> float:
+        """Get effective companion selection range, defaulting to sigma_x if not specified."""
+        return self.epsilon_c if self.epsilon_c is not None else self.sigma_x
 
 
 class EuclideanGasParams(BaseModel):
@@ -99,7 +124,7 @@ class EuclideanGasParams(BaseModel):
     potential: PotentialParams = Field(description="Target potential parameters")
     langevin: LangevinParams = Field(description="Langevin dynamics parameters")
     cloning: CloningParams = Field(description="Cloning operator parameters")
-    bounds: Any = Field(None, description="Position bounds (optional, TorchBounds or NumpyBounds)")
+    bounds: TorchBounds | None = Field(None, description="Position bounds (optional, TorchBounds only)")
     device: str = Field("cpu", description="PyTorch device (cpu/cuda)")
     dtype: str = Field("float32", description="PyTorch dtype (float32/float64)")
     freeze_best: bool = Field(
@@ -171,9 +196,11 @@ class SwarmState:
             msg = f"Expected SwarmState, got {type(other)}"
             raise TypeError(msg)
         if mask.dtype != torch.bool:
-            raise ValueError("Mask must be boolean tensor")
+            msg = "Mask must be boolean tensor"
+            raise ValueError(msg)
         if mask.shape[0] != self.N:
-            raise ValueError("Mask size mismatch")
+            msg = "Mask size mismatch"
+            raise ValueError(msg)
         if not mask.any():
             return
         indices = torch.where(mask)[0]
@@ -182,186 +209,11 @@ class SwarmState:
 
 
 class VectorizedOps:
-    """Vectorized operations on swarm states."""
+    """Vectorized operations on swarm states.
 
-    @staticmethod
-    def algorithmic_distance_squared(
-        state: SwarmState, lambda_alg: float
-    ) -> Tensor:
-        """
-        Compute pairwise algorithmic distances squared.
-
-        d_alg(i,j)² = ||x_i - x_j||² + λ_alg ||v_i - v_j||²
-
-        Args:
-            state: Current swarm state
-            lambda_alg: Velocity weight in algorithmic distance (λ_alg)
-
-        Returns:
-            Distance matrix [N, N]
-        """
-        # Position distances [N, N]
-        dx = state.x.unsqueeze(1) - state.x.unsqueeze(0)  # [N, N, d]
-        dist_x_sq = torch.sum(dx**2, dim=-1)  # [N, N]
-
-        # Velocity distances [N, N]
-        dv = state.v.unsqueeze(1) - state.v.unsqueeze(0)  # [N, N, d]
-        dist_v_sq = torch.sum(dv**2, dim=-1)  # [N, N]
-
-        return dist_x_sq + lambda_alg * dist_v_sq
-
-    @staticmethod
-    def find_companions(dist_sq: Tensor, epsilon: float) -> Tensor:
-        """
-        Find companions using ε-dependent spatial kernel (softmax with Gaussian weights).
-
-        Implements the Sequential Stochastic Greedy Pairing Operator from 03_cloning.md:
-        - Weights: w_ij = exp(-d²_ij / (2ε²))
-        - Probability: P(choose j) = w_ij / Σ_l w_il
-        - Sample from this distribution for each walker
-
-        Edge case: Single walker returns itself as companion.
-
-        Args:
-            dist_sq: Pairwise distance matrix [N, N]
-            epsilon: Interaction range parameter (σ_x for cloning, ε_d for diversity)
-
-        Returns:
-            Companion indices [N]
-        """
-        N = dist_sq.shape[0]
-
-        # Edge case: single walker has no companions, returns self
-        if N == 1:
-            return torch.tensor([0], dtype=torch.long, device=dist_sq.device)
-
-        # Set diagonal to infinity to exclude self
-        dist_sq_masked = dist_sq.clone()
-        dist_sq_masked.fill_diagonal_(float("inf"))
-
-        # Compute Gaussian spatial weights: w_ij = exp(-d²_ij / (2ε²))
-        # Use log-sum-exp trick for numerical stability when distances are large
-        exponent = -dist_sq_masked / (2.0 * epsilon**2)  # [N, N]
-
-        # Numerical stability: subtract max per row to avoid underflow
-        max_exp = torch.max(exponent, dim=1, keepdim=True)[0]  # [N, 1]
-        weights = torch.exp(exponent - max_exp)  # [N, N]
-
-        # Handle case where all weights are zero (all walkers too far)
-        # Fall back to uniform distribution
-        row_sums = weights.sum(dim=1, keepdim=True)  # [N, 1]
-        zero_rows = row_sums.squeeze(1) < 1e-100  # Boolean mask for rows with all zero weights
-
-        if zero_rows.any():
-            # For rows with all zero weights, use uniform distribution
-            uniform_probs = torch.ones_like(weights) / (N - 1)
-            uniform_probs.fill_diagonal_(0.0)  # Still exclude self
-            weights = torch.where(zero_rows.unsqueeze(1), uniform_probs, weights)
-            row_sums = weights.sum(dim=1, keepdim=True)
-
-        # Convert to probabilities (normalize)
-        # Add epsilon to prevent division by zero
-        probabilities = weights / (row_sums + 1e-12)  # [N, N]
-
-        # Clamp to [0, 1] to handle floating point errors
-        probabilities = torch.clamp(probabilities, min=0.0, max=1.0)
-
-        # Renormalize to ensure valid probability distribution
-        probabilities = probabilities / probabilities.sum(dim=1, keepdim=True)
-
-        # Sample companions from the probability distribution
-        # Use torch.multinomial which samples from categorical distribution
-        companions = torch.multinomial(probabilities, num_samples=1).squeeze(1)  # [N]
-
-        return companions
-
-    @staticmethod
-    def find_companions_with_bounds(dist_sq: Tensor, in_bounds: Tensor, epsilon: float) -> Tensor:
-        """
-        Find companions using ε-dependent spatial kernel, with boundary enforcement.
-
-        CRITICAL: Out-of-bounds walkers can NEVER be chosen as companions by anyone.
-        This effectively "kills" them by ensuring no one clones from them.
-        All walkers (both in-bounds and out-of-bounds) can only choose in-bounds companions.
-
-        Edge case: If ALL walkers are out of bounds, falls back to nearest neighbor selection.
-
-        Args:
-            dist_sq: Pairwise distance matrix [N, N]
-            in_bounds: Boolean mask indicating which walkers are in bounds [N]
-            epsilon: Interaction range parameter (σ_x for cloning, ε_d for diversity)
-
-        Returns:
-            Companion indices [N]
-        """
-        N = dist_sq.shape[0]
-        n_in_bounds = in_bounds.sum().item()
-
-        # Edge case: if ALL or almost all walkers are out of bounds, bypass spatial kernel
-        # and use simple uniform distribution (stochastic nearest neighbor)
-        if n_in_bounds <= 1:
-            # Use the original distance matrix (without bounds masking)
-            dist_sq_masked = dist_sq.clone()
-            dist_sq_masked.fill_diagonal_(float("inf"))
-
-            # Use log-softmax trick for numerical stability
-            exponent = -dist_sq_masked / (2.0 * epsilon**2)
-            max_exp = torch.max(exponent, dim=1, keepdim=True)[0]
-            weights = torch.exp(exponent - max_exp)
-
-            # Check for zero rows and fall back to uniform if needed
-            row_sums = weights.sum(dim=1, keepdim=True)
-            zero_rows = row_sums.squeeze(1) < 1e-100
-
-            if zero_rows.any():
-                uniform_probs = torch.ones_like(weights) / (N - 1)
-                uniform_probs.fill_diagonal_(0.0)
-                weights = torch.where(zero_rows.unsqueeze(1), uniform_probs, weights)
-                row_sums = weights.sum(dim=1, keepdim=True)
-
-            probabilities = weights / row_sums
-            companions = torch.multinomial(probabilities, num_samples=1).squeeze(1)
-            return companions
-
-        # Normal case: some walkers are in bounds
-        dist_sq_masked = dist_sq.clone()
-
-        # Set diagonal to infinity to exclude self
-        dist_sq_masked.fill_diagonal_(float("inf"))
-
-        # Set distance to ALL out-of-bounds walkers to infinity
-        out_of_bounds = ~in_bounds
-        col_mask = out_of_bounds.unsqueeze(0)  # [1, N]
-        dist_sq_masked = torch.where(col_mask, torch.tensor(float("inf")), dist_sq_masked)
-
-        # Compute Gaussian spatial weights with numerical stability
-        exponent = -dist_sq_masked / (2.0 * epsilon**2)  # [N, N]
-
-        # Numerical stability: subtract max per row to avoid underflow
-        max_exp = torch.max(exponent, dim=1, keepdim=True)[0]  # [N, 1]
-        weights = torch.exp(exponent - max_exp)  # [N, N]
-
-        # Handle case where all weights are zero (all walkers too far)
-        row_sums = weights.sum(dim=1, keepdim=True)  # [N, 1]
-        zero_rows = row_sums.squeeze(1) < 1e-100  # Boolean mask for rows with all zero weights
-
-        if zero_rows.any():
-            # Use uniform distribution over in-bounds walkers only
-            uniform_probs = torch.ones_like(weights) / (n_in_bounds - 1.0)
-            uniform_probs.fill_diagonal_(0.0)
-            # Only allow in-bounds companions
-            uniform_probs = torch.where(out_of_bounds.unsqueeze(0), torch.tensor(0.0), uniform_probs)
-
-            weights = torch.where(zero_rows.unsqueeze(1), uniform_probs, weights)
-            row_sums = weights.sum(dim=1, keepdim=True)
-
-        # Convert to probabilities (normalize)
-        probabilities = weights / row_sums  # [N, N]
-
-        # Sample companions from the probability distribution
-        companions = torch.multinomial(probabilities, num_samples=1).squeeze(1)  # [N]
-
-        return companions
+    Note: Companion selection methods have been moved to fragile.companion_selection module.
+    This class now only contains variance computation methods.
+    """
 
     @staticmethod
     def variance_position(state: SwarmState) -> Tensor:
@@ -416,9 +268,7 @@ def random_isotropic_rotation(v: Tensor) -> Tensor:
     # Householder reflection: R(v) = v - 2 * (v · u) * u
     # where u is the unit normal to the reflection plane
     dot_product = torch.sum(v * random_unit, dim=1, keepdim=True)
-    v_reflected = v - 2 * dot_product * random_unit
-
-    return v_reflected
+    return v - 2 * dot_product * random_unit
 
 
 class CloningOperator:
@@ -429,7 +279,7 @@ class CloningOperator:
         params: CloningParams,
         device: torch.device,
         dtype: torch.dtype,
-        bounds: Bounds | None = None
+        bounds: Bounds | None = None,
     ):
         """
         Initialize cloning operator.
@@ -449,11 +299,14 @@ class CloningOperator:
         """
         Apply cloning operator with boundary enforcement.
 
+        Uses companion selection from fragile.companion_selection module.
+
         For each walker i:
         1. Check if walker is out of bounds (if bounds specified)
-        2. Find companion c_clone(i) using d_alg
-           - Out-of-bounds walkers are EXCLUDED from being chosen as companions
-           - This effectively "kills" them (no one clones from them)
+        2. Find companion c_clone(i) using configured selection method:
+           - "hybrid": Alive walkers use softmax, dead walkers use uniform
+           - "softmax": All walkers use distance-dependent selection
+           - "uniform": All walkers use uniform random selection
         3. Clone position: x̃_i = x_c + σ_x * ζ_i^x where ζ_i^x ~ N(0, I)
         4. Reset velocity using inelastic collision model
 
@@ -465,25 +318,39 @@ class CloningOperator:
         """
         N, d = state.N, state.d
 
-        # Check which walkers are out of bounds
+        # Create alive_mask from bounds checking
+        # Out-of-bounds walkers are considered "dead" for companion selection
         if self.bounds is not None:
-            in_bounds = self.bounds.contains(state.x)  # [N]
+            alive_mask = self.bounds.contains(state.x)  # [N]
         else:
-            in_bounds = torch.ones(N, dtype=torch.bool, device=self.device)
+            alive_mask = torch.ones(N, dtype=torch.bool, device=self.device)
 
-        # Find companions using algorithmic distance
-        dist_sq = VectorizedOps.algorithmic_distance_squared(
-            state, self.params.lambda_alg
-        )
+        # Get effective epsilon_c (defaults to sigma_x if not specified)
+        epsilon_c = self.params.get_epsilon_c()
 
-        # For out-of-bounds walkers, only allow cloning from in-bounds companions
-        # Use sigma_x as the interaction range for cloning
-        if self.bounds is not None and not in_bounds.all():
-            companions = VectorizedOps.find_companions_with_bounds(
-                dist_sq, in_bounds, epsilon=self.params.sigma_x
+        # Select companions using configured method
+        method = self.params.companion_selection_method
+        if method == "hybrid":
+            # Hybrid mode: alive use softmax, dead use uniform (matches old behavior)
+            companions = select_companions_for_cloning(
+                state.x, state.v, alive_mask,
+                epsilon_c=epsilon_c,
+                lambda_alg=self.params.lambda_alg
             )
+        elif method == "softmax":
+            # All walkers use distance-dependent softmax selection
+            companions = select_companions_softmax(
+                state.x, state.v, alive_mask,
+                epsilon=epsilon_c,
+                lambda_alg=self.params.lambda_alg,
+                exclude_self=True
+            )
+        elif method == "uniform":
+            # All walkers use uniform random selection
+            companions = select_companions_uniform(alive_mask)
         else:
-            companions = VectorizedOps.find_companions(dist_sq, epsilon=self.params.sigma_x)  # [N]
+            msg = f"Unknown companion_selection_method: {method}"
+            raise ValueError(msg)
 
         # Clone positions with jitter
         zeta_x = torch.randn(N, d, device=self.device, dtype=self.dtype)  # [N, d]
@@ -499,9 +366,7 @@ class CloningOperator:
 
         return SwarmState(x_new, v_new)
 
-    def _inelastic_collision_velocity(
-        self, state: SwarmState, companions: Tensor
-    ) -> Tensor:
+    def _inelastic_collision_velocity(self, state: SwarmState, companions: Tensor) -> Tensor:
         """
         Compute velocities after multi-body inelastic collision.
 
@@ -522,7 +387,7 @@ class CloningOperator:
         Returns:
             New velocities [N, d] after collision
         """
-        N, d = state.N, state.d
+        _N, _d = state.N, state.d
         v_new = state.v.clone()  # Start with original velocities
         alpha = self.params.alpha_restitution
 
@@ -540,7 +405,9 @@ class CloningOperator:
 
             # Collision group: [companion, cloner_1, ..., cloner_M]
             group_indices = torch.cat([c_idx.unsqueeze(0), cloner_indices_no_companion])
-            group_velocities = state.v[group_indices]  # [M+1, d] where M is number of OTHER cloners
+            group_velocities = state.v[
+                group_indices
+            ]  # [M+1, d] where M is number of OTHER cloners
 
             # Step 1: Compute center-of-mass velocity (conserved quantity)
             V_COM = torch.mean(group_velocities, dim=0)  # [d]
@@ -594,9 +461,7 @@ class KineticOperator:
 
         # O-step coefficients
         self.c1 = torch.exp(torch.tensor(-self.gamma * self.dt, dtype=dtype))
-        self.c2 = torch.sqrt(
-            (1.0 - self.c1**2) / self.beta
-        )  # Noise amplitude
+        self.c2 = torch.sqrt((1.0 - self.c1**2) / self.beta)  # Noise amplitude
 
     def apply(self, state: SwarmState) -> SwarmState:
         """
@@ -620,29 +485,25 @@ class KineticOperator:
         # First B step
         x.requires_grad_(True)
         U = self.potential.evaluate(x)  # [N]
-        grad_U = torch.autograd.grad(
-            U.sum(), x, create_graph=False
-        )[0]  # [N, d]
-        v = v - (self.dt / 2) * grad_U
+        grad_U = torch.autograd.grad(U.sum(), x, create_graph=False)[0]  # [N, d]
+        v -= self.dt / 2 * grad_U
         x.requires_grad_(False)
 
         # First A step
-        x = x + (self.dt / 2) * v
+        x += self.dt / 2 * v
 
         # O step (Ornstein-Uhlenbeck)
         ξ = torch.randn(N, d, device=self.device, dtype=self.dtype)
         v = self.c1 * v + self.c2 * ξ
 
         # Second A step
-        x = x + (self.dt / 2) * v
+        x += self.dt / 2 * v
 
         # Second B step
         x.requires_grad_(True)
         U = self.potential.evaluate(x)  # [N]
-        grad_U = torch.autograd.grad(
-            U.sum(), x, create_graph=False
-        )[0]  # [N, d]
-        v = v - (self.dt / 2) * grad_U
+        grad_U = torch.autograd.grad(U.sum(), x, create_graph=False)[0]  # [N, d]
+        v -= self.dt / 2 * grad_U
         x.requires_grad_(False)
 
         return SwarmState(x, v)
@@ -665,11 +526,10 @@ class EuclideanGas:
         self.params = params
         self.device = torch.device(params.device)
         self.dtype = params.torch_dtype
+        self.bounds = params.bounds
 
         # Initialize operators
-        self.cloning_op = CloningOperator(
-            params.cloning, self.device, self.dtype, params.bounds
-        )
+        self.cloning_op = CloningOperator(params.cloning, self.device, self.dtype, params.bounds)
         self.kinetic_op = KineticOperator(
             params.langevin, params.potential, self.device, self.dtype
         )
@@ -684,10 +544,11 @@ class EuclideanGas:
             return None
         rewards = self.get_cumulative_rewards(state)
         if rewards is None:
-            raise RuntimeError(
+            msg = (
                 "freeze_best is enabled but get_cumulative_rewards returned None. "
                 "Override get_cumulative_rewards in subclasses to supply cumulative values."
             )
+            raise RuntimeError(msg)
         if rewards.numel() == 0:
             return None
         if not isinstance(rewards, Tensor):
@@ -699,7 +560,9 @@ class EuclideanGas:
         mask[best_idx] = True
         return mask
 
-    def initialize_state(self, x_init: Tensor | None = None, v_init: Tensor | None = None) -> SwarmState:
+    def initialize_state(
+        self, x_init: Tensor | None = None, v_init: Tensor | None = None
+    ) -> SwarmState:
         """
         Initialize swarm state.
 
@@ -747,7 +610,9 @@ class EuclideanGas:
             state_final.copy_from(reference_state, freeze_mask)
         return state_cloned, state_final
 
-    def run(self, n_steps: int, x_init: Tensor | None = None, v_init: Tensor | None = None) -> dict:
+    def run(
+        self, n_steps: int, x_init: Tensor | None = None, v_init: Tensor | None = None
+    ) -> dict:
         """
         Run Euclidean Gas for multiple steps.
 
@@ -758,42 +623,93 @@ class EuclideanGas:
 
         Returns:
             Dictionary with trajectory data:
-                - 'x': positions [n_steps+1, N, d]
-                - 'v': velocities [n_steps+1, N, d]
-                - 'var_x': position variance [n_steps+1]
-                - 'var_v': velocity variance [n_steps+1]
+                - 'x': positions [n_steps+1, N, d] or [t_final+1, N, d] if stopped early
+                - 'v': velocities [n_steps+1, N, d] or [t_final+1, N, d] if stopped early
+                - 'var_x': position variance [n_steps+1] or [t_final+1]
+                - 'var_v': velocity variance [n_steps+1] or [t_final+1]
+                - 'n_alive': number of alive walkers [n_steps+1] or [t_final+1]
+                - 'terminated_early': True if stopped due to all walkers dead
+                - 'final_step': actual number of steps completed
+
+        Note:
+            Run stops early if all walkers become dead (out of bounds).
         """
         state = self.initialize_state(x_init, v_init)
 
         # Preallocate storage
         N, d = state.N, state.d
-        x_traj = torch.zeros(
-            n_steps + 1, N, d, device=self.device, dtype=self.dtype
-        )
-        v_traj = torch.zeros(
-            n_steps + 1, N, d, device=self.device, dtype=self.dtype
-        )
+        x_traj = torch.zeros(n_steps + 1, N, d, device=self.device, dtype=self.dtype)
+        v_traj = torch.zeros(n_steps + 1, N, d, device=self.device, dtype=self.dtype)
         var_x_traj = torch.zeros(n_steps + 1, device=self.device, dtype=self.dtype)
         var_v_traj = torch.zeros(n_steps + 1, device=self.device, dtype=self.dtype)
+        n_alive_traj = torch.zeros(n_steps + 1, dtype=torch.long, device=self.device)
+
+        # Check initial alive status
+        if self.bounds is not None:
+            alive_mask = self.bounds.contains(state.x)
+            n_alive = alive_mask.sum().item()
+        else:
+            n_alive = N
 
         # Store initial state
         x_traj[0] = state.x
         v_traj[0] = state.v
         var_x_traj[0] = VectorizedOps.variance_position(state)
         var_v_traj[0] = VectorizedOps.variance_velocity(state)
+        n_alive_traj[0] = n_alive
+
+        # Check if initially all dead
+        if n_alive == 0:
+            return {
+                "x": x_traj[:1],
+                "v": v_traj[:1],
+                "var_x": var_x_traj[:1],
+                "var_v": var_v_traj[:1],
+                "n_alive": n_alive_traj[:1],
+                "terminated_early": True,
+                "final_step": 0,
+            }
 
         # Run steps
+        terminated_early = False
+        final_step = n_steps
+
         for t in range(n_steps):
+            # Check if all walkers are currently dead BEFORE stepping
+            # (step will fail if trying to clone with 0 alive walkers)
+            if self.bounds is not None:
+                alive_mask = self.bounds.contains(state.x)
+                n_alive = alive_mask.sum().item()
+                if n_alive == 0:
+                    # All walkers died during previous step
+                    terminated_early = True
+                    final_step = t
+                    break
+
+            # Perform step (safe because we know n_alive > 0)
             _, state = self.step(state)
 
+            # Update alive count after step
+            if self.bounds is not None:
+                alive_mask = self.bounds.contains(state.x)
+                n_alive = alive_mask.sum().item()
+            else:
+                n_alive = N
+
+            # Store new state
             x_traj[t + 1] = state.x
             v_traj[t + 1] = state.v
             var_x_traj[t + 1] = VectorizedOps.variance_position(state)
             var_v_traj[t + 1] = VectorizedOps.variance_velocity(state)
+            n_alive_traj[t + 1] = n_alive
 
+        # Return only the trajectory up to the final step
         return {
-            "x": x_traj,
-            "v": v_traj,
-            "var_x": var_x_traj,
-            "var_v": var_v_traj,
+            "x": x_traj[: final_step + 1],
+            "v": v_traj[: final_step + 1],
+            "var_x": var_x_traj[: final_step + 1],
+            "var_v": var_v_traj[: final_step + 1],
+            "n_alive": n_alive_traj[: final_step + 1],
+            "terminated_early": terminated_early,
+            "final_step": final_step,
         }

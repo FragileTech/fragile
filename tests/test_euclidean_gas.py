@@ -3,7 +3,9 @@
 import pytest
 import torch
 
+from fragile.bounds import TorchBounds
 from fragile.euclidean_gas import (
+    CloningParams,
     EuclideanGas,
     EuclideanGasParams,
     SwarmState,
@@ -91,7 +93,7 @@ class TestEuclideanGas:
         state = gas.initialize_state()
 
         torch.manual_seed(43)
-        state_cloned, state_final = gas.step(state)
+        _state_cloned, state_final = gas.step(state)
 
         # State should change after step
         assert not torch.allclose(state_final.x, state.x)
@@ -295,7 +297,7 @@ class TestEuclideanGas:
         # Check that consecutive positions don't jump too much
         # Note: cloning can cause larger jumps, so we use a generous bound
         for t in range(10):
-            dx = results["x"][t+1] - results["x"][t]
+            dx = results["x"][t + 1] - results["x"][t]
             max_displacement = torch.max(torch.norm(dx, dim=-1))
 
             # With dt=0.01 and cloning, max displacement can be larger

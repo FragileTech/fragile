@@ -15,16 +15,15 @@ def test_individual_conversions():
     for unicode_char, expected_latex in UNICODE_TO_LATEX.items():
         result = convert_unicode_to_latex(unicode_char)
         if result != expected_latex:
-            failures.append(f"  {repr(unicode_char)} → {repr(result)} (expected {repr(expected_latex)})")
+            failures.append(f"  {unicode_char!r} → {result!r} (expected {expected_latex!r})")
 
     if failures:
         print("❌ FAILED:")
         for f in failures:
             print(f)
         return False
-    else:
-        print(f"✓ All {len(UNICODE_TO_LATEX)} symbols convert correctly")
-        return True
+    print(f"✓ All {len(UNICODE_TO_LATEX)} symbols convert correctly")
+    return True
 
 
 def test_compound_expressions():
@@ -35,7 +34,7 @@ def test_compound_expressions():
         ("(d')^β", "(d')^\\beta", "exponent with Greek letter"),
         ("ε_d > 0", "\\varepsilon_d > 0", "epsilon with subscript"),
         ("||v_i||²", "||v_i||^{2}", "norm with superscript 2"),
-        ("c_{v\_reg}", "c_{v\_reg}", "subscript (no Unicode)"),
+        (r"c_{v\_reg}", r"c_{v\_reg}", "subscript (no Unicode)"),
         ("α ∈ (0, 1)", "\\alpha \\in (0, 1)", "Greek with set membership"),
         ("x² + y³", "x^{2} + y^{3}", "multiple superscripts"),
         ("a ≈ b ≤ c ≥ d", "a \\approx b \\leq c \\geq d", "comparison operators"),
@@ -52,19 +51,20 @@ def test_compound_expressions():
     for input_str, expected, description in test_cases:
         result = convert_unicode_to_latex(input_str)
         if result != expected:
-            failures.append(f"  {description}:")
-            failures.append(f"    Input:    {repr(input_str)}")
-            failures.append(f"    Got:      {repr(result)}")
-            failures.append(f"    Expected: {repr(expected)}")
+            failures.extend((
+                f"  {description}:",
+                f"    Input:    {input_str!r}",
+                f"    Got:      {result!r}",
+                f"    Expected: {expected!r}",
+            ))
 
     if failures:
         print("❌ FAILED:")
         for f in failures:
             print(f)
         return False
-    else:
-        print(f"✓ All {len(test_cases)} compound expressions convert correctly")
-        return True
+    print(f"✓ All {len(test_cases)} compound expressions convert correctly")
+    return True
 
 
 def test_preserves_non_unicode():
@@ -74,7 +74,7 @@ def test_preserves_non_unicode():
         "This is plain text",
         "def-d-state-space",
         "eq-virtual-reward",
-        "c_{v\_reg}",
+        r"c_{v\_reg}",
         "V_Var,x",
         "`code block`",
         "$x^{2}$",
@@ -85,16 +85,15 @@ def test_preserves_non_unicode():
     for test_str in test_cases:
         result = convert_unicode_to_latex(test_str)
         if result != test_str:
-            failures.append(f"  Changed: {repr(test_str)} → {repr(result)}")
+            failures.append(f"  Changed: {test_str!r} → {result!r}")
 
     if failures:
         print("❌ FAILED - these should not have changed:")
         for f in failures:
             print(f)
         return False
-    else:
-        print(f"✓ All {len(test_cases)} non-Unicode strings preserved")
-        return True
+    print(f"✓ All {len(test_cases)} non-Unicode strings preserved")
+    return True
 
 
 def test_in_context():
@@ -104,22 +103,22 @@ def test_in_context():
         (
             "The fitness potential becomes dominated by the diversity term (`(d')^β`).",
             "The fitness potential becomes dominated by the diversity term (`(d')^\\beta`).",
-            "inline code with Greek"
+            "inline code with Greek",
         ),
         (
             "where `ε_d > 0` (The Interaction Range for Diversity).",
             "where `\\varepsilon_d > 0` (The Interaction Range for Diversity).",
-            "inline code with epsilon"
+            "inline code with epsilon",
         ),
         (
-            "The `-c_{v\_reg} ||v_i||²` term gives this walker",
-            "The `-c_{v\_reg} ||v_i||^{2}` term gives this walker",
-            "inline code with superscript"
+            r"The `-c_{v\_reg} ||v_i||²` term gives this walker",
+            r"The `-c_{v\_reg} ||v_i||^{2}` term gives this walker",
+            "inline code with superscript",
         ),
         (
             "If **`α_restitution = 1`**, the collision is **perfectly elastic**.",
             "If **`\\alpha_restitution = 1`**, the collision is **perfectly elastic**.",
-            "bold with inline code and Greek"
+            "bold with inline code and Greek",
         ),
     ]
 
@@ -127,18 +126,19 @@ def test_in_context():
     for input_str, expected, description in test_cases:
         result = convert_unicode_to_latex(input_str)
         if result != expected:
-            failures.append(f"  {description}:")
-            failures.append(f"    Got:      {repr(result)}")
-            failures.append(f"    Expected: {repr(expected)}")
+            failures.extend((
+                f"  {description}:",
+                f"    Got:      {result!r}",
+                f"    Expected: {expected!r}",
+            ))
 
     if failures:
         print("❌ FAILED:")
         for f in failures:
             print(f)
         return False
-    else:
-        print(f"✓ All {len(test_cases)} contextual tests pass")
-        return True
+    print(f"✓ All {len(test_cases)} contextual tests pass")
+    return True
 
 
 def main():
@@ -159,12 +159,12 @@ def main():
         print("✅ ALL TESTS PASSED")
         print("=" * 60)
         return 0
-    else:
-        print("❌ SOME TESTS FAILED")
-        print("=" * 60)
-        return 1
+    print("❌ SOME TESTS FAILED")
+    print("=" * 60)
+    return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
+
     sys.exit(main())

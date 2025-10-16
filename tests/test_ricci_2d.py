@@ -7,16 +7,16 @@ import pytest
 import torch
 
 from fragile.ricci_gas import (
-    RicciGas,
-    RicciGasParams,
-    SwarmState,
     compute_kde_density,
     compute_kde_hessian,
     compute_ricci_proxy,
     compute_ricci_proxy_3d,
     double_well,
     rastrigin,
+    RicciGas,
+    RicciGasParams,
     sphere,
+    SwarmState,
 )
 
 
@@ -160,11 +160,11 @@ def test_2d_optimization_convergence(device):
 
     # Run dynamics
     for t in range(100):  # More steps
-        R, H = gas.compute_curvature(state, cache=True)
+        _R, _H = gas.compute_curvature(state, cache=True)
         force = gas.compute_force(state)
 
         state.v = 0.8 * state.v + 0.2 * force + torch.randn_like(state.v, device=device) * 0.03
-        state.x = state.x + state.v * 0.1
+        state.x += state.v * 0.1
 
     final_best = (state.x**2).sum(dim=-1).min().item()
 
@@ -317,8 +317,8 @@ def test_2d_vs_3d_consistency(device):
     state_3d = SwarmState(x=x_3d, v=v_3d, s=s_3d)
 
     # Compute curvature
-    R_2d, H_2d = gas.compute_curvature(state_2d)
-    R_3d, H_3d = gas.compute_curvature(state_3d)
+    R_2d, _H_2d = gas.compute_curvature(state_2d)
+    R_3d, _H_3d = gas.compute_curvature(state_3d)
 
     # Both should have valid curvatures
     assert torch.isfinite(R_2d).all()

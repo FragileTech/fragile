@@ -345,34 +345,52 @@ When writing or reviewing mathematical documentation, **you MUST follow this wor
 - Ensure all mathematical notation is consistent with framework conventions
 - Add proper labels and cross-references to entries in `00_reference.md`
 
-#### Step 2: Gemini Review via MCP
-**MANDATORY**: Before finalizing any mathematical content, submit it for review using the `mcp__gemini-cli__ask-gemini` tool:
+#### Step 2: Dual Independent Review via MCP (Gemini + Codex)
+**MANDATORY**: Before finalizing any mathematical content, submit it for review using BOTH independent reviewers:
+
+1. **Gemini Review** - Use `mcp__gemini-cli__ask-gemini` with **model: "gemini-2.5-pro"**
+2. **Codex Review** - Use `mcp__codex__codex` for independent second opinion
+
+**CRITICAL REQUIREMENTS:**
+- Both reviewers must receive the **identical prompt** to ensure independent, comparable feedback
+- This dual review protocol guards against hallucinations and provides diverse perspectives
+- Run both reviews in parallel when possible (single message with two tool calls)
+- Always verify claims by checking against framework documents before accepting feedback
 
 **NOTE**: Gemini will automatically consult `00_index.md` (and `00_reference.md` when needed) as part of its review protocol (see GEMINI.md § 4).
 
-Request specific review types:
-- **Rigor check**: "Review this proof for mathematical rigor and completeness"
-- **Consistency check**: "Verify this definition is consistent with the framework"
-- **Clarity check**: "Assess if the proof structure is clear and well-organized"
+**Prompt Templates** (use identical prompt for both reviewers):
+- **Rigor check**: "Review this proof for mathematical rigor and completeness. Check all claims, verify logical steps, identify gaps, and assess whether the proof meets publication standards."
+- **Consistency check**: "Verify this definition is consistent with the Fragile framework. Check against existing definitions in the framework documents, verify notation consistency, and identify any contradictions."
+- **Clarity check**: "Assess if the proof structure is clear and well-organized. Evaluate pedagogical flow, identify unclear steps, and suggest improvements for readability."
 
-The Gemini reviewer will follow the protocol in [GEMINI.md](GEMINI.md) and provide:
+Each reviewer will provide:
 1. Critical analysis with severity ratings
 2. Specific issues with location, problem, impact, and suggested fix
 3. Checklist of required proofs
 4. Prioritized action plan
 5. Implementation checklist
 
-EXTREMELY IMPORTANT: YOU ARE ONLY ALLOWED TO USE GEMINI 2.5 PRO
+**Review Comparison Protocol:**
+1. **Consensus Issues** (both reviewers agree): High confidence → prioritize these
+2. **Discrepancies** (reviewers contradict): Potential hallucination → verify manually against framework docs
+3. **Unique Issues** (only one reviewer identifies): Medium confidence → verify before accepting
+4. **Cross-Validation**: Always check specific claims against `00_index.md` and `00_reference.md` before implementing
 
-#### Step 3: Critical Evaluation of Gemini Feedback
-**IMPORTANT**: You must critically evaluate Gemini's feedback:
-- Cross-check suggestions against existing framework definitions
-- Verify mathematical correctness of proposed fixes
-- Assess whether suggested changes preserve the algorithmic intent
-- **If you disagree** with Gemini's feedback, you MUST:
-  1. Document your reasoning clearly
+EXTREMELY IMPORTANT: ALWAYS USE GEMINI 2.5 PRO (never flash or other variants)
+
+#### Step 3: Critical Evaluation of Dual Feedback
+**IMPORTANT**: You must critically evaluate BOTH reviewers' feedback:
+- **Compare outputs**: Identify where reviewers agree (high confidence) vs. disagree (requires investigation)
+- **Cross-check suggestions** against existing framework definitions in `00_index.md` and `00_reference.md`
+- **Verify mathematical correctness** of proposed fixes by checking proofs and definitions
+- **Assess preservation** of algorithmic intent and framework consistency
+- **Investigate discrepancies**: When reviewers contradict, manually verify against source documents
+- **Flag hallucinations**: If a claim cannot be verified in framework docs, reject it
+- **If you disagree** with feedback from either or both reviewers, you MUST:
+  1. Document your reasoning clearly with references to framework documents
   2. Inform the user of the disagreement
-  3. Propose an alternative approach
+  3. Propose an alternative approach with mathematical justification
   4. Let the user make the final decision
 
 #### Step 4: Implement Changes
@@ -391,21 +409,25 @@ Use the tools in `src/tools/` to ensure correct formatting:
 
 ### Disagreement Protocol
 
-When you disagree with Gemini's mathematical feedback:
+When you disagree with feedback from either reviewer (Gemini or Codex):
 
 **DO:**
-- Explain the mathematical reasoning behind your position
-- Reference specific framework axioms or established results
+- Explain the mathematical reasoning behind your position with specific references
+- Reference specific framework axioms or established results from `00_index.md`/`00_reference.md`
+- Verify your position by checking source documents before disagreeing
 - Propose alternative solutions that maintain rigor
-- Present both perspectives to the user
+- Present all perspectives (yours, Gemini's, Codex's) to the user
+- Note when reviewers contradict each other (strong signal for manual verification)
 
 **DON'T:**
-- Silently ignore Gemini's feedback
+- Silently ignore reviewer feedback without investigation
 - Implement changes you believe are mathematically incorrect
-- Defer to Gemini without understanding the issue
+- Defer to either reviewer without understanding and verifying the issue
 - Create inconsistencies with the existing framework
+- Accept claims that cannot be verified in framework documents
+- Assume either reviewer is always correct (both can hallucinate)
 
-**Example Response:**
+**Example Response (Single Reviewer Disagreement):**
 ```
 I've reviewed Gemini's feedback on the convergence proof. I disagree with
 suggestion #3 regarding the Lipschitz constant bound because:
@@ -414,11 +436,31 @@ suggestion #3 regarding the Lipschitz constant bound because:
    already guarantees L_φ ≤ 1 through Lemma 2.3 in 01_fragile_gas_framework.md
 2. Gemini's suggested bound of L_φ ≤ √(1 + λ_v) would contradict this
 3. The existing proof structure relies on the tighter bound
+4. Codex's review confirms the current bound is correct
 
 Proposed alternative: Keep the current bound and add an explicit reference
 to Lemma 2.3 to clarify the justification.
 
 Would you like me to proceed with this approach?
+```
+
+**Example Response (Reviewer Contradiction):**
+```
+Gemini and Codex provide contradictory feedback on the compactness argument:
+
+- Gemini claims: Sequential compactness is insufficient, need uniform bound
+- Codex claims: Sequential compactness is adequate given the metric structure
+
+I've verified against the framework documents:
+- Lemma 4.2 in 05_mean_field.md establishes uniform bounds (supports Gemini)
+- However, the metric structure assumption isn't stated in our theorem (Codex correct about gap)
+
+Both reviewers identify real issues but from different angles. Proposed resolution:
+1. Add explicit uniform bound hypothesis (addressing Gemini's concern)
+2. State the metric structure assumption clearly (addressing Codex's concern)
+3. Reference Lemma 4.2 for the uniform bound
+
+Would you like me to implement this combined fix?
 ```
 
 ### Mathematical Notation Conventions

@@ -92,12 +92,15 @@ class TestSwarmState:
         state2.x[0, 0] = 999.0
         assert not torch.equal(state1.x, state2.x)
 
-    @pytest.mark.parametrize("N,d", [
-        (5, 2),
-        (100, 3),
-        (1, 10),
-        (50, 1),
-    ])
+    @pytest.mark.parametrize(
+        "N,d",
+        [
+            (5, 2),
+            (100, 3),
+            (1, 10),
+            (50, 1),
+        ],
+    )
     def test_various_dimensions(self, N, d):
         """Test state creation with various dimensions."""
         x = torch.randn(N, d)

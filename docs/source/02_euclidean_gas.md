@@ -35,7 +35,7 @@ Given a swarm state $\mathcal S_t=(w_1,\dots,w_N)$ with walkers $w_i=(x_i,v_i,s_
 
 1.  **Cemetery check.** If all walkers are dead (no alive indices in $\mathcal A_t$) return the cemetery state; otherwise continue.
 2.  **Measurement stage.** For every alive walker $i\in\mathcal A_t$ sample a companion $c_{\mathrm{pot}}(i)$ from the algorithmic distance-weighted kernel $\mathbb C_\epsilon(\mathcal S_t,i)$, then compute raw reward $r_i:=R(x_i,v_i)$ and algorithmic distance $d_i:=d_{\text{alg}}(i,c_{\mathrm{pot}}(i))$ as defined in Section 1.3 and detailed in {ref}`Stage 2 <sec-eg-stage2>`.
-3.  **Patched standardisation.** Aggregate the raw reward and distance vectors with the empirical operator and apply the patched standard deviation from {prf:ref}`def-statistical-properties-measurement` to obtain standardized scores with floor $\sigma'_{\min,\mathrm{patch}} = \sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$.
+3.  **Patched standardisation.** Aggregate the raw reward and distance vectors with the empirical operator and apply the regularized standard deviation from {prf:ref}`def-statistical-properties-measurement` to obtain standardized scores with floor $\sigma'_{\min,\mathrm{patch}} = \sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$.
 4.  **Logistic rescale.** Apply the Canonical Logistic Rescale Function ({prf:ref}`def-canonical-logistic-rescale-function-example`) to the standardized reward and distance components, producing positive outputs $r'_i$ and $d'_i$. Combine them with the canonical exponents to freeze the potential vector $V_{\text{fit},i}=(d'_i)^\beta (r'_i)^\alpha$ with floor $\eta^{\alpha+\beta}$.
 5.  **Clone/Persist gate.** For each walker draw a clone companion $c_{\mathrm{clone}}(i)$ from the same algorithmic distance-weighted kernel and threshold $T_i\sim\mathrm{Unif}(0,p_{\max})$, compute the canonical score $S_i:=\big(V_{\text{fit},c_{\mathrm{clone}}(i)}-V_{\text{fit},i}\big)/(V_{\text{fit},i}+\varepsilon_{\mathrm{clone}})$, and clone when $S_i>T_i$. Cloned walkers reset their position to the companion's position plus Gaussian jitter ($\sigma_x$) and reset their velocity directly to the companion's velocity (no velocity jitter), as detailed in {ref}`Stage 3 <sec-eg-stage3>`. Otherwise the walker persists unchanged. The intermediate swarm sets every status to alive before the kinetic step.
 6.  **Kinetic perturbation.** Update each alive clone or survivor by applying the **BAOAB splitting integrator** for one step of underdamped Langevin dynamics with force $F(x)=\nabla R_{\mathrm{pos}}(x)$ and noise scales $(\sigma_v,\sigma_x)$.
@@ -377,7 +377,7 @@ We measure dispersion in the Sasaki metric and retain the canonical aggregation 
 
   For the Euclidean Gas, we set $\lambda_{\text{alg}} = \lambda_v$ so that these metrics coincide in their functional form, simplifying the connection between algorithmic behavior and analytical properties. However, they serve conceptually different roles: the algorithmic distance is intrinsic to the algorithm's design, while the Sasaki metric is extrinsic to the convergence analysis.
   :::
-- **Walkers:** $N\ge 2$; the empirical reward and distance aggregators keep their canonical formulas. Lemma {prf:ref}`lem-sasaki-aggregator-lipschitz` supplies Sasaki-specific error moduli, and Lemma {prf:ref}`lem-sasaki-standardization-lipschitz` applies them to the patched standard deviation and logistic rescale operators.
+- **Walkers:** $N\ge 2$; the empirical reward and distance aggregators keep their canonical formulas. Lemma {prf:ref}`lem-sasaki-aggregator-lipschitz` supplies Sasaki-specific error moduli, and Lemma {prf:ref}`lem-sasaki-standardization-lipschitz` applies them to the regularized standard deviation and logistic rescale operators.
 - **Dynamics weights:** $\alpha,\beta\ge 0$ with $\alpha+\beta>0$ fixed as in the framework’s Axiom of Sufficient Amplification ({prf:ref}`def-axiom-sufficient-amplification`).
 
 ### 1.5 Kinetic Langevin perturbations with velocity capping
@@ -1076,7 +1076,7 @@ Combine Lemmas {prf:ref}`lem-sasaki-aggregator-value` and {prf:ref}`lem-sasaki-a
 ```
 :::
 
-7. **Standardization & rescale continuity.** Let $\sigma_{\min,\mathrm{patch}}:=\sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ be the lower bound supplied by the patched standard deviation operator, and denote by $L_{\sigma'_{\mathrm{patch}}}$ the global derivative bound from Lemma {prf:ref}`lem-sigma-patch-lipschitz`. For notational compactness write
+7. **Standardization & rescale continuity.** Let $\sigma_{\min,\mathrm{patch}}:=\sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ be the lower bound supplied by the regularized standard deviation operator, and denote by $L_{\sigma'_{\mathrm{patch}}}$ the global derivative bound from Lemma {prf:ref}`lem-sigma-patch-lipschitz`. For notational compactness write
 
 $$
 L_{\sigma',M}^{\mathrm{Sasaki}}(k):=L_{\sigma'_{\mathrm{patch}}}\Big(L_{m_2,M}^{\mathrm{Sasaki}}(k)+2V_{\mathrm{max}}^{(R)}L_{\mu,M}^{\mathrm{Sasaki}}(k)\Big).
@@ -1085,7 +1085,7 @@ $$
 :::{prf:definition} Standardization constants (Sasaki geometry)
 :label: def-sasaki-standardization-constants
 
-Let $\sigma_{\min,\mathrm{patch}}:=\sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ be the uniform lower bound on the patched standard deviation, and let $L_{\sigma'_{\mathrm{patch}}}$ be its global Lipschitz constant from Lemma {prf:ref}`lem-sigma-patch-lipschitz`.
+Let $\sigma_{\min,\mathrm{patch}}:=\sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ be the uniform lower bound on the regularized standard deviation, and let $L_{\sigma'_{\mathrm{patch}}}$ be its global Lipschitz constant from Lemma {prf:ref}`lem-sigma-patch-lipschitz`.
 
 ##### Value Error Coefficients
 The following coefficients bound the error in the standardization operator when the swarm structure is fixed but the raw values change due to positional displacement. They are notably independent of the number of alive walkers, `k`.
@@ -1102,7 +1102,7 @@ The following coefficients bound the error in the standardization operator when 
     C_{V,\mathrm{mean}} := \frac{1}{\sigma_{\min,\mathrm{patch}}}
     $$
 
--   **Denominator Shift Coefficient ($C_{V,\mathrm{denom}}$):** Bounding the error from the resulting change in the patched standard deviation.
+-   **Denominator Shift Coefficient ($C_{V,\mathrm{denom}}$):** Bounding the error from the resulting change in the regularized standard deviation.
 
     $$
     C_{V,\mathrm{denom}} := \frac{8\big(V_{\mathrm{max}}^{(R)}\big)^2 L_{\sigma'_{\mathrm{patch}}}}{\sigma_{\min,\mathrm{patch}}^2}
@@ -1167,7 +1167,7 @@ where:
     $$
     where $\mathbf{1}$ is a k-dimensional vector of ones.
 
-3.  **The Denominator Shift ($\Delta_{\text{denom}}$):** The error from the change in the patched standard deviation, which rescales the second standardized vector.
+3.  **The Denominator Shift ($\Delta_{\text{denom}}$):** The error from the change in the regularized standard deviation, which rescales the second standardized vector.
 
     $$
     \Delta_{\text{denom}} := \mathbf z_2 \cdot \frac{\sigma'_2 - \sigma'_1}{\sigma'_1}
@@ -1219,11 +1219,11 @@ $$
 \|\Delta_{\text{direct}}\|_2^2 \le \frac{1}{\sigma_{\min,\mathrm{patch}}^2} \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
 $$
 
-where $\sigma_{\min,\mathrm{patch}} := \sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ is the uniform lower bound from the patched standard deviation.
+where $\sigma_{\min,\mathrm{patch}} := \sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ is the uniform lower bound from the regularized standard deviation.
 
 ```{dropdown} Proof
 :::{prf:proof}
-The proof is a direct application of the definition of $\Delta_{\text{direct}}$ and the uniform lower bound on the patched standard deviation.
+The proof is a direct application of the definition of $\Delta_{\text{direct}}$ and the uniform lower bound on the regularized standard deviation.
 
 1.  **Start with the Definition.**
     The squared L2-norm of the direct shift component is:
@@ -1240,7 +1240,7 @@ The proof is a direct application of the definition of $\Delta_{\text{direct}}$ 
     $$
 
 3.  **Apply the Uniform Lower Bound.**
-    The patched standard deviation function $\sigma'_{\mathrm{patch}}(V)$ is, by construction in the framework ({prf:ref}`def-statistical-properties-measurement`), strictly positive and uniformly bounded below by the constant $\sigma_{\min,\mathrm{patch}}$. Therefore, $\sigma'_1 \ge \sigma_{\min,\mathrm{patch}} > 0$. This implies:
+    The regularized standard deviation function $\sigma'_{\mathrm{patch}}(V)$ is, by construction in the framework ({prf:ref}`def-statistical-properties-measurement`), strictly positive and uniformly bounded below by the constant $\sigma_{\min,\mathrm{patch}}$. Therefore, $\sigma'_1 \ge \sigma_{\min,\mathrm{patch}} > 0$. This implies:
 
     $$
     \frac{1}{(\sigma'_1)^2} \le \frac{1}{\sigma_{\min,\mathrm{patch}}^2}
@@ -1320,11 +1320,11 @@ $$
 \|\Delta_{\text{denom}}\|_2^2 \le k \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2 \left( \frac{L_{\sigma',M}^{\mathrm{Sasaki}}(k)}{\sigma_{\min,\mathrm{patch}}} \right)^2 \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
 $$
 
-where $L_{\sigma',M}^{\mathrm{Sasaki}}(k)$ is the derived Lipschitz constant for the patched standard deviation.
+where $L_{\sigma',M}^{\mathrm{Sasaki}}(k)$ is the derived Lipschitz constant for the regularized standard deviation.
 
 ```{dropdown} Proof
 :::{prf:proof}
-The proof bounds the squared norm by bounding its three constituent parts: the norm of the standardized vector, the change in the patched standard deviation, and the inverse of the standard deviation.
+The proof bounds the squared norm by bounding its three constituent parts: the norm of the standardized vector, the change in the regularized standard deviation, and the inverse of the standard deviation.
 
 1.  **Start with the Definition.**
     The squared L2-norm of the denominator shift component is:
@@ -1348,7 +1348,7 @@ The proof bounds the squared norm by bounding its three constituent parts: the n
         \|\mathbf z_2\|_2^2 \le k \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2
         $$
 
-    *   **Bound on `(sigma'_2 - sigma'_1)^2`**: The patched standard deviation function is Lipschitz continuous with respect to the raw value vector, as established by composing the Lipschitz properties of the aggregator moments and the patching function itself ({prf:ref}`lem-stats-value-continuity` in the framework). This gives:
+    *   **Bound on `(sigma'_2 - sigma'_1)^2`**: The regularized standard deviation function is Lipschitz continuous with respect to the raw value vector, as established by composing the Lipschitz properties of the aggregator moments and the patching function itself ({prf:ref}`lem-stats-value-continuity` in the framework). This gives:
 
         $$
         (\sigma'_2 - \sigma'_1)^2 \le \left(L_{\sigma',M}^{\mathrm{Sasaki}}(k)\right)^2 \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
@@ -1458,7 +1458,7 @@ Let $\mathcal S$ be a fixed swarm state with alive set $\mathcal A$ of size $k \
     C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S) := 3 \cdot \left( C_{V,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S) + C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S) + C_{V,\mathrm{denom}}^{\mathrm{sq}}(\mathcal S) \right)
     $$
 
-where $L_{\mu,M}^{\mathrm{Sasaki}}(k)$ and $L_{\sigma',M}^{\mathrm{Sasaki}}(k)$ are the value Lipschitz functions for the aggregator's mean and patched standard deviation, respectively. For the canonical empirical aggregator, these coefficients simplify, notably making the mean shift coefficient independent of $k$: $C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S) = 1/\sigma_{\min,\mathrm{patch}}^2$.
+where $L_{\mu,M}^{\mathrm{Sasaki}}(k)$ and $L_{\sigma',M}^{\mathrm{Sasaki}}(k)$ are the value Lipschitz functions for the aggregator's mean and regularized standard deviation, respectively. For the canonical empirical aggregator, these coefficients simplify, notably making the mean shift coefficient independent of $k$: $C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S) = 1/\sigma_{\min,\mathrm{patch}}^2$.
 :::
 
 ###### 2.3.6. Theorem: Structural Continuity of Patched Standardization (Sasaki)
@@ -1721,7 +1721,7 @@ Let $\mathcal S_1$ and $\mathcal S_2$ be two swarm states with alive sets $\math
     C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) := 2 k_{\mathrm{stable}} \frac{(L_{\mu,S}^{\mathrm{Sasaki}})^2}{\sigma_{\min,\mathrm{patch}}^{2}} + 2 k_2 \left(\frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}}\right)^2 \frac{(L_{\sigma',S}^{\mathrm{Sasaki}})^2}{\sigma_{\min,\mathrm{patch}}^{2}}
     $$
 
-where $L_{\mu,S}^{\mathrm{Sasaki}}$ and $L_{\sigma',S}^{\mathrm{Sasaki}}$ are the structural continuity functions for the aggregator's mean and patched standard deviation, respectively, which depend on the swarm states.
+where $L_{\mu,S}^{\mathrm{Sasaki}}$ and $L_{\sigma',S}^{\mathrm{Sasaki}}$ are the structural continuity functions for the aggregator's mean and regularized standard deviation, respectively, which depend on the swarm states.
 
 ###### 2.3.8. Theorem: Composite Continuity of the Patched Standardization Operator
 

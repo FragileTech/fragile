@@ -174,9 +174,7 @@ class TestDiffusionTensorStability:
             eigenvalues = torch.linalg.eigvalsh(G_i)
             assert torch.all(eigenvalues > 0), f"Walker {i} has non-positive eigenvalues"
 
-    def test_diffusion_tensor_strong_regularization(
-        self, euclidean_gas_params, simple_potential
-    ):
+    def test_diffusion_tensor_strong_regularization(self, euclidean_gas_params, simple_potential):
         """Test diffusion tensor with very strong regularization."""
         # Very strong regularization should prevent any numerical issues
         params = AdaptiveGasParams(
@@ -261,11 +259,15 @@ class TestAdaptiveGasLongRunStability:
 
         # Allow for more exploration with stochastic companion selection
         # The key is that variance shouldn't explode to infinity
-        assert late_var < early_var * 10.0, f"Variance increased too much: {early_var:.4f} -> {late_var:.4f}"
+        assert (
+            late_var < early_var * 10.0
+        ), f"Variance increased too much: {early_var:.4f} -> {late_var:.4f}"
 
         # Also check that variance doesn't grow unboundedly throughout the run
         max_var = var_x.max()
-        assert max_var < early_var * 15.0, f"Variance exploded during run: max={max_var:.4f}, early={early_var:.4f}"
+        assert (
+            max_var < early_var * 15.0
+        ), f"Variance exploded during run: max={max_var:.4f}, early={early_var:.4f}"
 
 
 class TestEdgeCases:

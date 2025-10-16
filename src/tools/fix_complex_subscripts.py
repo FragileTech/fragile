@@ -4,26 +4,24 @@ Fix complex subscript notation in markdown files.
 Converts patterns like V_Var,x and V_x_struct in backticks to proper LaTeX.
 """
 
+from pathlib import Path
 import re
 import sys
-from pathlib import Path
 
 
 # Common variable patterns that need proper LaTeX formatting
 SUBSCRIPT_PATTERNS = [
     # Variance components
-    (r'V_Var,x', r'V_{\text{Var},x}'),
-    (r'V_Var,v', r'V_{\text{Var},v}'),
-    (r'V_Var', r'V_{\text{Var}}'),
-
+    (r"V_Var,x", r"V_{\text{Var},x}"),
+    (r"V_Var,v", r"V_{\text{Var},v}"),
+    (r"V_Var", r"V_{\text{Var}}"),
     # Structural components
-    (r'V_x_struct', r'V_{x,\text{struct}}'),
-    (r'V_W', r'V_W'),  # Keep as is - single letter subscript
-
+    (r"V_x_struct", r"V_{x,\text{struct}}"),
+    (r"V_W", r"V_W"),  # Keep as is - single letter subscript
     # Other common patterns
-    (r'W_b', r'W_b'),  # Keep as is
-    (r'k_{\text{alive}}', r'k_{\text{alive}}'),  # Already correct
-    (r'c_V\*V_Var', r'c_V \cdot V_{\text{Var}}'),  # Fix multiplication
+    (r"W_b", r"W_b"),  # Keep as is
+    (r"k_{\text{alive}}", r"k_{\text{alive}}"),  # Already correct
+    (r"c_V\*V_Var", r"c_V \cdot V_{\text{Var}}"),  # Fix multiplication
 ]
 
 
@@ -40,16 +38,16 @@ def fix_inline_code_subscripts(content):
 
     def protect_fenced(match):
         protected_blocks.append(match.group(0))
-        return f'__FENCED_{len(protected_blocks)-1}__'
+        return f"__FENCED_{len(protected_blocks) - 1}__"
 
-    content = re.sub(r'```.*?```', protect_fenced, content, flags=re.DOTALL)
+    content = re.sub(r"```.*?```", protect_fenced, content, flags=re.DOTALL)
 
     # Now process inline code (backticks) in the remaining content
     def replace_backtick(match):
         text = match.group(1)
 
         # Skip if it's a reference or code identifier
-        if text.startswith(('def-', 'eq-', 'label:', 'http', 'www')):
+        if text.startswith(("def-", "eq-", "label:", "http", "www")):
             return match.group(0)
 
         # Skip simple code variables (no complex subscripts)
@@ -62,14 +60,14 @@ def fix_inline_code_subscripts(content):
             result = result.replace(pattern, replacement)
 
         # Convert to math mode
-        return f'${result}$'
+        return f"${result}$"
 
     # Process inline code
-    content = re.sub(r'`([^`]+)`', replace_backtick, content)
+    content = re.sub(r"`([^`]+)`", replace_backtick, content)
 
     # Restore protected fenced blocks
     for i, block in enumerate(protected_blocks):
-        content = content.replace(f'__FENCED_{i}__', block)
+        content = content.replace(f"__FENCED_{i}__", block)
 
     return content
 
@@ -85,34 +83,30 @@ def fix_text_subscripts(content):
 
     def protect(match):
         protected.append(match.group(0))
-        return f'__PROTECTED_{len(protected)-1}__'
+        return f"__PROTECTED_{len(protected) - 1}__"
 
     # Protect inline math
-    content = re.sub(r'\$[^$]+\$', protect, content)
+    content = re.sub(r"\$[^$]+\$", protect, content)
 
     # Protect display math
-    content = re.sub(r'\$\$.*?\$\$', protect, content, flags=re.DOTALL)
+    content = re.sub(r"\$\$.*?\$\$", protect, content, flags=re.DOTALL)
 
     # Protect inline code
-    content = re.sub(r'`[^`]+`', protect, content)
+    content = re.sub(r"`[^`]+`", protect, content)
 
     # Protect fenced code blocks
-    content = re.sub(r'```.*?```', protect, content, flags=re.DOTALL)
+    content = re.sub(r"```.*?```", protect, content, flags=re.DOTALL)
 
     # Now fix patterns in unprotected text
     # Be conservative - only fix obvious standalone variable references
     # Pattern: word boundary, variable, word boundary or punctuation
     for pattern, replacement in SUBSCRIPT_PATTERNS:
         # Match pattern when it appears as standalone or before punctuation/space
-        content = re.sub(
-            r'\b' + re.escape(pattern) + r'(?=[,\.\)\s:]|\b)',
-            replacement,
-            content
-        )
+        content = re.sub(r"\b" + re.escape(pattern) + r"(?=[,\.\)\s:]|\b)", replacement, content)
 
     # Restore protected content
     for i, block in enumerate(protected):
-        content = content.replace(f'__PROTECTED_{i}__', block)
+        content = content.replace(f"__PROTECTED_{i}__", block)
 
     return content
 
@@ -129,7 +123,7 @@ def process_file(input_path, output_path=None, dry_run=False):
     Returns:
         Number of changes made
     """
-    with open(input_path, 'r', encoding='utf-8') as f:
+    with open(input_path, encoding="utf-8") as f:
         content = f.read()
 
     original_content = content
@@ -142,8 +136,8 @@ def process_file(input_path, output_path=None, dry_run=False):
     if content != original_content:
         # Count pattern occurrences
         for pattern, replacement in SUBSCRIPT_PATTERNS:
-            orig_count = original_content.count(f'`{pattern}`')
-            new_count = content.count(f'${replacement}$')
+            orig_count = original_content.count(f"`{pattern}`")
+            content.count(f"${replacement}$")
             if orig_count > 0:
                 changes += orig_count
                 print(f"  Converted {orig_count}× `{pattern}` → ${replacement}$")
@@ -154,8 +148,8 @@ def process_file(input_path, output_path=None, dry_run=False):
 
             # Show first few examples
             print("\nFirst few examples:")
-            lines_orig = original_content.split('\n')
-            lines_new = content.split('\n')
+            lines_orig = original_content.split("\n")
+            lines_new = content.split("\n")
             examples = 0
             for i, (orig, new) in enumerate(zip(lines_orig, lines_new), 1):
                 if orig != new and examples < 5:
@@ -165,14 +159,13 @@ def process_file(input_path, output_path=None, dry_run=False):
                     examples += 1
         else:
             print("No changes needed")
+    elif changes > 0:
+        output = output_path or input_path
+        with open(output, "w", encoding="utf-8") as f:
+            f.write(content)
+        print(f"\nWrote {changes} changes to {output}")
     else:
-        if changes > 0:
-            output = output_path or input_path
-            with open(output, 'w', encoding='utf-8') as f:
-                f.write(content)
-            print(f"\nWrote {changes} changes to {output}")
-        else:
-            print("No changes needed")
+        print("No changes needed")
 
     return changes
 
@@ -194,7 +187,7 @@ def main():
     dry_run = False
 
     for arg in sys.argv[2:]:
-        if arg == '--dry-run':
+        if arg == "--dry-run":
             dry_run = True
         else:
             output_file = arg
@@ -206,5 +199,5 @@ def main():
     process_file(input_file, output_file, dry_run)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

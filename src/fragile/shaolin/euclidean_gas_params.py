@@ -47,9 +47,7 @@ class EuclideanGasParamSelector(param.Parameterized):
     """
 
     # Swarm parameters
-    n_walkers = param.Integer(
-        default=50, bounds=(10, 1000), doc="Number of walkers in the swarm"
-    )
+    n_walkers = param.Integer(default=50, bounds=(10, 1000), doc="Number of walkers in the swarm")
     dimensions = param.Integer(default=2, bounds=(1, 20), doc="Dimensionality of state space")
     device = param.Selector(default="cpu", objects=["cpu", "cuda"], doc="Computation device")
     dtype = param.Selector(
@@ -69,9 +67,7 @@ class EuclideanGasParamSelector(param.Parameterized):
         step=0.1,
         doc="Inverse temperature (higher = less random exploration)",
     )
-    delta_t = param.Number(
-        default=0.1, bounds=(0.001, 1.0), step=0.01, doc="Integration timestep"
-    )
+    delta_t = param.Number(default=0.1, bounds=(0.001, 1.0), step=0.01, doc="Integration timestep")
     integrator = param.Selector(
         default="baoab",
         objects=["baoab", "aboba", "babo", "obab"],
@@ -154,9 +150,7 @@ class EuclideanGasParamSelector(param.Parameterized):
 
         # Langevin dynamics section
         self.langevin_section = pn.Card(
-            pn.widgets.FloatSlider.from_param(
-                self.param.gamma, name="Friction (γ)", width=400
-            ),
+            pn.widgets.FloatSlider.from_param(self.param.gamma, name="Friction (γ)", width=400),
             pn.widgets.FloatSlider.from_param(
                 self.param.beta, name="Inverse Temperature (β)", width=400
             ),
@@ -179,7 +173,7 @@ class EuclideanGasParamSelector(param.Parameterized):
                 pn.pane.Markdown(
                     "_Spatial kernel scale for companion selection_",
                     styles={"font-size": "11px", "color": "#666"},
-                    width=300
+                    width=300,
                 ),
             ),
             pn.widgets.FloatSlider.from_param(
@@ -237,7 +231,7 @@ class EuclideanGasParamSelector(param.Parameterized):
 
     def _generate_summary(self) -> str:
         """Generate a summary of current parameter configuration."""
-        summary = f"""
+        return f"""
 ### 📋 Current Configuration
 
 **Swarm**: {self.n_walkers} walkers in {self.dimensions}D space ({self.device}/{self.dtype})
@@ -248,7 +242,6 @@ class EuclideanGasParamSelector(param.Parameterized):
 
 **Benchmark**: {self.benchmark_type}
 """
-        return summary
 
     def _get_benchmark(self) -> OptimBenchmark:
         """Get the configured benchmark instance."""
@@ -265,7 +258,7 @@ class EuclideanGasParamSelector(param.Parameterized):
         benchmark_cls = benchmark_classes[self.benchmark_type]
 
         # Some benchmarks have fixed dimensions
-        if self.benchmark_type in ["EggHolder", "Easom", "HolderTable"]:
+        if self.benchmark_type in {"EggHolder", "Easom", "HolderTable"}:
             return benchmark_cls()
         return benchmark_cls(dims=self.dimensions)
 
@@ -277,7 +270,11 @@ class EuclideanGasParamSelector(param.Parameterized):
 
         Note:
             This method requires the euclidean_gas module. Import it when needed:
-            >>> from fragile.euclidean_gas import EuclideanGasParams, LangevinParams, CloningParams
+            >>> from fragile.euclidean_gas import (
+            ...     EuclideanGasParams,
+            ...     LangevinParams,
+            ...     CloningParams,
+            ... )
 
         Example:
             >>> selector = EuclideanGasParamSelector()

@@ -5,40 +5,95 @@ Only converts expressions that contain LaTeX commands.
 Preserves non-math code blocks and references.
 """
 
+from pathlib import Path
 import re
 import sys
-from pathlib import Path
+
 
 # LaTeX commands that indicate mathematical content
 LATEX_COMMANDS = {
-    'alpha', 'beta', 'gamma', 'delta', 'varepsilon', 'zeta', 'eta', 'theta',
-    'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi', 'pi', 'rho', 'sigma', 'tau',
-    'upsilon', 'phi', 'chi', 'psi', 'omega',
-    'Gamma', 'Delta', 'Theta', 'Lambda', 'Xi', 'Pi', 'Sigma', 'Upsilon',
-    'Phi', 'Psi', 'Omega',
-    'approx', 'leq', 'geq', 'in', 'notin', 'cup', 'cap', 'times', 'div',
-    'sum', 'prod', 'int', 'infty', 'partial', 'nabla', 'pm', 'neq', 'equiv',
-    'subseteq', 'supseteq', 'sqrt', 'propto', 'frac', 'text'
+    "alpha",
+    "beta",
+    "gamma",
+    "delta",
+    "varepsilon",
+    "zeta",
+    "eta",
+    "theta",
+    "iota",
+    "kappa",
+    "lambda",
+    "mu",
+    "nu",
+    "xi",
+    "pi",
+    "rho",
+    "sigma",
+    "tau",
+    "upsilon",
+    "phi",
+    "chi",
+    "psi",
+    "omega",
+    "Gamma",
+    "Delta",
+    "Theta",
+    "Lambda",
+    "Xi",
+    "Pi",
+    "Sigma",
+    "Upsilon",
+    "Phi",
+    "Psi",
+    "Omega",
+    "approx",
+    "leq",
+    "geq",
+    "in",
+    "notin",
+    "cup",
+    "cap",
+    "times",
+    "div",
+    "sum",
+    "prod",
+    "int",
+    "infty",
+    "partial",
+    "nabla",
+    "pm",
+    "neq",
+    "equiv",
+    "subseteq",
+    "supseteq",
+    "sqrt",
+    "propto",
+    "frac",
+    "text",
 }
+
 
 def is_reference(text):
     """Check if text is a MyST reference (not math)."""
-    return text.startswith(('def-', 'eq-', 'lem-', 'thm-', 'prf:', 'ax:'))
+    return text.startswith(("def-", "eq-", "lem-", "thm-", "prf:", "ax:"))
+
 
 def is_code_variable(text):
     """Check if text is a simple code variable or identifier."""
     # Simple identifiers without LaTeX
-    if re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', text):
+    if re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", text):
         return True
     # Simple comparisons/assignments without LaTeX
-    if re.match(r'^[a-zA-Z_]\w*\s*[<>=!]+\s*[0-9a-zA-Z_]+$', text):
-        if not any(f'\\{cmd}' in text for cmd in LATEX_COMMANDS):
+    if re.match(r"^[a-zA-Z_]\w*\s*[<>=!]+\s*[0-9a-zA-Z_]+$", text):
+        if not any(f"\\{cmd}" in text for cmd in LATEX_COMMANDS):
             return True
     return False
 
+
 def contains_latex(text):
     """Check if text contains LaTeX commands."""
-    return any(f'\\{cmd}' in text for cmd in LATEX_COMMANDS)
+    return any(f"\\{cmd}" in text for cmd in LATEX_COMMANDS)
+
 
 def should_convert(text):
     """Determine if a backtick expression should be converted to math."""
@@ -56,14 +111,15 @@ def should_convert(text):
 
     return False
 
+
 def wrap_text_content(text):
     """Wrap plain text content (like 'Var') with \\text{}"""
     # Common function names that should be wrapped in \text
     text_patterns = [
-        (r'\bVar\b', r'\\text{Var}'),
-        (r'\bCov\b', r'\\text{Cov}'),
-        (r'\bE\[', r'\\text{E}['),
-        (r'\bchoose\b', r'\\text{choose}'),
+        (r"\bVar\b", r"\\text{Var}"),
+        (r"\bCov\b", r"\\text{Cov}"),
+        (r"\bE\[", r"\\text{E}["),
+        (r"\bchoose\b", r"\\text{choose}"),
     ]
 
     result = text
@@ -72,22 +128,23 @@ def wrap_text_content(text):
 
     return result
 
+
 def process_line(line):
     """Process a single line, converting backtick math to dollar signs."""
+
     def replace_backtick(match):
         content = match.group(1)
 
         if should_convert(content):
             # Wrap text content appropriately
             converted = wrap_text_content(content)
-            return f'${converted}$'
-        else:
-            # Keep as backticks
-            return match.group(0)
+            return f"${converted}$"
+        # Keep as backticks
+        return match.group(0)
 
     # Replace backtick expressions
-    result = re.sub(r'`([^`]+)`', replace_backtick, line)
-    return result
+    return re.sub(r"`([^`]+)`", replace_backtick, line)
+
 
 def process_file(input_path, output_path=None, dry_run=False):
     """
@@ -101,7 +158,7 @@ def process_file(input_path, output_path=None, dry_run=False):
     Returns:
         Number of conversions made
     """
-    with open(input_path, 'r', encoding='utf-8') as f:
+    with open(input_path, encoding="utf-8") as f:
         lines = f.readlines()
 
     converted_lines = []
@@ -132,13 +189,14 @@ def process_file(input_path, output_path=None, dry_run=False):
 
     if conversions > 0:
         output = output_path or input_path
-        with open(output, 'w', encoding='utf-8') as f:
+        with open(output, "w", encoding="utf-8") as f:
             f.writelines(converted_lines)
         print(f"Converted {conversions} lines in {output}")
     else:
         print("No conversions needed")
 
     return conversions
+
 
 def main():
     """Main entry point."""
@@ -155,7 +213,7 @@ def main():
     dry_run = False
 
     for arg in sys.argv[2:]:
-        if arg == '--dry-run':
+        if arg == "--dry-run":
             dry_run = True
         else:
             output_file = arg
@@ -166,5 +224,6 @@ def main():
 
     process_file(input_file, output_file, dry_run)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

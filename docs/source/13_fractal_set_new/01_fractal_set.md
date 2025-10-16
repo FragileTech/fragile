@@ -2753,9 +2753,385 @@ The Riemann curvature tensor $R^\rho_{\sigma\mu\nu}(x_i)$ at each walker positio
 - Christoffel symbols: $\Gamma^\lambda_{\mu\nu}(n_{i,t})$ (rank-3 tensor, stored as spinor components)
 - Ricci tensor: $R_{\mu\nu}(n_{i,t})$ (symmetric 2-tensor, stored as spinor)
 
-**Full Riemann tensor**: Stored as auxiliary data structure (rank-4 tensor, $d^4$ components for d-dimensional space).
+**Full Riemann tensor**: Stored as **spinor representation** on CST edges. The rank-4 tensor $R^\rho_{\sigma\mu\nu}$ is encoded via its spinor equivalent using the Riemann-spinor correspondence.
 
-**Dimension**: For $d=3$ spatial dimensions, $R^\rho_{\sigma\mu\nu}$ has $3^4 = 81$ components, but symmetries reduce to **20 independent components**.
+**Dimension**: For $d=3$ spatial dimensions, $R^\rho_{\sigma\mu\nu}$ has $3^4 = 81$ components, but symmetries reduce to **20 independent components**. These are encoded in a spinor representation to maintain frame-covariance.
+
+**Rationale**: Storing curvature as **spinors** (rather than tensors) is essential for:
+1. **Frame-covariance**: Spinors transform intrinsically under Lorentz transformations, unlike tensors which require position-dependent Jacobians
+2. **Consistency**: All CST edge data (forces, velocities, displacements) are stored as spinors
+3. **SO(10) unification**: The gravitational spinor naturally embeds into the 16-dimensional SO(10) spinor representation (§7.15)
+:::
+
+:::{prf:definition} Two-Spinor Formalism for 4D Spacetime
+:label: def-two-spinor-formalism
+
+To encode curvature tensors in spinor form, we use the **two-spinor formalism** (Penrose & Rindler), which provides a natural isomorphism between 4D Minkowski vectors and $2 \times 2$ Hermitian matrices.
+
+**1. Spinor Index Structure:**
+
+**Unprimed spinors**: $\psi^A$, $A \in \{0, 1\}$ (2 components)
+- Transform under $SL(2, \mathbb{C})$ matrices $S^A{}_B$
+- Complex 2-component objects
+
+**Primed spinors**: $\chi^{A'}$, $A' \in \{0', 1'\}$ (2 components)
+- Transform under $\bar{S}^{A'}{}_{B'}$ (complex conjugate of $S$)
+- Represent independent helicity states
+
+**Relation to Lorentz group**: The proper orthochronous Lorentz group $SO^+(1,3)$ is locally isomorphic to $SL(2, \mathbb{C})/\{\pm I\}$. Spinors provide the faithful **double cover** (Spin(1,3)).
+
+**2. Index Raising and Lowering:**
+
+**Levi-Civita symbols:**
+
+$$
+\epsilon_{AB} = \begin{pmatrix} 0 & 1 \\ -1 & 0 \end{pmatrix}, \quad
+\epsilon^{AB} = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}
+$$
+
+with $\epsilon_{AB} \epsilon^{BC} = \delta^C_A$ and similarly for primed indices.
+
+**Index operations:**
+
+$$
+\psi_A = \epsilon_{AB} \psi^B, \quad \psi^A = \epsilon^{AB} \psi_B
+$$
+
+$$
+\chi_{A'} = \epsilon_{A'B'} \chi^{B'}, \quad \chi^{A'} = \epsilon^{A'B'} \chi_{B'}
+$$
+
+**3. Soldering Forms (Spinor-Vector Correspondence):**
+
+The **Pauli matrices** (with Minkowski signature) provide the soldering:
+
+$$
+\sigma^{AA'}_\mu = (\sigma^0, \sigma^1, \sigma^2, \sigma^3), \quad
+\sigma^0 = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}, \quad
+\sigma^i = \text{(Pauli matrices)}
+$$
+
+Explicitly:
+
+$$
+\sigma^{AA'}_0 = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}, \quad
+\sigma^{AA'}_1 = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}, \quad
+\sigma^{AA'}_2 = \begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix}, \quad
+\sigma^{AA'}_3 = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}
+$$
+
+**Inverse soldering:**
+
+$$
+\tilde{\sigma}_\mu^{AA'} = g_{\mu\nu} \eta^{AA'BB'} \sigma^{BB'}_\nu
+$$
+
+where $\eta^{AA'BB'} = \epsilon^{AB} \epsilon^{A'B'}$.
+
+**4. Spinor-Vector Isomorphism:**
+
+Any 4-vector $V^\mu$ can be represented as a mixed-index spinor:
+
+$$
+V^{AA'} = V^\mu \sigma^{AA'}_\mu
+$$
+
+This provides a Hermitian $2 \times 2$ matrix:
+
+$$
+V^{AA'} = \begin{pmatrix} V^0 + V^3 & V^1 - iV^2 \\ V^1 + iV^2 & V^0 - V^3 \end{pmatrix}
+$$
+
+**Inverse map:**
+
+$$
+V^\mu = \frac{1}{2} \text{Tr}(\sigma_\mu V^{AA'})
+$$
+
+**5. Spinor Products and Contractions:**
+
+**Spinor inner product** (antisymmetric):
+
+$$
+\langle \psi | \chi \rangle = \psi^A \chi_A = \psi^A \epsilon_{AB} \chi^B = \psi^0 \chi^1 - \psi^1 \chi^0
+$$
+
+**Vector norm from spinor**:
+
+$$
+g_{\mu\nu} V^\mu V^\nu = \det(V^{AA'}) = V^{AA'} V_{AA'}
+$$
+
+**6. Transformation Laws:**
+
+Under a Lorentz transformation $\Lambda \in SO^+(1,3)$ with corresponding $S \in SL(2, \mathbb{C})$:
+
+**Unprimed spinors:**
+
+$$
+\psi'^A = S^A{}_B \psi^B
+$$
+
+**Primed spinors:**
+
+$$
+\chi'^{A'} = \bar{S}^{A'}{}_{B'} \chi^{B'}
+$$
+
+**Mixed spinors (vectors):**
+
+$$
+V'^{AA'} = S^A{}_B \bar{S}^{A'}{}_{B'} V^{BB'}
+$$
+
+This reproduces the standard Lorentz transformation: $V'^\mu = \Lambda^\mu{}_\nu V^\nu$.
+
+**7. Relation to Dirac Spinors:**
+
+A Dirac spinor $\Psi \in \mathbb{C}^4$ decomposes into two 2-component Weyl spinors:
+
+$$
+\Psi = \begin{pmatrix} \psi^A \\ \bar{\chi}_{A'} \end{pmatrix}
+$$
+
+where $\psi^A$ is a left-handed (unprimed) spinor and $\bar{\chi}_{A'}$ is a right-handed (primed) spinor.
+
+:::
+
+:::{prf:definition} Riemann Tensor Spinor Encoding (Corrected)
+:label: def-riemann-spinor-encoding
+
+The Riemann curvature tensor $R^\rho_{\sigma\mu\nu}$ is encoded as a spinor using the **Riemann-spinor correspondence** via the curvature spinor $\Psi_R$.
+
+**1. Riemann Tensor Decomposition:**
+
+In 4D spacetime, the Riemann tensor decomposes into three independent pieces:
+
+$$
+R^\rho_{\sigma\mu\nu} = C^\rho_{\sigma\mu\nu} + \frac{1}{2}(g^\rho_\mu S_{\sigma\nu} - g^\rho_\nu S_{\sigma\mu} - g_{\sigma\mu} S^\rho_\nu + g_{\sigma\nu} S^\rho_\mu) + \frac{\Lambda}{6}(g^\rho_\mu g_{\sigma\nu} - g^\rho_\nu g_{\sigma\mu})
+$$
+
+where:
+- $C^\rho_{\sigma\mu\nu}$: **Weyl curvature tensor** (10 independent real components, conformally invariant, traceless)
+- $S_{\mu\nu} = R_{\mu\nu} - \frac{1}{4}g_{\mu\nu}R$: **Trace-free Ricci tensor** (9 independent real components)
+- $\Lambda = \frac{R}{24}$: **Ricci scalar** (normalized, 1 real component)
+
+**Total: 10 + 9 + 1 = 20 independent real components** ✓
+
+**Bianchi identity**: The decomposition automatically accounts for the first Bianchi identity, giving exactly 20 DOFs.
+
+**2. Two-Spinor Encoding:**
+
+Using the two-spinor formalism ({prf:ref}`def-two-spinor-formalism`), the curvature decomposes into three spinorial objects:
+
+**Weyl spinor** $\Psi_{ABCD}$:
+- Totally symmetric in 4 unprimed indices: $\Psi_{(ABCD)}$
+- **5 complex components** (10 real) encoding the Weyl tensor
+
+**Trace-free Ricci spinor** $\Phi_{ABA'B'}$:
+- Hermitian in mixed indices: $\Phi_{(AB)(A'B')} = \overline{\Phi_{A'B'AB}}$
+- **3 complex + 3 real components** (9 real) encoding the traceless Ricci tensor
+
+**Ricci scalar** $\Lambda \in \mathbb{R}$:
+- **1 real component**
+
+**Total in spinor form**: 5 complex + 3 complex + 4 real = **8 complex + 4 real = 20 real** ✓
+
+**3. Explicit Spinor Components:**
+
+**Weyl spinor** (5 complex, 10 real):
+
+$$
+\Psi_{ABCD} = \begin{cases}
+\Psi_{0000}, \Psi_{0001}, \Psi_{0011}, \Psi_{0111}, \Psi_{1111} & \text{(5 independent complex components)}
+\end{cases}
+$$
+
+**Symmetry**: $\Psi_{ABCD} = \Psi_{(ABCD)}$ (totally symmetric).
+
+**Relation to Weyl tensor**:
+
+$$
+C_{\mu\nu\rho\sigma} = \Psi_{ABCD} \sigma^{AB}_{\mu\nu} \sigma^{CD}_{\rho\sigma} + \bar{\Psi}_{A'B'C'D'} \bar{\sigma}^{A'B'}_{\mu\nu} \bar{\sigma}^{C'D'}_{\rho\sigma}
+$$
+
+where $\sigma^{AB}_{\mu\nu} = \sigma^A_{[\mu} \sigma^B_{\nu]}$ are antisymmetrized soldering forms.
+
+**Trace-free Ricci spinor** (3 complex + 3 real = 9 real):
+
+$$
+\Phi_{ABA'B'} = \Phi_{(AB)(A'B')} \quad \text{(Hermitian: } \Phi_{ABA'B'} = \overline{\Phi_{A'B'AB}})
+$$
+
+Components:
+
+$$
+\begin{aligned}
+&\text{Real diagonal}: \Phi_{00,0'0'}, \, \Phi_{01,0'1'}, \, \Phi_{11,1'1'} \quad (3 \text{ real}) \\
+&\text{Complex off-diagonal}: \Phi_{00,0'1'}, \, \Phi_{01,0'0'}, \, \Phi_{01,1'1'} \quad (3 \text{ complex} = 6 \text{ real})
+\end{aligned}
+$$
+
+**Relation to traceless Ricci**:
+
+$$
+S_{\mu\nu} = \Phi_{ABA'B'} \sigma^{AB}_\mu \bar{\sigma}^{A'B'}_\nu
+$$
+
+where $S_{\mu\nu} = R_{\mu\nu} - \frac{1}{4}g_{\mu\nu}R$ is the trace-free part.
+
+**Ricci scalar**:
+
+$$
+\Lambda = \frac{R}{24} \in \mathbb{R} \quad (1 \text{ real component})
+$$
+
+**4. Storage in $\mathbb{C}^{16}$:**
+
+The combined curvature spinor is stored as:
+
+$$
+\Psi_R^{(16)} = \begin{pmatrix}
+\Psi_{0000} \\
+\Psi_{0001} \\
+\Psi_{0011} \\
+\Psi_{0111} \\
+\Psi_{1111} \\
+\Phi_{00,0'0'} \\
+\Phi_{01,0'1'} \\
+\Phi_{11,1'1'} \\
+\Phi_{00,0'1'} \\
+\Phi_{01,0'0'} \\
+\Phi_{01,1'1'} \\
+\Lambda \\
+0 \\
+0 \\
+0 \\
+0
+\end{pmatrix} \in \mathbb{C}^{16}
+$$
+
+**Slot usage:**
+- Slots 1-5: Weyl spinor (5 complex)
+- Slots 6-8: Real diagonal of Ricci spinor (3 real, stored as real parts)
+- Slots 9-11: Off-diagonal Ricci spinor (3 complex)
+- Slot 12: Ricci scalar (1 real, stored as real part)
+- Slots 13-16: Padding (required for SO(10) gauge connection compatibility)
+
+**Effective storage**: 11 complex slots used (22 real components), with 20 being independent after accounting for Hermiticity.
+
+**5. Lorentz Transformation Properties:**
+
+Under a Lorentz transformation $\Lambda \in SO^+(1,3)$ with corresponding $S \in SL(2, \mathbb{C})$ (from {prf:ref}`def-two-spinor-formalism`):
+
+**Weyl spinor transforms as:**
+
+$$
+\Psi'_{ABCD} = S^E{}_A S^F{}_B S^G{}_C S^H{}_D \Psi_{EFGH}
+$$
+
+(4 unprimed indices → 4 factors of $S$)
+
+**Trace-free Ricci spinor transforms as:**
+
+$$
+\Phi'_{ABA'B'} = S^C{}_A S^D{}_B \bar{S}^{C'}{}_{A'} \bar{S}^{D'}{}_{B'} \Phi_{CDC'D'}
+$$
+
+(2 unprimed + 2 primed indices → mixed transformation)
+
+**Ricci scalar is invariant:**
+
+$$
+\Lambda' = \Lambda
+$$
+
+(Scalar curvature is a Lorentz scalar)
+
+**6. Reconstruction Formulas:**
+
+Given the spinor components $\Psi_{ABCD}$, $\Phi_{ABA'B'}$, and $\Lambda$, reconstruct the full Riemann tensor:
+
+**Self-dual and anti-self-dual bivectors:**
+
+First, define the self-dual 2-form spinor basis:
+
+$$
+\sigma_{\mu\nu}^{AB} = \sigma_\mu^{AA'} \sigma_\nu^{BA'} - \sigma_\nu^{AA'} \sigma_\mu^{BA'}
+$$
+
+and its complex conjugate:
+
+$$
+\bar{\sigma}_{\mu\nu}^{A'B'} = \bar{\sigma}_\mu^{AA'} \bar{\sigma}_\nu^{AB'} - \bar{\sigma}_\nu^{AA'} \bar{\sigma}_\mu^{AB'}
+$$
+
+These satisfy $\sigma_{\mu\nu}^{AB} = \sigma_{[\mu\nu]}^{AB}$ (antisymmetric in $\mu, \nu$) and $\sigma_{\mu\nu}^{AB} = \sigma_{\mu\nu}^{(AB)}$ (symmetric in $A, B$).
+
+**Step 1: Reconstruct Weyl tensor**
+
+$$
+C_{\mu\nu\rho\sigma} = \Psi_{ABCD} \sigma_{\mu\nu}^{AB} \sigma_{\rho\sigma}^{CD} \epsilon_{A'B'} \epsilon_{C'D'} + \bar{\Psi}_{A'B'C'D'} \bar{\sigma}_{\mu\nu}^{A'B'} \bar{\sigma}_{\rho\sigma}^{C'D'} \epsilon_{AB} \epsilon_{CD}
+$$
+
+where $\epsilon_{A'B'}$ and $\epsilon_{AB}$ are Levi-Civita symbols contracting the primed indices.
+
+**Step 2: Reconstruct trace-free Ricci**
+
+$$
+S_{\mu\nu} = \Phi_{ABA'B'} \sigma_\mu^{AA'} \sigma_\nu^{BB'}
+$$
+
+where $\sigma_\mu^{AA'}$ are the soldering forms from {prf:ref}`def-two-spinor-formalism`.
+
+**Step 3: Full Ricci tensor**
+
+$$
+R_{\mu\nu} = S_{\mu\nu} + \frac{1}{4}g_{\mu\nu}R = S_{\mu\nu} + 6\Lambda g_{\mu\nu}
+$$
+
+where $\Lambda = R/24$.
+
+**Step 4: Full Riemann tensor**
+
+$$
+R^\rho_{\sigma\mu\nu} = C^\rho_{\sigma\mu\nu} + \frac{1}{2}(g^\rho_\mu S_{\sigma\nu} - g^\rho_\nu S_{\sigma\mu} - g_{\sigma\mu} S^\rho_\nu + g_{\sigma\nu} S^\rho_\mu) + \frac{\Lambda}{6}(g^\rho_\mu g_{\sigma\nu} - g^\rho_\nu g_{\sigma\mu})
+$$
+
+This provides the **bijective inverse map** from spinor back to tensor form.
+
+**7. Storage on CST Edges:**
+
+Each CST edge $(n_{i,t} \to n_{i,t+1})$ stores:
+- $\Psi_R^{(16)}(n_{i,t}) \in \mathbb{C}^{16}$: Full curvature spinor as specified in section 4
+- Computed from stored Christoffel symbols $\Gamma^\lambda_{\mu\nu}$ via the Riemann tensor formula:
+
+$$
+R^\rho_{\sigma\mu\nu} = \partial_\mu \Gamma^\rho_{\nu\sigma} - \partial_\nu \Gamma^\rho_{\mu\sigma} + \Gamma^\rho_{\mu\lambda}\Gamma^\lambda_{\nu\sigma} - \Gamma^\rho_{\nu\lambda}\Gamma^\lambda_{\mu\sigma}
+$$
+
+then decomposed and encoded into $\Psi_{ABCD}$, $\Phi_{ABA'B'}$, $\Lambda$ using the reconstruction formulas (inverse).
+
+**8. Dimension Verification:**
+
+$$
+\begin{aligned}
+\text{Weyl}: & \quad 5 \text{ complex} = 10 \text{ real} \\
+\text{Trace-free Ricci}: & \quad 3 \text{ real} + 3 \text{ complex} = 9 \text{ real} \\
+\text{Ricci scalar}: & \quad 1 \text{ real} \\
+\hline
+\text{Total}: & \quad 20 \text{ real components}
+\end{aligned}
+$$
+
+**This matches the 20 independent components of the Riemann tensor exactly.** ✓
+
+:::
+
+:::{important}
+**Dimension Mismatch Resolved**: The previous encoding claimed "Ricci spinor (6 components)" which was **incorrect**—it missed 4 Ricci tensor components. The corrected encoding uses the standard Penrose-Rindler two-spinor formalism with trace-free Ricci spinor $\Phi_{ABA'B'}$ (9 components) plus Ricci scalar $\Lambda$ (1 component), giving exactly 10 + 9 + 1 = 20 real components.
+
+**References**: Penrose & Rindler, *Spinors and Space-Time*, Vol. 1 (Cambridge, 1984), Chapter 4.
 :::
 
 ### 7.15. SO(10) Grand Unification
@@ -2783,41 +3159,191 @@ $$
 
 **2. Unified State Vector (Spinor Representation):**
 
-Each walker state is a **16-component spinor** in the fundamental representation of SO(10):
+Each walker state is a **16-component Dirac spinor** in the fundamental representation of SO(10):
 
 $$
-|\Psi_i^{(\text{SO}(10))}\rangle = \begin{pmatrix}
-|\Psi_i^{(\text{color})}\rangle \\
-|\Psi_i^{(\text{weak})}\rangle \\
-|\psi_i^{(\text{fitness})}\rangle \\
-|\text{graviton}\rangle
-\end{pmatrix} \in \mathbb{C}^{16}
-
+|\Psi_i^{(\text{SO}(10))}\rangle \in \mathbb{C}^{16}
 $$
 
-where:
-- $|\Psi_i^{(\text{color})}\rangle \in \mathbb{C}^3$: SU(3) color triplet (§7.12)
-- $|\Psi_i^{(\text{weak})}\rangle \in \mathbb{C}^2$: SU(2) weak doublet (§7.10)
-- $|\psi_i^{(\text{fitness})}\rangle \in \mathbb{C}^{N-1}$: U(1)_fitness dressed state (diversity measurement)
-- $|\text{graviton}\rangle \in \mathbb{C}^{10}$: Graviton (metric perturbation $h_{\mu\nu}$)
+This 16-dimensional spinor is the **irreducible representation** under SO(10) and contains all gauge and gravitational degrees of freedom in a unified, frame-covariant form.
+
+**Decomposition under Standard Model subgroup:**
+
+Under the chain SO(10) ⊃ SU(5) ⊃ SU(3)×SU(2)×U(1), the 16-spinor decomposes as:
+
+$$
+\mathbf{16} = \mathbf{10} \oplus \bar{\mathbf{5}} \oplus \mathbf{1}
+$$
+
+**Algorithmic interpretation:**
+- The **color sector** (SU(3), §7.13): Embedded in the 16-spinor via viscous force components
+- The **weak sector** (SU(2), §7.10): Embedded via cloning companion selection phases
+- The **fitness charge** (U(1), §7.6): Global quantum number, not a gauge DOF in the 16-spinor
+- The **gravitational sector**: Encoded via Riemann curvature spinor (§7.14, stored on CST edges)
+
+**Key principle:** All 16 components transform **covariantly** under SO(10), preserving frame-independence. The decomposition into gauge sectors emerges from symmetry breaking, not from a direct sum of separate spaces.
 
 **3. SO(10) Generators:**
 
-The 45 generators of SO(10) decompose as:
+The 45 generators of SO(10) form the adjoint representation and decompose under the Standard Model subgroup as:
 
 $$
-\mathbf{45} = \mathbf{8}_{\text{gluons}} \oplus \mathbf{3}_{\text{weak bosons}} \oplus \mathbf{N!-1}_{\text{S}_N \text{ braids}} \oplus \mathbf{10}_{\text{graviton}} \oplus \mathbf{23}_{\text{broken generators}}
-
+\mathbf{45} = \mathbf{8}_{\text{gluons}} \oplus \mathbf{3}_{\text{weak bosons}} \oplus \mathbf{1}_{\text{B-L}} \oplus \mathbf{24}_{\text{X,Y bosons}} \oplus \text{others}
 $$
 
 **Gauge structure clarification:**
-- **8 gluons**: SU(3)_color local gauge bosons
-- **3 weak bosons** (W±, Z): SU(2)_weak local gauge bosons
-- **S_N braid modes**: Discrete gauge holonomies (not continuous gauge bosons)
-- **U(1)_fitness**: Global symmetry → conserved charge, NOT a gauge boson
-- **10 graviton modes**: Metric perturbations h_μν
+- **8 generators**: SU(3)_color → gluons (local gauge bosons)
+- **3 generators**: SU(2)_weak → W±, Z bosons (local gauge bosons)
+- **1 generator**: U(1)_{B-L} → broken symmetry (not U(1)_fitness which is global)
+- **24 generators**: X, Y gauge bosons (heavy, broken at GUT scale)
+- **Remaining**: Symmetry breaking sector
 
-Total **continuous** gauge bosons: $8 + 3 = 11$ (not 12, since U(1) is global)
+**Discrete symmetry S_N:**
+- S_N permutation group acts on walker labels (discrete, not part of SO(10) Lie algebra)
+- Provides braid holonomy on Information Graph edges (topological)
+- Commutes with SO(10) continuous transformations
+
+**Global symmetry U(1)_fitness:**
+- Conserved charge (Noether current), not a gauge field
+- Does NOT contribute a generator to the 45-dimensional Lie algebra
+
+Total **local continuous** gauge bosons from SO(10): 45 generators → breaks to 8 (gluons) + 3 (weak) + 1 (B-L) at GUT scale, then further breaks to 8 (gluons) + 1 (photon) at EW scale.
+:::
+
+:::{prf:definition} SO(10) Generator Matrices in Spinor Representation
+:label: def-so10-generator-matrices
+
+The 45 generators of SO(10) acting on the 16-dimensional spinor $|\Psi\rangle \in \mathbb{C}^{16}$ are represented by 16×16 matrices constructed from **Dirac gamma matrices in 10 dimensions**.
+
+**1. Gamma Matrix Basis:**
+
+In 10D, we have 10 Dirac gamma matrices $\Gamma^A$ (A = 0,1,...,9) satisfying the Clifford algebra:
+
+$$
+\{\Gamma^A, \Gamma^B\} = 2\eta^{AB}
+$$
+
+where $\eta^{AB} = \text{diag}(-1,+1,+1,...,+1)$ is the 10D Minkowski metric.
+
+**Representation:** Each $\Gamma^A$ is a 16×16 matrix. The 16-component spinor is the **Weyl (chiral) spinor** in 10D.
+
+**2. SO(10) Generator Construction:**
+
+The 45 generators are antisymmetric combinations:
+
+$$
+T^{AB} = \frac{1}{4}[\Gamma^A, \Gamma^B] = \frac{1}{4}(\Gamma^A \Gamma^B - \Gamma^B \Gamma^A), \quad A < B
+$$
+
+This gives $\binom{10}{2} = 45$ independent generators.
+
+**Properties:**
+- Antisymmetric: $T^{AB} = -T^{BA}$
+- Satisfy SO(10) commutation relations: $[T^{AB}, T^{CD}] = \eta^{AC}T^{BD} - \eta^{AD}T^{BC} - \eta^{BC}T^{AD} + \eta^{BD}T^{AC}$
+- Act on 16-spinor: $T^{AB} |\Psi\rangle \in \mathbb{C}^{16}$
+
+**3. Explicit 10D Gamma Matrices (Weyl Basis):**
+
+In the Weyl (chiral) basis, the 10D gamma matrices can be constructed from 4D gamma matrices via:
+
+$$
+\Gamma^0 = \gamma^0 \otimes I_4 \otimes \sigma_3, \quad
+\Gamma^i = \gamma^i \otimes I_4 \otimes \sigma_3 \quad (i=1,2,3)
+$$
+$$
+\Gamma^{4+a} = \gamma^5 \otimes \sigma^a \otimes \sigma_1 \quad (a=1,2,3,4,5,6)
+$$
+
+where:
+- $\gamma^\mu$ are 4D Dirac matrices (4×4)
+- $\gamma^5 = i\gamma^0\gamma^1\gamma^2\gamma^3$ is the chirality operator
+- $\sigma^a$ are generalized Pauli matrices in higher dimensions
+- $I_4$ is the 4×4 identity matrix
+
+**4. Decomposition Under Standard Model:**
+
+Under SO(10) ⊃ SU(3)×SU(2)×U(1), the 45 generators decompose as:
+
+**SU(3) generators (8 matrices):**
+$$
+T^{SU(3)}_a = \frac{1}{4}[\Gamma^{i}, \Gamma^{j}], \quad a = 1,...,8 \quad (i,j \in \{1,2,3\})
+$$
+
+These embed the Gell-Mann matrices $\lambda_a$ in the 16-spinor.
+
+**SU(2) generators (3 matrices):**
+$$
+T^{SU(2)}_a = \frac{1}{4}[\Gamma^{4+a}, \Gamma^{4+b}], \quad a = 1,2,3 \quad (a \neq b)
+$$
+
+These embed the Pauli matrices $\sigma_a$ in the 16-spinor.
+
+**U(1)_{B-L} generator (1 matrix):**
+$$
+T^{U(1)} = \frac{1}{4}\sum_{A=5}^{9} \Gamma^A \Gamma^{A+1}
+$$
+
+This is the hypercharge generator (Baryon minus Lepton number).
+
+**X, Y bosons (24 matrices):**
+The remaining 33 generators connect different SM sectors (lepto-quark transitions).
+
+**Gravitational embedding (distributed across all 45):**
+The curvature spinor $\Psi_R$ transforms under the full SO(10) via all 45 generators, not a separate subspace.
+
+**5. Action on Walker States:**
+
+For a walker with state $|\Psi_i\rangle \in \mathbb{C}^{16}$, an infinitesimal SO(10) transformation is:
+
+$$
+|\Psi_i\rangle \to |\Psi_i'\rangle = \left(I_{16} + i\sum_{A<B} \theta^{AB} T^{AB}\right) |\Psi_i\rangle
+$$
+
+where $\theta^{AB}$ are 45 real parameters (transformation angles).
+
+**Finite transformations:**
+$$
+|\Psi_i\rangle \to U|\Psi_i\rangle, \quad U = \exp\left(i\sum_{A<B} \theta^{AB} T^{AB}\right) \in SO(10)
+$$
+
+**6. Numerical Representation (Explicit Matrices):**
+
+The complete 16×16 matrices for all 45 generators can be computed from the gamma matrix products. For algorithmic implementation, the standard Weyl basis provides:
+
+**Example: $T^{01}$ (boost in t-x plane):**
+$$
+T^{01} = \frac{1}{4}[\Gamma^0, \Gamma^1] = \frac{1}{4}(\Gamma^0\Gamma^1 - \Gamma^1\Gamma^0) \in \mathbb{C}^{16 \times 16}
+$$
+
+This is a 16×16 matrix that mixes spinor components corresponding to time-space transformations.
+
+**Storage in Fractal Set:**
+- Each CST edge stores the **gauge connection**: $A_{AB}^\mu(n_{i,t}) \in \mathbb{R}^{45}$
+- Parallel transport operator: $U(n_{i,t} \to n_{j,t+1}) = \exp\left(i\sum_{AB} A_{AB} T^{AB}\right) \in SO(10)$
+- Walker state transforms: $|\Psi(t+1)\rangle = U|\Psi(t)\rangle$
+:::
+
+:::{prf:theorem} SO(10) Covariant Derivative and Spinor Transformation
+:label: thm-so10-covariant-derivative
+
+The walker state $|\Psi_i(t)\rangle \in \mathbb{C}^{16}$ evolves covariantly under SO(10) via:
+
+$$
+\frac{d|\Psi_i\rangle}{dt} = -i\sum_{A<B} A_{AB}^\mu(x_i) \frac{dx_i^\mu}{dt} \, T^{AB} |\Psi_i\rangle
+$$
+
+where:
+- $A_{AB}^\mu$: SO(10) gauge connection (45 components at each spacetime point)
+- $dx_i^\mu/dt = v_i^\mu$: Walker 4-velocity
+- $T^{AB}$: SO(10) generators (16×16 matrices from {prf:ref}`def-so10-generator-matrices`)
+
+**Frame-covariance:** Under SO(10) gauge transformation $U(x)$:
+$$
+|\Psi\rangle \to U|\Psi\rangle, \quad A_{AB}^\mu \to U A_{AB}^\mu U^{-1} + \frac{i}{g}(\partial^\mu U) U^{-1}
+$$
+
+The equation of motion remains invariant, ensuring all physical observables are frame-independent.
+:::
 
 **4. Unified Field Strength Tensor:**
 
@@ -2851,16 +3377,18 @@ where:
 
 **6. Gravity Unification:**
 
-The **graviton** emerges from the metric perturbation:
+The **gravitational sector** is encoded in the SO(10) spinor via the Riemann curvature spinor stored on CST edges (§7.14).
 
-$$
-g_{\mu\nu}(x) = \eta_{\mu\nu} + h_{\mu\nu}(x)
+**Spinor encoding of curvature:**
 
-$$
+The metric perturbation $h_{\mu\nu}(x) = \frac{1}{\epsilon_\Sigma^2} H_{\mu\nu}^{V_{\text{fit}}}(x)$ and its associated curvature tensors ($\Gamma^\lambda_{\mu\nu}$, $R^\rho_{\sigma\mu\nu}$) are stored as **spinor representations** on CST edges, not as rank-4 tensors.
 
-where $h_{\mu\nu}(x) = \frac{1}{\epsilon_\Sigma^2} H_{\mu\nu}^{V_{\text{fit}}}(x)$ (from §7.14).
+**Rationale for spinor storage:**
+1. **Frame-covariance**: Spinors transform intrinsically under Lorentz/SO(10), unlike tensors which require position-dependent Jacobians
+2. **Unification**: Gravitational spinor naturally embeds into the 16-component SO(10) spinor $|\Psi^{(\text{SO}(10))}\rangle$
+3. **Consistency**: All CST edge data (forces, velocities, curvature) stored as spinors
 
-The Riemann curvature tensor $R^\rho_{\sigma\mu\nu}$ can be encoded as a **10-dimensional subspace** of the SO(10) Lie algebra, unifying gravity with gauge forces.
+The gravitational degrees of freedom (20 independent components of Riemann tensor in 4D) are **embedded** within the 16-dimensional spinor via the spinor-curvature correspondence, allowing gravity to unify with gauge forces in a frame-covariant manner.
 
 **7. Symmetry Breaking Pattern:**
 

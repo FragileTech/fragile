@@ -26,17 +26,23 @@ Reference: docs/source/08_emergent_geometry.md Chapter 9
 from __future__ import annotations
 
 import sympy as sp
-from sympy import symbols, Function, exp, log, sqrt, Matrix, simplify, expand
-from sympy import diff, tensorcontraction, tensorproduct
-from typing import Dict, Tuple, List, Optional
-from dataclasses import dataclass
+from sympy import (
+    diff,
+    exp,
+    expand,
+    Function,
+    Matrix,
+    simplify,
+    sqrt,
+)
 
 
 # ============================================================================
 # Symbolic Variables and Parameters
 # ============================================================================
 
-def create_algorithmic_parameters() -> Dict[str, sp.Symbol]:
+
+def create_algorithmic_parameters() -> dict[str, sp.Symbol]:
     """
     Create all algorithmic parameters from Chapter 9.6.1.
 
@@ -45,48 +51,40 @@ def create_algorithmic_parameters() -> Dict[str, sp.Symbol]:
     dict
         Dictionary mapping parameter names to SymPy symbols.
     """
-    params = {
+    return {
         # Measurement and Fitness Parameters
-        'rho': sp.Symbol('rho', positive=True, real=True),
-        'kappa_var_min': sp.Symbol('kappa_var_min', positive=True, real=True),
-        'A': sp.Symbol('A', positive=True, real=True),
-        'epsilon_d': sp.Symbol('epsilon_d', positive=True, real=True),
-
+        "rho": sp.Symbol("rho", positive=True, real=True),
+        "kappa_var_min": sp.Symbol("kappa_var_min", positive=True, real=True),
+        "A": sp.Symbol("A", positive=True, real=True),
+        "epsilon_d": sp.Symbol("epsilon_d", positive=True, real=True),
         # Diffusion and Geometry Parameters
-        'epsilon_Sigma': sp.Symbol('epsilon_Sigma', positive=True, real=True),
-        'sigma_v': sp.Symbol('sigma_v', positive=True, real=True),
-        'delta': sp.Symbol('delta', positive=True, real=True),
-
+        "epsilon_Sigma": sp.Symbol("epsilon_Sigma", positive=True, real=True),
+        "sigma_v": sp.Symbol("sigma_v", positive=True, real=True),
+        "delta": sp.Symbol("delta", positive=True, real=True),
         # Adaptive Dynamics Parameters
-        'epsilon_F': sp.Symbol('epsilon_F', nonnegative=True, real=True),
-        'nu': sp.Symbol('nu', nonnegative=True, real=True),
-
+        "epsilon_F": sp.Symbol("epsilon_F", nonnegative=True, real=True),
+        "nu": sp.Symbol("nu", nonnegative=True, real=True),
         # Kinetic and Cloning Parameters
-        'gamma': sp.Symbol('gamma', positive=True, real=True),
-        'tau': sp.Symbol('tau', positive=True, real=True),
-        'lambda_v': sp.Symbol('lambda_v', positive=True, real=True),
-        'lambda_alg': sp.Symbol('lambda_alg', nonnegative=True, real=True),
-
+        "gamma": sp.Symbol("gamma", positive=True, real=True),
+        "tau": sp.Symbol("tau", positive=True, real=True),
+        "lambda_v": sp.Symbol("lambda_v", positive=True, real=True),
+        "lambda_alg": sp.Symbol("lambda_alg", nonnegative=True, real=True),
         # Cloning and Selection Parameters
-        'alpha': sp.Symbol('alpha', real=True),  # In [0, 1]
-        'beta': sp.Symbol('beta', real=True),    # In [0, 1]
-        'eta': sp.Symbol('eta', real=True),      # In (0, 1)
-        'epsilon_rescale': sp.Symbol('epsilon_rescale', positive=True, real=True),
-
+        "alpha": sp.Symbol("alpha", real=True),  # In [0, 1]
+        "beta": sp.Symbol("beta", real=True),  # In [0, 1]
+        "eta": sp.Symbol("eta", real=True),  # In (0, 1)
+        "epsilon_rescale": sp.Symbol("epsilon_rescale", positive=True, real=True),
         # Confinement Parameters
-        'kappa_conf': sp.Symbol('kappa_conf', positive=True, real=True),
-
+        "kappa_conf": sp.Symbol("kappa_conf", positive=True, real=True),
         # Lyapunov Weights
-        'alpha_x': sp.Symbol('alpha_x', positive=True, real=True),
-        'alpha_v': sp.Symbol('alpha_v', positive=True, real=True),
-        'alpha_D': sp.Symbol('alpha_D', positive=True, real=True),
-        'alpha_R': sp.Symbol('alpha_R', positive=True, real=True),
+        "alpha_x": sp.Symbol("alpha_x", positive=True, real=True),
+        "alpha_v": sp.Symbol("alpha_v", positive=True, real=True),
+        "alpha_D": sp.Symbol("alpha_D", positive=True, real=True),
+        "alpha_R": sp.Symbol("alpha_R", positive=True, real=True),
     }
 
-    return params
 
-
-def create_state_variables(dim: int = 3) -> Tuple[Matrix, Dict[str, sp.Symbol]]:
+def create_state_variables(dim: int = 3) -> tuple[Matrix, dict[str, sp.Symbol]]:
     """
     Create state space variables for a given dimension.
 
@@ -102,8 +100,8 @@ def create_state_variables(dim: int = 3) -> Tuple[Matrix, Dict[str, sp.Symbol]]:
     coords : dict
         Dictionary mapping coordinate names to symbols
     """
-    coords = {f'x_{i+1}': sp.Symbol(f'x_{i+1}', real=True) for i in range(dim)}
-    x = Matrix([coords[f'x_{i+1}'] for i in range(dim)])
+    coords = {f"x_{i + 1}": sp.Symbol(f"x_{i + 1}", real=True) for i in range(dim)}
+    x = Matrix([coords[f"x_{i + 1}"] for i in range(dim)])
 
     return x, coords
 
@@ -111,6 +109,7 @@ def create_state_variables(dim: int = 3) -> Tuple[Matrix, Dict[str, sp.Symbol]]:
 # ============================================================================
 # Measurement Function (Abstract)
 # ============================================================================
+
 
 class MeasurementFunction:
     """
@@ -120,7 +119,7 @@ class MeasurementFunction:
     measurement functions. Specific examples can be instantiated.
     """
 
-    def __init__(self, dim: int = 3, name: str = 'd'):
+    def __init__(self, dim: int = 3, name: str = "d"):
         """
         Parameters
         ----------
@@ -157,13 +156,15 @@ class MeasurementFunction:
             Hessian matrix [∂²d/∂x_i∂x_j]
         """
         grad = self.gradient()
-        return Matrix([[diff(grad[i], self.x[j]) for j in range(self.dim)]
-                       for i in range(self.dim)])
+        return Matrix([
+            [diff(grad[i], self.x[j]) for j in range(self.dim)] for i in range(self.dim)
+        ])
 
 
 # ============================================================================
 # Rescale Functions (Chapter 9.7.1)
 # ============================================================================
+
 
 class RescaleFunction:
     """Symbolic rescale function g_A: R -> [0, A]."""
@@ -210,17 +211,17 @@ class RescaleFunction:
 
         if order == 1:
             return diff(g, z)
-        elif order == 2:
+        if order == 2:
             return diff(g, z, 2)
-        elif order == 3:
+        if order == 3:
             return diff(g, z, 3)
-        else:
-            raise ValueError(f"Derivative order {order} not supported (use 1, 2, or 3)")
+        raise ValueError(f"Derivative order {order} not supported (use 1, 2, or 3)")
 
 
 # ============================================================================
 # Fitness Potential Pipeline (Chapter 9.2)
 # ============================================================================
+
 
 class FitnessPotential:
     """
@@ -234,8 +235,9 @@ class FitnessPotential:
     5. Rescaled fitness potential
     """
 
-    def __init__(self, dim: int = 3, num_walkers: int = 3,
-                 measurement: Optional[MeasurementFunction] = None):
+    def __init__(
+        self, dim: int = 3, num_walkers: int = 3, measurement: MeasurementFunction | None = None
+    ):
         """
         Parameters
         ----------
@@ -253,15 +255,17 @@ class FitnessPotential:
         self.x, self.coords = create_state_variables(dim)
 
         # Measurement function
-        self.measurement = measurement if measurement else MeasurementFunction(dim)
+        self.measurement = measurement or MeasurementFunction(dim)
 
         # Parameters
         self.params = create_algorithmic_parameters()
 
         # Walker positions and measurements
-        self.x_walkers = [Matrix([sp.Symbol(f'x_{j+1}^{i+1}', real=True)
-                                  for j in range(dim)]) for i in range(num_walkers)]
-        self.d_walkers = [sp.Symbol(f'd_{i+1}', real=True) for i in range(num_walkers)]
+        self.x_walkers = [
+            Matrix([sp.Symbol(f"x_{j + 1}^{i + 1}", real=True) for j in range(dim)])
+            for i in range(num_walkers)
+        ]
+        self.d_walkers = [sp.Symbol(f"d_{i + 1}", real=True) for i in range(num_walkers)]
 
     def localization_kernel(self, x_i: Matrix, x_j: Matrix, rho: sp.Symbol) -> sp.Expr:
         """
@@ -287,7 +291,7 @@ class FitnessPotential:
         dist_sq = diff_vec.dot(diff_vec)
         return exp(-dist_sq / (2 * rho**2))
 
-    def localization_weights(self) -> List[sp.Expr]:
+    def localization_weights(self) -> list[sp.Expr]:
         """
         Compute normalized localization weights w_j(ρ).
 
@@ -298,21 +302,18 @@ class FitnessPotential:
         list of Expr
             Weights [w_1, w_2, ..., w_k]
         """
-        rho = self.params['rho']
+        rho = self.params["rho"]
 
         # Compute unnormalized kernels
-        kernels = [self.localization_kernel(self.x, x_j, rho)
-                   for x_j in self.x_walkers]
+        kernels = [self.localization_kernel(self.x, x_j, rho) for x_j in self.x_walkers]
 
         # Normalization
         Z = sum(kernels)
 
         # Normalized weights
-        weights = [K / Z for K in kernels]
+        return [K / Z for K in kernels]
 
-        return weights
-
-    def localized_mean(self, weights: Optional[List[sp.Expr]] = None) -> sp.Expr:
+    def localized_mean(self, weights: list[sp.Expr] | None = None) -> sp.Expr:
         """
         Compute localized mean μ_ρ.
 
@@ -331,11 +332,11 @@ class FitnessPotential:
         if weights is None:
             weights = self.localization_weights()
 
-        mu = sum(w * d for w, d in zip(weights, self.d_walkers))
-        return mu
+        return sum(w * d for w, d in zip(weights, self.d_walkers))
 
-    def localized_variance(self, weights: Optional[List[sp.Expr]] = None,
-                          mu: Optional[sp.Expr] = None) -> sp.Expr:
+    def localized_variance(
+        self, weights: list[sp.Expr] | None = None, mu: sp.Expr | None = None
+    ) -> sp.Expr:
         """
         Compute localized variance σ²_ρ.
 
@@ -358,10 +359,9 @@ class FitnessPotential:
         if mu is None:
             mu = self.localized_mean(weights)
 
-        variance = sum(w * (d - mu)**2 for w, d in zip(weights, self.d_walkers))
-        return variance
+        return sum(w * (d - mu) ** 2 for w, d in zip(weights, self.d_walkers))
 
-    def z_score(self, weights: Optional[List[sp.Expr]] = None) -> sp.Expr:
+    def z_score(self, weights: list[sp.Expr] | None = None) -> sp.Expr:
         """
         Compute Z-score with regularization.
 
@@ -387,15 +387,13 @@ class FitnessPotential:
         var = self.localized_variance(weights, mu)
 
         # Regularized std dev (using max for simplicity)
-        sigma_prime = sp.Max(sqrt(var), self.params['kappa_var_min'])
+        sigma_prime = sp.Max(sqrt(var), self.params["kappa_var_min"])
 
         # Z-score
         d_x = self.measurement.d
-        Z = (d_x - mu) / sigma_prime
+        return (d_x - mu) / sigma_prime
 
-        return Z
-
-    def fitness_potential_sigmoid(self, weights: Optional[List[sp.Expr]] = None) -> sp.Expr:
+    def fitness_potential_sigmoid(self, weights: list[sp.Expr] | None = None) -> sp.Expr:
         """
         Compute fitness potential with sigmoid rescale.
 
@@ -412,15 +410,14 @@ class FitnessPotential:
             V_fit[f_k, ρ](x)
         """
         Z = self.z_score(weights)
-        A = self.params['A']
-        V_fit = RescaleFunction.sigmoid(Z, A)
-
-        return V_fit
+        A = self.params["A"]
+        return RescaleFunction.sigmoid(Z, A)
 
 
 # ============================================================================
 # Hessian and Metric (Chapter 9.3-9.4)
 # ============================================================================
+
 
 class EmergentMetric:
     """
@@ -482,9 +479,9 @@ class EmergentMetric:
             Hessian H (dim × dim matrix)
         """
         grad = self.gradient_V_fit(V_fit)
-        H = Matrix([[diff(grad[i], self.x[j]) for j in range(self.dim)]
-                    for i in range(self.dim)])
-        return H
+        return Matrix([
+            [diff(grad[i], self.x[j]) for j in range(self.dim)] for i in range(self.dim)
+        ])
 
     def metric_tensor(self, H: Matrix) -> Matrix:
         """
@@ -500,10 +497,9 @@ class EmergentMetric:
         Matrix
             Metric tensor g (dim × dim symmetric matrix)
         """
-        epsilon_Sigma = self.params['epsilon_Sigma']
+        epsilon_Sigma = self.params["epsilon_Sigma"]
         I = sp.eye(self.dim)
-        g = H + epsilon_Sigma * I
-        return g
+        return H + epsilon_Sigma * I
 
     def volume_element(self, g: Matrix) -> sp.Expr:
         """
@@ -543,20 +539,21 @@ class EmergentMetric:
             √det(g)
         """
         if H.shape != (3, 3):
-            raise ValueError("Explicit 3D formula requires 3×3 Hessian")
+            msg = "Explicit 3D formula requires 3×3 Hessian"
+            raise ValueError(msg)
 
-        epsilon_Sigma = self.params['epsilon_Sigma']
+        epsilon_Sigma = self.params["epsilon_Sigma"]
 
         # Extract Hessian components
         h11, h12, h13 = H[0, 0], H[0, 1], H[0, 2]
-        h21, h22, h23 = H[1, 0], H[1, 1], H[1, 2]
-        h31, h32, h33 = H[2, 0], H[2, 1], H[2, 2]
+        _h21, h22, h23 = H[1, 0], H[1, 1], H[1, 2]
+        _h31, _h32, h33 = H[2, 0], H[2, 1], H[2, 2]
 
         # det(H)
         det_H = H.det()
 
         # tr(adj(H)) = sum of principal 2×2 minors
-        tr_adj_H = (h22*h33 - h23**2) + (h11*h33 - h13**2) + (h11*h22 - h12**2)
+        tr_adj_H = (h22 * h33 - h23**2) + (h11 * h33 - h13**2) + (h11 * h22 - h12**2)
 
         # tr(H)
         tr_H = h11 + h22 + h33
@@ -570,6 +567,7 @@ class EmergentMetric:
 # ============================================================================
 # Christoffel Symbols (Chapter 9.7.7)
 # ============================================================================
+
 
 class ChristoffelSymbols:
     """
@@ -589,7 +587,7 @@ class ChristoffelSymbols:
         self.dim = metric.dim
         self.x = metric.x
 
-    def compute(self, g: Matrix, simplify_result: bool = False) -> List[List[List[sp.Expr]]]:
+    def compute(self, g: Matrix, simplify_result: bool = False) -> list[list[list[sp.Expr]]]:
         """
         Compute all Christoffel symbols.
 
@@ -634,7 +632,7 @@ class ChristoffelSymbols:
 
         return Gamma
 
-    def get_component(self, Gamma: List, a: int, b: int, c: int) -> sp.Expr:
+    def get_component(self, Gamma: list, a: int, b: int, c: int) -> sp.Expr:
         """
         Get a specific Christoffel symbol component.
 
@@ -657,6 +655,7 @@ class ChristoffelSymbols:
 # Geodesic Equation (Chapter 9.7.8)
 # ============================================================================
 
+
 class GeodesicEquation:
     """
     Symbolic geodesic equation.
@@ -675,8 +674,8 @@ class GeodesicEquation:
         self.dim = christoffel.dim
 
         # Create symbolic curve γ(t)
-        self.t = sp.Symbol('t', real=True)
-        self.gamma = [Function(f'gamma_{i+1}')(self.t) for i in range(self.dim)]
+        self.t = sp.Symbol("t", real=True)
+        self.gamma = [Function(f"gamma_{i + 1}")(self.t) for i in range(self.dim)]
 
         # Velocities
         self.gamma_dot = [diff(g, self.t) for g in self.gamma]
@@ -684,7 +683,7 @@ class GeodesicEquation:
         # Accelerations
         self.gamma_ddot = [diff(g_dot, self.t) for g_dot in self.gamma_dot]
 
-    def equation(self, Gamma: List, component: int) -> sp.Expr:
+    def equation(self, Gamma: list, component: int) -> sp.Expr:
         """
         Get geodesic equation for a specific component.
 
@@ -720,6 +719,7 @@ class GeodesicEquation:
 # ============================================================================
 # 3D Concrete Example (Chapter 9.7)
 # ============================================================================
+
 
 def example_3d_metric():
     """
@@ -785,19 +785,19 @@ def example_3d_metric():
 
     # Package results
     results = {
-        'fitness': fitness,
-        'weights': weights,
-        'mu': mu,
-        'variance': var,
-        'Z_score': Z,
-        'V_fit': V_fit,
-        'gradient_V': metric.gradient_V_fit(V_fit),
-        'Hessian': H,
-        'metric': g,
-        'volume_direct': vol_direct,
-        'volume_explicit': vol_explicit,
-        'metric_obj': metric,
-        'christoffel_obj': christoffel,
+        "fitness": fitness,
+        "weights": weights,
+        "mu": mu,
+        "variance": var,
+        "Z_score": Z,
+        "V_fit": V_fit,
+        "gradient_V": metric.gradient_V_fit(V_fit),
+        "Hessian": H,
+        "metric": g,
+        "volume_direct": vol_direct,
+        "volume_explicit": vol_explicit,
+        "metric_obj": metric,
+        "christoffel_obj": christoffel,
     }
 
     print("\n" + "=" * 70)
@@ -816,7 +816,8 @@ def example_3d_metric():
 # Utility Functions
 # ============================================================================
 
-def simplify_metric_component(g_ij: sp.Expr, level: str = 'basic') -> sp.Expr:
+
+def simplify_metric_component(g_ij: sp.Expr, level: str = "basic") -> sp.Expr:
     """
     Simplify a metric tensor component.
 
@@ -832,17 +833,16 @@ def simplify_metric_component(g_ij: sp.Expr, level: str = 'basic') -> sp.Expr:
     Expr
         Simplified expression
     """
-    if level == 'basic':
+    if level == "basic":
         return simplify(g_ij)
-    elif level == 'full':
+    if level == "full":
         return simplify(expand(g_ij))
-    elif level == 'trigsimp':
+    if level == "trigsimp":
         return sp.trigsimp(simplify(g_ij))
-    else:
-        return g_ij
+    return g_ij
 
 
-def export_to_latex(expr: sp.Expr, name: str = '') -> str:
+def export_to_latex(expr: sp.Expr, name: str = "") -> str:
     """
     Export SymPy expression to LaTeX.
 
@@ -862,11 +862,10 @@ def export_to_latex(expr: sp.Expr, name: str = '') -> str:
 
     if name:
         return f"{name} = {latex_str}"
-    else:
-        return latex_str
+    return latex_str
 
 
-def generate_numerical_function(expr: sp.Expr, variables: List[sp.Symbol]) -> callable:
+def generate_numerical_function(expr: sp.Expr, variables: list[sp.Symbol]) -> callable:
     """
     Generate fast numerical function from symbolic expression.
 
@@ -882,16 +881,14 @@ def generate_numerical_function(expr: sp.Expr, variables: List[sp.Symbol]) -> ca
     callable
         Numerical function (lambdified)
     """
-    return sp.lambdify(variables, expr, modules=['numpy'])
+    return sp.lambdify(variables, expr, modules=["numpy"])
 
 
 # ============================================================================
 # Main Example
 # ============================================================================
 
-if __name__ == '__main__':
-    import sys
-
+if __name__ == "__main__":
     print(__doc__)
 
     # Run 3D example
@@ -903,14 +900,14 @@ if __name__ == '__main__':
     print("=" * 70)
 
     print("\nMetric tensor g (3×3):")
-    print(results['metric'])
+    print(results["metric"])
 
     print("\nHessian H₁₁ (first component, truncated):")
-    H11 = results['Hessian'][0, 0]
+    H11 = results["Hessian"][0, 0]
     print(str(H11))
 
     print("\n\nVolume element √det(g) (explicit formula, truncated):")
-    vol = results['volume_explicit']
+    vol = results["volume_explicit"]
     print(str(vol))
 
     # Example: export to LaTeX
@@ -919,8 +916,8 @@ if __name__ == '__main__':
     print("=" * 70)
 
     # Get a simple component
-    epsilon_Sigma = results['fitness'].params['epsilon_Sigma']
-    latex_metric = export_to_latex(epsilon_Sigma, name='\\epsilon_\\Sigma')
+    epsilon_Sigma = results["fitness"].params["epsilon_Sigma"]
+    latex_metric = export_to_latex(epsilon_Sigma, name="\\epsilon_\\Sigma")
     print(f"\nMetric regularization parameter:\n  {latex_metric}")
 
     print("\n" + "=" * 70)

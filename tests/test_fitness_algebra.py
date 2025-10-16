@@ -7,15 +7,15 @@ against the formulas in Chapter 9 of 08_emergent_geometry.md.
 
 import pytest
 import sympy as sp
-from sympy import symbols, exp, sqrt, simplify, Matrix
+from sympy import exp, Matrix, simplify, sqrt, symbols
 
 from fragile.fitness_algebra import (
-    FitnessPotential,
-    EmergentMetric,
-    RescaleFunction,
-    MeasurementFunction,
     create_algorithmic_parameters,
     create_state_variables,
+    EmergentMetric,
+    FitnessPotential,
+    MeasurementFunction,
+    RescaleFunction,
 )
 
 
@@ -27,26 +27,26 @@ class TestAlgorithmicParameters:
         params = create_algorithmic_parameters()
 
         # Check essential parameters exist
-        assert 'rho' in params
-        assert 'epsilon_Sigma' in params
-        assert 'A' in params
-        assert 'kappa_var_min' in params
-        assert 'gamma' in params
-        assert 'alpha' in params
-        assert 'beta' in params
+        assert "rho" in params
+        assert "epsilon_Sigma" in params
+        assert "A" in params
+        assert "kappa_var_min" in params
+        assert "gamma" in params
+        assert "alpha" in params
+        assert "beta" in params
 
         # Check they are symbols
-        assert isinstance(params['rho'], sp.Symbol)
-        assert isinstance(params['epsilon_Sigma'], sp.Symbol)
+        assert isinstance(params["rho"], sp.Symbol)
+        assert isinstance(params["epsilon_Sigma"], sp.Symbol)
 
     def test_state_variables_3d(self):
         """Test 3D state variable creation."""
         x, coords = create_state_variables(dim=3)
 
         assert x.shape == (3, 1)
-        assert 'x_1' in coords
-        assert 'x_2' in coords
-        assert 'x_3' in coords
+        assert "x_1" in coords
+        assert "x_2" in coords
+        assert "x_3" in coords
 
 
 class TestRescaleFunction:
@@ -54,8 +54,8 @@ class TestRescaleFunction:
 
     def test_sigmoid_basic(self):
         """Test sigmoid rescale function."""
-        z = symbols('z', real=True)
-        A = symbols('A', positive=True)
+        z = symbols("z", real=True)
+        A = symbols("A", positive=True)
 
         g = RescaleFunction.sigmoid(z, A)
 
@@ -68,8 +68,8 @@ class TestRescaleFunction:
 
     def test_sigmoid_derivative(self):
         """Test sigmoid derivatives."""
-        z = symbols('z', real=True)
-        A = symbols('A', positive=True)
+        z = symbols("z", real=True)
+        A = symbols("A", positive=True)
 
         g = RescaleFunction.sigmoid(z, A)
         g_prime = RescaleFunction.sigmoid_derivative(z, A, order=1)
@@ -80,8 +80,8 @@ class TestRescaleFunction:
 
     def test_sigmoid_second_derivative(self):
         """Test second derivative."""
-        z = symbols('z', real=True)
-        A = symbols('A', positive=True)
+        z = symbols("z", real=True)
+        A = symbols("A", positive=True)
 
         g = RescaleFunction.sigmoid(z, A)
         g_double_prime = RescaleFunction.sigmoid_derivative(z, A, order=2)
@@ -101,7 +101,7 @@ class TestMeasurementFunction:
         assert grad.shape == (2, 1)
 
         # Check that gradient contains derivatives
-        x1, x2 = meas.x
+        x1, _x2 = meas.x
         assert sp.Derivative(meas.d, x1) in grad or sp.diff(meas.d, x1) in grad
 
     def test_hessian_2d(self):
@@ -112,7 +112,7 @@ class TestMeasurementFunction:
         assert H.shape == (2, 2)
 
         # Check symmetry (symbolic)
-        x1, x2 = meas.x
+        _x1, _x2 = meas.x
         # Hessian should be symmetric
         assert simplify(H[0, 1] - H[1, 0]) == 0
 
@@ -124,8 +124,8 @@ class TestFitnessPotential:
         """Test that kernel K(x, x) = 1 (unnormalized)."""
         fitness = FitnessPotential(dim=2, num_walkers=2)
 
-        x_i = Matrix([sp.Symbol('x1'), sp.Symbol('x2')])
-        rho = sp.Symbol('rho', positive=True)
+        x_i = Matrix([sp.Symbol("x1"), sp.Symbol("x2")])
+        rho = sp.Symbol("rho", positive=True)
 
         # K(x, x) should be exp(0) = 1
         K_ii = fitness.localization_kernel(x_i, x_i, rho)
@@ -152,7 +152,7 @@ class TestFitnessPotential:
         V_fit = fitness.fitness_potential_sigmoid()
 
         # V_fit should be an expression involving A
-        assert fitness.params['A'] in V_fit.free_symbols
+        assert fitness.params["A"] in V_fit.free_symbols
 
 
 class TestEmergentMetric:
@@ -165,12 +165,12 @@ class TestEmergentMetric:
         metric_obj = EmergentMetric(fitness)
 
         # Create a simple test Hessian
-        h11, h12, h22 = symbols('h11 h12 h22', real=True)
+        h11, h12, h22 = symbols("h11 h12 h22", real=True)
         H_test = Matrix([[h11, h12], [h12, h22]])
 
         g = metric_obj.metric_tensor(H_test)
 
-        epsilon_Sigma = fitness.params['epsilon_Sigma']
+        epsilon_Sigma = fitness.params["epsilon_Sigma"]
 
         # Check diagonal has regularization
         assert simplify(g[0, 0] - (h11 + epsilon_Sigma)) == 0
@@ -185,7 +185,7 @@ class TestEmergentMetric:
         metric_obj = EmergentMetric(fitness)
 
         # Simple 2×2 metric
-        g11, g12, g22 = symbols('g11 g12 g22', positive=True)
+        g11, g12, g22 = symbols("g11 g12 g22", positive=True)
         g_test = Matrix([[g11, g12], [g12, g22]])
 
         vol = metric_obj.volume_element(g_test)
@@ -203,8 +203,8 @@ class TestEmergentMetric:
         H_zero = sp.zeros(3, 3)
 
         # Temporarily set epsilon_Sigma = 1 for this test
-        old_eps = fitness.params['epsilon_Sigma']
-        fitness.params['epsilon_Sigma'] = sp.Integer(1)
+        old_eps = fitness.params["epsilon_Sigma"]
+        fitness.params["epsilon_Sigma"] = sp.Integer(1)
 
         vol = metric_obj.volume_element_3d_explicit(H_zero)
 
@@ -212,7 +212,7 @@ class TestEmergentMetric:
         assert simplify(vol) == 1
 
         # Restore
-        fitness.params['epsilon_Sigma'] = old_eps
+        fitness.params["epsilon_Sigma"] = old_eps
 
 
 class TestIntegration:
@@ -245,11 +245,11 @@ class TestIntegration:
         metric_obj = EmergentMetric(fitness)
 
         # Diagonal Hessian (simple case)
-        h1, h2 = symbols('h1 h2', real=True)
+        h1, h2 = symbols("h1 h2", real=True)
         H = Matrix([[h1, 0], [0, h2]])
 
         g = metric_obj.metric_tensor(H)
-        epsilon_Sigma = fitness.params['epsilon_Sigma']
+        epsilon_Sigma = fitness.params["epsilon_Sigma"]
 
         # Check metric is diagonal with correct values
         assert simplify(g[0, 0] - (h1 + epsilon_Sigma)) == 0
@@ -268,5 +268,5 @@ class TestIntegration:
 # tested interactively or with numerical values.
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

@@ -106,7 +106,9 @@ def test_cloning_respects_alive_status(device, params):
             dist_to_dead = (state_cloned.x - state.x[dead_idx]).norm(dim=-1)
             # Some walkers might be accidentally close, but not significantly more than random
             # We just check that dead walkers aren't systematically chosen
-            assert (dist_to_dead < params.sigma_clone * 2).sum() <= 4  # Very few should be this close
+            assert (
+                dist_to_dead < params.sigma_clone * 2
+            ).sum() <= 4  # Very few should be this close
 
 
 def test_step_includes_cloning(device, params):
@@ -209,7 +211,10 @@ def test_cloning_with_large_epsilon(device):
     # Create two distant clusters
     x = torch.zeros(N, d, device=device)
     x[:25] = torch.randn(25, d, device=device) * 0.2  # Cluster 1 at origin
-    x[25:] = torch.randn(25, d, device=device) * 0.2 + torch.tensor([10.0, 10.0])  # Cluster 2 far away
+    x[25:] = torch.randn(25, d, device=device) * 0.2 + torch.tensor([
+        10.0,
+        10.0,
+    ])  # Cluster 2 far away
 
     v = torch.randn(N, d, device=device) * 0.1
     s = torch.ones(N, device=device)

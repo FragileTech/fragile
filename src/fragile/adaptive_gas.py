@@ -16,8 +16,8 @@ from __future__ import annotations
 
 import warnings
 
-import torch
 from pydantic import BaseModel, Field
+import torch
 from torch import Tensor
 
 from fragile.euclidean_gas import (
@@ -56,9 +56,7 @@ class AdaptiveParams(BaseModel):
         default=0.1, gt=0, description="Z-score regularization (σ'_min,patch)"
     )
     patch_radius: float = Field(default=1.0, gt=0, description="Patch radius (ρ)")
-    l_viscous: float = Field(
-        default=1.0, gt=0, description="Viscous kernel length scale"
-    )
+    l_viscous: float = Field(default=1.0, gt=0, description="Viscous kernel length scale")
     use_adaptive_diffusion: bool = Field(
         default=True, description="Enable adaptive diffusion tensor"
     )
@@ -176,7 +174,9 @@ class MeanFieldOps:
 
             state_plus = SwarmState(x_plus, state.v)
             measurement_plus = potential_evaluator.evaluate(x_plus)
-            V_fit_plus = MeanFieldOps.compute_fitness_potential(state_plus, measurement_plus, params)
+            V_fit_plus = MeanFieldOps.compute_fitness_potential(
+                state_plus, measurement_plus, params
+            )
 
             # Compute finite difference: ∂V / ∂x_j ≈ (V(x+eps) - V(x)) / eps
             grad_V_fit[:, j] = (V_fit_plus - V_fit_center) / eps
@@ -233,9 +233,7 @@ class MeanFieldOps:
             H[:, :, j] = (grad_plus - grad_center) / eps
 
         # Symmetrize Hessian
-        H = 0.5 * (H + H.transpose(1, 2))
-
-        return H
+        return 0.5 * (H + H.transpose(1, 2))
 
 
 class ViscousForce:
@@ -253,7 +251,7 @@ class ViscousForce:
         Returns:
             Kernel values [N, N]
         """
-        return torch.exp(-r**2 / (2 * l**2))
+        return torch.exp(-(r**2) / (2 * l**2))
 
     @staticmethod
     def compute(state: SwarmState, nu: float, l_viscous: float) -> Tensor:
@@ -271,7 +269,7 @@ class ViscousForce:
         Returns:
             Viscous forces [N, d]
         """
-        N, d = state.N, state.d
+        _N, _d = state.N, state.d
 
         # Compute pairwise distances
         dx = state.x.unsqueeze(1) - state.x.unsqueeze(0)  # [N, N, d]
@@ -286,9 +284,7 @@ class ViscousForce:
 
         # Compute viscous force: F_i = ν Σ_j K_ij (v_j - v_i) = ν Σ_j K_ij (-dv_ij)
         # Note: dv[i,j] = v_i - v_j, so we want -dv[i,j] = v_j - v_i
-        F_viscous = -nu * torch.einsum("ij,ijk->ik", K, dv)  # [N, d]
-
-        return F_viscous
+        return -nu * torch.einsum("ij,ijk->ik", K, dv)  # [N, d]
 
 
 class AdaptiveKineticOperator(KineticOperator):
@@ -315,9 +311,7 @@ class AdaptiveKineticOperator(KineticOperator):
         )
         self.adaptive_params = adaptive_params
 
-    def compute_adaptive_diffusion_tensor(
-        self, state: SwarmState, measurement: Tensor
-    ) -> Tensor:
+    def compute_adaptive_diffusion_tensor(self, state: SwarmState, measurement: Tensor) -> Tensor:
         """
         Compute regularized adaptive diffusion tensor Σ_reg.
 
@@ -334,8 +328,12 @@ class AdaptiveKineticOperator(KineticOperator):
         if not self.adaptive_params.use_adaptive_diffusion:
             # Fall back to isotropic diffusion
             N, d = state.N, state.d
-            sigma = torch.sqrt(torch.tensor(2.0 / self.beta, device=state.device, dtype=state.dtype))
-            return sigma * torch.eye(d, device=state.device, dtype=state.dtype).unsqueeze(0).expand(N, d, d)
+            sigma = torch.sqrt(
+                torch.tensor(2.0 / self.beta, device=state.device, dtype=state.dtype)
+            )
+            return sigma * torch.eye(d, device=state.device, dtype=state.dtype).unsqueeze(
+                0
+            ).expand(N, d, d)
 
         # Compute Hessian H_i for each walker
         H = MeanFieldOps.compute_fitness_hessian(
@@ -350,11 +348,15 @@ class AdaptiveKineticOperator(KineticOperator):
                 "This may indicate walkers are too clustered or variance collapsed. "
                 "Consider increasing epsilon_Sigma or sigma_prime_min_patch.",
                 RuntimeWarning,
-                stacklevel=2
+                stacklevel=2,
             )
             N, d = state.N, state.d
-            sigma = torch.sqrt(torch.tensor(2.0 / self.beta, device=state.device, dtype=state.dtype))
-            return sigma * torch.eye(d, device=state.device, dtype=state.dtype).unsqueeze(0).expand(N, d, d)
+            sigma = torch.sqrt(
+                torch.tensor(2.0 / self.beta, device=state.device, dtype=state.dtype)
+            )
+            return sigma * torch.eye(d, device=state.device, dtype=state.dtype).unsqueeze(
+                0
+            ).expand(N, d, d)
 
         # Regularize: H_reg = H + ε_Σ I
         eps_Sigma = self.adaptive_params.epsilon_Sigma
@@ -372,16 +374,21 @@ class AdaptiveKineticOperator(KineticOperator):
                 # This should never happen with proper regularization, but failsafe
                 eigenvalues = torch.maximum(
                     eigenvalues,
-                    torch.tensor(eps_Sigma / 10, device=state.device, dtype=state.dtype)
+                    torch.tensor(eps_Sigma / 10, device=state.device, dtype=state.dtype),
                 )
 
             # G_reg = V Λ^{-1} V^T, so G_reg^{1/2} = V Λ^{-1/2} V^T
             inv_sqrt_eigenvalues = 1.0 / torch.sqrt(eigenvalues)  # [N, d]
-            Sigma_reg = eigenvectors @ torch.diag_embed(inv_sqrt_eigenvalues) @ eigenvectors.transpose(1, 2)
+            Sigma_reg = (
+                eigenvectors
+                @ torch.diag_embed(inv_sqrt_eigenvalues)
+                @ eigenvectors.transpose(1, 2)
+            )
 
             # Final check for numerical issues
             if torch.any(~torch.isfinite(Sigma_reg)):
-                raise RuntimeError("Non-finite values in Sigma_reg")
+                msg = "Non-finite values in Sigma_reg"
+                raise RuntimeError(msg)
 
             return Sigma_reg
 
@@ -392,11 +399,15 @@ class AdaptiveKineticOperator(KineticOperator):
                 "Falling back to isotropic diffusion. "
                 "Consider increasing epsilon_Sigma for better numerical stability.",
                 RuntimeWarning,
-                stacklevel=2
+                stacklevel=2,
             )
             N, d = state.N, state.d
-            sigma = torch.sqrt(torch.tensor(2.0 / self.beta, device=state.device, dtype=state.dtype))
-            return sigma * torch.eye(d, device=state.device, dtype=state.dtype).unsqueeze(0).expand(N, d, d)
+            sigma = torch.sqrt(
+                torch.tensor(2.0 / self.beta, device=state.device, dtype=state.dtype)
+            )
+            return sigma * torch.eye(d, device=state.device, dtype=state.dtype).unsqueeze(
+                0
+            ).expand(N, d, d)
 
     def apply(self, state: SwarmState) -> SwarmState:
         """
@@ -448,7 +459,7 @@ class AdaptiveKineticOperator(KineticOperator):
         v = v + (self.dt / 2) * F_total - (self.dt / 2) * self.gamma * v
 
         # ============ First A step ============
-        x = x + (self.dt / 2) * v
+        x += self.dt / 2 * v
 
         # ============ O step: Ornstein-Uhlenbeck with adaptive diffusion ============
         if self.adaptive_params.use_adaptive_diffusion:
@@ -471,7 +482,7 @@ class AdaptiveKineticOperator(KineticOperator):
             v = self.c1 * v + self.c2 * xi
 
         # ============ Second A step ============
-        x = x + (self.dt / 2) * v
+        x += self.dt / 2 * v
 
         # ============ Second B step ============
         x.requires_grad_(True)
@@ -533,9 +544,7 @@ class AdaptiveGas(EuclideanGas):
         self.adaptive_params = params.adaptive
 
         # Replace kinetic operator with adaptive version
-        self.kinetic_op = AdaptiveKineticOperator(
-            params.euclidean, params.adaptive
-        )
+        self.kinetic_op = AdaptiveKineticOperator(params.euclidean, params.adaptive)
 
     def get_fitness_potential(self, state: SwarmState) -> Tensor:
         """
@@ -550,6 +559,4 @@ class AdaptiveGas(EuclideanGas):
             Fitness values [N]
         """
         measurement = self.kinetic_op.potential.evaluate(state.x)
-        return MeanFieldOps.compute_fitness_potential(
-            state, measurement, self.adaptive_params
-        )
+        return MeanFieldOps.compute_fitness_potential(state, measurement, self.adaptive_params)

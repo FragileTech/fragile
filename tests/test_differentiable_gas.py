@@ -11,18 +11,20 @@ Tests cover:
 
 from __future__ import annotations
 
+import math
+
 import pytest
 import torch
 
 from fragile.differentiable_gas import (
+    compute_combined_logits,
+    compute_diversity_logits,
+    compute_fitness_logits,
+    create_differentiable_gas_variants,
     DifferentiableGas,
     DifferentiableGasParams,
-    SwarmState,
     gumbel_softmax_sample,
-    compute_fitness_logits,
-    compute_diversity_logits,
-    compute_combined_logits,
-    create_differentiable_gas_variants,
+    SwarmState,
 )
 
 
@@ -123,9 +125,7 @@ def test_diversity_logits_shape(device):
 
 def test_diversity_logits_distance(device):
     """Test that farther walkers get higher logits."""
-    x = torch.tensor(
-        [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [5.0, 0.0, 0.0]], device=device
-    )
+    x = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [5.0, 0.0, 0.0]], device=device)
     x_query = torch.tensor([[0.0, 0.0, 0.0]], device=device)
 
     logits = compute_diversity_logits(x, x_query, bandwidth=1.0)
@@ -317,7 +317,7 @@ def test_gradient_flow_through_rollout(device):
     state = SwarmState(x=x_init, v=v_init, reward=reward_init)
 
     # Rollout
-    state_final, history = gas.rollout(state, T=10, dt=0.1)
+    state_final, _history = gas.rollout(state, T=10, dt=0.1)
 
     # Loss on final state
     loss = -state_final.reward.mean()
@@ -335,7 +335,7 @@ def test_meta_optimization_temperature(device):
         """Rastrigin function (many local minima)."""
         A = 10
         d = x.shape[-1]
-        pi = torch.tensor(3.14159265, device=x.device, dtype=x.dtype)
+        pi = torch.tensor(math.pi, device=x.device, dtype=x.dtype)
         return A * d + (x**2 - A * torch.cos(2 * pi * x)).sum(dim=-1)
 
     # Learnable temperature
@@ -437,9 +437,7 @@ def test_no_cloning(device):
 
 def test_temperature_annealing(device):
     """Test temperature annealing schedule."""
-    params = DifferentiableGasParams(
-        tau_init=2.0, tau_min=0.1, tau_anneal=0.9
-    )
+    params = DifferentiableGasParams(tau_init=2.0, tau_min=0.1, tau_anneal=0.9)
     gas = DifferentiableGas(params, device=device)
 
     assert gas.tau == 2.0

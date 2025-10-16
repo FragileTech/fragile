@@ -87,7 +87,7 @@ class DimensionMapper(param.Parameterized):
 
     def init_range_widget(self, val_range, resolution, default_range):
         start, end = val_range[:2]
-        has_step = len(val_range) == 3  # noqa: PLR2004 (start, end, step)
+        has_step = len(val_range) == 3
         step = val_range[2] if has_step else (end - start) / resolution
         default_range = default_range or (start, end)
         return pn.widgets.EditableRangeSlider(

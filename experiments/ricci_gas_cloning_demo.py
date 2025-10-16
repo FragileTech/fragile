@@ -9,7 +9,9 @@ This script shows:
 """
 
 import torch
+
 from fragile.ricci_gas import RicciGas, RicciGasParams, SwarmState
+
 
 def main():
     # Setup
@@ -19,7 +21,7 @@ def main():
         kde_bandwidth=0.4,
         epsilon_Ric=0.01,
         epsilon_clone=0.5,  # Moderate distance for companion selection
-        sigma_clone=0.1,    # Small jitter
+        sigma_clone=0.1,  # Small jitter
         force_mode="pull",
         reward_mode="inverse",
     )
@@ -38,7 +40,7 @@ def main():
     print("=" * 60)
     print("Ricci Gas Cloning Demonstration")
     print("=" * 60)
-    print(f"\nInitial state:")
+    print("\nInitial state:")
     print(f"  Walkers: {N}")
     print(f"  Dimension: {d}")
     print(f"  Epsilon clone: {params.epsilon_clone}")
@@ -56,7 +58,7 @@ def main():
     # Compute displacement statistics
     displacement = (state_after.x - state_before.x).norm(dim=-1)
 
-    print(f"\nDisplacement statistics:")
+    print("\nDisplacement statistics:")
     print(f"  Mean: {displacement.mean():.3f}")
     print(f"  Std:  {displacement.std():.3f}")
     print(f"  Min:  {displacement.min():.3f}")
@@ -93,6 +95,7 @@ def main():
     print("  • Try different epsilon_clone values (large → uniform, small → local)")
     print("  • Visualize walker trajectories")
     print("  • Compare with/without cloning")
+
 
 if __name__ == "__main__":
     main()

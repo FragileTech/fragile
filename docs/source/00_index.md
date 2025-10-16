@@ -2,7 +2,7 @@
 
 Compressed index of all mathematical entries from 00_reference.md
 
-Total Entries: 819 (705 original + 70 scutoid + 20 CFT + 24 holography/AdS-CFT)
+Total Entries: 846 (705 original + 70 scutoid + 20 CFT + 24 holography/AdS-CFT + 27 holography proof)
 
 ---
 
@@ -5331,3 +5331,168 @@ Total Entries: 819 (705 original + 70 scutoid + 20 CFT + 24 holography/AdS-CFT)
 - **Tags:** validation, testing, quality-assurance, comprehensive
 - **Source:** [22_geometrothermodynamics.md § 8.3](22_geometrothermodynamics.md)
 
+---
+
+## Holographic Principle and AdS/CFT (27 entries from 12_holography.md)
+
+### Holographic Principle from Fractal Gas
+- **Type:** Theorem
+- **Label:** `thm-holographic-main`
+- **Tags:** holography, ads-cft, entanglement, area-law, einstein-equations
+- **Source:** [13_fractal_set_new/12_holography.md § Introduction](13_fractal_set_new/12_holography.md)
+
+### CST Boundary Area
+- **Type:** Definition
+- **Label:** `def-cst-area-holography`
+- **Tags:** holography, cst, geometry, boundary, area
+- **Source:** [13_fractal_set_new/12_holography.md § 1](13_fractal_set_new/12_holography.md)
+
+### IG Entanglement Entropy
+- **Type:** Definition
+- **Label:** `def-ig-entropy-holography`
+- **Tags:** holography, information-graph, entropy, entanglement
+- **Source:** [13_fractal_set_new/12_holography.md § 1](13_fractal_set_new/12_holography.md)
+
+### Nonlocal Perimeter Functional
+- **Type:** Definition
+- **Label:** `def-nonlocal-perimeter`
+- **Tags:** holography, perimeter, nonlocal, functional, gamma-convergence
+- **Source:** [13_fractal_set_new/12_holography.md § 1.1](13_fractal_set_new/12_holography.md)
+
+### Γ-Convergence to Local Perimeter
+- **Type:** Theorem
+- **Label:** `thm-gamma-convergence-holography`
+- **Tags:** holography, gamma-convergence, perimeter, area-law, bv-functions
+- **Source:** [13_fractal_set_new/12_holography.md § 1.2](13_fractal_set_new/12_holography.md)
+
+### Antichain-Surface Correspondence
+- **Type:** Theorem
+- **Label:** `thm-antichain-surface-correspondence`
+- **Tags:** holography, antichain, cst, discrete-geometry, area
+- **Source:** [13_fractal_set_new/12_holography.md § 1.3](13_fractal_set_new/12_holography.md)
+
+### IG Cut N-Scaling
+- **Type:** Theorem
+- **Label:** `thm-ig-cut-scaling`
+- **Tags:** holography, information-graph, scaling, area-law, perimeter
+- **Source:** [13_fractal_set_new/12_holography.md § 1.3](13_fractal_set_new/12_holography.md)
+
+### Informational Area Law
+- **Type:** Theorem
+- **Label:** `thm-area-law-holography`
+- **Tags:** holography, area-law, entanglement, bekenstein-hawking, ryu-takayanagi
+- **Source:** [13_fractal_set_new/12_holography.md § 1.4](13_fractal_set_new/12_holography.md)
+
+### Swarm Energy Variation
+- **Type:** Definition
+- **Label:** `def-energy-variation-holography`
+- **Tags:** holography, energy, stress-energy-tensor, first-law
+- **Source:** [13_fractal_set_new/12_holography.md § 2.1](13_fractal_set_new/12_holography.md)
+
+### IG Entropy Variation
+- **Type:** Definition
+- **Label:** `def-entropy-variation-holography`
+- **Tags:** holography, entropy, variation, first-law
+- **Source:** [13_fractal_set_new/12_holography.md § 2.1](13_fractal_set_new/12_holography.md)
+
+### First Law of Algorithmic Entanglement
+- **Type:** Theorem
+- **Label:** `thm-first-law-holography`
+- **Tags:** holography, first-law, entanglement, thermodynamics, clausius
+- **Source:** [13_fractal_set_new/12_holography.md § 2.2](13_fractal_set_new/12_holography.md)
+
+### Unruh Temperature in Fragile Gas
+- **Type:** Theorem
+- **Label:** `thm-unruh-holography`
+- **Tags:** holography, unruh-effect, temperature, acceleration, rindler
+- **Source:** [13_fractal_set_new/12_holography.md § 3.1](13_fractal_set_new/12_holography.md)
+
+### Einstein's Equations from Thermodynamic Consistency
+- **Type:** Theorem
+- **Label:** `thm-einstein-equations-holography`
+- **Tags:** holography, einstein-equations, gravity, thermodynamics, jacobson
+- **Source:** [13_fractal_set_new/12_holography.md § 3.2](13_fractal_set_new/12_holography.md)
+
+### Bekenstein-Hawking Formula
+- **Type:** Theorem
+- **Label:** `thm-bekenstein-hawking-holography`
+- **Tags:** holography, bekenstein-hawking, black-hole-entropy, area-law
+- **Source:** [13_fractal_set_new/12_holography.md § 3.3](13_fractal_set_new/12_holography.md)
+
+### Modular Stress-Energy Tensor
+- **Type:** Definition
+- **Label:** `def-modular-stress-energy`
+- **Tags:** holography, stress-energy, modular-energy, vacuum-subtraction
+- **Source:** [13_fractal_set_new/12_holography.md § 4.1](13_fractal_set_new/12_holography.md)
+
+### Nonlocal IG Pressure
+- **Type:** Definition
+- **Label:** `def-ig-pressure`
+- **Tags:** holography, pressure, information-graph, nonlocal, ads-geometry
+- **Source:** [13_fractal_set_new/12_holography.md § 4.1](13_fractal_set_new/12_holography.md)
+
+### Effective Cosmological Constant
+- **Type:** Theorem
+- **Label:** `thm-lambda-eff`
+- **Tags:** holography, cosmological-constant, ads-geometry, pressure, vacuum-energy
+- **Source:** [13_fractal_set_new/12_holography.md § 4.2](13_fractal_set_new/12_holography.md)
+
+### Sign of IG Pressure
+- **Type:** Theorem
+- **Label:** `thm-ig-pressure-sign`
+- **Tags:** holography, pressure, uv-ir, surface-tension, ads-geometry
+- **Source:** [13_fractal_set_new/12_holography.md § 4.3](13_fractal_set_new/12_holography.md)
+
+### Negative Cosmological Constant in UV
+- **Type:** Theorem
+- **Label:** `thm-ads-geometry`
+- **Tags:** holography, ads-geometry, cosmological-constant, negative-curvature, uv-regime
+- **Source:** [13_fractal_set_new/12_holography.md § 4.4](13_fractal_set_new/12_holography.md)
+
+### Marginal-Stability AdS Regime
+- **Type:** Definition
+- **Label:** `def-marginal-stability`
+- **Tags:** holography, ads-geometry, marginal-stability, regime
+- **Source:** [13_fractal_set_new/12_holography.md § 4.4](13_fractal_set_new/12_holography.md)
+
+### IG Encodes Quantum Correlations (Recap)
+- **Type:** Theorem
+- **Label:** `thm-ig-quantum-recap`
+- **Tags:** holography, quantum-correlations, osterwalder-schrader, wightman-axioms
+- **Source:** [13_fractal_set_new/12_holography.md § 5.1](13_fractal_set_new/12_holography.md)
+
+### Conformal Transformations
+- **Type:** Definition
+- **Label:** `def-conformal-transformations`
+- **Tags:** holography, cft, conformal-symmetry, scale-invariance
+- **Source:** [13_fractal_set_new/12_holography.md § 5.2](13_fractal_set_new/12_holography.md)
+
+### IG Exhibits Approximate Conformal Symmetry
+- **Type:** Theorem
+- **Label:** `thm-ig-conformal`
+- **Tags:** holography, cft, conformal-symmetry, n-point-functions, scaling-limit
+- **Source:** [13_fractal_set_new/12_holography.md § 5.2](13_fractal_set_new/12_holography.md)
+
+### AdS/CFT Correspondence
+- **Type:** Theorem
+- **Label:** `thm-ads-cft-correspondence`
+- **Tags:** holography, ads-cft, partition-function, holographic-dictionary, duality
+- **Source:** [13_fractal_set_new/12_holography.md § 5.3](13_fractal_set_new/12_holography.md)
+
+### Complete Proof of Holographic Principle (Summary)
+- **Type:** Theorem
+- **Label:** `thm-holography-complete`
+- **Tags:** holography, summary, ads-cft, area-law, einstein-equations
+- **Source:** [13_fractal_set_new/12_holography.md § 6.1](13_fractal_set_new/12_holography.md)
+
+### Computational Verification of Holography
+- **Type:** Prediction
+- **Label:** `pred-computational-holography`
+- **Tags:** holography, prediction, falsifiable, computational, wilson-loops
+- **Source:** [13_fractal_set_new/12_holography.md § 6.3](13_fractal_set_new/12_holography.md)
+
+### Varying Fitness Regimes
+- **Type:** Remark
+- **Label:** `rem-varying-fitness`
+- **Tags:** holography, fitness-potential, spatially-varying, generalization
+- **Source:** [13_fractal_set_new/12_holography.md § 1.2](13_fractal_set_new/12_holography.md)

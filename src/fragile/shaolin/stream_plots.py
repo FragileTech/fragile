@@ -27,7 +27,7 @@ class StreamingPlot:
         data=None,
         bokeh_opts: dict | None = None,
         mpl_opts: dict | None = None,
-        widgets_mapping: dict[str, Any] = None,
+        widgets_mapping: dict[str, Any] | None = None,
         **kwargs,
     ):
         """Initialize a :class:`StreamingPlot`.

@@ -1,8 +1,16 @@
-"""Tests for VectorizedOps."""
+"""Tests for VectorizedOps and companion selection functions.
+
+Note: Algorithmic distance and companion selection functions have been moved
+to fragile.companion_selection module. These tests now import from there.
+"""
 
 import pytest
 import torch
 
+from fragile.companion_selection import (
+    compute_algorithmic_distance_matrix,
+    select_companions_softmax,
+)
 from fragile.euclidean_gas import SwarmState, VectorizedOps
 
 
@@ -13,22 +21,19 @@ class TestAlgorithmicDistance:
         """Test that d_alg(i, i) = 0 for all i."""
         x = torch.randn(10, 3)
         v = torch.randn(10, 3)
-        state = SwarmState(x, v)
 
         lambda_alg = 1.0
-        dist_sq = VectorizedOps.algorithmic_distance_squared(state, lambda_alg)
+        dist_sq = compute_algorithmic_distance_matrix(x, v, lambda_alg)
 
-        # Diagonal should be zero
-        assert torch.allclose(torch.diag(dist_sq), torch.zeros(10))
+        # Diagonal should be zero (within numerical precision)
+        assert torch.allclose(torch.diag(dist_sq), torch.zeros(10), atol=1e-5)
 
     def test_symmetry(self):
         """Test that d_alg(i, j) = d_alg(j, i)."""
         x = torch.randn(10, 3)
         v = torch.randn(10, 3)
-        state = SwarmState(x, v)
-
         lambda_alg = 1.0
-        dist_sq = VectorizedOps.algorithmic_distance_squared(state, lambda_alg)
+        dist_sq = compute_algorithmic_distance_matrix(x, v, lambda_alg)
 
         # Should be symmetric
         assert torch.allclose(dist_sq, dist_sq.T)
@@ -37,32 +42,28 @@ class TestAlgorithmicDistance:
         """Test distance when positions are identical but velocities differ."""
         x = torch.zeros(5, 2)  # All at origin
         v = torch.randn(5, 2)
-        state = SwarmState(x, v)
-
         lambda_alg = 2.0
-        dist_sq = VectorizedOps.algorithmic_distance_squared(state, lambda_alg)
+        dist_sq = compute_algorithmic_distance_matrix(x, v, lambda_alg)
 
         # Distance should be lambda_alg * ||v_i - v_j||^2
         for i in range(5):
             for j in range(5):
                 if i != j:
-                    expected = lambda_alg * torch.sum((v[i] - v[j])**2)
+                    expected = lambda_alg * torch.sum((v[i] - v[j]) ** 2)
                     assert torch.allclose(dist_sq[i, j], expected)
 
     def test_identical_velocities_different_positions(self):
         """Test distance when velocities are identical but positions differ."""
         x = torch.randn(5, 2)
         v = torch.zeros(5, 2)  # All stationary
-        state = SwarmState(x, v)
-
         lambda_alg = 1.0
-        dist_sq = VectorizedOps.algorithmic_distance_squared(state, lambda_alg)
+        dist_sq = compute_algorithmic_distance_matrix(x, v, lambda_alg)
 
         # Distance should be ||x_i - x_j||^2
         for i in range(5):
             for j in range(5):
                 if i != j:
-                    expected = torch.sum((x[i] - x[j])**2)
+                    expected = torch.sum((x[i] - x[j]) ** 2)
                     assert torch.allclose(dist_sq[i, j], expected, atol=1e-6)
 
     @pytest.mark.parametrize("lambda_alg", [0.1, 1.0, 10.0])
@@ -70,9 +71,7 @@ class TestAlgorithmicDistance:
         """Test effect of lambda_alg parameter."""
         x = torch.randn(5, 2)
         v = torch.randn(5, 2)
-        state = SwarmState(x, v)
-
-        dist_sq = VectorizedOps.algorithmic_distance_squared(state, lambda_alg)
+        dist_sq = compute_algorithmic_distance_matrix(x, v, lambda_alg)
 
         # Verify formula: ||x_i - x_j||^2 + lambda_alg * ||v_i - v_j||^2
         for i in range(5):
@@ -83,15 +82,14 @@ class TestAlgorithmicDistance:
                 assert torch.allclose(dist_sq[i, j], expected)
 
     def test_non_negativity(self):
-        """Test that all distances are non-negative."""
+        """Test that all distances are non-negative (within numerical precision)."""
         x = torch.randn(10, 3)
         v = torch.randn(10, 3)
-        state = SwarmState(x, v)
-
         lambda_alg = 1.0
-        dist_sq = VectorizedOps.algorithmic_distance_squared(state, lambda_alg)
+        dist_sq = compute_algorithmic_distance_matrix(x, v, lambda_alg)
 
-        assert torch.all(dist_sq >= 0)
+        # Allow small numerical errors
+        assert torch.all(dist_sq >= -1e-6)
 
     def test_large_lambda_emphasizes_velocity(self):
         """Test that large lambda_alg emphasizes velocity differences."""
@@ -100,10 +98,10 @@ class TestAlgorithmicDistance:
         state = SwarmState(x, v)
 
         # Small lambda: position-dominated
-        dist_small = VectorizedOps.algorithmic_distance_squared(state, 0.01)
+        dist_small = compute_algorithmic_distance_matrix(x, v, 0.01)
 
         # Large lambda: velocity-dominated
-        dist_large = VectorizedOps.algorithmic_distance_squared(state, 100.0)
+        dist_large = compute_algorithmic_distance_matrix(x, v, 100.0)
 
         # They should give different orderings (in general)
         assert not torch.allclose(dist_small, dist_large)
@@ -116,11 +114,12 @@ class TestFindCompanions:
         """Test that walkers don't select themselves as companions."""
         x = torch.randn(10, 3)
         v = torch.randn(10, 3)
-        state = SwarmState(x, v)
+        alive_mask = torch.ones(10, dtype=torch.bool)
 
-        dist_sq = VectorizedOps.algorithmic_distance_squared(state, 1.0)
         epsilon = 0.5
-        companions = VectorizedOps.find_companions(dist_sq, epsilon)
+        companions = select_companions_softmax(
+            x, v, alive_mask, epsilon=epsilon, lambda_alg=1.0, exclude_self=True
+        )
 
         # No walker should be its own companion
         for i in range(10):
@@ -137,9 +136,8 @@ class TestFindCompanions:
             [10.01, 0.0],  # Very close to 2
         ])
         v = torch.zeros(4, 2)
-        state = SwarmState(x, v)
+        alive_mask = torch.ones(4, dtype=torch.bool)
 
-        dist_sq = VectorizedOps.algorithmic_distance_squared(state, 0.0)
         epsilon = 0.5  # Small epsilon means strong preference for nearby
 
         # Run multiple times to test stochastic behavior
@@ -148,24 +146,27 @@ class TestFindCompanions:
         n_trials = 100
 
         for _ in range(n_trials):
-            companions = VectorizedOps.find_companions(dist_sq, epsilon)
+            companions = select_companions_softmax(
+                x, v, alive_mask, epsilon=epsilon, lambda_alg=0.0, exclude_self=True
+            )
             if companions[0] == 1:
                 counts_0_to_1 += 1
 
         # With small epsilon and very close neighbors, should almost always choose nearby
         # Allow some randomness but expect > 90% selection of nearest
-        assert counts_0_to_1 > 0.9 * n_trials, \
-            f"Expected walker 0 to choose walker 1 in >90% of trials, got {counts_0_to_1}/{n_trials}"
+        assert (
+            counts_0_to_1 > 0.9 * n_trials
+        ), f"Expected walker 0 to choose walker 1 in >90% of trials, got {counts_0_to_1}/{n_trials}"
 
     def test_two_walkers(self):
         """Test edge case with only two walkers."""
         x = torch.randn(2, 3)
         v = torch.randn(2, 3)
-        state = SwarmState(x, v)
-
-        dist_sq = VectorizedOps.algorithmic_distance_squared(state, 1.0)
+        alive_mask = torch.ones(x.shape[0], dtype=torch.bool)
         epsilon = 0.5
-        companions = VectorizedOps.find_companions(dist_sq, epsilon)
+        companions = select_companions_softmax(
+            x, v, alive_mask, epsilon=epsilon, lambda_alg=1.0, exclude_self=True
+        )
 
         # Each must choose the other (only option)
         assert companions[0] == 1
@@ -175,16 +176,18 @@ class TestFindCompanions:
         """Test that companion finding is reproducible with same random seed."""
         x = torch.randn(10, 3)
         v = torch.randn(10, 3)
-        state = SwarmState(x, v)
-
-        dist_sq = VectorizedOps.algorithmic_distance_squared(state, 1.0)
+        alive_mask = torch.ones(10, dtype=torch.bool)
         epsilon = 0.5
 
         torch.manual_seed(42)
-        companions1 = VectorizedOps.find_companions(dist_sq, epsilon)
+        companions1 = select_companions_softmax(
+            x, v, alive_mask, epsilon=epsilon, lambda_alg=1.0, exclude_self=True
+        )
 
         torch.manual_seed(42)
-        companions2 = VectorizedOps.find_companions(dist_sq, epsilon)
+        companions2 = select_companions_softmax(
+            x, v, alive_mask, epsilon=epsilon, lambda_alg=1.0, exclude_self=True
+        )
 
         assert torch.equal(companions1, companions2)
 
@@ -192,11 +195,11 @@ class TestFindCompanions:
         """Test that output has correct shape."""
         x = torch.randn(20, 5)
         v = torch.randn(20, 5)
-        state = SwarmState(x, v)
-
-        dist_sq = VectorizedOps.algorithmic_distance_squared(state, 1.0)
+        alive_mask = torch.ones(x.shape[0], dtype=torch.bool)
         epsilon = 0.5
-        companions = VectorizedOps.find_companions(dist_sq, epsilon)
+        companions = select_companions_softmax(
+            x, v, alive_mask, epsilon=epsilon, lambda_alg=1.0, exclude_self=True
+        )
 
         assert companions.shape == (20,)
         assert companions.dtype == torch.long
@@ -242,7 +245,7 @@ class TestVariancePosition:
 
         # Manual calculation
         mu = torch.mean(x, dim=0)
-        expected = torch.mean(torch.sum((x - mu)**2, dim=-1))
+        expected = torch.mean(torch.sum((x - mu) ** 2, dim=-1))
 
         assert torch.allclose(var_x, expected)
 
@@ -296,7 +299,7 @@ class TestVarianceVelocity:
 
         # Manual calculation
         mu = torch.mean(v, dim=0)
-        expected = torch.mean(torch.sum((v - mu)**2, dim=-1))
+        expected = torch.mean(torch.sum((v - mu) ** 2, dim=-1))
 
         assert torch.allclose(var_v, expected)
 

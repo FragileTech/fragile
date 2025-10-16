@@ -127,7 +127,7 @@ def test_from_array():
     Test the from_array class method for both TorchBounds and NumpyBounds.
     """
     # For NumpyBounds
-    x_np = np.random.uniform(0, 10, size=(100, 3))  # noqa: NPY002
+    x_np = np.random.uniform(0, 10, size=(100, 3))
     bounds_np = NumpyBounds.from_array(x_np, scale=1.0)
     assert isinstance(bounds_np, NumpyBounds)
     assert bounds_np.low.shape == (3,)
@@ -189,3 +189,119 @@ def test_points_in_bounds(bounds):
     else:
         points_outside = np.array([[0.0, 5.0, 10.0], [6.0, 9.0, 14.0]])
     assert not bounds.points_in_bounds(points_outside).all()
+
+
+# ===== Additional TorchBounds Tests =====
+
+
+def test_torchbounds_on_device(test_device):
+    """Test TorchBounds works correctly on different devices."""
+    high = torch.tensor([5.0, 10.0, 15.0])
+    low = torch.tensor([1.0, 2.0, 3.0])
+    bounds = TorchBounds(high=high, low=low, device=test_device)
+
+    # Verify device
+    assert bounds.high.device.type == test_device
+    assert bounds.low.device.type == test_device
+
+    # Test that samples work on the device
+    samples = bounds.sample(num_samples=10)
+    assert samples.device.type == test_device
+    assert bounds.contains(samples).all()
+
+    # Test clip
+    x_out = torch.tensor([[0.0, 5.0, 20.0], [6.0, 11.0, 2.5]], device=test_device)
+    x_clipped = bounds.clip(x_out)
+    assert x_clipped.device.type == test_device
+    assert bounds.contains(x_clipped).all()
+
+    # Test pbc
+    x_pbc = bounds.pbc(x_out)
+    assert x_pbc.device.type == test_device
+    assert bounds.contains(x_pbc).all()
+
+
+def test_torchbounds_dtype_conversions():
+    """Test TorchBounds with different dtypes (float32, float64)."""
+    high = torch.tensor([5.0, 10.0, 15.0])
+    low = torch.tensor([1.0, 2.0, 3.0])
+
+    # Test float32
+    bounds_f32 = TorchBounds(high=high, low=low, dtype=torch.float32)
+    assert bounds_f32.dtype == torch.float32
+    samples_f32 = bounds_f32.sample(num_samples=5)
+    assert samples_f32.dtype == torch.float32
+    assert bounds_f32.contains(samples_f32).all()
+
+    # Test float64
+    bounds_f64 = TorchBounds(high=high, low=low, dtype=torch.float64)
+    assert bounds_f64.dtype == torch.float64
+    samples_f64 = bounds_f64.sample(num_samples=5)
+    assert samples_f64.dtype == torch.float64
+    assert bounds_f64.contains(samples_f64).all()
+
+
+def test_torchbounds_chained_operations():
+    """Test chaining clip/pbc with contains."""
+    high = torch.tensor([5.0, 10.0, 15.0])
+    low = torch.tensor([1.0, 2.0, 3.0])
+    bounds = TorchBounds(high=high, low=low)
+
+    # Out-of-bounds points
+    x_out = torch.tensor([[0.0, 5.0, 20.0], [6.0, 11.0, 2.5]])
+
+    # Clip then check contains
+    x_clipped = bounds.clip(x_out)
+    assert bounds.contains(x_clipped).all()
+
+    # PBC then check contains
+    x_pbc = bounds.pbc(x_out)
+    assert bounds.contains(x_pbc).all()
+
+
+def test_torchbounds_with_euclidean_gas_integration():
+    """Test TorchBounds integration with EuclideanGas alive_mask logic."""
+    from fragile.euclidean_gas import SwarmState
+
+    N, d = 10, 2
+    high = torch.tensor([5.0, 5.0])
+    low = torch.tensor([-5.0, -5.0])
+    bounds = TorchBounds(high=high, low=low)
+
+    # Create state with some walkers out of bounds
+    x = torch.randn(N, d) * 10  # Large variance, some will be out of bounds
+    v = torch.randn(N, d)
+    state = SwarmState(x, v)
+
+    # Test contains returns boolean mask
+    alive_mask = bounds.contains(state.x)
+    assert alive_mask.shape == (N,)
+    assert alive_mask.dtype == torch.bool
+
+    # Test that clipped positions are all in bounds
+    x_clipped = bounds.clip(state.x)
+    alive_mask_clipped = bounds.contains(x_clipped)
+    assert alive_mask_clipped.all()
+
+
+def test_torchbounds_edge_cases():
+    """Test edge cases for TorchBounds."""
+    # Very small bounds (near zero width)
+    small_high = torch.tensor([0.001, 0.001])
+    small_low = torch.tensor([0.0, 0.0])
+    small_bounds = TorchBounds(high=small_high, low=small_low)
+    small_samples = small_bounds.sample(num_samples=10)
+    assert small_bounds.contains(small_samples).all()
+
+    # Large bounds (wide range)
+    large_high = torch.tensor([1e6, 1e6])
+    large_low = torch.tensor([-1e6, -1e6])
+    large_bounds = TorchBounds(high=large_high, low=large_low)
+    large_samples = large_bounds.sample(num_samples=10)
+    assert large_bounds.contains(large_samples).all()
+
+    # Single dimension
+    single_dim_bounds = TorchBounds(high=torch.tensor([10.0]), low=torch.tensor([0.0]))
+    single_samples = single_dim_bounds.sample(num_samples=5)
+    assert single_samples.shape == (5, 1)
+    assert single_dim_bounds.contains(single_samples).all()

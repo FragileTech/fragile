@@ -783,5 +783,5 @@ class NumpyBounds:
 
         """
         shape = (num_samples, *self.shape)
-        rand = numpy.random.rand(*shape).astype(self.dtype)  # noqa: NPY002
+        rand = numpy.random.rand(*shape).astype(self.dtype)
         return self.low + (self.high - self.low) * rand

@@ -7,9 +7,9 @@ Ensures:
 3. Proper spacing around math
 """
 
+from pathlib import Path
 import re
 import sys
-from pathlib import Path
 
 
 def fix_single_line_display_math(content):
@@ -18,14 +18,13 @@ def fix_single_line_display_math(content):
     $$equation$$ -> \n$$\nequation\n$$
     """
     # Find all single-line display math (no newlines between $$)
-    pattern = r'\$\$([^\n$]+)\$\$'
+    pattern = r"\$\$([^\n$]+)\$\$"
 
     def replace_func(match):
         equation = match.group(1).strip()
-        return f'\n$$\n{equation}\n$$'
+        return f"\n$$\n{equation}\n$$"
 
-    result = re.sub(pattern, replace_func, content)
-    return result
+    return re.sub(pattern, replace_func, content)
 
 
 def add_blank_line_before_display_math(content):
@@ -38,26 +37,26 @@ def add_blank_line_before_display_math(content):
     - start of file
     - after block elements
     """
-    lines = content.split('\n')
+    lines = content.split("\n")
     result_lines = []
 
     for i, line in enumerate(lines):
         # Check if current line starts a display math block
-        if line.strip() == '$$':
+        if line.strip() == "$$":
             # Check if we need to add blank line before
             if i > 0:
-                prev_line = result_lines[-1] if result_lines else ''
+                prev_line = result_lines[-1] if result_lines else ""
                 # Don't add blank line if:
                 # - previous line is already empty
                 # - previous line is a block element marker
                 # - we're in a list or indented block
-                if prev_line.strip() != '' and not line.startswith('   '):
+                if prev_line.strip() != "" and not line.startswith("   "):
                     # Add blank line
-                    result_lines.append('')
+                    result_lines.append("")
 
         result_lines.append(line)
 
-    return '\n'.join(result_lines)
+    return "\n".join(result_lines)
 
 
 def process_file(input_path, output_path=None, dry_run=False):
@@ -72,7 +71,7 @@ def process_file(input_path, output_path=None, dry_run=False):
     Returns:
         Number of fixes made
     """
-    with open(input_path, 'r', encoding='utf-8') as f:
+    with open(input_path, encoding="utf-8") as f:
         content = f.read()
 
     original_content = content
@@ -87,15 +86,15 @@ def process_file(input_path, output_path=None, dry_run=False):
     # Count changes
     if content != original_content:
         # Count specific changes
-        original_single_line = len(re.findall(r'\$\$[^\n]+\$\$', original_content))
-        new_single_line = len(re.findall(r'\$\$[^\n]+\$\$', content))
+        original_single_line = len(re.findall(r"\$\$[^\n]+\$\$", original_content))
+        new_single_line = len(re.findall(r"\$\$[^\n]+\$\$", content))
         single_line_fixed = original_single_line - new_single_line
 
-        original_lines = len(original_content.split('\n'))
-        new_lines = len(content.split('\n'))
+        original_lines = len(original_content.split("\n"))
+        new_lines = len(content.split("\n"))
         lines_added = new_lines - original_lines
 
-        print(f"\nChanges:")
+        print("\nChanges:")
         print(f"  - Fixed {single_line_fixed} single-line display math blocks")
         print(f"  - Added {lines_added} blank lines")
 
@@ -103,24 +102,23 @@ def process_file(input_path, output_path=None, dry_run=False):
             print("\nDRY RUN - No changes written")
             # Show a sample
             print("\nSample of first difference:")
-            orig_lines = original_content.split('\n')
-            new_lines = content.split('\n')
+            orig_lines = original_content.split("\n")
+            new_lines = content.split("\n")
             for i, (o, n) in enumerate(zip(orig_lines[:100], new_lines[:100])):
                 if o != n:
-                    print(f"Line {i+1}:")
+                    print(f"Line {i + 1}:")
                     print(f"  Before: {o[:80]}")
                     print(f"  After:  {n[:80]}")
                     break
         else:
             output = output_path or input_path
-            with open(output, 'w', encoding='utf-8') as f:
+            with open(output, "w", encoding="utf-8") as f:
                 f.write(content)
             print(f"\nWrote changes to {output}")
 
         return single_line_fixed + lines_added
-    else:
-        print("No changes needed")
-        return 0
+    print("No changes needed")
+    return 0
 
 
 def main():
@@ -139,7 +137,7 @@ def main():
     dry_run = False
 
     for arg in sys.argv[2:]:
-        if arg == '--dry-run':
+        if arg == "--dry-run":
             dry_run = True
         else:
             output_file = arg
@@ -151,5 +149,5 @@ def main():
     process_file(input_file, output_file, dry_run)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

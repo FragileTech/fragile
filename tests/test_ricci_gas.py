@@ -13,22 +13,22 @@ Tests cover:
 
 from __future__ import annotations
 
+import numpy as np
 import pytest
 import torch
-import numpy as np
 
 from fragile.ricci_gas import (
+    compute_kde_density,
+    compute_kde_hessian,
+    compute_ricci_gradient,
+    compute_ricci_proxy_3d,
+    create_ricci_gas_variants,
+    double_well_3d,
+    gaussian_kernel,
+    rastrigin_3d,
     RicciGas,
     RicciGasParams,
     SwarmState,
-    compute_kde_density,
-    compute_kde_hessian,
-    compute_ricci_proxy_3d,
-    compute_ricci_gradient,
-    gaussian_kernel,
-    create_ricci_gas_variants,
-    double_well_3d,
-    rastrigin_3d,
 )
 
 
@@ -88,7 +88,7 @@ def test_gaussian_kernel_normalization(device):
     y = torch.linspace(-5, 5, 100, device=device)
     z = torch.linspace(-5, 5, 100, device=device)
 
-    xx, yy, zz = torch.meshgrid(x, y, z, indexing='ij')
+    xx, yy, zz = torch.meshgrid(x, y, z, indexing="ij")
     grid = torch.stack([xx.flatten(), yy.flatten(), zz.flatten()], dim=-1)
 
     # Kernel centered at origin
@@ -121,7 +121,7 @@ def test_kde_density_normalization(simple_state, device):
     x_min, x_max = simple_state.x.min() - 2, simple_state.x.max() + 2
     grid_1d = torch.linspace(x_min, x_max, 30, device=device)
 
-    xx, yy, zz = torch.meshgrid(grid_1d, grid_1d, grid_1d, indexing='ij')
+    xx, yy, zz = torch.meshgrid(grid_1d, grid_1d, grid_1d, indexing="ij")
     grid = torch.stack([xx.flatten(), yy.flatten(), zz.flatten()], dim=-1)
 
     rho = compute_kde_density(
@@ -179,7 +179,7 @@ def test_ricci_proxy_shape(simple_state, ricci_gas):
 
 def test_ricci_proxy_bounds(simple_state, ricci_gas):
     """Test Ricci curvature is finite."""
-    R, H = ricci_gas.compute_curvature(simple_state)
+    R, _H = ricci_gas.compute_curvature(simple_state)
 
     assert torch.isfinite(R).all(), "Ricci curvature contains NaN/Inf"
     assert R.abs().max() < 1e6, "Ricci curvature unbounded"
@@ -188,11 +188,12 @@ def test_ricci_proxy_bounds(simple_state, ricci_gas):
 def test_ricci_proxy_eigenvalue_formula(device):
     """Test Ricci proxy formula: R = tr(H) - λ_min(H)."""
     # Create simple Hessian
-    H = torch.tensor([
-        [[2.0, 0.0, 0.0],
-         [0.0, 1.0, 0.0],
-         [0.0, 0.0, 0.5]],
-    ], device=device)
+    H = torch.tensor(
+        [
+            [[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.5]],
+        ],
+        device=device,
+    )
 
     R = compute_ricci_proxy_3d(H)
 
@@ -231,8 +232,8 @@ def test_ricci_responds_to_clustering(device):
     gas = RicciGas(params)
 
     # Compute curvatures
-    R_clustered, H_clustered = gas.compute_curvature(state_clustered)
-    R_diffuse, H_diffuse = gas.compute_curvature(state_diffuse)
+    R_clustered, _H_clustered = gas.compute_curvature(state_clustered)
+    R_diffuse, _H_diffuse = gas.compute_curvature(state_diffuse)
 
     # Just check they're computable (may be zero for symmetric configs)
     assert torch.isfinite(R_clustered).all()
@@ -252,7 +253,7 @@ def test_force_direction_pull(simple_state, device):
     gas = RicciGas(params)
 
     # Compute geometry
-    R, H = gas.compute_curvature(simple_state, cache=True)
+    _R, _H = gas.compute_curvature(simple_state, cache=True)
 
     # Compute force
     force = gas.compute_force(simple_state)
@@ -270,7 +271,7 @@ def test_force_direction_push(simple_state, device):
     )
     gas = RicciGas(params)
 
-    R, H = gas.compute_curvature(simple_state, cache=True)
+    _R, _H = gas.compute_curvature(simple_state, cache=True)
     force_push = gas.compute_force(simple_state)
 
     # Compare with pull mode
@@ -296,7 +297,7 @@ def test_force_none(simple_state):
 
 def test_reward_inverse(simple_state, ricci_gas):
     """Test inverse reward: r = 1/(R + ε)."""
-    R, H = ricci_gas.compute_curvature(simple_state, cache=True)
+    R, _H = ricci_gas.compute_curvature(simple_state, cache=True)
     reward = ricci_gas.compute_reward(simple_state)
 
     # Expected
@@ -310,7 +311,7 @@ def test_reward_negative(simple_state, device):
     params = RicciGasParams(reward_mode="negative")
     gas = RicciGas(params)
 
-    R, H = gas.compute_curvature(simple_state, cache=True)
+    R, _H = gas.compute_curvature(simple_state, cache=True)
     reward = gas.compute_reward(simple_state)
 
     # Expected
@@ -336,11 +337,14 @@ def test_reward_none(simple_state, device):
 def test_singularity_regulation_kills_high_curvature(device):
     """Test that walkers with R > R_crit are killed."""
     # Create state with one walker in high curvature
-    x = torch.tensor([
-        [0.0, 0.0, 0.0],
-        [0.01, 0.0, 0.0],  # Very close → high curvature
-        [5.0, 5.0, 5.0],   # Far away → low curvature
-    ], device=device)
+    x = torch.tensor(
+        [
+            [0.0, 0.0, 0.0],
+            [0.01, 0.0, 0.0],  # Very close → high curvature
+            [5.0, 5.0, 5.0],  # Far away → low curvature
+        ],
+        device=device,
+    )
     v = torch.zeros(3, 3, device=device)
     s = torch.ones(3, device=device)
     state = SwarmState(x=x, v=v, s=s)
@@ -353,7 +357,7 @@ def test_singularity_regulation_kills_high_curvature(device):
     gas = RicciGas(params)
 
     # Compute curvature
-    R, H = gas.compute_curvature(state, cache=True)
+    R, _H = gas.compute_curvature(state, cache=True)
 
     # Apply regulation
     state = gas.apply_singularity_regulation(state)
@@ -428,12 +432,12 @@ def test_simple_dynamics_converges(device):
 
     # Run dynamics
     for t in range(100):
-        R, H = gas.compute_curvature(state, cache=True)
+        _R, _H = gas.compute_curvature(state, cache=True)
         force = gas.compute_force(state)
 
         # Simple Langevin
         state.v = 0.9 * state.v + 0.1 * force + torch.randn_like(state.v) * 0.05
-        state.x = state.x + state.v * 0.1
+        state.x += state.v * 0.1
 
         state = gas.apply_singularity_regulation(state)
 
@@ -463,11 +467,11 @@ def test_variance_evolution_subcritical(device):
 
     # Run
     for t in range(200):
-        R, H = gas.compute_curvature(state, cache=True)
+        _R, _H = gas.compute_curvature(state, cache=True)
         force = gas.compute_force(state)
 
         state.v = 0.9 * state.v + 0.1 * force + torch.randn_like(state.v) * 0.05
-        state.x = state.x + state.v * 0.1
+        state.x += state.v * 0.1
 
     final_var = state.x.var(dim=0).sum().item()
 
@@ -500,11 +504,11 @@ def test_variance_evolution_supercritical(device):
 
     # Run longer to see effect
     for t in range(400):
-        R, H = gas.compute_curvature(state, cache=True)
+        _R, _H = gas.compute_curvature(state, cache=True)
         force = gas.compute_force(state)
 
         state.v = 0.7 * state.v + 0.3 * force + torch.randn_like(state.v) * 0.02
-        state.x = state.x + state.v * 0.05
+        state.x += state.v * 0.05
 
     final_var = state.x.var(dim=0).sum().item()
 
@@ -518,11 +522,14 @@ def test_variance_evolution_supercritical(device):
 
 def test_double_well_shape(device):
     """Test double-well potential has two minima."""
-    x = torch.tensor([
-        [-1.0, 0.0, 0.0],  # Near first minimum
-        [1.0, 0.0, 0.0],   # Near second minimum
-        [0.0, 0.0, 0.0],   # Saddle
-    ], device=device)
+    x = torch.tensor(
+        [
+            [-1.0, 0.0, 0.0],  # Near first minimum
+            [1.0, 0.0, 0.0],  # Near second minimum
+            [0.0, 0.0, 0.0],  # Saddle
+        ],
+        device=device,
+    )
 
     V = double_well_3d(x)
 
@@ -565,7 +572,7 @@ def test_gradient_clipping_works(device):
         s=torch.ones(20, device=device),
     )
 
-    R, H = gas.compute_curvature(state, cache=True)
+    _R, _H = gas.compute_curvature(state, cache=True)
     force = gas.compute_force(state)
 
     # Force should be finite (gradient clipping ensures this)
@@ -593,7 +600,7 @@ def test_regularization_prevents_singularity(device):
         s=torch.ones(20, device=device),
     )
 
-    R, H = gas.compute_curvature(state, cache=True)
+    _R, _H = gas.compute_curvature(state, cache=True)
     reward = gas.compute_reward(state)
 
     # Reward should be finite even if R ≈ 0
@@ -610,7 +617,7 @@ def test_full_ricci_gas_iteration(ricci_gas, simple_state):
     x0 = simple_state.x.clone()
 
     # Compute geometry
-    R, H = ricci_gas.compute_curvature(simple_state, cache=True)
+    R, _H = ricci_gas.compute_curvature(simple_state, cache=True)
 
     # Compute force and reward
     force = ricci_gas.compute_force(simple_state)
@@ -618,7 +625,7 @@ def test_full_ricci_gas_iteration(ricci_gas, simple_state):
 
     # Update (simple Langevin)
     simple_state.v = 0.9 * simple_state.v + 0.1 * force
-    simple_state.x = simple_state.x + simple_state.v * 0.1
+    simple_state.x += simple_state.v * 0.1
 
     # Apply regulation
     simple_state = ricci_gas.apply_singularity_regulation(simple_state)
@@ -641,7 +648,7 @@ def test_all_variants_work(variant_name, simple_state):
     gas = RicciGas(params)
 
     # Run one iteration
-    R, H = gas.compute_curvature(simple_state, cache=True)
+    R, _H = gas.compute_curvature(simple_state, cache=True)
     force = gas.compute_force(simple_state)
     reward = gas.compute_reward(simple_state)
 
@@ -671,7 +678,7 @@ def test_performance_scaling(device):
         )
 
         start = time.time()
-        R, H = gas.compute_curvature(state)
+        _R, _H = gas.compute_curvature(state)
         elapsed = time.time() - start
 
         times.append((N, elapsed))
@@ -696,7 +703,7 @@ def test_single_walker(ricci_gas, device):
         s=torch.ones(1, device=device),
     )
 
-    R, H = ricci_gas.compute_curvature(state, cache=True)
+    R, _H = ricci_gas.compute_curvature(state, cache=True)
     force = ricci_gas.compute_force(state)
     reward = ricci_gas.compute_reward(state)
 
@@ -714,7 +721,7 @@ def test_all_dead_walkers(ricci_gas, simple_state):
     # We just check it doesn't crash catastrophically
     # It's OK if it returns NaN or raises a specific error
     try:
-        R, H = ricci_gas.compute_curvature(simple_state)
+        _R, _H = ricci_gas.compute_curvature(simple_state)
         # If no error, R/H might be NaN which is acceptable
         # (there's no density to compute curvature from)
         assert True, "Handled gracefully"
@@ -747,7 +754,7 @@ def test_very_close_walkers(device):
 
     # May still have numerical issues in extreme case, so allow some tolerance
     try:
-        R, H = gas.compute_curvature(state, cache=True)
+        R, _H = gas.compute_curvature(state, cache=True)
         force = gas.compute_force(state)
 
         # Should be finite (regularization prevents NaN/Inf)
@@ -755,7 +762,9 @@ def test_very_close_walkers(device):
         finite_force = torch.isfinite(force).all()
 
         assert finite_R or R.isnan().sum() < len(R) // 2, "Most Ricci values are NaN"
-        assert finite_force or force.isnan().sum() < force.numel() // 2, "Most force values are NaN"
+        assert (
+            finite_force or force.isnan().sum() < force.numel() // 2
+        ), "Most force values are NaN"
 
     except (torch._C._LinAlgError, RuntimeError):
         # Very close walkers can still cause numerical issues

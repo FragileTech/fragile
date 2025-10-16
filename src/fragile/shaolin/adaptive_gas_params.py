@@ -233,7 +233,7 @@ class AdaptiveGasParamSelector(param.Parameterized):
         # Get Euclidean Gas summary
         euclidean_params = self.euclidean_selector.get_params()
 
-        summary = f"""
+        return f"""
 ### 📋 Adaptive Gas Configuration
 
 **Mode**: {self.mode}
@@ -244,16 +244,15 @@ class AdaptiveGasParamSelector(param.Parameterized):
 - Cloning: σ_x={euclidean_params.cloning.sigma_x:.2f}, λ={euclidean_params.cloning.lambda_alg:.2f}
 
 **Adaptive Mechanisms**:
-- Adaptive Force: ε_F={self.epsilon_F:.2f} {'(disabled)' if self.epsilon_F == 0 else '(active)'}
-- Viscous Force: ν={self.nu:.2f}, l={self.l_viscous:.2f} {'(disabled)' if self.nu == 0 else '(active)'}
-- Adaptive Diffusion: {'enabled' if self.use_adaptive_diffusion else 'disabled'} (ε_Σ={self.epsilon_Sigma:.2f})
+- Adaptive Force: ε_F={self.epsilon_F:.2f} {"(disabled)" if self.epsilon_F == 0 else "(active)"}
+- Viscous Force: ν={self.nu:.2f}, l={self.l_viscous:.2f} {"(disabled)" if self.nu == 0 else "(active)"}
+- Adaptive Diffusion: {"enabled" if self.use_adaptive_diffusion else "disabled"} (ε_Σ={self.epsilon_Sigma:.2f})
 
 **Fitness Potential**:
 - Amplitude: A={self.A:.2f}
 - Patch radius: ρ={self.patch_radius:.2f}
 - Regularization: σ'_min={self.sigma_prime_min_patch:.2f}
 """
-        return summary
 
     def get_params(self):
         """Get configured AdaptiveGasParams object.
@@ -286,13 +285,11 @@ class AdaptiveGasParamSelector(param.Parameterized):
         )
 
         # Create complete adaptive gas parameters
-        params = AdaptiveGasParams(
+        return AdaptiveGasParams(
             euclidean=euclidean_params,
             adaptive=adaptive_params,
             measurement_fn="potential",
         )
-
-        return params
 
     def get_euclidean_params(self):
         """Get configured EuclideanGasParams for comparison.

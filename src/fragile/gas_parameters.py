@@ -23,7 +23,6 @@ from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
-import torch
 from numpy.typing import NDArray
 from torch import Tensor
 
@@ -39,6 +38,7 @@ class LandscapeParams:
         f_typical: Typical fitness scale
         Delta_f_boundary: Fitness gap at boundary (interior - boundary)
     """
+
     lambda_min: float
     lambda_max: float
     d: int
@@ -62,6 +62,7 @@ class GasParams:
     - d_safe: Safe Harbor distance
     - κ_wall (kappa_wall): Boundary stiffness
     """
+
     tau: float
     gamma: float
     sigma_v: float
@@ -81,10 +82,11 @@ class ConvergenceRates:
     From Theorem 8.5 (Total Convergence Rate):
     κ_total = min(κ_x, κ_v, κ_W, κ_b) * (1 - ε_coupling)
     """
-    kappa_x: float      # Position variance contraction rate
-    kappa_v: float      # Velocity variance dissipation rate
-    kappa_W: float      # Wasserstein contraction rate
-    kappa_b: float      # Boundary contraction rate
+
+    kappa_x: float  # Position variance contraction rate
+    kappa_v: float  # Velocity variance dissipation rate
+    kappa_W: float  # Wasserstein contraction rate
+    kappa_b: float  # Boundary contraction rate
     kappa_total: float  # Total geometric convergence rate
     epsilon_coupling: float  # Expansion-to-contraction ratio
 
@@ -95,16 +97,18 @@ class EquilibriumConstants:
 
     From Section 8: C_i determines equilibrium variance V_i^eq = C_i / κ_i
     """
-    C_x: float          # Position variance source
-    C_v: float          # Velocity variance source
-    C_W: float          # Wasserstein source
-    C_b: float          # Boundary source
-    C_total: float      # Total source term
+
+    C_x: float  # Position variance source
+    C_v: float  # Velocity variance source
+    C_W: float  # Wasserstein source
+    C_b: float  # Boundary source
+    C_total: float  # Total source term
 
 
 # ==============================================================================
 # Rate Computation (Chapter 8)
 # ==============================================================================
+
 
 def compute_velocity_rate(params: GasParams) -> float:
     """Compute velocity variance dissipation rate κ_v.
@@ -161,9 +165,7 @@ def compute_position_rate(params: GasParams, landscape: LandscapeParams) -> floa
 
 
 def compute_wasserstein_rate(
-    params: GasParams,
-    landscape: LandscapeParams,
-    c_hypo: float = 0.5
+    params: GasParams, landscape: LandscapeParams, c_hypo: float = 0.5
 ) -> float:
     """Compute Wasserstein contraction rate κ_W.
 
@@ -200,9 +202,7 @@ def compute_boundary_rate(params: GasParams, landscape: LandscapeParams) -> floa
 
 
 def compute_convergence_rates(
-    params: GasParams,
-    landscape: LandscapeParams,
-    c_hypo: float = 0.5
+    params: GasParams, landscape: LandscapeParams, c_hypo: float = 0.5
 ) -> ConvergenceRates:
     """Compute all convergence rates and total rate.
 
@@ -235,13 +235,14 @@ def compute_convergence_rates(
         kappa_W=kappa_W,
         kappa_b=kappa_b,
         kappa_total=kappa_total,
-        epsilon_coupling=epsilon_coupling
+        epsilon_coupling=epsilon_coupling,
     )
 
 
 # ==============================================================================
 # Equilibrium Constants (Chapter 8)
 # ==============================================================================
+
 
 def compute_velocity_equilibrium(params: GasParams, landscape: LandscapeParams) -> float:
     """Compute velocity equilibrium constant C_v.
@@ -309,8 +310,7 @@ def compute_boundary_equilibrium(params: GasParams, landscape: LandscapeParams) 
 
 
 def compute_equilibrium_constants(
-    params: GasParams,
-    landscape: LandscapeParams
+    params: GasParams, landscape: LandscapeParams
 ) -> EquilibriumConstants:
     """Compute all equilibrium constants.
 
@@ -333,24 +333,16 @@ def compute_equilibrium_constants(
     alpha_b = 1.0
     C_total = C_x + alpha_v * C_v + alpha_W * C_W + alpha_b * C_b
 
-    return EquilibriumConstants(
-        C_x=C_x,
-        C_v=C_v,
-        C_W=C_W,
-        C_b=C_b,
-        C_total=C_total
-    )
+    return EquilibriumConstants(C_x=C_x, C_v=C_v, C_W=C_W, C_b=C_b, C_total=C_total)
 
 
 # ==============================================================================
 # Mixing Time Estimation (Section 8.6)
 # ==============================================================================
 
+
 def compute_mixing_time(
-    params: GasParams,
-    landscape: LandscapeParams,
-    epsilon: float = 0.01,
-    V_init: float = 1.0
+    params: GasParams, landscape: LandscapeParams, epsilon: float = 0.01, V_init: float = 1.0
 ) -> dict[str, float]:
     """Compute mixing time to reach ε-proximity to equilibrium.
 
@@ -386,12 +378,12 @@ def compute_mixing_time(
     T_mix_steps = int(np.ceil(T_mix_time / params.tau))
 
     return {
-        'T_mix_time': T_mix_time,
-        'T_mix_steps': T_mix_steps,
-        'kappa_total': rates.kappa_total,
-        'V_eq': V_eq,
-        'rates': rates,
-        'constants': constants
+        "T_mix_time": T_mix_time,
+        "T_mix_steps": T_mix_steps,
+        "kappa_total": rates.kappa_total,
+        "V_eq": V_eq,
+        "rates": rates,
+        "constants": constants,
     }
 
 
@@ -399,10 +391,9 @@ def compute_mixing_time(
 # Optimal Parameter Selection (Section 9.10.1)
 # ==============================================================================
 
+
 def compute_optimal_parameters(
-    landscape: LandscapeParams,
-    V_target: float = 0.1,
-    gamma_budget: float | None = None
+    landscape: LandscapeParams, V_target: float = 0.1, gamma_budget: float | None = None
 ) -> GasParams:
     """Compute optimal parameters using closed-form solution.
 
@@ -434,9 +425,9 @@ def compute_optimal_parameters(
 
     # Step 3: Timestep from stability
     tau_opt = min(
-        0.5 / gamma_opt,                    # Friction stability
-        1.0 / np.sqrt(landscape.lambda_max), # Symplectic stability
-        0.01                                 # Practical upper bound
+        0.5 / gamma_opt,  # Friction stability
+        1.0 / np.sqrt(landscape.lambda_max),  # Symplectic stability
+        0.01,  # Practical upper bound
     )
 
     # Step 4: Exploration noise from target
@@ -476,7 +467,7 @@ def compute_optimal_parameters(
         lambda_alg=lambda_alg_opt,
         alpha_rest=alpha_rest_opt,
         d_safe=d_safe_opt,
-        kappa_wall=kappa_wall_opt
+        kappa_wall=kappa_wall_opt,
     )
 
 
@@ -484,10 +475,9 @@ def compute_optimal_parameters(
 # Parameter Sensitivity Matrix (Section 9)
 # ==============================================================================
 
+
 def compute_sensitivity_matrix(
-    params: GasParams,
-    landscape: LandscapeParams,
-    delta: float = 1e-4
+    params: GasParams, landscape: LandscapeParams, delta: float = 1e-4
 ) -> NDArray[np.float64]:
     """Compute sensitivity matrix M_κ: ∂κ_i / ∂log(P_j).
 
@@ -506,13 +496,27 @@ def compute_sensitivity_matrix(
     Returns:
         Sensitivity matrix (4, 10)
     """
-    param_names = ['tau', 'gamma', 'sigma_v', 'lambda_clone', 'N', 'sigma_x',
-                   'lambda_alg', 'alpha_rest', 'd_safe', 'kappa_wall']
+    param_names = [
+        "tau",
+        "gamma",
+        "sigma_v",
+        "lambda_clone",
+        "N",
+        "sigma_x",
+        "lambda_alg",
+        "alpha_rest",
+        "d_safe",
+        "kappa_wall",
+    ]
 
     # Baseline rates
     rates_base = compute_convergence_rates(params, landscape)
-    kappa_base = np.array([rates_base.kappa_x, rates_base.kappa_v,
-                           rates_base.kappa_W, rates_base.kappa_b])
+    kappa_base = np.array([
+        rates_base.kappa_x,
+        rates_base.kappa_v,
+        rates_base.kappa_W,
+        rates_base.kappa_b,
+    ])
 
     M_kappa = np.zeros((4, len(param_names)))
 
@@ -524,8 +528,12 @@ def compute_sensitivity_matrix(
 
         # Compute perturbed rates
         rates_pert = compute_convergence_rates(params_pert, landscape)
-        kappa_pert = np.array([rates_pert.kappa_x, rates_pert.kappa_v,
-                               rates_pert.kappa_W, rates_pert.kappa_b])
+        kappa_pert = np.array([
+            rates_pert.kappa_x,
+            rates_pert.kappa_v,
+            rates_pert.kappa_W,
+            rates_pert.kappa_b,
+        ])
 
         # Sensitivity: ∂log(κ_i) / ∂log(P_j) ≈ Δκ_i / (κ_i · δ)
         M_kappa[:, j] = (kappa_pert - kappa_base) / (kappa_base * delta)
@@ -537,9 +545,9 @@ def compute_sensitivity_matrix(
 # Trajectory Analysis (Section 9.10.4)
 # ==============================================================================
 
+
 def estimate_rates_from_trajectory(
-    trajectory_data: dict[str, Tensor | NDArray],
-    tau: float
+    trajectory_data: dict[str, Tensor | NDArray], tau: float
 ) -> ConvergenceRates:
     """Estimate empirical convergence rates from trajectory.
 
@@ -557,6 +565,7 @@ def estimate_rates_from_trajectory(
     Returns:
         Estimated convergence rates
     """
+
     def fit_exponential_rate(V: NDArray | Tensor, times: NDArray) -> float:
         """Fit V(t) = C + A * exp(-κ*t) and extract κ."""
         if isinstance(V, Tensor):
@@ -583,14 +592,13 @@ def estimate_rates_from_trajectory(
             poly = np.polyfit(times_transient, log_V_transient, 1)
             kappa = -poly[0]  # Negative slope
             return max(kappa, 0.0)
-        else:
-            return 0.0
+        return 0.0
 
     # Extract trajectories
-    V_Var_x = trajectory_data.get('V_Var_x', np.zeros(1))
-    V_Var_v = trajectory_data.get('V_Var_v', np.zeros(1))
-    V_W = trajectory_data.get('V_W', np.zeros(1))
-    W_b = trajectory_data.get('W_b', np.zeros(1))
+    V_Var_x = trajectory_data.get("V_Var_x", np.zeros(1))
+    V_Var_v = trajectory_data.get("V_Var_v", np.zeros(1))
+    V_W = trajectory_data.get("V_W", np.zeros(1))
+    W_b = trajectory_data.get("W_b", np.zeros(1))
 
     T = len(V_Var_x)
     times = np.arange(T) * tau
@@ -602,9 +610,11 @@ def estimate_rates_from_trajectory(
     kappa_b = fit_exponential_rate(W_b, times) if len(W_b) > 1 else 0.0
 
     epsilon_coupling = 0.05  # Default estimate
-    kappa_total = min(kappa_x, kappa_v, kappa_W, kappa_b) * (1.0 - epsilon_coupling) if all(
-        k > 0 for k in [kappa_x, kappa_v, kappa_W, kappa_b]
-    ) else 0.0
+    kappa_total = (
+        min(kappa_x, kappa_v, kappa_W, kappa_b) * (1.0 - epsilon_coupling)
+        if all(k > 0 for k in [kappa_x, kappa_v, kappa_W, kappa_b])
+        else 0.0
+    )
 
     return ConvergenceRates(
         kappa_x=kappa_x,
@@ -612,7 +622,7 @@ def estimate_rates_from_trajectory(
         kappa_W=kappa_W,
         kappa_b=kappa_b,
         kappa_total=kappa_total,
-        epsilon_coupling=epsilon_coupling
+        epsilon_coupling=epsilon_coupling,
     )
 
 
@@ -620,13 +630,14 @@ def estimate_rates_from_trajectory(
 # Adaptive Tuning (Section 9.10.4)
 # ==============================================================================
 
+
 def adaptive_parameter_tuning(
     trajectory_data: dict[str, Tensor | NDArray],
     params_init: GasParams,
     landscape: LandscapeParams,
     max_iterations: int = 10,
     alpha_init: float = 0.2,
-    verbose: bool = True
+    verbose: bool = True,
 ) -> tuple[GasParams, list[dict]]:
     """Iteratively improve parameters using empirical measurements.
 
@@ -655,18 +666,16 @@ def adaptive_parameter_tuning(
 
     # Estimate current rates from trajectory
     rates_emp = estimate_rates_from_trajectory(trajectory_data, params.tau)
-    kappa_base = min(rates_emp.kappa_x, rates_emp.kappa_v,
-                     rates_emp.kappa_W, rates_emp.kappa_b)
+    kappa_base = min(rates_emp.kappa_x, rates_emp.kappa_v, rates_emp.kappa_W, rates_emp.kappa_b)
 
     if verbose:
         print(f"Initial rate: κ_total = {kappa_base:.6f}")
 
     for iteration in range(max_iterations):
         # Identify bottleneck
-        rate_values = [rates_emp.kappa_x, rates_emp.kappa_v,
-                       rates_emp.kappa_W, rates_emp.kappa_b]
+        rate_values = [rates_emp.kappa_x, rates_emp.kappa_v, rates_emp.kappa_W, rates_emp.kappa_b]
         bottleneck_idx = np.argmin(rate_values)
-        bottleneck_names = ['Position', 'Velocity', 'Wasserstein', 'Boundary']
+        bottleneck_names = ["Position", "Velocity", "Wasserstein", "Boundary"]
         bottleneck = bottleneck_names[bottleneck_idx]
         kappa_min = rate_values[bottleneck_idx]
 
@@ -681,8 +690,12 @@ def adaptive_parameter_tuning(
 
         # Estimate gap to achievable rate
         rates_theoretical = compute_convergence_rates(params, landscape)
-        kappa_target = min(rates_theoretical.kappa_x, rates_theoretical.kappa_v,
-                          rates_theoretical.kappa_W, rates_theoretical.kappa_b)
+        kappa_target = min(
+            rates_theoretical.kappa_x,
+            rates_theoretical.kappa_v,
+            rates_theoretical.kappa_W,
+            rates_theoretical.kappa_b,
+        )
         gap = kappa_target - kappa_min
 
         # Adaptive step size
@@ -692,8 +705,18 @@ def adaptive_parameter_tuning(
             alpha = 0.05
 
         # Update parameters (multiplicative)
-        param_names = ['tau', 'gamma', 'sigma_v', 'lambda_clone', 'N', 'sigma_x',
-                       'lambda_alg', 'alpha_rest', 'd_safe', 'kappa_wall']
+        param_names = [
+            "tau",
+            "gamma",
+            "sigma_v",
+            "lambda_clone",
+            "N",
+            "sigma_x",
+            "lambda_alg",
+            "alpha_rest",
+            "d_safe",
+            "kappa_wall",
+        ]
 
         params_new = GasParams(**vars(params))
         for j, param_name in enumerate(param_names):
@@ -707,8 +730,7 @@ def adaptive_parameter_tuning(
 
         # Validate improvement
         rates_new = compute_convergence_rates(params_new, landscape)
-        kappa_new = min(rates_new.kappa_x, rates_new.kappa_v,
-                       rates_new.kappa_W, rates_new.kappa_b)
+        kappa_new = min(rates_new.kappa_x, rates_new.kappa_v, rates_new.kappa_W, rates_new.kappa_b)
 
         improvement = kappa_new - kappa_min
 
@@ -724,12 +746,12 @@ def adaptive_parameter_tuning(
 
         # Record history
         history.append({
-            'iteration': iteration,
-            'params': GasParams(**vars(params)),
-            'rates': rates_emp,
-            'bottleneck': bottleneck,
-            'kappa_total': kappa_new if improvement > 0 else kappa_min,
-            'improvement': improvement
+            "iteration": iteration,
+            "params": GasParams(**vars(params)),
+            "rates": rates_emp,
+            "bottleneck": bottleneck,
+            "kappa_total": kappa_new if improvement > 0 else kappa_min,
+            "improvement": improvement,
         })
 
         # Convergence check
@@ -742,8 +764,7 @@ def adaptive_parameter_tuning(
 
 
 def project_parameters_onto_constraints(
-    params: GasParams,
-    landscape: LandscapeParams
+    params: GasParams, landscape: LandscapeParams
 ) -> GasParams:
     """Project parameters onto feasible constraint set.
 
@@ -764,7 +785,7 @@ def project_parameters_onto_constraints(
     # Positivity
     for attr in vars(params_proj):
         value = getattr(params_proj, attr)
-        if isinstance(value, (int, float)):
+        if isinstance(value, int | float):
             setattr(params_proj, attr, max(value, 1e-8))
 
     # Stability constraints
@@ -788,10 +809,9 @@ def project_parameters_onto_constraints(
 # Evaluation Functions
 # ==============================================================================
 
+
 def evaluate_gas_convergence(
-    params: GasParams,
-    landscape: LandscapeParams,
-    verbose: bool = True
+    params: GasParams, landscape: LandscapeParams, verbose: bool = True
 ) -> dict[str, Any]:
     """Complete convergence analysis for given parameters.
 
@@ -808,37 +828,37 @@ def evaluate_gas_convergence(
     mixing = compute_mixing_time(params, landscape)
 
     # Identify bottleneck
-    rate_names = ['Position (κ_x)', 'Velocity (κ_v)', 'Wasserstein (κ_W)', 'Boundary (κ_b)']
+    rate_names = ["Position (κ_x)", "Velocity (κ_v)", "Wasserstein (κ_W)", "Boundary (κ_b)"]
     rate_values = [rates.kappa_x, rates.kappa_v, rates.kappa_W, rates.kappa_b]
     bottleneck_idx = np.argmin(rate_values)
     bottleneck = rate_names[bottleneck_idx]
 
     results = {
-        'rates': rates,
-        'constants': constants,
-        'mixing_time': mixing['T_mix_time'],
-        'mixing_steps': mixing['T_mix_steps'],
-        'V_equilibrium': mixing['V_eq'],
-        'bottleneck': bottleneck,
-        'bottleneck_rate': rate_values[bottleneck_idx]
+        "rates": rates,
+        "constants": constants,
+        "mixing_time": mixing["T_mix_time"],
+        "mixing_steps": mixing["T_mix_steps"],
+        "V_equilibrium": mixing["V_eq"],
+        "bottleneck": bottleneck,
+        "bottleneck_rate": rate_values[bottleneck_idx],
     }
 
     if verbose:
-        print("="*60)
+        print("=" * 60)
         print("EUCLIDEAN GAS CONVERGENCE ANALYSIS")
-        print("="*60)
-        print(f"\nParameters:")
+        print("=" * 60)
+        print("\nParameters:")
         print(f"  γ = {params.gamma:.4f}, λ = {params.lambda_clone:.4f}, τ = {params.tau:.6f}")
         print(f"  σ_v = {params.sigma_v:.4f}, N = {params.N}")
-        print(f"\nConvergence Rates:")
+        print("\nConvergence Rates:")
         for name, value in zip(rate_names, rate_values):
             marker = " ⚠ BOTTLENECK" if value == rates.kappa_total else ""
             print(f"  {name:20s} = {value:.6f}{marker}")
         print(f"  Total (κ_total)      = {rates.kappa_total:.6f}")
-        print(f"\nMixing Time:")
+        print("\nMixing Time:")
         print(f"  T_mix = {mixing['T_mix_time']:.2f} time units ({mixing['T_mix_steps']} steps)")
-        print(f"\nEquilibrium:")
+        print("\nEquilibrium:")
         print(f"  V_eq = {mixing['V_eq']:.6f}")
-        print("="*60)
+        print("=" * 60)
 
     return results

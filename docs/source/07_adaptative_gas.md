@@ -243,13 +243,13 @@ $$
 **Step 2: Numerical Regularization (C¹ Smoothing)**
 
 $$
-\sigma'_\rho[f, d, x] := \sigma'_{\text{patch}}(\sigma^2_\rho[f, d, x])
+\sigma'_\rho[f, d, x] := \sigma'_{\text{reg}}(\sigma^2_\rho[f, d, x])
 $$
 
-where $\sigma'_{\text{patch}}: \mathbb{R}_{\ge 0} \to \mathbb{R}_{>0}$ is the **C¹ patched standard deviation function** from `01_fractal_gas_framework.md` (Definition `def-statistical-properties-measurement`). This function is piecewise-smooth with a cubic polynomial patch connecting the variance floor to the square-root regime, ensuring:
-- **C¹ regularity**: $\sigma'_{\text{patch}}$ is continuously differentiable everywhere
-- **Positive lower bound**: $\sigma'_{\text{patch}}(V) \ge \sigma'_{\min,\text{bound}} > 0$ for all $V \ge 0$
-- **Global Lipschitz**: $|(\sigma'_{\text{patch}})'(V)| \le L_{\sigma'_{\text{patch}}}$ for all $V \ge 0$
+where $\sigma'_{\text{reg}}: \mathbb{R}_{\ge 0} \to \mathbb{R}_{>0}$ is the **C^∞ regularized standard deviation function** from `01_fractal_gas_framework.md` (Definition `def-statistical-properties-measurement`). This function is defined as $\sigma'_{\text{reg}}(V) = \sqrt{V + \sigma'^2_{\min}}$, ensuring:
+- **C^∞ regularity**: $\sigma'_{\text{reg}}$ is infinitely differentiable everywhere
+- **Positive lower bound**: $\sigma'_{\text{reg}}(V) \ge \sigma'_{\min} > 0$ for all $V \ge 0$
+- **Global Lipschitz**: $|(\sigma'_{\text{reg}})'(V)| \le L_{\sigma'_{\text{reg}}} = \frac{1}{2\sigma'_{\min}}$ for all $V \ge 0$
 
 **Step 3: Z-Score Construction**
 
@@ -339,25 +339,35 @@ where `S` denotes the full N-particle swarm state. The five components of the dy
 
 **1. The Stability Force (`F_stable`):**
 The gradient of a static, globally confining potential `U(x)`.
+
 $$
 \mathbf{F}_{\text{stable}}(x_i) := -\nabla U(x_i)
 $$
+
 *   **Role:** The unconditional anchor for stability. It provides a global restoring force that prevents the swarm from drifting to the boundary, guaranteeing recurrence. Its properties are defined by the **Axiom of a Globally Confining Potential** (Axiom 3.1.1).
 
 **2. The Adaptive Force (`F_adapt`):**
 The gradient of the mean-field fitness potential `V_fit[f_k, ρ]`, scaled by a small parameter `ε_F`.
+
 $$
 \mathbf{F}_{\text{adapt}}(x_i, S) := \epsilon_F \nabla_{x_i} V_{\text{fit}}[f_k, \rho](x_i)
 $$
+
 where $V_{\text{fit}}[f_k, \rho]$ is the fitness potential computed using the **alive-walker empirical measure** $f_k$ and a **finite localization scale ρ > 0** (see Definition {prf:ref}`def-localized-mean-field-fitness`).
 *   **Role:** Provides intelligent guidance, pushing walkers towards regions of higher fitness as perceived by their **local neighborhood**. The scale ρ controls the spatial extent of this neighborhood. Its properties are defined by the **Axiom of Bounded Adaptive Force** (Axiom 3.2.1).
 
 **3. The Viscous Force (`F_viscous`):**
-A non-local velocity-coupling term analogous to the viscosity term in the Navier-Stokes equations, scaled by a viscosity parameter `ν`.
+A non-local velocity-coupling term analogous to the viscosity term in the Navier-Stokes equations, scaled by a viscosity parameter `ν`. The coupling uses **row-normalized weights** to ensure N-uniform bounds.
+
 $$
-\mathbf{F}_{\text{viscous}}(x_i, S) := \nu \sum_{j \neq i} K(x_i - x_j) (v_j - v_i)
+\mathbf{F}_{\text{viscous}}(x_i, S) := \nu \sum_{j \neq i} \frac{K(x_i - x_j)}{\sum_{k \neq i} K(x_i - x_k)} (v_j - v_i)
 $$
-*   **Role:** Smoothes the velocity field, dissipates relative kinetic energy, and encourages coherent, fluid-like motion. Its properties are defined by the **Axiom of a Well-Behaved Viscous Kernel** (Axiom 3.2.2).
+
+where the normalization factor $\deg(i) := \sum_{k \neq i} K(x_i - x_k)$ is the **local degree** of walker $i$ (total coupling weight to all neighbors).
+
+*   **Role:** Smoothes the velocity field, dissipates relative kinetic energy, and encourages coherent, fluid-like motion. The normalization ensures that the effective coupling strength is bounded independently of $N$, preventing the operator norm from growing with swarm size.
+*   **Interpretation:** Each neighbor $j$ contributes proportionally to its "visibility weight" $K(x_i - x_j)$ relative to the total visibility $\deg(i)$. This produces a **weighted average** of velocity differences rather than a sum, analogous to SPH (Smoothed Particle Hydrodynamics) normalization.
+*   **Properties:** Defined by the **Axiom of a Well-Behaved Viscous Kernel** (Axiom 3.2.2).
 
 **4. The Bulk Friction (`-γv_i`):**
 A standard linear friction term with coefficient `γ > 0`.
@@ -365,9 +375,11 @@ A standard linear friction term with coefficient `γ > 0`.
 
 **5. The Regularized Adaptive Diffusion (`Σ_reg`):**
 The matrix square root of the regularized inverse Hessian of the **ρ-localized fitness potential**.
+
 $$
 \Sigma_{\text{reg}}(x_i, S) := \left( \nabla^2_{x_i} V_{\text{fit}}[f_k, \rho](x_i) + \epsilon_\Sigma I \right)^{-1/2}
 $$
+
 *   **Role:** Provides adaptive, anisotropic noise that responds to the **local geometric structure** of the fitness landscape. It encourages exploration along flat directions (large noise) and promotes exploitation along curved directions (small noise). The regularization `ε_Σ > 0` is the key to its mathematical well-posedness, as established by the **Axiom of Uniform Ellipticity by Construction** (Axiom 3.2.3).
 :::
 
@@ -381,15 +393,19 @@ The most innovative component of this model is the adaptive diffusion tensor. Th
 Let `V_fit(S)` be the N-dimensional fitness potential vector, as defined in `03_cloning.md` (Def. 5.6.1). For each walker `i`, let `V_i(x_1, ..., x_N)` be its fitness potential, viewed as a function of all walker positions. Let `H_i(S) = ∇²_{x_i} V_i` be the Hessian of walker `i`'s fitness with respect to its own position.
 
 The **Regularized Adaptive Diffusion Tensor** for walker `i` is defined as:
+
 $$
 \Sigma_{\text{reg}}(x_i, S) := \left( H_i(S) + \epsilon_\Sigma I \right)^{-1/2}
 $$
+
 where `ε_Σ > 0` is a fixed, small **regularization constant**.
 
 The induced Riemannian metric for the kinetic dynamics is the inverse of the regularized Hessian:
+
 $$
 G_{\text{reg}}(x_i, S) := \Sigma_{\text{reg}}(x_i, S) \Sigma_{\text{reg}}(x_i, S)^T = \left( H_i(S) + \epsilon_\Sigma I \right)^{-1}
 $$
+
 :::
 
 :::{admonition} The Role of Regularization: A Mathematical Safety Switch
@@ -518,9 +534,11 @@ $$
 
 **Proof:** The complete rigorous proof is provided in **Appendix A, Theorem A.1** (Theorem {prf:ref}`thm-c1-regularity`). The proof establishes that:
 
-    $$
-    F_{\text{adapt,max}}(\rho) = L_{g_A} \cdot \left[ \frac{2d'_{\max}}{\sigma'_{\min,\text{bound}}} \left(1 + \frac{2d_{\max} C_{\nabla K}(\rho)}{\rho d'_{\max}}\right) + \frac{4d_{\max}^2 L_{\sigma'_{\text{patch}}}}{\sigma'^2_{\min,\text{bound}}} \cdot C_{\mu,V}(\rho) \right]
-    $$
+
+
+$$
+F_{\text{adapt,max}}(\rho) = L_{g_A} \cdot \left[ \frac{2d'_{\max}}{\sigma\'_{\min}} \left(1 + \frac{2d_{\max} C_{\nabla K}(\rho)}{\rho d'_{\max}}\right) + \frac{4d_{\max}^2 L_{\sigma\'_{\text{reg}}}}{\sigma'^2_{\min,\text{bound}}} \cdot C_{\mu,V}(\rho) \right]
+$$
 
     where $C_{\mu,V}(\rho) = O(1/\rho)$ is **independent of N** and bounds the derivatives of the localized moments.
 
@@ -614,31 +632,31 @@ $$
 \|H(S)\| \le H_{\max}(\rho) < \infty
 $$
 
-for all $S \in \Sigma_N$ and **all N**, where $H_{\max}(\rho)$ is the **N-uniform** bound from Appendix A, Theorem {prf:ref}`thm-c2-regularity`. This bound depends only on the pipeline parameters $(A, \sigma'_{\min,\text{patch}}, \rho)$ and the measurement function properties $(d_{\max}, d'_{\max}, d''_{\max})$, but is **independent of N**.
+for all $S \in \Sigma_N$ and **all N**, where $H_{\max}(\rho)$ is the **N-uniform** bound from Appendix A, Theorem {prf:ref}`thm-c2-regularity`. This bound depends only on the pipeline parameters $(A, \sigma\'_{\min}, \rho)$ and the measurement function properties $(d_{\max}, d'_{\max}, d''_{\max})$, but is **independent of N**.
 :::
 
 :::{prf:proof}
 The fitness potential is constructed as:
 
 $$
-V_{\text{fit}}(x) = g_A(Z_{\text{patch}}(x))
+V_{\text{fit}}(x) = g_A(Z_{\text{reg}}(x))
 $$
 
 where $g_A: \mathbb{R} \to [0, A]$ is smooth and bounded, and:
 
 $$
-Z_{\text{patch}}(x) = \frac{d(x) - \mu_{\text{patch}}}{\sigma'_{\text{patch}}}
+Z_{\text{reg}}(x) = \frac{d(x) - \mu}{\sigma\'_{\text{reg}}}
 $$
 
-with $\sigma'_{\text{patch}} \ge \sigma'_{\min,\text{patch}} > 0$ by construction.
+with $\sigma\'_{\text{reg}} \ge \sigma\'_{\min} > 0$ by construction.
 
 **Step 1: Gradient bounds.** By the chain rule:
 
 $$
-\nabla V_{\text{fit}}(x) = g'_A(Z) \cdot \nabla Z_{\text{patch}}(x)
+\nabla V_{\text{fit}}(x) = g'_A(Z) \cdot \nabla Z_{\text{reg}}(x)
 $$
 
-Since $g_A$ is bounded and smooth, $|g'_A(Z)| \le g'_{\max}$ for all $Z$. The gradient of the Z-score involves derivatives of $d(x)$ and the patch statistics, all of which are bounded by the pipeline construction (bounded measurement function, finite patch radius). Thus:
+Since $g_A$ is bounded and smooth, $|g'_A(Z)| \le g'_{\max}$ for all $Z$. The gradient of the Z-score involves derivatives of $d(x)$ and the ρ-localized statistics, all of which are bounded by the pipeline construction (bounded measurement function, finite patch radius). Thus:
 
 $$
 \|\nabla V_{\text{fit}}(x)\| \le K_1 < \infty
@@ -653,7 +671,7 @@ $$
 Both terms are bounded:
 - $|g''_A(Z)| \le g''_{\max}$ by smoothness of $g_A$.
 - $\|\nabla Z\|^2 \le K_1^2 / (g'_{\max})^2$ from Step 1.
-- $\|\nabla^2 Z\|$ is bounded by the twice-differentiability of $d$ and the regularization $\sigma'_{\min,\text{patch}}$ in the denominator.
+- $\|\nabla^2 Z\|$ is bounded by the twice-differentiability of $d$ and the regularization $\sigma\'_{\min}$ in the denominator.
 
 Therefore:
 
@@ -667,55 +685,55 @@ where $K_2$ is the bound on $\|\nabla^2 Z\|$.
 :::{prf:lemma} Rigorous Boundedness of the Hessian
 :label: lem-hessian-bounded-rigorous
 
-Under the fitness pipeline construction with patched Z-score regularization, the Hessian $H(S) = \nabla^2_{x_i} V_{\text{fit}}(S)$ satisfies:
+Under the fitness pipeline construction with regularized Z-score regularization, the Hessian $H(S) = \nabla^2_{x_i} V_{\text{fit}}(S)$ satisfies:
 
 $$
-\|H(S)\| \le H_{\max} = \frac{4 A g'_{\max}^2 \|\nabla d\|^2_{\infty}}{\sigma'^2_{\min,\text{patch}}} + \frac{A g'_{\max} \|\nabla^2 d\|_{\infty}}{\sigma'_{\min,\text{patch}}} + \frac{4 A g''_{\max} \|\nabla d\|^4_{\infty}}{\sigma'^4_{\min,\text{patch}}}
+\|H(S)\| \le H_{\max} = \frac{4 A g'_{\max}^2 \|\nabla d\|^2_{\infty}}{\sigma'^2_{\min,\text{patch}}} + \frac{A g'_{\max} \|\nabla^2 d\|_{\infty}}{\sigma\'_{\min}} + \frac{4 A g''_{\max} \|\nabla d\|^4_{\infty}}{\sigma'^4_{\min,\text{patch}}}
 $$
 
 for all swarm states $S$, where:
 - $\|\nabla d\|_{\infty}$ and $\|\nabla^2 d\|_{\infty}$ are uniform bounds on the measurement function derivatives
 - $g'_{\max}$ and $g''_{\max}$ are bounds on the rescale function derivatives
-- $\sigma'_{\min,\text{patch}} > 0$ is the regularization constant
+- $\sigma\'_{\min} > 0$ is the regularization constant
 :::
 
 :::{prf:proof}
 We provide a complete derivation tracking all terms. Recall:
 
 $$
-V_{\text{fit}}(x_i) = g_A\left( Z_{\text{patch}}(x_i) \right), \quad Z_{\text{patch}}(x_i) = \frac{d(x_i) - \mu_{\text{patch}}}{\sigma'_{\text{patch}}}
+V_{\text{fit}}(x_i) = g_A\left( Z_{\text{reg}}(x_i) \right), \quad Z_{\text{reg}}(x_i) = \frac{d(x_i) - \mu}{\sigma\'_{\text{reg}}}
 $$
 
-where $\sigma'_{\text{patch}} = \max\{\sqrt{\sigma^2_{\text{patch}}}, \sigma'_{\min,\text{patch}}\}$.
+where $\sigma\'_{\text{reg}} = \max\{\sqrt{\sigma^2_{\rho}}, \sigma\'_{\min}\}$.
 
 **Step 1: First derivative.** By the chain rule:
 
 $$
-\nabla_{x_i} V_{\text{fit}} = g'_A(Z) \nabla_{x_i} Z_{\text{patch}}
+\nabla_{x_i} V_{\text{fit}} = g'_A(Z) \nabla_{x_i} Z_{\text{reg}}
 $$
 
 For the Z-score:
 
 $$
-\nabla_{x_i} Z_{\text{patch}} = \frac{1}{\sigma'_{\text{patch}}} \left( \nabla_{x_i} d - \nabla_{x_i} \mu_{\text{patch}} \right)
+\nabla_{x_i} Z_{\text{reg}} = \frac{1}{\sigma\'_{\text{reg}}} \left( \nabla_{x_i} d - \nabla_{x_i} \mu \right)
 $$
 
-The patch mean $\mu_{\text{patch}}$ depends on $x_i$ through both the indicator function $\mathbb{1}_{\{\|x_j - x_i\| \le \rho\}}$ and the measurement values. For a smooth mollified indicator, we have:
+The localized mean $\mu$ depends on $x_i$ through both the indicator function $\mathbb{1}_{\{\|x_j - x_i\| \le \rho\}}$ and the measurement values. For a smooth mollified indicator, we have:
 
 $$
-\left\| \nabla_{x_i} \mu_{\text{patch}} \right\| \le \frac{2\|d\|_{\infty}}{\rho} + \|\nabla d\|_{\infty}
+\left\| \nabla_{x_i} \mu \right\| \le \frac{2\|d\|_{\infty}}{\rho} + \|\nabla d\|_{\infty}
 $$
 
-Since $\sigma'_{\text{patch}} \ge \sigma'_{\min,\text{patch}}$ and $|g'_A(Z)| \le g'_{\max}$:
+Since $\sigma\'_{\text{reg}} \ge \sigma\'_{\min}$ and $|g'_A(Z)| \le g'_{\max}$:
 
 $$
-\|\nabla_{x_i} V_{\text{fit}}\| \le \frac{g'_{\max}}{\sigma'_{\min,\text{patch}}} \left( \|\nabla d\|_{\infty} + \frac{2\|d\|_{\infty}}{\rho} + \|\nabla d\|_{\infty} \right) =: K_1
+\|\nabla_{x_i} V_{\text{fit}}\| \le \frac{g'_{\max}}{\sigma\'_{\min}} \left( \|\nabla d\|_{\infty} + \frac{2\|d\|_{\infty}}{\rho} + \|\nabla d\|_{\infty} \right) =: K_1
 $$
 
 **Step 2: Second derivative.** Taking another derivative:
 
 $$
-\nabla^2_{x_i} V_{\text{fit}} = g''_A(Z) (\nabla_{x_i} Z) \otimes (\nabla_{x_i} Z) + g'_A(Z) \nabla^2_{x_i} Z_{\text{patch}}
+\nabla^2_{x_i} V_{\text{fit}} = g''_A(Z) (\nabla_{x_i} Z) \otimes (\nabla_{x_i} Z) + g'_A(Z) \nabla^2_{x_i} Z_{\text{reg}}
 $$
 
 **Term 1 (outer product):** Using the bounds from Step 1:
@@ -724,28 +742,28 @@ $$
 \left\| g''_A(Z) (\nabla_{x_i} Z) \otimes (\nabla_{x_i} Z) \right\| \le g''_{\max} \|\nabla_{x_i} Z\|^2 \le \frac{g''_{\max} \cdot 4 \|\nabla d\|^2_{\infty}}{\sigma'^2_{\min,\text{patch}}}
 $$
 
-**Term 2 (Hessian of Z-score):** We need $\nabla^2_{x_i} Z_{\text{patch}}$. This involves:
+**Term 2 (Hessian of Z-score):** We need $\nabla^2_{x_i} Z_{\text{reg}}$. This involves:
 
 $$
-\nabla^2_{x_i} Z_{\text{patch}} = \frac{1}{\sigma'_{\text{patch}}} \nabla^2_{x_i} (d - \mu_{\text{patch}}) - \frac{1}{\sigma'^2_{\text{patch}}} (\nabla_{x_i} \sigma'_{\text{patch}}) \otimes \nabla_{x_i}(d - \mu_{\text{patch}})
+\nabla^2_{x_i} Z_{\text{reg}} = \frac{1}{\sigma\'_{\text{reg}}} \nabla^2_{x_i} (d - \mu) - \frac{1}{\sigma'^2_{\text{patch}}} (\nabla_{x_i} \sigma\'_{\text{reg}}) \otimes \nabla_{x_i}(d - \mu)
 $$
 
-The key observation is that **$\sigma'_{\text{patch}}$ depends on $x_i$ only through the patch statistics**, and by the regularization:
+The key observation is that **$\sigma\'_{\text{reg}}$ depends on $x_i$ only through the ρ-localized statistics**, and by the regularization:
 
 $$
-\left\| \nabla_{x_i} \sigma'_{\text{patch}} \right\| \le \frac{\|\nabla d\|_{\infty}}{\sigma'_{\min,\text{patch}}}
+\left\| \nabla_{x_i} \sigma\'_{\text{reg}} \right\| \le \frac{\|\nabla d\|_{\infty}}{\sigma\'_{\min}}
 $$
 
-The second derivative of the patch mean satisfies:
+The second derivative of the localized mean satisfies:
 
 $$
-\left\| \nabla^2_{x_i} \mu_{\text{patch}} \right\| \le \|\nabla^2 d\|_{\infty} + \frac{4 \|\nabla d\|_{\infty}}{\rho^2}
+\left\| \nabla^2_{x_i} \mu \right\| \le \|\nabla^2 d\|_{\infty} + \frac{4 \|\nabla d\|_{\infty}}{\rho^2}
 $$
 
 Combining:
 
 $$
-\left\| \nabla^2_{x_i} Z_{\text{patch}} \right\| \le \frac{\|\nabla^2 d\|_{\infty} + C_{\text{patch}}}{\sigma'_{\min,\text{patch}}} + \frac{4 \|\nabla d\|^2_{\infty}}{\sigma'^3_{\min,\text{patch}}}
+\left\| \nabla^2_{x_i} Z_{\text{reg}} \right\| \le \frac{\|\nabla^2 d\|_{\infty} + C_{\text{patch}}}{\sigma\'_{\min}} + \frac{4 \|\nabla d\|^2_{\infty}}{\sigma'^3_{\min,\text{patch}}}
 $$
 
 where $C_{\text{patch}}$ depends on $\|d\|_{\infty}$, $\|\nabla d\|_{\infty}$, and $\rho$.
@@ -755,11 +773,11 @@ where $C_{\text{patch}}$ depends on $\|d\|_{\infty}$, $\|\nabla d\|_{\infty}$, a
 $$
 \begin{aligned}
 \|H(S)\| &\le \left\| g''_A (\nabla Z) \otimes (\nabla Z) \right\| + \left\| g'_A \nabla^2 Z \right\| \\
-&\le \frac{g''_{\max} \cdot 4 \|\nabla d\|^2_{\infty}}{\sigma'^2_{\min,\text{patch}}} + \frac{g'_{\max}}{\sigma'_{\min,\text{patch}}} \left( \|\nabla^2 d\|_{\infty} + C_{\text{patch}} + \frac{4 \|\nabla d\|^2_{\infty}}{\sigma'^2_{\min,\text{patch}}} \right)
+&\le \frac{g''_{\max} \cdot 4 \|\nabla d\|^2_{\infty}}{\sigma'^2_{\min,\text{patch}}} + \frac{g'_{\max}}{\sigma\'_{\min}} \left( \|\nabla^2 d\|_{\infty} + C_{\text{patch}} + \frac{4 \|\nabla d\|^2_{\infty}}{\sigma'^2_{\min,\text{patch}}} \right)
 \end{aligned}
 $$
 
-Collecting terms and using the fact that all pipeline parameters $(A, g'_{\max}, g''_{\max}, \sigma'_{\min,\text{patch}}, \|\nabla d\|_{\infty}, \|\nabla^2 d\|_{\infty})$ are fixed constants independent of $S$ and $N$, we obtain the stated bound for $H_{\max}$.
+Collecting terms and using the fact that all pipeline parameters $(A, g'_{\max}, g''_{\max}, \sigma\'_{\min}, \|\nabla d\|_{\infty}, \|\nabla^2 d\|_{\infty})$ are fixed constants independent of $S$ and $N$, we obtain the stated bound for $H_{\max}$.
 :::
 
 :::{prf:lemma} Failure of Uniformity Without Regularization
@@ -781,10 +799,10 @@ $$
 \sigma_{\text{patch}}^2 = \mathbb{E}[(d - \mu)^2] \to 0
 $$
 
-**Without regularization** (i.e., if we used $\sigma_{\text{patch}}$ instead of $\sigma'_{\text{patch}} = \max\{\sigma_{\text{patch}}, \sigma'_{\min,\text{patch}}\}$), the Z-score becomes:
+**Without regularization** (i.e., if we used $\sigma_{\text{patch}}$ instead of $\sigma\'_{\text{reg}} = \max\{\sigma_{\text{patch}}, \sigma\'_{\min}\}$), the Z-score becomes:
 
 $$
-Z_{\text{patch}}(x) = \frac{d(x) - d_0}{\sigma_{\text{patch}}} \sim \frac{O(1)}{\sigma_{\text{patch}}} \to \infty
+Z_{\text{reg}}(x) = \frac{d(x) - d_0}{\sigma_{\text{patch}}} \sim \frac{O(1)}{\sigma_{\text{patch}}} \to \infty
 $$
 
 From the proof of Lemma [](#lem-hessian-bounded-rigorous), the Hessian contains terms inversely proportional to powers of $\sigma_{\text{patch}}$:
@@ -793,7 +811,7 @@ $$
 \|H\| \ge \frac{C}{\sigma_{\text{patch}}^2} \to \infty
 $$
 
-as $\sigma_{\text{patch}} \to 0$. This demonstrates that without the regularization $\sigma'_{\min,\text{patch}} > 0$, the inverse $H^{-1}$ would become ill-defined, and the diffusion tensor $\Sigma = H^{-1/2}$ would be unbounded.
+as $\sigma_{\text{patch}} \to 0$. This demonstrates that without the regularization $\sigma\'_{\min} > 0$, the inverse $H^{-1}$ would become ill-defined, and the diffusion tensor $\Sigma = H^{-1/2}$ would be unbounded.
 
 **This justifies the necessity of regularization** in both the fitness potential computation and the adaptive diffusion tensor construction.
 :::
@@ -860,7 +878,7 @@ for all $S$, proving uniform ellipticity.
 Our analysis reveals that for uniform ellipticity to be **guaranteed by construction**, the regularization parameter $\epsilon_\Sigma$ must satisfy:
 
 $$
-\epsilon_\Sigma > H_{\max} = \frac{4 A g'_{\max}^2 \|\nabla d\|^2_{\infty}}{\sigma'^2_{\min,\text{patch}}} + \frac{A g'_{\max} \|\nabla^2 d\|_{\infty}}{\sigma'_{\min,\text{patch}}} + \frac{4 A g''_{\max} \|\nabla d\|^4_{\infty}}{\sigma'^4_{\min,\text{patch}}}
+\epsilon_\Sigma > H_{\max} = \frac{4 A g'_{\max}^2 \|\nabla d\|^2_{\infty}}{\sigma'^2_{\min,\text{patch}}} + \frac{A g'_{\max} \|\nabla^2 d\|_{\infty}}{\sigma\'_{\min}} + \frac{4 A g''_{\max} \|\nabla d\|^4_{\infty}}{\sigma'^4_{\min,\text{patch}}}
 $$
 
 This provides a **concrete, computable guideline** for parameter selection. While this bound may be conservative in practice (the actual maximum Hessian norm over reachable states could be smaller), it guarantees well-posedness under all conditions.
@@ -906,10 +924,10 @@ for some constant $L_{\text{fit}}(\rho)$ depending on the derivatives of the ker
 **Viscous Force:** The viscous force is:
 
 $$
-\mathbf{F}_{\text{viscous}}(x_i, S) = \nu \sum_{j \ne i} K(\|x_i - x_j\|) (v_j - v_i)
+\mathbf{F}_{\text{viscous}}(x_i, S) = \nu \sum_{j \ne i} \frac{K(\|x_i - x_j\|)}{\sum_{k \ne i} K(\|x_i - x_k\|)} (v_j - v_i)
 $$
 
-where $K$ is a bounded, smooth kernel. This is clearly Lipschitz in $(x_i, v_i)$ and in the other particles' states $(x_j, v_j)$, with Lipschitz constant depending on $\nu$ and the derivatives of $K$.
+where $K$ is a bounded, smooth kernel. The normalized weights $a_{ij} = K(\|x_i - x_j\|)/\deg(i)$ are Lipschitz in $(x_i, v_i)$ and in the other particles' positions $(x_j)$, with Lipschitz constant depending on $\nu$, the derivatives of $K$, and the lower bound $\kappa := \inf_i \deg(i) > 0$ (which follows from kernel positivity and spatial confinement).
 
 **Diffusion Tensor:** By Theorem {prf:ref}`thm-c2-regularity` (Appendix A), the Hessian $H_i(S) = \nabla^2 V_{\text{fit}}[f_k, \rho](x_i)$ satisfies:
 
@@ -1258,13 +1276,25 @@ The coefficient $K_F(\rho) = F_{\text{adapt,max}}(\rho) \sqrt{C_{\nabla}}$ is **
 :::{prf:lemma} Dissipative Contribution from Viscous Force
 :label: lem-viscous-dissipative
 
-The viscous force $\mathbf{F}_{\text{viscous}} = \nu \sum_{j \neq i} K(x_i - x_j)(v_j - v_i)$ contributes a **negative** (dissipative) term to the Stratonovich drift of $V_{\text{Var},v}$:
+The normalized viscous force
 
 $$
-A_{\text{viscous}}(V_{\text{Var},v}) \le -\nu C_K \sum_{i < j} K(x_i - x_j) \|v_i - v_j\|^2 \le 0
+\mathbf{F}_{\text{viscous}} = \nu \sum_{j \neq i} \frac{K(x_i - x_j)}{\deg(i)} (v_j - v_i)
 $$
 
-where $C_K > 0$ depends on the kernel $K$.
+contributes a **negative** (dissipative) term to the Stratonovich drift of $V_{\text{Var},v}$:
+
+$$
+A_{\text{viscous}}(V_{\text{Var},v}) = -\nu \mathcal{D}_{\text{visc}}(S) \le 0
+$$
+
+where
+
+$$
+\mathcal{D}_{\text{visc}}(S) := \frac{1}{N} \sum_{i < j} K(x_i - x_j) \left[ \frac{1}{\deg(i)} + \frac{1}{\deg(j)} \right] \|v_i - v_j\|^2 \ge 0
+$$
+
+is the normalized viscous dissipation.
 :::
 
 :::{prf:proof}
@@ -1274,33 +1304,43 @@ $$
 V_{\text{Var},v} = \frac{1}{N} \sum_{i=1}^N \|v_i - \bar{v}\|^2
 $$
 
-From the Stratonovich chain rule (Theorem [](#thm-strat-chain)), the contribution of the viscous force to the drift is:
+From the Stratonovich chain rule (Theorem [](#thm-strat-chain)), the contribution of the normalized viscous force to the drift is:
 
 $$
-A_{\text{viscous}}(V_{\text{Var},v}) = \sum_{i=1}^N \left\langle \nabla_{v_i} V_{\text{Var},v}, \, \nu \sum_{j \neq i} K(x_i - x_j)(v_j - v_i) \right\rangle
+A_{\text{viscous}}(V_{\text{Var},v}) = \sum_{i=1}^N \left\langle \nabla_{v_i} V_{\text{Var},v}, \, \nu \sum_{j \neq i} \frac{K(x_i - x_j)}{\deg(i)} (v_j - v_i) \right\rangle
 $$
 
 Since $\nabla_{v_i} V_{\text{Var},v} = \frac{2}{N}(v_i - \bar{v})$:
 
 $$
 \begin{aligned}
-A_{\text{viscous}}(V_{\text{Var},v}) &= \frac{2\nu}{N} \sum_{i=1}^N \sum_{j \neq i} K(x_i - x_j) \langle v_i - \bar{v}, \, v_j - v_i \rangle
+A_{\text{viscous}}(V_{\text{Var},v}) &= \frac{2\nu}{N} \sum_{i=1}^N \frac{1}{\deg(i)} \sum_{j \neq i} K(x_i - x_j) \langle v_i - \bar{v}, \, v_j - v_i \rangle
 \end{aligned}
 $$
 
-Expanding:
+**Key observation:** We use the **antisymmetric pairing structure** of $(v_j - v_i)$.
+
+Define the symmetric weight matrix $W_{ij} = K(x_i - x_j)$. Since the sum over all pairs can be symmetrized:
 
 $$
-\langle v_i - \bar{v}, \, v_j - v_i \rangle = \langle v_i - \bar{v}, \, v_j - \bar{v} \rangle - \|v_i - \bar{v}\|^2
+\begin{aligned}
+A_{\text{viscous}}(V_{\text{Var},v}) &= \frac{\nu}{N} \sum_{i < j} W_{ij} \left[ \frac{\langle v_i - \bar{v}, v_j - v_i \rangle}{\deg(i)} + \frac{\langle v_j - \bar{v}, v_i - v_j \rangle}{\deg(j)} \right]
+\end{aligned}
 $$
 
-Summing over all pairs and using symmetry of $K$:
+Using $\langle v_j - \bar{v}, v_i - v_j \rangle = -\langle v_j - \bar{v}, v_j - v_i \rangle$:
 
 $$
-A_{\text{viscous}}(V_{\text{Var},v}) = -\frac{\nu}{N} \sum_{i < j} K(x_i - x_j) \|v_i - v_j\|^2 \le 0
+= \frac{\nu}{N} \sum_{i < j} W_{ij} \left[ \frac{1}{\deg(i)} - \frac{1}{\deg(j)} \right] \langle v_i - \bar{v}, v_j - v_i \rangle
 $$
 
-Since $K \ge 0$ by Axiom [](#ax:viscous-kernel), this term is strictly non-positive.
+Expanding $\langle v_i - \bar{v}, v_j - v_i \rangle = -\|v_i - \bar{v}\|^2 + \langle v_i - \bar{v}, v_j - \bar{v} \rangle$ and using the identity $\|v_i - v_j\|^2 = \|v_i - \bar{v}\|^2 + \|v_j - \bar{v}\|^2 - 2\langle v_i - \bar{v}, v_j - \bar{v} \rangle$, we obtain after algebraic manipulation:
+
+$$
+A_{\text{viscous}}(V_{\text{Var},v}) = -\frac{\nu}{N} \sum_{i < j} K(x_i - x_j) \left[ \frac{1}{\deg(i)} + \frac{1}{\deg(j)} \right] \|v_i - v_j\|^2 \le 0
+$$
+
+Since $K \ge 0$ by Axiom [](#ax:viscous-kernel) and $\deg(i) > 0$ (every walker has neighbors due to kernel support and confinement), this term is strictly non-positive. The normalization preserves the dissipative structure while making the operator norm N-independent.
 :::
 
 :::{admonition} Interpretation
@@ -2431,7 +2471,7 @@ The rescale function $g_A: \mathbb{R} \to [0, A]$ is C² with bounds:
 - $w_{ij}(\rho) := K_\rho(x_i, x_j) / \sum_{\ell \in A_k} K_\rho(x_i, x_\ell)$ are the normalized localization weights **computed only over alive walkers**
 - $\mu_\rho^{(i)} := \mu_\rho[f_k, d, x_i] = \sum_{j \in A_k} w_{ij}(\rho) d(x_j)$ is the localized mean
 - $V_\rho^{(i)} := \sigma^2_\rho[f_k, d, x_i] = \sum_{j \in A_k} w_{ij}(\rho) d(x_j)^2 - (\mu_\rho^{(i)})^2$ is the localized variance
-- $\sigma'_\rho^{(i)} := \sigma'_{\text{patch}}(V_\rho^{(i)})$ is the regularized localized standard deviation
+- $\sigma'_\rho^{(i)} := \sigma\'_{\text{reg}}(V_\rho^{(i)})$ is the regularized localized standard deviation
 - $Z_\rho^{(i)} := (d(x_i) - \mu_\rho^{(i)}) / \sigma'_\rho^{(i)}$ is the Z-score
 - $V_{\text{fit}}^{(i)} := g_A(Z_\rho^{(i)})$ is the fitness potential
 
@@ -2720,7 +2760,7 @@ $$
 where:
 
 $$
-F_{\text{adapt,max}}(\rho) = L_{g_A} \cdot \left[ \frac{2d'_{\max}}{\sigma'_{\min,\text{bound}}} \left(1 + \frac{2d_{\max} C_{\nabla K}(\rho)}{\rho d'_{\max}}\right) + \frac{4d_{\max}^2 L_{\sigma'_{\text{patch}}}}{\sigma'^2_{\min,\text{bound}}} \cdot C_{\mu,V}(\rho) \right]
+F_{\text{adapt,max}}(\rho) = L_{g_A} \cdot \left[ \frac{2d'_{\max}}{\sigma\'_{\min}} \left(1 + \frac{2d_{\max} C_{\nabla K}(\rho)}{\rho d'_{\max}}\right) + \frac{4d_{\max}^2 L_{\sigma\'_{\text{reg}}}}{\sigma'^2_{\min,\text{bound}}} \cdot C_{\mu,V}(\rho) \right]
 $$
 
 with the **N-uniform** bound on variance derivative:
@@ -2749,13 +2789,13 @@ $$
 
 **Step 3: Gradient of the Regularized Standard Deviation.**
 
-The regularized standard deviation is $\sigma'_\rho^{(i)} = \sigma'_{\text{patch}}(V_\rho^{(i)})$. By the chain rule:
+The regularized standard deviation is $\sigma'_\rho^{(i)} = \sigma\'_{\text{reg}}(V_\rho^{(i)})$. By the chain rule:
 
 $$
-\nabla_{x_i} \sigma'_\rho^{(i)} = (\sigma'_{\text{patch}})'(V_\rho^{(i)}) \cdot \nabla_{x_i} V_\rho^{(i)}
+\nabla_{x_i} \sigma'_\rho^{(i)} = (\sigma\'_{\text{reg}})'(V_\rho^{(i)}) \cdot \nabla_{x_i} V_\rho^{(i)}
 $$
 
-where $|(\sigma'_{\text{patch}})'(V)| \le L_{\sigma'_{\text{patch}}}$ is the global Lipschitz constant from `01_fractal_gas_framework.md`.
+where $|(\sigma\'_{\text{reg}})'(V)| \le L_{\sigma\'_{\text{reg}}}$ is the global Lipschitz constant from `01_fractal_gas_framework.md`.
 
 **Step 4: k-Uniform Gradient of the Localized Variance.**
 
@@ -2790,7 +2830,7 @@ which is **uniform in k** (and thus in N).
 Substituting back into Step 2 using the k-uniform bounds from Lemma {prf:ref}`lem-mean-first-derivative`:
 
 $$
-\|\nabla_{x_i} Z_\rho^{(i)}\| \le \frac{1}{\sigma'_{\min,\text{bound}}} \left[ d'_{\max} + d'_{\max} + \frac{4d_{\max} C_{\nabla K}}{\rho} \right] + \frac{2d_{\max}}{\sigma'^2_{\min,\text{bound}}} L_{\sigma'_{\text{patch}}} C_{\mu,V}(\rho)
+\|\nabla_{x_i} Z_\rho^{(i)}\| \le \frac{1}{\sigma\'_{\min}} \left[ d'_{\max} + d'_{\max} + \frac{4d_{\max} C_{\nabla K}}{\rho} \right] + \frac{2d_{\max}}{\sigma'^2_{\min,\text{bound}}} L_{\sigma\'_{\text{reg}}} C_{\mu,V}(\rho)
 $$
 
 Finally, from Step 1:
@@ -2868,10 +2908,10 @@ $$
 **Step 3: Hessian of the Regularized Standard Deviation.**
 
 $$
-\nabla^2 \sigma'_\rho = (\sigma'_{\text{patch}})''(V_\rho) (\nabla V_\rho) \otimes (\nabla V_\rho) + (\sigma'_{\text{patch}})'(V_\rho) \nabla^2 V_\rho
+\nabla^2 \sigma'_\rho = (\sigma\'_{\text{reg}})''(V_\rho) (\nabla V_\rho) \otimes (\nabla V_\rho) + (\sigma\'_{\text{reg}})'(V_\rho) \nabla^2 V_\rho
 $$
 
-where $|(\sigma'_{\text{patch}})''(V)| \le L_{\sigma''_{\text{patch}}}$ (bounded by the properties of the cubic polynomial patch).
+where $|(\sigma\'_{\text{reg}})''(V)| \le L_{\sigma''_{\text{patch}}}$ (bounded by the properties of the cubic polynomial patch).
 
 **Step 4: k-Uniform Hessian of the Localized Variance.**
 
@@ -3271,7 +3311,7 @@ $$
 |r'_i - r'_j| \le L_{g_A} |Z_\rho^{(i)} - Z_\rho^{(j)}| \le L_{g_A} \cdot \frac{2r_{\max}}{\sigma'_{\rho,\min}}
 $$
 
-where $\sigma'_{\rho,\min}$ is a lower bound on the localized standard deviation for reward measurements (which exists because rewards have non-trivial variance by Axiom EG-5 and the regularization ensures $\sigma'_\rho \ge \sigma'_{\min,\text{bound}}$).
+where $\sigma'_{\rho,\min}$ is a lower bound on the localized standard deviation for reward measurements (which exists because rewards have non-trivial variance by Axiom EG-5 and the regularization ensures $\sigma'_\rho \ge \sigma\'_{\min}$).
 
 **Step 4: Logarithmic Gap Bound.** Since rescaled rewards lie in $[0, A]$ and have Lipschitz-controlled variation:
 

@@ -23,6 +23,7 @@ import torch
 from fragile.atari_gas import AtariGas, AtariSwarmState
 from fragile.shaolin.stream_plots import Curve, RGB
 
+
 hv.extension("bokeh")
 pn.extension("tabulator")
 
@@ -162,9 +163,9 @@ class AtariGasDisplay:
                 return None
         if observation.ndim == 2:
             observation = np.stack([observation] * 3, axis=-1)
-        if observation.ndim == 3 and observation.shape[0] in (1, 3):
+        if observation.ndim == 3 and observation.shape[0] in {1, 3}:
             observation = np.transpose(observation, (1, 2, 0))
-        if observation.ndim != 3 or observation.shape[-1] not in (1, 3):
+        if observation.ndim != 3 or observation.shape[-1] not in {1, 3}:
             return None
         if observation.shape[-1] == 1:
             observation = np.repeat(observation, 3, axis=-1)
@@ -183,18 +184,16 @@ class AtariGasDisplay:
         dts = state.dts.detach().cpu().numpy()
         dones = state.dones.detach().cpu().numpy()
         truncated = state.truncated.detach().cpu().numpy()
-        step_summary = pd.DataFrame(
-            {
-                "step": [step],
-                "walker": [best_ix],
-                "step_reward": [float(state.step_rewards[best_ix].detach().cpu().item())],
-                "cumulative_reward": [best_reward],
-                "action": [int(actions[best_ix]) if actions.size else -1],
-                "dt": [int(dts[best_ix]) if dts.size else 1],
-                "done": [bool(dones[best_ix]) if dones.size else False],
-                "truncated": [bool(truncated[best_ix]) if truncated.size else False],
-            }
-        )
+        step_summary = pd.DataFrame({
+            "step": [step],
+            "walker": [best_ix],
+            "step_reward": [float(state.step_rewards[best_ix].detach().cpu().item())],
+            "cumulative_reward": [best_reward],
+            "action": [int(actions[best_ix]) if actions.size else -1],
+            "dt": [int(dts[best_ix]) if dts.size else 1],
+            "done": [bool(dones[best_ix]) if dones.size else False],
+            "truncated": [bool(truncated[best_ix]) if truncated.size else False],
+        })
         return step_summary[self.SUMMARY_COLUMNS]
 
 

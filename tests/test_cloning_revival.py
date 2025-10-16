@@ -1,6 +1,7 @@
 """Test that cloning actually revives dead walkers."""
 
 import torch
+
 from fragile.ricci_gas import RicciGas, RicciGasParams, SwarmState
 
 
@@ -71,7 +72,7 @@ def test_step_maintains_population_with_boundaries():
 
     # With revival, should maintain high population
     assert mean_alive > N * 0.9  # At least 90% on average
-    assert min_alive > N * 0.8   # Never drop below 80%
+    assert min_alive > N * 0.8  # Never drop below 80%
 
 
 def test_cloning_before_boundaries_maintains_population():
@@ -107,9 +108,10 @@ def test_cloning_before_boundaries_maintains_population():
 
     # With cloning revival, should maintain majority of population
     assert mean_alive > N * 0.85  # At least 85% on average
-    assert min_alive > N * 0.75   # Never drop below 75%
+    assert min_alive > N * 0.75  # Never drop below 75%
 
 
 if __name__ == "__main__":
     import pytest
+
     pytest.main([__file__, "-v"])

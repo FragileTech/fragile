@@ -1,8 +1,8 @@
 """Tests for Pydantic parameter models."""
 
+from pydantic import ValidationError
 import pytest
 import torch
-from pydantic import ValidationError
 
 from fragile.euclidean_gas import (
     CloningParams,
@@ -90,11 +90,14 @@ class TestLangevinParams:
 
         assert abs(std - expected) < 1e-10
 
-    @pytest.mark.parametrize("gamma,delta_t", [
-        (1.0, 0.01),
-        (2.0, 0.005),
-        (0.5, 0.02),
-    ])
+    @pytest.mark.parametrize(
+        "gamma,delta_t",
+        [
+            (1.0, 0.01),
+            (2.0, 0.005),
+            (0.5, 0.02),
+        ],
+    )
     def test_noise_std_values(self, gamma, delta_t):
         """Test noise_std for various parameter values."""
         params = LangevinParams(gamma=gamma, beta=1.0, delta_t=delta_t)
@@ -125,11 +128,16 @@ class TestCloningParams:
         with pytest.raises(ValidationError):
             CloningParams(sigma_x=sigma_x, lambda_alg=1.0, alpha_restitution=0.5)
 
-    @pytest.mark.parametrize("lambda_alg", [-1.0, 0.0])
+    @pytest.mark.parametrize("lambda_alg", [-1.0])
     def test_invalid_lambda_alg(self, lambda_alg):
-        """Test that lambda_alg must be positive."""
+        """Test that lambda_alg must be non-negative."""
         with pytest.raises(ValidationError):
             CloningParams(sigma_x=0.1, lambda_alg=lambda_alg, alpha_restitution=0.5)
+
+    def test_lambda_alg_zero_allowed(self):
+        """Test that lambda_alg=0 is allowed (position-only mode)."""
+        params = CloningParams(sigma_x=0.1, lambda_alg=0.0, alpha_restitution=0.5)
+        assert params.lambda_alg == 0.0
 
     @pytest.mark.parametrize("alpha_restitution", [-0.1, 1.1])
     def test_invalid_restitution(self, alpha_restitution):
@@ -197,10 +205,13 @@ class TestEuclideanGasParams:
         """Test torch_dtype property."""
         assert euclidean_gas_params.torch_dtype == torch.float64
 
-    @pytest.mark.parametrize("dtype_str,expected", [
-        ("float32", torch.float32),
-        ("float64", torch.float64),
-    ])
+    @pytest.mark.parametrize(
+        "dtype_str,expected",
+        [
+            ("float32", torch.float32),
+            ("float64", torch.float64),
+        ],
+    )
     def test_torch_dtype_conversion(
         self, dtype_str, expected, simple_potential, langevin_params, cloning_params
     ):

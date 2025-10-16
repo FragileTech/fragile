@@ -7,77 +7,77 @@ Converts Unicode symbols like β, ε, ², ≈ to \beta, \varepsilon, ^{2}, \appr
 while keeping the expressions in their original delimiters (` or $).
 """
 
-import re
-import sys
 from pathlib import Path
+import sys
+
 
 # Unicode to LaTeX mapping
 UNICODE_TO_LATEX = {
     # Superscripts
-    '²': r'^{2}',
-    '³': r'^{3}',
+    "²": r"^{2}",
+    "³": r"^{3}",
     # Comparison operators
-    '≈': r'\approx',
-    '≤': r'\leq',
-    '≥': r'\geq',
-    '±': r'\pm',
-    '≠': r'\neq',
-    '≡': r'\equiv',
+    "≈": r"\approx",
+    "≤": r"\leq",
+    "≥": r"\geq",
+    "±": r"\pm",
+    "≠": r"\neq",
+    "≡": r"\equiv",
     # Set operations
-    '∈': r'\in',
-    '∉': r'\notin',
-    '⊆': r'\subseteq',
-    '⊇': r'\supseteq',
-    '∪': r'\cup',
-    '∩': r'\cap',
+    "∈": r"\in",
+    "∉": r"\notin",
+    "⊆": r"\subseteq",
+    "⊇": r"\supseteq",
+    "∪": r"\cup",
+    "∩": r"\cap",
     # Arithmetic
-    '×': r'\times',
-    '÷': r'\div',
+    "×": r"\times",
+    "÷": r"\div",
     # Special symbols
-    '∞': r'\infty',
-    '∂': r'\partial',
-    '∇': r'\nabla',
-    '∫': r'\int',
-    '∑': r'\sum',
-    '∏': r'\prod',
-    '√': r'\sqrt',
-    '∝': r'\propto',
+    "∞": r"\infty",
+    "∂": r"\partial",
+    "∇": r"\nabla",
+    "∫": r"\int",
+    "∑": r"\sum",
+    "∏": r"\prod",
+    "√": r"\sqrt",
+    "∝": r"\propto",
     # Greek lowercase
-    'α': r'\alpha',
-    'β': r'\beta',
-    'γ': r'\gamma',
-    'δ': r'\delta',
-    'ε': r'\varepsilon',
-    'ζ': r'\zeta',
-    'η': r'\eta',
-    'θ': r'\theta',
-    'ι': r'\iota',
-    'κ': r'\kappa',
-    'λ': r'\lambda',
-    'μ': r'\mu',
-    'ν': r'\nu',
-    'ξ': r'\xi',
-    'π': r'\pi',
-    'ρ': r'\rho',
-    'σ': r'\sigma',
-    'τ': r'\tau',
-    'υ': r'\upsilon',
-    'φ': r'\phi',
-    'χ': r'\chi',
-    'ψ': r'\psi',
-    'ω': r'\omega',
+    "α": r"\alpha",
+    "β": r"\beta",
+    "γ": r"\gamma",
+    "δ": r"\delta",
+    "ε": r"\varepsilon",
+    "ζ": r"\zeta",
+    "η": r"\eta",
+    "θ": r"\theta",
+    "ι": r"\iota",
+    "κ": r"\kappa",
+    "λ": r"\lambda",
+    "μ": r"\mu",
+    "ν": r"\nu",
+    "ξ": r"\xi",
+    "π": r"\pi",
+    "ρ": r"\rho",
+    "σ": r"\sigma",
+    "τ": r"\tau",
+    "υ": r"\upsilon",
+    "φ": r"\phi",
+    "χ": r"\chi",
+    "ψ": r"\psi",
+    "ω": r"\omega",
     # Greek uppercase
-    'Γ': r'\Gamma',
-    'Δ': r'\Delta',
-    'Θ': r'\Theta',
-    'Λ': r'\Lambda',
-    'Ξ': r'\Xi',
-    'Π': r'\Pi',
-    'Σ': r'\Sigma',
-    'Υ': r'\Upsilon',
-    'Φ': r'\Phi',
-    'Ψ': r'\Psi',
-    'Ω': r'\Omega',
+    "Γ": r"\Gamma",
+    "Δ": r"\Delta",
+    "Θ": r"\Theta",
+    "Λ": r"\Lambda",
+    "Ξ": r"\Xi",
+    "Π": r"\Pi",
+    "Σ": r"\Sigma",
+    "Υ": r"\Upsilon",
+    "Φ": r"\Phi",
+    "Ψ": r"\Psi",
+    "Ω": r"\Omega",
 }
 
 
@@ -101,7 +101,7 @@ def process_file(input_path, output_path=None, dry_run=False):
     Returns:
         Number of substitutions made
     """
-    with open(input_path, 'r', encoding='utf-8') as f:
+    with open(input_path, encoding="utf-8") as f:
         content = f.read()
 
     original_content = content
@@ -118,14 +118,14 @@ def process_file(input_path, output_path=None, dry_run=False):
             for unicode_char, latex in UNICODE_TO_LATEX.items():
                 count = original_content.count(unicode_char)
                 if count > 0:
-                    print(f"  {repr(unicode_char)} → {repr(latex)} ({count} occurrences)")
+                    print(f"  {unicode_char!r} → {latex!r} ({count} occurrences)")
         else:
             print("No changes needed")
         return changes
 
     if changes > 0:
         output = output_path or input_path
-        with open(output, 'w', encoding='utf-8') as f:
+        with open(output, "w", encoding="utf-8") as f:
             f.write(converted_content)
         print(f"Made {changes} character substitutions in {output}")
     else:
@@ -148,7 +148,7 @@ def main():
     dry_run = False
 
     for arg in sys.argv[2:]:
-        if arg == '--dry-run':
+        if arg == "--dry-run":
             dry_run = True
         else:
             output_file = arg
@@ -160,5 +160,5 @@ def main():
     process_file(input_file, output_file, dry_run)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

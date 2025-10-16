@@ -19,7 +19,7 @@ def get_is_leaf(parents):
 
 def step(state, action, env):
     """Step the environment."""
-    dt = np.random.randint(1, 4, size=state.shape[0])  # noqa: NPY002
+    dt = np.random.randint(1, 4, size=state.shape[0])
     data = env.step(state=state, action=action, dts=dt)
     new_state, observ, reward, end, _truncated, info = data
     return new_state, observ, reward, end, info
@@ -271,7 +271,7 @@ class FractalTree(BaseFractalTree):
         if len(states) == 0:
             return
         actions = self.sample_actions(int(wc_np.sum()))
-        dt = np.random.randint(1, 5, size=len(actions))  # noqa: NPY002
+        dt = np.random.randint(1, 5, size=len(actions))
         try:
             data = self.env.step_batch(states=states, actions=actions, dt=dt)
         except Exception as e:

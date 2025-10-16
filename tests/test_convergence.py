@@ -295,9 +295,7 @@ class TestParameterSensitivity:
         results_inelastic = gas_inelastic.run(n_steps=100)
 
         # Different restitution should give different results
-        assert not torch.allclose(
-            results_elastic["x"][-1], results_inelastic["x"][-1], rtol=0.1
-        )
+        assert not torch.allclose(results_elastic["x"][-1], results_inelastic["x"][-1], rtol=0.1)
 
 
 class TestEdgeCases:

@@ -173,7 +173,9 @@ def perfectly_inelastic_gas(
         d=d,
         potential=SimpleQuadraticPotential(),
         langevin=LangevinParams(gamma=1.0, beta=1.0, delta_t=0.1),
-        cloning=CloningParams(sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.0),  # Perfectly inelastic
+        cloning=CloningParams(
+            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.0
+        ),  # Perfectly inelastic
         device=device,
         dtype=dtype,
     )
