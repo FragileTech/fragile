@@ -15,7 +15,7 @@ This document covers the following fundamental topological invariants:
 1. **Euler Characteristic** ($\chi$)
    - Combinatorial formula: $V - E + F - T$ (for 3D simplicial complexes)
    - Relation to Gauss-Bonnet theorem via deficit angles
-   - Already computed in the framework via Delaunay triangulation
+   - **Computed via Delaunay triangulation** (⚠️ yields point cloud topology, not landscape topology; see § 1.1 for critical limitations)
 
 2. **Betti Numbers** ($\beta_0, \beta_1, \beta_2, \ldots$)
    - $\beta_0$: Connected components
@@ -51,10 +51,10 @@ This document covers the following fundamental topological invariants:
 - Example: Flat torus has zero curvature everywhere but non-trivial topology ($\beta_1 = 2$)
 
 **Physical Interpretation**:
-- **$\beta_0$**: Number of disconnected fitness basins
+- **$\beta_0$**: Number of disconnected components in the walker configuration (⚠️ use persistent homology, not Delaunay χ, for landscape basin detection)
 - **$\beta_1$**: Number of independent cycles in the configuration graph (exploration pathways)
-- **$\chi$**: Global constraint on total curvature (Gauss-Bonnet)
-- **Genus**: Complexity of the fitness landscape surface
+- **$\chi$**: Combinatorial invariant of walker triangulation; related to total curvature via Gauss-Bonnet
+- **Genus**: Surface classification (requires persistent homology or α-complexes for landscape topology)
 
 **Algorithmic Applications**:
 - Detect phase transitions when $\beta_k$ changes (topological data analysis)
@@ -120,9 +120,18 @@ where:
 - $F_t$: Number of Delaunay faces
 - $T_t$: Number of Delaunay tetrahedra (for $d=3$)
 
+**CRITICAL LIMITATION**: The Delaunay triangulation of a finite point cloud is homeomorphic to the **convex hull** of those points, NOT necessarily the underlying fitness landscape topology. For a point cloud in $\mathbb{R}^3$, the Delaunay complex of the convex hull has $\chi = 1$ regardless of whether the sampled surface has genus $g > 0$. This formula computes the Euler characteristic of the **triangulated point cloud**, not the **manifold being sampled**.
+
+**To capture landscape topology**: Use α-complexes with appropriate radius thresholds or persistent homology (see § 2.3) to recover the topology of the underlying space from the sample. The Nerve Lemma guarantees that sufficiently dense sampling with appropriate filtration recovers the correct homotopy type.
+
+**Valid interpretations of Delaunay $\chi_t$**:
+1. **Combinatorial complexity**: Number of simplices in the triangulation (algorithmic bookkeeping)
+2. **Gauss-Bonnet verification**: Check $\sum_i \delta_i = 2\pi \chi_t$ for internal consistency
+3. **NOT valid**: Inferring genus, detecting topological phase transitions, or measuring landscape topology directly from Delaunay $\chi$ alone
+
 **Computational Complexity**: $O(|\text{simplices}|)$ for scanning all simplices in the triangulation. In $\mathbb{R}^d$, a Delaunay triangulation of $N$ points contains $O(N)$ simplices for $d=2$, $O(N)$ for $d=3$ (typically), but up to $\Theta(N^{\lceil d/2 \rceil})$ in the worst case. For practical walker configurations in $\mathbb{R}^3$, the simplex count is usually $O(N)$, making the Euler characteristic computation linear in the number of walkers.
 
-**Framework Status**: Already computed in the Fragile framework via the Delaunay triangulation maintained for curvature computations.
+**Framework Status**: Already computed in the Fragile framework via the Delaunay triangulation maintained for curvature computations. This provides the Euler characteristic of the **walker point cloud triangulation**, not the fitness landscape manifold.
 :::
 
 :::{prf:remark} Euler Characteristic for Different Dimensions
@@ -167,7 +176,14 @@ $$
 
 where $\delta_i$ is the deficit angle at vertex $i$ and $\chi(P)$ is the Euler characteristic.
 
-**Boundary case**: For surfaces with boundary, additional terms from geodesic curvature along the boundary curves must be included (see [curvature.md](curvature.md) for details on boundary terms).
+**Boundary case**: For surfaces with boundary $\partial M$, the formula becomes:
+
+$$
+\sum_{i \in \text{vertices}} \delta_i + \int_{\partial M} \kappa_g \, ds = 2\pi \chi(M)
+
+$$
+
+where $\kappa_g$ is the geodesic curvature along the boundary curves and $ds$ is the arc length element. See [curvature.md](curvature.md) § 1.1 for full treatment of boundary contributions.
 
 **Consequence**: The total integrated Gaussian curvature is determined by topology:
 
@@ -266,6 +282,23 @@ $$
 
 The Fractal Set is formally defined as a **2-dimensional simplicial complex** $\mathcal{F} = (\mathcal{E}, E_{\text{CST}} \cup E_{\text{IG}}, P)$ where $P$ is the set of plaquettes (CST-IG 4-cycles), as specified in {prf:ref}`def-fractal-set-simplicial-complex` from [13_fractal_set_new/08_lattice_qft_framework.md](13_fractal_set_new/08_lattice_qft_framework.md).
 
+::::{important} **Cellular Homology Required**
+The 2-cells (plaquettes) are **quadrilaterals** (CST-IG 4-cycles), NOT triangles (2-simplices). Therefore, the Fractal Set is technically a **CW complex** (or cellular complex), not a simplicial complex in the strict sense.
+
+**Consequences**:
+1. Standard simplicial boundary operators $\partial_k$ do NOT apply directly without modification
+2. Must use **cellular homology** with boundary operators defined for arbitrary cell attachments
+3. Alternatively, **triangulate each plaquette** via barycentric subdivision to obtain a true simplicial complex
+
+The formulas below assume either:
+- (A) Cellular boundary operators properly defined for quadrilateral 2-cells, OR
+- (B) Barycentric subdivision has been performed to triangulate all plaquettes
+
+**Status**: The framework document [13_fractal_set_new/08_lattice_qft_framework.md](13_fractal_set_new/08_lattice_qft_framework.md) defines the 2-complex structure but **does not provide explicit cellular boundary operators** for quadrilateral plaquettes. The boundary maps $\partial_1$ and $\partial_2$ are structurally implied by the CW complex definition but not computed. Implementation of $\beta_1, \beta_2$ computation requires either:
+1. Explicitly defining cellular boundary operators (mathematically straightforward but not yet done), OR
+2. Triangulating each plaquette via barycentric subdivision to obtain a simplicial complex where standard $\partial_k$ formulas apply
+::::
+
 **$\beta_0$: Connected Components**
 
 $$
@@ -320,7 +353,7 @@ This simplifies to $\beta_1^{\text{graph}} = |E'| - |\mathcal{E}| + \beta_0$, wh
 
 **Critical distinction**: The correct formula requires computing $\text{rank}(\partial_2)$, which is done via boundary matrix reduction (see {prf:ref}`alg-boundary-matrix`). The graph formula is computationally cheaper but mathematically gives only an upper bound: $\beta_1 \le \beta_1^{\text{graph}}$.
 
-**Framework Status**: The full 2-complex structure is defined in {prf:ref}`def-fractal-set-simplicial-complex`, but computational algorithms for $\beta_1$ including plaquette contributions are **not yet implemented**. Only the 1-skeleton upper bound is currently computable.
+**Framework Status**: The full 2-complex structure is defined in {prf:ref}`def-fractal-set-simplicial-complex`, but **cellular boundary operators are not explicitly provided**. Computational algorithms for $\beta_1$ including plaquette contributions require defining these operators. Currently, only the 1-skeleton upper bound $\beta_1^{\text{graph}}$ is computable via graph algorithms.
 :::
 
 :::{prf:remark} Physical Interpretation in Fragile Gas
@@ -418,7 +451,9 @@ $$
 
 **Complexity**: $O(s^3)$ where $s$ is the total number of simplices in the final complex of the filtration. **Important**: For a Vietoris-Rips complex on $N$ points with maximum dimension $k_{\max}$, the number of simplices is bounded by $s \le \sum_{k=0}^{k_{\max}} \binom{N}{k+1} = O(N^{k_{\max}+1})$. Thus the complexity is $O(N^{3(k_{\max}+1)})$ in the worst case, which is polynomial in $N$ for fixed $k_{\max}$ but exponential for large $k_{\max}$.
 
-**Feasibility assumption**: The complexity is practical only under the assumption that the walker point cloud has **well-behaved geometric structure** (e.g., low intrinsic dimension, sparse distribution, or clustered configuration). For such "nice" point sets, $s$ is observed to be near-linear in $N$, making persistent homology tractable. For arbitrary or adversarially-chosen point configurations in high dimensions, the method becomes computationally infeasible. Libraries like `Ripser` are highly optimized for the typical case. For large $N$ (>1000), use sparse matrix methods, dimension capping ($k \le 2$), or approximate algorithms.
+**Feasibility assumption**: The worst-case complexity is $O(s^3)$ where $s$ can be exponential in $N$ for high-dimensional data. In practice, libraries such as **Ripser** exploit sparsity and geometric structure of many real-world point clouds to achieve much better performance, but there is **no general near-linear guarantee**. The complexity is practical only under the assumption that the walker point cloud has **well-behaved geometric structure** (e.g., low intrinsic dimension, sparse distribution, or clustered configuration). For arbitrary or adversarially-chosen point configurations in high dimensions, the method becomes computationally infeasible. For large $N$ (>1000), use sparse matrix methods, dimension capping ($k \le 2$), or approximate algorithms.
+
+**Reference**: Bauer et al., "Ripser: Efficient computation of Vietoris-Rips persistence barcodes" (2021) — practical optimizations for geometric data.
 
 **Libraries**: Use existing TDA libraries:
 - **Python**: `gudhi`, `ripser`, `scikit-tda`
@@ -544,7 +579,7 @@ $$
 
 **For full integer homology** (including torsion): Use **Smith Normal Form** on the boundary matrices $\partial_k$ over $\mathbb{Z}$. This gives the torsion coefficients as well as the free rank.
 
-**Complexity**: $O(n^3)$ where $n$ is the total number of simplices (dominated by matrix reduction). Smith Normal Form is more expensive than Gaussian elimination but still polynomial.
+**Complexity**: $O(n^3)$ where $n$ is the total number of cells (dominated by matrix reduction via Gaussian elimination over a field). Smith Normal Form over $\mathbb{Z}$ for full integer homology has comparable or worse complexity but provides torsion information. Fast matrix multiplication algorithms (ω < 3) do not apply to sparse boundary matrices in practical homology computations.
 
 **Optimization**: Use sparse matrix methods; boundary matrices are extremely sparse for Delaunay triangulations.
 :::
@@ -747,8 +782,18 @@ where $g$ is the **non-orientable genus** (number of crosscaps).
 2. A sphere with $g$ crosscaps (non-orientable genus $g$)
 :::
 
-:::{prf:theorem} Computing Genus from Delaunay Triangulation
+:::{prf:theorem} Computing Genus from Triangulated 2-Manifold
 :label: thm-genus-from-triangulation
+
+::::{important} **Prerequisites: Actual 2-Manifold Required**
+This algorithm applies ONLY to a genuine **2-dimensional combinatorial manifold** (a triangulated surface), NOT to the raw Delaunay triangulation of a 3D point cloud.
+
+**Why**: The Delaunay triangulation of walkers in $\mathbb{R}^3$ produces a 3-dimensional simplicial complex (convex hull), not a 2-surface. To apply this genus computation, you must first:
+1. Extract a 2-manifold via **α-complex** at appropriate radius (see § 2.3), OR
+2. Use **persistent homology** to identify the correct scale where the 2-surface emerges
+
+**See § 1.1 warnings**: The Delaunay Euler characteristic captures point cloud topology, not landscape topology.
+::::
 
 For a triangulated 2-surface $\Sigma$ with $V$ vertices, $E$ edges, and $F$ faces:
 
@@ -954,11 +999,12 @@ where $\epsilon_{\mu\nu\rho\sigma}$ is the Levi-Civita symbol and the sum runs o
 
 **Mathematical Note**: The key difference from naive plaquette summation is that the Levi-Civita tensor $\epsilon_{\mu\nu\rho\sigma}$ ensures gauge invariance by properly combining orthogonal plaquettes. A single plaquette $F_{\mu\nu}$ cannot form $F \wedge F$ alone; the wedge product requires contributions from all four spacetime directions.
 
-**Framework Status**: Plaquette holonomy machinery exists in [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md) § 5 for computing the Riemann tensor. The gauge field formulation is defined in [15_yang_mills/yang_mills_geometry.md](15_yang_mills/yang_mills_geometry.md) § 3. This algorithm extends that framework to topological charge computation.
+**Framework Status**: **NOT IMPLEMENTED**. Plaquette holonomy machinery exists in [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md) § 5 for computing the Riemann tensor, and gauge connections are defined in [13_fractal_set_new/08_lattice_qft_framework.md](13_fractal_set_new/08_lattice_qft_framework.md) § 4. However, the **Levi-Civita ε-contraction over 4D hypercubes** (step 3 above) and the **geometric charge definition** required for integer quantization are **not yet implemented**. The existing plaquette infrastructure provides only the $F_{\mu\nu}$ components; assembling these into the full topological charge $Q$ via $\text{tr}(F \wedge F)$ remains to be done.
 
 **References**:
-- Montvay & Münster, "Quantum Fields on a Lattice" (1994), Chapter 4
-- Wilson, "Confinement of quarks", Phys. Rev. D 10, 2445 (1974)
+- Lüscher, "Topology of Lattice Gauge Fields", Comm. Math. Phys. 85, 39 (1982) — geometric charge
+- Montvay & Münster, "Quantum Fields on a Lattice" (1994), Chapter 4 — lattice QCD
+- Wilson, "Confinement of quarks", Phys. Rev. D 10, 2445 (1974) — Wilson loops
 :::
 
 ---
@@ -1106,14 +1152,14 @@ def max_lifetime(diagram):
 
 | Invariant | Method | Complexity | Framework Status |
 |-----------|--------|------------|------------------|
-| $\chi$ (Euler char.) | Delaunay count | $O(N)$ | ✅ Computed |
+| $\chi$ (Euler char.) | Delaunay count | $O(N)$ | ⚠️ Computed (point cloud only; see § 1.1) |
 | $\beta_0$ (components) | DFS/Union-Find | $O(N + E)$ | ✅ Computable from Fractal Set |
-| $\beta_1$ (cycles) | Boundary matrix | $O(s^\omega)$ with $s$ = #simplices, $\omega \approx 2.4$ | ⚠️ Upper bound from 1-skeleton; full formula requires $\partial_2$ |
-| $\beta_k$ ($k \ge 2$) | Boundary matrix | $O(s^3)$ | ⚠️ Requires full simplicial complex |
+| $\beta_1$ (cycles) | Cellular homology | $O(s^3)$ via Gaussian elimination over field; Smith Normal Form for $\mathbb{Z}$ | ⚠️ Requires cellular boundary operators |
+| $\beta_k$ ($k \ge 2$) | Boundary matrix | $O(s^3)$ | ⚠️ Requires full CW complex structure |
 | Persistent $H_*$ | Ripser | $O(s^3)$ | 🔧 External library; $s$ = #simplices (exp. in $N$) |
 | $\pi_1$ (fund. group) | Simplicial approx. | Exponential | ❌ Hard in general |
-| Genus $g$ | From $\chi$ | $O(1)$ given $\chi$ | ✅ Trivial from Euler |
-| Chern numbers | Lattice ε-contraction | $O(N_{\text{sites}})$ | ✅ From plaquette holonomy |
+| Genus $g$ | From $\chi$ + TDA | $O(1)$ given $\chi$ | ⚠️ Requires persistent homology for landscape |
+| Chern numbers | Geometric charge | Not implemented | ❌ Plaquette holonomy defined; no Levi-Civita ε-contraction |
 
 **Legend**:
 - ✅ Already computed or trivially computable
@@ -1275,23 +1321,31 @@ $$
 
 This document establishes computational methods for **six core topological invariants** in the Fragile Gas framework:
 
-1. **Euler characteristic** $\chi$ — already computed from Delaunay triangulation
-2. **Betti numbers** $\beta_k$ — computable from Fractal Set graph and persistent homology
-3. **Homology groups** $H_k$ — formal algebraic structure via boundary operators
-4. **Homotopy groups** $\pi_k$ — theoretical results for configuration space
-5. **Genus** $g$ — surface classification from Euler characteristic
-6. **Chern numbers** — gauge topology from plaquette holonomy
+1. **Euler characteristic** $\chi$ — computed from Delaunay triangulation (⚠️ yields point cloud topology only; see § 1.1 for critical limitations)
+2. **Betti numbers** $\beta_k$ — $\beta_0$ computable from Fractal Set; $\beta_1, \beta_2$ require cellular homology (⚠️ boundary operators not yet defined)
+3. **Homology groups** $H_k$ — formal algebraic structure via boundary operators (⚠️ requires cellular vs. simplicial clarification)
+4. **Homotopy groups** $\pi_k$ — theoretical results for configuration space (configuration space itself, not accessible dynamics)
+5. **Genus** $g$ — surface classification requires persistent homology or α-complexes with **sufficiently dense sampling** to satisfy Nerve Lemma guarantees (see § 2.3); not computable from Delaunay χ alone
+6. **Chern numbers** — plaquette holonomy defined; Levi-Civita ε-contraction **not yet implemented** (❌ see § 6.2)
 
 These invariants complement the **curvature theory** in [curvature.md](curvature.md) by providing global topological constraints on the emergent geometry. Together, curvature and topology form a complete picture of the Fragile Gas fitness landscape structure.
 
 **Key Contributions**:
-- Unified computational framework for all major topological invariants
-- Integration with existing Delaunay triangulation and Fractal Set infrastructure
+- Unified conceptual framework for all major topological invariants
+- Integration plan with existing Delaunay triangulation and Fractal Set infrastructure
 - Practical algorithms with complexity analysis and library recommendations
 - Physical interpretation for optimization applications (phase transitions, bottleneck detection)
 - Cross-references to framework documents showing existing topological results
+- **Critical corrections**: Identified gaps between defined structures and actual topology capture
+
+**Implementation Status and Gaps**:
+- **Delaunay Euler characteristic**: Computed but captures point cloud topology, not landscape manifold
+- **Fractal Set Betti numbers**: Requires cellular boundary operators for quadrilateral plaquettes
+- **Chern numbers**: Plaquette holonomy exists; topological charge assembly not implemented
 
 **Implementation Priority**:
-1. **High**: $\beta_0, \beta_1$ from Fractal Set (cheap, already have data structure)
-2. **Medium**: Persistent homology via Ripser (external library, moderate cost)
-3. **Low**: Higher homotopy groups (expensive, limited practical value)
+1. **High**: Persistent homology via Ripser for landscape topology (external library; replaces misleading Delaunay χ interpretations)
+2. **High**: $\beta_0$ from Fractal Set 1-skeleton (DFS/union-find; already feasible)
+3. **Medium**: Cellular boundary operators for Fractal Set to enable $\beta_1, \beta_2$ computation
+4. **Medium**: Chern number computation via Levi-Civita ε-contraction (extends existing plaquette infrastructure)
+5. **Low**: Higher homotopy groups (expensive, limited practical value)
