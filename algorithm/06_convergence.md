@@ -1,8 +1,135 @@
 # Convergence Theory and Parameter Optimization for the Euclidean Gas
 
-## 0. Document Overview and Prerequisites
+## 0. TLDR
 
-### 0.1. Purpose and Scope
+**Synergistic Foster-Lyapunov Condition**: The Euclidean Gas achieves full convergence through **complementary dissipation**. The cloning operator contracts positional variance but perturbs velocities; the kinetic operator contracts velocities but perturbs positions. When properly weighted, these opposing dynamics combine to produce **net contraction** of a unified Lyapunov function, establishing geometric ergodicity with explicit, N-uniform rates.
+
+**Geometric Ergodicity and QSD Convergence**: We prove the Euclidean Gas converges exponentially fast to a unique quasi-stationary distribution (QSD) with continuous-time rate $\kappa_{\text{QSD}} = \Theta(\kappa_{\text{total}})$, where $\kappa_{\text{total}}$ is the minimum of all component contraction rates. The survival time grows exponentially with swarm size ($\mathbb{E}[\tau_\dagger] = e^{\Theta(N)}$), a consequence of the collective energy barrier to extinction scaling linearly with $N$, making extinction negligible on all practical timescales. The QSD exhibits Gibbs-like structure with walkers concentrated in low-potential regions.
+
+**Spectral Parameter Optimization**: We develop a complete spectral analysis framework that transforms parameter tuning from heuristic art to systematic optimization. Through singular value decomposition of sensitivity matrices, we identify principal coupling modes, compute optimal parameters via closed-form solutions, construct Pareto frontiers for multi-objective trade-offs, and provide explicit condition numbers for robustness analysis.
+
+**Practical Impact**: This document provides the first rigorous proof that physics-inspired swarm algorithms can achieve provable convergence with explicit rates. Every parameter's effect on convergence is quantified, enabling principled design choices. The N-uniform analysis validates the mean-field limit, establishing the Fragile Gas as a continuum physics model with rigorous mathematical foundations.
+
+## 1. Introduction
+
+### 1.1. Goal and Scope
+
+The goal of this document is to establish the **complete convergence theory** for the Euclidean Gas algorithm, synthesizing operator-level analyses from companion documents into a unified proof of geometric ergodicity. The central object of study is the **composed operator** $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$, which combines the cloning operator (analyzed in `03_cloning.md`) and the kinetic Langevin operator (analyzed in `05_kinetic_contraction.md`).
+
+We prove four main results:
+
+1. **Foster-Lyapunov Drift Condition**: The composed operator satisfies $\mathbb{E}[\Delta V_{\text{total}}] \leq -\kappa_{\text{total}}\tau \cdot V_{\text{total}} + C_{\text{total}}$ with explicit, N-uniform constants
+2. **Geometric Ergodicity**: Exponential convergence to a unique quasi-stationary distribution at continuous-time rate $\kappa_{\text{QSD}} = \Theta(\kappa_{\text{total}})$
+3. **Explicit Parameter Dependence**: Complete formulas expressing all convergence rates in terms of primitive algorithmic parameters
+4. **Spectral Optimization Framework**: Systematic methods for parameter selection via sensitivity analysis and multi-objective optimization
+
+The scope includes rigorous proofs of φ-irreducibility and aperiodicity, physical interpretation of the QSD structure, explicit convergence time estimates, worked numerical examples with diagnostic plots, and robustness analysis via condition numbers. This document assumes results from `03_cloning.md` (Keystone Principle, Safe Harbor mechanism) and `05_kinetic_contraction.md` (hypocoercive contraction, velocity dissipation), which provide the operator-level drift inequalities that are synthesized here.
+
+### 1.2. The Synergistic Dissipation Paradigm
+
+The convergence of the Euclidean Gas emerges from a profound principle: **neither operator alone is sufficient, but their composition is**. This "synergistic dissipation" paradigm represents a departure from traditional algorithm design, where a single mechanism (e.g., gradient descent, Metropolis acceptance) provides all stability.
+
+The cloning operator embodies evolutionary selection. Through the Keystone Principle (Theorem 5.1 of `03_cloning.md`), it identifies and eliminates high-error configurations, contracting positional variance with rate $\kappa_x > 0$. However, this selective pressure introduces momentum perturbations through inelastic collisions, causing bounded expansion of velocity variance. The cloning operator cannot achieve full convergence alone—it trades positional stability for velocity disorder.
+
+The kinetic operator embodies thermalization. Through Langevin dynamics with friction $\gamma$, it dissipates velocity variance exponentially fast. Through hypocoercive coupling ({prf:ref}`thm-inter-swarm-contraction-kinetic` from `05_kinetic_contraction.md`), it contracts the Wasserstein distance between swarms. Through the confining potential $U(x)$, it prevents boundary escape. However, the Langevin noise $\sigma_v$ causes bounded expansion of positional variance. The kinetic operator cannot achieve full convergence alone—it trades velocity stability for positional diffusion.
+
+**The magic occurs when these operators compose**. Each contracts precisely what the other expands. By carefully weighting the Lyapunov components ($V_{\text{total}} = V_W + c_V V_{\text{Var}} + c_B W_b$, where $V_W$ is the inter-swarm Wasserstein distance, $V_{\text{Var}}$ is the total intra-swarm variance, and $W_b$ is the boundary-avoidance potential), we achieve a **balancing act** where contraction forces dominate expansion forces across all components simultaneously. This synthesis is non-trivial: the coupling constants $(c_V, c_B)$ must satisfy explicit inequalities that depend on primitive parameters through complicated expressions involving multiple operator interactions.
+
+:::{important} Synergy as Design Principle
+The synergistic dissipation paradigm suggests a general principle for designing stable stochastic algorithms: **use multiple operators with complementary dissipation profiles**. Rather than seeking a single "perfect" operator, compose operators that correct each other's instabilities. This approach may apply beyond the Fragile Gas to broader classes of particle-based optimization algorithms.
+:::
+
+### 1.3. Overview of the Proof Strategy and Document Structure
+
+The proof synthesizes results from two companion documents to establish full convergence. The diagram below illustrates how operator-level analyses compose into the main convergence theorem.
+
+```mermaid
+graph TD
+    subgraph "Prerequisites: Operator-Level Analysis"
+        A["<b>03_cloning.md: Cloning Operator</b><br>✓ Keystone Principle: V_Var,x contracts<br>✓ Safe Harbor: W_b contracts<br>⚠ V_Var,v expands boundedly"]:::axiomStyle
+        B["<b>05_kinetic_contraction.md: Kinetic Operator</b><br>✓ Hypocoercivity: V_W contracts<br>✓ Friction: V_Var,v contracts<br>⚠ V_Var,x expands boundedly"]:::axiomStyle
+    end
+
+    subgraph "Chapter 3: Synergistic Composition"
+        C["<b>3.2: Component Drift Summary</b><br>Catalog all operator drifts from prerequisites"]:::stateStyle
+        D["<b>3.4-3.5: Foster-Lyapunov Condition</b><br>Balance coupling constants to achieve<br><b>net contraction of V_total</b>"]:::theoremStyle
+        E["<b>3.6: Synergy Interpretation</b><br>Each operator corrects the other's expansion"]:::lemmaStyle
+    end
+
+    subgraph "Chapter 4: Main Convergence Theorem"
+        F["<b>4.2-4.3: QSD Framework</b><br>Cemetery state & quasi-stationarity"]:::stateStyle
+        G["<b>4.4.1: φ-Irreducibility Proof</b><br>Two-stage construction via Gaussian noise"]:::lemmaStyle
+        H["<b>4.4.2: Aperiodicity Proof</b><br>Non-degenerate noise ensures aperiodicity"]:::lemmaStyle
+        I["<b>4.5: Main Theorem</b><br><b>Geometric Ergodicity</b><br>Exponential convergence to unique QSD<br>with rate κ_QSD = Θ(κ_total τ)"]:::theoremStyle
+        J["<b>4.6: QSD Physical Structure</b><br>Gibbs-like position distribution,<br>Gaussian velocity distribution"]:::stateStyle
+    end
+
+    subgraph "Chapter 5: Explicit Parameter Dependence"
+        K["<b>5.1-5.4: Component Rates</b><br>Explicit formulas for κ_v, κ_x, κ_W, κ_b<br>in terms of primitive parameters"]:::lemmaStyle
+        L["<b>5.5: Total Rate Formula</b><br>κ_total = min(κ_v, κ_x, κ_W, κ_b)<br>with full parameter dependence"]:::theoremStyle
+        M["<b>5.6: Convergence Time Estimates</b><br>T_mix = O(1/(κ_total τ))"]:::stateStyle
+        N["<b>5.7-5.9: Optimization Strategy</b><br>Parameter selection guidelines,<br>trade-off analysis, sensitivity"]:::stateStyle
+    end
+
+    subgraph "Chapter 6: Spectral Optimization Framework"
+        O["<b>6.3: Sensitivity Matrices</b><br>M_κ (rate sensitivity)<br>M_C (equilibrium sensitivity)"]:::stateStyle
+        P["<b>6.4: SVD Analysis</b><br>Principal coupling modes,<br>dominant parameter interactions"]:::lemmaStyle
+        Q["<b>6.5: Eigenanalysis</b><br>Hessian of constrained optimization,<br>stability of optimal point"]:::lemmaStyle
+        R["<b>6.10: Rate-Space Optimization</b><br>Closed-form balanced solution,<br>Pareto frontier computation,<br>adaptive tuning algorithms"]:::theoremStyle
+        S["<b>6.7-6.8: Robustness Analysis</b><br>Condition numbers,<br>worked numerical examples"]:::stateStyle
+    end
+
+    subgraph "Chapter 7: Conclusion"
+        T["<b>7.1-7.3: Summary & Impact</b><br>Theoretical contributions,<br>practical implications"]:::stateStyle
+        U["<b>7.4-7.5: Future Directions</b><br>Hessian diffusion, recursive fitness,<br>mean-field PDE, manifolds"]:::stateStyle
+    end
+
+    A --> C
+    B --> C
+    C --> D
+    D --> E
+    D --> F
+    F --> G
+    G --> H
+    H --> I
+    D --"Drift condition"--> I
+    I --> J
+    I --> K
+    K --> L
+    L --> M
+    M --> N
+    L --> O
+    O --> P
+    O --> Q
+    P --> R
+    Q --> R
+    R --> S
+    I --> T
+    L --> T
+    R --> T
+    T --> U
+
+    classDef stateStyle fill:#4a5f8c,stroke:#8fa4d4,stroke-width:2px,color:#e8eaf6
+    classDef axiomStyle fill:#8c6239,stroke:#d4a574,stroke-width:2px,stroke-dasharray: 5 5,color:#f4e8d8
+    classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
+    classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
+```
+
+**Chapter 3** synthesizes operator-level drift inequalities from prerequisite documents. By solving a system of inequalities for coupling constants $(c_V, c_B)$, we prove the composed operator satisfies a Foster-Lyapunov condition with explicit rate $\kappa_{\text{total}}$ and bias $C_{\text{total}}$.
+
+**Chapter 4** establishes the main convergence theorem using the Foster-Lyapunov drift from Chapter 3. We rigorously prove φ-irreducibility through a two-stage construction (perturbation to interior, then Gaussian accessibility) and prove aperiodicity via non-degenerate noise. The Meyn-Tweedie theory then guarantees exponential convergence to a unique QSD. We analyze the QSD's physical structure, showing it exhibits Gibbs-like position concentration and Gaussian velocity distribution.
+
+**Chapter 5** derives explicit formulas for all convergence rates in terms of primitive parameters ($\alpha_{\text{rest}}$, $\gamma$, $\sigma_v$, $\sigma_x$, $\lambda$, etc.). This transforms abstract convergence guarantees into quantitative predictions. We provide convergence time estimates, parameter selection guidelines, trade-off analysis, and diagnostic plots for worked examples.
+
+**Chapter 6** develops a spectral optimization framework. Through singular value decomposition of sensitivity matrices, we identify principal parameter coupling modes and dominant interactions. We derive closed-form solutions for balanced optimization, algorithms for constrained optimization with arbitrary objectives, Pareto frontier computation for multi-objective trade-offs, and robustness analysis via condition numbers.
+
+**Chapter 7** summarizes contributions and discusses future directions including Hessian-based anisotropic diffusion, recursive fitness landscapes, mean-field PDE analysis, Riemannian manifold extensions, and multi-scale hierarchical swarms.
+
+---
+
+## 2. Document Overview and Prerequisites
+
+### 2.1. Purpose and Scope
 
 This document establishes the **complete convergence theory** for the Euclidean Gas algorithm, building on the operator-level analysis developed in companion documents. While the cloning operator and kinetic operator have been analyzed separately, this document proves that their **synergistic composition** achieves:
 
@@ -11,17 +138,17 @@ This document establishes the **complete convergence theory** for the Euclidean 
 3. **Explicit parameter dependence** of all convergence rates
 4. **Spectral optimization framework** for systematic parameter tuning
 
-### 0.2. Document Structure
+### 2.2. Document Structure
 
-This document contains five chapters:
+This document contains five main technical chapters (Chapters 3-7):
 
-- **Chapter 1:** Synergistic composition and Foster-Lyapunov condition
-- **Chapter 2:** Main convergence theorem and quasi-stationary distribution
-- **Chapter 3:** Explicit parameter dependence and convergence rates
-- **Chapter 4:** Spectral analysis of parameter coupling
-- **Chapter 5:** Conclusion and future directions
+- **Chapter 7:** Synergistic composition and Foster-Lyapunov condition
+- **Chapter 6:** Main convergence theorem and quasi-stationary distribution
+- **Chapter 7:** Explicit parameter dependence and convergence rates
+- **Chapter 6:** Spectral analysis of parameter coupling
+- **Chapter 7:** Conclusion and future directions
 
-### 0.3. Prerequisites
+### 2.3. Prerequisites
 
 This document requires results from two companion documents:
 
@@ -52,7 +179,7 @@ The following drift inequalities are established in the prerequisite documents a
 **Key observation:** Each operator contracts what the other expands, enabling synergistic composition.
 :::
 
-### 0.4. Main Contributions
+### 2.4. Main Contributions
 
 **Theoretical Achievements:**
 1. ✅ First rigorous proof that complementary dissipation mechanisms achieve full convergence
@@ -66,7 +193,7 @@ The following drift inequalities are established in the prerequisite documents a
 3. ✅ Worked examples with diagnostic plots
 4. ✅ Pareto frontier computation for multi-objective optimization
 
-### 0.5. Notation and Conventions
+### 2.5. Notation and Conventions
 
 Throughout this document:
 - $\Psi_{\text{clone}}$: Cloning operator (analyzed in 03_cloning.md)
@@ -77,9 +204,9 @@ Throughout this document:
 
 ---
 
-## 1. Synergistic Composition and Foster-Lyapunov Condition
+## 3. Synergistic Composition and Foster-Lyapunov Condition
 
-### 1.1. Introduction: Assembling the Full Picture
+### 3.1. Introduction: Assembling the Full Picture
 
 This chapter synthesizes the operator-level drift results established in companion documents to prove that the **composed operator** $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ satisfies a Foster-Lyapunov drift condition.
 
@@ -97,7 +224,7 @@ Each operator has been analyzed individually:
 
 **Key insight:** The operators have **complementary dissipation profiles**. Each contracts what the other expands. This chapter proves that when properly weighted, these complementary properties combine to give **net contraction** of the full Lyapunov function.
 
-### 1.2. The Full Lyapunov Function (Recall)
+### 3.2. The Full Lyapunov Function (Recall)
 
 :::{prf:definition} Synergistic Lyapunov Function (Recall)
 :label: def-full-lyapunov-recall
@@ -115,7 +242,7 @@ where:
 - $c_V, c_B > 0$: Coupling constants (to be chosen)
 :::
 
-### 1.3. Component Drift Summary
+### 3.3. Component Drift Summary
 
 We summarize all drift results:
 
@@ -134,7 +261,7 @@ We summarize all drift results:
 - Kinetic drifts: See theorems in 05_kinetic_contraction.md Sections 2.3, 3.3, 4.3, 5.3 (referenced above)
 :::
 
-### 1.4. Main Theorem: Synergistic Foster-Lyapunov Condition
+### 3.4. Main Theorem: Synergistic Foster-Lyapunov Condition
 
 :::{prf:theorem} Foster-Lyapunov Drift for the Composed Operator
 :label: thm-foster-lyapunov-main
@@ -162,7 +289,7 @@ $$
 3. Concentration around the QSD
 :::
 
-### 1.5. Proof: Choosing the Coupling Constants
+### 3.5. Proof: Choosing the Coupling Constants
 
 :::{prf:proof}
 **Proof (Rigorous Verification of Coupling Constants).**
@@ -390,7 +517,7 @@ is the **Foster-Lyapunov drift condition** with:
 **Q.E.D.**
 :::
 
-### 1.6. Interpretation: Perfect Synergy
+### 3.6. Interpretation: Perfect Synergy
 
 :::{admonition} The Synergistic Dissipation Framework in Action
 :class: important
@@ -414,7 +541,7 @@ This theorem proves the core design principle of the Euclidean Gas:
 **The coupling constants $c_V, c_B$** balance the different contraction rates to ensure no component dominates or lags behind.
 :::
 
-### 1.7. Summary
+### 3.7. Summary
 
 This chapter has proven:
 
@@ -428,11 +555,11 @@ This chapter has proven:
 
 **Achievement:** This is the **main analytical result** of the document - the foundation for all convergence guarantees.
 
-**Next:** Chapter 2 applies Foster-Lyapunov theory to prove geometric ergodicity and convergence to the quasi-stationary distribution.
+**Next:** Chapter 6 applies Foster-Lyapunov theory to prove geometric ergodicity and convergence to the quasi-stationary distribution.
 
-## 2. Main Convergence Theorem and Quasi-Stationary Distribution
+## 4. Main Convergence Theorem and Quasi-Stationary Distribution
 
-### 2.1. Introduction: From Drift to Convergence
+### 4.1. Introduction: From Drift to Convergence
 
 Chapter 1 established the Foster-Lyapunov drift condition:
 
@@ -444,7 +571,7 @@ This chapter applies **Foster-Lyapunov theory** (Meyn-Tweedie) to convert this d
 2. **Convergence to QSD** - unique limiting distribution conditioned on survival
 3. **Exponentially suppressed extinction** - vanishingly small probability of total death
 
-### 2.2. The Cemetery State and Absorption
+### 4.2. The Cemetery State and Absorption
 
 :::{prf:definition} The Cemetery State
 :label: def-cemetery-state
@@ -479,7 +606,7 @@ Therefore:
 But: **Before absorption**, the system can spend exponentially long time near a **quasi-stationary distribution**.
 :::
 
-### 2.3. Quasi-Stationary Distributions
+### 4.3. Quasi-Stationary Distributions
 
 :::{prf:definition} Quasi-Stationary Distribution (QSD)
 :label: def-qsd
@@ -497,13 +624,13 @@ for all measurable sets $A \subseteq \Sigma_N^{\text{alive}}$.
 **Alternative characterization:** $\nu_{\text{QSD}}$ is the leading eigenfunction of the transition kernel restricted to the alive space, with eigenvalue $\lambda < 1$ (the survival probability).
 :::
 
-### 2.4. Irreducibility and Aperiodicity - The Foundation of Uniqueness
+### 4.4. Irreducibility and Aperiodicity - The Foundation of Uniqueness
 
 This section provides the rigorous proof that the Euclidean Gas Markov chain is **φ-irreducible** and **aperiodic** on the alive state space $\Sigma_N^{\text{alive}}$. These properties are the absolute bedrock for claiming the existence of a **unique** QSD.
 
 **Why This is Critical:** Without irreducibility, the swarm could have isolated "islands" in state space, leading to multiple QSDs depending on initial conditions. The uniqueness claim would fail.
 
-#### 2.4.1. φ-Irreducibility via Two-Stage Construction
+#### 4.4.1. φ-Irreducibility via Two-Stage Construction
 
 :::{prf:theorem} φ-Irreducibility of the Euclidean Gas
 :label: thm-phi-irreducibility
@@ -657,7 +784,7 @@ During the $M$ steps of kinetic evolution from $\mathcal{C}$ to $O_B$, walkers m
 
 **Safe interior property:** Since $S_C \in \mathcal{C}$ starts in a region with $\varphi_{\text{barrier}} < \epsilon$ (deep interior), and the target $S_B^* \in O_B$ is also in the alive space, we can choose trajectories that remain in the interior.
 
-**Probability of staying alive:** By the boundary potential contraction (Chapter 5, Theorem 5.3.1), walkers starting in the interior with low $W_b$ have exponentially small probability of reaching the boundary in finite time:
+**Probability of staying alive:** By the boundary potential contraction (Chapter 7, Theorem 5.3.1), walkers starting in the interior with low $W_b$ have exponentially small probability of reaching the boundary in finite time:
 
 $$
 P(\text{any walker exits during } M \text{ steps} \mid S_C) \leq M \cdot N \cdot e^{-c/\tau} \ll 1
@@ -704,7 +831,7 @@ $$
 **Q.E.D.**
 :::
 
-#### 2.4.2. Aperiodicity
+#### 4.4.2. Aperiodicity
 
 :::{prf:theorem} Aperiodicity of the Euclidean Gas
 :label: thm-aperiodicity
@@ -741,7 +868,7 @@ $$
 P(S_1 \in \mathcal{S}_{(k+1) \mod d} \mid S_0 \in \mathcal{S}_k) = 1
 $$
 
-But from the irreducibility proof (Theorem {prf:ref}`thm-phi-irreducibility` in Section 2.4.1), we showed that from any state in $\mathcal{S}_0$, we can reach the core set $\mathcal{C}$ in **one** step with positive probability.
+But from the irreducibility proof (Theorem {prf:ref}`thm-phi-irreducibility` in Section 6.4.1), we showed that from any state in $\mathcal{S}_0$, we can reach the core set $\mathcal{C}$ in **one** step with positive probability.
 
 Similarly, from any state in $\mathcal{S}_1$, we can reach $\mathcal{C}$ in **one** step.
 
@@ -774,7 +901,7 @@ The irreducibility proof showcases the **perfect synergy** between the two opera
 This is a fundamental design principle that makes the Euclidean Gas a **provably global optimizer**, not just a local search heuristic.
 :::
 
-### 2.5. Main Convergence Theorem
+### 4.5. Main Convergence Theorem
 
 :::{prf:theorem} Geometric Ergodicity and Convergence to QSD
 :label: thm-main-convergence
@@ -819,7 +946,7 @@ $$
 where $V_{\text{total}}^{\text{QSD}} = \mathbb{E}_{\nu_{\text{QSD}}}[V_{\text{total}}]$ is the equilibrium Lyapunov value.
 :::
 
-### 2.5.1. Proof Sketch
+### 4.5.1. Proof Sketch
 
 :::{prf:proof}
 **Proof Sketch.**
@@ -828,15 +955,15 @@ We apply standard Foster-Lyapunov theory, adapted to the quasi-stationary settin
 
 **Part 1: Existence and Uniqueness**
 
-The Foster-Lyapunov drift condition ({prf:ref}`thm-foster-lyapunov-main` from Chapter 1) implies:
+The Foster-Lyapunov drift condition ({prf:ref}`thm-foster-lyapunov-main` from Chapter 7) implies:
 
 $$\mathbb{E}[V_{\text{total}}(S_{t+1}) \mid S_t] \leq (1-\kappa_{\text{total}}\tau) V_{\text{total}}(S_t) + C_{\text{total}}$$
 
 By the Meyn-Tweedie theorem (Meyn & Tweedie, 2009, Theorem 14.0.1), this drift condition with:
 - $V_{\text{total}}$ as a Lyapunov function
 - Compact level sets (ensured by the boundary potential $W_b$ and confining potential)
-- **φ-Irreducibility** ({prf:ref}`thm-phi-irreducibility` in Section 2.4.1) - rigorously proven via two-stage construction
-- **Aperiodicity** ({prf:ref}`thm-aperiodicity` in Section 2.4.2) - proven via non-degenerate Gaussian noise
+- **φ-Irreducibility** ({prf:ref}`thm-phi-irreducibility` in Section 6.4.1) - rigorously proven via two-stage construction
+- **Aperiodicity** ({prf:ref}`thm-aperiodicity` in Section 6.4.2) - proven via non-degenerate Gaussian noise
 
 implies existence of a unique invariant measure. In the absorbing case, this becomes a unique QSD (Champagnat & Villemonais, 2016).
 
@@ -881,7 +1008,7 @@ This follows from combining:
 **Q.E.D.** (Full details in Meyn-Tweedie, adapted to QSD setting by Champagnat-Villemonais)
 :::
 
-### 2.6. Physical Interpretation of the QSD
+### 4.6. Physical Interpretation of the QSD
 
 :::{prf:proposition} Properties of the Quasi-Stationary Distribution
 :label: prop-qsd-properties
@@ -1048,7 +1175,7 @@ $$
 **Q.E.D.**
 :::
 
-### 2.7. Summary and Implications
+### 4.7. Summary and Implications
 
 This chapter has proven:
 
@@ -1070,9 +1197,9 @@ This chapter has proven:
 
 **Achievement:** This completes the main convergence proof for the Euclidean Gas algorithm.
 
-**Next:** Chapter 3 expands all convergence conditions to show explicit parameter dependence.
+**Next:** Chapter 7 expands all convergence conditions to show explicit parameter dependence.
 
-## 3. Explicit Parameter Dependence and Convergence Rates
+## 5. Explicit Parameter Dependence and Convergence Rates
 
 This chapter systematically expands all convergence conditions from previous sections to show **explicit dependence** on the algorithmic parameters:
 
@@ -1093,7 +1220,7 @@ The goal is to derive **explicit formulas** for the total convergence rate $\kap
 3. **Scaling laws** - predict performance for different problem sizes
 4. **Theoretical guarantees** - prove convergence for specific settings
 
-### 3.1. Velocity Variance Dissipation: Explicit Constants
+### 5.1. Velocity Variance Dissipation: Explicit Constants
 
 From Section 3, the velocity variance satisfies:
 
@@ -1181,7 +1308,7 @@ This is the **Gibbs thermal variance** at effective temperature $\sigma_v^2/\gam
 
 **Optimal choice:** High friction $\gamma \gg 1$ for fast velocity thermalization, but not so high that $\gamma \tau \to 1$ (violates small-timestep assumption).
 
-### 3.2. Positional Variance Contraction: Explicit Constants
+### 5.2. Positional Variance Contraction: Explicit Constants
 
 From 03_cloning.md, the positional variance satisfies:
 
@@ -1279,7 +1406,7 @@ This adds $O(\tau)$ to the rate.
 
 **Optimal choice:** High cloning rate $\lambda \sim 0.1 - 1$ for fast variance contraction, small timestep $\tau \ll 1$ to minimize diffusive expansion.
 
-### 3.3. Wasserstein Contraction: Explicit Constants
+### 5.3. Wasserstein Contraction: Explicit Constants
 
 From Section 2, the inter-swarm Wasserstein error satisfies:
 
@@ -1378,7 +1505,7 @@ The $N^{-1/d}$ comes from the Wasserstein-to-variance scaling in dimension $d$.
 - For **smooth potentials** ($\lambda_{\min}$ large): Use moderate friction $\gamma \sim \lambda_{\min}$
 - For **rough potentials** ($\lambda_{\min}$ small): Use low friction $\gamma \sim \lambda_{\min} \ll 1$ to avoid overdamping
 
-### 3.4. Boundary Potential Contraction: Explicit Constants
+### 5.4. Boundary Potential Contraction: Explicit Constants
 
 From Section 5 and 03_cloning.md, the boundary potential satisfies:
 
@@ -1479,7 +1606,7 @@ $$
 
 **Optimal choice:** High boundary stiffness $\kappa_{\text{wall}} \gg 1$ and high cloning rate $\lambda$ for safety. Large Safe Harbor distance $d_{\text{safe}}$ prevents thermal escapes.
 
-### 3.5. Synergistic Composition: Total Convergence Rate
+### 5.5. Synergistic Composition: Total Convergence Rate
 
 From Section 6, the total Lyapunov function is:
 
@@ -1629,7 +1756,7 @@ $$
 
 **Proof:**
 
-From {prf:ref}`thm-foster-lyapunov-main` (Synergistic Composition, Chapter 1), the weights $\alpha_v, \alpha_W, \alpha_b$ are chosen to satisfy:
+From {prf:ref}`thm-foster-lyapunov-main` (Synergistic Composition, Chapter 7), the weights $\alpha_v, \alpha_W, \alpha_b$ are chosen to satisfy:
 
 $$
 \alpha_v \geq \frac{C_{xv}}{\kappa_v V_{\text{Var},v}^{\text{eq}}}, \quad
@@ -1687,7 +1814,7 @@ Typical values:
 - Rough optimization: $\gamma \sim \lambda \sim 0.1$, $\tau \sim 0.01$
 - High-dimensional: Increase $N \sim 10^3 - 10^4$ to tighten Wasserstein term
 
-### 3.6. Convergence Time Estimates
+### 5.6. Convergence Time Estimates
 
 Using the explicit rates, we can estimate the time to reach equilibrium.
 
@@ -1762,7 +1889,7 @@ With $\epsilon = 0.01$: $\ln(1/\epsilon) \approx 4.6 \approx 5$.
 - **Fast rough**: High cloning compensates for low friction
 - **Underdamped**: Very low friction → slow mixing (velocity bottleneck)
 
-### 3.7. Parameter Optimization Strategy
+### 5.7. Parameter Optimization Strategy
 
 Based on the explicit formulas, here is a practical strategy for choosing parameters:
 
@@ -1871,7 +1998,7 @@ $$
 T_{\text{mix}} \sim \frac{5}{0.32} \approx 16 \text{ time units} \approx 300 \text{ steps}
 $$
 
-### 3.8. Summary Table: Parameter Effects
+### 5.8. Summary Table: Parameter Effects
 
 This table consolidates all parameter dependencies derived in this chapter:
 
@@ -1893,7 +2020,7 @@ This table consolidates all parameter dependencies derived in this chapter:
 4. **Swarm size helps Wasserstein:** Larger $N$ → tighter inter-swarm error
 5. **Boundary safety is independent:** Can be tuned separately from convergence rate
 
-### 3.9. Trade-offs and Practical Considerations
+### 5.9. Trade-offs and Practical Considerations
 
 **Exploration vs. Exploitation:**
 
@@ -1941,7 +2068,7 @@ For robust performance:
 - Monitor $V_{\text{total}}(t)$ to detect convergence stalls
 - Restart with increased $\lambda$ or $\gamma$ if convergence too slow
 
-### 3.10. Chapter Summary
+### 5.10. Chapter Summary
 
 This chapter has derived **explicit, parameter-dependent formulas** for all convergence rates and equilibrium constants:
 
@@ -1987,11 +2114,11 @@ These explicit formulas enable:
 3. **Computational planning** - estimate runtime before expensive simulations
 4. **Automated adaptation** - dynamically adjust parameters based on observed landscape
 
-**Next:** Chapter 4 performs spectral analysis of the parameter-rate coupling matrix.
+**Next:** Chapter 6 performs spectral analysis of the parameter-rate coupling matrix.
 
-## 4. Spectral Analysis of Parameter Coupling
+## 6. Spectral Analysis of Parameter Coupling
 
-### 4.0. Chapter Overview
+### 6.0. Chapter Overview
 
 The previous chapter derived explicit formulas showing how algorithmic parameters affect convergence rates. However, a critical question remains: **What is the structure of the parameter space itself?**
 
@@ -2014,9 +2141,9 @@ This chapter performs a comprehensive **spectral analysis** of the coupling betw
 
 **Practical impact:** Transforms parameter selection from heuristic art to rigorous optimization science with provable guarantees.
 
-### 4.1. The Complete Parameter Space
+### 6.1. The Complete Parameter Space
 
-From the analysis in Chapter 3 and the cloning operator specification in 03_cloning.md, the **complete tunable parameter space** consists of:
+From the analysis in Chapter 7 and the cloning operator specification in 03_cloning.md, the **complete tunable parameter space** consists of:
 
 :::{prf:definition} Complete Parameter Space
 :label: def-complete-parameter-space
@@ -2066,7 +2193,7 @@ This means there exist **families of parameter choices** that achieve identical 
 
 The goal of this chapter is to characterize this degeneracy and identify optimal trade-offs.
 
-### 4.2. Parameter Classification by Effect Type
+### 6.2. Parameter Classification by Effect Type
 
 Before constructing the full sensitivity matrix, we classify parameters by their **primary mechanism of action**:
 
@@ -2124,11 +2251,11 @@ These parameters enforce **physical constraints**:
 
 **Key insight:** Classes A and C control convergence rates (4 effective control dimensions), while Classes B, D, E provide additional degrees of freedom for optimizing secondary objectives (cost, robustness, exploration) within the 8-dimensional null space.
 
-### 4.3. Construction of the Sensitivity Matrices
+### 6.3. Construction of the Sensitivity Matrices
 
 We now construct explicit formulas for how each parameter affects each rate and equilibrium constant.
 
-#### 9.3.1. Rate Sensitivity Matrix $M_\kappa$
+#### 6.3.1. Rate Sensitivity Matrix $M_\kappa$
 
 :::{prf:definition} Log-Sensitivity Matrix for Convergence Rates
 :label: def-rate-sensitivity-matrix
@@ -2154,7 +2281,7 @@ $$
 
 **Row 1: $\kappa_x = \lambda \cdot c_{\text{fit}}(\lambda_{\text{alg}}, \epsilon_c, \epsilon_d) \cdot (1 - \epsilon_\tau \tau)$**
 
-From {prf:ref}`prop-position-rate-explicit` (Positional Contraction Rate, Section 3.2):
+From {prf:ref}`prop-position-rate-explicit` (Positional Contraction Rate, Section 5.2):
 
 $$
 \kappa_x = \lambda \cdot \mathbb{E}\left[\frac{\text{Cov}(f_i, \|x_i - \bar{x}\|^2)}{\mathbb{E}[\|x_i - \bar{x}\|^2]}\right] + O(\tau)
@@ -2198,7 +2325,7 @@ $$
 
 **Row 2: $\kappa_v = 2\gamma(1 - \epsilon_\tau \tau)$**
 
-From {prf:ref}`prop-velocity-rate-explicit` (Velocity Dissipation Rate, Section 3.1):
+From {prf:ref}`prop-velocity-rate-explicit` (Velocity Dissipation Rate, Section 5.1):
 
 $$
 \frac{\partial \log \kappa_v}{\partial \log \gamma} = 1 + O(\tau)
@@ -2212,7 +2339,7 @@ All other entries are zero (velocity dissipation is independent of cloning param
 
 **Row 3: $\kappa_W = c_{\text{hypo}}^2 \gamma / (1 + \gamma/\lambda_{\min})$**
 
-From {prf:ref}`prop-wasserstein-rate-explicit` (Wasserstein Contraction Rate, Section 3.3):
+From {prf:ref}`prop-wasserstein-rate-explicit` (Wasserstein Contraction Rate, Section 5.3):
 
 $$
 \frac{\partial \log \kappa_W}{\partial \log \gamma} = \frac{\partial}{\partial \log \gamma}\left[\log \gamma - \log(1 + \gamma/\lambda_{\min})\right]
@@ -2230,7 +2357,7 @@ $$
 
 **Row 4: $\kappa_b = \min(\lambda \cdot \Delta f_{\text{boundary}}/f_{\text{typical}}, \kappa_{\text{wall}} + \gamma)$**
 
-From {prf:ref}`prop-boundary-rate-explicit` (Boundary Contraction Rate, Section 3.4):
+From {prf:ref}`prop-boundary-rate-explicit` (Boundary Contraction Rate, Section 5.4):
 
 This is **piecewise** depending on which mechanism dominates.
 
@@ -2282,7 +2409,7 @@ $$
 - **Columns 2, 3, 6, 8, 10, 12:** Zero entries (Class D, E parameters don't affect rates directly)
 :::
 
-#### 9.3.2. Equilibrium Sensitivity Matrix $M_C$
+#### 6.3.2. Equilibrium Sensitivity Matrix $M_C$
 
 Similarly, we construct the matrix for equilibrium constants:
 
@@ -2349,7 +2476,7 @@ $$
 
 **Key observation:** $\sigma_v$ affects **all** equilibrium constants (column 8 has nonzero entries in every row) but has **zero** effect on rates (column 8 of $M_\kappa$ is all zeros). This confirms $\sigma_v$ is a **pure exploration parameter** in the null space.
 
-### 4.4. Singular Value Decomposition and Principal Modes
+### 6.4. Singular Value Decomposition and Principal Modes
 
 We now analyze the structure of $M_\kappa$ via singular value decomposition.
 
@@ -2367,7 +2494,7 @@ where:
 - $\Sigma \in \mathbb{R}^{4 \times 12}$ is diagonal (singular values $\sigma_1 \geq \sigma_2 \geq \sigma_3 \geq \sigma_4 > 0$)
 - $V \in \mathbb{R}^{12 \times 12}$ has orthonormal columns (right singular vectors, **parameter space**)
 
-**Computed values** (using the explicit $M_\kappa$ derived in Section 4.3):
+**Computed values** (using the explicit $M_\kappa$ derived in Section 6.3):
 
 **Singular values:**
 $$
@@ -2464,11 +2591,11 @@ This is a **moderately well-conditioned** matrix:
 **Implication:** Parameter optimization is **numerically stable**. Small errors in parameter values cause proportionally small errors in convergence rates.
 :::
 
-### 4.5. Eigenanalysis of Constrained Optimization
+### 6.5. Eigenanalysis of Constrained Optimization
 
 We now analyze the optimization problem: **maximize $\kappa_{\text{total}}(\mathbf{P})$ subject to feasibility constraints**.
 
-#### 9.5.1. Optimization Problem Formulation
+#### 6.5.1. Optimization Problem Formulation
 
 :::{prf:definition} Parameter Optimization Problem
 :label: def-parameter-optimization
@@ -2502,7 +2629,7 @@ $$
 
 **Key difficulty:** The objective function is **non-smooth** due to the $\min()$ operator. At points where two or more rates are equal, the gradient is not uniquely defined.
 
-#### 9.5.2. Subgradient Calculus for min() Operator
+#### 6.5.2. Subgradient Calculus for min() Operator
 
 :::{prf:theorem} Subgradient of min() Function
 :label: thm-subgradient-min
@@ -2535,7 +2662,7 @@ where $\text{conv}(\cdot)$ denotes the convex hull.
 
 **Proof:** Standard result from convex analysis. The $\min()$ function is concave, and its subgradient at non-smooth points is the convex combination of gradients of active constraints.
 
-#### 9.5.3. Balanced Optimality Condition
+#### 6.5.3. Balanced Optimality Condition
 
 :::{prf:theorem} Necessity of Balanced Rates at Optimum
 :label: thm-balanced-optimality
@@ -2592,7 +2719,7 @@ This contradicts the assumption that $\mathbf{P}^*$ is a local maximum.
 2. **Three-way balanced:** $\kappa_x = \kappa_v = \kappa_W < \kappa_b$ (kinetic balance)
 3. **Four-way balanced:** $\kappa_x = \kappa_v = \kappa_W = \kappa_b$ (fully balanced, rare)
 
-#### 9.5.4. Hessian Analysis at Optimal Point
+#### 6.5.4. Hessian Analysis at Optimal Point
 
 For a two-way tie (most common case), assume $\kappa_x(\mathbf{P}^*) = \kappa_v(\mathbf{P}^*)$ at optimum.
 
@@ -2630,11 +2757,11 @@ $$
 - If $\kappa(H) \sim 10$: gradient ascent converges in ~10 iterations
 - If $\kappa(H) \sim 100$: slow convergence, ~100 iterations
 
-### 4.6. Coupling Analysis: Cross-Parameter Effects
+### 6.6. Coupling Analysis: Cross-Parameter Effects
 
 The previous sections analyzed individual parameter effects. We now study **cross-coupling**: how parameters interact to produce non-additive effects.
 
-#### 9.6.1. The $\alpha_{\text{rest}}$ - $\gamma$ Trade-off (Velocity Equilibrium)
+#### 6.6.1. The $\alpha_{\text{rest}}$ - $\gamma$ Trade-off (Velocity Equilibrium)
 
 **Mechanism:** The velocity equilibrium width is determined by the balance of two opposing forces:
 
@@ -2689,7 +2816,7 @@ For fixed $V_{\text{eq}} = 0.1$, $\sigma_v = 0.2$, $d = 10$:
 
 **Proof:** Set $V_{\text{Var},v}^{\text{eq}} = C_v/\kappa_v$ and solve for $\gamma$. The formula for $f(\alpha)$ comes from analyzing the expected kinetic energy after collision averaging over random rotations.
 
-#### 9.6.2. The $\sigma_x$ - $\lambda$ Trade-off (Positional Variance)
+#### 6.6.2. The $\sigma_x$ - $\lambda$ Trade-off (Positional Variance)
 
 **Mechanism:** Positional equilibrium is determined by:
 
@@ -2744,7 +2871,7 @@ $$
 
 **Proof:** Solve $C_x/\kappa_x = V_{\text{Var},x}^{\text{target}}$ for $\lambda$. The crossover occurs when $\sigma_x^2 \approx \sigma_v^2\tau^2/\gamma$.
 
-#### 9.6.3. The $\lambda_{\text{alg}}$ - $\epsilon_c$ Coupling (Companion Selection Geometry)
+#### 6.6.3. The $\lambda_{\text{alg}}$ - $\epsilon_c$ Coupling (Companion Selection Geometry)
 
 **Mechanism:** The fitness-variance correlation depends on how well the companion pairing identifies positional outliers despite velocity noise.
 
@@ -2794,7 +2921,7 @@ $$
 
 This shows the deep interdependence between geometric parameters that cannot be tuned independently.
 
-### 4.7. Robustness Analysis via Condition Numbers
+### 6.7. Robustness Analysis via Condition Numbers
 
 We now quantify how parameter errors propagate to convergence rate errors.
 
@@ -2839,7 +2966,7 @@ So **10% parameter errors → ≤25% rate slowdown**.
 
 **Design guideline:** Aim for ±10% parameter precision for robust performance.
 
-### 4.8. Complete Numerical Example with Full Analysis
+### 6.8. Complete Numerical Example with Full Analysis
 
 **Problem setup:**
 - Dimension: $d = 10$
@@ -2847,7 +2974,7 @@ So **10% parameter errors → ≤25% rate slowdown**.
 - Swarm size: $N = 100$
 - Target: Reach 99% of equilibrium in $T_{\text{mix}} < 1000$ steps
 
-**Step 1: Initial parameter guess from Chapter 3**
+**Step 1: Initial parameter guess from Chapter 7**
 
 $$
 \begin{aligned}
@@ -2865,7 +2992,7 @@ $$
 
 **Step 2: Compute convergence rates**
 
-Using formulas from Chapter 3:
+Using formulas from Chapter 7:
 
 $$
 \begin{aligned}
@@ -2954,11 +3081,11 @@ $$
 
 **Conclusion:** Even with optimization, this landscape requires ~20k steps due to poor conditioning ($\lambda_{\max}/\lambda_{\min} = 100$). This is **intrinsic to the problem**, not a parameter tuning issue.
 
-### 4.10. Rate-Space Optimization: Computing Optimal Parameters
+### 6.10. Rate-Space Optimization: Computing Optimal Parameters
 
 The previous sections provided the **forward map** ($\mathbf{P} \to \kappa$) and **sensitivities** ($\partial \kappa / \partial \mathbf{P}$). This section provides the **inverse map**: given a landscape and constraints, compute the optimal parameters $\mathbf{P}^*$ that maximize $\kappa_{\text{total}}$.
 
-#### 9.10.1. Closed-Form Solution for the Balanced Case
+#### 6.10.1. Closed-Form Solution for the Balanced Case
 
 **Problem:** Given landscape parameters $(\lambda_{\min}, \lambda_{\max}, d)$ and target exploration width $V_{\text{target}}$, compute optimal parameters assuming no constraints.
 
@@ -3058,7 +3185,7 @@ $$
 
 **Predicted rate:** $\kappa_{\text{total}}^* \approx 0.0125$, $T_{\text{mix}} \approx 400$ time units.
 
-#### 9.10.2. Constrained Optimization Algorithm
+#### 6.10.2. Constrained Optimization Algorithm
 
 When constraints are active (e.g., limited memory $N \leq N_{\max}$ or communication budget $\lambda \leq \lambda_{\max}$), we need iterative optimization.
 
@@ -3133,7 +3260,7 @@ def compute_rates(P, landscape):
     epsilon_c = P['epsilon_c']
     kappa_wall = P['kappa_wall']
 
-    # Use formulas from Chapter 3
+    # Use formulas from Chapter 7
     c_fit = estimate_fitness_correlation(lambda_alg, epsilon_c)
 
     kappa_x = lambda_val * c_fit * (1 - 0.1*tau)
@@ -3170,7 +3297,7 @@ def project_onto_constraints(P, constraints):
 
 **Convergence guarantee:** For smooth regions, converges in $O(\kappa(H))$ iterations where $\kappa(H) \sim 10$ is the Hessian condition number. At corners (balanced points), uses subgradient method with $O(1/\sqrt{k})$ convergence.
 
-#### 9.10.3. Multi-Objective Optimization: Pareto Frontier
+#### 6.10.3. Multi-Objective Optimization: Pareto Frontier
 
 When multiple objectives compete (speed vs. cost vs. robustness), compute the Pareto frontier.
 
@@ -3247,7 +3374,7 @@ def compute_pareto_frontier(landscape, constraints, n_points=50):
 
 **Observation:** Doubling cost improves speed by ~10-20%. Diminishing returns beyond cost ≈ 100.
 
-#### 9.10.4. Adaptive Tuning from Empirical Measurements
+#### 6.10.4. Adaptive Tuning from Empirical Measurements
 
 When the landscape is unknown or model assumptions are violated, adapt parameters based on measured convergence.
 
@@ -3352,7 +3479,7 @@ def estimate_rates_from_trajectory(trajectory):
 
 **Convergence:** Typically reaches 90% of optimal in 5-10 iterations.
 
-#### 9.10.5. Complete Worked Example: High-Dimensional Landscape
+#### 6.10.5. Complete Worked Example: High-Dimensional Landscape
 
 **Problem specification:**
 - Dimension: $d = 20$ (high-dimensional)
@@ -3362,7 +3489,7 @@ def estimate_rates_from_trajectory(trajectory):
 
 **Step 1: Unconstrained optimum (balanced solution)**
 
-Using the balanced solution approach from Section 4.4:
+Using the balanced solution approach from Section 6.4:
 
 $$
 \begin{aligned}
@@ -3465,11 +3592,11 @@ $$
 - Preconditioning the landscape (reduce $\lambda_{\max}/\lambda_{\min}$)
 - Adaptive anisotropic diffusion (future work, Section 10.4.1)
 
-#### 9.10.6. Summary: Rate-Space Optimization Toolkit
+#### 6.10.6. Summary: Rate-Space Optimization Toolkit
 
 This section provides a **complete toolkit** for computing optimal parameters:
 
-**1. Closed-form balanced solution (Section 4.4)**
+**1. Closed-form balanced solution (Section 6.4)**
 - **Input:** $\lambda_{\min}, \lambda_{\max}, d, V_{\text{target}}$
 - **Output:** 12 optimal parameters in closed form
 - **Use case:** Quick initial guess, unconstrained problems
@@ -3479,7 +3606,7 @@ This section provides a **complete toolkit** for computing optimal parameters:
 - **Handles:** $N_{\max}, \lambda_{\max}, V_{\max}$, stability constraints
 - **Convergence:** $O(10-50)$ iterations
 
-**3. Pareto frontier computation (Section 9.10.3)**
+**3. Pareto frontier computation (Section 6.10.3)**
 - **Trade-off:** Speed vs. cost
 - **Output:** Curve of Pareto-optimal designs
 - **Use case:** Design space exploration, resource allocation
@@ -3489,7 +3616,7 @@ This section provides a **complete toolkit** for computing optimal parameters:
 - **Robustness:** Works with unknown landscape, model mismatch
 - **Convergence:** 5-10 iterations to 90% optimal
 
-**5. Complete worked example (Section 9.10.5)**
+**5. Complete worked example (Section 6.10.5)**
 - **Problem:** $d=20$, condition 1000, constrained budget
 - **Result:** Identified intrinsic limitation, found Pareto-optimal point
 - **Savings:** 50% cost reduction with 3% speed improvement
@@ -3509,7 +3636,7 @@ This section provides a **complete toolkit** for computing optimal parameters:
 
 **Impact:** Users can now **directly compute optimal parameters** for their specific problem in seconds, with provable guarantees and trade-off analysis.
 
-### 4.11. Chapter Summary
+### 6.11. Chapter Summary
 
 **Main results:**
 
@@ -3558,11 +3685,11 @@ This spectral analysis provides:
 
 **Transforms parameter tuning from heuristic art → rigorous optimization science.**
 
-## 5. Conclusion and Future Directions
+## 7. Conclusion and Future Directions
 
-### 5.1. Summary of Main Results
+### 7.1. Summary of Main Results
 
-This document, together with its companions *"Hypocoercivity and Kinetic Operator Analysis"* (05_kinetic_contraction.md) and *"The Keystone Principle and the Contractive Nature of Cloning"* (03_cloning.md), has established a **complete convergence theory** for the Euclidean Gas algorithm, culminating in Chapter 4's spectral analysis that transforms parameter selection into rigorous optimization.
+This document, together with its companions *"Hypocoercivity and Kinetic Operator Analysis"* (05_kinetic_contraction.md) and *"The Keystone Principle and the Contractive Nature of Cloning"* (03_cloning.md), has established a **complete convergence theory** for the Euclidean Gas algorithm, culminating in Chapter 6's spectral analysis that transforms parameter selection into rigorous optimization.
 
 **Main Achievements:**
 
@@ -3585,7 +3712,7 @@ This document, together with its companions *"Hypocoercivity and Kinetic Operato
 4. ✅ **Exponentially suppressed extinction**
 5. ✅ **All constants N-uniform** - valid mean-field system
 
-### 5.2. Theoretical Contributions
+### 7.2. Theoretical Contributions
 
 **1. Synergistic Dissipation Framework**
 
@@ -3632,7 +3759,7 @@ Extends quasi-stationary distribution theory to systems with **state-dependent, 
 
 Most QSD literature assumes **passive dynamics** or simple boundary-conditioned processes.
 
-### 5.3. Practical Implications
+### 7.3. Practical Implications
 
 **For Optimization:**
 - **Guaranteed convergence** to regions of high reward
@@ -3652,9 +3779,9 @@ Most QSD literature assumes **passive dynamics** or simple boundary-conditioned 
 - **Safety guarantees** via boundary potential
 - **Theoretical foundation** for evolutionary algorithms
 
-### 5.4. Future Directions
+### 7.4. Future Directions
 
-#### 9.4.1. Hessian-Based Anisotropic Diffusion
+#### 7.4.1. Hessian-Based Anisotropic Diffusion
 
 **Motivation:** Adapt noise to the local fitness landscape geometry.
 
@@ -3680,7 +3807,7 @@ where $H_{\text{fitness}}$ is the Hessian of the fitness landscape.
 
 **Status:** Framework established (Axiom 1.3.2), awaits implementation and analysis.
 
-#### 9.4.2. Recursive Fitness Landscapes
+#### 7.4.2. Recursive Fitness Landscapes
 
 **Motivation:** Use the QSD itself to define the fitness landscape.
 
@@ -3702,7 +3829,7 @@ where $H_{\text{fitness}}$ is the Hessian of the fitness landscape.
 
 **Status:** Speculative, requires separate analysis.
 
-#### 9.4.3. Mean-Field Limit and PDE Connection
+#### 7.4.3. Mean-Field Limit and PDE Connection
 
 **Goal:** Take $N \to \infty$ limit to obtain a **continuum PDE**.
 
@@ -3721,7 +3848,7 @@ where $\mathcal{C}_{\text{clone}}[\mu]$ is a **nonlocal cloning operator** that 
 
 **Status:** N-uniformity proven here is the prerequisite; PDE limit remains open.
 
-#### 9.4.4. Riemannian Manifold Extension
+#### 7.4.4. Riemannian Manifold Extension
 
 **Goal:** Extend Euclidean Gas to **Riemannian manifolds** $\mathcal{M}$.
 
@@ -3749,7 +3876,7 @@ $$
 
 **Status:** Stratonovich formulation (this document) is manifold-compatible; needs implementation.
 
-#### 9.4.5. Multi-Scale and Hierarchical Swarms
+#### 7.4.5. Multi-Scale and Hierarchical Swarms
 
 **Goal:** **Nested swarms** at different scales for multi-resolution optimization.
 
@@ -3770,7 +3897,7 @@ $$
 
 **Status:** Conceptual; requires new analysis framework.
 
-### 5.5. Open Problems
+### 7.5. Open Problems
 
 **1. Optimal Parameter Selection**
 
@@ -3804,7 +3931,7 @@ $$
 
 **Approach:** Use **empirical process theory** + Wasserstein distance bounds.
 
-### 5.6. Concluding Remarks
+### 7.6. Concluding Remarks
 
 This document, together with 03_cloning.md, provides a **rigorous mathematical foundation** for the Euclidean Gas algorithm. The main achievements are:
 

@@ -1,6 +1,141 @@
 # Mathematical Foundations of Fragile
 
-## 1. Global Conventions: Foundational Objects and Core Algorithmic Parameters
+## 0. TLDR
+
+**Parametric Axiomatic Framework**: This document establishes Fragile Gas as a general class of adaptive swarm algorithms through a rigorous axiomatic framework where every stability assumption is reframed as a quantifiable parameter. This transforms algorithm debugging from guesswork into systematic diagnosis—when the algorithm fails, the axiomatic parameter values reveal exactly which components need adjustment.
+
+**Guaranteed Revival and Viability**: The framework proves that any instantiation satisfying the Axiom of Guaranteed Revival ($\kappa_{\text{revival}} > 1$) ensures almost-sure resurrection of dead walkers, preventing gradual swarm extinction through attrition. This establishes a fundamental dichotomy: either the swarm operates indefinitely in a quasi-stationary regime, or it faces catastrophic extinction from large coherent noise events—gradual extinction through attrition is mathematically ruled out as long as a single walker remains alive.
+
+**Mean-Square Continuity and Scalability**: The document derives comprehensive continuity bounds for every operator in the Fragile Gas pipeline, proving that under normal operation (low attrition), the measurement noise is $O(1)$ with respect to swarm size $N$, establishing N-uniform stability. However, the analysis reveals extreme sensitivity to regularization parameters, with error amplification scaling as $O(\varepsilon_{\text{std}}^{-6})$, making careful parameter selection critical for practical stability.
+
+**Canonical Instantiation as Existence Proof**: The framework's rigor is validated by proving that a Canonical Fragile Swarm (Euclidean space, Gaussian noise, empirical aggregators) satisfies all foundational axioms (one structural assumption and sixteen parametric axioms). This existence proof demonstrates that the axiomatic constraints are neither vacuous nor contradictory, providing a concrete, verifiable baseline for implementers.
+
+## 1. Introduction
+
+### 1.1. Goal and Scope
+
+The goal of this document is to establish the **Mathematical Foundations of the Fragile Gas Framework**, a general class of adaptive particle swarm algorithms inspired by statistical physics and natural selection. The Fragile Gas framework provides a rigorous analytical foundation for understanding how stochastic particle systems can efficiently explore complex state spaces through a combination of measurement, selection, and adaptive dynamics.
+
+The central object of study is the **Swarm Update Operator** $\Psi_{\mathcal{F}}$, a sophisticated composition of measurement, standardization, fitness evaluation, perturbation, status checking, and cloning operations that evolves a swarm of $N$ walkers from one discrete time step to the next. This document provides complete, self-contained definitions of all components of this operator and establishes the minimal axiomatic requirements any valid instantiation must satisfy.
+
+The main analytical achievements of this work are threefold:
+
+1. **Axiomatic Parametrization**: We reframe every stability assumption as a quantifiable **Axiomatic Parameter** (e.g., $\kappa_{\text{revival}}$, $L_R$, $p_{\text{worst-case}}$), transforming abstract requirements into concrete diagnostic tools. This parametric framework enables systematic debugging: when an algorithm fails, the parameter values identify which components violate their required bounds.
+
+2. **Operator-Level Continuity Analysis**: We prove comprehensive continuity bounds (both deterministic Lipschitz and mean-square probabilistic) for every operator in the pipeline—measurement, aggregation, standardization, rescaling, perturbation, status update, and cloning. These results establish that the Fragile Gas is **N-uniform stable** under normal operation, meaning measurement noise does not grow with swarm size.
+
+3. **Guaranteed Revival Mechanism**: We prove the **Theorem of Almost-Sure Revival** {prf:ref}`thm-revival-guarantee`, establishing that under the Axiom of Guaranteed Revival, any swarm with at least one surviving walker will resurrect all dead walkers with probability 1. This prevents gradual extinction through attrition, confining the system's failure modes to catastrophic events only.
+
+**Scope and Limitations**: This document focuses exclusively on defining the framework and proving operator-level stability properties. It does *not* prove convergence to quasi-stationary distributions—that analysis requires the Keystone Principle and hypocoercive Lyapunov analysis, which are developed in the companion document *"The Keystone Principle and the Contractive Nature of Cloning"* {prf:ref}`03_cloning.md`. This document establishes the *tools* (metrics, axioms, continuity bounds); the companion document establishes the *dynamics* (drift inequalities, convergence rates).
+
+### 1.2. The Fragile Gas as a Parametric Debugging Framework
+
+The Fragile Gas framework represents a paradigm shift in how we design and analyze swarm algorithms. Traditional approaches define algorithms through implementation details (pseudocode, hyperparameters) and validate them empirically. The Fragile framework inverts this: we first establish a set of **functional requirements** (axioms) that any well-behaved swarm must satisfy, then prove that *any instantiation satisfying these axioms* inherits strong stability and convergence guarantees.
+
+The key innovation is **parametrization of axioms**. Rather than stating abstract conditions like "the reward function must be regular," we define a parameter $L_R$ (the Lipschitz constant of the reward) and prove how this parameter propagates through every downstream continuity bound. When an implementation fails, the user can measure $L_R$ in their environment and immediately diagnose whether reward irregularity is the root cause.
+
+This parametric perspective transforms the 21 sections of this document into a **diagnostic manual**:
+
+- **Sections 3** defines the axiomatic parameters and their roles (viability, exploration, measurement quality)
+- **Sections 4-16** show how these parameters combine to bound each operator's continuity
+- **Section 17** proves the revival mechanism that prevents attrition-based failure
+- **Section 18** composes all operators into the full Swarm Update Operator $\Psi_{\mathcal{F}}$
+- **Section 20** provides an existence proof via the Canonical Fragile Swarm
+- **Section 21** consolidates all continuity constants for quick reference
+
+:::{admonition} Why "Fragile"?
+:class: note
+
+The name "Fragile" reflects the algorithm's fundamental property: walkers are fragile entities that can die (status $s=0$) when they violate environmental constraints. This fragility is not a weakness but the *source of adaptation*. Dead walkers mark dangerous regions, and the cloning operator reallocates computational resources away from these regions toward successful paths. The framework proves this fragile-plus-revival architecture is mathematically sound and guarantees long-term viability.
+:::
+
+### 1.3. Overview of the Proof Strategy and Document Structure
+
+The document builds the framework in four main parts: **Foundational Definitions** (Sections 2-5), **Measurement and Standardization Pipeline** (Sections 6-12), **Dynamics and Cloning** (Sections 13-17), and **System Composition and Validation** (Sections 18-21). Each part establishes necessary mathematical machinery for the next, culminating in a complete, verified algorithmic definition.
+
+The diagram below illustrates the logical dependencies and information flow through the framework:
+
+```mermaid
+graph TD
+    subgraph "Part I: Foundations (§2-5)"
+        A["<b>§3: Axiomatic Foundations</b><br>Defines 16 core axioms + 1 assumption <br>with quantifiable parameters"]:::axiomStyle
+        B["<b>§4: Environment</b><br>Reward function R, <br>Valid domain X_valid"]:::stateStyle
+        C["<b>§5: Algorithmic Noise</b><br>Perturbation (P_σ) and <br>Cloning (Q_δ) measures"]:::stateStyle
+        A --> B
+        A --> C
+    end
+
+    subgraph "Part II: Measurement Pipeline (§6-12)"
+        D["<b>§6: Algorithmic Space</b><br>Projection φ: X → Y, <br>Algorithmic distance d_Y"]:::stateStyle
+        E["<b>§7: Swarm Measuring</b><br>Empirical measure aggregation, <br>Lipschitz continuity"]:::lemmaStyle
+        F["<b>§8: Companion Selection</b><br>Fitness-weighted selection, <br>Error bounds"]:::lemmaStyle
+        G["<b>§9-12: Standardization</b><br>Rescale transformation, <br>Distance measurement, <br>Z-score standardization"]:::lemmaStyle
+
+        B --> D
+        D --> E
+        E --> F
+        F --> G
+        A --"Measurement Quality Axioms"--> E
+        A --"Measurement Quality Axioms"--> G
+    end
+
+    subgraph "Part III: Dynamics (§13-17)"
+        H["<b>§13: Fitness Potential</b><br>V_fit composition from <br>rescaled reward & diversity"]:::stateStyle
+        I["<b>§14: Perturbation</b><br>Probabilistic continuity, <br>McDiarmid bound"]:::theoremStyle
+        J["<b>§15: Status Update</b><br>Death boundary checks, <br>Hölder continuity"]:::lemmaStyle
+        K["<b>§16: Cloning Measure</b><br>Threshold-based selection, <br>Continuity bounds"]:::theoremStyle
+        L["<b>§17: Revival at k=1</b><br>Single-survivor dynamics, <br>Almost-sure resurrection"]:::theoremStyle
+
+        G --> H
+        H --> I
+        I --> J
+        J --> K
+        A --"Axiom of Guaranteed Revival"--> K
+        A --"Exploration Axioms"--> I
+        A --"Viability Axioms"--> J
+        K --> L
+    end
+
+    subgraph "Part IV: Composition (§18-21)"
+        M["<b>§18: Swarm Update Ψ_F</b><br>Markov kernel composition, <br>W_2 continuity bounds"]:::theoremStyle
+        N["<b>§19: Fragile Gas Algorithm</b><br>Time-homogeneous Markov chain, <br>Trajectory generation"]:::stateStyle
+        O["<b>§20: Canonical Instantiation</b><br>Existence proof via <br>Euclidean space + Gaussian noise"]:::theoremStyle
+        P["<b>§21: Constants Glossary</b><br>Consolidated continuity bounds <br>and parameter impacts"]:::stateStyle
+
+        L --> M
+        I --> M
+        J --> M
+        M --> N
+        A --"All axioms"--> O
+        M --> O
+        O --> P
+    end
+
+    classDef stateStyle fill:#4a5f8c,stroke:#8fa4d4,stroke-width:2px,color:#e8eaf6
+    classDef axiomStyle fill:#8c6239,stroke:#d4a574,stroke-width:2px,stroke-dasharray: 5 5,color:#f4e8d8
+    classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
+    classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
+```
+
+**Document Structure**:
+
+- **Part I (Sections 2-5)**: Establishes the foundational objects. Section 2 defines global conventions (walkers, swarms, state spaces, metrics). Section 3 defines the complete axiomatic framework with 16 core axioms plus 1 structural assumption, organized into three categories: Viability (preventing extinction), Environmental (problem structure), and Regularity (algorithmic stability). Section 4 defines the environment (reward function, valid domain, state space) and Section 5 defines the algorithmic noise measures (perturbation and cloning).
+
+- **Part II (Sections 6-12)**: Develops the measurement and standardization pipeline. Section 6 introduces the algorithmic space and projection map. Section 7 proves empirical aggregation is Lipschitz continuous with respect to $W_2$ distance. Section 8 analyzes companion selection under status changes. Sections 9-12 derive the complete standardization pipeline: rescale transformation (smooth patching, monotonicity, Lipschitz bounds), distance-to-companion measurement (error decomposition, structural continuity), and z-score standardization (mean-square continuity, $O(\varepsilon_{\text{std}}^{-6})$ sensitivity).
+
+- **Part III (Sections 13-17)**: Analyzes the dynamical operators. Section 13 defines the fitness potential operator and proves its continuity. Section 14 establishes probabilistic continuity of the perturbation operator via McDiarmid's inequality. Section 15 analyzes the status update operator and its Hölder continuous death probability under boundary regularity. Section 16 defines the cloning transition measure and proves its continuity. Section 17 handles the special case of single-survivor revival ($k=1$), proving almost-sure resurrection under the Axiom of Guaranteed Revival.
+
+- **Part IV (Sections 18-21)**: Composes and validates the complete system. Section 18 defines the Swarm Update Operator $\Psi_{\mathcal{F}}$ as a Markov kernel and derives its $W_2$ continuity bound. Section 19 formally defines the Fragile Gas algorithm as a time-homogeneous Markov chain. Section 20 provides an existence proof by defining a Canonical Fragile Swarm and proving axiom-by-axiom that it satisfies all requirements. Section 21 consolidates all continuity constants in a reference table.
+
+**Reading Recommendations**:
+
+- **For implementers**: Read Sections 1-5 (foundations and axioms), Section 19 (algorithm definition), Section 20 (canonical instantiation), and Section 21 (parameter glossary). This provides the complete algorithmic specification and a validated baseline implementation.
+
+- **For theorists**: The full document is a prerequisite for the companion convergence analysis in *"The Keystone Principle and the Contractive Nature of Cloning."* Pay special attention to Section 12 (standardization continuity), Section 16 (cloning measure), and Section 18 (composed operator bounds).
+
+- **For debuggers**: When an implementation fails, use Section 21 to identify which continuity constants are large, then trace back through the document to find the corresponding axiomatic parameter. For example, if fitness variance is unstable, check $\varepsilon_{\text{std}}$ (Section 9), variance axioms (Section 3), and $L_R$ (Section 4).
+
+## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters
 
 This section establishes the foundational objects of the system, the assumptions about the environment, and the core tunable parameters that dictate the algorithm's execution. For the mathematical framework to be sound, these conventions must be fixed before the analysis begins.
 
@@ -396,7 +531,7 @@ This formula cleverly counts status changes: since $s_i \in \{0,1\}$, we have $(
 The **N-Particle Displacement Metric** defined in Section 1.5 is a specific weighted average of these components: $d_{\text{Disp},\mathcal{Y}}^2 = \frac{1}{N}\Delta_{\text{pos}}^2 + \frac{\lambda_{\mathrm{status}}}{N}n_c$. The generalized continuity framework will use $\Delta_{\text{pos}}^2$ and $n_c$ as direct inputs to provide a more detailed analysis of error propagation.
 :::
 
-## 2. Axiomatic Foundations: A Parametric Debugging Framework
+## 3. Axiomatic Foundations: A Parametric Debugging Framework
 
 :::{admonition} What Are Axiomatic Foundations?
 :class: important
@@ -960,7 +1095,7 @@ $$
 The margin-based axiom strengthens this near zero by ensuring $n_c=0$ whenever the displacement is small enough, which is crucial to guarantee deterministic continuity of downstream operators.
 :::
 | Theorem of Deterministic Potential Continuity ([](#thm-deterministic-potential-continuity)) | The fitness potential operator can be made globally Lipschitz continuous.                                          | The deterministic squared error $                                                                                                                                                                                                                |                                                                                                                                                 | V_1 - V_2 \|^2$ is bounded by a Lipschitz-Hölder function of the input displacement and raw value difference.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | The **Axiom of Variance Regularization** ($\kappa_{\text{var}},min$) and all other axiomatic parameters.                                                              | This is the **strongest continuity result**, available when using the patched standardization operator. It proves the potential is a well-behaved, deterministic function suitable for worst-case analysis. This property is the key prerequisite for validating stronger convergence results like those from Feynman-Kac theory. If the axiom is not enforced, this theorem does not hold. |
-## 3. The Environment: State and Reward Measurement
+## 4. The Environment: State and Reward Measurement
 The environment provides the static context for the swarm's evolution. Its core properties—the state space and the reward function—are defined axiomatically in Section 2.2. The algorithm interacts with the environment through a formal measurement process.
 ### 3.1 Reward Measurement
 A walker determines the value of its location by evaluating the global Reward Function.
@@ -974,7 +1109,7 @@ r_i := \mathbb{E}_{\delta_{x_i}}[R] = \int_{\mathcal{X}} R(x) \, d\delta_{x_i}(x
 $$
 This formalizes the act of "evaluating the reward" as a measurement process.
 :::
-## 4. Algorithmic Noise Measures
+## 5. Algorithmic Noise Measures
 The algorithm's random movements are sourced from probability measures that must satisfy the core properties defined in the **Valid Noise Measure Axiom (Def. 2.3)**. The user is responsible for providing concrete instantiations of these measures.
 ### 4.1 Algorithmic Instantiations
 The algorithm uses two distinct noise measures, both of which are required to be instantiations of a Valid Noise Measure.
@@ -1074,7 +1209,7 @@ As above, $P_\sigma=\chi_E * p_{\sigma^2}$ and $\nabla(\chi_E * p_{\sigma^2})=(D
 **Q.E.D.**
 :::
 :::
-## 5. Algorithm Space and Distance Measurement
+## 6. Algorithm Space and Distance Measurement
 ### 5.1 Specification of the Algorithmic Space
 :::{prf:definition} Algorithmic Space
 :label: def-algorithmic-space-generic
@@ -1104,7 +1239,7 @@ $$
 $$
 This is the practical implementation of the Wasserstein distance between the walkers' projected Dirac measures and serves as the ground distance for all subsequent calculations.
 :::
-## 6. Swarm Measuring
+## 7. Swarm Measuring
 To analyze the collective behavior of the finite N-particle system, we define several distances between swarm states.
 These definitions do not involve a mean-field approximation; instead, they provide different lenses through which to view
 and measure the dissimilarity between two finite swarms, $\mathcal{S}_1$ and $\mathcal{S}_2$. Each distance allows for different
@@ -1343,7 +1478,7 @@ $$
 
 $$
 :::
-## 7. Companion Selection
+## 8. Companion Selection
 The process of choosing a companion is governed by a uniform probability measure on a set of available walker indices. This selection is fundamental to the algorithm's diversity measurement. The stability of this selection process—how the expected outcome changes when the set of available companions changes—is a critical component of the overall system's continuity analysis.
 :::{admonition} 🎯 Key Insight: Social Dynamics in the Swarm
 :class: important
@@ -1482,7 +1617,7 @@ $$
 $$
 **Q.E.D.**
 :::
-## 8. Rescale Transformation
+## 9. Rescale Transformation
 The core non-linearity of the algorithm is encapsulated in the rescale transformation, which maps standardized Z-scores to positive values that form the components of the fitness potential. For the stability and continuity of the entire system to hold, this transformation cannot be arbitrary. It must be governed by a function that is smooth, bounded, and preserves the ordering of inputs.
 :::{admonition} 🎯 The Magic of the Rescale Function
 :class: important
@@ -1959,7 +2094,7 @@ The proof consists of verifying each of the four axiomatic conditions, which was
 Since all four conditions are met, the Canonical Logistic Rescale Function is a valid instantiation.
 **Q.E.D.**
 :::
-## 9. Abstract Raw Value Measurement
+## 10. Abstract Raw Value Measurement
 The initial stage of the algorithm's measurement pipeline involves each walker generating a raw scalar value based on its state and its relation to the swarm. To create a modular and reusable analytical framework for the subsequent standardization process, we abstract this initial measurement into a generic operator. Any specific measurement, such as reward or distance-to-companion, will be treated as a concrete instantiation of this abstract operator. The continuity of the entire system depends on this operator being well-behaved in a probabilistic sense.
 ### 9.1 The Raw Value Operator
 :::{prf:definition} Raw Value Operator
@@ -2002,7 +2137,7 @@ $$
 *   **Framework Application:** This axiom is a key ingredient for proving that a stochastic operator is mean-square continuous. It allows the framework to bound the stochastic fluctuations around the mean, isolating the remaining analytical challenge to bounding the change in the mean itself.
 *   **Failure Mode Analysis:** If this axiom is violated, the raw measurement process could have an unbounded variance. This would allow for rare but arbitrarily large measurement errors, causing the *expected* squared error to be infinite. This would break the mean-square continuity of the operator, leading to unstable swarm behavior.
 :::
-## 10. Distance-to-Companion Measurement
+## 11. Distance-to-Companion Measurement
 The second intrinsic measurement is the distance of each walker to a randomly chosen companion. This operator is the primary source of state-dependent instability in the algorithm.
 ### 10.1 Definition of Distance-to-Companion Measurement
 :::{prf:definition} Distance-to-Companion Measurement
@@ -2661,7 +2796,7 @@ $$
 This simplifies to the expression for $F_{d,ms}(\mathcal{S}_1, \mathcal{S}_2)$ as stated in the theorem.
 **Q.E.D.**
 :::
-## 11. Standardization pipeline
+## 12. Standardization pipeline
 The core of the algorithm's decision-making process relies on transforming raw measurements into a common, standardized scale. This is handled by the standardization pipeline, a composite operator that maps a full swarm state $S$ to a corresponding N-dimensional standardized vector (a "Z-score" vector). The output is defined to be zero for any walker that is not in the alive set.
 The stability of the entire algorithm is critically dependent on the continuity properties of this pipeline. This section provides a rigorous, self-contained proof of its probabilistic continuity, valid for any aggregation operator satisfying the axiomatic requirements of [](#def-swarm-aggregation-operator-axiomatic) and any raw value operator satisfying the continuity axiom of [](#axiom-raw-value-mean-square-continuity).
 :::{admonition} Notation freeze: $\sigma$ vs. $\sigma'$ (patched)
@@ -3641,7 +3776,7 @@ $$
 4.  **Combine the Bounds:** Substituting the bounds from steps 2 and 3 into the decomposition from step 1 yields the final inequality as stated in the theorem. This provides a complete, deterministic, worst-case bound on the operator's output error.
 **Q.E.D.**
 :::
-## 12. Fitness potential operator
+## 13. Fitness potential operator
 This section defines the sequence of deterministic operators that transform the raw measurement vectors (rewards and distances) into a final, N-dimensional fitness potential vector. These operators are executed after the stochastic measurement stage and are fixed for the remainder of the cloning decision process.
 ### 12.1 Rescaled Potential Operator for the Alive Set
 :::{prf:definition} Rescaled Potential Operator for the Alive Set
@@ -3895,7 +4030,7 @@ F_{\text{pot,det}}(\mathcal{S}_1, \mathcal{S}_2, \mathbf{v}_{r1}, \mathbf{v}_{r2
 $$
 Moreover, for $d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1,\mathcal{S}_2)^2\le r_{\mathrm{status}}$ we have $n_c=0$ and the unstable term vanishes exactly; the remaining terms are controlled by the deterministic continuity of the patched standardization operator and the Lipschitz continuity of the potential map $F$.
 :::
-## 13. The Perturbation Operator
+## 14. The Perturbation Operator
 The perturbation stage applies a random displacement to each walker in the swarm, representing an exploration step. This is a purely stochastic operator that only affects walker positions.
 ### 13.1 Definition: Perturbation Operator
 :::{prf:definition} Perturbation Operator
@@ -4077,7 +4212,7 @@ $$
 :class: note
 This concentration bound relies on Assumption A (in‑step independence) and on the with‑replacement sampling policy in §7.1.1. Implementations that use within‑step dependence (e.g., systematic resampling with a shared uniform) violate these assumptions; in that case use a dependent bounded‑differences inequality (see Appendix) instead of McDiarmid.
 :::
-## 14. The Status Update Operator
+## 15. The Status Update Operator
 After any change in position (either from cloning or perturbation), a walker's status must be re-evaluated. This operator performs that check deterministically.
 ### 14.1 Definition: Status Update Operator
 :::{prf:definition} Status Update Operator
@@ -4172,7 +4307,7 @@ $$
     Combining these two bounds yields the final inequality as stated in the theorem.
 **Q.E.D.**
 :::
-## 15. The Cloning Transition Measure
+## 16. The Cloning Transition Measure
 The final step in the measurement pipeline is to convert the N-dimensional fitness potential vector into a probabilistic cloning decision for each walker. This process is governed by a score function and the resulting $Cloning Bernoulli Measure$.
 ### 15.1 Definition: Cloning Transition Measure
 #### 15.1.1 The Cloning Score Function
@@ -4513,7 +4648,7 @@ where $A_k$ are state-dependent coefficients.
     Combining all terms, the total L1-norm $\|\DeltaP\|_1$ is bounded by an expression of the form $C'_P V_{\text{in}} + H'_P sqrt(V_{\text{in}}) + K'_P$. Absorbing the term **2N** into the constant offset gives the final result as stated in the sub-lemma.
 **Q.E.D.**
 :::
-## 16. The Revival State: Dynamics at $k=1$
+## 17. The Revival State: Dynamics at $k=1$
 :::{admonition} The Near-Extinction Recovery Mechanism
 :class: important
 :open:
@@ -4585,7 +4720,7 @@ Therefore, we have the following guaranteed inequality: $S_i \ge \frac{\eta^{\al
     *   Since the perturbations are independent for each walker, the probability of total swarm failure is the product of the individual probabilities of failure. This isolates the extinction risk to a single, quantifiable event, contingent entirely on the outcomes of the **N** post-revival random walks. This proves the third property.
 **Q.E.D.**
 :::
-## 17. Swarm Update Operator: A Composition of Measures
+## 18. Swarm Update Operator: A Composition of Measures
 ### 17.1 Definition: Swarm Update Operator
 :::{prf:definition} Swarm Update Procedure
 :label: def-swarm-update-procedure
@@ -5045,7 +5180,7 @@ All selection, cloning and aggregation maps are Borel on $\Sigma_N$, being built
 We compare two runs via synchronous coupling (same noise seeds) to control $W_2$ distances. This is a proof device only. Within a single run and timestep, per‑walker random inputs remain independent (Assumption A). The $W_2$‑optimized bound and the expectation‑based bound are distinct results proved with different couplings; the former eliminates additive offsets at zero input distance.
 :::
 :::
-## 18. Fragile Gas: The Algorithm's Execution
+## 19. Fragile Gas: The Algorithm's Execution
 The preceding sections have defined all the necessary mathematical objects, operators, and axiomatic constraints that constitute the Fragile framework. This final section formally defines the algorithm's execution, describing how the one-step **Swarm Update Operator** is used to evolve a swarm over time.
 ### 18.1 The Fragile Swarm Instantiation
 To distinguish the general analytical framework from a specific, runnable instance of the algorithm, we define a **Fragile Swarm**. This object is a complete instantiation of the system, where all user-selectable parameters, functions, and measures have been fixed.
@@ -5079,7 +5214,7 @@ $$
 **Output:**
 The algorithm outputs the full trajectory of swarm states: $(\mathcal{S}_0, \mathcal{S}_1, \dots, \mathcal{S}_T)$.
 :::
-## 19. Canonical Instantiation and Axiom Validation
+## 20. Canonical Instantiation and Axiom Validation
 The preceding framework is built upon a comprehensive set of axioms that a user's specific instantiation of the algorithm must satisfy for the stability and convergence guarantees to hold. A critical question for the rigor of the entire framework is whether these axioms are satisfiable in practice for any non-trivial system, or if they are mutually exclusive or so restrictive as to be vacuous.
 This section serves as an existence proof. We define a **Canonical Fragile Swarm** by making a set of standard, well-behaved choices for the environment, noise measures, and aggregation operators. We then formally prove, axiom by axiom, that this canonical instantiation satisfies the full set of foundational requirements. This demonstrates that the axiomatic framework is not empty and provides a concrete, verifiable baseline for users implementing their own systems.
 ### 19.1. Definition: The Canonical Fragile Swarm
@@ -5098,7 +5233,7 @@ The Canonical Fragile Swarm is defined by the following set of concrete choices.
     *   **Cloning Measure ($\mathcal{Q}_\delta$):** A Gaussian measure with covariance $\delta^2 I$.
     *   All other scalar parameters ($\alpha, \beta, \sigma, \delta, p_{\max}, \eta, \varepsilon_{\text{std}}, z_{\max}, \varepsilon_{\text{clone}}$) are assumed to be chosen as positive constants that collectively satisfy the global constraints, such as the **Axiom of Guaranteed Revival**.
 This complete, concrete instantiation will now be used to validate the axiomatic framework.
-## 20. Continuity Constants: Canonical Values and Glossary
+## 21. Continuity Constants: Canonical Values and Glossary
 This section consolidates the constants used across absolute-value and mean‑square continuity results, with short definitions and their explicit expressions under the Canonical Fragile Swarm (Section 19). It is organized to show how algorithmic parameters and design choices impact stability bounds.
 ### 20.1 Quick Table (symbols, meaning, canonical value)
 | Symbol | Type | Meaning | Canonical value (closed form) |

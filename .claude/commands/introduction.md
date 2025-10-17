@@ -108,9 +108,48 @@ Write the overview section that:
 
 Should be 1-2 paragraphs followed by structured overview.
 
-### Step 8: Dual MCP Review (MANDATORY)
+### Step 8: Analyze Existing Document Structure
 
-**CRITICAL**: Before finalizing, submit the complete draft for dual independent review:
+**CRITICAL**: Determine how to integrate the new sections 0 and 1:
+
+**Case A: No existing sections 0 and 1**
+- Simply insert the new TLDR and Introduction at the beginning
+- Existing content starts at section 2 (no renumbering needed)
+
+**Case B: Existing sections 0 and/or 1 contain unrelated content**
+- Insert new sections 0 (TLDR) and 1 (Introduction) at the beginning
+- Renumber existing section 0 → section 2
+- Renumber existing section 1 → section 3
+- Update ALL subsequent section numbers throughout the document
+- Update ALL internal cross-references to reflect new numbering
+- Search for patterns like:
+  - `## N.` → `## (N+2).`
+  - `### N.M.` → `### (N+2).M.`
+  - `{prf:ref}` references that include section numbers
+  - Text references like "in Section X" or "Chapter X"
+
+**Case C: Existing sections 0 and 1 are already TLDR and Introduction**
+- Replace them with improved versions
+- No renumbering needed
+
+### Step 9: Integration and Renumbering
+
+Execute the integration based on the case identified:
+
+1. **Backup approach**: Preserve old content that might be valuable in comments or admonitions
+2. **Insert new sections 0 and 1** with the drafted content
+3. **If renumbering is required** (Case B):
+   - Use systematic find-replace for section headers
+   - Update subsection numbers (e.g., `### 1.2.` → `### 3.2.`)
+   - Search for and update cross-references:
+     - `{prf:ref}` labels may need updates if they encode section numbers
+     - Prose references like "Section 2.3" or "Chapter 4"
+   - Verify Mermaid diagram references match new numbering
+4. **Verify smooth transitions** between sections
+
+### Step 10: Dual MCP Review (MANDATORY)
+
+**CRITICAL**: After integration, submit the complete introduction (sections 0 and 1 ONLY) for dual independent review:
 
 Submit the IDENTICAL prompt to BOTH reviewers in parallel:
 
@@ -136,7 +175,7 @@ Provide specific feedback with severity ratings.
 1. **Gemini**: Use `mcp__gemini-cli__ask-gemini` with `model: "gemini-2.5-pro"`
 2. **Codex**: Use `mcp__codex__codex`
 
-### Step 9: Evaluate and Compare Feedback
+### Step 11: Evaluate and Compare Feedback
 
 Critically evaluate both reviews:
 - **Consensus issues** (both agree): High confidence → prioritize
@@ -150,7 +189,7 @@ If you disagree with feedback:
 3. Propose alternative with justification
 4. Let user decide
 
-### Step 10: Implement Revisions
+### Step 12: Implement Revisions
 
 Address validated feedback systematically:
 - Maintain mathematical precision
@@ -158,19 +197,7 @@ Address validated feedback systematically:
 - Update cross-references as needed
 - Ensure proper LaTeX formatting
 
-### Step 11: Integration
-
-**If existing introduction:**
-- Replace sections 0 and 1 with the new content
-- Preserve any custom admonitions or remarks if still relevant
-- Ensure smooth transition to section 2
-
-**If no introduction:**
-- Insert sections 0 and 1 at the beginning
-- Adjust subsequent section numbering if needed
-- Update any internal cross-references
-
-### Step 12: Formatting Pass
+### Step 13: Final Formatting Pass
 
 Apply formatting tools from `src/tools/`:
 - Ensure exactly ONE blank line before `$$` blocks
@@ -180,11 +207,16 @@ Apply formatting tools from `src/tools/`:
 
 ## Output Requirements
 
-Present the final introduction to the user showing:
+Present the final result to the user showing:
 1. The complete TLDR and Introduction sections (0 and 1)
-2. Summary of key changes made (if improving existing content)
-3. Brief explanation of the structure diagram
-4. Note any areas where user input might be helpful
+2. Summary of integration approach used (Case A, B, or C)
+3. If renumbering was performed:
+   - List of section number changes (e.g., "Section 2 → Section 4")
+   - Number of cross-references updated
+   - Any references that may need manual review
+4. Brief explanation of the structure diagram
+5. Summary of dual review feedback and how it was addressed
+6. Note any areas where user input might be helpful
 
 ## Important Notes
 

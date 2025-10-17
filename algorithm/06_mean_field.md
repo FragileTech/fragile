@@ -366,28 +366,28 @@ This is the instantaneous rate at which alive mass transitions to dead mass.
 :::{prf:definition} Revival Operator
 :label: def-revival-operator
 
-Revival is modeled as a non-local source term that re-injects mass from the dead population back into the alive population. The dead population acts as a reservoir from which revival occurs at a constant rate. The spatial profile of the re-injected mass, $g[f/m_a]$, is determined by cloning from the current **normalized alive population**, mirroring the discrete algorithm's revival mechanism.
+Revival is modeled as a source term that re-injects mass from the dead population back into the alive population. The dead population acts as a reservoir from which revival occurs at a constant rate. Dead walkers are instantly revived by cloning from alive companions, so the spatial profile of the re-injected mass is simply **proportional to the current alive density**, mirroring the discrete algorithm's revival mechanism.
 
 The **Revival Operator** is defined as:
 
 $$
-B[f, m_d](t, z) := \lambda_{\text{rev}} \cdot m_d(t) \cdot g[f/m_a](t, z)
+B[f, m_d](t, z) := \lambda_{\text{revive}} \cdot m_d(t) \cdot \frac{f(t,z)}{m_a(t)}
 $$
 
 where:
-*   $\lambda_{\text{rev}} = 1/\tau$ is the **revival rate**, the inverse of the mean revival time (analogous to the discrete timestep $\tau$)
+*   $\lambda_{\text{revive}} > 0$ is the **revival rate**, a free parameter independent of the timestep (typical values: 0.1-5)
 *   $m_d(t) = 1 - m_a(t)$ is the current dead mass
-*   $g[f/m_a](t, z) := \int_{\Omega} Q_{\delta}(z \mid z') \frac{f(t,z')}{m_a(t)} \,\mathrm{d}z'$ is the revival profile
+*   $f(t,z)/m_a(t)$ is the **normalized alive density** (the probability distribution over the alive population)
 
-Here, $Q_\delta(z \mid z')$ is the jitter kernel (a Gaussian centered at $z'$ with variance $\delta^2$), and the companion is selected uniformly from the normalized alive density $f/m_a$.
+This form directly translates the discrete algorithm: dead walkers select companions uniformly from the alive set and clone to their positions.
 
 **Key property**: The total mass revived per unit time is:
 
 $$
-\int_{\Omega} B[f, m_d](t,z)\,\mathrm{d}z = \lambda_{\text{rev}} \cdot m_d(t)
+\int_{\Omega} B[f, m_d](t,z)\,\mathrm{d}z = \lambda_{\text{revive}} \cdot m_d(t)
 $$
 
-since $\int_\Omega Q_\delta(z|z')\,\mathrm{d}z = 1$ and $\int_\Omega [f/m_a]\,\mathrm{d}z' = 1$.
+since the normalized alive density integrates to unity: $\int_\Omega [f/m_a]\,\mathrm{d}z = 1$.
 :::
 
 #### **2.3.3. Derivation of the Internal Cloning Operator from First Principles**
@@ -624,14 +624,14 @@ subject to initial conditions $f(0, \cdot) = f_0$ and $m_d(0) = 1 - \int_\Omega 
 In explicit form, the equation for $f$ is:
 
 $$
-\partial_t f(t,z) = -\nabla\cdot(A(z) f(t,z)) + \nabla\cdot(\mathsf{D}\nabla f(t,z)) - c(z)f(t,z) + \lambda_{\text{rev}} m_d(t) g[f/m_a](t,z) + S[f](t,z)
+\partial_t f(t,z) = -\nabla\cdot(A(z) f(t,z)) + \nabla\cdot(\mathsf{D}\nabla f(t,z)) - c(z)f(t,z) + \lambda_{\text{revive}} m_d(t) \frac{f(t,z)}{m_a(t)} + S[f](t,z)
 $$
 
 where:
 *   $A(z)$ is the drift field and $\mathsf{D}$ is the diffusion tensor from the kinetic transport (with reflecting boundaries)
 *   $c(z)$ is the interior killing rate (zero in interior, positive near boundary)
-*   $\lambda_{\text{rev}} = 1/\tau$ is the revival rate
-*   $B[f, m_d] = \lambda_{\text{rev}} m_d(t) g[f/m_a]$ is the revival operator
+*   $\lambda_{\text{revive}} > 0$ is the revival rate (free parameter, typical values 0.1-5)
+*   $B[f, m_d] = \lambda_{\text{revive}} m_d(t) f/m_a$ is the revival operator
 *   $S[f]$ is the mass-neutral internal cloning operator
 
 The total alive mass is $m_a(t) = \int_\Omega f(t,z)\,\mathrm{d}z$, and the system conserves the total population: $m_a(t) + m_d(t) = 1$ for all $t$.
@@ -675,7 +675,7 @@ Evaluating each term using the properties established in previous sections:
 
 1.  **Transport**: From Lemma 3.1, $\int_\Omega L^\dagger f\,\mathrm{d}z = 0$ (reflecting boundaries)
 2.  **Killing**: By definition, $\int_\Omega c(z)f\,\mathrm{d}z = k_{\text{killed}}[f]$
-3.  **Revival**: From Definition 2.3.2, $\int_\Omega B[f, m_d]\,\mathrm{d}z = \lambda_{\text{rev}} m_d(t)$
+3.  **Revival**: From Definition 2.3.2, $\int_\Omega B[f, m_d]\,\mathrm{d}z = \lambda_{\text{revive}} m_d(t)$
 4.  **Internal cloning**: From Definition 2.3.3, $\int_\Omega S[f]\,\mathrm{d}z = 0$
 
 Therefore:
@@ -717,7 +717,7 @@ The Mean-Field Equations for the Euclidean Gas form a coupled system of a PDE (f
 
 *   **Coupled Reaction-Diffusion Structure:** The system has the form of a coupled reaction-diffusion system. The PDE for $f$ has the form of a reaction-diffusion PDE with non-local reaction terms. The kinetic operator $L^\dagger$ provides the diffusion (with reflecting boundaries), while the killing $-c(z)f$, revival $B[f, m_d]$, and cloning $S[f]$ terms provide the reactions. The ODE for $m_d$ describes the evolution of the dead reservoir. This structure is well-studied in PDE theory and enables the application of standard analytical techniques for coupled systems.
 
-*   **Total Mass Conservation with Dynamic Equilibrium:** As proven in Theorem 3.3, the coupled system conserves the total population $m_a(t) + m_d(t) = 1$. However, unlike a model with instantaneous revival, the alive and dead masses can exchange and evolve towards a non-trivial **stationary state** where $\mathrm{d}/\mathrm{d}t\, m_a = 0$ and $\mathrm{d}/\mathrm{d}t\, m_d = 0$. At this stationary state, the killing and revival rates are balanced: $k_{\text{killed}}[f_\infty] = \lambda_{\text{rev}} m_{d,\infty}$. This faithfully represents the discrete algorithm's behavior where the number of alive walkers $k$ fluctuates and converges to a stationary distribution.
+*   **Total Mass Conservation with Dynamic Equilibrium:** As proven in Theorem 3.3, the coupled system conserves the total population $m_a(t) + m_d(t) = 1$. However, unlike a model with instantaneous revival, the alive and dead masses can exchange and evolve towards a non-trivial **stationary state** where $\mathrm{d}/\mathrm{d}t\, m_a = 0$ and $\mathrm{d}/\mathrm{d}t\, m_d = 0$. At this stationary state, the killing and revival rates are balanced: $k_{\text{killed}}[f_\infty] = \lambda_{\text{revive}} m_{d,\infty}$. This faithfully represents the discrete algorithm's behavior where the number of alive walkers $k$ fluctuates and converges to a stationary distribution.
 
 ### **4.2. Well-Posedness and Future Work**
 
@@ -732,12 +732,12 @@ The well-posedness of the coupled mean-field system relies on the following assu
 *   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \gamma_{\text{fric}}, \Theta, \sigma_x$) are finite and positive.
 *   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.
 *   **(H5)** The killing rate function $c(z)$ is smooth ($C^\infty$), non-negative, and has compact support in a neighborhood of $\partial X_{\text{valid}}$.
-*   **(H6)** The revival rate $\lambda_{\text{rev}} = 1/\tau > 0$ is a positive constant.
+*   **(H6)** The revival rate $\lambda_{\text{revive}} > 0$ is a free positive constant independent of the timestep $\tau$ (typical values: 0.1-5).
 :::
 
 Under these assumptions, the coupled mean-field system is of a class for which analytical tools have been developed. This system now serves as the formal starting point for addressing critical questions about the algorithm's macroscopic behavior:
 1.  **Existence and Uniqueness:** Proving that a well-behaved solution $(f(t,z), m_d(t))$ exists for all time and is unique for given initial conditions $(f_0, m_{d,0})$.
-2.  **Stationary States:** Investigating the existence and properties of stationary solutions $(f_\infty(z), m_{d,\infty})$ that satisfy $\partial_t f = 0$ and $\mathrm{d}/\mathrm{d}t\, m_d = 0$. At the stationary state, the killing and revival rates balance: $k_{\text{killed}}[f_\infty] = \lambda_{\text{rev}} m_{d,\infty}$.
+2.  **Stationary States:** Investigating the existence and properties of stationary solutions $(f_\infty(z), m_{d,\infty})$ that satisfy $\partial_t f = 0$ and $\mathrm{d}/\mathrm{d}t\, m_d = 0$. At the stationary state, the killing and revival rates balance: $k_{\text{killed}}[f_\infty] = \lambda_{\text{revive}} m_{d,\infty}$.
 3.  **Convergence to Equilibrium:** Proving that any initial state $(f_0, m_{d,0})$ converges to the unique stationary state $(f_\infty, m_{d,\infty})$ as $t \to \infty$.
 4.  **Functional Inequalities:** Establishing functional inequalities, such as a Logarithmic Sobolev Inequality (LSI), for the stationary measure. Proving an LSI would provide a quantitative and exponential rate of convergence to equilibrium.
 

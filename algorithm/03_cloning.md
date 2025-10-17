@@ -1,5 +1,15 @@
 # The Keystone Principle and the Contractive Nature of Cloning
 
+## 0. TLDR
+
+**The Keystone Lemma**: The cloning operator $\Psi_{\text{clone}}$ exhibits a powerful error-correction mechanism. When the swarm's internal positional variance $V_{\text{Var},x}$ is large, the system automatically generates a fitness signal that correctly identifies high-error walkers and applies cloning pressure proportional to their positional error. This creates an expected N-uniform contraction of internal variance with rate $\kappa_x > 0$.
+
+**Foster-Lyapunov Drift Condition**: The cloning operator satisfies a two-part drift inequality on the hypocoercive Lyapunov function. Positional variance contracts geometrically ($\mathbb{E}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x$), while velocity variance exhibits bounded expansion ($\mathbb{E}[\Delta V_{\text{Var},v}] \leq C_v$). Combined with the Safe Harbor mechanism, boundary potential contracts exponentially ($\mathbb{E}[\Delta W_b] \leq -\kappa_b W_b + C_b$), ensuring low extinction probability.
+
+**N-Uniform Scalability**: All contraction rates ($\kappa_x$, $\kappa_b$) and expansion bounds ($C_x$, $C_v$, $C_b$) are independent of the swarm size $N$. This N-uniformity is the foundation for mean-field analysis and validates the Fragile Gas as a continuum physics model. The proof is constructive with explicit constants expressed in terms of primitive algorithmic parameters.
+
+**Synergistic Stability**: The cloning operator provides partial contraction—it stabilizes position but perturbs velocity. The companion document proves that the kinetic operator $\Psi_{\text{kin}}$ provides complementary dynamics (stabilizes velocity, perturbs position). Together, they form a synergistic Foster-Lyapunov condition guaranteeing exponential convergence to a unique Quasi-Stationary Distribution (QSD).
+
 ## 1. Introduction
 
 ### 1.1. Goal and Scope
@@ -24,30 +34,30 @@ Therefore, the convergence analysis in this document is dedicated to proving tha
 
 At the heart of the Fragile Gas framework is an engine of adaptation designed to mimic natural selection. This engine is the cloning operator, $\Psi_{\text{clone}}$. In intuitive terms, it is the source of the swarm's collective intelligence, allowing it to dynamically reallocate its computational resources (the walkers) toward more promising regions of the state space. It prevents the system from being a mere collection of disconnected random walkers and imbues it with a coherent, adaptive dynamic.
 
-The core analytical challenge of this work is to prove that this operator, despite its complexity, is guaranteed to be stabilizing. The process is stochastic, state-dependent, and involves discontinuous "reset" events (the death and revival of walkers), making its behavior difficult to predict. To overcome this challenge, we will state and prove a central, unifying result that we call the **Keystone Principle**. This principle establishes the existence of a robust, corrective feedback loop within the operator's dynamics. It proves that a large system-level error is an unstable condition that deterministically forces a powerful, targeted, and contractive cloning response whose strength is proportional to the magnitude of the error itself.
+The core analytical challenge of this work is to prove that this operator, despite its complexity, is guaranteed to be stabilizing. The process is stochastic, state-dependent, and involves discontinuous "reset" events (the death and revival of walkers), making its behavior difficult to predict. To overcome this challenge, we will state and prove a central, unifying result that we call the **Keystone Lemma**. This lemma establishes the existence of a robust, corrective feedback loop within the operator's dynamics. It proves that a large system-level error creates an expected contractive cloning response whose strength is proportional to the magnitude of the error itself.
 
-A key focus of this document is to establish that these stabilizing forces are **N-uniform**, meaning the algorithm's stability does not degrade for large swarms. This property is a non-negotiable prerequisite for establishing the Fragile Gas as a valid mean-field model and for rigorously analyzing its connection to continuum physics. The Keystone Principle provides the foundation for this claim, demonstrating that the framework's core adaptive mechanism is fundamentally scalable.
+A key focus of this document is to establish that these stabilizing forces are **N-uniform**, meaning the algorithm's stability does not degrade for large swarms. This property is a non-negotiable prerequisite for establishing the Fragile Gas as a valid mean-field model and for rigorously analyzing its connection to continuum physics. The Keystone Lemma provides the foundation for this claim, demonstrating that the framework's core adaptive mechanism is fundamentally scalable.
 
 ### 1.3. Overview of the Proof Strategy and Document Structure
 
 The proof is constructed as a logical argument in three main parts: Foundations, the Keystone Causal Chain, and the Drift Analysis. Each part builds upon the last, culminating in a rigorous proof of the contractive properties of the cloning operator.
 
-The diagram below illustrates the logical flow of the proof. We first establish the mathematical foundations (Chapters 2-4). This framework is then used to build the multi-chapter proof of the Keystone Principle (Chapters 5-8), which is the theoretical core of this work. Finally, the Keystone Principle is applied as the central tool in the drift analysis (Chapters 9-11) to derive the main results of this documents.
+The diagram below illustrates the logical flow of the proof. We first establish the mathematical foundations (Chapters 2-4). This framework is then used to build the multi-chapter proof of the Keystone Lemma (Chapters 5-8), which is the theoretical core of this work. Finally, the Keystone Lemma is applied as the central tool in the drift analysis (Chapters 9-12) to derive the main results of this document.
 
 ```mermaid
 graph TD
     subgraph "Part I: Foundations (Ch 2-4)"
-        A["<b>Ch 2: State Space & Metrics</b><br>Defines Empirical Measures & <br><b>Hypocoercive Wasserstein Distance (V_W)</b>"]:::stateStyle
-        B["<b>Ch 3: The Synergistic Lyapunov Function</b><br>Defines <b>V_total = V_W + c_V*V_Var + c_B*W_b</b>"]:::stateStyle
+        A["<b>Ch 2: State Space & Metrics</b><br>Defines Empirical Measures & <br><b>Hypocoercive Wasserstein Distance (W_h²)</b>"]:::stateStyle
+        B["<b>Ch 3: The Synergistic Lyapunov Function</b><br>Defines <b>V_total = W_h² + c_V*V_Var + c_B*W_b</b>"]:::stateStyle
         C["<b>Ch 4: Foundational Axioms</b><br>Includes <b>Globally Confining Potential</b> Axiom"]:::axiomStyle
         A --> B --> C
     end
 
-    subgraph "Part II: The Keystone Principle - Contraction of Internal Variance (Ch 5-8)"
+    subgraph "Part II: The Keystone Lemma - Contraction of Internal Variance (Ch 5-8)"
         D["<b>Ch 5: The Measurement Pipeline</b><br>(Intra-Swarm Measurements)"]:::stateStyle
         E["<b>Ch 6: V_Var → Geometric Structure → Fitness Signal</b><br>A large <b>Internal Variance (V_Var)</b> is detected"]:::lemmaStyle
         F["<b>Ch 7: Corrective Nature of Fitness</b><br>High-variance walkers are correctly identified as 'unfit'"]:::lemmaStyle
-        G["<b>Ch 8: The Keystone Principle for V_Var</b><br><b>\Psi_clone</b> strongly contracts the swarm's <br><b>Internal Variance (V_Var)</b>"]:::theoremStyle
+        G["<b>Ch 8: The Keystone Lemma for V_Var</b><br><b>\Psi_clone</b> creates expected contraction of <br><b>Internal Variance (V_Var)</b>"]:::theoremStyle
 
         C --"INPUT"--> D
         D --"Is used by"--> E
@@ -55,37 +65,37 @@ graph TD
         F --> G
     end
 
-    subgraph "Part III: Full Operator Drift Analysis (Ch 9-12)"
-        H["<b>Ch 9: The Cloning Operator (\Psi_clone)</b><br>Formal definition of the intra-swarm operator"]:::stateStyle
-        I["<b>Ch 10: Drift under \Psi_clone</b><br><b>V_Var contracts</b> (Keystone),<br><b>V_W is boundedly expansive</b>,<br><b>W_b contracts</b> (Safe Harbor)"]:::theoremStyle
-        J["<b>Ch 11: Drift under \Psi_kin</b><br><b>V_W contracts</b> (Hypocoercivity/Confinement),<br><b>V_Var is boundedly expansive</b> (Noise)"]:::theoremStyle
-        K["<b>Ch 12: Synergistic Drift of \Psi_total</b><br>Balancing the drifts to prove a<br><b>Foster-Lyapunov condition for V_total</b>"]:::theoremStyle
+    subgraph "Part III: Cloning Operator Drift Analysis (Ch 9-12)"
+        H["<b>Ch 9: The Cloning Operator (\Psi_clone)</b><br>Formal definition of the operator"]:::stateStyle
+        I["<b>Ch 10: Variance Drift under \Psi_clone</b><br><b>V_Var contracts</b> (Keystone Lemma)"]:::theoremStyle
+        J["<b>Ch 11: Boundary Drift under \Psi_clone</b><br><b>W_b contracts</b> (Safe Harbor)"]:::theoremStyle
+        K["<b>Ch 12: Complete Drift Analysis</b><br><b>W_h² bounded expansion</b>,<br>Synergistic drift characterization"]:::theoremStyle
 
         G --"Is the ENGINE for V_Var contraction in"--> I
-        C --"Safe Harbor Axiom"--> I
+        C --"Safe Harbor Axiom"--> J
         H --"Operator analyzed in"--> I
-        I --"Provides input state for"--> J
-        J --"Contraction of V_W balances expansion in"--> I
-        I & J --"Are combined to prove"--> K
+        H --"Operator analyzed in"--> J
+        I --> K
+        J --> K
     end
 
-    subgraph "Part IV: Conclusion (Ch 13)"
-        L["<b>Ch 13: Main Result & Convergence</b><br>Geometric Ergodicity & <br>Convergence to QSD"]:::stateStyle
+    subgraph "Part IV: Connection to Full System"
+        L["<b>Companion Document</b><br>Kinetic operator \Psi_kin analysis<br>& Full convergence to QSD"]:::externalStyle
     end
 
-    K --"Satisfies requirements for"--> L
+    K --"Cloning drift combined with kinetic drift in"--> L
 
     classDef stateStyle fill:#4a5f8c,stroke:#8fa4d4,stroke-width:2px,color:#e8eaf6
     classDef axiomStyle fill:#8c6239,stroke:#d4a574,stroke-width:2px,stroke-dasharray: 5 5,color:#f4e8d8
     classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
     classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
+    classDef externalStyle fill:#666,stroke:#999,stroke-width:2px,color:#eee,stroke-dasharray: 2 2
 ```
 
 The document is structured as follows:
 *   **Chapters 2-4 (Foundations):** We begin by defining our analytical tools: the coupled state space for comparing swarms, the augmented hypocoercive Lyapunov function for measuring error, and the complete set of foundational axioms that any valid Fragile Gas must satisfy.
-*   **Chapters 5-8 (The Keystone Principle):** The core of this work is a multi-chapter proof of the Keystone Principle. We build a rigorous causal chain, proving that a large system error is guaranteed to be converted into a non-cancellable fitness signal (Ch 6), that this signal correctly targets the walkers responsible for the error (Ch 7), and that the resulting corrective force is proportional to the error in a scalable, N-uniform manner (Ch 8).
-*   **Chapters 9-11 (Drift Analysis):** With the Keystone Principle established, we apply it to analyze the one-step drift of the cloning operator. We formally define the operator (Ch 9) and then prove that it induces a geometric contraction on the positional error (Ch 10) and the boundary potential (Ch 11).
-*   **Chapter 12 (Conclusion):** Finally, we summarize the proven contractive properties of the cloning operator, yielding the final drift inequalities that will serve as the input for the analysis of the full Euclidean Gas in the companion document.
+*   **Chapters 5-8 (The Keystone Lemma):** The core of this work is a multi-chapter proof of the Keystone Lemma. We build a rigorous causal chain, proving that a large system error is guaranteed to be converted into a non-cancellable fitness signal (Ch 6), that this signal correctly targets the walkers responsible for the error (Ch 7), and that the resulting expected contractive force is proportional to the error in a scalable, N-uniform manner (Ch 8).
+*   **Chapters 9-12 (Drift Analysis):** With the Keystone Lemma established, we apply it to analyze the one-step drift of the cloning operator. We formally define the operator (Ch 9) and then prove that it induces geometric expected contraction on the positional variance (Ch 10) and boundary potential (Ch 11). Chapter 12 synthesizes these results into the complete drift inequality for the cloning operator, demonstrating the synergistic interplay between variance contraction, boundary safety, and inter-swarm error dynamics.
 
 ## 2. The Coupled State Space and State Differences
 

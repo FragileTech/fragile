@@ -1,4 +1,4 @@
-# Symmetries in the Adaptive Gas: Flat Space and Emergent Manifold
+# Symmetries in the Euclidean Gas
 
 ## 0. Introduction
 

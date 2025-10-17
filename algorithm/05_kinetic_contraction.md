@@ -1,6 +1,127 @@
 # Hypocoercivity and Convergence of the Euclidean Gas
 
-## 0. Document Overview and Relation to 03_cloning.md
+## 0. TLDR
+
+*Notation: $W_h^2$ = inter-swarm hypocoercive Wasserstein distance; $V_{\text{Var},x}$, $V_{\text{Var},v}$ = positional and velocity variance; $W_b$ = boundary potential; $\Psi_{\text{kin}}$, $\Psi_{\text{clone}}$ = kinetic and cloning operators.*
+
+**Hypocoercive Contraction Without Convexity**: The kinetic operator $\Psi_{\text{kin}}$ achieves exponential contraction of the inter-swarm Wasserstein distance $W_h^2$ through hypocoercive coupling, even for non-convex potentials, using only coercivity (confinement at infinity) and friction-transport coupling.
+
+**Velocity Dissipation via Langevin Friction**: The friction term $-\gamma v$ provides direct linear contraction of velocity variance $V_{\text{Var},v}$, balancing the bounded expansion from cloning collisions to maintain thermal equilibrium.
+
+**Confining Potential as Dual Safety**: The force field $F(x) = -\nabla U(x)$ provides independent boundary protection $W_b \to 0$, complementing the cloning-based Safe Harbor mechanism to create layered safety against extinction.
+
+**Synergistic Convergence Architecture**: The kinetic operator's contractions of $W_h^2$ and $W_b$ are precisely complementary to the cloning operator's contractions of $V_{\text{Var},x}$, enabling the composed operator $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ to achieve full convergence to a quasi-stationary distribution.
+
+## 1. Introduction
+
+### 1.1. Goal and Scope
+
+The goal of this document is to provide a complete, rigorous analysis of the **kinetic operator** $\Psi_{\text{kin}}$ and prove that it provides the complementary dissipation mechanisms necessary for the Euclidean Gas to achieve full convergence to a quasi-stationary distribution (QSD). While the companion document *"The Keystone Principle and the Contractive Nature of Cloning"* (03_cloning.md) proved that the cloning operator $\Psi_{\text{clone}}$ achieves contraction of positional variance $V_{\text{Var},x}$ and boundary potential $W_b$, this document establishes the corresponding contraction properties of the kinetic operator.
+
+The central mathematical object of study is the **underdamped Langevin dynamics** that governs walker evolution between cloning events. This dynamics combines deterministic drift from a confining potential, friction that dissipates kinetic energy, and thermal noise that maintains ergodicity. We prove that this operator achieves:
+
+1. **Hypocoercive contraction** of inter-swarm Wasserstein distance $W_h^2$ (Chapter 4)
+2. **Velocity dissipation** through Langevin friction for $V_{\text{Var},v}$ (Chapter 5)
+3. **Bounded positional expansion** from thermal diffusion for $V_{\text{Var},x}$ (Chapter 6)
+4. **Confining potential protection** for boundary safety $W_b$ (Chapter 7)
+
+A critical contribution of this document is the proof that hypocoercive contraction **does not require convexity** of the potential $U(x)$. We establish contraction using only **coercivity** (confinement at infinity), **Lipschitz continuity** of forces, and **non-degenerate friction-diffusion coupling**. This extends classical hypocoercivity theory to the non-convex multi-well landscapes characteristic of complex optimization problems.
+
+The scope of this document is the analysis of $\Psi_{\text{kin}}$ in isolation. The composition $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$, parameter optimization, and the main convergence theorem are deferred to the companion document *06_convergence.md*.
+
+### 1.2. The Synergistic Dissipation Framework
+
+The Euclidean Gas achieves stability through a carefully orchestrated interplay between two operators that provide **complementary dissipation**. Neither operator alone is sufficient for convergence; each contracts the error components that the other expands:
+
+| **Lyapunov Component** | **Cloning $\Psi_{\text{clone}}$** | **Kinetics $\Psi_{\text{kin}}$** | **Net Effect** |
+|:-----------------------|:-----------------------------------|:----------------------------------|:---------------|
+| $W_h^2$ (inter-swarm)  | $\leq C_W \tau$ (bounded expansion) | $-\kappa_W W_h^2 \tau + C_W' \tau$ (contraction) | **Contraction** |
+| $V_{\text{Var},x}$ (position) | $-\kappa_x V_{\text{Var},x} \tau + C_x \tau$ (contraction) | $\leq C_{\text{kin},x} \tau$ (bounded expansion) | **Contraction** |
+| $V_{\text{Var},v}$ (velocity) | $\leq C_v \tau$ (bounded expansion) | $-2\gamma V_{\text{Var},v} \tau + \sigma_{\max}^2 d \tau$ (contraction) | **Contraction** |
+| $W_b$ (boundary)       | $-\kappa_b W_b \tau + C_b \tau$ (contraction) | $-\kappa_{\text{pot}} W_b \tau + C_{\text{pot}} \tau$ (contraction) | **Strong contraction** |
+
+**The Physical Intuition:**
+
+- **Cloning** is a *positional* mechanism: it resamples walker positions based on fitness, causing positional variance $V_{\text{Var},x}$ to contract as clones concentrate in high-reward regions. However, inelastic collisions during cloning inject momentum noise, causing velocity variance $V_{\text{Var},v}$ to expand. The resampling also creates inter-swarm divergence, expanding $W_h^2$.
+
+- **Kinetics** is a *velocity* mechanism: the friction term $-\gamma v$ directly dissipates velocity variance, while thermal noise $\Sigma \circ dW$ injects positional diffusion. The hypocoercive coupling between transport ($\dot{x} = v$) and friction creates effective contraction of inter-swarm error $W_h^2$ in phase space.
+
+- **Boundary safety** benefits from **dual independent mechanisms**: cloning eliminates boundary-proximate walkers (Safe Harbor), while the confining potential actively pushes walkers away from the boundary.
+
+This synergistic architecture is fundamental to the Fragile Gas framework. The decomposition into complementary operators enables each mechanism to be analyzed independently using specialized techniques (Foster-Lyapunov for cloning, hypocoercivity for kinetics), while the composition achieves full ergodic convergence.
+
+### 1.3. Overview of the Proof Strategy and Document Structure
+
+The proof is organized into five main chapters, each establishing a specific drift inequality for one component of the Lyapunov function. The diagram below illustrates the logical dependencies and the role of each chapter in the overall convergence architecture.
+
+```mermaid
+graph TD
+    subgraph "Foundations"
+        A["<b>Ch 3: Kinetic Operator Definition</b><br>Stratonovich SDE, Axioms for U, Σ, γ<br>Fokker-Planck Equation"]:::stateStyle
+        B["<b>Ch 3.7: Discretization Theory</b><br>Continuous → Discrete Drift<br>Weak Error Bounds"]:::lemmaStyle
+    end
+
+    subgraph "Chapter 4: Hypocoercive Contraction of W_h²"
+        C["<b>Ch 4.2: Hypocoercive Norm</b><br>Coupled (x,v) metric with<br>cross-term b⟨Δx, Δv⟩"]:::stateStyle
+        D["<b>Ch 4.5: Location Error Drift</b><br>Barycenter separation contracts<br>via friction-transport coupling"]:::lemmaStyle
+        E["<b>Ch 4.6: Structural Error Drift</b><br>Shape dissimilarity contracts<br>via diffusion and confinement"]:::lemmaStyle
+        F["<b>Theorem 4.3: W_h² Contraction</b><br>ΔW_h² ≤ -κ_W W_h² τ + C_W' τ<br><b>No convexity required!</b>"]:::theoremStyle
+    end
+
+    subgraph "Chapters 5-7: Variance and Boundary Components"
+        G["<b>Theorem 5.3: V_Var,v Dissipation</b><br>Friction provides<br>ΔV_Var,v ≤ -2γV_Var,v τ + σ_max² d τ"]:::theoremStyle
+        H["<b>Theorem 6.3: V_Var,x Expansion</b><br>Bounded thermal diffusion<br>ΔV_Var,x ≤ C_kin,x τ"]:::theoremStyle
+        I["<b>Theorem 7.3: W_b Contraction</b><br>Confining potential creates<br>ΔW_b ≤ -κ_pot W_b τ + C_pot τ"]:::theoremStyle
+    end
+
+    subgraph "Integration with Cloning Operator"
+        J["<b>From 03_cloning.md</b><br>Cloning provides:<br>ΔV_Var,x ≤ -κ_x V_Var,x τ + C_x τ<br>ΔW_b ≤ -κ_b W_b τ + C_b τ"]:::axiomStyle
+        K["<b>Synergistic Composition</b><br>Balance weights c_V, c_B in<br>V_total = W_h² + c_V V_Var + c_B W_b"]:::stateStyle
+        L["<b>Result (in 06_convergence.md)</b><br>Full Foster-Lyapunov Drift:<br>ΔV_total ≤ -κV_total + C"]:::theoremStyle
+    end
+
+    A --> B
+    A --> C
+    B --> F
+    C --> D
+    C --> E
+    D --> F
+    E --> F
+
+    A --> G
+    A --> H
+    A --> I
+
+    F --> K
+    G --> K
+    H --> K
+    I --> K
+    J -- "Provides complementary<br>contractions" --> K
+    K --> L
+
+    classDef stateStyle fill:#4a5f8c,stroke:#8fa4d4,stroke-width:2px,color:#e8eaf6
+    classDef axiomStyle fill:#8c6239,stroke:#d4a574,stroke-width:2px,stroke-dasharray: 5 5,color:#f4e8d8
+    classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
+    classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
+```
+
+**Chapter-by-Chapter Overview:**
+
+- **Chapter 3 (Foundations):** Defines the kinetic operator using Stratonovich stochastic differential equations, states the axioms for the confining potential $U$, diffusion tensor $\Sigma$, and friction coefficient $\gamma$, derives the Fokker-Planck equation, and establishes the discretization theory connecting continuous-time generators to discrete-time drift inequalities.
+
+- **Chapter 4 (Hypocoercive Contraction):** The technical core of this document. We introduce the hypocoercive norm coupling position and velocity, prove separate drift lemmas for location error (barycenter separation) and structural error (shape dissimilarity), and combine them to establish contraction of $W_h^2$ **without assuming convexity**. This result generalizes classical hypocoercivity theory.
+
+- **Chapter 5 (Velocity Dissipation):** Proves that Langevin friction provides direct linear dissipation of velocity variance $V_{\text{Var},v}$, with expansion bounded by thermal noise. This balances the velocity expansion from cloning collisions.
+
+- **Chapter 6 (Positional Expansion):** Establishes that thermal noise causes bounded positional expansion $\Delta V_{\text{Var},x} \leq C_{\text{kin},x}$, which is overcome by the strong positional contraction from cloning.
+
+- **Chapter 7 (Boundary Safety):** Proves that the confining potential provides independent boundary protection through the drift inequality $\Delta W_b \leq -\kappa_{\text{pot}} W_b + C_{\text{pot}}$, creating a layered safety architecture with the cloning-based Safe Harbor mechanism.
+
+The drift inequalities proven in this document, combined with those from 03_cloning.md, provide the complete set of components needed for the main convergence theorem in 06_convergence.md.
+
+
+
+## 2. Document Overview and Relation to 03_cloning.md
 
 **Purpose of This Document:**
 
@@ -21,17 +142,17 @@ This document proves the drift inequalities in the "$\Psi_{\text{kin}}$" column 
 
 **Document Structure:**
 
-- **Chapter 1:** The kinetic operator with Stratonovich formulation
-- **Chapter 2:** Hypocoercive contraction of inter-swarm error $V_W$
-- **Chapter 3:** Velocity variance dissipation via Langevin friction
-- **Chapter 4:** Positional diffusion and bounded expansion
-- **Chapter 5:** Boundary potential contraction via confining potential
+- **Chapter 3:** The kinetic operator with Stratonovich formulation
+- **Chapter 4:** Hypocoercive contraction of inter-swarm error $V_W$
+- **Chapter 5:** Velocity variance dissipation via Langevin friction
+- **Chapter 6:** Positional diffusion and bounded expansion
+- **Chapter 7:** Boundary potential contraction via confining potential
 
 **Note:** The synergistic composition, main convergence theorem, and parameter optimization are covered in the companion document *06_convergence.md*.
 
-## 1. The Kinetic Operator with Stratonovich Formulation
+## 3. The Kinetic Operator with Stratonovich Formulation
 
-### 1.1. Introduction and Motivation
+### 5.1. Introduction and Motivation
 
 The kinetic operator $\Psi_{\text{kin}}$ governs the continuous-time evolution of walkers between cloning events. It is an **underdamped Langevin dynamics** that combines:
 
@@ -52,7 +173,7 @@ We adopt the **Stratonovich convention** for the stochastic differential equatio
 
 For the isotropic case analyzed in detail here, the Stratonovich and Itô formulations coincide. We state the general framework to enable future extensions.
 
-### 1.2. The Kinetic SDE
+### 5.2. The Kinetic SDE
 
 :::{prf:definition} The Kinetic Operator (Stratonovich Form)
 :label: def-kinetic-operator-stratonovich
@@ -102,11 +223,11 @@ where $\Sigma_j$ is the $j$-th column of $\Sigma$.
 **For isotropic diffusion** ($\Sigma = \sigma_v I_d$), the correction term vanishes since $\nabla_v(\sigma_v I_d) = 0$. Thus **Stratonovich = Itô** in this case, which is the primary setting analyzed in this document.
 :::
 
-### 1.3. Axioms for the Kinetic Operator
+### 5.3. Axioms for the Kinetic Operator
 
 We now state the foundational axioms that $U$, $\Sigma$, and $\gamma$ must satisfy for the convergence theory to hold.
 
-#### 1.3.1. The Confining Potential
+#### 5.3.1. The Confining Potential
 
 :::{prf:axiom} Globally Confining Potential
 :label: axiom-confining-potential
@@ -169,7 +290,7 @@ This potential:
 - Satisfies all axiom requirements with $\alpha_U = \kappa$
 :::
 
-#### 1.3.2. The Diffusion Tensor
+#### 5.3.2. The Diffusion Tensor
 
 :::{prf:axiom} Anisotropic Diffusion Tensor
 :label: axiom-diffusion-tensor
@@ -245,7 +366,7 @@ The uniform ellipticity condition $\lambda_{\min} \geq \sigma_{\min}^2 > 0$ is *
 Without this, the system can become **degenerate** and convergence may fail.
 :::
 
-#### 1.3.3. Friction and Timestep Parameters
+#### 5.3.3. Friction and Timestep Parameters
 
 :::{prf:axiom} Friction and Integration Parameters
 :label: axiom-friction-timestep
@@ -285,7 +406,7 @@ where $k_B$ is Boltzmann's constant and $m$ is the particle mass. This ensures t
 For optimization applications, this balance is **not required** - $\gamma$ and $\sigma_v$ are independent algorithmic parameters.
 :::
 
-### 1.4. The Fokker-Planck Equation
+### 5.4. The Fokker-Planck Equation
 
 The kinetic operator induces evolution of the swarm's probability density.
 
@@ -334,7 +455,7 @@ This is the **canonical Gibbs distribution** for position and velocity.
 **However:** The boundary condition (walkers die when exiting $\mathcal{X}_{\text{valid}}$) makes this measure invalid. Instead, the system converges to a **quasi-stationary distribution** (QSD) - a distribution conditioned on survival. This is analyzed in the companion document 06_convergence.md.
 :::
 
-### 1.5. Numerical Integration
+### 5.5. Numerical Integration
 
 For practical implementation, the Stratonovich SDE is discretized using splitting schemes.
 
@@ -402,7 +523,7 @@ v_new = exp(-gamma*tau)*v + Sigma_mid * sqrt(noise_variance) * xi
 For the isotropic case, this simplifies to the standard BAOAB.
 :::
 
-### 1.6. Summary and Preview
+### 5.6. Summary and Preview
 
 This chapter has established:
 
@@ -414,14 +535,14 @@ This chapter has established:
 **What comes next:**
 
 - **Section 1.7:** Establish rigorous connection between continuous-time generators and discrete-time expectations
-- **Chapter 2:** Prove that $\Psi_{\text{kin}}$ contracts the inter-swarm error $V_W$ via **hypocoercivity**
-- **Chapter 3:** Prove velocity variance dissipation via **Langevin friction**
-- **Chapter 4:** Bound positional variance expansion from **diffusion**
-- **Chapter 5:** Prove boundary potential contraction from **confining potential**
+- **Chapter 4:** Prove that $\Psi_{\text{kin}}$ contracts the inter-swarm error $V_W$ via **hypocoercivity**
+- **Chapter 5:** Prove velocity variance dissipation via **Langevin friction**
+- **Chapter 6:** Bound positional variance expansion from **diffusion**
+- **Chapter 7:** Prove boundary potential contraction from **confining potential**
 
 These drift inequalities will then be combined with the cloning results (03_cloning.md) to establish the main convergence theorem.
 
-### 1.7. From Continuous-Time Generators to Discrete-Time Drift
+### 5.7. From Continuous-Time Generators to Discrete-Time Drift
 
 **Purpose of This Section:**
 
@@ -433,7 +554,7 @@ This section establishes the foundational result that allows us to translate con
 
 ---
 
-#### 1.7.1. The Continuous-Time Generator
+#### 5.7.1. The Continuous-Time Generator
 
 :::{prf:definition} Infinitesimal Generator of the Kinetic SDE
 :label: def-generator
@@ -481,7 +602,7 @@ then this immediately implies exponential decay of $V$ in continuous time. The c
 
 ---
 
-#### 1.7.2. Main Discretization Theorem
+#### 5.7.2. Main Discretization Theorem
 
 :::{prf:theorem} Discrete-Time Inheritance of Generator Drift
 :label: thm-discretization
@@ -529,7 +650,7 @@ which is the **discrete-time drift inequality** with effective contraction rate 
 
 ---
 
-#### 1.7.3. Rigorous Component-Wise Weak Error Analysis
+#### 5.7.3. Rigorous Component-Wise Weak Error Analysis
 
 This section provides a rigorous proof that Theorem 1.7.2 applies to each component of the synergistic Lyapunov function $V_{\text{total}} = V_W + c_V V_{\text{Var}} + c_B W_b$, despite the significant technical challenges posed by the non-standard nature of these components.
 
@@ -911,14 +1032,14 @@ This multi-part proof is a **significant mathematical contribution** because:
 
 ---
 
-#### 1.7.4. Explicit Constants
+#### 5.7.4. Explicit Constants
 
 To make the above theorem fully constructive, we now provide explicit formulas for the constants.
 
 :::{prf:proposition} Explicit Discretization Constants
 :label: prop-explicit-constants
 
-Under the axioms of Chapter 1, with:
+Under the axioms of Chapter 3, with:
 - Lipschitz force: $\|F(x) - F(y)\| \leq L_F\|x - y\|$
 - Bounded force growth: $\|F(x)\| \leq C_F(1 + \|x\|)$
 - Diffusion bounds: $\sigma_{\min}^2 I_d \leq \Sigma\Sigma^T \leq \sigma_{\max}^2 I_d$
@@ -943,7 +1064,7 @@ For typical parameters $(\gamma = 1, \sigma_v = 1, \kappa \sim 0.1)$, taking $\t
 
 ---
 
-#### 1.7.5. Application to Each Lyapunov Component
+#### 5.7.5. Application to Each Lyapunov Component
 
 In the subsequent chapters, we prove generator bounds for each component:
 
@@ -966,7 +1087,7 @@ for $\tau < \tau_*(\kappa_{\text{component}})$.
 
 ---
 
-#### 1.7.6. Summary and Interpretation
+#### 5.7.6. Summary and Interpretation
 
 :::{admonition} Key Takeaways
 :class: important
@@ -1000,9 +1121,9 @@ From now on:
 
 **End of Section 1.7**
 
-## 2. Hypocoercive Contraction of Inter-Swarm Error
+## 4. Hypocoercive Contraction of Inter-Swarm Error
 
-### 2.1. Introduction: The Hypocoercivity Challenge
+### 6.1. Introduction: The Hypocoercivity Challenge
 
 The kinetic operator faces a fundamental challenge: the velocity diffusion is **degenerate** in position space. The noise acts only on $v$, not directly on $x$:
 
@@ -1040,7 +1161,7 @@ The proof works for **W-shaped potentials**, **multi-well landscapes**, and any 
 **Contrast with classical results:** Many hypocoercivity proofs in the literature assume convex potentials for simplicity. Our proof uses a **two-region decomposition** (core + exterior) to handle non-convex cases rigorously.
 :::
 
-### 2.2. The Hypocoercive Norm
+### 6.2. The Hypocoercive Norm
 
 To analyze hypocoercivity, we must work with a specially designed norm that couples position and velocity.
 
@@ -1086,12 +1207,12 @@ The coupling term $b\langle \Delta x, \Delta v \rangle$ is the key to hypocoerci
 The optimal choice of $b$ depends on $\gamma$, $\sigma_v$, and the potential $U$.
 :::
 
-### 2.3. Main Theorem: Hypocoercive Contraction
+### 6.3. Main Theorem: Hypocoercive Contraction
 
 :::{prf:theorem} Inter-Swarm Error Contraction Under Kinetic Operator
 :label: thm-inter-swarm-contraction-kinetic
 
-Under the axioms of Chapter 1, there exist constants $\kappa_W > 0$, $C_W' < \infty$, and hypocoercive parameters $(\lambda_v, b)$, all independent of $N$, such that:
+Under the axioms of Chapter 3, there exist constants $\kappa_W > 0$, $C_W' < \infty$, and hypocoercive parameters $(\lambda_v, b)$, all independent of $N$, such that:
 
 $$
 \mathbb{E}_{\text{kin}}[V_W(S'_1, S'_2) \mid S_1, S_2] \leq (1 - \kappa_W \tau) V_W(S_1, S_2) + C_W' \tau
@@ -1118,7 +1239,7 @@ $$
 3. **N-uniformity:** All constants are independent of swarm size $N$.
 :::
 
-### 2.4. Proof Strategy
+### 6.4. Proof Strategy
 
 The proof follows the **entropy method** adapted to the discrete swarm setting:
 
@@ -1129,7 +1250,7 @@ The proof follows the **entropy method** adapted to the discrete swarm setting:
 
 We now execute this strategy in detail.
 
-### 2.5. Location Error Drift
+### 6.5. Location Error Drift
 
 :::{prf:lemma} Drift of Location Error Under Kinetics
 :label: lem-location-error-drift-kinetic
@@ -1333,7 +1454,7 @@ where $\alpha_{\text{eff}} = \min(\kappa_{\text{hypo}}, \alpha_U)$ combines hypo
 **Q.E.D.**
 :::
 
-### 2.6. Structural Error Drift
+### 6.6. Structural Error Drift
 
 :::{prf:lemma} Drift of Structural Error Under Kinetics
 :label: lem-structural-error-drift-kinetic
@@ -1499,7 +1620,7 @@ where $\kappa_{\text{struct}} \sim \min(\gamma, \frac{\gamma^2}{\gamma + L_F})$ 
 **Q.E.D.**
 :::
 
-### 2.7. Proof of Main Theorem
+### 6.7. Proof of Main Theorem
 
 :::{prf:proof}
 **Proof of Theorem 2.3.1.**
@@ -1530,7 +1651,7 @@ $$
 **Q.E.D.**
 :::
 
-### 2.8. Summary
+### 6.8. Summary
 
 This chapter has proven:
 
@@ -1542,13 +1663,13 @@ This chapter has proven:
 
 **Key Insight:** Even though noise only acts on velocity, the coupling between position and velocity through the hypocoercive norm allows effective dissipation of positional error.
 
-**Next:** Chapter 3 proves that the same kinetic operator contracts velocity variance via Langevin friction.
+**Next:** Chapter 5 proves that the same kinetic operator contracts velocity variance via Langevin friction.
 
-## 3. Velocity Variance Dissipation via Langevin Friction
+## 5. Velocity Variance Dissipation via Langevin Friction
 
-### 3.1. Introduction: The Friction Mechanism
+### 7.1. Introduction: The Friction Mechanism
 
-While Chapter 2 showed hypocoercive contraction of inter-swarm error, this chapter focuses on **intra-swarm velocity variance**. The friction term $-\gamma v$ in the Langevin equation provides direct dissipation of kinetic energy.
+While Chapter 4 showed hypocoercive contraction of inter-swarm error, this chapter focuses on **intra-swarm velocity variance**. The friction term $-\gamma v$ in the Langevin equation provides direct dissipation of kinetic energy.
 
 **The Challenge from Cloning:**
 
@@ -1558,7 +1679,7 @@ Recall from 03_cloning.md that the cloning operator causes **bounded velocity va
 
 The friction term $-\gamma v$ acts like a "drag force" that pulls all velocities toward zero (or toward the drift velocity $u(x)$ if non-zero). This causes the velocity distribution to shrink toward its equilibrium value.
 
-### 3.2. Velocity Variance Definition (Recall)
+### 7.2. Velocity Variance Definition (Recall)
 
 :::{prf:definition} Velocity Variance Component (Recall)
 :label: def-velocity-variance-recall
@@ -1574,12 +1695,12 @@ where $\delta_{v,k,i} = v_{k,i} - \mu_{v,k}$ is the centered velocity of walker 
 **Physical interpretation:** Measures the spread of velocities within each swarm around their respective velocity barycenters.
 :::
 
-### 3.3. Main Theorem: Velocity Dissipation
+### 7.3. Main Theorem: Velocity Dissipation
 
 :::{prf:theorem} Velocity Variance Contraction Under Kinetic Operator
 :label: thm-velocity-variance-contraction-kinetic
 
-Under the axioms of Chapter 1, the velocity variance satisfies:
+Under the axioms of Chapter 3, the velocity variance satisfies:
 
 $$
 \mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},v}] \leq -2\gamma V_{\text{Var},v} \tau + \sigma_{\max}^2 d \tau
@@ -1598,7 +1719,7 @@ $$
 **Critical Property:** When $V_{\text{Var},v} > \frac{\sigma_{\max}^2 d}{2\gamma}$, the drift is strictly negative.
 :::
 
-### 3.4. Proof
+### 7.4. Proof
 
 :::{prf:proof}
 **Proof (Complete Algebraic Derivation).**
@@ -1781,7 +1902,7 @@ This result shows:
 **Q.E.D.**
 :::
 
-### 3.5. Balancing with Cloning Expansion
+### 7.5. Balancing with Cloning Expansion
 
 :::{prf:corollary} Net Velocity Variance Contraction for Composed Operator
 :label: cor-net-velocity-contraction
@@ -1816,7 +1937,7 @@ $$
 - Cloning perturbations ($C_v$)
 :::
 
-### 3.6. Summary
+### 7.6. Summary
 
 This chapter has proven:
 
@@ -1835,11 +1956,11 @@ This chapter has proven:
 - Kinetics contracts velocity variance (this chapter)
 - Together: full phase-space contraction
 
-**Next:** Chapter 4 analyzes the positional diffusion that causes bounded expansion of $V_{\text{Var},x}$.
+**Next:** Chapter 6 analyzes the positional diffusion that causes bounded expansion of $V_{\text{Var},x}$.
 
-## 4. Positional Diffusion and Bounded Expansion
+## 6. Positional Diffusion and Bounded Expansion
 
-### 4.1. Introduction: The Price of Thermal Noise
+### 6.1. Introduction: The Price of Thermal Noise
 
 The Langevin equation includes thermal noise in velocity: $dv = \ldots + \Sigma \circ dW$. This noise, while essential for ergodicity, causes **diffusion in position space** via the coupling $\dot{x} = v$.
 
@@ -1850,7 +1971,7 @@ The Langevin equation includes thermal noise in velocity: $dv = \ldots + \Sigma 
 
 This chapter proves that this expansion is **bounded** - it doesn't grow with the system size or state. The strong positional contraction from cloning (03_cloning.md, Ch 10) overcomes this bounded expansion.
 
-### 4.2. Positional Variance (Recall)
+### 6.2. Positional Variance (Recall)
 
 :::{prf:definition} Positional Variance Component (Recall)
 :label: def-positional-variance-recall
@@ -1864,12 +1985,12 @@ $$
 where $\delta_{x,k,i} = x_{k,i} - \mu_{x,k}$ is the centered position.
 :::
 
-### 4.3. Main Theorem: Bounded Positional Expansion
+### 6.3. Main Theorem: Bounded Positional Expansion
 
 :::{prf:theorem} Bounded Positional Variance Expansion Under Kinetics
 :label: thm-positional-variance-bounded-expansion
 
-Under the axioms of Chapter 1, the positional variance satisfies:
+Under the axioms of Chapter 3, the positional variance satisfies:
 
 $$
 \mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},x}] \leq C_{\text{kin},x} \tau
@@ -1880,12 +2001,12 @@ $$
 C_{\text{kin},x} = \mathbb{E}[\|v\|^2] + \frac{1}{2}\sigma_{\max}^2 \tau + O(\tau^2)
 $$
 
-The constant $C_{\text{kin},x}$ is **state-independent** when velocity variance is bounded (which is ensured by Chapter 3).
+The constant $C_{\text{kin},x}$ is **state-independent** when velocity variance is bounded (which is ensured by Chapter 5).
 
 **Key Property:** The expansion is **bounded** - it does not grow with $V_{\text{Var},x}$ itself.
 :::
 
-### 4.4. Proof
+### 6.4. Proof
 
 :::{prf:proof}
 **Proof (Second-Order Itô-Taylor Expansion).**
@@ -1968,7 +2089,7 @@ $$
 \int_0^\tau \|\delta_{v,k,i}(s)\|^2 ds
 $$
 
-This is the **integral of velocity variance** over time. By Chapter 3 (Theorem 3.3.1), velocity variance equilibrates to:
+This is the **integral of velocity variance** over time. By Chapter 5 (Theorem 3.3.1), velocity variance equilibrates to:
 
 $$
 V_{\text{Var},v}^{\text{eq}} \approx \frac{d\sigma_{\max}^2}{2\gamma}
@@ -2033,7 +2154,7 @@ where both $C_1 \tau$ and $C_2 \tau$ are present at leading order.
 **Q.E.D.**
 :::
 
-### 4.5. Balancing with Cloning Contraction
+### 6.5. Balancing with Cloning Contraction
 
 :::{prf:corollary} Net Positional Variance Contraction for Composed Operator
 :label: cor-net-positional-contraction
@@ -2059,7 +2180,7 @@ $$
 **Interpretation:** As long as positional variance exceeds a threshold (determined by the balance of forces), the cloning contraction dominates the kinetic diffusion.
 :::
 
-### 4.6. Summary
+### 6.6. Summary
 
 This chapter has proven:
 
@@ -2071,11 +2192,11 @@ This chapter has proven:
 
 **Key Insight:** While thermal noise causes random walk in position (via $\dot{x} = v$), this expansion is **bounded and manageable**. The geometric variance contraction from cloning (Keystone Principle) dominates.
 
-**Next:** Chapter 5 proves that the confining potential provides additional contraction of the boundary potential.
+**Next:** Chapter 7 proves that the confining potential provides additional contraction of the boundary potential.
 
-## 5. Boundary Potential Contraction via Confining Potential
+## 7. Boundary Potential Contraction via Confining Potential
 
-### 5.1. Introduction: Dual Safety Mechanisms
+### 7.1. Introduction: Dual Safety Mechanisms
 
 The Euclidean Gas has **two independent mechanisms** that prevent boundary extinction:
 
@@ -2084,7 +2205,7 @@ The Euclidean Gas has **two independent mechanisms** that prevent boundary extin
 
 This chapter proves the second mechanism, showing that the kinetic operator provides **additional** boundary safety beyond the cloning mechanism.
 
-### 5.2. Boundary Potential (Recall)
+### 7.2. Boundary Potential (Recall)
 
 :::{prf:definition} Boundary Potential (Recall)
 :label: def-boundary-potential-recall
@@ -2100,12 +2221,12 @@ where $\varphi_{\text{barrier}}: \mathcal{X}_{\text{valid}} \to \mathbb{R}_{\geq
 - Grows as $x \to \partial\mathcal{X}_{\text{valid}}$
 :::
 
-### 5.3. Main Theorem: Potential-Driven Safety
+### 7.3. Main Theorem: Potential-Driven Safety
 
 :::{prf:theorem} Boundary Potential Contraction Under Kinetic Operator
 :label: thm-boundary-potential-contraction-kinetic
 
-Under the axioms of Chapter 1, particularly the confining potential axiom, the boundary potential satisfies:
+Under the axioms of Chapter 3, particularly the confining potential axiom, the boundary potential satisfies:
 
 $$
 \mathbb{E}_{\text{kin}}[\Delta W_b] \leq -\kappa_{\text{pot}} W_b \tau + C_{\text{pot}} \tau
@@ -2118,7 +2239,7 @@ where:
 **Key Property:** This provides **independent safety** beyond the cloning-based Safe Harbor mechanism.
 :::
 
-### 5.4. Proof
+### 7.4. Proof
 
 :::{prf:proof}
 **Proof (Infinitesimal Generator and Velocity-Weighted Lyapunov Function).**
@@ -2267,7 +2388,7 @@ $$
 
 where we assume $\|\nabla\varphi_{\text{barrier}}\| \leq C_{\text{grad}}\sqrt{\varphi_{\text{barrier}}}$ (valid for many barrier functions).
 
-**For bounded velocity variance** (ensured by Chapter 3), $\mathbb{E}[\|v_i\|^2] \leq V_{\text{Var},v}^{\text{eq}}$, so the velocity-dependent terms contribute $O(1)$.
+**For bounded velocity variance** (ensured by Chapter 5), $\mathbb{E}[\|v_i\|^2] \leq V_{\text{Var},v}^{\text{eq}}$, so the velocity-dependent terms contribute $O(1)$.
 
 **Dominant term for large $\varphi_i$:**
 
@@ -2325,7 +2446,7 @@ This result shows:
 **Q.E.D.**
 :::
 
-### 5.5. Layered Safety Architecture
+### 7.5. Layered Safety Architecture
 
 :::{prf:corollary} Total Boundary Safety from Dual Mechanisms
 :label: cor-total-boundary-safety
@@ -2346,7 +2467,7 @@ $$
 **Result:** **Layered defense** - even if one mechanism temporarily fails, the other provides safety.
 :::
 
-### 5.6. Summary
+### 7.6. Summary
 
 This chapter has proven:
 
