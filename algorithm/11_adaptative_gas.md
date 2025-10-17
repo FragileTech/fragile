@@ -1732,7 +1732,7 @@ Each step is technically demanding and would constitute substantial new research
 
 - **Chapter 7 (Foster-Lyapunov):** **PROVEN** - Rigorous foundation for geometric ergodicity.
 - **Chapter 8 (LSI):** **PROVEN** - Strengthens the convergence result with entropy decay and concentration.
-  - N-particle: Theorem `thm-lsi-adaptive-gas` (proven in [12_adaptive_gas_lsi_proof.md](12_adaptive_gas_lsi_proof.md))
+  - N-particle: Theorem `thm-lsi-adaptive-gas` (proven in [15_adaptive_gas_lsi_proof.md](15_adaptive_gas_lsi_proof.md))
   - Mean-field: Theorem `thm-lsi-mean-field` (proven via backbone + perturbation)
 
 Both approaches provide exponential convergence, with the LSI additionally providing stronger quantitative guarantees including Gaussian concentration bounds.
@@ -1994,7 +1994,7 @@ Theorem {prf:ref}`thm-lsi-adaptive-gas` has been rigorously established by compl
 3. **LSI preservation** under the cloning jump operator ✅
 4. **Coupling of all three mechanisms** to obtain a single uniform LSI constant ✅
 
-Each step required substantial technical work and is detailed in [12_adaptive_gas_lsi_proof.md](12_adaptive_gas_lsi_proof.md). The Foster-Lyapunov proof in Chapter 7 provides the **geometric ergodicity foundation**. The LSI is a **strengthening** that additionally provides entropy decay and concentration of measure.
+Each step required substantial technical work and is detailed in [15_adaptive_gas_lsi_proof.md](15_adaptive_gas_lsi_proof.md). The Foster-Lyapunov proof in Chapter 7 provides the **geometric ergodicity foundation**. The LSI is a **strengthening** that additionally provides entropy decay and concentration of measure.
 
 ### 8.5. Consequences of the LSI Theorem
 
@@ -2227,7 +2227,7 @@ where:
 - $\text{Ent}_{\rho}(f) := \int f \log(f / \rho) \, dx \, dv$ is the relative entropy.
 - $D(f) := -\int (\mathcal{L}_{\text{MF}} f) \log(f / \rho_{\text{QSD}}) \, dx \, dv$ is the entropy dissipation (Fisher information).
 
-**Proof:** The rigorous proof for the Euclidean Gas backbone is established via hypocoercivity in [10_kl_convergence.md](10_kl_convergence.md) (for the N-particle case) and [11_convergence_mean_field.md](11_convergence_mean_field.md) (for the mean-field case, Theorem `thm-mean-field-lsi-main`). The extension to the Adaptive Gas model follows from the perturbation analysis in this document, which shows that the adaptive mechanisms (adaptive force, viscous coupling, Hessian diffusion) preserve and enhance the LSI structure. This perturbation approach is fully justified by the N-particle proof in [12_adaptive_gas_lsi_proof.md](12_adaptive_gas_lsi_proof.md), which extends naturally to the mean-field limit.
+**Proof:** The rigorous proof for the Euclidean Gas backbone is established via hypocoercivity in [09_kl_convergence.md](09_kl_convergence.md) (for the N-particle case) and [16_convergence_mean_field.md](16_convergence_mean_field.md) (for the mean-field case, Theorem `thm-mean-field-lsi-main`). The extension to the Adaptive Gas model follows from the perturbation analysis in this document, which shows that the adaptive mechanisms (adaptive force, viscous coupling, Hessian diffusion) preserve and enhance the LSI structure. This perturbation approach is fully justified by the N-particle proof in [15_adaptive_gas_lsi_proof.md](15_adaptive_gas_lsi_proof.md), which extends naturally to the mean-field limit.
 :::
 
 :::{admonition} Proof Status: PROVEN (Based on Euclidean Gas Backbone + Perturbation Theory)
@@ -2235,17 +2235,17 @@ where:
 
 **This theorem is now proven.** The proof relies on the following established results:
 
-1. **Euclidean Gas Mean-Field LSI:** Theorem `thm-mean-field-lsi-main` in [11_convergence_mean_field.md](11_convergence_mean_field.md) proves exponential KL-convergence for the Euclidean Gas mean-field limit via hypocoercivity, establishing the backbone LSI.
+1. **Euclidean Gas Mean-Field LSI:** Theorem `thm-mean-field-lsi-main` in [16_convergence_mean_field.md](16_convergence_mean_field.md) proves exponential KL-convergence for the Euclidean Gas mean-field limit via hypocoercivity, establishing the backbone LSI.
 
 2. **Adaptive Perturbation Theory:** The analysis in this document (Sections 6-8) shows that adaptive mechanisms act as controlled perturbations with explicit bounds on their impact on the LSI constant.
 
-3. **N-Particle Validation:** The N-particle LSI for the full Adaptive Gas (Theorem `thm-lsi-adaptive-gas`) has been rigorously proven in [12_adaptive_gas_lsi_proof.md](12_adaptive_gas_lsi_proof.md), confirming that the perturbation structure preserves the LSI in the finite-N regime.
+3. **N-Particle Validation:** The N-particle LSI for the full Adaptive Gas (Theorem `thm-lsi-adaptive-gas`) has been rigorously proven in [15_adaptive_gas_lsi_proof.md](15_adaptive_gas_lsi_proof.md), confirming that the perturbation structure preserves the LSI in the finite-N regime.
 
-4. **Mean-Field Limit:** The propagation of chaos results in [06_mean_field.md](06_mean_field.md) and [08_propagation_chaos.md](08_propagation_chaos.md) ensure that the N-particle LSI passes to the mean-field limit as $N \to \infty$.
+4. **Mean-Field Limit:** The propagation of chaos results in [07_mean_field.md](07_mean_field.md) and [08_propagation_chaos.md](08_propagation_chaos.md) ensure that the N-particle LSI passes to the mean-field limit as $N \to \infty$.
 
 **Key Technical Achievements:**
 
-1. **Existence and regularity of $\rho_{\text{QSD}}$:** Established in [11_convergence_mean_field.md](11_convergence_mean_field.md), Stage 0.5 (Properties R1-R6), which proves the QSD is $C^2$, strictly positive on the interior, with exponential concentration.
+1. **Existence and regularity of $\rho_{\text{QSD}}$:** Established in [16_convergence_mean_field.md](16_convergence_mean_field.md), Stage 0.5 (Properties R1-R6), which proves the QSD is $C^2$, strictly positive on the interior, with exponential concentration.
 
 2. **Weighted Sobolev space analysis:** All function spaces are defined with respect to the weight $\rho_{\text{QSD}}$, with integration by parts formulae justified via boundary term analysis (Stage 1, Section 3).
 
@@ -2255,16 +2255,16 @@ where:
 
 5. **Non-local perturbations:** The adaptive force and viscous coupling are shown to be relatively bounded perturbations with explicit constants (Stage 2, Section 3.3).
 
-The mean-field LSI constant $\lambda_{\text{LSI}}$ has the explicit formula derived in [11_convergence_mean_field.md](11_convergence_mean_field.md), Stage 2, Section 1.2.
+The mean-field LSI constant $\lambda_{\text{LSI}}$ has the explicit formula derived in [16_convergence_mean_field.md](16_convergence_mean_field.md), Stage 2, Section 1.2.
 :::
 
 ### 9.3.1. Proof Strategy via Hypocoercivity
 
 :::{note}
-The proof strategy outlined below has now been completed in [11_convergence_mean_field.md](11_convergence_mean_field.md). This section is preserved for pedagogical purposes to explain the mathematical structure of the proof.
+The proof strategy outlined below has now been completed in [16_convergence_mean_field.md](16_convergence_mean_field.md). This section is preserved for pedagogical purposes to explain the mathematical structure of the proof.
 :::
 
-We outline the rigorous proof strategy that establishes the mean-field LSI (Theorem `thm-lsi-mean-field`). This proof has been fully completed in [11_convergence_mean_field.md](11_convergence_mean_field.md).
+We outline the rigorous proof strategy that establishes the mean-field LSI (Theorem `thm-lsi-mean-field`). This proof has been fully completed in [16_convergence_mean_field.md](16_convergence_mean_field.md).
 
 **Step 1: Decomposition of Entropy Dissipation**
 

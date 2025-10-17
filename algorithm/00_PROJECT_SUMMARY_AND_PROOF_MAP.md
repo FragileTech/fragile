@@ -13,19 +13,19 @@ The Fragile Gas Framework is a rigorous mathematical foundation for physics-insp
 ### Main Achievements
 
 1. **N-Particle Exponential Convergence**: Proven via N-uniform LSI with synergistic dissipation
-   → Document: [12_adaptive_gas_lsi_proof.md](12_adaptive_gas_lsi_proof.md)
-   → Theorem: `thm-lsi-adaptive-gas` in [07_adaptative_gas.md](07_adaptative_gas.md)
+   → Document: [15_adaptive_gas_lsi_proof.md](15_adaptive_gas_lsi_proof.md)
+   → Theorem: `thm-lsi-adaptive-gas` in [11_adaptative_gas.md](11_adaptative_gas.md)
 
 2. **Mean-Field PDE Derivation**: Rigorous McKean-Vlasov limit and propagation of chaos
-   → Documents: [06_mean_field.md](06_mean_field.md), [08_propagation_chaos.md](08_propagation_chaos.md)
+   → Documents: [07_mean_field.md](07_mean_field.md), [08_propagation_chaos.md](08_propagation_chaos.md)
 
 3. **Mean-Field Exponential Convergence**: Proven via hypocoercive LSI with kinetic dominance
-   → Document: [11_convergence_mean_field.md](11_convergence_mean_field.md)
+   → Document: [16_convergence_mean_field.md](16_convergence_mean_field.md)
    → Theorem: `thm-mean-field-lsi-main`
 
 4. **Adaptive Mechanisms**: Extended to full Adaptive Viscous Fluid Model via perturbation theory
-   → N-particle: Theorem `thm-lsi-adaptive-gas` ([07_adaptative_gas.md](07_adaptative_gas.md))
-   → Mean-field: Theorem `thm-lsi-mean-field` ([07_adaptative_gas.md](07_adaptative_gas.md))
+   → N-particle: Theorem `thm-lsi-adaptive-gas` ([11_adaptative_gas.md](11_adaptative_gas.md))
+   → Mean-field: Theorem `thm-lsi-mean-field` ([11_adaptative_gas.md](11_adaptative_gas.md))
 
 ---
 
@@ -48,9 +48,9 @@ The Euclidean Gas is the non-adaptive backbone system combining:
 - [05_convergence.md](05_convergence.md) - Kinetic operator QSD convergence
 
 **Convergence Results**:
-- **Foster-Lyapunov**: Exponential TV-convergence ([05_convergence.md](05_convergence.md))
-- **N-Particle LSI**: KL-convergence for finite N ([10_kl_convergence.md](10_kl_convergence.md))
-- **Mean-Field LSI**: KL-convergence for McKean-Vlasov PDE ([11_convergence_mean_field.md](11_convergence_mean_field.md))
+- **Foster-Lyapunov**: Exponential TV-convergence ([06_convergence.md](06_convergence.md))
+- **N-Particle LSI**: KL-convergence for finite N ([09_kl_convergence.md](09_kl_convergence.md))
+- **Mean-Field LSI**: KL-convergence for McKean-Vlasov PDE ([16_convergence_mean_field.md](16_convergence_mean_field.md))
 
 #### **2. Extension: Adaptive Viscous Fluid Gas**
 
@@ -60,22 +60,22 @@ Adds three adaptive mechanisms to the Euclidean Gas:
 3. **Regularized Hessian Diffusion** (anisotropic noise adapting to landscape curvature)
 
 **Key Documents**:
-- [07_adaptative_gas.md](07_adaptative_gas.md) - Full adaptive model specification
-- [12_adaptive_gas_lsi_proof.md](12_adaptive_gas_lsi_proof.md) - N-particle LSI proof for adaptive system
+- [11_adaptative_gas.md](11_adaptative_gas.md) - Full adaptive model specification
+- [15_adaptive_gas_lsi_proof.md](15_adaptive_gas_lsi_proof.md) - N-particle LSI proof for adaptive system
 
 **Convergence Results**:
-- **Foster-Lyapunov**: Proven for small adaptive perturbations ([07_adaptative_gas.md](07_adaptative_gas.md), Chapter 7)
-- **N-Particle LSI**: Proven with N-uniform constants ([07_adaptative_gas.md](07_adaptative_gas.md), Theorem `thm-lsi-adaptive-gas`)
-- **Mean-Field LSI**: Proven via backbone + perturbation ([07_adaptative_gas.md](07_adaptative_gas.md), Theorem `thm-lsi-mean-field`)
+- **Foster-Lyapunov**: Proven for small adaptive perturbations ([11_adaptative_gas.md](11_adaptative_gas.md), Chapter 7)
+- **N-Particle LSI**: Proven with N-uniform constants ([11_adaptative_gas.md](11_adaptative_gas.md), Theorem `thm-lsi-adaptive-gas`)
+- **Mean-Field LSI**: Proven via backbone + perturbation ([11_adaptative_gas.md](11_adaptative_gas.md), Theorem `thm-lsi-mean-field`)
 
 #### **3. Mean-Field Theory**
 
 Rigorous derivation of the N→∞ limit and propagation of chaos:
 
 **Key Documents**:
-- [06_mean_field.md](06_mean_field.md) - McKean-Vlasov PDE derivation
+- [07_mean_field.md](07_mean_field.md) - McKean-Vlasov PDE derivation
 - [08_propagation_chaos.md](08_propagation_chaos.md) - Weak convergence of marginals
-- [11_convergence_mean_field.md](11_convergence_mean_field.md) - Mean-field KL-convergence
+- [16_convergence_mean_field.md](16_convergence_mean_field.md) - Mean-field KL-convergence
 
 **Main Results**:
 - **Propagation of Chaos**: $\mu_N^{(k)} \to \rho_\infty^{\otimes k}$ as $N \to \infty$
@@ -101,16 +101,16 @@ flowchart TD
     D --> E
 
     %% N-Particle Euclidean Gas LSI
-    E --> F[10: N-Particle KL-Convergence]
+    E --> F[09: N-Particle KL-Convergence]
     F --> |"N-uniform LSI<br/>Synergistic Dissipation"| F1[Proven: Euclidean Gas<br/>N-Particle LSI]
 
     %% Mean-Field Euclidean Gas
-    B --> G[06: Mean-Field PDE]
+    B --> G[07: Mean-Field PDE]
     C --> G
     G --> H[08: Propagation of Chaos]
 
     %% Mean-Field LSI for Euclidean Gas
-    H --> I[11: Mean-Field Convergence]
+    H --> I[16: Mean-Field Convergence]
     I --> |"Stage 0: Revival KL-Properties"| I1[Revival Non-Expansive]
     I --> |"Stage 0.5: QSD Regularity"| I2[Properties R1-R6]
     I --> |"Stage 1: Entropy Production"| I3[Generator Analysis]
@@ -124,22 +124,22 @@ flowchart TD
     I6 --> |"Kinetic Dominance"| I7[Proven: Mean-Field<br/>Euclidean Gas LSI]
 
     %% Adaptive Gas Extensions
-    B --> J[07: Adaptive Gas]
+    B --> J[11: Adaptive Gas]
 
     %% N-Particle Adaptive Gas LSI
-    F1 --> K[12: Adaptive Gas LSI Proof]
+    F1 --> K[15: Adaptive Gas LSI Proof]
     J --> K
     K --> |"Hypocoercivity +<br/>Perturbation Theory"| K1[Proven: Adaptive Gas<br/>N-Particle LSI]
 
     %% Mean-Field Adaptive Gas LSI
-    I7 --> L[07: Adaptive Mean-Field LSI]
+    I7 --> L[11: Adaptive Mean-Field LSI]
     K1 --> L
     H --> L
     L --> |"Backbone + Perturbation"| L1[Proven: Adaptive Gas<br/>Mean-Field LSI]
 
     %% Additional Theory
-    J --> M[09: Symmetries]
-    A --> N[A1: QSD Exchangeability]
+    J --> M[12: Symmetries]
+    A --> N[10: QSD Exchangeability]
 
     %% Styling
     classDef proven fill:#d4f4dd,stroke:#4caf50,stroke-width:3px
@@ -154,25 +154,25 @@ flowchart TD
 **Path 1: N-Particle Euclidean Gas**
 ```
 Axioms → Euclidean Gas → Cloning → Wasserstein Contraction
-  → N-Particle LSI ✅ (10_kl_convergence.md)
+  → N-Particle LSI ✅ (09_kl_convergence.md)
 ```
 
 **Path 2: Mean-Field Euclidean Gas**
 ```
 Axioms → Euclidean Gas → Mean-Field PDE → Propagation of Chaos
-  → Mean-Field Convergence (5 Stages) → Mean-Field LSI ✅ (11_convergence_mean_field.md)
+  → Mean-Field Convergence (5 Stages) → Mean-Field LSI ✅ (16_convergence_mean_field.md)
 ```
 
 **Path 3: N-Particle Adaptive Gas**
 ```
 Euclidean Gas N-LSI + Adaptive Mechanisms → Hypocoercivity + Perturbation
-  → Adaptive N-Particle LSI ✅ (12_adaptive_gas_lsi_proof.md)
+  → Adaptive N-Particle LSI ✅ (15_adaptive_gas_lsi_proof.md)
 ```
 
 **Path 4: Mean-Field Adaptive Gas**
 ```
 Mean-Field Euclidean LSI + Adaptive Perturbation Theory + Propagation of Chaos
-  → Adaptive Mean-Field LSI ✅ (07_adaptative_gas.md, Theorem thm-lsi-mean-field)
+  → Adaptive Mean-Field LSI ✅ (11_adaptative_gas.md, Theorem thm-lsi-mean-field)
 ```
 
 ---
@@ -183,9 +183,9 @@ Mean-Field Euclidean LSI + Adaptive Perturbation Theory + Propagation of Chaos
 
 | Theorem | Label | Document | Status |
 |:--------|:------|:---------|:-------|
-| N-Particle LSI (Discrete-Time) | `thm-kl-convergence-euclidean` | [10_kl_convergence.md](10_kl_convergence.md) | ✅ Proven |
-| Mean-Field LSI (Continuous-Time) | `thm-mean-field-lsi-main` | [11_convergence_mean_field.md](11_convergence_mean_field.md) | ✅ Proven |
-| Foster-Lyapunov TV-Convergence | `thm-fl-euclidean` | [05_convergence.md](05_convergence.md) | ✅ Proven |
+| N-Particle LSI (Discrete-Time) | `thm-kl-convergence-euclidean` | [09_kl_convergence.md](09_kl_convergence.md) | ✅ Proven |
+| Mean-Field LSI (Continuous-Time) | `thm-mean-field-lsi-main` | [16_convergence_mean_field.md](16_convergence_mean_field.md) | ✅ Proven |
+| Foster-Lyapunov TV-Convergence | `thm-fl-euclidean` | [06_convergence.md](06_convergence.md) | ✅ Proven |
 | Propagation of Chaos | `thm-propagation-chaos` | [08_propagation_chaos.md](08_propagation_chaos.md) | ✅ Proven |
 | Wasserstein Contraction | `thm-wasserstein-contraction` | [04_wasserstein_contraction.md](04_wasserstein_contraction.md) | ✅ Proven |
 
@@ -193,18 +193,18 @@ Mean-Field Euclidean LSI + Adaptive Perturbation Theory + Propagation of Chaos
 
 | Theorem | Label | Document | Status |
 |:--------|:------|:---------|:-------|
-| N-Particle LSI (Adaptive) | `thm-lsi-adaptive-gas` | [07_adaptative_gas.md](07_adaptative_gas.md) | ✅ Proven |
-| Mean-Field LSI (Adaptive) | `thm-lsi-mean-field` | [07_adaptative_gas.md](07_adaptative_gas.md) | ✅ Proven |
-| Foster-Lyapunov (Adaptive) | `thm-fl-drift-adaptive` | [07_adaptative_gas.md](07_adaptative_gas.md) | ✅ Proven |
+| N-Particle LSI (Adaptive) | `thm-lsi-adaptive-gas` | [11_adaptative_gas.md](11_adaptative_gas.md) | ✅ Proven |
+| Mean-Field LSI (Adaptive) | `thm-lsi-mean-field` | [11_adaptative_gas.md](11_adaptative_gas.md) | ✅ Proven |
+| Foster-Lyapunov (Adaptive) | `thm-fl-drift-adaptive` | [11_adaptative_gas.md](11_adaptative_gas.md) | ✅ Proven |
 
 ### Supporting Results
 
 | Result | Label | Document | Status |
 |:-------|:------|:---------|:-------|
-| QSD Regularity Properties (R1-R6) | Multiple | [11_convergence_mean_field.md](11_convergence_mean_field.md), Stage 0.5 | ✅ Proven |
-| Revival Operator KL-Bounds | `lem-revival-nonexpansive` | [11_convergence_mean_field.md](11_convergence_mean_field.md), Stage 0 | ✅ Proven |
-| Kinetic Dominance Condition | (inline) | [11_convergence_mean_field.md](11_convergence_mean_field.md), Stage 4 | ✅ Proven |
-| N-Uniform Ellipticity Bounds | `thm-ueph` | [07_adaptative_gas.md](07_adaptative_gas.md) | ✅ Proven |
+| QSD Regularity Properties (R1-R6) | Multiple | [16_convergence_mean_field.md](16_convergence_mean_field.md), Stage 0.5 | ✅ Proven |
+| Revival Operator KL-Bounds | `lem-revival-nonexpansive` | [16_convergence_mean_field.md](16_convergence_mean_field.md), Stage 0 | ✅ Proven |
+| Kinetic Dominance Condition | (inline) | [16_convergence_mean_field.md](16_convergence_mean_field.md), Stage 4 | ✅ Proven |
+| N-Uniform Ellipticity Bounds | `thm-ueph` | [11_adaptative_gas.md](11_adaptative_gas.md) | ✅ Proven |
 | Cloning Keystone Principle | `thm-keystone` | [03_cloning.md](03_cloning.md) | ✅ Proven |
 
 ---
@@ -219,7 +219,7 @@ Mean-Field Euclidean LSI + Adaptive Perturbation Theory + Propagation of Chaos
 - **Quasi-stationary distributions** (conditioned processes)
 - **State-dependent anisotropic diffusion** (adaptive mechanisms)
 
-**Documents**: [11_convergence_mean_field.md](11_convergence_mean_field.md), [12_adaptive_gas_lsi_proof.md](12_adaptive_gas_lsi_proof.md)
+**Documents**: [16_convergence_mean_field.md](16_convergence_mean_field.md), [15_adaptive_gas_lsi_proof.md](15_adaptive_gas_lsi_proof.md)
 
 ### 2. Kinetic Dominance Condition
 
@@ -232,7 +232,7 @@ $$
 \sigma^2 > \sigma_{\text{crit}}^2 := \frac{2C_{\text{Fisher}}^{\text{coup}}}{\lambda_{\text{LSI}}} + \frac{C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}}{\lambda_{\text{LSI}}}
 $$
 
-**Document**: [11_convergence_mean_field.md](11_convergence_mean_field.md), Stage 4, Section 1
+**Document**: [16_convergence_mean_field.md](16_convergence_mean_field.md), Stage 4, Section 1
 
 ### 3. Synergistic Dissipation (N-Particle)
 
@@ -243,7 +243,7 @@ $$
 
 **Net effect**: N-uniform LSI constant despite complex interactions
 
-**Document**: [12_adaptive_gas_lsi_proof.md](12_adaptive_gas_lsi_proof.md)
+**Document**: [15_adaptive_gas_lsi_proof.md](15_adaptive_gas_lsi_proof.md)
 
 ### 4. N-Uniform Ellipticity for State-Dependent Diffusion
 
@@ -255,7 +255,7 @@ c_{\min}(\rho) I \preceq \Sigma_{\text{reg}}(x_i, S) \preceq c_{\max}(\rho) I
 $$
 with constants **independent of N**.
 
-**Document**: [07_adaptative_gas.md](07_adaptative_gas.md), Theorem `thm-ueph`
+**Document**: [11_adaptative_gas.md](11_adaptative_gas.md), Theorem `thm-ueph`
 
 ---
 
@@ -273,7 +273,7 @@ $$
 - **Friction**: $\gamma \sim \sigma$ (optimal hypocoercivity balance)
 - **Cloning rate**: $\lambda_{\text{clone}}$ affects $A_{\text{jump}}$ (trade-off: exploration vs. entropy production)
 
-**Document**: [11_convergence_mean_field.md](11_convergence_mean_field.md), Stages 2-3
+**Document**: [16_convergence_mean_field.md](16_convergence_mean_field.md), Stages 2-3
 
 ### Adaptive Gas (Mean-Field)
 
@@ -289,7 +289,7 @@ where adaptive mechanisms provide:
 
 **Expected speedup**: 2× to 10× faster for rugged landscapes
 
-**Document**: [07_adaptative_gas.md](07_adaptative_gas.md), Section 9.3; [11_convergence_mean_field.md](11_convergence_mean_field.md), Stage 3, Section 10.1
+**Document**: [11_adaptative_gas.md](11_adaptative_gas.md), Section 9.3; [16_convergence_mean_field.md](16_convergence_mean_field.md), Stage 3, Section 10.1
 
 ---
 
@@ -297,13 +297,13 @@ where adaptive mechanisms provide:
 
 ### Euclidean Gas LSI
 
-**N-Particle** ([10_kl_convergence.md](10_kl_convergence.md)):
+**N-Particle** ([09_kl_convergence.md](09_kl_convergence.md)):
 1. Discrete-time operator splitting: $\mathcal{P}_{\Delta t} = \Psi_{\text{clone}} \circ \Psi_{\text{kin}}(\tau)$
 2. Prove each operator contracts KL or is non-expansive
 3. Composition yields exponential contraction
 4. Use synchronous coupling for N-uniformity
 
-**Mean-Field** ([11_convergence_mean_field.md](11_convergence_mean_field.md)):
+**Mean-Field** ([16_convergence_mean_field.md](16_convergence_mean_field.md)):
 1. **Stage 0**: Prove revival operator is KL-non-expansive
 2. **Stage 0.5**: Establish QSD regularity (R1-R6)
 3. **Stage 1**: Derive full generator entropy production equation
@@ -313,14 +313,14 @@ where adaptive mechanisms provide:
 
 ### Adaptive Gas LSI
 
-**N-Particle** ([12_adaptive_gas_lsi_proof.md](12_adaptive_gas_lsi_proof.md)):
+**N-Particle** ([15_adaptive_gas_lsi_proof.md](15_adaptive_gas_lsi_proof.md)):
 1. Start with Euclidean Gas N-LSI (backbone)
 2. Prove N-uniform ellipticity for $\Sigma_{\text{reg}}(x_i, S)$
 3. Apply Cattiaux-Guillin perturbation theorem for adaptive force
 4. Show viscous coupling is dissipative (enhances LSI)
 5. Verify all bounds are N-uniform
 
-**Mean-Field** ([07_adaptative_gas.md](07_adaptative_gas.md), Theorem `thm-lsi-mean-field`):
+**Mean-Field** ([11_adaptative_gas.md](11_adaptative_gas.md), Theorem `thm-lsi-mean-field`):
 1. Start with mean-field Euclidean Gas LSI (backbone)
 2. Apply perturbation theory for adaptive mechanisms
 3. Leverage N-particle proof structure (extends naturally to mean-field)
@@ -332,7 +332,7 @@ where adaptive mechanisms provide:
 
 ### 1. Large Deviations Principle (LDP)
 
-**Status**: Conjectured ([11_convergence_mean_field.md](11_convergence_mean_field.md), Section 1.2)
+**Status**: Conjectured ([16_convergence_mean_field.md](16_convergence_mean_field.md), Section 1.2)
 
 **Statement**: As $N \to \infty$, the empirical measure $\mu_N$ satisfies an LDP with rate function $I(\rho) = D_{\text{KL}}(\rho \| \rho_\infty)$.
 
@@ -344,7 +344,7 @@ where adaptive mechanisms provide:
 
 ### 2. Non-Log-Concave Potentials
 
-**Status**: Open ([11_convergence_mean_field.md](11_convergence_mean_field.md), Stage 5, Section 3.2)
+**Status**: Open ([16_convergence_mean_field.md](16_convergence_mean_field.md), Stage 5, Section 3.2)
 
 **Challenge**: For multi-modal or non-convex potentials:
 - LSI constant may be exponentially small: $\lambda_{\text{LSI}} \sim e^{-\beta \Delta F}$
@@ -360,7 +360,7 @@ where adaptive mechanisms provide:
 
 ### 3. High-Dimensional Scaling
 
-**Status**: Partially analyzed ([11_convergence_mean_field.md](11_convergence_mean_field.md), Stage 5, Section 3.3)
+**Status**: Partially analyzed ([16_convergence_mean_field.md](16_convergence_mean_field.md), Stage 5, Section 3.3)
 
 **Observation**: For $d \to \infty$:
 - Coupling constants grow: $C_{\text{Fisher}}^{\text{coup}} \sim \sqrt{d}$, $C_{\text{KL}}^{\text{coup}} \sim d$
@@ -375,7 +375,7 @@ where adaptive mechanisms provide:
 
 ### 4. Optimal Parameter Tuning
 
-**Status**: Formulas derived, automation incomplete ([11_convergence_mean_field.md](11_convergence_mean_field.md), Stage 3, Stage 5 Section 3.4)
+**Status**: Formulas derived, automation incomplete ([16_convergence_mean_field.md](16_convergence_mean_field.md), Stage 3, Stage 5 Section 3.4)
 
 **Goal**: Given potential $U(x)$ and domain $\mathcal{D}$, automatically find parameters $(\sigma, \gamma, \lambda_{\text{clone}}, \delta, \kappa_{\text{kill}})$ that maximize $\alpha_{\text{net}}$.
 
@@ -415,7 +415,7 @@ The hypocoercivity theory developed for the Fragile Gas framework extends to oth
 **Key Transferable Results**:
 - Revival operator KL-bounds (Stage 0)
 - Kinetic dominance condition (Stage 4)
-- N-uniform LSI for state-dependent diffusion (12_adaptive_gas_lsi_proof.md)
+- N-uniform LSI for state-dependent diffusion (15_adaptive_gas_lsi_proof.md)
 
 ---
 
@@ -424,26 +424,26 @@ The hypocoercivity theory developed for the Fragile Gas framework extends to oth
 ### For Implementation
 
 1. **Start**: [02_euclidean_gas.md](02_euclidean_gas.md) - Algorithm specification
-2. **Parameters**: [11_convergence_mean_field.md](11_convergence_mean_field.md), Stage 3 - Tuning strategies
+2. **Parameters**: [16_convergence_mean_field.md](16_convergence_mean_field.md), Stage 3 - Tuning strategies
 3. **Code**: [01_fragile_gas_framework.md](01_fragile_gas_framework.md), Section 9 - Implementation guide
 
 ### For Theory (Convergence)
 
-1. **Finite-N**: [10_kl_convergence.md](10_kl_convergence.md) - Discrete-time LSI
-2. **Mean-Field**: [11_convergence_mean_field.md](11_convergence_mean_field.md) - Continuous-time LSI
-3. **Adaptive**: [12_adaptive_gas_lsi_proof.md](12_adaptive_gas_lsi_proof.md) - Full model proof
+1. **Finite-N**: [09_kl_convergence.md](09_kl_convergence.md) - Discrete-time LSI
+2. **Mean-Field**: [16_convergence_mean_field.md](16_convergence_mean_field.md) - Continuous-time LSI
+3. **Adaptive**: [15_adaptive_gas_lsi_proof.md](15_adaptive_gas_lsi_proof.md) - Full model proof
 
 ### For Mean-Field PDE Analysis
 
-1. **Derivation**: [06_mean_field.md](06_mean_field.md) - McKean-Vlasov PDE
+1. **Derivation**: [07_mean_field.md](07_mean_field.md) - McKean-Vlasov PDE
 2. **Propagation of Chaos**: [08_propagation_chaos.md](08_propagation_chaos.md) - Weak convergence
-3. **Hypocoercivity**: [11_convergence_mean_field.md](11_convergence_mean_field.md), Stages 1-2 - Entropy production
+3. **Hypocoercivity**: [16_convergence_mean_field.md](16_convergence_mean_field.md), Stages 1-2 - Entropy production
 
 ### For Adaptive Mechanisms
 
-1. **Overview**: [07_adaptative_gas.md](07_adaptative_gas.md) - Full adaptive model
-2. **Symmetries**: [09_symmetries_adaptive_gas.md](09_symmetries_adaptive_gas.md) - Gauge structure
-3. **N-Particle Proof**: [12_adaptive_gas_lsi_proof.md](12_adaptive_gas_lsi_proof.md) - LSI with perturbations
+1. **Overview**: [11_adaptative_gas.md](11_adaptative_gas.md) - Full adaptive model
+2. **Symmetries**: [12_symmetries_adaptive_gas.md](12_symmetries_adaptive_gas.md) - Gauge structure
+3. **N-Particle Proof**: [15_adaptive_gas_lsi_proof.md](15_adaptive_gas_lsi_proof.md) - LSI with perturbations
 
 ---
 

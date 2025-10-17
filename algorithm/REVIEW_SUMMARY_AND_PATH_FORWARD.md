@@ -314,7 +314,7 @@ where κ_W > 0 independent of N.
 
 3. **Numerical validation scope?**
    - Implement explicit swarm examples to verify κ_W independent of N?
-   - Compare contraction rates with KL-divergence (10_kl_convergence.md)?
+   - Compare contraction rates with KL-divergence (09_kl_convergence.md)?
 
 4. **Treatment of original 04_wasserstein_contraction.md?**
    - Option A: Completely replace with cluster-based proof

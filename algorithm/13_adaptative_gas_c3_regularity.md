@@ -1,133 +1,117 @@
 # $C^3$ Regularity and Stability Analysis of the �-Localized Adaptive Gas
 
+## 0. TLDR
+
+**$C^3$ Regularity Theorem**: The fitness potential $V_{\text{fit}}[f_k, \rho](x_i)$ of the ρ-localized Adaptive Gas is three times continuously differentiable with **k-uniform** (independent of alive walker count $k$) and **N-uniform** (independent of total swarm size $N$) third derivative bound $\|\nabla^3_{x_i} V_{\text{fit}}\| \leq K_{V,3}(\rho) < \infty$. This completes the regularity hierarchy ($C^0 \to C^1 \to C^2 \to C^3$) required for the convergence theory.
+
+**BAOAB Discretization Validity**: The $C^3$ regularity with bounded third derivatives validates the smoothness requirements for the BAOAB splitting integrator, ensuring the $O(\Delta t^2)$ weak error bound holds for the adaptive algorithm. This connects the regularity analysis to the stability framework in [06_convergence.md](06_convergence.md).
+
+**Proof Architecture**: The proof proceeds through a six-stage computational pipeline: localization weights → localized moments → regularized standard deviation → Z-score → fitness potential. At each stage, we apply the chain rule for third derivatives (Faà di Bruno formula) and establish k-uniform bounds using telescoping identities for normalized weights.
+
+**Scaling Analysis**: The third derivative bound scales as $K_{V,3}(\rho) \sim O(\rho^{-3})$ in the hyper-local regime, providing explicit numerical stability constraints for time step selection. The global backbone regime ($\rho \to \infty$) recovers finite, parameter-independent bounds.
+
 ## 1. Introduction
 
-### 1.1. Motivation and Context
+### 1.1. Goal and Scope
 
-This document establishes the **$C^3$ regularity** (three times continuous differentiability) of the fitness potential $V_{\text{fit}}[f_k, \rho](x_i)$ for the **�-localized Adaptive Viscous Fluid Model** defined in [07_adaptative_gas.md](../07_adaptative_gas.md). This regularity result is essential for the complete stability analysis of the adaptive algorithm and validates key technical assumptions required for convergence proofs.
+The goal of this document is to establish **$C^3$ regularity** (three times continuous differentiability) of the fitness potential $V_{\text{fit}}[f_k, \rho](x_i)$ for the **ρ-localized Adaptive Viscous Fluid Model** defined in [11_adaptative_gas.md](11_adaptative_gas.md). This result is the capstone of the regularity hierarchy, completing the mathematical foundation required for the full stability and convergence analysis of the adaptive algorithm.
 
-**Why $C^3$ Regularity Matters:**
+The central mathematical object of study is the fitness potential operator, which maps the alive-walker empirical measure $f_k$ and walker position $x_i$ to a smooth potential value through a multi-stage computational pipeline involving Gaussian localization kernels, weighted statistical moments, regularized standard deviation, and smooth rescaling. We prove that this composite function possesses bounded third derivatives that are **k-uniform** (independent of alive walker count) and **N-uniform** (independent of total swarm size).
 
-1. **BAOAB Discretization**: The discretization theorem (Theorem 1.7.2 in [04_convergence.md](../04_convergence.md)) requires the Lyapunov function to satisfy $V \in C^3$ with bounded second and third derivatives on compact sets ([04_convergence.md:493-494](../04_convergence.md)). This ensures the BAOAB splitting integrator maintains its $O(\Delta t^2)$ weak error bound.
+This document focuses exclusively on the $C^3$ regularity analysis. It builds upon and completes the $C^1$ and $C^2$ regularity results established in Appendix A of [11_adaptative_gas.md](11_adaptative_gas.md). The broader implications for Foster-Lyapunov stability, geometric ergodicity, and mean-field limits are addressed in companion documents including [06_convergence.md](06_convergence.md), [07_mean_field.md](07_mean_field.md), and [16_convergence_mean_field.md](16_convergence_mean_field.md).
 
-2. **Foster-Lyapunov Stability**: The total Lyapunov function $V_{\text{total}}$ includes contributions from the fitness potential through the adaptive force. $C^3$ regularity ensures smooth perturbations preserve geometric ergodicity.
+### 1.2. Why $C^3$ Regularity Is Essential
 
-3. **Numerical Stability**: Bounded third derivatives provide quantitative control over the curvature of the fitness landscape, directly informing time step constraints and parameter choices.
+The $C^3$ regularity of the fitness potential is not merely a technical nicety—it is a critical requirement that enables multiple foundational results in the Fragile framework:
 
-4. **Completeness**: This document extends the regularity analysis from Appendix A of [07_adaptative_gas.md](../07_adaptative_gas.md), which established $C^3$ (Theorem {prf:ref}`thm-c1-regularity`) and $C^3$ (Theorem {prf:ref}`thm-c2-regularity`) regularity. $C^3$ completes the regularity hierarchy required for the full convergence theory.
+**1. BAOAB Discretization Theorem**: The discretization analysis in [04_convergence.md](../04_convergence.md) (Theorem 1.7.2) requires the Lyapunov function to satisfy $V \in C^3$ with bounded second and third derivatives on compact sets. This condition ensures the BAOAB splitting integrator maintains its $O(\Delta t^2)$ weak error bound for the underdamped Langevin dynamics. Without $C^3$ regularity, the numerical stability analysis would be incomplete.
 
-### 1.2. The �-Localized Framework
+**2. Foster-Lyapunov Stability**: The total Lyapunov function $V_{\text{total}}$ includes contributions from the fitness potential through the adaptive force $F_{\text{adapt}} = \epsilon_F \nabla V_{\text{fit}}$. The $C^3$ regularity ensures that smooth perturbations of the swarm state produce smooth perturbations of the Lyapunov drift, preserving the geometric ergodicity structure established in [03_cloning.md](03_cloning.md) and [06_convergence.md](06_convergence.md).
 
-The adaptive model uses **radius-based local statistics** to compute the fitness potential. This is the most general version of the framework, interpolating between:
-- **Global backbone regime** ($\rho \to \infty$): Recovers the proven stable backbone from [03_cloning.md](../03_cloning.md) and [04_convergence.md](../04_convergence.md)
-- **Hyper-local regime** ($\rho \to 0$): Enables Hessian-based geometric adaptation
+**3. Numerical Stability and Time Step Selection**: Bounded third derivatives provide quantitative control over the curvature and its rate of change for the fitness landscape. This directly informs time step constraints: the BAOAB integrator requires $\Delta t \lesssim 1/\sqrt{\|\nabla^3 V\|}$ for stability. The explicit ρ-dependence of $K_{V,3}(\rho)$ enables principled parameter selection.
 
-The fitness potential is constructed via the following pipeline:
+**4. Completeness of the Regularity Hierarchy**: This document completes the three-stage regularity analysis initiated in Appendix A of [11_adaptative_gas.md](../07_adaptative_gas.md):
+   - **$C^1$ regularity** (Theorem A.1): Established continuous differentiability
+   - **$C^2$ regularity** (Theorem A.2): Established Hessian bounds
+   - **$C^3$ regularity** (this document): Establishes third derivative bounds
 
-**Step 1: Localization Kernel** (Definition {prf:ref}`def-localization-kernel`)
+Together, these results provide the complete smoothness structure required for the convergence theory.
 
-$$
-K_\rho(x, x') := \frac{1}{Z_\rho(x)} \exp\left(-\frac{\|x - x'\|^2}{2\rho^2}\right)
-$$
+:::{note} The ρ-Localized Framework: Global Backbone to Hyper-Local Adaptation
+The adaptive model uses **radius-based local statistics** controlled by the localization scale ρ. This unified framework interpolates between two extremes:
+- **Global backbone regime** ($\rho \to \infty$): Recovers the proven stable Euclidean Gas dynamics from [02_euclidean_gas.md](../02_euclidean_gas.md) with parameter-independent bounds
+- **Hyper-local regime** ($\rho \to 0$): Enables Hessian-based geometric adaptation with explicit $\rho^{-3}$ scaling
 
-**Step 2: Localized Weights** (computed over alive walkers $A_k$ only)
-
-$$
-w_{ij}(\rho) := \frac{K_\rho(x_i, x_j)}{\sum_{\ell \in A_k} K_\rho(x_i, x_\ell)}
-$$
-
-**Step 3: Localized Moments** (Definition {prf:ref}`def-localized-mean-field-moments`)
-
-$$
-\mu_\rho[f_k, d, x_i] := \sum_{j \in A_k} w_{ij}(\rho) \, d(x_j)
-$$
-
-$$
-\sigma^2_\rho[f_k, d, x_i] := \sum_{j \in A_k} w_{ij}(\rho) \, [d(x_j) - \mu_\rho[f_k, d, x_i]]^2
-$$
-
-**Step 4: Unified Z-Score with Regularized Standard Deviation** (Definition {prf:ref}`def-unified-z-score`)
-
-$$
-Z_\rho[f_k, d, x_i] := \frac{d(x_i) - \mu_\rho[f_k, d, x_i]}{\sigma\'_{\text{reg}}(\sigma^2_\rho[f_k, d, x_i])}
-$$
-
-where $\sigma\'_{\text{reg}}: \mathbb{R}_{\ge 0} \to \mathbb{R}_{>0}$ is the $C^3$ regularized standard deviation function with positive lower bound $\sigma\'_{\min} > 0$.
-
-**Step 5: Fitness Potential** (Definition {prf:ref}`def-localized-mean-field-fitness`)
-
-$$
-V_{\text{fit}}[f_k, \rho](x_i) := g_A(Z_\rho[f_k, d, x_i])
-$$
-
-where $g_A: \mathbb{R} \to [0, A]$ is the smooth rescale function.
-
-### 1.3. Prior Regularity Results
-
-Appendix A of [07_adaptative_gas.md](../07_adaptative_gas.md) established the following results:
-
-:::{prf:theorem} $C^3$ Regularity (Theorem A.1 in 07_adaptative_gas.md)
-:label: thm-c1-review
-
-The fitness potential $V_{\text{fit}}[f_k, \rho](x_i)$ is continuously differentiable in walker position $x_i$ with **k-uniform** bound:
-
-$$
-\|\nabla_{x_i} V_{\text{fit}}[f_k, \rho](x_i)\| \le F_{\text{adapt,max}}(\rho) < \infty
-$$
-
-for all alive walker counts $k \in \{1, \ldots, N\}$ and all swarm sizes $N \ge 1$.
+The $C^3$ analysis tracks how regularity and bounds vary across this entire continuum, providing both theoretical understanding and practical guidance for parameter selection.
 :::
 
-:::{prf:theorem} $C^3$ Regularity (Theorem A.2 in 07_adaptative_gas.md)
-:label: thm-c2-review
+### 1.3. Overview of the Proof Strategy and Document Structure
 
-The fitness potential $V_{\text{fit}}[f_k, \rho](x_i)$ is twice continuously differentiable in walker position $x_i$ with **k-uniform** bound:
+The proof proceeds through a systematic analysis of the six-stage computational pipeline that defines the fitness potential. The diagram below illustrates the logical flow of the document, showing how regularity propagates from primitive assumptions through the full composition.
 
-$$
-\|\nabla^2_{x_i} V_{\text{fit}}[f_k, \rho](x_i)\| \le H_{\max}(\rho) < \infty
-$$
+```mermaid
+graph TD
+    subgraph "Part I: Foundations (Ch 2-3)"
+        A["<b>Ch 2: Mathematical Framework</b><br>State space, swarm configuration<br>Chain rules for third derivatives"]:::stateStyle
+        B["<b>Ch 3: C³ Assumptions</b><br>Measurement function d ∈ C³<br>Kernel K_ρ ∈ C³<br>Rescale g_A ∈ C³"]:::axiomStyle
+    end
 
-for all alive walker counts $k \in \{1, \ldots, N\}$ and all swarm sizes $N \ge 1$.
-:::
+    subgraph "Part II: Localization Pipeline (Ch 4-7)"
+        C["<b>Ch 4: Localization Weights</b><br>∇³ w_ij(ρ) with k-uniform bound"]:::lemmaStyle
+        D["<b>Ch 5: Localized Moments</b><br>∇³ μ_ρ and ∇³ σ²_ρ<br>Telescoping identities"]:::lemmaStyle
+        E["<b>Ch 6: Regularized Std Dev</b><br>∇³ σ'_reg(σ²_ρ)<br>Chain rule application"]:::lemmaStyle
+        F["<b>Ch 7: Z-Score</b><br>∇³ Z_ρ via quotient rule<br>Combining all ingredients"]:::lemmaStyle
+    end
 
-These results established:
-1. **k-uniformity**: Bounds independent of the number of alive walkers
-2. **N-uniformity**: Bounds independent of total swarm size
-3. **�-dependence**: Explicit dependence on localization scale
+    subgraph "Part III: Main Result (Ch 8-9)"
+        G["<b>Ch 8: C³ Regularity Theorem</b><br>∇³ V_fit = ∇³(g_A ∘ Z_ρ)<br>K_{V,3}(ρ) bound"]:::theoremStyle
+        H["<b>Ch 9: Stability Implications</b><br>BAOAB validity<br>Foster-Lyapunov preservation"]:::theoremStyle
+    end
 
-### 1.4. Main Result Preview
+    subgraph "Part IV: Scaling and Continuity (Ch 10-11)"
+        I["<b>Ch 10: ρ-Scaling Analysis</b><br>K_{V,3}(ρ) ~ O(ρ⁻³) as ρ → 0<br>Numerical considerations"]:::lemmaStyle
+        J["<b>Ch 11: Continuity</b><br>Third derivatives continuous<br>in (x_i, S, ρ)"]:::theoremStyle
+    end
 
-This document proves the following theorem:
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    G --> I
+    G --> J
 
-:::{prf:theorem} Main Result (Informal Statement)
-:label: thm-c3-main-preview
+    classDef stateStyle fill:#4a5f8c,stroke:#8fa4d4,stroke-width:2px,color:#e8eaf6
+    classDef axiomStyle fill:#8c6239,stroke:#d4a574,stroke-width:2px,stroke-dasharray: 5 5,color:#f4e8d8
+    classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
+    classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
+```
 
-Under natural smoothness assumptions on the measurement function, localization kernel, and rescale function, the fitness potential $V_{\text{fit}}[f_k, \rho](x_i)$ is three times continuously differentiable with **k-uniform** and **N-uniform** bound:
+**Proof Strategy Overview:**
 
-$$
-\|\nabla^3_{x_i} V_{\text{fit}}[f_k, \rho](x_i)\| \le K_{V,3}(\rho) < \infty
-$$
+The document is organized into four main parts:
 
-Moreover, all third derivatives are continuous functions of $(x_i, S, \rho)$.
-:::
+**Part I: Foundations (Chapters 2-3)** establishes the mathematical framework. Chapter 2 defines the state space, swarm configuration, and crucially, the chain rules for third derivatives (Faà di Bruno formula, quotient rule). Chapter 3 states the $C^3$ regularity assumptions on the primitive functions: the measurement function $d \in C^3$, the Gaussian kernel $K_\rho \in C^3$, and the rescale function $g_A \in C^3$.
 
-This completes the regularity hierarchy required for the convergence theory and validates all technical hypotheses of the discretization theorem.
+**Part II: Localization Pipeline (Chapters 4-7)** propagates regularity through each stage of the fitness potential computation:
+- **Chapter 4** establishes third derivative bounds for the localization weights $w_{ij}(\rho)$, which are normalized products of Gaussian kernels.
+- **Chapter 5** analyzes the localized moments $\mu_\rho$ (weighted mean) and $\sigma^2_\rho$ (weighted variance). The key technical tool is the **telescoping identity**: since $\sum_j w_{ij} = 1$ identically, differentiating yields $\sum_j \nabla^m w_{ij} = 0$, which allows us to rewrite sums in forms that yield k-uniform bounds.
+- **Chapter 6** applies the chain rule to the regularized standard deviation function $\sigma'_{\text{reg}}(\sigma^2_\rho)$, tracking how third derivatives compose.
+- **Chapter 7** combines all previous results to bound $\nabla^3 Z_\rho$ using the quotient rule for $(d(x_i) - \mu_\rho)/\sigma'_{\text{reg}}$.
 
-### 1.5. Document Structure
+**Part III: Main Result (Chapters 8-9)** completes the proof and explores implications:
+- **Chapter 8** proves the main $C^3$ regularity theorem by composing the rescale function with the Z-score: $V_{\text{fit}} = g_A(Z_\rho)$. The bound $K_{V,3}(\rho)$ is expressed explicitly in terms of primitive parameters.
+- **Chapter 9** derives four corollaries establishing the validity of the BAOAB discretization, $C^3$ regularity of the total Lyapunov function, smooth perturbation structure, and completeness of the regularity hierarchy.
 
-The remainder of this document is organized as follows:
+**Part IV: Scaling and Continuity (Chapters 10-11)** analyzes the ρ-dependence:
+- **Chapter 10** performs asymptotic scaling analysis, showing $K_{V,3}(\rho) \sim O(\rho^{-3})$ as $\rho \to 0$ and establishing numerical stability guidelines for time step selection.
+- **Chapter 11** proves that all third derivatives are jointly continuous in the extended argument $(x_i, S, \rho)$, where $S$ represents the swarm state.
 
-- **�2**: Mathematical framework and notation
-- **�3**: $C^3$ regularity assumptions on primitive functions
-- **�4**: Third derivatives of localization weights
-- **�5**: Third derivatives of localized moments
-- **�6**: Third derivatives of regularized standard deviation
-- **�7**: Third derivatives of Z-score
-- **�8**: Main $C^3$ regularity theorem
-- **�9**: Stability implications and corollaries
-- **�10**: �-scaling analysis and numerical considerations
-- **�11**: Continuity of third derivatives
-- **�12**: Conclusion and future directions
+**Chapter 12** concludes with a summary, discussion of significance for the convergence theory, open questions, and practical recommendations for implementation.
+
+The proof is constructive throughout: all bounds are expressed explicitly in terms of algorithmic parameters, making the results directly applicable to numerical implementation and parameter tuning.
 
 ## 2. Mathematical Framework and Notation
 
@@ -228,7 +212,7 @@ This identity allows us to rewrite sums involving derivatives of $w_{ij}$ in a f
 
 ### 2.6. Summary of Known Bounds (from Appendix A)
 
-From the $C^3$ and $C^3$ analysis in [07_adaptative_gas.md](../07_adaptative_gas.md) Appendix A, we have:
+From the $C^3$ and $C^3$ analysis in [11_adaptative_gas.md](../07_adaptative_gas.md) Appendix A, we have:
 
 **Localization Weights (Lemma A.1):**
 - $\|\nabla_{x_i} w_{ij}(\rho)\| \le 2C_{\nabla K}(\rho) / \rho$
@@ -333,7 +317,7 @@ Since $V \ge 0$, all bounds are achieved at $V = 0$.
 These assumptions are **mild and standard** for stochastic optimization algorithms:
 1. They hold for essentially all practical reward functions and kernel choices
 2. They can be verified explicitly for specific implementations
-3. They extend naturally from the $C^3$ assumptions in Appendix A of [07_adaptative_gas.md](../07_adaptative_gas.md)
+3. They extend naturally from the $C^3$ assumptions in Appendix A of [11_adaptative_gas.md](../07_adaptative_gas.md)
 
 Moreover, these conditions are **sufficient but not minimal**weaker regularity (e.g., H�lder continuity of third derivatives) might suffice for some results, but $C^3$ is the natural setting for the BAOAB discretization theorem.
 :::
@@ -754,7 +738,7 @@ $$
 \|\nabla^3_{x_i} \sigma'_{\rho}^{(i)}\| \le L_{\sigma\'\'\'_{\text{reg}}} \cdot (C_{V,\nabla}(\rho))^3 + 3 L_{\sigma\'\'_{\text{reg}}} \cdot C_{V,\nabla}(\rho) \cdot C_{V,\nabla^2}(\rho) + L_{\sigma\'_{\text{reg}}} \cdot C_{V,\nabla^3}(\rho)
 $$
 
-where $C_{V,\nabla}(\rho)$, $C_{V,\nabla^2}(\rho)$, $C_{V,\nabla^3}(\rho)$ are the bounds from Lemmas {prf:ref}`lem-variance-gradient`, {prf:ref}`lem-variance-hessian`, and {prf:ref}`lem-variance-third-derivative` (the latter two from Appendix A of [07_adaptative_gas.md](../07_adaptative_gas.md) and Lemma {prf:ref}`lem-variance-third-derivative` above).
+where $C_{V,\nabla}(\rho)$, $C_{V,\nabla^2}(\rho)$, $C_{V,\nabla^3}(\rho)$ are the bounds from Lemmas {prf:ref}`lem-variance-gradient`, {prf:ref}`lem-variance-hessian`, and {prf:ref}`lem-variance-third-derivative` (the latter two from Appendix A of [11_adaptative_gas.md](../07_adaptative_gas.md) and Lemma {prf:ref}`lem-variance-third-derivative` above).
 
 This bound is **k-uniform** and **N-uniform**.
 :::
@@ -989,7 +973,7 @@ $$
 
 By Assumption {prf:ref}`assump-c3-rescale`, $|g'''_A(z)| \le L_{g'''_A}$ for all $z \in \mathbb{R}$.
 
-The first derivative of $Z_\rho$ satisfies (from Appendix A of [07_adaptative_gas.md](../07_adaptative_gas.md)):
+The first derivative of $Z_\rho$ satisfies (from Appendix A of [11_adaptative_gas.md](../07_adaptative_gas.md)):
 
 $$
 \|\nabla Z_\rho\| \le K_{Z,1}(\rho)
@@ -1046,8 +1030,8 @@ $$
 **Step 4: k-uniformity.**
 
 Each constituent bound is k-uniform by the preceding lemmas:
-- $K_{Z,1}(\rho)$ is k-uniform (Theorem A.1 in [07_adaptative_gas.md](../07_adaptative_gas.md))
-- $K_{Z,2}(\rho)$ is k-uniform (Theorem A.2 in [07_adaptative_gas.md](../07_adaptative_gas.md))
+- $K_{Z,1}(\rho)$ is k-uniform (Theorem A.1 in [11_adaptative_gas.md](../07_adaptative_gas.md))
+- $K_{Z,2}(\rho)$ is k-uniform (Theorem A.2 in [11_adaptative_gas.md](../07_adaptative_gas.md))
 - $K_{Z,3}(\rho)$ is k-uniform (Lemma {prf:ref}`lem-zscore-third-derivative`)
 
 Therefore $K_{V,3}(\rho)$ is k-uniform and N-uniform.
@@ -1099,7 +1083,7 @@ with explicit dependence on measurement derivatives and rescale function bounds.
 
 These scalings follow from:
 1. Weight derivatives: $C_{w,m}(\rho) = O(\rho^{-m})$ for Gaussian kernel (Lemma {prf:ref}`lem-weight-third-derivative`)
-2. **Corrected** localized moment derivatives: $C_{\mu,\nabla^m}(\rho) = O(\rho^{-(m-1)})$ for $m \ge 1$ via centered telescoping (see C⁴ analysis [c4_adaptative_gas.md](c4_adaptative_gas.md) Lemma 5.1 for rigorous proof)
+2. **Corrected** localized moment derivatives: $C_{\mu,\nabla^m}(\rho) = O(\rho^{-(m-1)})$ for $m \ge 1$ via centered telescoping (see C⁴ analysis [14_adaptative_gas_c4_regularity.md](14_adaptative_gas_c4_regularity.md) Lemma 5.1 for rigorous proof)
 3. Quotient rule composition: $Z = (d - \mu)/\sigma'_{\text{reg}}$ gives $K_{Z,m}$ from $C_{\mu,\nabla^m}$ and $C_{V,\nabla^m}$
 
 **Step 2: Analyze the three terms in $K_{V,3}(\rho)$ via Faà di Bruno.**
@@ -1150,7 +1134,7 @@ $$
 :::
 
 :::{prf:proof}
-Direct consequence of Theorem {prf:ref}`thm-c3-regularity` and Theorem A.2 ($C^3$ regularity) from [07_adaptative_gas.md](../07_adaptative_gas.md). The discretization theorem requires $V \in C^3$ with bounded second and third derivatives on compact sets. Both conditions are satisfied by the k-uniform bounds.
+Direct consequence of Theorem {prf:ref}`thm-c3-regularity` and Theorem A.2 ($C^3$ regularity) from [11_adaptative_gas.md](../07_adaptative_gas.md). The discretization theorem requires $V \in C^3$ with bounded second and third derivatives on compact sets. Both conditions are satisfied by the k-uniform bounds.
 :::
 
 :::{admonition} Why This Matters
@@ -1176,14 +1160,14 @@ $$
 
 where $K_{\text{total},3}$ depends on the third-derivative bounds of the confining potential $U(x)$, the fitness potential $V_{\text{fit}}[f_k, \rho]$, and the quadratic velocity term.
 
-**Consequence:** The perturbation analysis in Chapter 7 of [07_adaptative_gas.md](../07_adaptative_gas.md) is justified at the $C^3$ level, ensuring smooth perturbations preserve geometric ergodicity.
+**Consequence:** The perturbation analysis in Chapter 7 of [11_adaptative_gas.md](../07_adaptative_gas.md) is justified at the $C^3$ level, ensuring smooth perturbations preserve geometric ergodicity.
 :::
 
 :::{prf:proof}
 
 **Step 1: Structure of $V_{\text{total}}$.**
 
-From [07_adaptative_gas.md](../07_adaptative_gas.md) Chapter 5, the total Lyapunov function is:
+From [11_adaptative_gas.md](../07_adaptative_gas.md) Chapter 5, the total Lyapunov function is:
 
 $$
 V_{\text{total}}(S) = V_{\text{pos}}(S) + \lambda_v V_{\text{vel}}(S)
@@ -1232,7 +1216,7 @@ $$
 \|\nabla^2 \mathbf{F}_{\text{adapt}}\| = \epsilon_F \|\nabla^3 V_{\text{fit}}\| \le \epsilon_F K_{V,3}(\rho)
 $$
 
-**Consequence:** The perturbation analysis in [07_adaptative_gas.md](../07_adaptative_gas.md) Chapter 6, which bounds the drift perturbation by $O(\epsilon_F K_F(\rho) V_{\text{total}})$, is mathematically rigorous. The $C^3$ structure ensures second-order Taylor expansions are valid, confirming the perturbation calculations.
+**Consequence:** The perturbation analysis in [11_adaptative_gas.md](../07_adaptative_gas.md) Chapter 6, which bounds the drift perturbation by $O(\epsilon_F K_F(\rho) V_{\text{total}})$, is mathematically rigorous. The $C^3$ structure ensures second-order Taylor expansions are valid, confirming the perturbation calculations.
 :::
 
 :::{prf:proof}
@@ -1608,10 +1592,10 @@ The $C^3$ regularity theorem completes the mathematical foundation required for 
 1. **Foundation**: Axioms and state space structure ([01_fragile_gas_framework.md](../01_fragile_gas_framework.md))
 2. **Cloning stability**: Keystone Principle and Wasserstein-2 contraction ([03_cloning.md](../03_cloning.md))
 3. **Kinetic convergence**: Hypocoercivity and Foster-Lyapunov for backbone ([04_convergence.md](../04_convergence.md))
-4. **$C^3$ regularity**: Bounded gradients (Appendix A of [07_adaptative_gas.md](../07_adaptative_gas.md))
-5. **$C^3$ regularity**: Bounded Hessians (Appendix A of [07_adaptative_gas.md](../07_adaptative_gas.md))
+4. **$C^3$ regularity**: Bounded gradients (Appendix A of [11_adaptative_gas.md](../07_adaptative_gas.md))
+5. **$C^3$ regularity**: Bounded Hessians (Appendix A of [11_adaptative_gas.md](../07_adaptative_gas.md))
 6. **$C^3$ regularity**: **This document** � Validates discretization theorem
-7. **Adaptive convergence**: Perturbation theory and Foster-Lyapunov (Chapter 7 of [07_adaptative_gas.md](../07_adaptative_gas.md))
+7. **Adaptive convergence**: Perturbation theory and Foster-Lyapunov (Chapter 7 of [11_adaptative_gas.md](../07_adaptative_gas.md))
 
 The $C^3$ result is the **final technical requirement** for establishing that the discrete-time N-particle algorithm converges exponentially fast to the QSD with N-uniform rates.
 
@@ -1651,7 +1635,7 @@ Based on the theoretical analysis in this document, we offer the following pract
 **Parameter Choices:**
 1. **Localization scale**: Start with $\rho \approx 0.3 \cdot \text{diam}(\mathcal{X})$ (moderate localization)
 2. **Time step**: Use $\Delta t \le \min(\rho^{3/2}, 0.01)$ for stability
-3. **Adaptation rate**: Choose $\epsilon_F < \epsilon_F^*(\rho)$ where $\epsilon_F^*(\rho) \propto 1/K_{V,3}(\rho)$ (from Chapter 7 of [07_adaptative_gas.md](../07_adaptative_gas.md))
+3. **Adaptation rate**: Choose $\epsilon_F < \epsilon_F^*(\rho)$ where $\epsilon_F^*(\rho) \propto 1/K_{V,3}(\rho)$ (from Chapter 7 of [11_adaptative_gas.md](../07_adaptative_gas.md))
 
 **Monitoring Numerical Stability:**
 1. Track $\|\nabla V_{\text{fit}}\|$ and $\|\nabla^2 V_{\text{fit}}\|$ during runs
@@ -1747,6 +1731,6 @@ The result is a **provably stable, numerically sound, and theoretically complete
 - [01_fragile_gas_framework.md](../01_fragile_gas_framework.md) - Foundational axioms and state space
 - [03_cloning.md](../03_cloning.md) - Keystone Principle and cloning stability
 - [04_convergence.md](../04_convergence.md) - Hypocoercivity and BAOAB discretization
-- [07_adaptative_gas.md](../07_adaptative_gas.md) - Adaptive model definition and $C^3$/$C^3$ regularity
+- [11_adaptative_gas.md](../07_adaptative_gas.md) - Adaptive model definition and $C^3$/$C^3$ regularity
 
 **Next Steps:** Submit for dual MCP review (Gemini 2.5 Pro + Codex) to verify mathematical rigor and completeness.

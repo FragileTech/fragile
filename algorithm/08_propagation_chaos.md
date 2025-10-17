@@ -2,13 +2,15 @@
 
 ## 0. TLDR
 
+This document proves that the continuum mean-field model rigorously emerges as the large-N limit of the discrete Euclidean Gas dynamics. We establish existence, uniqueness, and convergence of the mean-field Quasi-Stationary Distribution using a constructive propagation of chaos argument that bypasses intractable direct PDE analysis.
+
 **Propagation of Chaos**: The sequence of single-particle marginals $\{\mu_N\}$ extracted from the N-particle Quasi-Stationary Distributions converges weakly to a unique limit $\mu_\infty$ as $N \to \infty$. This limit is the stationary solution $\rho_0$ to the McKean-Vlasov PDE derived in the mean-field analysis, rigorously justifying the continuum model as the thermodynamic limit of the discrete N-particle Euclidean Gas.
 
 **Constructive Existence via Tightness-Identification-Uniqueness**: Direct PDE analysis fails due to the quadratic, non-local cloning operator. Instead, we construct $\rho_0$ by proving (1) **tightness** of $\{\mu_N\}$ using uniform moment bounds from Foster-Lyapunov analysis, (2) **identification** showing any limit point satisfies the stationary mean-field PDE via Law of Large Numbers for empirical measures, and (3) **uniqueness** of the weak solution via contraction mapping on a weighted Sobolev space using hypoelliptic regularity theory.
 
-**Thermodynamic Limit**: The convergence holds in the strong Wasserstein-2 metric and implies that macroscopic observables computed from finite-N equilibria converge to their mean-field counterparts: $\lim_{N \to \infty} \mathbb{E}_{\nu_N^{QSD}}[\frac{1}{N}\sum_i \phi(z_i)] = \int \phi(z) \rho_0(z) dz$ for any bounded continuous function $\phi$.
+**Thermodynamic Limit**: The convergence holds in the weak topology and implies that macroscopic observables computed from finite-N equilibria converge to their mean-field counterparts: $\lim_{N \to \infty} \mathbb{E}_{\nu_N^{QSD}}[\frac{1}{N}\sum_i \phi(z_i)] = \int \phi(z) \rho_0(z) dz$ for any bounded continuous function $\phi$. Stronger Wasserstein-2 convergence $W_2(\mu_N, \mu_\infty) \to 0$ can be established via second moment bounds from the Foster-Lyapunov analysis, providing quantitative rates.
 
-**Hypoelliptic Regularity**: The contraction argument requires that the kinetic resolvent operator maps the weighted $L^2$ space into a weighted $H^1$ Sobolev space. This non-standard regularity is guaranteed by Hörmander's hypoellipticity theorem, which applies because the kinetic operator's Lie bracket structure satisfies the bracket-generating condition.
+**Hypoelliptic Regularity**: The contraction argument requires that the kinetic resolvent operator maps the weighted $L^2$ space into a weighted $H^1$ Sobolev space. This non-standard regularity follows from Hörmander's hypoellipticity theorem once we verify that the kinetic operator's Lie bracket structure satisfies the bracket-generating condition—a verification carried out explicitly in Section 5.
 
 ## 1. Introduction
 
@@ -72,7 +74,7 @@ graph TD
     subgraph "Part IV: Uniqueness (§5)"
         H["<b>§5.A: Weighted Sobolev Space H¹_w</b><br>Function space with polynomial weights"]:::stateStyle
         I["<b>§5.B: Lipschitz Continuity</b><br>Fitness potential, cloning operator"]:::lemmaStyle
-        J["<b>§5.C: Hypoelliptic Regularity</b><br>Hörmander's theorem: kinetic resolvent<br>maps L²_w → H¹_w"]:::theoremStyle
+        J["<b>§5.C: Hypoelliptic Regularity</b><br>Verify bracket-generating condition<br>Apply Hörmander's theorem: L²_w → H¹_w"]:::theoremStyle
         K["<b>§5.D: Contraction Mapping</b><br>Solution operator is γ-contraction<br>for γ < 1 with large enough weight"]:::theoremStyle
 
         H --> K
@@ -114,7 +116,7 @@ The document is structured as follows:
 
 * **Section 5 (Uniqueness):** We prove that the weak solution is unique via a contraction mapping argument on the weighted Sobolev space $H^1_w(\Omega)$. The solution operator is shown to be Lipschitz continuous with a constant that can be made arbitrarily small by choosing sufficiently large polynomial weights. The critical technical ingredient is **hypoelliptic regularity**: Hörmander's theorem guarantees that the kinetic resolvent operator gains one Sobolev derivative despite the degenerate diffusion, allowing us to control the $H^1_w$ norm.
 
-* **Section 6 (Synthesis):** We combine tightness, identification, and uniqueness to conclude that the entire sequence $\{\mu_N\}$ converges to the unique mean-field QSD $\rho_0$. We establish the thermodynamic limit, showing that macroscopic observables converge, and prove stronger Wasserstein-2 convergence using metrization theorems from optimal transport.
+* **Section 6 (Synthesis):** We combine tightness, identification, and uniqueness to conclude that the entire sequence $\{\mu_N\}$ converges weakly to the unique mean-field QSD $\rho_0$. We establish the thermodynamic limit, showing that macroscopic observables converge. Stronger Wasserstein-2 convergence can be proven separately by leveraging N-uniform second moment bounds from the Foster-Lyapunov analysis, providing quantitative convergence rates.
 
 ## 2. Formal Setup: The Sequence of N-Particle Stationary Measures
 
@@ -217,6 +219,7 @@ The unique N-particle QSD $\nu_N^{QSD}$ is an exchangeable measure on the produc
 
 $$
 \nu_N^{QSD}(\{(z_1, \ldots, z_N) \in A\}) = \nu_N^{QSD}(\{(z_{\sigma(1)}, \ldots, z_{\sigma(N)}) \in A\})
+
 $$
 :::
 
@@ -237,12 +240,14 @@ Let $\{N_k\}$ be any subsequence such that $\mu_{N_k} \rightharpoonup \mu_\infty
 
 $$
 \mu_{N_k-1}^{\text{comp}}(S_{N_k}) := \frac{1}{N_k-1} \sum_{j=2}^{N_k} \delta_{z_j}
+
 $$
 
 Then for $\nu_{N_k}^{QSD}$-almost every sequence of configurations, as $k \to \infty$,
 
 $$
 \mu_{N_k-1}^{\text{comp}}(S_{N_k}) \rightharpoonup \mu_\infty \quad \text{weakly in } \mathcal{P}(\Omega)
+
 $$
 :::
 
@@ -253,6 +258,7 @@ For large $N_k$, this implies that the companions $\{z_2, \ldots, z_{N_k}\}$ beh
 
 $$
 \frac{1}{N_k-1} \sum_{j=2}^{N_k} \delta_{z_j}
+
 $$
 
 converges almost surely to the true underlying measure $\mu_{N_k}$ as $N_k \to \infty$. Since we have assumed $\mu_{N_k} \rightharpoonup \mu_\infty$ by hypothesis, the empirical companion measure must also converge weakly to $\mu_\infty$.
@@ -275,6 +281,7 @@ The reward moment functionals $\mu_R[\cdot]$ and $\sigma_R^2[\cdot]$ are continu
 
 $$
 \lim_{k \to \infty} \mu_R[\mu_k] = \mu_R[\mu_\infty] \quad \text{and} \quad \lim_{k \to \infty} \sigma_R^2[\mu_k] = \sigma_R^2[\mu_\infty]
+
 $$
 :::
 
@@ -283,6 +290,7 @@ Recall that
 
 $$
 \mu_R[\mu] = \int_\Omega R(z) \, d\mu(z) \quad \text{and} \quad \sigma_R^2[\mu] = \int_\Omega R(z)^2 \, d\mu(z) - \left(\int_\Omega R(z) \, d\mu(z)\right)^2
+
 $$
 
 1. **Continuity of the mean**: The **Axiom of Reward Regularity** establishes that the reward function $R: \Omega \to \mathbb{R}$ is Lipschitz continuous. Since $\Omega$ is a compact subset of $\mathbb{R}^{2d}$ (bounded positions and velocity-capped), $R$ is bounded and continuous. A fundamental result in weak convergence theory is that if $\mu_k \rightharpoonup \mu_\infty$ and $g$ is a bounded, continuous function, then $\int g \, d\mu_k \to \int g \, d\mu_\infty$. Applying this with $g = R$ gives the convergence of $\mu_R[\mu_k]$.
@@ -301,6 +309,7 @@ The distance moment functionals $\mu_D[\cdot]$ and $\sigma_D^2[\cdot]$ are conti
 
 $$
 \lim_{k \to \infty} \mu_D[\mu_k] = \mu_D[\mu_\infty] \quad \text{and} \quad \lim_{k \to \infty} \sigma_D^2[\mu_k] = \sigma_D^2[\mu_\infty]
+
 $$
 :::
 
@@ -309,6 +318,7 @@ Recall that
 
 $$
 \mu_D[\mu] = \iint_{\Omega \times \Omega} d(z, z') \, d\mu(z) \, d\mu(z')
+
 $$
 
 where $d(z, z')$ is the algorithmic distance between two phase-space points.
@@ -321,6 +331,7 @@ where $d(z, z')$ is the algorithmic distance between two phase-space points.
 
 $$
 \iint d(z, z') \, d(\mu_k \otimes \mu_k)(z, z') \to \iint d(z, z') \, d(\mu_\infty \otimes \mu_\infty)(z, z')
+
 $$
 
 This establishes the convergence of $\mu_D[\mu_k]$.
@@ -329,6 +340,7 @@ This establishes the convergence of $\mu_D[\mu_k]$.
 
 $$
 \sigma_D^2[\mu] = \iint (d(z, z') - \mu_D[\mu])^2 \, d\mu(z) \, d\mu(z')
+
 $$
 
 The function $(d(z, z') - c)^2$ is continuous in both its spatial arguments and the constant $c$. Since we have already shown that $\mu_D[\mu_k] \to \mu_D[\mu_\infty]$, the integrand converges point-wise. By the bounded convergence theorem (the integrand is bounded on the compact domain), the integral converges, giving $\sigma_D^2[\mu_k] \to \sigma_D^2[\mu_\infty]$.
@@ -351,12 +363,14 @@ Let $\phi \in C_c^\infty(\Omega)$ be a smooth, compactly supported test function
 
 $$
 \left\{ \mathcal{L}_{N_k} \phi(z_1) \right\}_{k=1}^\infty
+
 $$
 
 is uniformly integrable with respect to the measures $\{\nu_{N_k}^{QSD}\}$. Consequently, for any convergent subsequence $\mu_{N_k} \rightharpoonup \mu_\infty$,
 
 $$
 \lim_{k \to \infty} \mathbb{E}_{\nu_{N_k}^{QSD}}[\mathcal{L}_{N_k} \phi(z_1)] = \mathbb{E}_{\mu_\infty}\left[\lim_{k \to \infty} \mathbb{E}^{(N_k)}_{\text{comp}}[\mathcal{L}_{N_k} \phi(z_1) \mid z_1]\right]
+
 $$
 
 where $\mathbb{E}^{(N_k)}_{\text{comp}}[\cdot \mid z_1]$ denotes the conditional expectation over the companion states $\{z_2, \ldots, z_{N_k}\}$ given the state of walker 1.
@@ -371,6 +385,7 @@ We must show that all terms in the generator applied to $\phi$ are uniformly bou
 
 $$
 \mathcal{L}_{\text{clone}, N_k} \phi(z_1) = \sum_{\text{transitions}} \lambda(z_1 \to z') (\phi(z') - \phi(z_1))
+
 $$
 
 where the transition rates $\lambda(z_1 \to z')$ are derived from cloning probabilities (which are bounded by 1) and the selection rate $\lambda_{\text{sel}}$ (a fixed constant). The jump kernel lands in the compact domain $\Omega$, so $|\phi(z') - \phi(z_1)| \le 2 \|\phi\|_\infty < \infty$. The total jump rate out of any state is bounded by a constant times $\lambda_{\text{sel}}$. Therefore, $|\mathcal{L}_{\text{clone}, N_k} \phi(z_1)| \le C_{\text{clone}}$ for some constant $C_{\text{clone}}$ independent of $N_k$.
@@ -379,6 +394,7 @@ where the transition rates $\lambda(z_1 \to z')$ are derived from cloning probab
 
 $$
 |\mathcal{L}_{N_k} \phi(z_1)| \le C_{\text{kin}} + C_{\text{clone}} =: C
+
 $$
 
 Since this bound is independent of $N_k$ and independent of the state $z_1 \in \Omega$, the sequence of integrands is uniformly bounded. On a probability space, uniform boundedness implies uniform integrability. By the Dominated Convergence Theorem, we can interchange the limit and the expectation.
@@ -396,6 +412,7 @@ Let $\{N_k\}$ be any subsequence such that $\mu_{N_k} \rightharpoonup \mu_\infty
 $$
 \lim_{k \to \infty} \mathbb{E}_{\nu_{N_k}^{QSD}}[\mathcal{L}_{\text{boundary}, N_k} \phi(z_1)]
 = \int_{\Omega} \left(-c(z)\rho_0(z) + B[\rho_0, m_{d,\infty}](z)\right) \phi(z) \, dz
+
 $$
 
 where $c(z)$ is the interior killing rate and $B[\rho_0, m_{d,\infty}]$ is the revival operator defined in `06_mean_field.md`.
@@ -412,6 +429,7 @@ In the continuous limit, Theorem 4.4.2 of `06_mean_field.md` (Consistency of the
 
 $$
 \lim_{\tau \to 0} \frac{1}{\tau} p_{\text{exit}}(z, \tau) = c(z)
+
 $$
 
 with uniform convergence over the phase space $\Omega$. The killing rate $c(z)$ has the following properties:
@@ -423,6 +441,7 @@ The contribution of the killing mechanism to the generator is:
 
 $$
 \mathcal{L}_{\text{death}, N_k} \phi(z_1) = -\frac{1}{\tau} p_{\text{exit}}(z_1, \tau) \phi(z_1)
+
 $$
 
 Taking the limit as $k \to \infty$ (equivalently, $\tau \to 0$), and integrating against the marginal density:
@@ -430,6 +449,7 @@ Taking the limit as $k \to \infty$ (equivalently, $\tau \to 0$), and integrating
 $$
 \lim_{k \to \infty} \mathbb{E}_{\mu_{N_k}}\left[\mathcal{L}_{\text{death}, N_k} \phi(z_1)\right]
 = -\int_{\Omega} c(z) \rho_0(z) \phi(z) \, dz
+
 $$
 
 **Step 2: Discrete Revival Converges to the Revival Operator**
@@ -449,6 +469,7 @@ The revival operator in the mean-field model is defined as:
 
 $$
 B[\rho_0, m_{d,\infty}](z) = \lambda_{\text{rev}} \cdot m_{d,\infty} \cdot g[\rho_0](z)
+
 $$
 
 where $g[\rho_0](z) = \int_{\Omega} Q_\delta(z \mid z') \rho_0(z') \, dz'$ is the spatial profile of revived mass.
@@ -457,6 +478,7 @@ The contribution of the revival mechanism to the generator is:
 
 $$
 \mathcal{L}_{\text{revival}, N_k} \phi(z_1) = \lambda_{\text{rev}} m_{d,N_k} \int_{\Omega} Q_\delta(z' \mid z_c) \phi(z') \, dz' \, d\mu_{N_k}^{\text{comp}}(z_c)
+
 $$
 
 By the convergence of $m_{d,N_k} \to m_{d,\infty}$ and $\mu_{N_k}^{\text{comp}} \rightharpoonup \rho_0$, and the continuity of the integral operator with respect to weak convergence:
@@ -464,6 +486,7 @@ By the convergence of $m_{d,N_k} \to m_{d,\infty}$ and $\mu_{N_k}^{\text{comp}} 
 $$
 \lim_{k \to \infty} \mathbb{E}_{\nu_{N_k}^{QSD}}[\mathcal{L}_{\text{revival}, N_k} \phi(z_1)]
 = \int_{\Omega} B[\rho_0, m_{d,\infty}](z) \phi(z) \, dz
+
 $$
 
 **Step 3: Combine Both Terms**
@@ -472,6 +495,7 @@ The net contribution from the boundary mechanism (death plus revival) is:
 
 $$
 \mathcal{L}_{\text{boundary}, N_k} = \mathcal{L}_{\text{death}, N_k} + \mathcal{L}_{\text{revival}, N_k}
+
 $$
 
 Taking the limit:
@@ -479,6 +503,7 @@ Taking the limit:
 $$
 \lim_{k \to \infty} \mathbb{E}_{\nu_{N_k}^{QSD}}[\mathcal{L}_{\text{boundary}, N_k} \phi(z_1)]
 = \int_{\Omega} \left(-c(z)\rho_0(z) + B[\rho_0, m_{d,\infty}](z)\right) \phi(z) \, dz
+
 $$
 
 This is precisely the boundary contribution in the mean-field PDE derived in `06_mean_field.md`.
@@ -501,6 +526,7 @@ For a finite N-particle system, the Quasi-Stationary Distribution $\nu_N^{QSD}$ 
 
 $$
 \mathbb{E}_{\nu_N^{QSD}}[\mathcal{L}_N \Phi] = -\lambda_N \mathbb{E}_{\nu_N^{QSD}}[\Phi]
+
 $$
 
 where $\lambda_N > 0$ is the **extinction rate** (also called the survival rate or quasi-stationary eigenvalue). This rate characterizes how quickly the conditioned process escapes from the quasi-stationary state toward the absorbing boundary.
@@ -517,6 +543,7 @@ The extinction rate $\lambda_N$ of the N-particle QSD satisfies:
 
 $$
 \lim_{N \to \infty} \lambda_N = 0
+
 $$
 
 Consequently, in the limit $N \to \infty$, the QSD stationarity condition converges to the standard stationary condition for the mean-field PDE.
@@ -531,6 +558,7 @@ A classical result in the theory of quasi-stationary distributions (Champagnat &
 
 $$
 \lambda_N = \frac{1}{\mathbb{E}_{\nu_N^{QSD}}[\tau_{\text{ext}}]}
+
 $$
 
 where $\tau_{\text{ext}}$ is the **expected time to extinction** (hitting time of the absorbing state) when starting from the QSD. Thus, proving $\lambda_N \to 0$ is equivalent to proving that $\mathbb{E}_{\nu_N^{QSD}}[\tau_{\text{ext}}] \to \infty$.
@@ -541,6 +569,7 @@ The Foster-Lyapunov drift condition from `06_convergence.md` establishes that th
 
 $$
 \mathcal{L}_N V(S) \leq -\kappa V(S) + C
+
 $$
 
 for all states $S \in \Sigma_N$ (the alive states). This drift condition holds **uniformly in N**.
@@ -555,6 +584,7 @@ From the coupled dynamics in `06_mean_field.md`, the alive mass fraction $m_{a,N
 
 $$
 \lambda_{\text{rev}} m_{d,N} = k_{\text{killed}}[f_N]
+
 $$
 
 By the law of large numbers for exchangeable systems, as $N \to \infty$:
@@ -572,24 +602,28 @@ By Cramér's theorem for sums of independent random variables (or its extension 
 
 $$
 \mathbb{P}_{\nu_N^{QSD}}(\tau_{\text{ext}} \leq T) \leq e^{-c N}
+
 $$
 
 for some constant $c > 0$ independent of $N$. Therefore:
 
 $$
 \mathbb{E}_{\nu_N^{QSD}}[\tau_{\text{ext}}] \geq T \cdot (1 - e^{-cN})
+
 $$
 
 As $N \to \infty$, the right-hand side grows without bound. Since $T$ is arbitrary, we have:
 
 $$
 \lim_{N \to \infty} \mathbb{E}_{\nu_N^{QSD}}[\tau_{\text{ext}}] = \infty
+
 $$
 
 **Formal justification via QSD theory**: The above heuristic argument can be made rigorous using the theory of quasi-stationary distributions for processes with state-dependent killing. More formally, the N-uniform Foster-Lyapunov condition from `06_convergence.md` implies a **uniform geometric ergodicity** for the process conditioned on non-extinction. By Theorem 2.1 in Champagnat & Villemonais, *"General criteria for the study of quasi-stationarity"*, Annals of Probability 40(4), 2012, pp. 1427-1497, such a uniform Lyapunov drift condition combined with the concentration of the empirical measure (law of large numbers) implies that the expected hitting time of the absorbing state grows **exponentially in N**:
 
 $$
 \mathbb{E}_{\nu_N^{QSD}}[\tau_{\text{ext}}] \geq C e^{\beta N}
+
 $$
 
 for some constants $C, \beta > 0$. This is the rigorous version of the large deviation bound above, directly connecting our N-uniform Lyapunov condition to the vanishing extinction rate.
@@ -602,24 +636,28 @@ From Step 1, the extinction rate is:
 
 $$
 \lambda_N = \frac{1}{\mathbb{E}_{\nu_N^{QSD}}[\tau_{\text{ext}}]} \to 0 \quad \text{as } N \to \infty
+
 $$
 
 **Implication for the Limit**: When we take the limit of the N-particle stationarity condition:
 
 $$
 \mathbb{E}_{\nu_{N_k}^{QSD}}[\mathcal{L}_{N_k} \phi(z_1)] = -\lambda_{N_k} \mathbb{E}_{\nu_{N_k}^{QSD}}[\phi(z_1)]
+
 $$
 
 Since $\lambda_{N_k} \to 0$ and $\phi$ is bounded, the right-hand side vanishes:
 
 $$
 \lim_{k \to \infty} \left(-\lambda_{N_k} \mathbb{E}_{\nu_{N_k}^{QSD}}[\phi(z_1)]\right) = 0
+
 $$
 
 Therefore, the limiting equation is the **standard stationary PDE** with no extinction term:
 
 $$
 \int_\Omega \left(L^\dagger \rho_0 - c(z)\rho_0 + S[\rho_0] + B[\rho_0, m_{d,\infty}]\right) \phi \, dz = 0
+
 $$
 
 This rigorously justifies the identification step.
@@ -642,12 +680,14 @@ Let $\{\mu_{N_k}\}$ be any subsequence of the marginal measures that converges w
 
 $$
 L^\dagger \rho_0 - c(z)\rho_0 + S[\rho_0] + B[\rho_0, m_{d,\infty}] = 0
+
 $$
 
 with the equilibrium condition:
 
 $$
 k_{\text{killed}}[\rho_0] = \lambda_{\text{rev}} m_{d,\infty}
+
 $$
 
 where $\rho_0$ is the density of $\mu_\infty$, $c(z)$ is the interior killing rate, $B[\rho_0, m_{d,\infty}] = \lambda_{\text{rev}} m_{d,\infty} g[\rho_0]$ is the revival operator, and $m_{d,\infty}$ is the stationary dead mass fraction.
@@ -660,6 +700,7 @@ A measure $\mu_\infty$ with density $\rho_0$ is a weak solution to the stationar
 
 $$
 \int_\Omega \left(L^\dagger \rho_0(z) - c(z)\rho_0(z) + S[\rho_0](z) + B[\rho_0, m_{d,\infty}](z)\right) \phi(z) \, dz = 0
+
 $$
 
 We establish this by starting with the N-particle stationarity condition and taking the limit as $k \to \infty$.
@@ -670,12 +711,14 @@ For each $N_k$, the QSD $\nu_{N_k}^{QSD}$ is stationary with respect to the N-pa
 
 $$
 \mathbb{E}_{\nu_{N_k}^{QSD}}[\mathcal{L}_{N_k} \phi(z_1)] = 0 \quad \text{for all } k
+
 $$
 
 Decomposing the generator as $\mathcal{L}_{N_k} = \mathcal{L}_{\text{kin}, N_k} + \mathcal{L}_{\text{clone}, N_k}$, we have:
 
 $$
 \mathbb{E}_{\nu_{N_k}^{QSD}}[\mathcal{L}_{\text{kin}, N_k} \phi(z_1)] + \mathbb{E}_{\nu_{N_k}^{QSD}}[\mathcal{L}_{\text{clone}, N_k} \phi(z_1)] = 0 \quad (*)
+
 $$
 
 **Step 2: Limit of the Kinetic Term**
@@ -684,12 +727,14 @@ The kinetic generator acts only on walker 1, independently of all other walkers.
 
 $$
 \mathbb{E}_{\nu_{N_k}^{QSD}}[\mathcal{L}_{\text{kin}, N_k} \phi(z_1)] = \int_{\Omega} (L\phi)(z) \, d\mu_{N_k}(z)
+
 $$
 
 By weak convergence $\mu_{N_k} \rightharpoonup \mu_\infty$ and the fact that $L\phi$ is continuous and bounded (since $\phi$ is smooth and compactly supported), we have:
 
 $$
 \lim_{k \to \infty} \int_{\Omega} (L\phi)(z) \, d\mu_{N_k}(z) = \int_{\Omega} (L\phi)(z) \, \rho_0(z) \, dz = \int_{\Omega} (L^\dagger\rho_0)(z) \phi(z) \, dz
+
 $$
 
 where the last equality uses the definition of the adjoint operator.
@@ -700,24 +745,28 @@ This is the heart of the propagation of chaos argument. The **internal cloning**
 
 $$
 \mathcal{L}_{\text{clone}, N_k} \phi(z_1) = \int_{\Omega} K_{N_k}(z_1, z'; S_{N_k}) (\phi(z') - \phi(z_1)) \, dz'
+
 $$
 
 where $K_{N_k}(z_1, z'; S_{N_k})$ is the transition kernel that depends on the empirical statistics of the companion set $\{z_2, \ldots, z_{N_k}\}$. Specifically, the fitness potential $V_N(z_1)$ that governs cloning rates is computed using empirical moments:
 
 $$
 V_N(z_1) = V(z_1; \mu_R[\mu_{N_k-1}^{\text{comp}}], \sigma_R^2[\mu_{N_k-1}^{\text{comp}}], \mu_D[\mu_{N_k-1}^{\text{comp}}], \sigma_D^2[\mu_{N_k-1}^{\text{comp}}])
+
 $$
 
 By Lemma [](#lem-empirical-convergence), $\mu_{N_k-1}^{\text{comp}} \rightharpoonup \mu_\infty$. By Lemmas [](#lem-reward-continuity) and [](#lem-distance-continuity), the moment functionals converge:
 
 $$
 \mu_R[\mu_{N_k-1}^{\text{comp}}] \to \mu_R[\mu_\infty], \quad \sigma_R^2[\mu_{N_k-1}^{\text{comp}}] \to \sigma_R^2[\mu_\infty]
+
 $$
 
 and similarly for the distance moments. Since the fitness potential $V$ is a continuous function of its arguments (by the axioms), we have:
 
 $$
 V_N(z_1) \to V[\rho_0](z_1)
+
 $$
 
 point-wise for $\mu_\infty$-almost every $z_1$, where $V[\rho_0]$ is the mean-field fitness potential computed using the moments of $\rho_0$.
@@ -726,18 +775,21 @@ By Lemma [](#lem-uniform-integrability), we can interchange the limit and the ex
 
 $$
 \frac{1}{N_k-1} \sum_{j=2}^{N_k} \pi(V_N(z_1), V_N(z_j))
+
 $$
 
 converge (by Lemma [](#lem-empirical-convergence)) to the integral
 
 $$
 \int_\Omega \pi(V[\rho_0](z_1), V[\rho_0](z_c)) \rho_0(z_c) \, dz_c
+
 $$
 
 Therefore, the **internal cloning** term (mass-neutral redistribution within the alive population) converges:
 
 $$
 \lim_{k \to \infty} \mathbb{E}_{\nu_{N_k}^{QSD}}[\mathcal{L}_{\text{clone}, N_k} \phi(z_1)] = \int_{\Omega} S[\rho_0](z) \phi(z) \, dz
+
 $$
 
 where $S[\rho_0]$ is the mean-field internal cloning operator defined in `06_mean_field.md`.
@@ -749,6 +801,7 @@ By Lemma [](#lem-boundary-convergence), the discrete boundary death and revival 
 $$
 \lim_{k \to \infty} \mathbb{E}_{\nu_{N_k}^{QSD}}[\mathcal{L}_{\text{boundary}, N_k} \phi(z_1)]
 = \int_{\Omega} \left(-c(z)\rho_0(z) + B[\rho_0, m_{d,\infty}](z)\right) \phi(z) \, dz
+
 $$
 
 **Step 5: Conclusion**
@@ -757,12 +810,14 @@ Combining all three terms (kinetic, internal cloning, and boundary), and taking 
 
 $$
 \int_\Omega \left(L^\dagger \rho_0(z) - c(z)\rho_0(z) + S[\rho_0](z) + B[\rho_0, m_{d,\infty}](z)\right) \phi(z) \, dz = 0
+
 $$
 
 Additionally, at the stationary state, the total mass killed must equal the total mass revived. Integrating the killing rate over $\Omega$ and equating to the revival rate:
 
 $$
 \int_\Omega c(z)\rho_0(z) \, dz = k_{\text{killed}}[\rho_0] = \lambda_{\text{rev}} m_{d,\infty}
+
 $$
 
 Since this holds for any smooth, compactly supported test function $\phi \in C_c^\infty(\Omega)$, the density $\rho_0$ is, by definition, a weak solution to the stationary mean-field coupled system.
@@ -800,6 +855,7 @@ Let $w(z) = w(x,v) = 1 + \|x\|^2 + \|v\|^2$ be a polynomial weight function. The
 
 $$
 \|\rho\|_{H^1_w}^2 := \int_{\Omega} \left[\rho(z)^2 + \|\nabla_z \rho(z)\|^2\right] w(z) \, dz < \infty
+
 $$
 
 with the normalization constraint $\int_{\Omega} \rho(z) dz = 1$.
@@ -826,6 +882,7 @@ Let $\mathcal{P} \subset H^1_w(\Omega)$ denote the subset of probability densiti
 
 $$
 \mathcal{P} := \left\{\rho \in H^1_w(\Omega) : \rho(z) \ge 0 \text{ a.e., } \int_\Omega \rho dz = 1\right\}
+
 $$
 
 :::{prf:remark} Completeness of the Constraint Set $\mathcal{P}$
@@ -854,12 +911,14 @@ The stationary equation $0 = L^\dagger \rho - c(z)\rho + S[\rho] + B[\rho, m_d]$
 
 $$
 \rho = (-\mathcal{L}_{\text{lin}})^{-1} (S[\rho] + B[\rho, m_d[\rho]] - c(\cdot)\rho + C\rho) =: \mathcal{T}[\rho]
+
 $$
 
 where $m_d[\rho]$ is determined by the equilibrium condition $k_{\text{killed}}[\rho] = \lambda_{\text{rev}} m_d[\rho]$, giving:
 
 $$
 m_d[\rho] = \frac{1}{\lambda_{\text{rev}}} \int_\Omega c(z)\rho(z) \, dz
+
 $$
 
 A stationary solution is a fixed point of the solution operator $\mathcal{T}: \mathcal{P} \to \mathcal{P}$.
@@ -881,6 +940,7 @@ The equation $-\mathcal{L}_{\text{lin}} u = f$ with $\mathcal{L}_{\text{lin}} = 
 
 $$
 (-L^\dagger + C \cdot I) u = f
+
 $$
 
 For $C$ sufficiently large, the operator $-L^\dagger + C \cdot I$ satisfies a **comparison principle**: if $f \geq 0$, then $u \geq 0$. This is a consequence of the hypoelliptic structure and reflecting boundary conditions.
@@ -891,6 +951,7 @@ For $C$ sufficiently large, the operator $-L^\dagger + C \cdot I$ satisfies a **
 
 $$
 S[\rho](z) = S_{\text{src}}[\rho](z) - S_{\text{sink}}[\rho](z)
+
 $$
 
 where:
@@ -901,6 +962,7 @@ The total source term is:
 
 $$
 f(z) = S_{\text{src}}[\rho](z) + B[\rho, m_d](z) + \rho(z)\left[C - c(z) - \frac{1}{\tau}\int_{\Omega} P_{\text{clone}}(V[z], V[z_c]) \frac{f(z_c)}{m_a} \,\mathrm{d}z_c\right]
+
 $$
 
 **Key observations**:
@@ -917,12 +979,14 @@ The coefficient satisfies:
 
 $$
 C - c(z) - \frac{1}{\tau}\int P_{\text{clone}}(\cdots) \,\mathrm{d}z_c \geq C - \|c\|_{L^\infty} - \lambda_{\text{sel}}
+
 $$
 
 **Explicit construction of C**: Choose:
 
 $$
 C := \|c\|_{L^\infty(\Omega)} + \lambda_{\text{sel}} \cdot \sup_{z,z' \in \Omega} P_{\text{clone}}(V[\rho](z), V[\rho](z')) + 1
+
 $$
 
 With this choice:
@@ -940,12 +1004,14 @@ Starting from the fixed-point equation:
 
 $$
 \mathcal{T}[\rho] = (-\mathcal{L}_{\text{lin}})^{-1} (S[\rho] + B[\rho, m_d[\rho]] - c(\cdot)\rho + C\rho)
+
 $$
 
 Applying $-\mathcal{L}_{\text{lin}}$ to both sides:
 
 $$
 -\mathcal{L}_{\text{lin}} \mathcal{T}[\rho] = S[\rho] + B[\rho, m_d[\rho]] - c(\cdot)\rho + C\rho
+
 $$
 
 Integrating both sides over $\Omega$:
@@ -953,6 +1019,7 @@ Integrating both sides over $\Omega$:
 $$
 \int_{\Omega} (-L^\dagger + C \cdot I) \mathcal{T}[\rho] \, dz
 = \int_{\Omega} (S[\rho] + B[\rho, m_d[\rho]] - c(\cdot)\rho + C\rho) \, dz
+
 $$
 
 Using the mass conservation properties from `06_mean_field.md`:
@@ -965,12 +1032,14 @@ This gives:
 
 $$
 C \int_{\Omega} \mathcal{T}[\rho] \, dz = \lambda_{\text{rev}} m_d[\rho] - k_{\text{killed}}[\rho] + C \int_{\Omega} \rho \, dz
+
 $$
 
 At the stationary state, the equilibrium condition $k_{\text{killed}}[\rho] = \lambda_{\text{rev}} m_d[\rho]$ holds by construction (from our definition of $m_d[\rho]$ in the fixed-point reformulation). Since $\int \rho = 1$:
 
 $$
 C \int_{\Omega} \mathcal{T}[\rho] \, dz = 0 + C
+
 $$
 
 Therefore, $\int_{\Omega} \mathcal{T}[\rho] \, dz = 1$.
@@ -987,6 +1056,7 @@ The moment functionals $\mu_R[\cdot], \sigma_R[\cdot], \mu_D[\cdot], \sigma_D[\c
 
 $$
 |\mu_R[\rho_1] - \mu_R[\rho_2]| \le L_{\mu} \|\rho_1 - \rho_2\|_{H^1_w}
+
 $$
 
 and similarly for the other moments.
@@ -997,18 +1067,21 @@ The reward moments are defined by:
 
 $$
 \mu_R[\rho] = \int_\Omega R(z) \rho(z) dz, \quad \sigma_R^2[\rho] = \int_\Omega R(z)^2 \rho(z) dz - \mu_R[\rho]^2
+
 $$
 
 **Step 1**: By the Axiom of Reward Regularity, $R: \Omega \to \mathbb{R}$ is Lipschitz continuous and bounded. Therefore:
 
 $$
 |\mu_R[\rho_1] - \mu_R[\rho_2]| = \left|\int_\Omega R(z) (\rho_1(z) - \rho_2(z)) dz\right| \le \|R\|_{L^\infty} \|\rho_1 - \rho_2\|_{L^1}
+
 $$
 
 **Step 2**: By Sobolev embedding, $H^1_w(\Omega) \hookrightarrow L^1_w(\Omega) \hookrightarrow L^1(\Omega)$ (using the weight decay). Therefore, there exists a constant $C_{\text{Sob}}$ such that:
 
 $$
 \|\rho_1 - \rho_2\|_{L^1} \le C_{\text{Sob}} \|\rho_1 - \rho_2\|_{H^1_w}
+
 $$
 
 **Step 3**: Combining Steps 1-2 gives Lipschitz continuity of $\mu_R$ with constant $L_{\mu} = \|R\|_{L^\infty} C_{\text{Sob}}$.
@@ -1027,6 +1100,7 @@ Any fixed point $\rho^* \in \mathcal{P}$ of the solution operator $\mathcal{T}$ 
 
 $$
 \|\rho^*\|_{H^1_w} \leq R_*
+
 $$
 :::
 
@@ -1035,6 +1109,7 @@ Let $\rho^* = \mathcal{T}[\rho^*]$ be any fixed point. By the definition of $\ma
 
 $$
 \rho^* = (C \cdot I - L^\dagger)^{-1} (S[\rho^*] + B[\rho^*, m_d[\rho^*]] - c(\cdot)\rho^* + C\rho^*)
+
 $$
 
 **Step 1: Hypoelliptic regularity estimate**
@@ -1043,6 +1118,7 @@ From the hypoelliptic regularity theory (Theorem [](#thm-uniqueness-hypoelliptic
 
 $$
 \|\rho^*\|_{H^1_w} = \|(C \cdot I - L^\dagger)^{-1} f\|_{H^1_w} \leq C_{\text{hypo}} \|f\|_{L^2_w}
+
 $$
 
 where $f = S[\rho^*] + B[\rho^*, m_d[\rho^*]] - c(\cdot)\rho^* + C\rho^*$ is the source term.
@@ -1103,12 +1179,14 @@ Now, taking $L^2_w$ norms in the fixed-point equation:
 
 $$
 \|\rho^*\|_{H^1_w} \leq C_{\text{hypo}} \left(\|S[\rho^*]\|_{L^2_w} + \|B[\rho^*, m_d]\|_{L^2_w} + \|c \rho^*\|_{L^2_w} + C\|\rho^*\|_{L^2_w}\right)
+
 $$
 
 Using the bounds from Steps 2:
 
 $$
 \|\rho^*\|_{H^1_w} \leq C_{\text{hypo}} \left(K_S + K_B + (\|c\|_{L^\infty} + C) \|\rho^*\|_{L^2_w}\right)
+
 $$
 
 By Sobolev embedding on the compact domain $\Omega$: $\|\rho^*\|_{L^2_w} \leq C_{\text{Sob}} \|\rho^*\|_{H^1_w}$.
@@ -1117,12 +1195,14 @@ Therefore:
 
 $$
 \|\rho^*\|_{H^1_w} \leq C_{\text{hypo}} (K_S + K_B) + C_{\text{hypo}} (\|c\|_{L^\infty} + C) C_{\text{Sob}} \|\rho^*\|_{H^1_w}
+
 $$
 
 Rearranging:
 
 $$
 \|\rho^*\|_{H^1_w} \left[1 - C_{\text{hypo}} C_{\text{Sob}} (\|c\|_{L^\infty} + C)\right] \leq C_{\text{hypo}} (K_S + K_B)
+
 $$
 
 **Step 4: Conclusion**
@@ -1131,12 +1211,14 @@ For the physical parameters of the system, we can choose $C$ and $\sigma_v^2$ (w
 
 $$
 C_{\text{hypo}} C_{\text{Sob}} (\|c\|_{L^\infty} + C) < \frac{1}{2}
+
 $$
 
 Then:
 
 $$
 \|\rho^*\|_{H^1_w} \leq 2 C_{\text{hypo}} (K_S + K_B) =: R_*
+
 $$
 
 This bound depends only on the system parameters and constants, not on the particular fixed point $\rho^*$.
@@ -1151,6 +1233,7 @@ The fitness potential operator $\rho \mapsto V[\rho]$ is Lipschitz continuous fr
 
 $$
 \|V[\rho_1] - V[\rho_2]\|_{L^\infty} \le L_V \|\rho_1 - \rho_2\|_{H^1_w}
+
 $$
 :::
 
@@ -1159,6 +1242,7 @@ The fitness potential has the form:
 
 $$
 V[\rho](z) = \alpha_R \left(\frac{R(z) - \mu_R[\rho]}{\sigma_R[\rho]}\right) + \alpha_D \left(\frac{D[\rho](z) - \mu_D[\rho]}{\sigma_D[\rho]}\right)
+
 $$
 
 where $D[\rho](z) = \int d(z, z') \rho(z') dz'$ is the expected distance functional.
@@ -1169,6 +1253,7 @@ where $D[\rho](z) = \int d(z, z') \rho(z') dz'$ is the expected distance functio
 
 $$
 |D[\rho_1](z) - D[\rho_2](z)| \le \int_\Omega d(z, z') |\rho_1(z') - \rho_2(z')| dz' \le \|d\|_{L^\infty} \|\rho_1 - \rho_2\|_{L^1}
+
 $$
 
 **Step 3**: The fitness potential is a composition of Lipschitz functions (ratios with denominators bounded away from zero by the non-degeneracy axioms). By the chain rule for Lipschitz functions, $V[\rho]$ is Lipschitz.
@@ -1185,6 +1270,7 @@ The cloning operator $S: \mathcal{P} \to H^1_w(\Omega)$ is **locally Lipschitz c
 
 $$
 \|S[\rho_1] - S[\rho_2]\|_{H^1_w} \le L_S(R) \|\rho_1 - \rho_2\|_{H^1_w}
+
 $$
 
 where $L_S(R) = O(R)$ (grows at most linearly with $R$).
@@ -1195,12 +1281,14 @@ The cloning operator $S[\rho]$ has the structure:
 
 $$
 S[\rho](z) = S_{\text{src}}[\rho](z) - S_{\text{sink}}[\rho](z)
+
 $$
 
 where both terms involve **quadratic** expressions in $\rho$ due to pairwise walker-companion interactions:
 
 $$
 S_{\text{src}}[\rho](z) = \int_{\Omega} \int_{\Omega} K_{\text{jitter}}(z_d \to z) \pi(V[\rho](z_d), V[\rho](z_c)) \rho(z_d) \rho(z_c) \, dz_d \, dz_c
+
 $$
 
 **Challenge**: A quadratic operator is **not** globally Lipschitz on a vector space. However, it **is** locally Lipschitz on bounded balls in the $H^1_w$ norm.
@@ -1213,6 +1301,7 @@ For $\rho_1, \rho_2 \in \mathcal{P}$, the source term difference involves:
 
 $$
 S_{\text{src}}[\rho_1] - S_{\text{src}}[\rho_2] = \int_{\Omega} \int_{\Omega} K_{\text{jitter}}(z_d \to z) \left[\pi(V[\rho_1](z_d), V[\rho_1](z_c)) \rho_1(z_d) \rho_1(z_c) - \pi(V[\rho_2](z_d), V[\rho_2](z_c)) \rho_2(z_d) \rho_2(z_c)\right] dz_d dz_c
+
 $$
 
 **Step 3: Decompose the difference**
@@ -1222,6 +1311,7 @@ Using the algebraic identity for bilinear forms, we can write:
 $$
 \pi(V_1, V_1^c) \rho_1 \rho_1^c - \pi(V_2, V_2^c) \rho_2 \rho_2^c
 = [\pi(V_1, V_1^c) - \pi(V_2, V_2^c)] \rho_1 \rho_1^c + \pi(V_2, V_2^c) [\rho_1 \rho_1^c - \rho_2 \rho_2^c]
+
 $$
 
 where $V_i = V[\rho_i](z_d)$ and $V_i^c = V[\rho_i](z_c)$.
@@ -1231,6 +1321,7 @@ For the second term, using $ab - cd = a(b-d) + (a-c)d$:
 $$
 \rho_1(z_d)\rho_1(z_c) - \rho_2(z_d)\rho_2(z_c)
 = \rho_1(z_d)[\rho_1(z_c) - \rho_2(z_c)] + [\rho_1(z_d) - \rho_2(z_d)]\rho_2(z_c)
+
 $$
 
 **Step 4: Lipschitz continuity of π and V**
@@ -1239,12 +1330,14 @@ By Lemma [](#lem-uniqueness-lipschitz-fitness-potential), $V[\rho]$ is Lipschitz
 
 $$
 \|V[\rho_1] - V[\rho_2]\|_{L^\infty} \leq L_V \|\rho_1 - \rho_2\|_{H^1_w}
+
 $$
 
 By the axiom of selection probability, $\pi(\cdot, \cdot)$ is Lipschitz with constant $L_\pi$:
 
 $$
 |\pi(V_1, V_1^c) - \pi(V_2, V_2^c)| \leq L_\pi (\|V_1 - V_2\|_{L^\infty} + \|V_1^c - V_2^c\|_{L^\infty})
+
 $$
 
 **Step 5: Estimate using Sobolev embedding**
@@ -1253,6 +1346,7 @@ The weighted Sobolev space $H^1_w(\Omega)$ embeds continuously into $L^2_w(\Omeg
 
 $$
 \|\rho\|_{L^2} \leq C_{\text{Sob}} \|\rho\|_{H^1_w}
+
 $$
 
 Using Hölder's inequality on the bilinear term:
@@ -1260,6 +1354,7 @@ Using Hölder's inequality on the bilinear term:
 $$
 \left\|\int \rho_1(z_d)[\rho_1(z_c) - \rho_2(z_c)] (\cdots) dz_d dz_c\right\|_{L^2_w}
 \leq C \|\rho_1\|_{L^2} \|\rho_1 - \rho_2\|_{L^2}
+
 $$
 
 **Step 6: Explicit estimate on the ball**
@@ -1269,12 +1364,14 @@ For $\rho_1, \rho_2 \in \mathcal{P}_R$ (where $\|\rho_i\|_{H^1_w} \leq R$), the 
 $$
 \left\|\int \rho_1(z_d)[\rho_1(z_c) - \rho_2(z_c)] (\cdots) dz_d dz_c\right\|_{L^2_w}
 \leq C \|\rho_1\|_{L^2} \|\rho_1 - \rho_2\|_{L^2} \leq C C_{\text{Sob}}^2 R \|\rho_1 - \rho_2\|_{H^1_w}
+
 $$
 
 Similarly for the other bilinear term. Combining all contributions from the quadratic structure, the source and sink terms:
 
 $$
 \|S[\rho_1] - S[\rho_2]\|_{H^1_w} \leq C_{\text{quad}} \cdot R \cdot \|\rho_1 - \rho_2\|_{H^1_w}
+
 $$
 
 where $C_{\text{quad}}$ depends on:
@@ -1287,6 +1384,7 @@ where $C_{\text{quad}}$ depends on:
 
 $$
 L_S(R) := C_{\text{quad}} \cdot R + C_{\text{linear}}
+
 $$
 
 where $C_{\text{linear}}$ accounts for the linear part of the sink term. On the **ball** $\mathcal{P}_R$, the cloning operator is Lipschitz continuous with constant $L_S(R) = O(R)$.
@@ -1298,6 +1396,7 @@ where $C_{\text{linear}}$ accounts for the linear part of the sink term. On the 
 
 $$
 \|B[\rho_1, m_d[\rho_1]] - B[\rho_2, m_d[\rho_2]]\|_{H^1_w} \leq L_B(R) \|\rho_1 - \rho_2\|_{H^1_w}
+
 $$
 
 where $L_B(R)$ grows at most linearly with $R$ due to the product structure.
@@ -1317,6 +1416,7 @@ The kinetic operator $L^\dagger$ has the structure:
 
 $$
 L^\dagger f = -v \cdot \nabla_x f - \nabla_v \cdot (\gamma v f) + \nabla_v \cdot (\mathsf{D}_v \nabla_v f)
+
 $$
 
 where $\mathsf{D}_v = \sigma_v^2 \gamma \mathsf{I}$ is the velocity diffusion tensor.
@@ -1336,6 +1436,7 @@ Let $L$ be a second-order operator of the form:
 
 $$
 L = \sum_{i=1}^{m} X_i^2 + X_0
+
 $$
 
 where $X_0, X_1, \ldots, X_m$ are smooth vector fields on a manifold $M$. If the Lie algebra generated by $\{X_0, X_1, \ldots, X_m\}$ spans the tangent space $T_z M$ at every point $z \in M$, then $L$ is hypoelliptic.
@@ -1360,6 +1461,7 @@ Write $L$ in the form required by Hörmander's theorem:
 
 $$
 L\phi = \sum_{i=1}^{d} X_i^2 \phi + X_0 \phi
+
 $$
 
 where:
@@ -1372,30 +1474,35 @@ For any $i \in \{1, \ldots, d\}$, compute the commutator:
 
 $$
 [X_0, X_i] = [v \cdot \nabla_x - \gamma v \cdot \nabla_v, \frac{\partial}{\partial v_i}]
+
 $$
 
 Using $[A+B, C] = [A, C] + [B, C]$:
 
 $$
 [X_0, X_i] = [v \cdot \nabla_x, \frac{\partial}{\partial v_i}] + [-\gamma v \cdot \nabla_v, \frac{\partial}{\partial v_i}]
+
 $$
 
 For the first term, note that $v \cdot \nabla_x = \sum_j v_j \partial_{x_j}$:
 
 $$
 [v \cdot \nabla_x, \frac{\partial}{\partial v_i}] \phi = v \cdot \nabla_x \left(\frac{\partial \phi}{\partial v_i}\right) - \frac{\partial}{\partial v_i}(v \cdot \nabla_x \phi) = -\frac{\partial \phi}{\partial x_i} = -\partial_{x_i}
+
 $$
 
 For the second term, similarly:
 
 $$
 [-\gamma v \cdot \nabla_v, \frac{\partial}{\partial v_i}] \phi = -\gamma \partial_{v_i}
+
 $$
 
 Therefore:
 
 $$
 [X_0, X_i] = -\partial_{x_i} - \gamma \partial_{v_i}
+
 $$
 
 **Step 2: Span the tangent space**
@@ -1404,6 +1511,7 @@ At any point $(x, v) \in \Omega$, the vector fields $\{X_1, \ldots, X_d\}$ span 
 
 $$
 \{[X_0, X_i] : i = 1, \ldots, d\} \text{ contain } \{-\partial_{x_1}, \ldots, -\partial_{x_d}\}
+
 $$
 
 which span the position tangent directions $T_x$. Therefore, the Lie algebra generated by $\{X_0, X_1, \ldots, X_d\}$ spans $T_{(x,v)} \Omega = T_x \times T_v$ at every point.
@@ -1424,12 +1532,14 @@ Let $\mathcal{L}_{\text{lin}} = L^\dagger - C \cdot I$ where $C > 0$ is sufficie
 
 $$
 -\mathcal{L}_{\text{lin}} u = f
+
 $$
 
 has a unique solution $u \in H^1_w(\Omega)$. Moreover, there exists a constant $C_{\text{hypo}}$ depending on $\sigma_v^2, \gamma, C$ such that:
 
 $$
 \|u\|_{H^1_w} \le C_{\text{hypo}} \|f\|_{L^2_w}
+
 $$
 :::
 
@@ -1450,12 +1560,14 @@ Define the bilinear form associated with $-\mathcal{L}_{\text{lin}}$:
 
 $$
 a(u, v) = \int_\Omega \left[-L^\dagger u + Cu\right] v \, w(z) \, dz
+
 $$
 
 Using integration by parts (with boundary terms vanishing by the reflecting/absorbing boundary conditions):
 
 $$
 a(u, v) = \int_\Omega \left[\sigma_v^2 \gamma \nabla_v u \cdot \nabla_v v + \gamma v \cdot \nabla_v u \, v + C u v\right] w(z) \, dz
+
 $$
 
 **Step 2: Coercivity estimate (the hypocoercivity argument)**
@@ -1464,6 +1576,7 @@ The challenge is to show $a(u, u) \ge \alpha \|u\|_{H^1_w}^2$ for some $\alpha >
 
 $$
 a(u, u) \ge \sigma_v^2 \gamma \int |\nabla_v u|^2 w dz + C \int u^2 w dz
+
 $$
 
 This provides control only over velocity derivatives, not position derivatives. **Hypocoercivity** is the technique to obtain control over $\|\nabla_x u\|^2$ as well.
@@ -1472,12 +1585,14 @@ The key idea (Villani 2009, Theorem 24): Define an auxiliary functional:
 
 $$
 \Psi[u] = a(u, u) + \epsilon \int u (v \cdot \nabla_x u) w dz
+
 $$
 
 for a carefully chosen small $\epsilon > 0$. After integration by parts and using the weight function, one can show:
 
 $$
 \Psi[u] \ge c_1 \left(\sigma_v^2 \|\nabla_v u\|_{L^2_w}^2 + \|\nabla_x u\|_{L^2_w}^2 + \|u\|_{L^2_w}^2\right)
+
 $$
 
 for constants $c_1 = c_1(\sigma_v^2, \gamma, C, \epsilon)$. The coupling term $v \cdot \nabla_x$ "transfers" the regularity from velocity to position.
@@ -1499,6 +1614,7 @@ By the **Lax-Milgram theorem**, for any $f \in L^2_w$, there exists a unique $u 
 
 $$
 \|u\|_{H^1_w} \le \frac{1}{c_1} \|f\|_{L^2_w} =: C_{\text{hypo}} \|f\|_{L^2_w}
+
 $$
 
 **Q.E.D.**
@@ -1513,12 +1629,14 @@ The constant $C_{\text{hypo}}$ from Theorem [](#thm-uniqueness-hypoelliptic-regu
 
 $$
 C_{\text{hypo}} \sim \frac{1}{\min(\sigma_v^2 \gamma, C)}
+
 $$
 
 In particular, for $C$ fixed and $\sigma_v^2$ sufficiently large:
 
 $$
 C_{\text{hypo}} \lesssim \frac{1}{\sigma_v^2 \gamma}
+
 $$
 :::
 
@@ -1529,24 +1647,28 @@ The coercivity constant $c_1$ from the hypocoercivity argument in Theorem [](#th
 
 $$
 \int \sigma_v^2 \gamma |\nabla_v u|^2 w dz \ge \sigma_v^2 \gamma \|\nabla_v u\|_{L^2_w}^2
+
 $$
 
 **From the auxiliary functional** (Villani's method): The term controlling position derivatives scales as:
 
 $$
 \epsilon \int u (v \cdot \nabla_x u) w dz + O(\epsilon^2) \text{ terms}
+
 $$
 
 Optimizing over $\epsilon$, one obtains (see Villani 2009, Theorem 24, equation (59)):
 
 $$
 \|\nabla_x u\|_{L^2_w}^2 \lesssim \frac{1}{\sigma_v^2 \gamma} \text{(diffusive estimate)}
+
 $$
 
 The overall coercivity constant is:
 
 $$
 c_1 = \min\left(\sigma_v^2 \gamma, C, \frac{(\sigma_v^2 \gamma)^2}{C_{\text{Poincaré}}}\right)
+
 $$
 
 where $C_{\text{Poincaré}}$ is the Poincaré constant for the domain.
@@ -1555,6 +1677,7 @@ For large $\sigma_v^2$, the bottleneck is the transfer from velocity to position
 
 $$
 c_1 \sim \sigma_v^2 \gamma \implies C_{\text{hypo}} = \frac{1}{c_1} \sim \frac{1}{\sigma_v^2 \gamma}
+
 $$
 
 **Q.E.D.**
@@ -1573,12 +1696,14 @@ Let $R^* > 0$ be the radius from Lemma [](#lem-uniqueness-fixed-point-boundednes
 
 $$
 \mathcal{P}_R := \mathcal{P} \cap \{\rho \in H^1_w(\Omega) : \|\rho\|_{H^1_w} \le R^*\}
+
 $$
 
 There exists a choice of parameters (specifically, sufficiently large kinetic diffusion $\sigma_v^2$) such that the solution operator $\mathcal{T}: \mathcal{P}_R \to \mathcal{P}_R$ is a strict contraction on this ball. That is, there exists $\kappa(R^*) \in (0, 1)$ such that:
 
 $$
 \|\mathcal{T}[\rho_1] - \mathcal{T}[\rho_2]\|_{H^1_w} \le \kappa(R^*) \|\rho_1 - \rho_2\|_{H^1_w}
+
 $$
 
 for all $\rho_1, \rho_2 \in \mathcal{P}_R$.
@@ -1591,6 +1716,7 @@ Recall $\mathcal{T}[\rho] = (-\mathcal{L}_{\text{lin}})^{-1} (S[\rho] + B[\rho, 
 
 $$
 \mathcal{T}[\rho_1] - \mathcal{T}[\rho_2] = (-\mathcal{L}_{\text{lin}})^{-1} \left[(S[\rho_1] - S[\rho_2]) + (B[\rho_1, m_d[\rho_1]] - B[\rho_2, m_d[\rho_2]]) - c(\cdot)(\rho_1 - \rho_2) + C(\rho_1 - \rho_2)\right]
+
 $$
 
 **Step 2: Hypoelliptic regularity of the inverse operator**
@@ -1599,6 +1725,7 @@ By Theorem [](#thm-uniqueness-hypoelliptic-regularity), the operator $(-\mathcal
 
 $$
 \|(-\mathcal{L}_{\text{lin}})^{-1}\|_{L^2_w \to H^1_w} = C_{\text{hypo}}
+
 $$
 
 **Critical note**: The kinetic operator $L^\dagger$ is **hypoelliptic**, not elliptic. It has second-order derivatives only in velocity variables, but Hörmander's condition (Lemma [](#lem-uniqueness-hormander-verification)) ensures that smoothness propagates to position variables through the coupling term $v \cdot \nabla_x$.
@@ -1609,6 +1736,7 @@ By Lemma [](#lem-uniqueness-scaling-hypoelliptic-constant), the constant $C_{\te
 
 $$
 C_{\text{hypo}} \sim \frac{1}{\sigma_v^2 \gamma}
+
 $$
 
 for sufficiently large $\sigma_v^2$. This scaling is a consequence of Villani's hypocoercivity theory, which shows that the coercivity constant for the kinetic operator is proportional to the velocity diffusion coefficient.
@@ -1619,16 +1747,19 @@ For any $\rho_1, \rho_2 \in \mathcal{P}_R$, by Lemma [](#lem-uniqueness-lipschit
 
 $$
 \|S[\rho_1] - S[\rho_2]\|_{L^2_w} \le L_S(R^*) \|\rho_1 - \rho_2\|_{H^1_w}
+
 $$
 
 $$
 \|B[\rho_1, m_d[\rho_1]] - B[\rho_2, m_d[\rho_2]]\|_{L^2_w} \le L_B(R^*) \|\rho_1 - \rho_2\|_{H^1_w}
+
 $$
 
 where both $L_S(R^*)$ and $L_B(R^*)$ grow at most linearly with $R^*$:
 
 $$
 L_S(R^*) \le C_S(1 + R^*), \quad L_B(R^*) \le C_B(1 + R^*)
+
 $$
 
 for some constants $C_S, C_B > 0$ independent of $R^*$.
@@ -1637,6 +1768,7 @@ Additionally, the killing term is linear with bounded coefficient:
 
 $$
 \|c(\cdot)\rho_1 - c(\cdot)\rho_2\|_{L^2_w} \le \|c\|_{L^\infty} \|\rho_1 - \rho_2\|_{L^2_w} \le L_c \|\rho_1 - \rho_2\|_{H^1_w}
+
 $$
 
 where $L_c = \|c\|_{L^\infty}$ (bounded since $c$ has compact support).
@@ -1647,6 +1779,7 @@ We must verify that $\mathcal{T}[\mathcal{P}_R] \subseteq \mathcal{P}_R$. For an
 
 $$
 \|\mathcal{T}[\rho]\|_{H^1_w} \le R^*
+
 $$
 
 Therefore, $\mathcal{T}$ maps the ball $\mathcal{P}_R$ into itself.
@@ -1655,18 +1788,21 @@ Therefore, $\mathcal{T}$ maps the ball $\mathcal{P}_R$ into itself.
 
 $$
 \|\mathcal{T}[\rho_1] - \mathcal{T}[\rho_2]\|_{H^1_w} \le C_{\text{hypo}} (L_S(R^*) + L_B(R^*) + L_c + C) \|\rho_1 - \rho_2\|_{H^1_w}
+
 $$
 
 Define the R-dependent contraction constant:
 
 $$
 \kappa(R^*) := C_{\text{hypo}} (L_S(R^*) + L_B(R^*) + L_c + C)
+
 $$
 
 Using the linear growth bounds and the scaling $C_{\text{hypo}} \sim 1/(\sigma_v^2 \gamma)$:
 
 $$
 \kappa(R^*) \le \frac{C_S(1 + R^*) + C_B(1 + R^*) + L_c + C}{\sigma_v^2 \gamma} = \frac{(C_S + C_B)(1 + R^*) + L_c + C}{\sigma_v^2 \gamma}
+
 $$
 
 **Step 7: Ensuring $\kappa(R^*) < 1$**
@@ -1675,12 +1811,14 @@ Since $R^*$ is determined by the fixed point boundedness lemma and depends on th
 
 $$
 \kappa(R^*) = \frac{(C_S + C_B)(1 + R^*) + L_c + C}{\sigma_v^2 \gamma} < 1
+
 $$
 
 by choosing the kinetic perturbation strength $\sigma_v^2$ sufficiently large:
 
 $$
 \sigma_v^2 > \frac{(C_S + C_B)(1 + R^*) + L_c + C}{\gamma}
+
 $$
 
 **Remark**: The key insight is that even though the Lipschitz constants grow with $R^*$, they grow at most linearly, while we can increase $\sigma_v^2$ arbitrarily. Therefore, for any fixed $R^*$, we can achieve contraction by choosing sufficiently strong kinetic diffusion.
@@ -1699,6 +1837,7 @@ The stationary coupled system:
 
 $$
 0 = L^\dagger \rho_0 - c(z)\rho_0 + S[\rho_0] + B[\rho_0, m_{d,\infty}]
+
 $$
 
 with equilibrium condition $k_{\text{killed}}[\rho_0] = \lambda_{\text{rev}} m_{d,\infty}$, has at most one solution in $\mathcal{P} \subset H^1_w(\Omega)$.
@@ -1745,6 +1884,7 @@ This uniqueness proof reveals a deep connection between the algorithm's design p
 
 $$
 \sigma_v^2 > \frac{(C_S + C_B)(1 + R^*) + L_c + C}{\gamma}
+
 $$
 
 is both a **mathematical necessity** (for uniqueness) and a **practical guideline** (for algorithm design). It quantifies the required balance between exploration (kinetic noise) and exploitation (cloning selection pressure).
@@ -1854,8 +1994,10 @@ Let $\{\mu_{N_k}\}$ be any subsequence of the marginal measures that converges w
 **Proof.**
 
 A measure $\mu_\infty$ with density $\rho_0$ is a weak solution to the stationary mean-field equation if, for any smooth, compactly supported test function $\phi \in C_c^\infty(\Omega)$, it satisfies $\int_\Omega (\mathcal{L}_{\text{FG}} \phi)(z) d\mu_\infty(z) = 0$, where $\mathcal{L}_{\text{FG}}$ is the generator of the mean-field process. This is equivalent to:
+
 $$
 \int_\Omega \left(L^\dagger \rho_0(z) - c(z)\rho_0(z) + S[\rho_0](z) + B[\rho_0, m_{d,\infty}](z)\right) \phi(z) \, dz = 0
+
 $$
 Our proof establishes this by starting with the stationarity condition for the finite-$N_k$ system and showing that it converges to this weak formulation as $k \to \infty$.
 
@@ -1961,8 +2103,10 @@ The convergence of the entire sequence $\{\mu_N\}$ to a unique limit is the form
 Let $\rho_0$ be the unique stationary solution to the mean-field PDE. Let $\phi: \Omega \to \mathbb{R}$ be any bounded, continuous function (a "macroscopic observable").
 
 Then, the average value of this observable in the N-particle quasi-stationary state converges to the expected value of the observable in the mean-field stationary state:
+
 $$
 \lim_{N \to \infty} \mathbb{E}_{\nu_N^{QSD}} \left[ \frac{1}{N} \sum_{i=1}^N \phi(z_i) \right] = \int_\Omega \phi(z) \rho_0(z) dz
+
 $$
 :::
 :::{prf:proof}
@@ -2002,6 +2146,7 @@ The convergence of marginals to the mean-field QSD holds in the stronger Wassers
 
 $$
 \lim_{N \to \infty} W_2(\mu_N, \mu_\infty) = 0
+
 $$
 
 where $W_2$ is the Wasserstein-2 (optimal transport) distance between probability measures.
@@ -2018,6 +2163,7 @@ By Theorem [](#thm-qsd-marginals-are-tight), the tightness proof established tha
 
 $$
 \sup_{N \ge 2} \mathbb{E}_{\mu_N}[\|z\|^2] = \sup_{N \ge 2} \int_\Omega (\|x\|^2 + \|v\|^2) \, d\mu_N(x,v) \le C'
+
 $$
 
 This uniform bound on second moments is a direct consequence of the N-uniform Foster-Lyapunov analysis in `06_convergence.md`.
@@ -2028,6 +2174,7 @@ The main result of Section 5 (combining Theorems 5.2, 5.4, and 5.5) established 
 
 $$
 \mu_N \rightharpoonup \mu_\infty \quad \text{as } N \to \infty
+
 $$
 
 **Step 3: Apply the Metrization Theorem**
@@ -2044,6 +2191,7 @@ Then $W_2(\nu_n, \nu) \to 0$.
 
 $$
 \lim_{N \to \infty} W_2(\mu_N, \mu_\infty) = 0
+
 $$
 
 **Step 4: Physical Interpretation**

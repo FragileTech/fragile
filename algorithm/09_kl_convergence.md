@@ -1952,7 +1952,7 @@ $$
 
 ### 7.1. Perturbation of the LSI Constant
 
-For the adaptive model in [07_adaptative_gas.md](07_adaptative_gas.md), the generator includes:
+For the adaptive model in [11_adaptative_gas.md](11_adaptative_gas.md), the generator includes:
 - Adaptive force $\epsilon_F \nabla V_{\text{fit}}[f_k, \rho]$
 - Viscous coupling with rate $\nu$
 - Anisotropic diffusion $\Sigma_{\text{reg}}(x, S)$
@@ -1975,7 +1975,7 @@ $$
 :::
 
 :::{prf:proof}
-Standard perturbation theory for functional inequalities. The key is that the adaptive terms are **bounded** (see Axiom 3.5 in [07_adaptative_gas.md](07_adaptative_gas.md)):
+Standard perturbation theory for functional inequalities. The key is that the adaptive terms are **bounded** (see Axiom 3.5 in [11_adaptative_gas.md](11_adaptative_gas.md)):
 
 $$
 \|\mathbf{F}_{\text{adapt}}\| \le F_{\text{adapt,max}}(\rho)
@@ -2005,7 +2005,7 @@ $$
 
 :::
 
-This matches the critical threshold derived via perturbation analysis in Chapter 7 of [07_adaptative_gas.md](07_adaptative_gas.md), providing an **independent verification** of the stability condition.
+This matches the critical threshold derived via perturbation analysis in Chapter 7 of [11_adaptative_gas.md](11_adaptative_gas.md), providing an **independent verification** of the stability condition.
 
 ---
 
@@ -2124,7 +2124,7 @@ This establishes the Euclidean Gas as a **provably convergent** information-geom
 - Information-geometric structure compatible with natural gradient methods
 - Robustness to adaptive perturbations (Section 7)
 
-The framework extends to the adaptive model in [07_adaptative_gas.md](07_adaptative_gas.md) via perturbation theory, with ρ-dependent critical thresholds.
+The framework extends to the adaptive model in [11_adaptative_gas.md](11_adaptative_gas.md) via perturbation theory, with ρ-dependent critical thresholds.
 
 ### 9.6. N-Uniform LSI: Scalability to Large Swarms
 
@@ -4196,7 +4196,7 @@ $$
 3. **Existing composition theorem** (main document Section 6)
 
 **Relationship to other proofs**:
-- This proof is **complementary** to the displacement convexity proof in Section 5.2 of [10_kl_convergence.md](10_kl_convergence.md)
+- This proof is **complementary** to the displacement convexity proof in Section 5.2 of [09_kl_convergence.md](09_kl_convergence.md)
 - It provides **explicit constants** from generator parameters
 - Both proofs rely on log-concavity (Axiom 3.5) but through different machinery
 
@@ -4207,7 +4207,7 @@ $$
 :::{prf:theorem} Exponential KL-Convergence via Mean-Field Analysis
 :label: thm-meanfield-kl-convergence-hybrid
 
-**Hypotheses**: Same as Theorem {prf:ref}`thm-main-kl-convergence` in [10_kl_convergence.md](10_kl_convergence.md):
+**Hypotheses**: Same as Theorem {prf:ref}`thm-main-kl-convergence` in [09_kl_convergence.md](09_kl_convergence.md):
 
 1. $\pi_{\text{QSD}}$ is log-concave (Axiom 3.5)
 2. Parameters satisfy Foster-Lyapunov conditions
@@ -4265,7 +4265,7 @@ $$
 
 with $\gamma$ the friction coefficient and $\kappa_{\text{conf}}$ the convexity constant of the confining potential.
 
-**Proof**: See Theorem 3.4 (lines 495-553) and Section 2 (lines 200-494) of [10_kl_convergence.md](10_kl_convergence.md).
+**Proof**: See Theorem 3.4 (lines 495-553) and Section 2 (lines 200-494) of [09_kl_convergence.md](09_kl_convergence.md).
 
 This result uses Villani's hypocoercivity framework with explicit auxiliary metric and block matrix calculations.
 :::
@@ -4475,7 +4475,7 @@ $$
 D_{\text{KL}}(\Psi_{\text{total}} \# \mu \| \pi) \leq [1 - \tau(\alpha_1 + \alpha_2)] D_{\text{KL}}(\mu \| \pi) + C_1 + C_2 + O(\tau^2)
 $$
 
-**Proof**: See Theorem 6.3 (Composition Theorem, lines 1148-1215) of [10_kl_convergence.md](10_kl_convergence.md).
+**Proof**: See Theorem 6.3 (Composition Theorem, lines 1148-1215) of [09_kl_convergence.md](09_kl_convergence.md).
 
 This uses iterative application of the HWI inequality and contraction properties.
 :::
@@ -4677,7 +4677,7 @@ This proof is **complementary** to the displacement convexity approach, providin
 **Key feature**: Unlike the hybrid proof ([10_R_meanfield_lsi_hybrid.md](10_R_meanfield_lsi_hybrid.md)), this document is **fully standalone** - all components are proven from first principles using generator analysis.
 
 **Relationship to other proofs**:
-- **Alternative to**: Displacement convexity proof (Section 5.2 of [10_kl_convergence.md](10_kl_convergence.md))
+- **Alternative to**: Displacement convexity proof (Section 5.2 of [09_kl_convergence.md](09_kl_convergence.md))
 - **Complementary perspective**: Infinitesimal/analytic vs. global/geometric
 - **Unique value**: Complete mean-field PDE treatment with explicit constants
 
@@ -4894,7 +4894,7 @@ $\square$
 
 :::
 
-**Remark**: This is a condensed version of the full hypocoercivity argument. The complete proof with explicit matrix calculations is in Section 2-3 of [10_kl_convergence.md](10_kl_convergence.md).
+**Remark**: This is a condensed version of the full hypocoercivity argument. The complete proof with explicit matrix calculations is in Section 2-3 of [09_kl_convergence.md](09_kl_convergence.md).
 
 ---
 
@@ -7362,7 +7362,7 @@ where $\pi_{\text{coarse}}$ is the coarse-grained equilibrium on basins.
 
 ### 6.4. Adaptive Mechanisms and Multimodality
 
-**Question**: Does the **Adaptive Gas** (Chapter 7 of [07_adaptative_gas.md](../07_adaptative_gas.md)) with viscous coupling and adaptive forces **improve** convergence in non-convex settings?
+**Question**: Does the **Adaptive Gas** (Chapter 7 of [11_adaptative_gas.md](../07_adaptative_gas.md)) with viscous coupling and adaptive forces **improve** convergence in non-convex settings?
 
 **Hypothesis**: **Yes**, because:
 1. **Viscous coupling** helps particles **collectively traverse barriers** (swarm effect)
@@ -7373,7 +7373,7 @@ where $\pi_{\text{coarse}}$ is the coarse-grained equilibrium on basins.
 - **State-dependent diffusion** ($\Sigma_{\text{reg}}(x, S)$)
 
 **Possible approach**:
-- Treat adaptive terms as **bounded perturbations** of the backbone (as in [07_adaptative_gas.md](../07_adaptative_gas.md), Chapter 6)
+- Treat adaptive terms as **bounded perturbations** of the backbone (as in [11_adaptative_gas.md](../07_adaptative_gas.md), Chapter 6)
 - Use **perturbation theory for hypocoercivity** (Saloff-Coste 1992, Holley-Stroock 1987)
 - Show the perturbed system retains exponential convergence with **ρ-dependent constants**
 
@@ -7497,7 +7497,7 @@ expressed directly in terms of physical parameters (hypocoercive mixing minus me
 **Fragile Framework:**
 - [03_cloning.md](../03_cloning.md): The Keystone Principle
 - [04_convergence.md](../04_convergence.md): Hypocoercivity and Convergence of the Euclidean Gas
-- [07_adaptative_gas.md](../07_adaptative_gas.md): The Adaptive Viscous Fluid Model
+- [11_adaptative_gas.md](../07_adaptative_gas.md): The Adaptive Viscous Fluid Model
 - [10_kl_convergence_unification.md](10_kl_convergence_unification.md): Unified KL-Convergence Proof
 
 ---
@@ -8557,7 +8557,7 @@ This document builds on results from:
 - Used synergistic Lyapunov function
 - **Limitation:** Total variation doesn't imply concentration
 
-**Phase 2: Displacement Convexity (10_kl_convergence.md - Part II of this document)**
+**Phase 2: Displacement Convexity (09_kl_convergence.md - Part II of this document)**
 - First KL-convergence proof
 - Used optimal transport + HWI inequality
 - **Achievement:** Exponential KL-convergence under log-concavity

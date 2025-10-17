@@ -6,21 +6,156 @@
 
 **Relationship to Main Results**:
 - The Foster-Lyapunov convergence proof in [04_convergence.md](04_convergence.md) (finite-N Euclidean Gas) is **rigorous and complete**
-- The perturbation theory in [07_adaptative_gas.md](07_adaptative_gas.md) extends convergence to the adaptive model
+- The perturbation theory in [11_adaptative_gas.md](11_adaptative_gas.md) extends convergence to the adaptive model
 - The propagation of chaos result in [06_propagation_chaos.md](06_propagation_chaos.md) establishes the mean-field limit
-- The discrete-time LSI in [10_kl_convergence.md](10_kl_convergence.md) proves KL-convergence for finite-N
+- The discrete-time LSI in [09_kl_convergence.md](09_kl_convergence.md) proves KL-convergence for finite-N
 - This document explores **extending** KL-convergence to the **mean-field regime** ($N \to \infty$)
 
 ---
 
-## 0. Executive Summary
+## 0. TLDR
 
-### 0.1. Current State and Goal
+**High-Level Summary**: We prove that a large system of interacting particles, described by a mean-field McKean-Vlasov PDE, converges exponentially toward a stable quasi-stationary distribution. Convergence occurs when diffusion-driven stabilization dominates the destabilizing effects of boundary absorption and mean-field feedback. The convergence rate and critical parameter threshold are given by explicit formulas.
+
+**Exponential KL-Convergence in the Mean-Field Limit (Technical)**: The McKean-Vlasov-Fokker-Planck PDE governing the mean-field Euclidean Gas converges exponentially to a unique Quasi-Stationary Distribution (QSD) with explicit rate $\alpha_{\text{net}} = \lambda_{\text{LSI}} \sigma^2 - 2\lambda_{\text{LSI}}C_{\text{Fisher}}^{\text{coup}} - C_{\text{KL}}^{\text{coup}} - A_{\text{jump}}$, provided diffusion strength exceeds a critical threshold. Convergence is to a **residual neighborhood** of the QSD with radius $C_{\text{offset}}/\alpha_{\text{net}}$; true convergence to the QSD occurs in local basins where higher-order remainder terms become negligible.
+
+**Multi-Stage Proof Architecture**: The proof required establishing five foundational components: (1) the mean-field revival operator is KL-expansive with bounded entropy production, (2) the QSD satisfies six regularity properties (R1-R6) enabling a Log-Sobolev inequality, (3) the full generator entropy production separates into kinetic dissipation, mean-field coupling, and jump expansion terms, (4) explicit hypocoercivity constants relate Fisher information to KL-divergence via the LSI, and (5) parameter-dependent formulas connect the mean-field rate to finite-N convergence with $\alpha_N = \alpha_{\text{net}} + O(1/N) + O(\tau)$.
+
+**Kinetic Dominance Condition (Sufficient Criterion)**: The system converges exponentially if diffusion strength exceeds a critical threshold: $\sigma^2 > \sigma_{\text{crit}}^2 = (2C_{\text{Fisher}}^{\text{coup}} + C_{\text{KL}}^{\text{coup}}/\lambda_{\text{LSI}} + A_{\text{jump}}/\lambda_{\text{LSI}})/\lambda_{\text{LSI}}$. This condition has clear physical interpretation: Langevin diffusion must overcome both the information loss from boundary killing and the perturbative effects of mean-field feedback coupling. Necessity of this condition remains an open question.
+
+**Explicit Constants and Numerical Verifiability**: Every constant ($\lambda_{\text{LSI}}$, $C_{\text{Fisher}}^{\text{coup}}$, $C_{\text{KL}}^{\text{coup}}$, $A_{\text{jump}}$, $B_{\text{jump}}$, $C_0^{\text{coup}}$) has an explicit formula in terms of the QSD's regularity bounds and system parameters. The convergence rate formula is directly computable from simulation data via QSD property estimation, making all theoretical predictions testable.
+
+## 1. Introduction
+
+### 1.1. Goal and Scope
+
+The goal of this document is to prove that the **mean-field Euclidean Gas** converges exponentially to a residual neighborhood of its Quasi-Stationary Distribution (QSD) in **KL-divergence**, with an **explicit convergence rate** expressed in terms of fundamental system parameters. The central mathematical object is the McKean-Vlasov-Fokker-Planck PDE:
+
+$$
+\frac{\partial \rho}{\partial t} = \mathcal{L}[\rho] = \mathcal{L}_{\text{kin}}[\rho] + \mathcal{L}_{\text{jump}}[\rho]
+$$
+
+where $\mathcal{L}_{\text{kin}}$ governs Langevin dynamics (friction + diffusion) and $\mathcal{L}_{\text{jump}}$ encodes state-dependent killing and proportional revival from absorbed mass. This PDE emerges as the $N \to \infty$ limit of the finite-particle system proven convergent in document `10_kl_convergence.md` (see {prf:ref}`thm-main-kl-convergence` for the finite-N theorem).
+
+We establish the main result: if the **Kinetic Dominance Condition** holds—meaning the kinetic operator's hypocoercive dissipation exceeds the jump operator's KL-expansive effects—then for any initial density $\rho_0$ with finite $D_{\text{KL}}(\rho_0 \| \rho_\infty) < \infty$, the solution satisfies:
+
+$$
+D_{\text{KL}}(\rho_t \| \rho_\infty) \le e^{-\alpha_{\text{net}} t} D_{\text{KL}}(\rho_0 \| \rho_\infty) + \frac{C_{\text{offset}}}{\alpha_{\text{net}}} (1 - e^{-\alpha_{\text{net}} t})
+$$
+
+The convergence rate $\alpha_{\text{net}}$ and offset $C_{\text{offset}}$ are given by **explicit formulas** depending on: (1) the Log-Sobolev constant $\lambda_{\text{LSI}}$ of the QSD, (2) coupling bounds from mean-field feedback, and (3) entropy production from killing/revival jumps.
+
+**Important caveat**: The system converges exponentially to a **residual neighborhood** with KL-divergence radius $C_{\text{offset}}/\alpha_{\text{net}}$, not necessarily to the QSD itself. True convergence to the QSD (zero residual) requires $C_{\text{offset}} \to 0$, which occurs in local basins near equilibrium where higher-order remainder terms become negligible. The present analysis establishes the structural form and explicit rate formula; extending to global, arbitrary-data convergence remains an open problem.
+
+**Scope and relationships**: This document extends the finite-N KL-convergence result (document `10_kl_convergence.md`) to the mean-field regime and complements the TV-convergence proofs in documents `04_convergence.md` (kinetic operator Foster-Lyapunov) and `03_cloning.md` (cloning operator Keystone Lemma). The mean-field limit itself was established in `06_propagation_chaos.md` with quantitative Wasserstein-2 bounds. Together, these results form a complete convergence theory spanning discrete particles, finite systems, and continuum limits.
+
+### 1.2. The Mean-Field Regime and KL-Convergence
+
+Why prove KL-convergence in the mean-field limit when we already have finite-N results? The mean-field PDE represents the **macroscopic emergent law** as $N \to \infty$, revealing collective dynamics invisible at finite particle counts. KL-divergence is the natural metric for McKean-Vlasov systems: it controls the large deviations principle (deviations from $\rho_\infty$ are exponentially suppressed $\sim e^{-N \cdot D_{\text{KL}}}$), provides the information-theoretic measure of distinguishability, and enables functional analytic techniques (Log-Sobolev inequalities, hypocoercivity theory) unavailable for discrete systems.
+
+The mean-field regime introduces unique challenges beyond finite-N: (1) the generator $\mathcal{L}[\rho]$ depends nonlinearly on the solution $\rho$ itself (McKean-Vlasov coupling), (2) functional inequalities like the LSI must be proven for the infinite-dimensional PDE, not just inherited from finite-N, (3) the revival operator's KL-properties in the limit require careful analysis of measure-theoretic resampling, and (4) QSD conditioning—living walkers conditioned on non-extinction—must be well-defined for the continuum.
+
+This document resolves all four challenges through a multi-stage proof strategy, culminating in an explicit convergence rate formula $\alpha_{\text{net}}$ that depends on the interplay between **hypocoercive dissipation** from velocity diffusion and **KL-expansion** from absorbing boundary jumps.
+
+### 1.3. Overview of the Proof Strategy and Document Structure
+
+The proof is organized as a **five-stage research program**, where each stage establishes a critical prerequisite component. The structure reflects the natural dependencies: we cannot prove LSI convergence without first knowing the revival operator's KL-behavior, and we cannot bound coupling terms without QSD regularity properties.
+
+The diagram below illustrates the logical architecture. Stages 0-3 build the mathematical infrastructure (revival operator analysis, QSD regularity, entropy production equation, hypocoercivity constants, parameter formulas), while Stage 4 assembles these components into the complete convergence proof.
+
+```mermaid
+graph TD
+    subgraph "Stage 0: Revival Operator KL-Properties"
+        A["<b>Revival Operator Definition</b><br>Formal definition of killing + proportional revival"]:::stateStyle
+        B["<b>Direct Proof Attempts</b><br>Data processing inequality insufficient"]:::lemmaStyle
+        C["<b>Counterexample Search</b><br>Revival is KL-expansive (verified)"]:::theoremStyle
+        D["<b>Bounded Expansion</b><br>Joint jump operator entropy production bound"]:::theoremStyle
+        A --> B --> C --> D
+    end
+
+    subgraph "Stage 0.5: QSD Regularity"
+        E["<b>QSD Existence</b><br>Nonlinear fixed-point + stability"]:::theoremStyle
+        F["<b>Smoothness & Positivity</b><br>Hörmander hypoellipticity"]:::theoremStyle
+        G["<b>Bounded Log-Derivatives</b><br>Bernstein method + Lyapunov drift"]:::theoremStyle
+        H["<b>Exponential Concentration</b><br>Heavy-tail bounds"]:::theoremStyle
+        I["<b>Properties R1-R6 Summary</b><br>Sufficient for LSI"]:::theoremStyle
+        E --> F --> G --> H --> I
+    end
+
+    subgraph "Stage 1: Entropy Production Analysis"
+        J["<b>Full Generator Equation</b><br>Separation: kinetic + coupling + jump"]:::stateStyle
+        K["<b>Integration by Parts</b><br>Identify dissipation vs expansion terms"]:::lemmaStyle
+        L["<b>Stationarity Constraint</b><br>Use $\mathcal{L}(\rho_\infty) = 0$ to relate terms"]:::lemmaStyle
+        M["<b>Structural Form</b><br>$\frac{d}{dt}D_{KL} = -\frac{\sigma^2}{2}I_v + R_{coup} + I_{jump}$"]:::theoremStyle
+        J --> K --> L --> M
+    end
+
+    subgraph "Stage 2: Hypocoercivity Constants"
+        N["<b>Modified Fisher Information</b><br>Define auxiliary functional"]:::stateStyle
+        O["<b>Log-Sobolev Inequality</b><br>Prove LSI for QSD with $\lambda_{LSI}$"]:::theoremStyle
+        P["<b>Coupling Bounds</b><br>Explicit $C_{Fisher}^{coup}$, $C_{KL}^{coup}$"]:::lemmaStyle
+        Q["<b>Jump Expansion Bound</b><br>$A_{jump}$, $B_{jump}$ from Stage 0"]:::lemmaStyle
+        R["<b>Grönwall Assembly</b><br>Convergence rate formula"]:::theoremStyle
+        N --> O
+        O --> P
+        O --> Q
+        P --> R
+        Q --> R
+    end
+
+    subgraph "Stage 3: Parameter Dependence"
+        S["<b>Mean-Field Constants</b><br>Express in terms of parameters"]:::stateStyle
+        T["<b>Convergence Rate Formula</b><br>$\alpha_{net}(\sigma, \gamma, ...)$"]:::theoremStyle
+        U["<b>Parameter Sensitivity</b><br>Critical $\sigma_{crit}^2$ threshold"]:::lemmaStyle
+        V["<b>Discrete-to-Continuous</b><br>$\alpha_N = \alpha_{net} + O(1/N) + O(\tau)$"]:::theoremStyle
+        S --> T --> U --> V
+    end
+
+    subgraph "Stage 4: Main Theorem"
+        W["<b>Complete Proof</b><br>Assemble Stages 0-2 components"]:::theoremStyle
+        X["<b>Physical Interpretation</b><br>Hypocoercivity vs KL-expansion"]:::stateStyle
+        W --> X
+    end
+
+    D --"Provides A_jump bound"--> Q
+    I --"Enables LSI"--> O
+    M --"Structure for"--> R
+    V --"Shows finite-N rate consistency"--> W
+
+    classDef stateStyle fill:#4a5f8c,stroke:#8fa4d4,stroke-width:2px,color:#e8eaf6
+    classDef axiomStyle fill:#8c6239,stroke:#d4a574,stroke-width:2px,stroke-dasharray: 5 5,color:#f4e8d8
+    classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
+    classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
+```
+
+*Note: The diagram represents the logical structure. Actual section numbers in the current document may differ and are subject to change during revision.*
+
+**Document roadmap by stage**:
+
+- **Stage 0**: Analyzes the mean-field revival operator, proves it is KL-expansive (not contractive), and establishes bounded entropy production. This critical "negative result" is what necessitates kinetic dominance.
+
+- **Stage 0.5**: Establishes six regularity properties (R1-R6) for the QSD: existence/uniqueness, smoothness, positivity, bounded spatial/velocity log-gradients, and exponential concentration. These properties are **sufficient** for the QSD to admit a Log-Sobolev inequality.
+
+- **Stage 1**: Derives the full generator entropy production equation, carefully separating contributions from kinetic dissipation, mean-field coupling, and jump expansion. Identifies which terms contribute to convergence versus obstruct it.
+
+- **Stage 2**: Proves the Log-Sobolev inequality for the QSD, derives explicit bounds for all coupling constants, bounds the jump operator expansion using Stage 0 results, and assembles the Grönwall inequality yielding the convergence rate formula.
+
+- **Stage 3**: Expresses all mean-field constants in terms of simulation parameters, provides parameter tuning strategies, analyzes the critical diffusion threshold $\sigma_{\text{crit}}^2$, and connects to finite-N convergence with explicit $O(1/N) + O(\tau)$ corrections.
+
+- **Stage 4**: States and proves the main theorem by combining all previous components, interprets the Kinetic Dominance Condition physically, and summarizes the document's achievements.
+
+The proof strategy's key innovation is recognizing that the revival operator's KL-expansive nature is not a flaw to be eliminated, but rather a **quantifiable expansion rate** that must be overcome by kinetic dissipation. This leads to the explicit condition $\lambda_{\text{LSI}} \sigma^2 > 2\lambda_{\text{LSI}}C_{\text{Fisher}}^{\text{coup}} + C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}$, which is both mathematically precise and physically interpretable.
+
+---
+
+## 2. Executive Summary
+
+### 2.1. Current State and Goal
 
 **What we have proven (rigorous)**:
-1.  **Finite-N**: KL-divergence convergence for N-particle system ([10_kl_convergence.md](10_kl_convergence.md))
+1.  **Finite-N**: KL-divergence convergence for N-particle system ([09_kl_convergence.md](09_kl_convergence.md))
 2.  **Mean-field limit**: Weak convergence of marginals $\mu_N \to \rho_\infty$ ([06_propagation_chaos.md](06_propagation_chaos.md))
-3.  **Foster-Lyapunov**: TV-convergence for both finite-N and mean-field ([04_convergence.md](04_convergence.md), [07_adaptative_gas.md](07_adaptative_gas.md))
+3.  **Foster-Lyapunov**: TV-convergence for both finite-N and mean-field ([04_convergence.md](04_convergence.md), [11_adaptative_gas.md](11_adaptative_gas.md))
 
 **What we seek**: Prove exponential KL-convergence **in the mean-field regime**:
 
@@ -59,7 +194,7 @@ The mean-field regime introduces **additional** barriers beyond the finite-N cas
 
 ### 1.1. Beyond Finite-N Results
 
-The finite-N KL-convergence in [10_kl_convergence.md](10_kl_convergence.md) is already strong. Why pursue the mean-field extension?
+The finite-N KL-convergence in [09_kl_convergence.md](09_kl_convergence.md) is already strong. Why pursue the mean-field extension?
 
 **Scientific Reasons**:
 1. **Macroscopic law**: Mean-field is the "true" emergent dynamics as $N \to \infty$
@@ -114,7 +249,7 @@ After consultation with Gemini (see conversation in task history), here is the c
 
 **Why this has potential**:
 -  Only approach that **naturally handles all six technical barriers** (hypoellipticity, non-reversibility, McKean-Vlasov, nonlocality, jumps, adaptive)
--  Builds on proven finite-N result ([10_kl_convergence.md](10_kl_convergence.md))
+-  Builds on proven finite-N result ([09_kl_convergence.md](09_kl_convergence.md))
 -  Clear milestones and decision points
 
 **Prerequisites**:
@@ -134,7 +269,7 @@ After consultation with Gemini (see conversation in task history), here is the c
 
 **Why this is essential**:
 -  Final stage extending backbone to full adaptive system
--  Mirrors structure of existing finite-N proof ([07_adaptative_gas.md](07_adaptative_gas.md))
+-  Mirrors structure of existing finite-N proof ([11_adaptative_gas.md](11_adaptative_gas.md))
 -  Standard technique (Kato perturbation)
 
 **Prerequisites**:
@@ -222,7 +357,7 @@ This document consolidates ALL mathematical results from the mean-field converge
 
 **Criticality**: **GO/NO-GO** - The entire three-stage research program (Stages 1-3) depends on the outcome of this investigation. As identified in Gemini's review, proceeding without resolving this conjecture first would be "an unacceptable research risk."
 
-- [10_kl_convergence.md](10_kl_convergence.md): Proves finite-N cloning operator preserves LSI ✅
+- [09_kl_convergence.md](09_kl_convergence.md): Proves finite-N cloning operator preserves LSI ✅
 - [06_propagation_chaos.md](06_propagation_chaos.md): Establishes mean-field limit of QSD ✅
 - **This document**: Investigates whether LSI-preservation survives N→∞ limit ❓
 
@@ -275,7 +410,7 @@ This document pursues four parallel tracks:
 **Intuitive arguments suggesting property holds**:
 1. Revival is proportional resampling from current alive distribution
 2. Analogous to Bayesian conditioning (which is KL-contractive)
-3. Finite-N cloning provably preserves LSI ([10_kl_convergence.md](10_kl_convergence.md))
+3. Finite-N cloning provably preserves LSI ([09_kl_convergence.md](09_kl_convergence.md))
 
 **Concerns/Red flags**:
 1. Mean-field limit can break properties that hold at finite-N
@@ -389,7 +524,7 @@ If $\mathcal{J}$ is KL-expansive, the entire strategy fails.
 
 ### 2.1. What We Know from Finite-N
 
-From [10_kl_convergence.md](10_kl_convergence.md), the finite-N cloning operator $\Psi_{\text{clone}}$ satisfies:
+From [09_kl_convergence.md](09_kl_convergence.md), the finite-N cloning operator $\Psi_{\text{clone}}$ satisfies:
 
 :::{prf:theorem} Finite-N LSI Preservation (Proven)
 :label: thm-finite-n-lsi-preservation
@@ -410,7 +545,7 @@ where $C'_{\text{LSI}} = C_{\text{LSI}} \cdot (1 + O(\delta^2))$ for cloning noi
 
 **Key mechanism**: The cloning operator introduces small Gaussian noise ($\delta \xi$) when copying walkers, which regularizes the Fisher information and prevents LSI constant blow-up.
 
-**Reference**: [10_kl_convergence.md](10_kl_convergence.md), Section 4, Theorem 4.3.
+**Reference**: [09_kl_convergence.md](09_kl_convergence.md), Section 4, Theorem 4.3.
 :::
 
 ### 2.2. The N→∞ Limit: What Changes?
@@ -914,7 +1049,7 @@ Revival alone is KL-expansive: TRUE ✓
 **Revised roadmap**:
 - ✅ Analyze full generator $\mathcal{L} = \mathcal{L}_{\text{kin}} + \mathcal{L}_{\text{jump}}$
 - ✅ Prove hypocoercive dissipation dominates jump expansion
-- ✅ Mirrors finite-N proof structure ([10_kl_convergence.md](10_kl_convergence.md))
+- ✅ Mirrors finite-N proof structure ([09_kl_convergence.md](09_kl_convergence.md))
 
 **Success probability**: 20-30%
 
@@ -2433,7 +2568,7 @@ When we compute $\int \mathcal{L}_{\text{kin}}(\rho) \log(\rho/\rho_\infty)$ and
 4. Identify dissipation terms (from kinetic diffusion) and expansion terms (from jumps)
 5. Show dissipation > expansion
 
-This mirrors the **finite-N proof** in [10_kl_convergence.md](10_kl_convergence.md) more closely.
+This mirrors the **finite-N proof** in [09_kl_convergence.md](09_kl_convergence.md) more closely.
 
 ---
 
@@ -4031,7 +4166,7 @@ The finite-N proof in [../kl_convergence/10_kl_convergence.md](../kl_convergence
 
 The explicit constants here complement the finite-N analysis:
 
-**Finite-N** ([10_kl_convergence.md](../kl_convergence/10_kl_convergence.md)):
+**Finite-N** ([09_kl_convergence.md](../kl_convergence/10_kl_convergence.md)):
 - Discrete-time operators $\Psi_{\text{kin}}, \Psi_{\text{clone}}$
 - Hypocoercive Lyapunov $\mathcal{E}_\theta = D_{\text{KL}} + \theta V$
 - LSI preserved by cloning (Lemma 5.2)
@@ -4105,7 +4240,7 @@ $$
 S_{t+1} = (\Psi_{\text{kin}}(\tau) \circ \Psi_{\text{clone}})(S_t)
 $$
 
-converges at rate $\alpha_N$ (from [10_kl_convergence.md](../10_kl_convergence/10_kl_convergence.md)).
+converges at rate $\alpha_N$ (from [09_kl_convergence.md](../10_kl_convergence/10_kl_convergence.md)).
 
 **Mean-Field (Continuous)**: The N→∞ limit with PDE
 
@@ -4675,7 +4810,7 @@ where $C_N$ is a constant depending on the cloning mechanism.
 
 **Source of correction**: Cloning introduces $O(1/N)$ fluctuations in the swarm distribution, slowing convergence.
 
-**From [10_kl_convergence.md](../10_kl_convergence/10_kl_convergence.md), Section 5**:
+**From [09_kl_convergence.md](../10_kl_convergence/10_kl_convergence.md), Section 5**:
 
 $$
 C_N \approx \frac{c_{\text{clone}}}{\delta^2}
@@ -5481,7 +5616,7 @@ Q.E.D.
 
 This theorem completes the research program outlined at the beginning of this document (Section 0). We have now rigorously proven:
 
-1. **Finite-N regime**: KL-convergence for the N-particle Euclidean Gas ([10_kl_convergence.md](10_kl_convergence.md))
+1. **Finite-N regime**: KL-convergence for the N-particle Euclidean Gas ([09_kl_convergence.md](09_kl_convergence.md))
 2. **Mean-field regime**: KL-convergence for the McKean-Vlasov PDE (this theorem)
 3. **Connection**: The mean-field rate $\alpha_{\text{net}}$ is the $N \to \infty$ limit of the finite-N rate $\alpha_N$ (Stage 3)
 
@@ -5523,7 +5658,7 @@ $$
 \lim_{N \to \infty, \tau \to 0} \alpha_N = \alpha_{\text{net}} = \delta
 $$
 
-The **N-uniform LSI** proven in [10_kl_convergence.md](10_kl_convergence.md) guarantees that $\alpha_N$ is bounded below **uniformly in N**. This theorem proves that $\alpha_N \to \alpha_{\text{net}}$, completing the picture:
+The **N-uniform LSI** proven in [09_kl_convergence.md](09_kl_convergence.md) guarantees that $\alpha_N$ is bounded below **uniformly in N**. This theorem proves that $\alpha_N \to \alpha_{\text{net}}$, completing the picture:
 
 $$
 \inf_N \alpha_N > 0 \quad \text{and} \quad \alpha_N \to \alpha_{\text{net}} \quad \text{as } N \to \infty
@@ -5698,7 +5833,7 @@ The LSI for the QSD (Theorem `thm-lsi-qsd`) is the **key technical tool** that c
 
 ### 2.1. Finite-N Discrete-Time LSI
 
-**Document**: [10_kl_convergence.md](10_kl_convergence.md)
+**Document**: [09_kl_convergence.md](09_kl_convergence.md)
 
 **Result**: N-uniform Log-Sobolev Inequality for the N-particle system with discrete-time operators $\Psi_{\text{clone}} \circ \Psi_{\text{kin}}(\tau)$.
 
@@ -5712,7 +5847,7 @@ $$
 
 ### 2.2. Adaptive Gas Extension
 
-**Document**: [07_adaptative_gas.md](07_adaptative_gas.md)
+**Document**: [11_adaptative_gas.md](11_adaptative_gas.md)
 
 **Result**: Conjectured LSI for the **Adaptive Viscous Fluid Gas** with three additional mechanisms:
 1. Adaptive force from mean-field fitness potential
@@ -5724,11 +5859,11 @@ $$
 - Reducing $A_{\text{jump}}$ (viscous coupling provides collective response to killing)
 - Increasing $\lambda_{\text{LSI}}$ (Hessian diffusion adapts noise to landscape curvature)
 
-**Status after this theorem**: The conjecture in [07_adaptative_gas.md](07_adaptative_gas.md) (Section 8.3, `conj-lsi-adaptive-gas`) can now be **upgraded to a theorem** by perturbation theory, following the same structure as the finite-N proof in [12_adaptive_gas_lsi_proof.md](12_adaptive_gas_lsi_proof.md).
+**Status after this theorem**: The conjecture in [11_adaptative_gas.md](11_adaptative_gas.md) (Section 8.3, `conj-lsi-adaptive-gas`) can now be **upgraded to a theorem** by perturbation theory, following the same structure as the finite-N proof in [15_adaptive_gas_lsi_proof.md](15_adaptive_gas_lsi_proof.md).
 
 ### 2.3. Propagation of Chaos
 
-**Document**: [06_mean_field.md](06_mean_field.md), [08_propagation_chaos.md](08_propagation_chaos.md)
+**Document**: [07_mean_field.md](07_mean_field.md), [08_propagation_chaos.md](08_propagation_chaos.md)
 
 **Result**: Weak convergence of the N-particle marginals $\mu_N^{(k)}$ to the k-fold product $\rho_\infty^{\otimes k}$ as $N \to \infty$.
 
@@ -5741,7 +5876,7 @@ $$
 
 ### 2.4. Foster-Lyapunov Total Variation Convergence
 
-**Document**: [04_convergence.md](04_convergence.md) (Euclidean Gas), [07_adaptative_gas.md](07_adaptative_gas.md) (Adaptive Gas)
+**Document**: [04_convergence.md](04_convergence.md) (Euclidean Gas), [11_adaptative_gas.md](11_adaptative_gas.md) (Adaptive Gas)
 
 **Result**: Exponential convergence in **total variation** distance using a Foster-Lyapunov function $V(x, v) = |v|^2 + \Phi(x)$.
 

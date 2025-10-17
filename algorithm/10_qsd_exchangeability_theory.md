@@ -181,7 +181,7 @@ $$
 where the LSI constant $C_{\text{LSI}}(\rho)$ is **independent of $N$** for all $N \geq 2$.
 :::
 
-**Proof approach** (detailed in [12_adaptive_gas_lsi_proof.md](12_adaptive_gas_lsi_proof.md)):
+**Proof approach** (detailed in [15_adaptive_gas_lsi_proof.md](15_adaptive_gas_lsi_proof.md)):
 
 The proof does NOT use tensorization (which requires product structure). Instead:
 
@@ -264,16 +264,16 @@ This follows by taking the $N \to \infty$ limit in the finite-N LSI, using:
 
 **QSD existence and uniqueness**:
 - [05_convergence.md](05_convergence.md) - Foster-Lyapunov drift conditions
-- [07_adaptative_gas.md](07_adaptative_gas.md) - Adaptive perturbation theory
+- [11_adaptative_gas.md](11_adaptative_gas.md) - Adaptive perturbation theory
 
 **Mean-field limit**:
-- [06_mean_field.md](06_mean_field.md) - McKean-Vlasov PDE derivation
+- [07_mean_field.md](07_mean_field.md) - McKean-Vlasov PDE derivation
 - [08_propagation_chaos.md](08_propagation_chaos.md) - Wasserstein convergence
 
 **Functional inequalities**:
-- [10_kl_convergence.md](10_kl_convergence.md) - Finite-N LSI
-- [11_convergence_mean_field.md](11_convergence_mean_field.md) - Mean-field entropy production
-- [12_adaptive_gas_lsi_proof.md](12_adaptive_gas_lsi_proof.md) - Complete LSI proof
+- [09_kl_convergence.md](09_kl_convergence.md) - Finite-N LSI
+- [16_convergence_mean_field.md](16_convergence_mean_field.md) - Mean-field entropy production
+- [15_adaptive_gas_lsi_proof.md](15_adaptive_gas_lsi_proof.md) - Complete LSI proof
 
 ### A1.4.3 Practical Implications
 
@@ -311,9 +311,9 @@ This follows by taking the $N \to \infty$ limit in the finite-N LSI, using:
 
 **Framework documents**:
 - [05_convergence.md](05_convergence.md) - QSD existence
-- [06_mean_field.md](06_mean_field.md) - McKean-Vlasov derivation
+- [07_mean_field.md](07_mean_field.md) - McKean-Vlasov derivation
 - [08_propagation_chaos.md](08_propagation_chaos.md) - Mean-field limit
-- [12_adaptive_gas_lsi_proof.md](12_adaptive_gas_lsi_proof.md) - Complete LSI proof
+- [15_adaptive_gas_lsi_proof.md](15_adaptive_gas_lsi_proof.md) - Complete LSI proof
 
 ---
 

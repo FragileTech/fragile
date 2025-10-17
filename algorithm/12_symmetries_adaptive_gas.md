@@ -1,60 +1,85 @@
 # Symmetries in the Euclidean Gas
 
-## 0. Introduction
+## 0. TLDR
 
-### 0.1. Purpose and Scope
+**Permutation Invariance and Exchangeability**: The Euclidean Gas operator $\Psi_{\text{EG}}$ is invariant under walker relabeling. Any permutation $\sigma \in S_N$ leaves the swarm distribution unchanged, establishing exchangeability of the quasi-stationary distribution (QSD) and ensuring that statistical properties depend only on empirical measures, not individual walker identities.
 
-This document establishes a comprehensive theory of **symmetries** in the Adaptive Gas framework, treating both:
-1. **Flat Algorithmic Space Symmetries**: Symmetries of the dynamics in the ambient Euclidean space $\mathcal{Y} \subset \mathbb{R}^m$ where the algorithmic projection lives
-2. **Emergent Manifold Symmetries**: Symmetries induced by the state-dependent Riemannian metric $g(x, S) = H(x, S) + \epsilon_\Sigma I$ defined by the fitness Hessian
+**Translation and Rotation Equivariance**: Under appropriate conditions on the reward function $R$, the Euclidean Gas respects Euclidean isometries. Translation equivariance requires $R(x + a) = R(x)$, while rotation equivariance requires $R(Qx) = R(x)$ for $Q \in SO(d)$. These symmetries guarantee that algorithmic performance is independent of coordinate system choice.
 
-The central theme is that while the Adaptive Gas breaks many symmetries present in the Euclidean Gas through its adaptive mechanisms, it **preserves** or **replaces** these symmetries with richer geometric structure tied to the emergent manifold.
+**Scaling Symmetries and Fitness Potential**: The fitness potential $U = -\log R$ exhibits scale-covariance under multiplicative shifts of the reward. Rescaling $R \to \lambda R$ induces an additive shift $U \to U - \log\lambda$, leaving the dynamics invariant up to a global energy offset. This symmetry underlies the flexibility in reward normalization.
 
-### 0.2. Relation to Prior Work
-
-- **01_fragile_gas_framework.md**: Establishes the foundational state space and axioms
-- **02_euclidean_gas.md**: Defines the base Euclidean Gas with isotropic symmetries
-- **07_adaptative_gas.md**: Introduces adaptive mechanisms that break Euclidean symmetries
-- **08_emergent_geometry.md**: Establishes the emergent Riemannian manifold perspective
-- **05_mean_field.md**: Provides the mean-field limit for symmetry analysis
-
-This document synthesizes these perspectives to prove rigorous theorems characterizing all symmetries of the adaptive system.
-
-### 0.3. Key Results Overview
-
-We establish:
-
-**Flat Space Symmetries:**
-1. **Permutation invariance** (Theorem {prf:ref}`thm-permutation-symmetry`)
-2. **Translation equivariance** under reward-preserving shifts (Theorem {prf:ref}`thm-translation-equivariance`)
-3. **Scaling symmetries** of the fitness potential (Theorem {prf:ref}`thm-fitness-scaling`)
-4. **Time-reversal asymmetry** and entropy production (Theorem {prf:ref}`thm-irreversibility`)
-
-**Emergent Manifold Symmetries:**
-1. **Riemannian isometries** of the emergent metric (Theorem {prf:ref}`thm-emergent-isometries`)
-2. **Geodesic preservation** under dynamics (Theorem {prf:ref}`thm-geodesic-invariance`)
-3. **Curvature-adapted symmetries** (Theorem {prf:ref}`thm-curvature-symmetries`)
-4. **Information-geometric structure** (Theorem {prf:ref}`thm-fisher-geometry`)
-
-### 0.4. Document Structure
-
-**Chapter 1**: Foundational definitions and symmetry groups for both flat and curved perspectives
-
-**Chapter 2**: Flat algorithmic space symmetries—continuous and discrete transformations
-
-**Chapter 3**: Emergent manifold symmetries—Riemannian geometric structure
-
-**Chapter 4**: Conservation laws and Noether's theorem applications
-
-**Chapter 5**: Symmetry breaking in the adaptive limit and localization
-
-**Chapter 6**: Physical interpretation and applications
+**Time-Reversal Asymmetry and Entropy Production**: Unlike conservative Hamiltonian systems, the Euclidean Gas exhibits strict irreversibility. Time-reversal symmetry is broken by the measurement-collapse structure of cloning and by friction in the Langevin dynamics, leading to monotonic entropy production and convergence to the QSD. This asymmetry is formalized via a generalized H-theorem.
 
 ---
 
-## 1. Foundational Definitions
+## 1. Introduction
 
-### 1.1. State Space and Transformation Groups
+### 1.1. Goal and Scope
+
+This document establishes the **symmetry structure** of the **Euclidean Gas**, the canonical instantiation of the Fragile Gas framework in flat Euclidean space with Langevin dynamics. Symmetry analysis reveals the intrinsic geometric and statistical invariances that constrain the algorithm's behavior and inform its convergence properties.
+
+**Note on Scope**: This document focuses exclusively on symmetries of the **Euclidean Gas**. Extensions to the **Adaptive Gas** (involving emergent Riemannian geometry, localization parameter $\rho$, and symmetry breaking mechanisms) are treated in a separate document.
+
+The main results are:
+
+1. **Permutation Invariance** ({prf:ref}`thm-permutation-symmetry`): The Euclidean Gas operator commutes with all walker permutations, establishing exchangeability and reducing the state space from the full configuration space $\mathcal{C}_N = (\mathbb{R}^d \times \mathbb{R}^d)^N$ (representing positions and velocities of $N$ walkers) to the space of empirical measures on $\mathbb{R}^d \times \mathbb{R}^d$.
+
+2. **Euclidean Equivariance** ({prf:ref}`thm-translation-equivariance`, {prf:ref}`thm-rotation-equivariance`): When the reward function respects translations or rotations, the Euclidean Gas dynamics intertwine with the corresponding group actions, ensuring coordinate-free behavior.
+
+3. **Scaling Symmetries** ({prf:ref}`thm-fitness-scaling`): Multiplicative rescaling of rewards induces only global energy shifts in the fitness potential, leaving the dynamics qualitatively unchanged.
+
+4. **Time-Reversal Asymmetry** ({prf:ref}`thm-irreversibility`, {prf:ref}`prop-h-theorem`): The measurement structure of cloning and dissipative Langevin dynamics break time-reversal symmetry, driving monotonic entropy production toward the QSD.
+
+### 1.2. Physical Motivation: Symmetry and Invariance Principles
+
+Symmetries are not merely mathematical conveniences—they encode fundamental physical principles that constrain the structure of dynamical systems:
+
+- **Permutation Invariance**: In statistical mechanics, identical particles are indistinguishable. The Euclidean Gas inherits this principle: walker labels are arbitrary, and all statistical properties must depend only on the empirical distribution of states.
+
+- **Spatial Symmetries**: Physical laws are independent of the choice of origin (translation symmetry) and orientation (rotation symmetry). When the reward function inherits these symmetries, the algorithm's behavior becomes coordinate-free, ensuring robustness to arbitrary spatial transformations.
+
+- **Scaling Symmetries**: Many optimization landscapes exhibit scale-invariance or near scale-invariance. Understanding how the algorithm transforms under scaling reveals the role of reward normalization and the stability of the dynamics under fitness potential shifts.
+
+- **Irreversibility and the Arrow of Time**: Unlike Hamiltonian mechanics (which is time-reversible), the Euclidean Gas incorporates measurement and dissipation, breaking time-reversal symmetry. This asymmetry is the thermodynamic foundation for convergence: the system evolves irreversibly toward equilibrium (the QSD), with entropy production serving as a Lyapunov function.
+
+### 1.3. Overview of Document Structure
+
+The document proceeds as follows:
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#e8f4f8','primaryTextColor':'#1a1a1a','primaryBorderColor':'#4a90a4','lineColor':'#4a90a4','secondaryColor':'#f4e8d8','tertiaryColor':'#fff'}}}%%
+graph TB
+    A[§2: Foundational Definitions] --> B[§3: Flat Algorithmic Space Symmetries]
+
+    B --> B1[§3.1: Permutation Invariance]
+    B --> B2[§3.2: Translation Equivariance]
+    B --> B3[§3.3: Rotation Equivariance]
+    B --> B4[§3.4: Scaling Symmetries]
+    B --> B5[§3.5: Time-Reversal Asymmetry]
+
+    style A fill:#e8f4f8,stroke:#4a90a4,stroke-width:2px
+    style B fill:#f4e8d8,stroke:#a47d4a,stroke-width:2px
+    style B1 fill:#fff,stroke:#4a90a4,stroke-width:1px
+    style B2 fill:#fff,stroke:#4a90a4,stroke-width:1px
+    style B3 fill:#fff,stroke:#4a90a4,stroke-width:1px
+    style B4 fill:#fff,stroke:#4a90a4,stroke-width:1px
+    style B5 fill:#fff,stroke:#4a90a4,stroke-width:1px
+```
+
+**§2. Foundational Definitions**: We define the configuration space $\mathcal{C}_N = (\mathbb{R}^d \times \mathbb{R}^d)^N$ and introduce the symmetry groups that will act on swarm states: the permutation group $S_N$, the translation group $\mathbb{R}^d$, the rotation group $SO(d)$, and the scaling group $\mathbb{R}_{>0}$. We also establish the fitness potential $U := -\log R$ as the natural object for scaling analysis.
+
+**§3. Flat Algorithmic Space Symmetries**: We establish the core symmetry properties of the Euclidean Gas:
+- **§3.1 (Permutation Invariance)**: Prove that $\Psi_{\text{EG}}$ commutes with walker relabeling, derive exchangeability of the QSD, and establish reduction to empirical measures.
+- **§3.2 (Translation Equivariance)**: Show that translation-invariant rewards induce translation-equivariant dynamics, with the center-of-mass evolving independently of relative coordinates.
+- **§3.3 (Rotation Equivariance)**: Prove that rotation-invariant rewards lead to rotation-equivariant dynamics, preserving angular structure.
+- **§3.4 (Scaling Symmetries)**: Analyze how multiplicative reward rescaling transforms the fitness potential and leaves the dynamics qualitatively unchanged.
+- **§3.5 (Time-Reversal Asymmetry)**: Establish irreversibility via the measurement structure and friction, prove monotonic entropy production (H-theorem).
+
+---
+
+## 2. Foundational Definitions
+
+### 2.1. State Space and Transformation Groups
 
 We work with the Adaptive Gas as defined in `07_adaptative_gas.md`, with swarm state space:
 
@@ -105,7 +130,7 @@ d_{\mathcal{Y}}^2(\varphi(x_1, v_1), \varphi(x_2, v_2)) = \|x_1 - x_2\|^2 + \lam
 $$
 :::
 
-### 1.2. Symmetry Groups: Definitions
+### 2.2. Symmetry Groups: Definitions
 
 :::{prf:definition} Symmetry Transformation
 :label: def-symmetry-transformation
@@ -160,7 +185,7 @@ $$
 **Orthogonal subgroup** $O(d)$: Includes reflections.
 :::
 
-### 1.3. Fitness Potential and Measurement Pipeline
+### 2.3. Fitness Potential and Measurement Pipeline
 
 The adaptive mechanisms depend critically on the **ρ-localized fitness potential** from `07_adaptative_gas.md`:
 
@@ -215,9 +240,9 @@ This defines a **state-dependent Riemannian manifold** $(\mathcal{X}, g(\cdot, S
 
 ---
 
-## 2. Flat Algorithmic Space Symmetries
+## 3. Flat Algorithmic Space Symmetries
 
-### 2.1. Permutation Invariance
+### 3.1. Permutation Invariance
 
 The most fundamental symmetry is the **exchangeability** of walkers.
 
@@ -310,7 +335,7 @@ $$
 The QSD is the unique stationary distribution of the ergodic Markov chain conditioned on survival. By Theorem {prf:ref}`thm-permutation-symmetry`, if $\pi$ is stationary, then $\sigma_* \pi$ is also stationary for any $\sigma \in S_N$. By uniqueness of the QSD, $\sigma_* \pi_{\text{QSD}} = \pi_{\text{QSD}}$. ∎
 :::
 
-### 2.2. Translation Equivariance
+### 3.2. Translation Equivariance
 
 Euclidean translations interact with the reward function and domain boundaries.
 
@@ -378,7 +403,7 @@ $$
 **Homogeneous rewards**: If $R(x, v) = R(v)$ is position-independent, translation symmetry holds within the interior of $\mathcal{X}_{\text{valid}}$, but is **spontaneously broken** by the domain boundary.
 :::
 
-### 2.3. Rotation and Orthogonal Symmetries
+### 3.3. Rotation and Orthogonal Symmetries
 
 :::{prf:theorem} Rotational Equivariance
 :label: thm-rotation-equivariance
@@ -443,7 +468,7 @@ on the ball $\mathcal{X}_{\text{valid}} = \{x : \|x\| \le R_0\}$. This system ha
 The emergent metric $g(x, S)$ will also be rotationally symmetric, and the QSD will be invariant under rotations.
 :::
 
-### 2.4. Scaling Symmetries
+### 3.4. Scaling Symmetries
 
 :::{prf:theorem} Fitness Potential Scaling Symmetry
 :label: thm-fitness-scaling
@@ -482,7 +507,7 @@ Taking the $1/c$ power recovers the original form. ∎
 The **exploitation/exploration ratio** $\alpha/\beta$ is the fundamental dimensionless parameter controlling the balance between reward optimization and diversity maintenance. The overall scale $\alpha + \beta$ can be absorbed into $\eta$.
 :::
 
-### 2.5. Time-Reversal Asymmetry and Irreversibility
+### 3.5. Time-Reversal Asymmetry and Irreversibility
 
 Unlike conservative physical systems, the Adaptive Gas is **irreversible**.
 
