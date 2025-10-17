@@ -32,7 +32,7 @@ A key focus of this document is to establish that these stabilizing forces are *
 
 The proof is constructed as a logical argument in three main parts: Foundations, the Keystone Causal Chain, and the Drift Analysis. Each part builds upon the last, culminating in a rigorous proof of the contractive properties of the cloning operator.
 
-The diagram below illustrates the logical flow of the proof. We first establish the mathematical foundations (Chapters 2-4). This framework is then used to build the multi-chapter proof of the Keystone Principle (Chapters 5-8), which is the theoretical core of this work. Finally, the Keystone Principle is applied as the central tool in the drift analysis (Chapters 9-11) to derive the main results of this document.
+The diagram below illustrates the logical flow of the proof. We first establish the mathematical foundations (Chapters 2-4). This framework is then used to build the multi-chapter proof of the Keystone Principle (Chapters 5-8), which is the theoretical core of this work. Finally, the Keystone Principle is applied as the central tool in the drift analysis (Chapters 9-11) to derive the main results of this documents.
 
 ```mermaid
 graph TD
@@ -1444,7 +1444,7 @@ $$
 
 The following pseudocode provides a concrete implementation of this operator.
 
-:::{.prf:algorithm} Sequential Stochastic Greedy Pairing Algorithm
+:::{prf:algorithm} Sequential Stochastic Greedy Pairing Algorithm
 ALGORITHM: GreedyPairing(alive_walkers, epsilon_d)
 -------------------------------------------------
 INPUT:
@@ -3247,7 +3247,7 @@ These uniform bounds are constructed entirely from fundamental system constants 
 
 **Q.E.D.**
 
-## 6.6. Chapter Conclusion
+### 6.6. Chapter Conclusion
 
 This chapter has established the first and most fundamental link in the Keystone causal chain: the rigorous, N-uniform connection between a macroscopic system error and a guaranteed microscopic geometric structure. We have proven that a large intra-swarm positional variance ($V_{\text{Var},x}$) is an unstable condition that forces a predictable and detectable pattern onto the swarm's configuration.
 
