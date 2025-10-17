@@ -37,7 +37,7 @@ Given a swarm state $\mathcal S_t=(w_1,\dots,w_N)$ with walkers $w_i=(x_i,v_i,s_
 2.  **Measurement stage.** For every alive walker $i\in\mathcal A_t$ sample a companion $c_{\mathrm{pot}}(i)$ from the algorithmic distance-weighted kernel $\mathbb C_\epsilon(\mathcal S_t,i)$, then compute raw reward $r_i:=R(x_i,v_i)$ and algorithmic distance $d_i:=d_{\text{alg}}(i,c_{\mathrm{pot}}(i))$ as defined in Section 1.3 and detailed in {ref}`Stage 2 <sec-eg-stage2>`.
 3.  **Patched standardisation.** Aggregate the raw reward and distance vectors with the empirical operator and apply the regularized standard deviation from {prf:ref}`def-statistical-properties-measurement` to obtain standardized scores with floor $\sigma'_{\min,\mathrm{patch}} = \sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$.
 4.  **Logistic rescale.** Apply the Canonical Logistic Rescale Function ({prf:ref}`def-canonical-logistic-rescale-function-example`) to the standardized reward and distance components, producing positive outputs $r'_i$ and $d'_i$. Combine them with the canonical exponents to freeze the potential vector $V_{\text{fit},i}=(d'_i)^\beta (r'_i)^\alpha$ with floor $\eta^{\alpha+\beta}$.
-5.  **Clone/Persist gate.** For each walker draw a clone companion $c_{\mathrm{clone}}(i)$ from the same algorithmic distance-weighted kernel and threshold $T_i\sim\mathrm{Unif}(0,p_{\max})$, compute the canonical score $S_i:=\big(V_{\text{fit},c_{\mathrm{clone}}(i)}-V_{\text{fit},i}\big)/(V_{\text{fit},i}+\varepsilon_{\mathrm{clone}})$, and clone when $S_i>T_i$. Cloned walkers reset their position to the companion's position plus Gaussian jitter ($\sigma_x$) and reset their velocity directly to the companion's velocity (no velocity jitter), as detailed in {ref}`Stage 3 <sec-eg-stage3>`. Otherwise the walker persists unchanged. The intermediate swarm sets every status to alive before the kinetic step.
+5.  **Clone/Persist gate.** For each walker draw a clone companion $c_{\mathrm{clone}}(i)$ from the same algorithmic distance-weighted kernel and threshold $T_i\sim\mathrm{Unif}(0,p_{\max})$, compute the canonical score $S_i:=\big(V_{\text{fit},c_{\mathrm{clone}}(i)}-V_{\text{fit},i}\big)/(V_{\text{fit},i}+\varepsilon_{\mathrm{clone}})$, and clone when $S_i>T_i$. Cloned walkers are grouped by companion and undergo a momentum-conserving inelastic collision: positions reset to the companion's position plus Gaussian jitter ($\sigma_x$), while velocities are updated via center-of-mass calculation with random rotation and restitution coefficient $\alpha_{\text{restitution}}$, as detailed in {ref}`Stage 3 <sec-eg-stage3>` and Definition 5.7.4 of `03_cloning.md`. Otherwise the walker persists unchanged. The intermediate swarm sets every status to alive before the kinetic step.
 6.  **Kinetic perturbation.** Update each alive clone or survivor by applying the **BAOAB splitting integrator** for one step of underdamped Langevin dynamics with force $F(x)=\nabla R_{\mathrm{pos}}(x)$ and noise scales $(\sigma_v,\sigma_x)$.
 7.  **Status refresh.** Set the new status $s_i^{(t+1)}=\mathbf 1_{\mathcal X_{\mathrm{valid}}}(x_i^+)$ and output the updated swarm $\mathcal S_{t+1}$.
 
@@ -45,7 +45,7 @@ Given a swarm state $\mathcal S_t=(w_1,\dots,w_N)$ with walkers $w_i=(x_i,v_i,s_
 
 $$
 \begin{aligned}
-& \textbf{Input:} \mathcal S_t = \{(x_i^{(t)}, v_i^{(t)}, s_i^{(t)})\}_{i=1}^N\text{; and parameters } \alpha, \beta, \varepsilon_{\mathrm{std}}, \eta, \tau, p_{\max}, \varepsilon_{\mathrm{clone}}, \delta_x, \delta_v, \sigma_x, \sigma_v, \\
+& \textbf{Input:} \mathcal S_t = \{(x_i^{(t)}, v_i^{(t)}, s_i^{(t)})\}_{i=1}^N\text{; and parameters } \alpha, \beta, \varepsilon_{\mathrm{std}}, \eta, \tau, p_{\max}, \varepsilon_{\mathrm{clone}}, \sigma_x, \alpha_{\text{restitution}}, \sigma_v, \\
 & \qquad \sigma'_{\mathrm{patch}}, g_A, \mathbb C_i, Q_{\delta}, \Psi_{\mathrm{kin,BAOAB}}. \\
 & \textbf{If } |\mathcal A_t| = 0: \textbf{ return } \delta_{\mathcal S_t} \quad \text{\# Cemetery absorption} \\
 \\
@@ -71,6 +71,7 @@ $$
 & \quad s_i^{(t+1)} \leftarrow \mathbf 1_{\mathcal X_{\mathrm{valid}}}(x_i^{(t+1)}) \\
 & \textbf{Return } \mathcal S_{t+1}
 \end{aligned}
+
 $$
 
 :::
@@ -250,12 +251,14 @@ def run_euclidean_gas_step(S_t, params):
 
   $$
   \mathcal Y\;:=\;\overline{B(0,R_x)}\times\overline{B(0,V_{\mathrm{alg}})}\subset\mathbb R^d\times\mathbb R^d,
+
   $$
 
   endowed with the Sasaki metric
 
   $$
   d_{\mathcal Y}^{\mathrm{Sasaki}}\bigl((y_x,y_v),(y'_x,y'_v)\bigr)^2:=\|y_x-y'_x\|^2+\lambda_v\|y_v-y'_v\|^2
+
   $$
   for some fixed weight $\lambda_v>0$. For physical states we write $y=\varphi(x,v)$ and $y'=\varphi(x',v')$; the metric therefore measures differences between squashed coordinates. The compactness of $\mathcal Y$ ensures a finite algorithmic diameter.
 - **Projection** $\varphi:\mathbb R^d\times\mathbb R^d\to B(0,R_x)\times B(0,V_{\mathrm{alg}})$ given by $\varphi(x,v)=(\psi_x(x),\psi_v(v))$ with the smooth squashing maps
@@ -263,6 +266,7 @@ def run_euclidean_gas_step(S_t, params):
   $$
   \psi_x(x)\ :=\ R_x\,\frac{x}{R_x+\|x\|},\qquad
   \psi_v(v)\ :=\ V_{\mathrm{alg}}\,\frac{v}{V_{\mathrm{alg}}+\|v\|}.
+
   $$
 
   ::: {admonition} Design Note
@@ -276,6 +280,7 @@ def run_euclidean_gas_step(S_t, params):
 
   $$
   d_{\text{alg}}(i,j)^2 := \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2
+
   $$
 
   where $\lambda_{\text{alg}} \geq 0$ controls the relative importance of velocity similarity in companion selection. For the Euclidean Gas, we set $\lambda_{\text{alg}} = \lambda_v$ to match the Sasaki metric weight, ensuring consistency between the algorithmic behavior and the analytical geometry. See Definition 5.0 in `03_cloning.md` for the full framework specification. This metric defines the algorithm's "perception" of proximity and is distinct from the Sasaki metric used in the analysis (see Section 1.4).
@@ -284,6 +289,7 @@ def run_euclidean_gas_step(S_t, params):
 
   $$
   R(x,v):=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2,
+
   $$
   where $R_{\mathrm{pos}}:\mathcal X_{\mathrm{valid}}\to\mathbb R$ is a $C^1$ potential defined on a neighbourhood of the valid domain. We require only that $R_{\mathrm{pos}}$ is bounded above on $\mathcal X_{\mathrm{valid}}$ and that its gradient $F(x):=\nabla R_{\mathrm{pos}}(x)$ is Lipschitz on the compact set $\mathcal X_{\mathrm{valid}}$ with constant $L_F$. The potential therefore provides a smooth reward landscape inside the permitted region rather than a mechanism for confining walkers at infinity.
 
@@ -302,6 +308,7 @@ For any constant $C>0$ define $\psi_C: \mathbb R^d\to B(0,C)$ by $\psi_C(z):=C\,
 
   $$
   D\psi_C(z)=\frac{C}{C+\|z\|}I-\frac{C}{(C+\|z\|)^2}\,\frac{z z^{\top}}{\|z\|}.
+
   $$
   The first term has operator norm at most $1$. The second term is positive semidefinite with norm $C\|z\|/(C+\|z\|)^2\le 1$. Hence $\|D\psi_C(z)\|\le 1$ for all $z\neq 0$. Continuity gives $\|D\psi_C(0)\|=1$. The mean-value inequality then implies $\|\psi_C(z)-\psi_C(z')\|\le\|z-z'\|$ for all $z,z'\in\mathbb R^d$.
 
@@ -322,6 +329,7 @@ For $(x,v),(x',v')\in\mathbb R^d\times\mathbb R^d$ the projection $\varphi(x,v)=
 
 $$
 d_{\mathcal Y}^{\mathrm{Sasaki}}\bigl(\varphi(x,v),\varphi(x',v')\bigr)\le L_{\varphi}\,\sqrt{\|x-x'\|^2+\lambda_v\|v-v'\|^2},
+
 $$
 
 with Lipschitz constant $L_{\varphi}\le\max\{1,\sqrt{\lambda_v}\}$.
@@ -332,6 +340,7 @@ Because $\psi_x$ and $\psi_v$ are $1$-Lipschitz (Lemma {prf:ref}`lem-squashing-p
 
 $$
 \|\psi_x(x)-\psi_x(x')\|\le\|x-x'\|,\qquad \|\psi_v(v)-\psi_v(v')\|\le\|v-v'\|.
+
 $$
 
 Therefore
@@ -343,6 +352,7 @@ d_{\mathcal Y}^{\mathrm{Sasaki}}\bigl(\varphi(x,v),\varphi(x',v')\bigr)^2
 &\le\|x-x'\|^2+\lambda_v\|v-v'\|^2\\
 &\le L_{\varphi}^2\bigl(\|x-x'\|^2+\lambda_v\|v-v'\|^2\bigr)
 \end{aligned}
+
 $$
 
 with $L_{\varphi}=1$ if $\lambda_v\le 1$ and $L_{\varphi}=\sqrt{\lambda_v}$ otherwise. Taking square roots gives the stated bound.
@@ -363,6 +373,7 @@ We measure dispersion in the Sasaki metric and retain the canonical aggregation 
   d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1,\mathcal S_2)^2
   := \frac{1}{N}\sum_{i=1}^{N} d_{\mathcal Y}^{\mathrm{Sasaki}}\big(\varphi(x_{1,i},v_{1,i}),\varphi(x_{2,i},v_{2,i})\big)^2
   + \frac{\lambda_{\mathrm{status}}}{N}\sum_{i=1}^{N}(s_{1,i}-s_{2,i})^2,
+
   $$
   with status penalty $\lambda_{\mathrm{status}}>0$ as in the canonical framework. Because the Sasaki metric adds a velocity term, Section 2.3 re-validates every deterministic Lipschitz bound against $d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}$.
 
@@ -391,16 +402,12 @@ We measure dispersion in the Sasaki metric and retain the canonical aggregation 
   v^+ &= \psi_v(\tilde v),\
   x^+ &= x + \tau\,v^+ + \sqrt{\tau}\,\sigma_x\,\xi_x.
   \end{aligned}
-  $$
-  The **kinetic perturbation kernel** $\mathcal P_{\mathrm{kin}}$ therefore injects independent Gaussian noise into both velocities and positions. The cap ensures $\|v^+\|\le V_{\mathrm{alg}}$; when capping is inactive the drift component coincides with an underdamped Langevin Euler step. If one sets $\sigma_x=0$, the same reachability conclusions follow whenever $\operatorname{diam}(\mathcal X_{\mathrm{comp}})<\tau V_{\mathrm{alg}}$, because $\psi_v(\mathbb R^d)=B(0,V_{\mathrm{alg}})$ makes every point of $\mathcal X_{\mathrm{comp}}$ one-step reachable.
-- **Clone jitter distribution.** When the Clone action fires in {ref}`Stage 3 <sec-eg-stage3>` we sample
 
   $$
-  (x_c,v_c) + (\delta_x\zeta_x,\,\delta_v\zeta_v),\qquad \zeta_x,\zeta_v\sim\mathcal N(0,I_d),
-  $$
-  with tunable spreads $\delta_x,\delta_v>0$ (velocity-preserving cloning corresponds to $\delta_v=0$), after which the smooth squashing map $\psi_v$ caps the velocity.
+  The **kinetic perturbation kernel** $\mathcal P_{\mathrm{kin}}$ therefore injects independent Gaussian noise into both velocities and positions. The cap ensures $\|v^+\|\le V_{\mathrm{alg}}$; when capping is inactive the drift component coincides with an underdamped Langevin Euler step. If one sets $\sigma_x=0$, the same reachability conclusions follow whenever $\operatorname{diam}(\mathcal X_{\mathrm{comp}})<\tau V_{\mathrm{alg}}$, because $\psi_v(\mathbb R^d)=B(0,V_{\mathrm{alg}})$ makes every point of $\mathcal X_{\mathrm{comp}}$ one-step reachable.
+- **Clone jitter distribution.** When the Clone action fires in {ref}`Stage 3 <sec-eg-stage3>`, positions are reset with Gaussian jitter $x_c + \sigma_x\zeta_x$ where $\zeta_x\sim\mathcal N(0,I_d)$ and $\sigma_x > 0$ is the positional jitter scale. Velocities are updated via the momentum-conserving inelastic collision model: for each companion $c$ with cloners $I_c$, the center-of-mass velocity $V_{\text{COM},c} = (v_c + \sum_{j \in I_c} v_j)/(M_c+1)$ is computed, then each walker $k$ in the system receives velocity $\tilde v_k = V_{\text{COM},c} + \alpha_{\text{restitution}} \cdot R_k(v_k - V_{\text{COM},c})$ where $R_k$ is a random rotation and $\alpha_{\text{restitution}} \in [0,1]$ controls energy dissipation. See Definition 5.7.4 in `03_cloning.md` for the complete specification.
 - **Pipeline ordering.** {ref}`Section 4 <sec-eg-kernel>` executes the canonical measurement → standardize → rescale pipeline first, freezes the potential vector, and then applies the Clone/Persist rule to produce an all-alive intermediate swarm. The kinetic update above acts on that intermediate state, and the deterministic status operator sets $s_i^{(t+1)}=\mathbf 1_{\mathcal X_{\mathrm{valid}}}(x_i^+)$ afterward—no cloning occurs after the status check.
-- **In-step independence.** The random draws $(\xi_i^v,\xi_i^x,\zeta_i^x,\zeta_i^v)$ used in the cloning and kinetic stages are independent across walkers given the current swarm, as required by Assumption A ({prf:ref}`def-assumption-instep-independence`).
+- **In-step independence.** The random draws $(\xi_i^v,\xi_i^x,\zeta_i^x,R_i)$ used in the cloning and kinetic stages are independent across walkers given the current swarm, as required by Assumption A ({prf:ref}`def-assumption-instep-independence`). Here $R_i$ denotes the random rotation applied in the inelastic collision model.
 
 **Design note.** The Langevin force field uses only the positional potential $R_{\mathrm{pos}}$, while the selection pipeline optimizes the full reward $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$. This intentional decoupling treats the velocity penalty as a regulariser that preserves fragility: Lemma {prf:ref}`lem-euclidean-richness` shows the quadratic term forces the environmental richness variance floor needed by ({prf:ref}`def-axiom-environmental-richness`). Consequently the kinetic perturbation samples a Gibbs law for $U(x)=-R_{\mathrm{pos}}(x)$ rather than $R$, and the stationary distribution of the swarm is not the standard underdamped Langevin equilibrium for the selection objective. All continuity and limit arguments in Section 2 therefore work directly with the Sasaki metric and the patched standardization pipeline, without assuming a coupled potential.
 
@@ -430,11 +437,13 @@ For $(x,v),(x',v')\in\mathcal X\times\mathcal V_{\mathrm{alg}}$ and any $\xi_v,\
 
 $$
 \Phi_{x,v}(\xi_v,\xi_x):=x+\tau\psi_v\big(v+\tfrac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau(v-u(x))+\sqrt{\sigma_v^2\tau}\,\xi_v\big)+\sqrt{\tau}\,\sigma_x\,\xi_x.
+
 $$
 Then
 
 $$
 \|\Phi_{x,v}(\xi_v,\xi_x)-\Phi_{x',v'}(\xi_v,\xi_x)\|\le L_{\mathrm{flow}}\,d_{\mathcal Y}^{\mathrm{Sasaki}}((x,v),(x',v')),\qquad L_{\mathrm{flow}}:=1+\frac{\tau^2}{m}L_F+\gamma_{\mathrm{fric}}\tau^2L_u+\frac{\tau(1+\gamma_{\mathrm{fric}}\tau)}{\sqrt{\lambda_v}}.
+
 $$
 
 ```{dropdown} Proof
@@ -443,6 +452,7 @@ Fix $(x,v),(x',v')\in\mathcal X\times\mathcal V_{\mathrm{alg}}$ and $\xi_v,\xi_x
 
 $$
 \tilde v:=v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)+\sqrt{\sigma_v^2\tau}\,\xi_v,\qquad\tilde v':=v'+\frac{\tau}{m}F(x')-\gamma_{\mathrm{fric}}\tau\big(v'-u(x')\big)+\sqrt{\sigma_v^2\tau}\,\xi_v.
+
 $$
 
 Because the same velocity noise $\xi_v$ appears in both expressions, it cancels in the difference $\tilde v-\tilde v'$. We bound the displacement in four steps.
@@ -454,6 +464,7 @@ $$
 \|\tilde v-\tilde v'\|&\le \|v-v'\|+\frac{\tau}{m}\|F(x)-F(x')\|+\gamma_{\mathrm{fric}}\tau\|v-v'\|+\gamma_{\mathrm{fric}}\tau\|u(x)-u(x')\|\\
 &\le(1+\gamma_{\mathrm{fric}}\tau)\,\|v-v'\|+\Big(\frac{\tau}{m}L_F+\gamma_{\mathrm{fric}}\tau L_u\Big)\,\|x-x'\|.
 \end{aligned}
+
 $$
 
 2. **Lipschitz projection.** Lemma {prf:ref}`lem-squashing-properties-generic` shows the smooth squashing map $\psi_v$ is $1$-Lipschitz, so the same inequality holds for the capped velocities $v^+:=\psi_v(\tilde v)$ and $v'^+:=\psi_v(\tilde v')$.
@@ -462,12 +473,14 @@ $$
 
 $$
 \|x^+-x'^+\|\le\|x-x'\|+\tau\,\|v^+-v'^+\|\le\Big(1+\frac{\tau^2}{m}L_F+\gamma_{\mathrm{fric}}\tau^2L_u\Big)\|x-x'\|+\tau(1+\gamma_{\mathrm{fric}}\tau)\|v-v'\|.
+
 $$
 
 4. **Express via the Sasaki metric.** The Sasaki distance satisfies $d_{\mathcal Y}^{\mathrm{Sasaki}}((x,v),(x',v'))^2=\|x-x'\|^2+\lambda_v\|v-v'\|^2$, so $\|x-x'\|\le d_{\mathcal Y}^{\mathrm{Sasaki}}$ and $\|v-v'\|\le d_{\mathcal Y}^{\mathrm{Sasaki}}/\sqrt{\lambda_v}$. Substituting these bounds into the inequality from Step 3 yields
 
 $$
 \|\Phi_{x,v}(\xi_v,\xi_x)-\Phi_{x',v'}(\xi_v,\xi_x)\|\le\Big(1+\frac{\tau^2}{m}L_F+\gamma_{\mathrm{fric}}\tau^2L_u+\frac{\tau(1+\gamma_{\mathrm{fric}}\tau)}{\sqrt{\lambda_v}}\Big) d_{\mathcal Y}^{\mathrm{Sasaki}}((x,v),(x',v')).
+
 $$
 
 The constant in parentheses is $L_{\mathrm{flow}}$, completing the proof.
@@ -483,12 +496,14 @@ Fix $(x,v),(x',v')\in\mathcal X\times\mathcal V_{\mathrm{alg}}$ and set $\Delta:
 
 $$
 \Phi_{x,v}(\xi_v,\xi_x):=x+\tau\psi_v\Big(v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)+\sqrt{\sigma_v^2\tau}\,\xi_v\Big)+\sqrt{\tau}\,\sigma_x\,\xi_x.
+
 $$
 
 Lemma {prf:ref}`lem-sasaki-kinetic-lipschitz` delivers $\|\Phi_{x,v}(\xi_v,\xi_x)-\Phi_{x',v'}(\xi_v,\xi_x)\|\le L_{\mathrm{flow}}\,\Delta$ almost surely. Consequently
 
 $$
 |p_{\mathrm{dead}}(x,v)-p_{\mathrm{dead}}(x',v')|\le\mathbb P\big(\Phi_{x,v}(\xi)\in N_{L_{\mathrm{flow}}\Delta}(\partial\mathcal X_{\mathrm{valid}})\big)+\mathbb P\big(\Phi_{x',v'}(\xi)\in N_{L_{\mathrm{flow}}\Delta}(\partial\mathcal X_{\mathrm{valid}})\big).
+
 $$
 
 We bound the first term; the second is identical with primed variables.
@@ -497,6 +512,7 @@ We bound the first term; the second is identical with primed variables.
 
 $$
 C_{\partial}:=\sup_{0<\varepsilon\le\varepsilon_{\mathrm{tube}}}\frac{\operatorname{Vol}(N_\varepsilon(\partial\mathcal X_{\mathrm{valid}}))}{\varepsilon}<\infty.
+
 $$
 
 By monotonicity it suffices to treat $L_{\mathrm{flow}}\Delta\le\varepsilon_{\mathrm{tube}}$; otherwise the Hölder bound follows immediately.
@@ -505,18 +521,21 @@ By monotonicity it suffices to treat $L_{\mathrm{flow}}\Delta\le\varepsilon_{\ma
 
 $$
 \tilde v:=v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)+\sqrt{\sigma_v^2\tau}\,\xi_v.
+
 $$
 
 Then $\tilde x:=x+\tau\tilde v+\sqrt{\tau}\,\sigma_x\,\xi_x$ is Gaussian with mean $x+\tau m(x,v)$, where $m(x,v):=\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau(v-u(x))$, and covariance $\tau(\sigma_v^2\tau^2+\sigma_x^2)I_d$. Its density is
 
 $$
 p_{\tilde x}(y)=\frac{1}{(2\pi\tau(\sigma_v^2\tau^2+\sigma_x^2))^{d/2}}\exp\Big(-\frac{\|y-(x+\tau m(x,v))\|^2}{2\tau(\sigma_v^2\tau^2+\sigma_x^2)}\Big).
+
 $$
 
 The density attains its supremum at the mean, yielding
 
 $$
 p_{\mathrm{aff}}:=\sup_{y\in\mathbb R^d}p_{\tilde x}(y)=\frac{1}{(2\pi\tau(\sigma_v^2\tau^2+\sigma_x^2))^{d/2}}.
+
 $$
 
 This constant governs the contribution of $C^c:=\{\|\tilde v\|\le V_{\mathrm{alg}}\}$, where the velocity cap is inactive.
@@ -525,24 +544,28 @@ This constant governs the contribution of $C^c:=\{\|\tilde v\|\le V_{\mathrm{alg
 
 $$
 g(u)=\frac{1}{(2\pi\sigma_v^2\tau)^{d/2}}\int_{V_{\mathrm{alg}}}^{\infty}\exp\Big(-\frac{\|ru-m(x,v)\|^2}{2\sigma_v^2\tau}\Big) r^{d-1}\,dr.
+
 $$
 
 The local bounds on $F$ and $u$ over $C$ imply
 
 $$
 \|m(x,v)\|\le M_{\mathrm{kin}}(C).
+
 $$
 
 For $r\ge V_{\mathrm{alg}}$ the inequality $\|a-b\|^2\ge\tfrac{1}{2}\|a\|^2-\|b\|^2$ yields
 
 $$
 \|ru-m(x,v)\|^2\ge\frac{r^2}{2}-M_{\mathrm{kin}}(C)^2.
+
 $$
 
 Substituting into $g(u)$ and changing variables via $s=r^2/(4\sigma_v^2\tau)$ produces
 
 $$
 g(u)\le\frac{\exp(M_{\mathrm{kin}}(C)^2/(2\sigma_v^2\tau))}{(2\pi\sigma_v^2\tau)^{d/2}}(2\sigma_v^2\tau)^{d/2}\Gamma\Big(\frac{d}{2},\frac{V_{\mathrm{alg}}^2}{4\sigma_v^2\tau}\Big)=:q_{\mathrm{dir}}(C),
+
 $$
 
 where $\Gamma(\cdot,\cdot)$ is the upper incomplete gamma function. Thus the capped direction has uniformly bounded density.
@@ -554,24 +577,28 @@ $$
 \mathbb P\big(\Phi_{x,v}(\xi)\in A\big)&=\mathbb P(E^c)\,\mathbb P\big(\Phi_{x,v}(\xi)\in A\mid E^c\big)+\mathbb P(E)\,\mathbb P\big(\Phi_{x,v}(\xi)\in A\mid E\big)\\
 &\le p_{\mathrm{aff}}\operatorname{Vol}(A)+\rho_*(C) q_{\mathrm{dir}}(C)\operatorname{Vol}(A).
 \end{aligned}
+
 $$
 
 Taking $A=N_{L_{\mathrm{flow}}\Delta}(\partial\mathcal X_{\mathrm{valid}})$ and using Step 1 yields
 
 $$
 \mathbb P\big(\Phi_{x,v}(\xi)\in N_{L_{\mathrm{flow}}\Delta}(\partial\mathcal X_{\mathrm{valid}})\big)\le\big(p_{\mathrm{aff}}+\rho_*(C)q_{\mathrm{dir}}(C)\big)C_{\partial}L_{\mathrm{flow}}\,\Delta.
+
 $$
 
 Combining the two probabilities shows
 
 $$
 |p_{\mathrm{dead}}(x,v)-p_{\mathrm{dead}}(x',v')|\le2\big(p_{\mathrm{aff}}+\rho_*(C)q_{\mathrm{dir}}(C)\big)C_{\partial}L_{\mathrm{flow}}\,\Delta.
+
 $$
 
 Therefore $\alpha_B^{\mathrm{Sasaki}}=1$ with Hölder constant
 
 $$
 L_{\mathrm{death}}^{\mathrm{Sasaki}}(C):=2\big(p_{\mathrm{aff}}+\rho_*(C)q_{\mathrm{dir}}(C)\big)C_{\partial}L_{\mathrm{flow}}.
+
 $$
 
 ```
@@ -593,12 +620,14 @@ Let $\mathcal Y^{\circ}:=B(0,R_x)\times B(0,V_{\mathrm{alg}})$ be the image of t
 
 $$
 \psi_C^{-1}(y)=\frac{C}{1-\|y\|/C}\,y\qquad(\|y\|<C).
+
 $$
 
 Define $R_{\mathcal Y}:\mathcal Y^{\circ}\to\mathbb R$ by
 
 $$
 R_{\mathcal Y}(y):=R_{\mathrm{pos}}\big(\psi_{R_x}^{-1}(y_x)\big)-\lambda_{\mathrm{vel}}\,\big\|\psi_{V_{\mathrm{alg}}}^{-1}(y_v)\big\|^2.
+
 $$
 
 This is well defined because the squashing maps are bijections between $\mathbb R^d$ and the open balls $B(0,R_x)$ and $B(0,V_{\mathrm{alg}})$. The maps $\psi_{R_x}^{-1}$ and $\psi_{V_{\mathrm{alg}}}^{-1}$ are continuous on $\mathcal Y^{\circ}$, and the compositions with $R_{\mathrm{pos}}$ and the quadratic velocity term are continuous. Hence $R_{\mathcal Y}$ is continuous on $\mathcal Y^{\circ}$.
@@ -618,6 +647,7 @@ Fix $(x_0,v_0)\in\mathcal Y$ and radius $r>0$. Every Sasaki ball of radius $r$ c
 
 $$
 \delta:=\min\Big\{\frac{r}{\sqrt{\lambda_v}},\,\frac{V_{\mathrm{alg}}}{2}\Big\}>0.
+
 $$
 Consider the two velocities $v_1:=v_0$ and $v_2:=v_0+\delta e$, where the direction $e$ is chosen as follows:
 
@@ -628,6 +658,7 @@ In both cases the velocities stay in the ball, and the reward difference equals
 
 $$
 |R(x_0,v_1)-R(x_0,v_2)|=\lambda_{\mathrm{vel}}\,|\|v_2\|^2-\|v_0\|^2|\ge \lambda_{\mathrm{vel}}\,\delta^2.
+
 $$
 For the inward-pointing choice we use that $\|v_0\|>V_{\mathrm{alg}}-\delta\ge V_{\mathrm{alg}}/2\ge\delta$ because $\delta\le V_{\mathrm{alg}}/2$, guaranteeing the same lower bound.
 Hence the variance of $R$ on the ball is at least $\sigma_{\mathrm{rich}}^2(r):=\lambda_{\mathrm{vel}}^2\delta^4/4>0$, establishing environmental richness. :::
@@ -654,12 +685,14 @@ Introduce the uncapped velocity update
 
 $$
 \tilde v:=v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)+\sqrt{\sigma_v^2\tau}\,\xi_v,\qquad \xi_v\sim\mathcal N(0,I_d).
+
 $$
 
 Write $a(x,v):=\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)$. {ref}`Stage 4 <sec-eg-stage4>` applies the cap and Euler step to obtain
 
 $$
 v^+:=\psi_v(\tilde v),\qquad x^+:=x+\tau v^+ + \sqrt{\tau}\,\sigma_x\,\xi_x,
+
 $$
 
 with $\xi_x\sim\mathcal N(0,I_d)$ independent of $\xi_v$.
@@ -670,6 +703,7 @@ We bound the expected Sasaki increment in three explicit steps.
 
 $$
 \|x^+-x\|\le\tau\,\|v^+\|+\sqrt{\tau}\,\sigma_x\,\|\xi_x\|\le\tau V_{\mathrm{alg}}+\sqrt{\tau}\,\sigma_x\,\|\xi_x\|,
+
 $$
 
 so $\mathbb E\big[\|x^+-x\|^2\big]\le 2\tau^2 V_{\mathrm{alg}}^2+2\tau\sigma_x^2 d$.
@@ -678,36 +712,42 @@ so $\mathbb E\big[\|x^+-x\|^2\big]\le 2\tau^2 V_{\mathrm{alg}}^2+2\tau\sigma_x^2
 
 $$
 \tilde v-v=a(x,v)+\sqrt{\sigma_v^2\tau}\,\xi_v.
+
 $$
 
 Let $F_0:=\|F(0)\|$ and $u_0:=\|u(0)\|$. The Lipschitz bounds $\|F(x)\|\le F_0+L_F\|x\|$ and $\|u(x)\|\le u_0+L_u\|x\|$ imply
 
 $$
 \|a(x,v)\|\le\frac{\tau}{m}\big(F_0+L_F\|x\|\big)+\gamma_{\mathrm{fric}}\tau\Big(\|v\|+u_0+L_u\|x\|\Big).
+
 $$
 
 Define the coefficients
 
 $$
 A_x:=\tau\Big(\frac{L_F}{m}+\gamma_{\mathrm{fric}}L_u\Big),\qquad A_v:=\gamma_{\mathrm{fric}}\tau,\qquad A_0:=\frac{\tau}{m}F_0+\gamma_{\mathrm{fric}}\tau u_0.
+
 $$
 
 Then $\|a(x,v)\|\le A_x\|x\|+A_v\|v\|+A_0$. Using $\mathbb E\|\xi_v\|^2=d$ and $(\alpha+\beta+\gamma)^2\le 3(\alpha^2+\beta^2+\gamma^2)$ gives
 
 $$
 \mathbb E\big[\|\tilde v-v\|^2\big]\le 3A_x^2\|x\|^2+3A_v^2\|v\|^2+3A_0^2+\sigma_v^2\tau d.
+
 $$
 
 3. **Assemble the Sasaki moment.** By definition of the Sasaki metric,
 
 $$
 d_{\mathcal Y}^{\mathrm{Sasaki}}\big((x,v),(x^+,v^+)\big)^2=\|x^+-x\|^2+\lambda_v\,\|v^+-v\|^2.
+
 $$
 
 Taking expectations and combining the bounds from Steps 1–2 yields
 
 $$
 \mathbb E\big[d_{\mathcal Y}^{\mathrm{Sasaki}}\big((x,v),(x^+,v^+)\big)^2\big]\le C_x^{(\mathrm{pert})}\,\|x\|^2+C_v^{(\mathrm{pert})}\,\|v\|^2+C_0^{(\mathrm{pert})},
+
 $$
 
 with
@@ -718,6 +758,7 @@ C_x^{(\mathrm{pert})}&:=3\lambda_vA_x^2,\\
 C_v^{(\mathrm{pert})}&:=3\lambda_vA_v^2,\\
 C_0^{(\mathrm{pert})}&:=2\tau^2V_{\mathrm{alg}}^2+2\tau\sigma_x^2 d+3\lambda_vA_0^2+\lambda_v\sigma_v^2\tau d.
 \end{aligned}
+
 $$
 
 The kinetic kernel is Feller: it composes the continuous affine map $(x,v)\mapsto(x,\tilde v)$, the 1-Lipschitz projection $\psi_v$, and addition of a Gaussian with full support; appending the deterministic status update preserves this property.
@@ -737,18 +778,21 @@ Let $C\subset\mathbb R^d$ be an arbitrary compact set and define the local envel
 
 $$
 F_C:=\sup_{x\in C}\|F(x)\|,\qquad u_C:=\sup_{x\in C}\|u(x)\|,
+
 $$
 
 which are finite by continuity. Set
 
 $$
 C_{\mathrm{force}}(C):=\frac{F_C}{m}+\gamma_{\mathrm{fric}}\big(V_{\mathrm{alg}}+u_C\big),\qquad M_{\mathrm{kin}}(C):=V_{\mathrm{alg}}+\frac{\tau}{m}F_C+\gamma_{\mathrm{fric}}\tau\big(V_{\mathrm{alg}}+u_C\big).
+
 $$
 
 Let $\tilde v:=v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)+\sqrt{\sigma_v^2\tau}\,\xi_v$ with $\xi_v\sim\mathcal N(0,I_d)$ and set $v^+:=\psi_v(\tilde v)$, $x^+:=x+\tau v^+ + \sqrt{\tau}\,\sigma_x\,\xi_x$. Denote
 
 $$
 a(x,v):=\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big).
+
 $$
 
 We supply explicit constants for the drift and anisotropy parts of Definition {prf:ref}`def-axiom-geometric-consistency`.
@@ -757,72 +801,84 @@ We supply explicit constants for the drift and anisotropy parts of Definition {p
 
 $$
 \|\mathbb E[x^+-x]\|=\tau\,\|\mathbb E[v^+]\|\le\tau\big(\|\mathbb E[v^+-v]\|+V_{\mathrm{alg}}\big).
+
 $$
 
 The increment of the velocity splits as
 
 $$
 \mathbb E[v^+-v]=\mathbb E[\tilde v-v]+\mathbb E[\psi_v(\tilde v)-\tilde v].
+
 $$
 
 The affine term obeys $\|\mathbb E[\tilde v-v]\|=\|a(x,v)\|\le\tau C_{\mathrm{force}}(C)$. The projection error equals $(\|\tilde v\|-V_{\mathrm{alg}})_+$ and is supported on the capping event $E:=\{\|\tilde v\|>V_{\mathrm{alg}}\}$. Markov's inequality applied to
 
 $$
 \mathbb E\|\tilde v\|^2=\|a(x,v)\|^2+\sigma_v^2\tau\,\mathbb E\|\xi\|^2\le(\tau C_{\mathrm{force}}(C))^2+\sigma_v^2\tau d+V_{\mathrm{alg}}^2
+
 $$
 
 then yields
 
 $$
 \mathbb E[(\|\tilde v\|-V_{\mathrm{alg}})_+]\le\frac{(V_{\mathrm{alg}}+\tau C_{\mathrm{force}}(C))^2+\sigma_v^2\tau d-V_{\mathrm{alg}}^2}{V_{\mathrm{alg}}}=:\varepsilon_{\mathrm{cap}}^{\max}(C).
+
 $$
 
 Thus $\|\mathbb E[v^+-v]\|\le\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C)$ and
 
 $$
 \|\mathbb E[x^+-x]\|\le\tau\big(\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C)+V_{\mathrm{alg}}\big).
+
 $$
 
 Combining the position and velocity components gives
 
 $$
 \kappa_{\mathrm{drift}}^{\mathrm{Sasaki}}(C):=\sqrt{\tau^2\big(\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C)+V_{\mathrm{alg}}\big)^2+\lambda_v\big(\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C)\big)^2}.
+
 $$
 
 2. **Probability of capping.** The same second-moment estimate implies
 
 $$
 \rho_*(C):=\mathbb P(E)\le\frac{\mathbb E\|\tilde v\|^2}{V_{\mathrm{alg}}^2}\le\frac{(V_{\mathrm{alg}}+\tau C_{\mathrm{force}}(C))^2+\sigma_v^2\tau d}{V_{\mathrm{alg}}^2}.
+
 $$
 
 3. **Lower bound on the uncapped density.** The mean of $\tilde v$ satisfies
 
 $$
 \|m(x,v)\|=\Big\|v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau(v-u(x))\Big\|\le M_{\mathrm{kin}}(C).
+
 $$
 
 The Gaussian density of $\tilde v$ is
 
 $$
 p_{\tilde v}(y)=\frac{1}{(2\pi\sigma_v^2\tau)^{d/2}}\exp\Big(-\frac{\|y-m(x,v)\|^2}{2\sigma_v^2\tau}\Big).
+
 $$
 
 For $u\in S^{d-1}$ and $0\le r\le V_{\mathrm{alg}}/2$ the inequality $\|a-b\|^2\le 2\|a\|^2+2\|b\|^2$ yields
 
 $$
 \|ru-m(x,v)\|^2\le\Big(\frac{V_{\mathrm{alg}}}{2}+M_{\mathrm{kin}}(C)\Big)^2.
+
 $$
 
 Hence $p_{\tilde v}(ru)\ge c_{d,0}$ where
 
 $$
 c_{d,0}(C):=\frac{1}{(2\pi\sigma_v^2\tau)^{d/2}}\exp\Big(-\frac{(V_{\mathrm{alg}}/2+M_{\mathrm{kin}}(C))^2}{2\sigma_v^2\tau}\Big)>0.
+
 $$
 
 Integrating over the radial segment $[0,V_{\mathrm{alg}}/2]$ yields
 
 $$
 P(\tilde v\in K(u))\ge c_{d,0}(C)\int_{0}^{V_{\mathrm{alg}}/2} r^{d-1}\,dr=:c_d(C)>0,
+
 $$
 
 where $K(u):=\{ru:0\le r\le V_{\mathrm{alg}}/2\}$ and we used the polar-volume factor $r^{d-1}$. Thus every cone with opening direction $u$ receives probability at least $c_d(C)$.
@@ -831,12 +887,14 @@ where $K(u):=\{ru:0\le r\le V_{\mathrm{alg}}/2\}$ and we used the polar-volume f
 
 $$
 P(v^+\in A)\ge(1-\rho_*(C))c_d(C)\,\sigma_{d-1}(A).
+
 $$
 
 Taking reciprocals furnishes the anisotropy constant
 
 $$
 \kappa_{\mathrm{anisotropy}}^{\mathrm{Sasaki}}(C):=\frac{1}{(1-\rho_*(C))c_d(C)}.
+
 $$
 
 These constants realise the drift and anisotropy requirements of Definition {prf:ref}`def-axiom-geometric-consistency` on the compact set $C$. Since $C$ was arbitrary, the bounds hold uniformly on every compact subset of the state space, which suffices for the non-compact geometric-consistency axiom.
@@ -855,7 +913,7 @@ The analysis in the remainder of this chapter is performed for the **canonical E
 **Key Simplifications in the Canonical Model:**
 - **Companion Selection:** Uniform random selection from alive walkers (infinite ε limit)
 - **Algorithmic Distance:** While formally defined in Section 1.3 as `d_alg(i,j)² = ||x_i - x_j||² + λ_alg ||v_i - v_j||²`, the uniform selection means this distance only affects the raw distance measurement `d_i`, not the companion selection probabilities.
-- **Cloning Operator:** Position reset with jitter, velocity reset without jitter (as defined in `03_cloning.md`)
+- **Cloning Operator:** Momentum-conserving inelastic collision model with position jitter (as defined in Definition 5.7.4 of `03_cloning.md`)
 
 This simplified, non-local model serves as a valuable and tractable baseline. The main convergence proof, presented in the `03_cloning.md` document, builds upon this foundation by analyzing the full model with:
 - **Finite ε:** Companion selection weighted by `exp(-d_alg(i,j)² / 2ε²)`
@@ -869,6 +927,7 @@ Let $\mathcal S_1,\mathcal S_2$ be two swarm states and denote their alive sets 
 
 $$
 \Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2):=\sum_{i=1}^N d_{\mathcal Y}^{\mathrm{Sasaki}}\big(\varphi(w_{1,i}),\varphi(w_{2,i})\big)^2,
+
 $$
 and let $D_{\mathcal Y}:=\operatorname{diam}_{d_{\mathcal Y}^{\mathrm{Sasaki}}}(\mathcal Y)$.
 
@@ -881,6 +940,7 @@ The absolute error in its expected distance due to the positional displacement o
 
 $$
 \left| \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}), \varphi(w_{1,c})) \right] - \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{2,i}), \varphi(w_{2,c})) \right] \right| \le d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}), \varphi(w_{2,i})) + \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,c}), \varphi(w_{2,c})) \right]
+
 $$
 
 ```{dropdown} Proof
@@ -892,6 +952,7 @@ We combine the two terms into a single expectation over the fixed companion sele
 
 $$
 \Delta_{\mathrm{pos},i} = \left| \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}), \varphi(w_{1,c})) - d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{2,i}), \varphi(w_{2,c})) \right] \right|
+
 $$
 
 **Step 2: Apply Jensen's Inequality.**
@@ -899,6 +960,7 @@ Using Jensen's inequality for the convex function $f(x)=|x|$, we can move the ab
 
 $$
 \Delta_{\mathrm{pos},i} \le \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} \left[ \left| d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}), \varphi(w_{1,c})) - d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{2,i}), \varphi(w_{2,c})) \right| \right]
+
 $$
 
 **Step 3: Apply the Reverse Triangle Inequality.**
@@ -906,6 +968,7 @@ The term inside the expectation is the absolute difference between two distance 
 
 $$
 \left| d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}), \varphi(w_{1,c})) - d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{2,i}), \varphi(w_{2,c})) \right| \le d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}), \varphi(w_{2,i})) + d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,c}), \varphi(w_{2,c}))
+
 $$
 
 **Step 4: Finalize the Bound.**
@@ -913,6 +976,7 @@ We substitute the inequality from Step 3 back into the expression from Step 2.
 
 $$
 \Delta_{\mathrm{pos},i} \le \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}), \varphi(w_{2,i})) + d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,c}), \varphi(w_{2,c})) \right]
+
 $$
 
 By linearity of expectation, we can separate the terms. The first term, $d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}), \varphi(w_{2,i}))$, is a constant with respect to the expectation over the companion index $c$. This gives the final bound as stated in the lemma.
@@ -928,6 +992,7 @@ Let $i\in\mathcal A_{\mathrm{stable}}$ and keep the second swarm’s capped posi
 
 $$
 \left| \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{2,i}), \varphi(w_{2,c})) \right] - \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_2)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{2,i}), \varphi(w_{2,c})) \right] \right| \le \frac{2 D_{\mathcal Y}}{k_1-1} \cdot n_c(\mathcal S_1, \mathcal S_2)
+
 $$
 
 where $D_{\mathcal Y}$ is the diameter of the algorithmic space.
@@ -947,6 +1012,7 @@ The framework theorem {prf:ref}`thm-total-error-status-bound` provides a general
 
 $$
 \text{Error} \le \frac{2 M_f}{|S_1|} \cdot n_c(\mathcal S_1, \mathcal S_2)
+
 $$
 This bound is purely algebraic and holds for any choice of metric or bounded function.
 
@@ -966,6 +1032,7 @@ Let $\mathcal S_1,\mathcal S_2$ be swarms with alive sets $\mathcal A_r$ and let
 
 $$
 \sum_{i\in\mathcal A_{\mathrm{stable}}}\big|d^{(1)}_i-d^{(2)}_i\big|^2\le C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}})\,\Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2),
+
 $$
 
 where $C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}}):=2\Big(1+\frac{k_{\mathrm{stable}}}{\max\{1,k_1-1\}}\Big)$.
@@ -976,17 +1043,20 @@ For $i\in\mathcal A_{\mathrm{stable}}$ set $\Delta_i:=|d^{(1)}_i-d^{(2)}_i|$. Le
 
 $$
 \Delta_i\le d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}),\varphi(w_{2,i})) + \mathbb E_{c\sim\mathbb C_i(\mathcal S_1)}\big[d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,c}),\varphi(w_{2,c}))\big].
+
 $$
 
 Apply $(a+b)^2\le 2a^2+2b^2$ and Jensen's inequality to obtain
 
 $$
 \Delta_i^2\le 2\,d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}),\varphi(w_{2,i}))^2 + \frac{2}{k_1-1}\sum_{j\in\mathcal A_1} d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,j}),\varphi(w_{2,j}))^2,
+
 $$
 where the averaging denominator $k_1-1$ is interpreted as $1$ when $k_1=1$. Summing over $i\in\mathcal A_{\mathrm{stable}}$ yields
 
 $$
 \sum_{i\in\mathcal A_{\mathrm{stable}}}\Delta_i^2\le 2\,\Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2)+\frac{2k_{\mathrm{stable}}}{\max\{1,k_1-1\}}\,\Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2),
+
 $$
 which is the claimed bound.```
 :::
@@ -998,12 +1068,14 @@ Let $\mathbf d^{(r)}$ be the expected raw distance vectors of swarms $\mathcal S
 
 $$
 F_{d,ms}^{\mathrm{Sasaki}}(\Delta_{\mathrm{pos}}^2,n_c):=C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}})\,\Delta_{\mathrm{pos}}^2+4k_{\mathrm{stable}}\frac{D_{\mathcal Y}^2}{\max\{1,k_1-1\}^2}\,n_c^2+4D_{\mathcal Y}^2 n_c.
+
 $$
 
 Then
 
 $$
 \big\|\mathbf d^{(1)}-\mathbf d^{(2)}\big\|_2^2\le F_{d,ms}^{\mathrm{Sasaki}}\big(\Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2),n_c(\mathcal S_1,\mathcal S_2)\big).
+
 $$
 
 ```{dropdown} Proof
@@ -1013,7 +1085,7 @@ Decompose the index set into stable walkers $\mathcal A_{\mathrm{stable}}$ and t
 Finally, the structural perturbation of the companion distribution for stable walkers is controlled by Lemma {prf:ref}`lem-sasaki-single-walker-structural-error`. Squaring its bound and summing over the $k_{\mathrm{stable}}$ indices yields the middle term in $F_{d,ms}^{\mathrm{Sasaki}}$. Adding the three contributions completes the proof.```
 :::
 
-4. **Non-degenerate noise.** Choosing $\sigma_v^2>0$ and cloning scales $\delta_x,\delta_v>0$ keeps the perturbation and cloning measures non-Dirac.
+4. **Non-degenerate noise.** Choosing $\sigma_v^2>0$ and positional cloning jitter $\sigma_x>0$ keeps the perturbation and cloning measures non-Dirac. The velocity updates via the inelastic collision model add stochasticity through random rotations $R_k$.
 
 5. **Sufficient amplification.** The weights $\alpha,\beta\ge 0$ satisfy $\alpha+\beta>0$ exactly as in the canonical swarm ({prf:ref}`def-axiom-sufficient-amplification`).
 
@@ -1021,6 +1093,7 @@ Finally, the structural perturbation of the companion distribution for stable wa
 
 $$
 |R(x_1,v_1)-R(x_2,v_2)|\le L_R^{\mathrm{Sasaki}}\,d_{\mathcal Y}^{\mathrm{Sasaki}}\big((x_1,v_1),(x_2,v_2)\big),\qquad L_R^{\mathrm{Sasaki}}:=L_{\mathrm{pos}}+\frac{2\lambda_{\mathrm{vel}}V_{\mathrm{alg}}}{\sqrt{\lambda_v}}.
+
 $$
 Whenever aggregators act on reward vectors we use the uniform bound $V_{\mathrm{max}}^{(R)}:=\max\{|R_{\min}|,R_{\max}\}$; for distance vectors we use $V_{\mathrm{max}}^{(d)}:=D_{\mathcal Y}$. For swarms $\mathcal S_r$ write $k_r:=|\mathcal A(\mathcal S_r)|$, define $k_{\min}:=\max\{1,\min(k_1,k_2)\}$, and let $n_c:=\sum_{i=1}^N(s_{1,i}-s_{2,i})^2$ count the status changes.
 
@@ -1031,6 +1104,7 @@ Fix a swarm $\mathcal S$ with alive index set $\mathcal A(\mathcal S)$ of size $
 
 $$
 |\mu(\mathcal S,\mathbf v_1)-\mu(\mathcal S,\mathbf v_2)|\le \frac{1}{\sqrt{k}}\,\|\mathbf v_1-\mathbf v_2\|_2,\qquad|m_2(\mathcal S,\mathbf v_1)-m_2(\mathcal S,\mathbf v_2)|\le \frac{2V_{\max}}{\sqrt{k}}\,\|\mathbf v_1-\mathbf v_2\|_2.
+
 $$
 
 ```{dropdown} Proof
@@ -1047,6 +1121,7 @@ Let $\mathcal S_r=((x_{r,i},v_{r,i},s_{r,i}))_{i=1}^N$ with alive counts $k_r\ge
 
 $$
 |\mu(\mathcal S_1,\mathbf v)-\mu(\mathcal S_2,\mathbf v)|\le \frac{3V_{\max}}{k_{\min}}\,n_c,\qquad|m_2(\mathcal S_1,\mathbf v)-m_2(\mathcal S_2,\mathbf v)|\le \frac{3V_{\max}^2}{k_{\min}}\,n_c.
+
 $$
 
 ```{dropdown} Proof
@@ -1063,10 +1138,12 @@ For reward vectors take $V_{\max}=V_{\mathrm{max}}^{(R)}$; for distance vectors 
 
 $$
 L_{\mu,M}^{\mathrm{Sasaki}}(k)=\frac{1}{\sqrt{k}},\qquad L_{m_2,M}^{\mathrm{Sasaki}}(k)=\frac{2V_{\max}}{\sqrt{k}},
+
 $$
 
 $$
 L_{\mu,S}^{\mathrm{Sasaki}}(k_{\min})=\frac{3V_{\max}}{k_{\min}},\qquad L_{m_2,S}^{\mathrm{Sasaki}}(k_{\min})=\frac{3V_{\max}^2}{k_{\min}},
+
 $$
 and growth exponents $p_{\mu,S}=p_{m_2,S}=p_{\mathrm{worst	ext{-}case}}=-1$. Consequently $\kappa_{\mathrm{var}}^{\mathrm{Sasaki}}=\kappa_{\mathrm{range}}^{\mathrm{Sasaki}}=1$ as in the canonical framework.
 
@@ -1080,6 +1157,7 @@ Combine Lemmas {prf:ref}`lem-sasaki-aggregator-value` and {prf:ref}`lem-sasaki-a
 
 $$
 L_{\sigma',M}^{\mathrm{Sasaki}}(k):=L_{\sigma'_{\mathrm{patch}}}\Big(L_{m_2,M}^{\mathrm{Sasaki}}(k)+2V_{\mathrm{max}}^{(R)}L_{\mu,M}^{\mathrm{Sasaki}}(k)\Big).
+
 $$
 
 :::{prf:definition} Standardization constants (Sasaki geometry)
@@ -1120,6 +1198,7 @@ The structural error coefficients, which are used in the subsequent theorem for 
 $$
 C_{S,\mathrm{direct}}^{\mathrm{Sasaki}}(k_{\min}):=\frac{V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}}+\frac{2\big(V_{\mathrm{max}}^{(R)}\big)^2}{\sigma_{\min,\mathrm{patch}}^2},
 \qquad C_{S,\mathrm{indirect}}^{\mathrm{Sasaki}}(k_{\min}):=\frac{3V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}k_{\min}}+\frac{6\big(V_{\mathrm{max}}^{(R)}\big)^2}{\sigma_{\min,\mathrm{patch}}^2k_{\min}}L_{\sigma',M}^{\mathrm{Sasaki}}(k_{\min}).
+
 $$
 :::
 
@@ -1135,6 +1214,7 @@ Suppose $\mathcal S_1$ and $\mathcal S_2$ share the same alive set $\mathcal A$ 
 
 $$
 \big\|z(\mathcal S_1)-z(\mathcal S_2)\big\|_2^2 \le C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1) \cdot \Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2).
+
 $$
 
 where $C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$ is the **Total Value Error Coefficient**, a deterministic constant defined in {prf:ref}`def-sasaki-standardization-constants-sq`. The proof is provided in the subsequent sections by decomposing the total error into its constituent parts.
@@ -1151,6 +1231,7 @@ The total value error vector, $\Delta\mathbf{z} = \mathbf z_1 - \mathbf z_2$, ca
 
 $$
 \Delta\mathbf{z} = \Delta_{\text{direct}} + \Delta_{\text{mean}} + \Delta_{\text{denom}}
+
 $$
 
 where:
@@ -1177,6 +1258,7 @@ Furthermore, the total squared error is bounded by three times the sum of the sq
 
 $$
 \|\Delta\mathbf{z}\|_2^2 \le 3\left( \|\Delta_{\text{direct}}\|_2^2 + \|\Delta_{\text{mean}}\|_2^2 + \|\Delta_{\text{denom}}\|_2^2 \right)
+
 $$
 
 ```{dropdown} Proof
@@ -1192,6 +1274,7 @@ $$
 &= \frac{\mathbf r_1 - \mathbf r_2}{\sigma'_1} + \frac{\mu_2 - \mu_1}{\sigma'_1}\mathbf{1} + \frac{\mathbf r_2 - \mu_2}{\sigma'_2} \frac{\sigma'_2 - \sigma'_1}{\sigma'_1} \\
 &= \Delta_{\text{direct}} + \Delta_{\text{mean}} + \Delta_{\text{denom}}
 \end{aligned}
+
 $$
 The final line follows by recognizing the definitions of the three components.
 
@@ -1200,6 +1283,7 @@ The bound on the total squared norm follows from the triangle inequality (`||A+B
 
 $$
 \|\Delta\mathbf{z}\|_2^2 = \|\Delta_{\text{direct}} + \Delta_{\text{mean}} + \Delta_{\text{denom}}\|_2^2 \le \left( \|\Delta_{\text{direct}}\|_2 + \|\Delta_{\text{mean}}\|_2 + \|\Delta_{\text{denom}}\|_2 \right)^2 \le 3\left( \|\Delta_{\text{direct}}\|_2^2 + \|\Delta_{\text{mean}}\|_2^2 + \|\Delta_{\text{denom}}\|_2^2 \right)
+
 $$
 
 This completes the proof.
@@ -1217,6 +1301,7 @@ Let $\mathcal S$ be a fixed swarm state. Let $\mathbf r_1$ and $\mathbf r_2$ be 
 
 $$
 \|\Delta_{\text{direct}}\|_2^2 \le \frac{1}{\sigma_{\min,\mathrm{patch}}^2} \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
 $$
 
 where $\sigma_{\min,\mathrm{patch}} := \sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ is the uniform lower bound from the regularized standard deviation.
@@ -1266,6 +1351,7 @@ Let $\mathcal S$ be a fixed swarm state with alive set $\mathcal A$ of size $k \
 
 $$
 \|\Delta_{\text{mean}}\|_2^2 \le \frac{k \cdot (L_{\mu,M}^{\mathrm{Sasaki}}(k))^2}{\sigma_{\min,\mathrm{patch}}^2} \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
 $$
 
 where $L_{\mu,M}^{\mathrm{Sasaki}}(k)$ is the axiomatic **Value Lipschitz Function** for the aggregator's mean from {prf:ref}`lem-sasaki-aggregator-lipschitz`.
@@ -1318,6 +1404,7 @@ Let $\mathcal S$ be a fixed swarm state with alive set $\mathcal A$ of size $k \
 
 $$
 \|\Delta_{\text{denom}}\|_2^2 \le k \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2 \left( \frac{L_{\sigma',M}^{\mathrm{Sasaki}}(k)}{\sigma_{\min,\mathrm{patch}}} \right)^2 \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
 $$
 
 where $L_{\sigma',M}^{\mathrm{Sasaki}}(k)$ is the derived Lipschitz constant for the regularized standard deviation.
@@ -1383,6 +1470,7 @@ From the algebraic decomposition in {prf:ref}`lem-sasaki-value-error-decompositi
 
 $$
 \|z(\mathcal S_1)-z(\mathcal S_2)\|_2^2 \le 3\left( \|\Delta_{\text{direct}}\|_2^2 + \|\Delta_{\text{mean}}\|_2^2 + \|\Delta_{\text{denom}}\|_2^2 \right)
+
 $$
 
 **Step 2: Substitute the Bounds for Each Component.**
@@ -1409,6 +1497,7 @@ Substituting these into the inequality from Step 1 and factoring out the common 
 
 $$
 \|z_1 - z_2\|_2^2 \le 3 \left( C_{V,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S_1) + C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S_1) + C_{V,\mathrm{denom}}^{\mathrm{sq}}(\mathcal S_1) \right) \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
 $$
 
 By definition ({prf:ref}`def-sasaki-standardization-constants-sq`), the term in parentheses is the **Total Value Error Coefficient**, $C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1)$.
@@ -1418,6 +1507,7 @@ The raw reward vector difference is bounded by the positional displacement via t
 
 $$
 \|\mathbf r_1 - \mathbf r_2\|_2^2 = \sum_{i \in \mathcal A} |R(x_{1,i},v_{1,i}) - R(x_{2,i},v_{2,i})|^2 \le \sum_{i \in \mathcal A} \left(L_R^{\mathrm{Sasaki}}\right)^2 d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}), \varphi(w_{2,i}))^2 \le \left(L_R^{\mathrm{Sasaki}}\right)^2 \Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2)
+
 $$
 
 **Step 5: Final Assembly.**
@@ -1470,6 +1560,7 @@ For general swarms $\mathcal S_1,\mathcal S_2$ with alive counts $k_r\ge 1$, the
 
 $$
 \|z(\mathcal S_1)-z(\mathcal S_2)\|_2^2 \le C_{S,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) \cdot n_c(\mathcal S_1, \mathcal S_2) + C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) \cdot n_c(\mathcal S_1, \mathcal S_2)^2
+
 $$
 
 where $C_{S,\mathrm{direct}}^{\mathrm{sq}}$ and $C_{S,\mathrm{indirect}}^{\mathrm{sq}}$ are the **Squared Structural Error Coefficients** defined in {prf:ref}`def-sasaki-structural-coeffs-sq`. The proof is provided in the subsequent sections.
@@ -1486,6 +1577,7 @@ The total structural error vector, $\Delta\mathbf{z} = \mathbf z_1 - \mathbf z_2
 
 $$
 \Delta\mathbf{z} = \Delta_{\text{direct}} + \Delta_{\text{indirect}}
+
 $$
 
 where:
@@ -1496,6 +1588,7 @@ Because these two vectors have disjoint support, the squared L2-norm of the tota
 
 $$
 \|\Delta\mathbf{z}\|_2^2 = \|\Delta_{\text{direct}}\|_2^2 + \|\Delta_{\text{indirect}}\|_2^2
+
 $$
 
 ```{dropdown} Proof
@@ -1538,6 +1631,7 @@ Let $\mathbf r_2$ be a fixed raw value vector with components bounded by $V_{\ma
 
 $$
 \|\Delta_{\text{direct}}\|_2^2 \le \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2 \cdot n_c(\mathcal S_1, \mathcal S_2)
+
 $$
 
 ```{dropdown} Proof
@@ -1591,6 +1685,7 @@ Let $\mathbf r_2$ be a fixed raw value vector. Let $\mathcal S_1$ and $\mathcal 
 
 $$
 \|\Delta_{\text{indirect}}\|_2^2 \le C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) \cdot n_c(\mathcal S_1, \mathcal S_2)^2
+
 $$
 
 where $C_{S,\mathrm{indirect}}^{\mathrm{sq}}$ is the **Squared Indirect Structural Error Coefficient** defined in {prf:ref}`def-sasaki-structural-coeffs-sq`.
@@ -1608,11 +1703,13 @@ z_{1,i} - z_{2,i} &= \frac{r_{2,i} - \mu_1}{\sigma'_1} - \frac{r_{2,i} - \mu_2}{
 &= \left(\frac{r_{2,i} - \mu_1}{\sigma'_1} - \frac{r_{2,i} - \mu_2}{\sigma'_1}\right) + \left(\frac{r_{2,i} - \mu_2}{\sigma'_1} - \frac{r_{2,i} - \mu_2}{\sigma'_2}\right) \\
 &= \underbrace{\frac{\mu_2 - \mu_1}{\sigma'_1}}_{\text{Mean Shift}} + \underbrace{z_{2,i} \frac{\sigma'_2 - \sigma'_1}{\sigma'_1}}_{\text{Denominator Shift}}
 \end{aligned}
+
 $$
 The squared error for this single walker is bounded using $(a+b)^2 \le 2(a^2+b^2)$:
 
 $$
 (z_{1,i} - z_{2,i})^2 \le 2\left(\frac{\mu_2 - \mu_1}{\sigma'_1}\right)^2 + 2\left(z_{2,i} \frac{\sigma'_2 - \sigma'_1}{\sigma'_1}\right)^2
+
 $$
 
 **Step 2: Sum the Errors Over All Stable Walkers.**
@@ -1620,12 +1717,14 @@ The total squared indirect error is the sum over all $i \in \mathcal A_{\mathrm{
 
 $$
 \|\Delta_{\text{indirect}}\|_2^2 = \sum_{i \in \mathcal A_{\mathrm{stable}}} (z_{1,i} - z_{2,i})^2 \le \sum_{i \in \mathcal A_{\mathrm{stable}}} 2\left(\frac{\mu_2 - \mu_1}{\sigma'_1}\right)^2 + \sum_{i \in \mathcal A_{\mathrm{stable}}} 2\left(z_{2,i} \frac{\sigma'_2 - \sigma'_1}{\sigma'_1}\right)^2
+
 $$
 
 This can be simplified:
 
 $$
 \|\Delta_{\text{indirect}}\|_2^2 \le 2 k_{\mathrm{stable}} \frac{(\mu_2 - \mu_1)^2}{(\sigma'_1)^2} + 2 \frac{(\sigma'_2 - \sigma'_1)^2}{(\sigma'_1)^2} \sum_{i \in \mathcal A_{\mathrm{stable}}} (z_{2,i})^2
+
 $$
 
 **Step 3: Bound the Components.**
@@ -1652,12 +1751,14 @@ Substituting these bounds back into the inequality from Step 2 gives a bound tha
 
 $$
 \|\Delta_{\text{indirect}}\|_2^2 \le 2 k_{\mathrm{stable}} \frac{(L_{\mu,S})^2 n_c^2}{\sigma_{\min,\mathrm{patch}}^2} + 2 \frac{(L_{\sigma',S})^2 n_c^2}{\sigma_{\min,\mathrm{patch}}^2} k_2 \left(\frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}}\right)^2
+
 $$
 
 Factoring out $n_c^2$ and combining the coefficients gives:
 
 $$
 \|\Delta_{\text{indirect}}\|_2^2 \le \left[ 2 k_{\mathrm{stable}} \frac{(L_{\mu,S})^2}{\sigma_{\min,\mathrm{patch}}^2} + 2 k_2 \left(\frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}}\right)^2 \frac{(L_{\sigma',S})^2}{\sigma_{\min,\mathrm{patch}}^2} \right] \cdot n_c^2
+
 $$
 The term in the brackets is precisely the definition of the **Squared Indirect Structural Error Coefficient**, $C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2)$. This completes the proof.
 
@@ -1676,6 +1777,7 @@ From {prf:ref}`lem-sasaki-structural-error-decomposition`, the total squared str
 
 $$
 \|z(\mathcal S_1)-z(\mathcal S_2)\|_2^2 = \|\Delta_{\text{direct}}\|_2^2 + \|\Delta_{\text{indirect}}\|_2^2
+
 $$
 
 **Step 2: Substitute the Bounds for Each Component.**
@@ -1698,6 +1800,7 @@ Summing the two bounds from Step 2 directly gives the final inequality as stated
 
 $$
 \|z(\mathcal S_1)-z(\mathcal S_2)\|_2^2 \le C_{S,\mathrm{direct}}^{\mathrm{sq}} \cdot n_c(\mathcal S_1, \mathcal S_2) + C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) \cdot n_c(\mathcal S_1, \mathcal S_2)^2
+
 $$
 
 This completes the proof, establishing a deterministic, worst-case bound on the operator's output error due to structural changes.
@@ -1732,6 +1835,7 @@ The N-dimensional standardization operator $z(\mathcal S)$, when applied to the 
 
 $$
 \|z(\mathcal S_1)-z(\mathcal S_2)\|_2^2 \le L_{z,L}^2(\mathcal S_1,\mathcal S_2) \cdot d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1, \mathcal S_2)^2 + L_{z,H}^2(\mathcal S_1,\mathcal S_2) \cdot d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1, \mathcal S_2)^4
+
 $$
 
 where $L_{z,L}^2$ and $L_{z,H}^2$ are state-dependent coefficients representing the Lipschitz and higher-order parts of the bound, respectively. Consequently, the logistic rescale operator $u(\mathcal S) = g_A(z(\mathcal S))$ is also continuous.
@@ -1745,6 +1849,7 @@ Let $\mathbf r_1$ and $\mathbf r_2$ be the raw reward vectors for swarms $\mathc
 
 $$
 \|z(\mathcal S_1, \mathbf r_1) - z(\mathcal S_2, \mathbf r_2)\|_2^2 \le 2\,\|\underbrace{z(\mathcal S_1, \mathbf r_1) - z(\mathcal S_1, \mathbf r_2)}_{E_V}\|_2^2 + 2\,\|\underbrace{z(\mathcal S_1, \mathbf r_2) - z(\mathcal S_2, \mathbf r_2)}_{E_S}\|_2^2
+
 $$
 
 **Step 2: Bounding the Squared Value Error Term (`||E_V||_2^2`).**
@@ -1752,11 +1857,13 @@ The first term is a pure value error for the fixed swarm structure $\mathcal S_1
 
 $$
 \|E_V\|_2^2 \le C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1) \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
 $$
 The squared difference of the raw reward vectors is bounded by the sum of contributions from walkers with stable status and unstable status:
 
 $$
 \|\mathbf r_1 - \mathbf r_2\|_2^2 = \sum_{i \in \mathcal A_1 \cap \mathcal A_2} |r_{1,i}-r_{2,i}|^2 + \sum_{i \in \mathcal A_1 \triangle \mathcal A_2} |r_{1,i}-r_{2,i}|^2 \le (L_R^{\mathrm{Sasaki}})^2 \Delta_{\mathrm{pos,Sasaki}}^2 + n_c (2 V_{\max}^{(R)})^2
+
 $$
 where we used that for unstable walkers, one reward is zero and the other is bounded by $V_{\max}^{(R)}$.
 
@@ -1765,6 +1872,7 @@ The second term is a pure structural error for the fixed raw value vector $\math
 
 $$
 \|E_S\|_2^2 \le C_{S,\mathrm{direct}}^{\mathrm{sq}} \cdot n_c + C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) \cdot n_c^2
+
 $$
 
 **Step 4: Assembling the Composite Bound in Terms of Displacement Components.**
@@ -1772,6 +1880,7 @@ Combining the bounds from Steps 2 and 3 into the decomposition from Step 1 gives
 
 $$
 \|z_1 - z_2\|_2^2 \le 2\,C_{V,\mathrm{total}}^{\mathrm{Sasaki}} \left[ (L_R^{\mathrm{Sasaki}})^2 \Delta_{\mathrm{pos,Sasaki}}^2 + 4(V_{\max}^{(R)})^2 n_c \right] + 2 \left[ C_{S,\mathrm{direct}}^{\mathrm{sq}} n_c + C_{S,\mathrm{indirect}}^{\mathrm{sq}} n_c^2 \right]
+
 $$
 
 **Step 5: Expressing the Bound in Terms of the Dispersion Metric.**
@@ -1779,12 +1888,14 @@ Let $d^2:=d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1,\mathcal S
 
 $$
 \Delta_{\mathrm{pos,Sasaki}}^2\le N d^2,\qquad n_c\le\frac{N}{\lambda_{\mathrm{status}}}d^2,\qquad n_c^2\le\left(\frac{N}{\lambda_{\mathrm{status}}}\right)^2 d^4.
+
 $$
 
 Substituting these bounds into the expression from Step 4 yields
 
 $$
 \|z(\mathcal S_1)-z(\mathcal S_2)\|_2^2\le L_{z,L}^2(\mathcal S_1,\mathcal S_2)d^2+L_{z,H}^2(\mathcal S_1,\mathcal S_2)d^4.
+
 $$
 
 The coefficients are explicit:
@@ -1794,6 +1905,7 @@ $$
 L_{z,L}^2(\mathcal S_1,\mathcal S_2)&:=2C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1)(L_R^{\mathrm{Sasaki}})^2N\\&\quad{}+\frac{N}{\lambda_{\mathrm{status}}}\Big(8C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1)(V_{\max}^{(R)})^2+2C_{S,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S_1,\mathcal S_2)\Big),\\[4pt]
 L_{z,H}^2(\mathcal S_1,\mathcal S_2)&:=2C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1,\mathcal S_2)\left(\frac{N}{\lambda_{\mathrm{status}}}\right)^2.
 \end{aligned}
+
 $$
 
 All quantities on the right-hand side depend only on the swarm parameters and the bounds established earlier, so the coefficients are finite. Since the rescale function $g_A$ is globally Lipschitz ({prf:ref}`thm-rescale-function-lipschitz`), the continuity of $z$ implies the continuity of the composite operator $u(\mathcal S)=g_A(z(\mathcal S))$.
@@ -1807,6 +1919,7 @@ The bounds in Theorem {prf:ref}`thm-sasaki-standardization-composite-sq` show th
 
 $$
 \|z(\mathcal S_1)-z(\mathcal S_2)\|_2^2\le L_{z,L}^2(\mathcal S_1,\mathcal S_2)\,d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1,\mathcal S_2)^2+L_{z,H}^2(\mathcal S_1,\mathcal S_2)\,d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1,\mathcal S_2)^4.
+
 $$
 
 ```{dropdown} Proof
@@ -1849,6 +1962,7 @@ The environment $(X_{\mathrm{valid}}, R_{\mathrm{pos}})$ is **non-deceptive** if
 
 $$
 \frac{1}{\|x-y\|} \int_{0}^{\|x-y\|} \big\|\nabla R_{\mathrm{pos}}\big(x + t\tfrac{y-x}{\|y-x\|}\big)\big\|^2 dt \ge \kappa_{\mathrm{grad}}.
+
 $$
 
 **Validation:** This axiom is satisfied by ensuring the potential function $R_{\mathrm{pos}}$ does not contain large, perfectly flat plateaus within the compact valid domain $X_{\mathrm{valid}}$. Continuity of $\nabla R_{\mathrm{pos}}$ on the compact set allows the constants to be chosen with $L_{\mathrm{grad}}$ no larger than the richness scale $r_{\mathrm{rich}}/4$ from Section 2.2. This regularity condition is assumed to hold for the Euclidean Gas instantiation.
@@ -1864,7 +1978,7 @@ $$
 The Kinetic Euclidean Gas is a valid Fragile Gas because every axiom required by the framework has been verified in the preceding sections:
 - **Foundations & environment:** Lemmas {prf:ref}`lem-euclidean-reward-regularity` and {prf:ref}`lem-euclidean-richness` prove reward regularity and environmental richness in the Sasaki space, and the projection in Section 1.1 establishes bounded algorithmic diameter ({prf:ref}`def-axiom-bounded-algorithmic-diameter`).
 - **Noise validity & growth control:** Lemma {prf:ref}`lem-euclidean-perturb-moment` bounds the second moment of the kinetic perturbation by a quadratic function of $\|x\|$ and $\|v\|$ and confirms the Feller property of the capped kernel.
-- **Geometric constants & non-degeneracy:** Lemma {prf:ref}`lem-euclidean-geometric-consistency` supplies drift and anisotropy bounds that are uniform on compact subsets of the state space, while the parameter choices $\sigma_v^2>0$ and $\delta_x,\delta_v\ge 0$ keep the noise non-degenerate.
+- **Geometric constants & non-degeneracy:** Lemma {prf:ref}`lem-euclidean-geometric-consistency` supplies drift and anisotropy bounds that are uniform on compact subsets of the state space, while the parameter choices $\sigma_v^2>0$, $\sigma_x>0$, and random rotations $R_k$ in the inelastic collision model keep the noise non-degenerate.
 - **Measurement operator continuity:** Lemma {prf:ref}`thm-sasaki-distance-ms` proves the mean-square continuity of the Sasaki distance measurement with explicit error function $F_{d,ms}^{\mathrm{Sasaki}}$.
 - **Deterministic operator pipeline:** Lemma {prf:ref}`lem-sasaki-aggregator-lipschitz` together with Theorems {prf:ref}`thm-sasaki-standardization-value` and {prf:ref}`thm-sasaki-standardization-structural` (culminating in Lemma {prf:ref}`lem-sasaki-standardization-lipschitz`) provide Sasaki-specific Lipschitz and Feller bounds for the empirical aggregators, patched standardization, and logistic rescale, so the deterministic stage respects the dispersion metric ({prf:ref}`def-assumption-instep-independence`).
 - **Viability:** Section 2.1 re-establishes guaranteed revival and boundary regularity via Lemma {prf:ref}`lem-euclidean-boundary-holder`.
@@ -1933,15 +2047,61 @@ For each index $i\in\{1,\dots,N\}$ independently:
    S_i:=\frac{v_c-v_i}{v_i+\varepsilon_{\mathrm{clone}}}.
    $$
    Set $a_i=\textsf{Clone}$ if $S_i>T_i$, else $a_i=\textsf{Persist}$. (Note: For a dead walker `i`, this condition is guaranteed to be met by the Axiom of Guaranteed Revival.)
-3.  **Intermediate state.**
-   - If $a_i=\textsf{Persist}$, take $(\tilde x_i,\tilde v_i):=(x_i,v_i)$.
-   - If $a_i=\textsf{Clone}$, draw $\zeta_i^x\sim\mathcal N(0,I_d)$ and set
+3.  **Intermediate state (Inelastic Collision Model).**
+
+   The state update uses the momentum-conserving inelastic collision model from Definition 5.7.4 of `03_cloning.md`. Let $C_{\text{set}} := \{i \mid a_i = \textsf{Clone}\}$ be the set of all walkers marked for cloning.
+
+   - **Walkers that persist:** If $a_i=\textsf{Persist}$, take $(\tilde x_i,\tilde v_i):=(x_i,v_i)$.
+
+   - **Walkers that clone:** For cloners, the update proceeds in three stages:
+
+     **Stage 3a: Group by companion.** For each unique companion $c$ in the swarm, identify the set of cloners that selected it:
 
      $$
-     (\tilde x_i,\tilde v_i):=\Big(x_{c_{\mathrm{clone}}(i)}+\sigma_x\zeta_i^x,\;v_{c_{\mathrm{clone}}(i)}\Big).
+     I_c := \{j \in C_{\text{set}} \mid c_{\mathrm{clone}}(j) = c\}.
      $$
 
-     The position is reset to the companion's position plus Gaussian jitter with scale $\sigma_x$, while the velocity is reset directly to the companion's velocity without jitter. This matches the cloning operator defined in Definition 5.7.4 of `03_cloning.md`. For the full inelastic collision model with momentum conservation when multiple walkers clone simultaneously, see that definition.
+     Let $M_c := |I_c|$ be the number of walkers cloning from companion $c$. Each $(M_c+1)$-particle system (companion $c$ plus its cloners $I_c$) undergoes a coupled collision event.
+
+     **Stage 3b: Position updates.** For each cloner $j \in I_c$, draw independent Gaussian jitter $\zeta_j^x \sim \mathcal{N}(0, I_d)$ and set:
+
+     $$
+     \tilde x_j := x_c + \sigma_x \zeta_j^x.
+     $$
+
+     The companion's position remains unchanged: $\tilde x_c := x_c$.
+
+     **Stage 3c: Velocity updates (momentum-conserving inelastic collision).** The velocities of all $(M_c+1)$ interacting walkers are updated simultaneously:
+
+     1. **Center-of-mass velocity** (conserved quantity):
+
+        $$
+        V_{\text{COM}, c} := \frac{1}{M_c+1} \left( v_c + \sum_{j \in I_c} v_j \right).
+        $$
+
+     2. **Relative velocities in CoM frame:** For each walker $k \in I_c \cup \{c\}$, compute:
+
+        $$
+        u_k := v_k - V_{\text{COM}, c}.
+        $$
+
+     3. **Inelastic contraction with random rotation:** Let $R_k$ be a random orthogonal transformation that isotropically rotates $u_k$ to a uniformly random direction on the $(d-1)$-sphere while preserving magnitude. The new relative velocity is:
+
+        $$
+        u'_k := \alpha_{\text{restitution}} \cdot R_k(u_k),
+        $$
+
+        where $\alpha_{\text{restitution}} \in [0, 1]$ is the coefficient of restitution controlling energy dissipation.
+
+     4. **Return to lab frame:** The final velocity for each interacting walker is:
+
+        $$
+        \tilde v_k := V_{\text{COM}, c} + u'_k.
+        $$
+
+   - **Uninvolved walkers:** Any walker that is neither a cloner nor selected as a companion has its state unchanged: $(\tilde x_i, \tilde v_i) := (x_i, v_i)$.
+
+   **Physical interpretation:** This multi-body inelastic collision model ensures total momentum conservation while allowing tunable energy dissipation. When $\alpha_{\text{restitution}} = 0$ (perfectly inelastic), all walkers in a cloning group collapse to the center-of-mass velocity. When $\alpha_{\text{restitution}} = 1$ (perfectly elastic), kinetic energy is conserved but redistributed via random rotations. See Definition 5.7.4 in `03_cloning.md` for detailed analysis.
 
 Collect the intermediate swarm $\mathcal S_{t+1/2}=((\tilde x_i,\tilde v_i,1))_{i=1}^N$, i.e. every walker is set to alive before the kinetic step.
 
@@ -1952,11 +2112,13 @@ Independently for each $i$, draw $\xi_i\sim\mathcal N(0,I_d)$ and apply the kine
 
 $$
 \hat v_i:=\psi_v\!\Big(\tilde v_i+\frac{\tau}{m}F(\tilde x_i)-\gamma_{\mathrm{fric}}\tau(\tilde v_i-u(\tilde x_i))+\sqrt{\sigma_v^2\tau}\,\xi_i\Big),\qquad\hat x_i:=\tilde x_i+\tau\hat v_i.
+
 $$
 Set the terminal status by the deterministic boundary check
 
 $$
  s_i^{(t+1)}:=\mathbf 1_{\mathcal X_{\mathrm{valid}}}(\hat x_i).
+
 $$
 The next swarm is $\mathcal S_{t+1}=((\hat x_i,\hat v_i,s_i^{(t+1)}))_{i=1}^N$.
 
@@ -1967,6 +2129,7 @@ Let $\boldsymbol U=(T_i)$, $\boldsymbol C^{\mathrm{pot}}=(c_{\mathrm{pot}}(i))$,
 
 $$
 \Psi_{\mathcal F_{\mathrm{EG}}}(\mathcal S_t,A)=\int\mathbf 1\big\{\Phi(\mathcal S_t;\boldsymbol U,\boldsymbol C^{\mathrm{pot}},\boldsymbol C^{\mathrm{clone}},\boldsymbol\zeta,\boldsymbol\xi)\in A\big\}\,\nu(d\boldsymbol U\,d\boldsymbol C^{\mathrm{pot}}\,d\boldsymbol C^{\mathrm{clone}}\,d\boldsymbol\zeta\,d\boldsymbol\xi)
+
 $$
 for Borel $A\subseteq\Sigma_N$, where $\Phi$ executes the deterministic composition of Stages 2–4.
 
