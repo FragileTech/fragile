@@ -203,11 +203,11 @@ At the quasi-stationary distribution $\mu_{\text{QSD}}$, the adaptive force cont
    u^i_{\text{QSD}} = \frac{\varepsilon_F}{\gamma} \nabla^i V_{\text{fit}}[\rho_{\text{QSD}}] = O(\varepsilon_F)
    $$
 
-2. **Detailed balance**: The fitness potential satisfies:
+2. **Stationary solution**: The QSD density $\rho_{\text{QSD}}(x)$ is the unique solution to the zero-flux condition:
    $$
-   \rho_{\text{QSD}}(x) \propto \exp\left(-\frac{U(x) + \varepsilon_F V_{\text{fit}}[\rho_{\text{QSD}}](x)}{k_B T_{\text{eff}}}\right)
+   \rho \nabla (U + \varepsilon_F V_{\text{fit}}[\rho]) = \frac{k_B T}{m} \nabla \rho
    $$
-   to first order in $\varepsilon_F$.
+   which implicitly defines $\rho_{\text{QSD}}$ as a functional of the self-consistent potential.
 
 3. **Vanishing source**: $J^\nu_{\text{adapt}}[\mu_{\text{QSD}}] = 0$ since $\partial \rho_{\text{QSD}}/\partial t = 0$.
 
@@ -240,11 +240,15 @@ with corrections suppressed by $\varepsilon_F$.
    \varepsilon_F \nabla V_{\text{fit}} - \gamma u = 0 \implies u = O(\varepsilon_F)
    $$
 
-2. **Detailed balance**: The QSD density satisfies the stationary Fokker-Planck equation:
+2. **QSD existence via zero flux**: The QSD density $\rho_{\text{QSD}}(x)$ satisfies the stationary Fokker-Planck equation. We do not assume a Gibbs form; instead, we characterize it as the solution to the zero-flux condition:
    $$
-   \nabla \cdot \left[\rho \nabla (U + \varepsilon_F V_{\text{fit}}) - \frac{k_B T}{m} \nabla \rho\right] = 0
+   \mathbf{J}_{\text{prob}}(x) = \rho \nabla (U + \varepsilon_F V_{\text{fit}}[\rho]) - \frac{k_B T}{m} \nabla \rho = 0
    $$
-   which has solution $\rho \propto \exp(-(U + \varepsilon_F V_{\text{fit}})/k_B T)$.
+   This is a non-linear integro-differential equation for $\rho_{\text{QSD}}$ because $V_{\text{fit}}[\rho]$ depends on $\rho$ itself through the mean-field coupling:
+   $$
+   V_{\text{fit}}[\rho](x) = -\int K_\rho(x,x') \Psi(x') \rho(x') dx'
+   $$
+   The existence and uniqueness of such a stationary solution is guaranteed by standard results for non-linear Fokker-Planck equations (see Carrillo et al., J. Differential Equations 2003 for mean-field systems).
 
 3. **Vanishing source**: Since $\rho_{\text{QSD}}$ is time-independent, $\partial \rho/\partial t = 0$ and $J^\nu_{\text{adapt}} = 0$.
 

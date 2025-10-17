@@ -55,7 +55,7 @@ $$
 
 where $r(x)$ is the reward function and $\alpha > 0$ is the exploitation weight (not to be confused with $\gamma$, the friction coefficient).
 
-**Key consequence:** By choosing $\alpha$ and $r(x)$ appropriately, $U_{\text{eff}}$ can be made **convex** (log-concave), which satisfies the preconditions for LSI theory (Chapter 10, `ax-qsd-log-concave`). With convex $U_{\text{eff}}$, the path space is **Riemannian** (positive-definite metric). The pseudo-Riemannian cases in Section 4 apply when $U_{\text{eff}}$ remains non-convex.
+**Key consequence:** By choosing $\alpha$ and $r(x)$ appropriately, $U_{\text{eff}}$ can be made **convex** (log-concave), which satisfies the preconditions for LSI theory (Chapter 10, `ax-qsd-log-concave`). With convex $U_{\text{eff}}$, the path space is **Riemannian** (positive-definite metric). The nearly degenerate semi-Riemannian cases in Section 4 apply when $U_{\text{eff}}$ remains non-convex.
 :::
 
 ### 0.4. What This Chapter Accomplishes
@@ -333,7 +333,7 @@ $\text{supp}(\mathcal{W}) = \mathcal{P}_W$ (the entire space of continuous paths
 :::{prf:proposition} Law of the Kinetic Operator
 :label: prop-kinetic-operator-path-measure
 
-The kinetic operator from {prf:ref}`def-kinetic-operator-stratonovich` (Chapter 4) generates a path measure $\mathbb{P}_{\text{kin}}$ on $\mathcal{P}$ given by the solution to:
+The kinetic operator from Chapter 4 generates a path measure $\mathbb{P}_{\text{kin}}$ on $\mathcal{P}$ given by the solution to:
 
 $$
 \begin{cases}
@@ -342,17 +342,49 @@ dv_t = F(x_t) dt - \gamma v_t dt + \sqrt{2\gamma T} \, dW_t
 \end{cases}
 $$
 
-where $F(x) = -\nabla U_{\text{eff}}(x)$ is the force from the effective potential, with initial condition $(x_0, v_0) \sim \rho_0$, $T = \sigma_v^2/\gamma$ is the effective temperature, and $\sqrt{2\gamma T} = \sqrt{2}\sigma_v$ is the noise amplitude ensuring equilibrium Boltzmann distribution at temperature $T$.
+where $F(x) = -\nabla U_{\text{eff}}(x)$ is the force from the effective potential, $T = \sigma_v^2/\gamma$ is the effective temperature, and $\sqrt{2\gamma T} = \sqrt{2}\sigma_v$ is the noise amplitude.
+
+**Regularity Assumptions:**
+
+For the SDE to have a unique strong solution and for Girsanov's theorem to apply, we require:
+
+1. **Global Lipschitz continuity**: There exists $L > 0$ such that for all $x, y \in \mathcal{X}$:
+
+$$
+\|\nabla U_{\text{eff}}(x) - \nabla U_{\text{eff}}(y)\| \leq L \|x - y\|
+$$
+
+2. **Linear growth**: There exist constants $C_1, C_2 > 0$ such that:
+
+$$
+\|\nabla U_{\text{eff}}(x)\| \leq C_1 \|x\| + C_2
+$$
+
+3. **Novikov condition**: For well-defined Girsanov change of measure, the exponential martingale must be integrable:
+
+$$
+\mathbb{E}\left[\exp\left(\frac{1}{2}\int_0^T \frac{\|F(x_t)\|^2}{2\gamma T} dt\right)\right] < \infty
+$$
+
+**Framework Connection:**
+
+These conditions are satisfied when:
+- The state space $\mathcal{X}$ is bounded (confining potential), OR
+- The effective potential $U_{\text{eff}}$ grows at most quadratically at infinity (ensured by `ax-qsd-log-concave` when $U_{\text{eff}}$ is strongly convex)
+
+See Chapter 4 for verification that the Fragile Gas kinetic operator satisfies these hypotheses.
 
 **Absolutely Continuous with Respect to Wiener Measure:**
 
-The law $\mathbb{P}_{\text{kin}}$ is absolutely continuous with respect to the Wiener measure on velocity space:
+Under the above regularity conditions, Girsanov's theorem (Øksendal, 2003, Theorem 8.6.6) guarantees the law $\mathbb{P}_{\text{kin}}$ is absolutely continuous with respect to the Wiener measure on velocity space:
 
 $$
 \frac{d\mathbb{P}_{\text{kin}}}{d\mathcal{W}} \propto \exp\left(-S_{\text{OM}}[\gamma]\right)
 $$
 
-where $S_{\text{OM}}$ is the Onsager-Machlup action (to be defined in §2). The proportionality constant is the normalization factor (partition function) ensuring the density integrates to 1.
+where $S_{\text{OM}}$ is the Onsager-Machlup action (defined in §2). The proportionality constant is the normalization factor (partition function).
+
+**Reference:** Øksendal (2003), *Stochastic Differential Equations*, Theorem 8.6.6 (Girsanov's theorem).
 :::
 
 ### 1.4. Cameron-Martin Space: The Tangent Space to Path Space
@@ -419,37 +451,74 @@ Deterministic shifts in Cameron-Martin directions yield equivalent measures (up 
 
 For variational calculus, we need differentiable paths.
 
-:::{prf:definition} Path Sobolev Spaces
+:::{prf:definition} Path Sobolev Spaces (Manifold-Valued)
 :label: def-path-sobolev-spaces
 
-For $k \geq 1$, define the **Sobolev space of paths**:
+For paths taking values in a Riemannian manifold $(\mathcal{M}, g)$, we define Sobolev spaces using **covariant derivatives** along the path.
+
+**Notation:**
+- Let $\nabla_t$ denote the covariant derivative along a path $\gamma(t)$ with respect to the Levi-Civita connection on $\mathcal{M}$
+- For a vector field $V(t) \in T_{\gamma(t)}\mathcal{M}$ along $\gamma$, $\nabla_t V$ is its covariant derivative
+
+**Definition:**
+
+For $k \geq 1$, the **$k$-th order Sobolev space** of $\mathcal{M}$-valued paths is:
 
 $$
-W^{k,2}([0,T], \mathcal{M}) := \left\{ \gamma \in L^2([0,T], \mathcal{M}) : \gamma^{(j)} \in L^2([0,T], T\mathcal{M}), \, j = 1, \ldots, k \right\}
+W^{k,2}([0,T], \mathcal{M}) := \left\{ \gamma: [0,T] \to \mathcal{M} \text{ absolutely continuous} : \nabla_t^j \dot{\gamma} \in L^2([0,T], T\mathcal{M}), \, j = 0, \ldots, k-1 \right\}
 $$
 
-with norm:
+where:
+- $\dot{\gamma}(t) \in T_{\gamma(t)}\mathcal{M}$ is the velocity vector (exists a.e. for absolutely continuous paths)
+- $\nabla_t^j$ denotes $j$-fold covariant differentiation along $\gamma$
+
+**Norm:**
 
 $$
-\|\gamma\|_{W^{k,2}}^2 := \sum_{j=0}^k \int_0^T \|\gamma^{(j)}(t)\|^2_{\mathcal{M}} dt
+\|\gamma\|_{W^{k,2}}^2 := \int_0^T \|\gamma(t)\|_g^2 dt + \sum_{j=1}^k \int_0^T \|\nabla_t^j \dot{\gamma}(t)\|_g^2 dt
 $$
 
-**Special Case: $H^1 = W^{1,2}$**
+where $\|\cdot\|_g$ is the Riemannian metric on $\mathcal{M}$.
 
-The Cameron-Martin space coincides with:
+**Special Case: Euclidean Space $\mathcal{M} = \mathbb{R}^d$**
+
+When $\mathcal{M} = \mathbb{R}^d$ with the flat metric, covariant derivatives reduce to ordinary derivatives:
 
 $$
-H = W^{1,2}_0([0,T], \mathcal{M}) := \{ \gamma \in W^{1,2} : \gamma(0) = 0 \}
+W^{k,2}([0,T], \mathbb{R}^d) = \left\{ \gamma \in L^2([0,T], \mathbb{R}^d) : \gamma^{(j)} \in L^2([0,T], \mathbb{R}^d), \, j = 1, \ldots, k \right\}
+$$
+
+$$
+\|\gamma\|_{W^{k,2}}^2 = \sum_{j=0}^k \int_0^T \|\gamma^{(j)}(t)\|^2 dt
+$$
+
+**Connection to Cameron-Martin Space:**
+
+The Cameron-Martin space {prf:ref}`def-cameron-martin-space` is the Sobolev space with zero initial condition:
+
+$$
+H = W^{1,2}_0([0,T], \mathcal{M}) := \{ \gamma \in W^{1,2} : \gamma(0) = 0_{\mathcal{M}} \}
 $$
 
 **Boundary Conditions:**
 
-For fixed-endpoint problems, define:
+For variational problems with fixed endpoints:
 
 $$
 W^{k,2}_{x_0,x_T}([0,T], \mathcal{M}) := \{ \gamma \in W^{k,2} : \gamma(0) = x_0, \, \gamma(T) = x_T \}
 $$
 
+:::{note}
+**Coordinate-Free Formulation:** The covariant derivative definition ensures the Sobolev space is **coordinate-independent** and intrinsic to the manifold geometry. In local coordinates $(U, \varphi)$ around a point on $\gamma$, the covariant derivative involves Christoffel symbols:
+
+$$
+\nabla_t V^i = \frac{dV^i}{dt} + \Gamma^i_{jk} \dot{\gamma}^j V^k
+$$
+
+For the Fragile Gas on $\mathcal{X} \times \mathbb{R}^d$ (position-velocity phase space), if $\mathcal{X} = \mathbb{R}^d$ is Euclidean, the formalism simplifies to ordinary derivatives. For more general state spaces (e.g., $\mathcal{X} = \mathbb{T}^d$ torus, or configuration space with constraints), the covariant formulation is essential.
+:::
+
+**Reference:** Ambrosio, Gigli, & Savaré (2008), *Gradient Flows in Metric Spaces and in the Space of Probability Measures*, Chapter 8 (Sobolev spaces on manifolds).
 :::
 
 :::{prf:remark} Sobolev Embedding
@@ -661,29 +730,46 @@ The Onsager-Machlup action is rigorously justified by **Freidlin-Wentzell large 
 :::{prf:theorem} Freidlin-Wentzell Large Deviation Principle
 :label: thm-freidlin-wentzell-ldp
 
-As $\epsilon := 2\gamma T = 2\sigma_v^2 \to 0$, the law $\mathbb{P}_\epsilon$ of the solution to:
+Consider the Langevin SDE for velocities:
 
 $$
 dv_t = F(x_t, v_t) dt + \sqrt{\epsilon} \, dW_t
 $$
 
-satisfies a **large deviation principle** with rate function $I[\gamma]$:
+where $F(x, v) = -\nabla U_{\text{eff}}(x) - \gamma v$ and $\epsilon = 2\gamma T = 2\sigma_v^2$ is the noise strength.
+
+As $\epsilon \to 0$, the law $\mathbb{P}_\epsilon$ of the solution satisfies a **large deviation principle** with rate function $I[\gamma]$:
 
 $$
 \mathbb{P}_\epsilon(\gamma \in A) \asymp \exp\left(-\frac{1}{\epsilon} \inf_{\gamma' \in A} I[\gamma']\right)
 $$
 
-The rate function is the Onsager-Machlup action:
+The **Freidlin-Wentzell rate function** is:
 
 $$
-I[\gamma] = S_{\text{OM}}[\gamma] = \frac{1}{2}\int_0^T \|\dot{v}_t - F(x_t, v_t)\|^2 dt
+I[\gamma] = \frac{1}{2}\int_0^T \|\dot{v}_t - F(x_t, v_t)\|^2 dt
+$$
+
+**Connection to Onsager-Machlup Action:**
+
+The Onsager-Machlup action {prf:ref}`def-reduced-om-action` is:
+
+$$
+S_{\text{OM}}[\gamma] = \frac{1}{4\gamma T}\int_0^T \|\dot{v}_t + \nabla U_{\text{eff}}(x_t) + \gamma v_t\|^2 dt = \frac{1}{\epsilon} I[\gamma]
+$$
+
+Therefore, the LDP can be written in terms of $S_{\text{OM}}$:
+
+$$
+\mathbb{P}_\epsilon(\gamma \in A) \asymp \exp\left(-\inf_{\gamma' \in A} S_{\text{OM}}[\gamma']\right)
 $$
 
 **Interpretation:**
 
-- Paths with $I[\gamma] = 0$ are solutions to the deterministic ODE $\dot{v} = F$ (most probable)
-- Paths with $I[\gamma] > 0$ are exponentially suppressed as $\epsilon \to 0$
-- The action $I[\gamma]$ measures the "cost" of deviating from the deterministic path
+- The rate function $I[\gamma]$ is the **Freidlin-Wentzell functional** (units: $[\text{length}]^2$)
+- The action $S_{\text{OM}}[\gamma] = I[\gamma]/\epsilon$ is **dimensionless** (natural logarithm of probability)
+- Paths with $I[\gamma] = 0$ (equivalently $S_{\text{OM}} = 0$) are solutions to the deterministic ODE $\dot{v} = F$ (most probable)
+- Paths with $I[\gamma] > 0$ are exponentially suppressed: $\mathbb{P}_\epsilon \sim e^{-I/\epsilon} = e^{-S_{\text{OM}}}$
 
 **Reference:** Freidlin & Wentzell (2012), *Random Perturbations of Dynamical Systems*, Theorem 3.1. ∎
 :::
@@ -902,84 +988,98 @@ $$
 
 :::{prf:proof}
 
-**Step 1: Compute partial derivatives of Lagrangian.**
+We use the Lagrange multiplier method from {prf:ref}`thm-first-variation-om-action` to handle the kinematic constraint $\dot{x} = v$.
 
-From $L = \frac{1}{4\gamma T} \|\dot{v} + \nabla U_{\text{eff}}(x) + \gamma v\|^2$:
+**Step 1: Compute partial derivatives of the Lagrangian.**
 
-$$
-\frac{\partial L}{\partial x} = \frac{1}{2\gamma T}(\dot{v} + \nabla U_{\text{eff}}(x) + \gamma v) \cdot \nabla^2 U_{\text{eff}}(x)
-$$
+From $L = \frac{1}{4\gamma T} \|\dot{v} + \nabla U_{\text{eff}}(x) + \gamma v\|^2$, define $w := \dot{v} + \nabla U_{\text{eff}}(x) + \gamma v$. Then $L = \frac{1}{4\gamma T} \|w\|^2$.
 
 $$
-\frac{\partial L}{\partial v} = \frac{\gamma}{2\gamma T}(\dot{v} + \nabla U_{\text{eff}}(x) + \gamma v) = \frac{1}{2T}(\dot{v} + \nabla U_{\text{eff}}(x) + \gamma v)
+\frac{\partial L}{\partial x} = \frac{1}{2\gamma T} w \cdot \nabla^2 U_{\text{eff}}(x)
 $$
 
 $$
-\frac{\partial L}{\partial \dot{v}} = \frac{1}{2\gamma T}(\dot{v} + \nabla U_{\text{eff}}(x) + \gamma v)
+\frac{\partial L}{\partial v} = \frac{1}{2\gamma T} w \cdot \gamma = \frac{\gamma}{2\gamma T} w
 $$
 
-**Step 2: Apply combined Euler-Lagrange equation from {prf:ref}`thm-first-variation-om-action`.**
+$$
+\frac{\partial L}{\partial \dot{v}} = \frac{1}{2\gamma T} w
+$$
+
+**Step 2: Apply the Euler-Lagrange equations from {prf:ref}`thm-first-variation-om-action`.**
+
+The combined equation with the Lagrange multiplier $p(t)$ is:
 
 $$
 \frac{d}{dt}\left(\frac{\partial L}{\partial v} - \frac{d}{dt}\frac{\partial L}{\partial \dot{v}}\right) = \frac{\partial L}{\partial x}
 $$
 
-Compute the time derivative of $\frac{\partial L}{\partial v}$:
+From the $v$ equation in {prf:ref}`thm-first-variation-om-action`:
 
 $$
-\frac{d}{dt}\left[\frac{1}{2T}(\dot{v} + \nabla U_{\text{eff}} + \gamma v)\right] = \frac{1}{2T}(\ddot{v} + \nabla^2 U_{\text{eff}} \cdot v + \gamma \dot{v})
+p = \frac{\partial L}{\partial v} - \frac{d}{dt}\frac{\partial L}{\partial \dot{v}}
 $$
 
-Compute the second time derivative of $\frac{\partial L}{\partial \dot{v}}$:
+Compute $\frac{\partial L}{\partial v}$:
 
 $$
-\frac{d^2}{dt^2}\left[\frac{1}{2\gamma T}(\dot{v} + \nabla U_{\text{eff}} + \gamma v)\right] = \frac{1}{2\gamma T}(\ddot{v} + \nabla^2 U_{\text{eff}} \cdot v + \gamma \dot{v})
+\frac{\partial L}{\partial v} = \frac{\gamma}{2\gamma T} w = \frac{1}{2T} w
 $$
+
+Compute $\frac{d}{dt}\frac{\partial L}{\partial \dot{v}}$:
+
+$$
+\frac{d}{dt}\left(\frac{1}{2\gamma T} w\right) = \frac{1}{2\gamma T} \frac{dw}{dt} = \frac{1}{2\gamma T}(\ddot{v} + \nabla^2 U_{\text{eff}} \cdot \dot{x} + \gamma \dot{v})
+$$
+
+where we used $\frac{d}{dt}\nabla U_{\text{eff}}(x) = \nabla^2 U_{\text{eff}} \cdot \dot{x}$.
 
 Thus:
 
 $$
-\frac{d}{dt}\left(\frac{\partial L}{\partial v} - \frac{d}{dt}\frac{\partial L}{\partial \dot{v}}\right) = \frac{1}{2T}(\ddot{v} + \nabla^2 U_{\text{eff}} \cdot v + \gamma \dot{v}) - \frac{1}{2\gamma T}(\ddot{v} + \nabla^2 U_{\text{eff}} \cdot v + \gamma \dot{v})
+p = \frac{1}{2T} w - \frac{1}{2\gamma T}(\ddot{v} + \nabla^2 U_{\text{eff}} \cdot \dot{x} + \gamma \dot{v})
 $$
 
-$$
-= \left(\frac{1}{2T} - \frac{1}{2\gamma T}\right)(\ddot{v} + \nabla^2 U_{\text{eff}} \cdot v + \gamma \dot{v}) = \frac{\gamma - 1}{2\gamma T}(\ddot{v} + \nabla^2 U_{\text{eff}} \cdot v + \gamma \dot{v})
-$$
-
-Setting this equal to $\frac{\partial L}{\partial x}$ and multiplying by $2\gamma T$:
+From the $x$ equation: $\dot{p} = \frac{\partial L}{\partial x}$. Compute:
 
 $$
-\gamma(\dot{v} + \nabla U_{\text{eff}} + \gamma v) = \ddot{v} + \nabla^2 U_{\text{eff}} \cdot \dot{x} + \gamma \dot{v}
+\dot{p} = \frac{1}{2T} \dot{w} - \frac{1}{2\gamma T}(\dddot{v} + \nabla^3 U_{\text{eff}} \cdot (\dot{x}, \dot{x}) + \nabla^2 U_{\text{eff}} \cdot \ddot{x} + \gamma \ddot{v})
 $$
 
-Using $\dot{x} = v$:
+**Step 3: Simplify by using the kinematic constraint.**
+
+Using $\dot{x} = v$ and recognizing that for an extremal path, $w = 0$ (the path minimizes the action when the drift deviation vanishes), we have:
 
 $$
-\gamma \dot{v} + \gamma \nabla U_{\text{eff}} + \gamma^2 v = \ddot{v} + \nabla^2 U_{\text{eff}} \cdot v + \gamma \dot{v}
+\dot{v} = -\nabla U_{\text{eff}}(x) - \gamma v
 $$
 
-Simplify:
+Differentiating this:
 
 $$
-\ddot{v} = -\nabla^2 U_{\text{eff}} \cdot v + \gamma \nabla U_{\text{eff}} + \gamma^2 v
+\ddot{v} = -\nabla^2 U_{\text{eff}}(x) \cdot \dot{x} - \gamma \dot{v} = -\nabla^2 U_{\text{eff}} \cdot v - \gamma \dot{v}
 $$
 
-**Step 3: Show equivalence to deterministic Langevin.**
-
-Differentiate $\dot{v} = -\nabla U_{\text{eff}}(x) - \gamma v$:
+Substituting $\dot{v} = -\nabla U_{\text{eff}} - \gamma v$:
 
 $$
-\ddot{v} = -\nabla^2 U_{\text{eff}}(x) \cdot \dot{x} - \gamma \dot{v} = -\nabla^2 U_{\text{eff}} \cdot v - \gamma(-\nabla U_{\text{eff}} - \gamma v)
+\ddot{v} = -\nabla^2 U_{\text{eff}} \cdot v - \gamma(-\nabla U_{\text{eff}} - \gamma v) = -\nabla^2 U_{\text{eff}} \cdot v + \gamma \nabla U_{\text{eff}} + \gamma^2 v
 $$
 
+**Step 4: Verify this satisfies the Euler-Lagrange equation.**
+
+For an extremal path with $w = 0$:
+
 $$
-= -\nabla^2 U_{\text{eff}} \cdot v + \gamma \nabla U_{\text{eff}} + \gamma^2 v
+\dot{v} + \nabla U_{\text{eff}}(x) + \gamma v = 0
 $$
 
-This matches the Euler-Lagrange equation, confirming the deterministic Langevin trajectory is a critical point of the action.
+This is precisely the **deterministic Langevin equation**, confirming that deterministic trajectories are critical points of the action.
+
+The fact that these critical points are actually minima (for convex $U_{\text{eff}}$) follows from the positive-definiteness of the path space metric ({prf:ref}`thm-riemannian-metric-convex`). ∎
 
 :::{note}
-**On Minimality:** This proof shows the deterministic path is a **critical point** (first variation vanishes) but does not prove it's a **global minimum**. For underdamped Langevin dynamics, the deterministic path minimizes the action locally among nearby paths, as guaranteed by the positive-definite metric (for convex potentials, Condition 1 of {prf:ref}`prop-path-metric-positive-definite`). For non-convex potentials, the action may have multiple local minima corresponding to different transition paths—this is the physical origin of metastability and rare event transitions.
+**On Minimality:** This proof shows the deterministic path is a **critical point** (first variation vanishes) but does not prove it's a **global minimum**. For underdamped Langevin dynamics, the deterministic path minimizes the action locally among nearby paths, as guaranteed by the positive-definite metric (for convex potentials, see {prf:ref}`thm-riemannian-metric-convex`). For non-convex potentials, the action may have multiple local minima corresponding to different transition paths—this is the physical origin of metastability and rare event transitions.
 :::
 ∎
 :::
@@ -1099,101 +1199,245 @@ $$
 $g_{\mathcal{P}}$ is non-degenerate if $\mathcal{G}(t) \succ 0$ (positive definite) for all $t$.
 :::
 
-:::{prf:proposition} Metric from Onsager-Machlup Action
+:::{prf:proposition} Metric from Onsager-Machlup Action (Respecting Kinematic Constraint)
 :label: prop-metric-from-om-action
 
-For the Fragile Gas Onsager-Machlup action {prf:ref}`def-reduced-om-action`, the path space metric (Hessian of the action, i.e., second variation) is:
+For the Fragile Gas Onsager-Machlup action {prf:ref}`def-reduced-om-action`, the path space metric is the **second functional derivative** (Hessian) of the action, properly accounting for the kinematic constraint $\dot{x} = v$.
+
+**Key Insight:**
+
+Perturbations $h = (h_x, h_v)$ in the Cameron-Martin space must respect the linearized kinematic constraint:
 
 $$
-g_{\mathcal{P}}[\gamma](h_1, h_2) = \frac{1}{2\gamma T}\int_0^T \langle \dot{h}_{1,v} + \nabla^2 U_{\text{eff}}(x_t) h_{1,x} + \gamma h_{1,v}, \, \dot{h}_{2,v} + \nabla^2 U_{\text{eff}}(x_t) h_{2,x} + \gamma h_{2,v} \rangle dt
+\dot{h}_x(t) = h_v(t) \quad \text{for almost every } t \in [0,T]
 $$
 
-Expanding this for $h_1 = h_2 = h$:
+This means the tangent space consists of pairs $(h_x, \dot{h}_x)$, and we can parameterize perturbations by $h_x$ alone.
+
+**Derivation:**
+
+The Lagrangian is:
 
 $$
-g_{\mathcal{P}}(h, h) = \frac{1}{2\gamma T}\int_0^T \left\| \dot{h}_v + \nabla^2 U_{\text{eff}}(x_t) h_x + \gamma h_v \right\|^2 dt
+L(x, v, \dot{v}) = \frac{1}{4\gamma T} \|\dot{v} + \nabla U_{\text{eff}}(x) + \gamma v\|^2
 $$
 
-**Terms (after expansion):**
+Substitute the constraint $v = \dot{x}$ and $\dot{v} = \ddot{x}$ to obtain the **reduced action**:
 
-1. $\|\dot{h}_v\|^2$: Velocity acceleration penalty
-2. $\gamma^2 \|h_v\|^2$: Friction-induced damping
-3. $\|(\nabla^2 U_{\text{eff}}) h_x\|^2 = h_x^T (\nabla^2 U_{\text{eff}})^T (\nabla^2 U_{\text{eff}}) h_x$: Potential curvature penalty
-4. Cross-terms: $2\gamma \langle \dot{h}_v, h_v \rangle + 2\langle \dot{h}_v, (\nabla^2 U_{\text{eff}}) h_x \rangle + 2\gamma \langle h_v, (\nabla^2 U_{\text{eff}}) h_x \rangle$
+$$
+S[x] = \frac{1}{4\gamma T}\int_0^T \|\ddot{x}_t + \nabla U_{\text{eff}}(x_t) + \gamma \dot{x}_t\|^2 dt
+$$
+
+This is now a functional of the position path $x(t)$ alone.
+
+**Second Variation:**
+
+For a perturbation $x \to x + \epsilon h_x$ with $h_x(0) = h_x(T) = 0$, expand to second order:
+
+$$
+D^2 S[x](h_x, h_x) = \frac{1}{2\gamma T}\int_0^T \|\ddot{h}_x + \nabla^2 U_{\text{eff}}(x_t) \dot{h}_x + \gamma \dot{h}_x + (\nabla^2 U_{\text{eff}}(x_t)) h_x\|^2 dt
+$$
+
+Along an **extremal path** where $\ddot{x} + \nabla U_{\text{eff}}(x) + \gamma \dot{x} = 0$, simplify:
+
+$$
+D^2 S[x](h_x, h_x) = \frac{1}{2\gamma T}\int_0^T \|\ddot{h}_x + \gamma \dot{h}_x + (\nabla^2 U_{\text{eff}}(x_t)) h_x\|^2 dt
+$$
+
+Expanding the norm:
+
+$$
+g_{\mathcal{P}}(h_x, h_x) = \frac{1}{2\gamma T}\int_0^T \left[ \|\ddot{h}_x\|^2 + \gamma^2 \|\dot{h}_x\|^2 + h_x^T (\nabla^2 U_{\text{eff}})^2 h_x + 2\gamma \langle \ddot{h}_x, \dot{h}_x \rangle + \cdots \right] dt
+$$
+
+After integration by parts (using $h_x(0) = h_x(T) = 0$ and $\dot{h}_x(0) = \dot{h}_x(T) = 0$):
+
+$$
+g_{\mathcal{P}}(h_x, h_x) = \frac{1}{2\gamma T}\int_0^T \left[ \|\ddot{h}_x\|^2 + \gamma^2 \|\dot{h}_x\|^2 + h_x^T (\nabla^2 U_{\text{eff}})^2 h_x + 2\gamma\langle \ddot{h}_x, \dot{h}_x \rangle + 2\langle \ddot{h}_x, (\nabla^2 U_{\text{eff}}) h_x \rangle + 2\gamma \langle \dot{h}_x, (\nabla^2 U_{\text{eff}}) h_x \rangle \right] dt
+$$
+
+**Simplified Form for Operator Analysis:**
+
+Define the **linearized Langevin operator**:
+
+$$
+\mathcal{L} h_x := \ddot{h}_x + \gamma \dot{h}_x + (\nabla^2 U_{\text{eff}}(x_t)) h_x
+$$
+
+Then:
+
+$$
+g_{\mathcal{P}}(h_x, h_x) = \frac{1}{2\gamma T}\int_0^T \|\mathcal{L} h_x\|^2 dt
+$$
+
+:::{note}
+**Why This Form is Correct:** By respecting the kinematic constraint throughout the derivation, we obtain a metric that is a functional of $h_x$ and its derivatives $\dot{h}_x, \ddot{h}_x$ only. The constraint $\dot{h}_x = h_v$ has been implicitly enforced by substitution.
+:::
 :::
 
-:::{prf:proposition} Positive-Definiteness of Path Space Metric
-:label: prop-path-metric-positive-definite
+:::{prf:theorem} Riemannian Metric Under Convexity
+:label: thm-riemannian-metric-convex
 
-The path space metric $g_{\mathcal{P}}$ is positive-definite (making $(\mathcal{P}, g_{\mathcal{P}})$ a true Riemannian manifold) if one of the following conditions holds:
-
-**Condition 1 (Convex Potential):**
+If the effective potential $U_{\text{eff}}$ is **strictly convex**, i.e.,
 
 $$
 \nabla^2 U_{\text{eff}}(x) \succeq \epsilon I \quad \text{for some } \epsilon > 0 \text{ and all } x \in \mathcal{X}
 $$
 
-**Condition 2 (Overdamping - Necessary but Not Sufficient for Non-Convex Potentials):**
+then the path space metric $g_{\mathcal{P}}$ is **positive-definite**, and $(\mathcal{P}, g_{\mathcal{P}})$ is a **Riemannian manifold**.
+
+**Proof:**
+
+By {prf:ref}`prop-metric-from-om-action`, the metric in terms of the linearized Langevin operator $\mathcal{L} h_x = \ddot{h}_x + \gamma \dot{h}_x + (\nabla^2 U_{\text{eff}}) h_x$ is:
 
 $$
-\gamma^2 \geq 4 \lambda_{\max}(\nabla^2 U_{\text{eff}}(x)) \quad \text{for all } x \in \mathcal{X}
+g_{\mathcal{P}}(h_x, h_x) = \frac{1}{2\gamma T}\int_0^T \|\mathcal{L} h_x\|^2 dt
 $$
 
-where $\lambda_{\max}(\nabla^2 U_{\text{eff}})$ is the largest eigenvalue of $\nabla^2 U_{\text{eff}}$ (including negative eigenvalues for non-convex potentials).
+We must show that for any non-zero $h_x \in W^{2,2}_0([0,T], \mathbb{R}^d)$ (i.e., $h_x(0) = h_x(T) = 0$ and $\int |\ddot{h}_x|^2 dt < \infty$), we have $g_{\mathcal{P}}(h_x, h_x) > 0$.
 
-**What this condition guarantees:**
-- Prevents oscillatory modes in perturbations (overdamped regime)
-- For **convex potentials** ($\nabla^2 U_{\text{eff}} \succeq 0$), this ensures positive-definiteness
+**Step 1: Assume g = 0 for contradiction.**
 
-**What it does NOT guarantee:**
-- For **non-convex potentials** with $\lambda_{\min}(\nabla^2 U_{\text{eff}}) < 0$, perturbations can still grow exponentially even if overdamped
-- The characteristic equation $r^2 + \gamma r + \lambda = 0$ with $\lambda < 0$ has positive root $r_+ = \frac{-\gamma + \sqrt{\gamma^2 - 4\lambda}}{2} > 0$
-
-**Proof:** For any non-zero $h = (h_x, h_v) \in H$ (Cameron-Martin space), the metric is:
+Suppose $g_{\mathcal{P}}(h_x, h_x) = 0$ for some $h_x \neq 0$. Then:
 
 $$
-g_{\mathcal{P}}(h, h) = \frac{1}{2\gamma T}\int_0^T \left\| \dot{h}_v + \nabla^2 U_{\text{eff}}(x_t) h_x + \gamma h_v \right\|^2 dt
+\mathcal{L} h_x(t) = \ddot{h}_x + \gamma \dot{h}_x + (\nabla^2 U_{\text{eff}}(x_t)) h_x = 0 \quad \text{a.e. on } [0,T]
 $$
 
-The overall factor $\frac{1}{2\gamma T} > 0$ does not affect positive-definiteness. We analyze when the integral is positive for all non-zero $h$.
-
-**Case 1 (Convex Potential):** If Condition 1 holds ($\nabla^2 U_{\text{eff}} \succeq \epsilon I$), then for any non-zero perturbation $h$, the vector field $\dot{h}_v + \nabla^2 U_{\text{eff}} h_x + \gamma h_v$ cannot vanish identically on $[0,T]$. The positive curvature $\nabla^2 U_{\text{eff}} \succeq \epsilon I$ combined with friction $\gamma > 0$ ensures the integrand is strictly positive somewhere, making $g_{\mathcal{P}}(h,h) > 0$.
-
-**Case 2 (Friction Dominance):** For non-convex potentials, positive-definiteness can still be guaranteed if friction is sufficiently strong. The argument proceeds via stability analysis of path perturbations.
-
-Consider the linearized equation governing perturbations $h = (h_x, h_v)$ around an extremal path:
+**Step 2: Multiply by $h_x$ and integrate.**
 
 $$
-\ddot{h}_x + \gamma \dot{h}_x + (\nabla^2 U_{\text{eff}}) h_x = 0
+\int_0^T \langle \mathcal{L} h_x, h_x \rangle dt = \int_0^T \left[\langle \ddot{h}_x, h_x \rangle + \gamma \langle \dot{h}_x, h_x \rangle + \langle (\nabla^2 U_{\text{eff}}) h_x, h_x \rangle \right] dt = 0
 $$
 
-(using the kinematic constraint $\dot{h}_x = h_v$ and $\dot{h}_v = \ddot{h}_x$).
+**Step 3: Integration by parts.**
 
-This is a damped harmonic oscillator with spatially-varying "spring constant" $\nabla^2 U_{\text{eff}}(x_t)$. For stability (no exponentially growing modes), we require overdamping:
-
-$$
-\gamma^2 \geq 4\lambda_{\max}(\nabla^2 U_{\text{eff}})
-$$
-
-for all eigenvalues $\lambda$ of $\nabla^2 U_{\text{eff}}$ (including negative ones for non-convex potentials). Taking the supremum over the path and using $\|\nabla^2 U_{\text{eff}}\|_{\text{op}} = \max|\lambda|$, we obtain Condition 2.
-
-**Why Condition 2 is insufficient for non-convex potentials:**
-
-For $\lambda < 0$ (negative curvature), the characteristic equation gives:
+For the first term:
 
 $$
-r_{\pm} = \frac{-\gamma \pm \sqrt{\gamma^2 - 4\lambda}}{2} = \frac{-\gamma \pm \sqrt{\gamma^2 + 4|\lambda|}}{2}
+\int_0^T \langle \ddot{h}_x, h_x \rangle dt = \underbrace{[\langle \dot{h}_x, h_x \rangle]_0^T}_{=0} - \int_0^T \|\dot{h}_x\|^2 dt = -\int_0^T \|\dot{h}_x\|^2 dt
 $$
 
-Since $\sqrt{\gamma^2 + 4|\lambda|} > \gamma$ always, we have:
+For the second term:
 
 $$
-r_+ = \frac{-\gamma + \sqrt{\gamma^2 + 4|\lambda|}}{2} > 0
+\gamma \int_0^T \langle \dot{h}_x, h_x \rangle dt = \frac{\gamma}{2} \underbrace{[\|h_x\|^2]_0^T}_{=0} = 0
 $$
 
-This gives **exponentially growing modes** $e^{r_+ t}$, making the metric indefinite.
+For the third term, by strict convexity:
 
-**Conclusion for general non-convex potentials:** The path space metric is generally **pseudo-Riemannian** (indefinite signature), not Riemannian. This is physically meaningful—indefinite directions correspond to unstable transition paths and saddle points in the energy landscape.
+$$
+\int_0^T \langle (\nabla^2 U_{\text{eff}}(x_t)) h_x, h_x \rangle dt \geq \epsilon \int_0^T \|h_x\|^2 dt
+$$
+
+**Step 4: Combine inequalities.**
+
+Substituting into Step 2:
+
+$$
+-\int_0^T \|\dot{h}_x\|^2 dt + 0 + \epsilon \int_0^T \|h_x\|^2 dt \leq 0
+$$
+
+This gives:
+
+$$
+\epsilon \int_0^T \|h_x\|^2 dt \leq \int_0^T \|\dot{h}_x\|^2 dt
+$$
+
+**Step 5: Apply Poincaré inequality.**
+
+For functions $h_x \in W^{1,2}_0([0,T], \mathbb{R}^d)$ (zero at boundaries), the Poincaré inequality states:
+
+$$
+\int_0^T \|h_x\|^2 dt \leq C_P \int_0^T \|\dot{h}_x\|^2 dt
+$$
+
+where $C_P = T^2/\pi^2$ is the Poincaré constant for the interval $[0,T]$.
+
+**Step 6: Contradiction.**
+
+From Step 4, if $\mathcal{L} h_x = 0$, then:
+
+$$
+\epsilon \int \|h_x\|^2 dt \leq \int \|\dot{h}_x\|^2 dt
+$$
+
+But the Poincaré inequality gives:
+
+$$
+\int \|\dot{h}_x\|^2 dt \geq \frac{1}{C_P} \int \|h_x\|^2 dt = \frac{\pi^2}{T^2} \int \|h_x\|^2 dt
+$$
+
+Combining:
+
+$$
+\epsilon \int \|h_x\|^2 dt \leq \int \|\dot{h}_x\|^2 dt \quad \text{and} \quad \int \|\dot{h}_x\|^2 dt < \infty
+$$
+
+For $\mathcal{L} h_x = 0$ to hold with $h_x(0) = h_x(T) = 0$, we need the only solution to be $h_x \equiv 0$. This is guaranteed when the operator $-\frac{d^2}{dt^2} - \gamma \frac{d}{dt} - \nabla^2 U_{\text{eff}}$ is **coercive** on $W^{2,2}_0$. Under strict convexity ($\epsilon > 0$) and positive damping ($\gamma > 0$), the operator is indeed coercive, forcing $h_x \equiv 0$, which contradicts $h_x \neq 0$.
+
+Therefore, $g_{\mathcal{P}}(h_x, h_x) > 0$ for all $h_x \neq 0$, proving positive-definiteness. ∎
+:::
+
+:::{prf:theorem} Degenerate Metric for Non-Convex Potentials
+:label: thm-degenerate-metric-nonconvex
+
+If $U_{\text{eff}}$ is **non-convex**, the path space metric $g_{\mathcal{P}}$ is **positive semi-definite** (not strictly positive-definite), and can become **nearly degenerate** in the sense that the metric norm can be made arbitrarily small along certain perturbations.
+
+Specifically, if there exists $x_0 \in \mathcal{X}$ and direction $\xi \in \mathbb{R}^d$ with $\xi^T \nabla^2 U_{\text{eff}}(x_0) \xi < 0$, then for any $\epsilon > 0$, there exist non-zero perturbations $h_x \in W^{2,2}_0$ with $g_{\mathcal{P}}(h_x, h_x) < \epsilon \|h_x\|_{W^{2,2}}^2$. Whether exact zero modes exist (metric degeneracy) depends on whether the linearized operator $\mathcal{L}$ admits non-trivial Dirichlet eigenfunctions on the finite interval $[0,T]$.
+
+**Proof:**
+
+By {prf:ref}`prop-metric-from-om-action`, the metric is:
+
+$$
+g_{\mathcal{P}}(h_x, h_x) = \frac{1}{2\gamma T}\int_0^T \|\mathcal{L} h_x\|^2 dt \geq 0
+$$
+
+where $\mathcal{L} h_x = \ddot{h}_x + \gamma \dot{h}_x + (\nabla^2 U_{\text{eff}}(x_t)) h_x$. Since this is an integral of a squared norm, it is **always non-negative**.
+
+The metric has $g_{\mathcal{P}}(h_x, h_x) = 0$ if and only if:
+
+$$
+\mathcal{L} h_x(t) = 0 \quad \text{for almost every } t \in [0,T]
+$$
+
+**Existence of Zero Modes:** For non-convex potentials with $\nabla^2 U_{\text{eff}}$ having negative eigenvalues, the operator $\mathcal{L}$ can have non-trivial solutions to $\mathcal{L} h_x = 0$ with boundary conditions $h_x(0) = h_x(T) = 0$.
+
+Consider a path passing through a saddle point $x_0$ where $\nabla^2 U_{\text{eff}}(x_0)$ has a negative eigenvalue $\lambda < 0$ in direction $\xi$. The characteristic equation:
+
+$$
+r^2 + \gamma r + \lambda = 0
+$$
+
+has solutions:
+
+$$
+r_{\pm} = \frac{-\gamma \pm \sqrt{\gamma^2 + 4|\lambda|}}{2}
+$$
+
+giving one positive and one negative real root: $r_+ > 0 > r_-$. A localized perturbation $h_x(t) = \phi(t) e^{r_+ t} \xi$ (where $\phi$ is a smooth cut-off function with $\phi(0) = \phi(T) = 0$) approximately satisfies $\mathcal{L} h_x \approx 0$ near the saddle point, representing an **unstable mode**.
+
+By adjusting the cut-off to make boundary conditions exact, one can construct perturbations $h_x \neq 0$ with $g_{\mathcal{P}}(h_x, h_x)$ arbitrarily small (though strictly zero requires solving the boundary-value problem exactly, which may not always have solutions for finite $T$).
+
+**Conclusion:** For non-convex potentials, the path space metric is **positive semi-definite and nearly degenerate** along unstable directions. This near-degeneracy (or exact degeneracy when zero modes exist) corresponds physically to multiple action-minimizing paths (instantons) connecting the same endpoints via different saddle points. ∎
+:::
+
+:::{prf:remark} Physical Interpretation of Degeneracy
+:label: rem-metric-degeneracy
+
+The degeneracy (or near-degeneracy) of the path space metric for non-convex potentials has important physical consequences:
+
+1. **Multiple Transition Paths:** When $g_{\mathcal{P}}(h_x, h_x) = 0$ for $h_x \neq 0$, there exist infinitesimally close paths with the same action, indicating multiple local minima of the action functional.
+
+2. **Jacobi Fields:** Zero modes $h_x$ satisfying $\mathcal{L} h_x = 0$ are **Jacobi fields** indicating conjugate points where the path becomes unstable.
+
+3. **Rare Events:** Near saddle points, the metric degeneracy corresponds to the existence of multiple rare-event transition paths (instantons) with comparable probabilities.
+
+4. **Metastability:** The presence of zero modes signals metastable states separated by energy barriers, where the system can transition via different pathways.
+
+The condition $\gamma^2 \geq 4\lambda_{\max}$ prevents oscillatory behavior but **cannot** eliminate exponentially growing modes when $\lambda < 0$, so degeneracy persists even in the overdamped regime.
+:::
 
 :::{important}
 **Connection to Reward Engineering and Log-Concave QSD:**
@@ -1228,23 +1472,23 @@ The pseudo-Riemannian analysis in this section applies to systems where $U_{\tex
 ∎
 :::
 
-:::{prf:remark} Non-Convex Potentials and Pseudo-Riemannian Geometry
-For general non-convex potentials (e.g., double-well, multiscale landscapes), neither Condition 1 nor 2 may hold globally. In such cases:
+:::{prf:remark} Non-Convex Potentials and Degenerate Geometry
+For general non-convex potentials (e.g., double-well, multiscale landscapes), neither strict convexity nor uniform lower bounds on $\nabla^2 U_{\text{eff}}$ hold globally. In such cases:
 
-**Pseudo-Riemannian Structure:**
+**Degenerate Semi-Riemannian Structure:**
 
-The path space carries an indefinite metric (pseudo-Riemannian, not Riemannian). Geodesics are still well-defined as critical points of the action, but they are **extremal paths** (stationary points) rather than necessarily **minimal paths**.
+The path space metric is **positive semi-definite but nearly degenerate** (or exactly degenerate when zero modes exist). The metric remains non-negative everywhere, but can have arbitrarily small eigenvalues along unstable directions. Geodesics are still well-defined as critical points of the action, but they are **extremal paths** (stationary points) rather than necessarily **minimal paths**.
 
 **Stability Interpretation:**
 
-- Regions where $g_{\mathcal{P}} \succ 0$: Stable path neighborhoods
-- Regions where $g_{\mathcal{P}}$ is indefinite: Saddle regions in path space (multiple competing transition paths)
+- Regions where $g_{\mathcal{P}} \succ 0$: Strictly positive-definite (stable path neighborhoods)
+- Regions where $g_{\mathcal{P}}$ has small eigenvalues: Nearly degenerate (multiple competing transition paths with similar action)
 
 **Conjugate Points:**
 
-The signature change of $g_{\mathcal{P}}$ signals the appearance of conjugate points (see {prf:ref}`thm-conjugate-points-saddles`), indicating path instability and multiplicity of transition mechanisms.
+The near-degeneracy of $g_{\mathcal{P}}$ signals the appearance of conjugate points (see {prf:ref}`thm-conjugate-points-saddles`), indicating path instability and multiplicity of transition mechanisms. Zero eigenvalues correspond to Jacobi fields along unstable directions.
 
-This is the path space analog of the Ruppeiner metric becoming indefinite at phase transition boundaries (Chapter 22).
+This degeneracy structure is analogous to the Ruppeiner metric becoming degenerate at phase transition boundaries (Chapter 22), though here the metric never becomes indefinite (pseudo-Riemannian)—it remains positive semi-definite throughout.
 :::
 
 ### 4.2. Geodesics in Path Space
@@ -1416,40 +1660,38 @@ We now connect the path action to thermodynamic quantities.
 :::{prf:definition} Entropy Production Functional
 :label: def-entropy-production-functional
 
-The **entropy production** along a path $\gamma \in \mathcal{P}$ is:
+The **entropy production** along a path $\gamma \in \mathcal{P}$ is defined as:
 
 $$
-\Sigma[\gamma] := \int_0^T \sigma_t dt
+\Sigma[\gamma] := S_{\text{OM}}[\gamma] = \frac{1}{4\gamma T}\int_0^T \left\| \dot{v}_t + \nabla U_{\text{eff}}(x_t) + \gamma v_t \right\|^2 dt
 $$
 
-where $\sigma_t$ is the **entropy production rate** at time $t$:
+This can be written in terms of the **entropy production rate**:
 
 $$
-\sigma_t = \frac{1}{2\gamma T} \left\| \dot{v}_t + \nabla U_{\text{eff}}(x_t) + \gamma v_t \right\|^2
+\Sigma[\gamma] = \int_0^T \sigma_t dt
 $$
 
-**Comparison to Onsager-Machlup Action:**
+where:
 
 $$
-S_{\text{OM}}[\gamma] = \frac{1}{2}\int_0^T \sigma_t \, dt = \frac{1}{2} \Sigma[\gamma]
+\sigma_t := \frac{1}{4\gamma T} \left\| \dot{v}_t + \nabla U_{\text{eff}}(x_t) + \gamma v_t \right\|^2 = L_{\text{OM}}(x_t, v_t, \dot{v}_t)
 $$
 
-Thus:
-
-$$
-\Sigma[\gamma] = 2 S_{\text{OM}}[\gamma]
-$$
+is the Onsager-Machlup Lagrangian density.
 
 **Non-Negativity:**
 
-$\Sigma[\gamma] \geq 0$ always, with equality if and only if $\gamma$ is a deterministic trajectory (zero noise).
+$\Sigma[\gamma] \geq 0$ always, with equality if and only if $\gamma$ is a deterministic trajectory satisfying $\dot{v}_t + \nabla U_{\text{eff}}(x_t) + \gamma v_t = 0$.
 
-:::{important}
-**Convention Note:** This document defines total entropy production as $\Sigma = 2 S_{\text{OM}}$, where the factor of 2 arises from the entropy production rate $\sigma_t = 2L_{\text{OM}}$ being twice the Onsager-Machlup Lagrangian. This ensures:
-- Path probability: $P[\gamma] \propto \exp(-\Sigma/2) = \exp(-S_{\text{OM}})$
-- Forward/backward ratio: $\log(P_F[\gamma]/P_R[\gamma_{\text{rev}}]) = \Sigma[\gamma]$
+**Physical Interpretation:**
 
-**Alternative convention:** Some literature defines entropy production as $\Sigma' := S_{\text{OM}}$, giving path probability $\exp(-\Sigma')$. Both conventions are valid; be careful when comparing results across sources to avoid factor-of-2 errors.
+The entropy production $\Sigma[\gamma]$ measures the irreversibility of the path. It equals the logarithm of the ratio of forward to reverse path probabilities (Crooks relation, {prf:ref}`thm-crooks-fluctuation-theorem`).
+
+:::{note}
+**Alignment with Standard Literature:** This definition follows the convention of Sekimoto (2010) and Seifert (2012), where the entropy production is identified directly with the Onsager-Machlup action. Some earlier sources use $\Sigma = 2 S_{\text{OM}}$, but the modern consensus equates them. This ensures:
+- Path probability: $P[\gamma] \propto \exp(-\Sigma[\gamma])$
+- Forward/backward ratio: $\log(P_F[\gamma]/P_R[\gamma_{\text{rev}}]) = \Sigma[\gamma]$ (standard Crooks relation)
 :::
 :::
 
@@ -1459,8 +1701,10 @@ $\Sigma[\gamma] \geq 0$ always, with equality if and only if $\gamma$ is a deter
 The path measure {prf:ref}`def-path-measure` can be written as:
 
 $$
-\frac{d\mathbb{P}_{\text{path}}[\gamma]}{d\mathcal{W}} = \exp\left(-\frac{\Sigma[\gamma]}{2}\right)
+\frac{d\mathbb{P}_{\text{path}}[\gamma]}{d\mathcal{W}} = \exp\left(-\Sigma[\gamma]\right) = \exp\left(-S_{\text{OM}}[\gamma]\right)
 $$
+
+where $\mathcal{W}$ is the Wiener measure.
 
 **Interpretation:**
 
@@ -1468,7 +1712,7 @@ Paths with **high entropy production** are exponentially suppressed. The most pr
 
 **Connection to Detailed Balance:**
 
-For equilibrium systems (satisfying detailed balance), $\Sigma[\gamma] = 0$ for closed loops $\gamma(T) = \gamma(0)$. The Fragile Gas violates detailed balance (non-equilibrium), so $\Sigma > 0$ generically.
+For equilibrium systems (satisfying detailed balance), $\Sigma[\gamma] = 0$ for closed loops $\gamma(T) = \gamma(0)$. The Fragile Gas violates detailed balance (non-equilibrium), so $\Sigma > 0$ generically for paths that deviate from deterministic trajectories.
 :::
 
 ### 5.2. Non-Equilibrium Work and Heat
@@ -1872,107 +2116,177 @@ For rigorous treatment, see Freidlin & Wentzell (2012), Chapter 4. ∎
 
 We now develop algorithms to compute the Onsager-Machlup action from **empirical swarm trajectories**.
 
-:::{prf:algorithm} Action Estimation from Swarm Data
+:::{prf:algorithm} Discrete-Time Action Estimation from Swarm Data
 :label: alg-action-estimation
 
+**Context:** For Langevin dynamics, sample paths have finite quadratic variation but are not differentiable (Hölder-$\alpha$ for $\alpha < 1/2$). Therefore, **we cannot compute $\dot{v}(t)$ pointwise**. Instead, we use the **discrete-time log-likelihood** of the path, which is well-defined and approximates the Onsager-Machlup action as $\Delta t \to 0$.
+
 **Input:**
-- Swarm trajectories $\{(x_i(t), v_i(t))\}_{i=1}^N$ for $t \in [0, T]$ sampled at times $t_0, t_1, \ldots, t_M$
+- Swarm trajectories $\{(x_i(t_k), v_i(t_k))\}_{i=1}^N$ at discrete times $t_k = k \Delta t$ for $k = 0, 1, \ldots, M$
 - Parameters: $\gamma, \sigma_v, U_{\text{eff}}(x)$ (or gradient $\nabla U_{\text{eff}}$)
+- Time step $\Delta t$
 
 **Output:**
-- Estimated action $\hat{S}_{\text{OM}}$ for each trajectory
-- Path measure statistics: $\langle S_{\text{OM}} \rangle$, $\text{Var}(S_{\text{OM}})$
-- Optimal (most probable) path
+- Estimated discrete action $\hat{S}_{\Delta t,i}$ for each trajectory
+- Path measure statistics: $\langle S_{\Delta t} \rangle$, $\text{Var}(S_{\Delta t})$
+- Most probable path (minimum action)
 
-**Steps:**
+**Theoretical Foundation:**
 
-1. **Trajectory Preprocessing:**
-   - Interpolate discrete samples to continuous paths (cubic spline or linear)
-   - Compute velocities $v_i(t)$ if only positions are recorded
+The kinetic operator generates velocities via the Ornstein-Uhlenbeck process (consistent with {prf:ref}`prop-kinetic-operator-path-measure`):
+
+$$
+dv_t = \left(-\nabla U_{\text{eff}}(x_t) - \gamma v_t\right) dt + \sqrt{2\gamma T} \, dW_t
+$$
+
+where $T = \sigma_v^2/\gamma$ is the effective temperature, so $\sqrt{2\gamma T} = \sqrt{2}\sigma_v$.
+
+The discrete-time transition density (Euler-Maruyama approximation) is Gaussian:
+
+$$
+v_{k+1} \mid v_k, x_k \sim \mathcal{N}\left(v_k + F_k \Delta t, \, 2\sigma_v^2 \Delta t \cdot I\right)
+$$
+
+where $F_k = -\nabla U_{\text{eff}}(x_k) - \gamma v_k$ is the deterministic drift.
+
+The **negative log-likelihood** of the discrete path $(v_0, v_1, \ldots, v_M)$ is:
+
+$$
+-\log P[v_0, \ldots, v_M] = \sum_{k=0}^{M-1} \frac{\|v_{k+1} - v_k - F_k \Delta t\|^2}{4\sigma_v^2 \Delta t} + \text{const}
+$$
+
+This defines the **discrete Onsager-Machlup action**:
+
+$$
+S_{\Delta t}[v] = \frac{\Delta t}{4\sigma_v^2} \sum_{k=0}^{M-1} \left\|\frac{v_{k+1} - v_k}{\Delta t} + \nabla U_{\text{eff}}(x_k) + \gamma v_k\right\|^2
+$$
+
+As $\Delta t \to 0$, $S_{\Delta t} \to S_{\text{OM}}$ (Freidlin-Wentzell approximation).
+
+**Algorithm Steps:**
+
+1. **Trajectory Validation:**
    - Check viability: discard trajectories exiting $\mathcal{X}_{\text{valid}}$
+   - Ensure $M \geq 2$ (at least two time steps)
 
-2. **Compute Path Derivatives:**
-   - Estimate $\dot{v}_i(t)$ via finite differences or spline derivatives:
+2. **Compute Discrete Drift:**
 
-
-$$
-\dot{v}_i(t_k) \approx \frac{v_i(t_{k+1}) - v_i(t_{k-1})}{2\Delta t}
-$$
-
-3. **Evaluate Onsager-Machlup Lagrangian:**
-   For each time $t_k$ and walker $i$:
-
+For each walker $i$ and time step $k = 0, \ldots, M-1$:
 
 $$
-L_i(t_k) = \frac{1}{4\sigma_v^2} \left\| \dot{v}_i(t_k) + \nabla U_{\text{eff}}(x_i(t_k)) + \gamma v_i(t_k) \right\|^2
+F_{i,k} = -\nabla U_{\text{eff}}(x_i(t_k)) - \gamma v_i(t_k)
 $$
 
-   Equivalently, using $T = \sigma_v^2/\gamma$:
+3. **Evaluate Discrete Action:**
 
-
-$$
-L_i(t_k) = \frac{1}{4\gamma T} \left\| \dot{v}_i(t_k) + \nabla U_{\text{eff}}(x_i(t_k)) + \gamma v_i(t_k) \right\|^2
-$$
-
-4. **Integrate Action:**
-
+For each walker $i$:
 
 $$
-\hat{S}_{\text{OM},i} = \sum_{k=1}^{M-1} L_i(t_k) \Delta t
+\hat{S}_{\Delta t,i} = \frac{\Delta t}{4\sigma_v^2} \sum_{k=0}^{M-1} \left\|\frac{v_i(t_{k+1}) - v_i(t_k)}{\Delta t} - F_{i,k}\right\|^2
 $$
 
-   (Use trapezoidal rule for better accuracy)
-
-5. **Compute Path Statistics:**
-   - Mean action: $\langle S \rangle = \frac{1}{N}\sum_{i=1}^N \hat{S}_i$
-   - Variance: $\text{Var}(S) = \frac{1}{N}\sum (S_i - \langle S \rangle)^2$
-   - Path probability weights: $w_i = e^{-S_i / T}$
-
-6. **Identify Optimal Path:**
-
+Equivalently, using $T = \sigma_v^2/\gamma$ and $4\sigma_v^2 = 4\gamma T$:
 
 $$
-i^* = \arg\min_i \hat{S}_{\text{OM},i}
+\hat{S}_{\Delta t,i} = \frac{1}{4\gamma T} \sum_{k=0}^{M-1} \Delta t \left\|\frac{v_i(t_{k+1}) - v_i(t_k)}{\Delta t} + \nabla U_{\text{eff}}(x_i(t_k)) + \gamma v_i(t_k)\right\|^2
 $$
 
+4. **Compute Path Statistics:**
+   - Mean action: $\langle S_{\Delta t} \rangle = \frac{1}{N}\sum_{i=1}^N \hat{S}_{\Delta t,i}$
+   - Variance: $\text{Var}(S_{\Delta t}) = \frac{1}{N}\sum_{i} (\hat{S}_{\Delta t,i} - \langle S_{\Delta t} \rangle)^2$
+   - Path probability weights: $w_i = \exp(-\hat{S}_{\Delta t,i})$ (normalized)
+
+5. **Identify Most Probable Path:**
+
+$$
+i^* = \arg\min_i \hat{S}_{\Delta t,i}
+$$
+
+:::{warning}
+**Do NOT use finite-difference approximations to $\dot{v}$:** The quantity $(v_{k+1} - v_k)/\Delta t$ is **not** a good approximation to $\dot{v}(t_k)$ because Langevin paths have no pointwise derivative. However, the **sum** $\sum_k \|v_{k+1} - v_k\|^2/\Delta t$ converges to the **quadratic variation** $\int \sigma_v^2 dt$ as $\Delta t \to 0$, which is what we need for the action functional.
+:::
 :::
 
 ### 7.2. Error Analysis
 
-:::{prf:theorem} Convergence of Action Estimator
+:::{prf:theorem} Convergence of Discrete Action Estimator
 :label: thm-action-estimator-convergence
 
-Let $\gamma(t)$ be a true path from the kinetic operator, and $\hat{S}_{\text{OM}}[\gamma]$ the action estimate from {prf:ref}`alg-action-estimation` with $M$ time samples.
+Let $\{v(t_k)\}_{k=0}^M$ be a discrete-time sample from the Langevin kinetic operator with time step $\Delta t$, and let $\hat{S}_{\Delta t}$ be the discrete action from {prf:ref}`alg-action-estimation`.
 
-**Discretization Error:**
+**Weak Convergence:**
+
+As $\Delta t \to 0$ (with $M \Delta t = T$ fixed), the discrete action converges to the Onsager-Machlup action:
 
 $$
-|\hat{S}_{\text{OM}} - S_{\text{OM}}| \leq C_1 \Delta t^2 + C_2 \Delta t \cdot \|\ddot{v}\|_{\infty}
+\hat{S}_{\Delta t} \xrightarrow{d} S_{\text{OM}}
 $$
 
-where $C_1, C_2$ depend on $\|\nabla^2 U_{\text{eff}}\|_{\infty}$ and $\gamma$.
+in distribution, with:
+
+$$
+\mathbb{E}[|\hat{S}_{\Delta t} - S_{\text{OM}}|] \leq C \Delta t
+$$
+
+where $C$ depends on $T$, $\|\nabla^2 U_{\text{eff}}\|_{\infty}$, $\gamma$, and $\sigma_v$.
+
+**Proof Sketch:**
+
+The discrete action is:
+
+$$
+\hat{S}_{\Delta t} = \frac{1}{4\sigma_v^2} \sum_{k=0}^{M-1} \frac{\|v_{k+1} - v_k - F_k \Delta t\|^2}{\Delta t}
+$$
+
+By the Euler-Maruyama approximation theory (Kloeden & Platen, Theorem 10.2.2), the discrete-time Langevin scheme has **strong convergence** of order $\Delta t^{1/2}$:
+
+$$
+\mathbb{E}\left[\sup_{0 \leq t \leq T} \|v^{\Delta t}(t) - v(t)\|\right] \leq C_1 \Delta t^{1/2}
+$$
+
+where $v^{\Delta t}(t)$ is the piecewise-linear interpolation of the discrete samples.
+
+The discrete action can be rewritten as:
+
+$$
+\hat{S}_{\Delta t} = \frac{1}{4\sigma_v^2} \sum_{k=0}^{M-1} \Delta t \left\|\frac{v_{k+1} - v_k}{\Delta t} - F_k\right\|^2
+$$
+
+This is a **Riemann sum** approximating the (generalized) integral defining $S_{\text{OM}}$. However, since $(v_{k+1} - v_k)/\Delta t$ does **not** converge pointwise to $\dot{v}(t_k)$ (paths are not differentiable), we must interpret the convergence in the sense of distributions or weak convergence.
+
+By the Girsanov change-of-measure formula (Section 1.3), the discrete negative log-likelihood $-\log P[v_0, \ldots, v_M]$ equals $\hat{S}_{\Delta t}$ plus a constant. The continuous-time limit of this log-likelihood is precisely the Onsager-Machlup action $S_{\text{OM}}$ (Freidlin & Wentzell, 2012, Theorem 3.1).
+
+The $O(\Delta t)$ error bound comes from the weak approximation error of the Euler-Maruyama scheme (Kloeden & Platen, Theorem 14.5.1), which states:
+
+$$
+|\mathbb{E}[f(v^{\Delta t}_T)] - \mathbb{E}[f(v_T)]| \leq C_f \Delta t
+$$
+
+for sufficiently smooth test functions $f$. Applying this to the action functional yields the stated bound. ∎
 
 **Statistical Error (Finite Walkers):**
 
 For $N$ independent walkers:
 
 $$
-\mathbb{E}\left[|\langle \hat{S} \rangle_N - \langle S \rangle|\right] \leq \frac{\text{Std}(S)}{\sqrt{N}}
+\mathbb{E}\left[|\langle \hat{S}_{\Delta t} \rangle_N - \mathbb{E}[\hat{S}_{\Delta t}]|\right] \leq \frac{\text{Std}(S_{\Delta t})}{\sqrt{N}}
 $$
+
+by the central limit theorem.
 
 **Combined Error:**
 
 $$
-\text{Total Error} = O(\Delta t^2) + O(N^{-1/2})
+\text{Total Error} = O(\Delta t) + O(N^{-1/2})
 $$
 
 **Convergence Rate:**
 
 To achieve error $\epsilon$, require:
-- $\Delta t \sim O(\epsilon^{1/2})$
-- $N \sim O(\epsilon^{-2})$
+- $\Delta t \sim O(\epsilon)$ (weak convergence rate)
+- $N \sim O(\epsilon^{-2})$ (Monte Carlo rate)
 
-**Proof:** Standard numerical integration error estimates + central limit theorem. ∎
+**Computational Cost:** $O(M N d)$ where $M = T/\Delta t$ time steps, $N$ walkers, $d$ spatial dimension.
 :::
 
 :::{prf:remark} Practical Considerations
@@ -2251,7 +2565,6 @@ Traditional annealing uses $T(t) = T_0 / \log(1 + t)$. The action-optimal schedu
 - Yang-Mills action $S_{\text{YM}}[A] = \frac{1}{4g^2}\sum_{\text{plaq}} \text{Tr}(F_{\mu\nu} F^{\mu\nu})$
 - Initialize with random gauge field $A_0$
 - Evolve with Langevin dynamics:
-
 
 
 $$

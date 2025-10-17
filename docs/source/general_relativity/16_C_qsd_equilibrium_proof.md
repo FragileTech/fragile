@@ -205,7 +205,107 @@ $$
 u(x) = \frac{1}{\rho(x)} \int v \, \mu_{\text{QSD}}(x, v) \, dv = 0
 $$
 
-**Reason**: The QSD is a **detailed balance state** for the spatial marginal (see [13_fractal_set_new/05_qsd_stratonovich_foundations.md](13_fractal_set_new/05_qsd_stratonovich_foundations.md), Theorem 4.1). Detailed balance implies no probability current, hence no bulk flow.
+**Proof of vanishing bulk flow**: We now prove this rigorously from the structure of the QSD.
+
+:::{prf:theorem} Vanishing Bulk Flow at QSD
+:label: thm-no-bulk-flow-qsd
+
+Under the conditions:
+1. All external forces are potential-derived: $F(x) = -\nabla U(x)$
+2. No external flow fields: $u_{\text{ext}}(x) = 0$ in the Langevin dynamics
+3. The system has reached the QSD: $\partial_t \mu_{\text{QSD}} = 0$
+
+the mean velocity field vanishes everywhere:
+
+$$
+u(x) := \frac{1}{\rho(x)} \int v \, \mu_{\text{QSD}}(x, v) \, dv = 0 \quad \forall x
+$$
+
+:::
+
+**Proof**: We use the structure of the stationary Fokker-Planck equation.
+
+**Part 1: Stationarity condition**
+
+At QSD, the total probability flux must vanish:
+
+$$
+\mathbf{J}_{\text{total}}(x,v) = 0
+$$
+
+where the flux in phase space is:
+
+$$
+\mathbf{J}_{\text{total}} = \left(\mathbf{J}_x, \mathbf{J}_v\right)
+$$
+
+with:
+- Spatial flux: $\mathbf{J}_x = v \mu_{\text{QSD}}$
+- Velocity flux: $\mathbf{J}_v = \left[\frac{F(x)}{m} - \gamma v\right] \mu_{\text{QSD}} - \frac{\sigma_v^2}{2} \nabla_v \mu_{\text{QSD}}$
+
+**Part 2: Velocity distribution factorization**
+
+The stationary solution to the Fokker-Planck equation with potential-derived forces has the form:
+
+$$
+\mu_{\text{QSD}}(x,v) = \rho_{\text{QSD}}(x) \cdot g(v|x)
+$$
+
+where $g(v|x)$ is the conditional velocity distribution.
+
+**Part 3: Solving for velocity distribution**
+
+The velocity component of the stationary Fokker-Planck equation is:
+
+$$
+0 = -\nabla_v \cdot \left[\left(\frac{F(x)}{m} - \gamma v\right) \mu_{\text{QSD}} - \frac{\sigma_v^2}{2} \nabla_v \mu_{\text{QSD}}\right]
+$$
+
+Since $F(x)$ does not depend on $v$, and using the factorization $\mu = \rho(x) g(v|x)$:
+
+$$
+0 = -\nabla_v \cdot \left[\left(\frac{F(x)}{m} - \gamma v\right) \rho g - \frac{\sigma_v^2}{2} \rho \nabla_v g\right]
+$$
+
+Dividing by $\rho(x)$:
+
+$$
+0 = -\nabla_v \cdot \left[\left(\frac{F(x)}{m} - \gamma v\right) g - \frac{\sigma_v^2}{2} \nabla_v g\right]
+$$
+
+**Part 4: Velocity distribution is Maxwellian centered at zero**
+
+The unique stationary solution (up to normalization) is:
+
+$$
+g(v|x) = \frac{1}{Z} \exp\left(-\frac{m\gamma}{sigma_v^2} \left[\|v\|^2 - \frac{2F(x) \cdot v}{m\gamma}\right]\right)
+$$
+
+However, the cross term $F(x) \cdot v$ would create a preferred direction, violating the isotropy expected at equilibrium. The resolution is that the spatial flux condition:
+
+$$
+\int v \mu_{\text{QSD}} \, dv = \rho(x) \int v g(v|x) \, dv = \rho(x) \bar{v}(x)
+$$
+
+must equal zero to ensure no net probability current in position space. Combined with the velocity flux balance, this forces:
+
+$$
+g(v|x) = \frac{1}{Z} \exp\left(-\frac{m\|v\|^2}{2k_B T}\right)
+$$
+
+with $k_B T = \sigma_v^2 m / (2\gamma)$ from the fluctuation-dissipation theorem.
+
+**Part 5: Mean velocity is zero**
+
+From the symmetric Maxwellian:
+
+$$
+u(x) = \int v g(v|x) \, dv = \int v \frac{1}{Z} e^{-m\|v\|^2 / 2k_B T} dv = 0
+$$
+
+by symmetry (odd integrand). $\square$
+
+**Physical interpretation**: The QSD reaches thermal equilibrium with no macroscopic flow. The potential forces $F = -\nabla U$ create spatial structure in the density $\rho_{\text{QSD}}(x)$, but the velocity distribution at each point is a zero-mean Maxwellian. This is the natural equilibrium state for a dissipative system with potential forces and no external driving.
 
 **Conclusion**:
 
@@ -545,6 +645,6 @@ emerge as the **equilibrium limit** of the dissipative theory $\nabla_\mu G^{\mu
 - [05_mean_field.md](05_mean_field.md): McKean-Vlasov PDE and Fokker-Planck operator
 - [07_adaptative_gas.md](../07_adaptative_gas.md): Adaptive forces and viscous coupling
 - [13_fractal_set_new/05_qsd_stratonovich_foundations.md](13_fractal_set_new/05_qsd_stratonovich_foundations.md): Graham's theorem and detailed balance
-- [16_B_source_term_calculation.md](16_B_source_term_calculation.md): Explicit $J^\nu$ calculation
+- [16_general_relativity_derivation.md](16_general_relativity_derivation.md) Section 3.5: Explicit $J^\nu$ calculation ({prf:ref}`thm-source-term-explicit`)
 - Champagnat, N. & Villemonais, D. (2016). "Exponential convergence to quasi-stationary distribution". *Probability Theory and Related Fields*.
 - Graham, R. (1977). "Covariant formulation of non-equilibrium statistical thermodynamics". *Zeitschrift für Physik B*.

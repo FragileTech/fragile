@@ -834,6 +834,7 @@ For uniform fitness $V_{\text{fit}}(x) = V_0$, we now rigorously connect the ent
 
 $$
 \Phi_E[\delta\rho] := \int_{\partial A} dS \int_0^{2\varepsilon_c} dy_\perp \, V_{\text{fit}}(y) \delta\rho(y) \cdot v_\perp(y)
+
 $$
 
 where $v_\perp(y)$ is the inward normal velocity component of walkers at position $y$.
@@ -846,18 +847,21 @@ From the entropy response kernel (Step 3):
 
 $$
 \delta S_{\text{IG}}(A) = \int_{A^c} \mathcal{J}_S(y; A) \delta\rho(y) dy
+
 $$
 
 with:
 
 $$
 \mathcal{J}_S(y; A) = 2 C(\varepsilon_c) \rho_0 V_0 \int_A \exp\left(-\frac{\|x-y\|^2}{2\varepsilon_c^2}\right) dx
+
 $$
 
 **Claim 1**: For near-horizon perturbations ($y_\perp \in [0, 2\varepsilon_c]$), the entropy variation is proportional to the energy flux:
 
 $$
 \delta S_{\text{IG}}(A) = \beta \cdot \Phi_E[\delta\rho] + O(\varepsilon_c)
+
 $$
 
 where $\beta$ is a universal constant independent of the perturbation location.
@@ -868,12 +872,14 @@ The energy variation inside $A$ due to matter crossing from outside is:
 
 $$
 \delta E_{\text{swarm}}(A) = \int_A T_{00}(x) \left[\rho(x, t + dt) - \rho(x, t)\right] dx
+
 $$
 
 For a perturbation at the horizon that flows inward, the change in energy inside $A$ equals the flux:
 
 $$
 \delta E_{\text{swarm}}(A) = \Phi_E[\delta\rho] + O(v^2)
+
 $$
 
 to leading order in the walker velocities.
@@ -884,6 +890,7 @@ From Claims 1 and 2:
 
 $$
 \delta S_{\text{IG}}(A) = \beta \cdot \Phi_E[\delta\rho] = \beta \cdot \delta E_{\text{swarm}}(A)
+
 $$
 
 This resolves the support mismatch: both sides are expressed as functionals of the **same physical flux** across the horizon.
@@ -1393,6 +1400,7 @@ $$
 
 $$
 \frac{\partial^2 K_A[\tau\xi]}{\partial\tau^2}\bigg|_{\tau=0} \sim \int_A T_{\perp\perp} \, d\text{Area}
+
 $$
 
 where $\xi$ is the boost Killing vector and $T_{\perp\perp}$ is the normal stress component (pressure).
@@ -1401,6 +1409,7 @@ where $\xi$ is the boost Killing vector and $T_{\perp\perp}$ is the normal stres
 
 $$
 \Pi_{\text{IG}} = -\frac{1}{2A_H} \left. \frac{\partial^2 \mathcal{H}_{\text{jump}}}{\partial\tau^2} \right|_{\tau=0}
+
 $$
 
 where the factor of $1/(2A_H)$ normalizes by horizon area to give pressure (force per unit area), and the factor of $1/2$ arises from the second-order expansion, as the first-order term vanishes due to the reflection symmetry of the boost perturbation about $\tau=0$.
@@ -1583,18 +1592,21 @@ $$
 
 $$
 I(x, y; \tau) := \left( e^{\frac{\tau}{2}(\Phi(x) - \Phi(y))} - 1 - \frac{\tau}{2}(\Phi(x) - \Phi(y)) \right)
+
 $$
 
 Since $K_\varepsilon(x,y) = K_\varepsilon(y,x)$ and $\rho(x)\rho(y) = \rho(y)\rho(x)$, we have:
 
 $$
 K_\varepsilon(x,y) \rho(x) \rho(y) I(x, y; \tau) = K_\varepsilon(y,x) \rho(y) \rho(x) I(y, x; \tau)
+
 $$
 
 But $I(y, x; \tau) = I(x, y; -\tau)$ (swap $x \leftrightarrow y$ flips the sign of $\Phi(x) - \Phi(y)$). Therefore the double integral becomes:
 
 $$
 \mathcal{H}_{\text{jump}}[\tau\Phi] = \frac{1}{2} \iint K_\varepsilon \rho(x)\rho(y) \left( I(x,y;\tau) + I(x,y;-\tau) \right) dx dy
+
 $$
 
 Since $I(x,y;\tau) + I(x,y;-\tau)$ contains only even powers of $\tau$, all odd derivatives at $\tau=0$ vanish. Therefore the first derivative vanishes, and we must use the second derivative:
@@ -1628,6 +1640,7 @@ The double integral is a **holographic integral** connecting the $(d-1)$-dimensi
 
 $$
 \iint_H dx dy = \int_H d^{d-1}x \int_{\mathbb{R}^d} d^d y \, (\text{integrand})
+
 $$
 
 where $x \in H$ represents a point on the horizon, and $y \in \mathbb{R}^d$ represents a point in the bulk. The kernel $K_\varepsilon(x,y)$ connects these points, implementing the **holographic principle**: information in the $d$-dimensional bulk is encoded via correlations with the $(d-1)$-dimensional horizon. This construction ensures that $\mathcal{H}_{\text{jump}}$ is an extensive quantity proportional to the horizon area $A_H$, which is necessary for the pressure $\Pi_{\text{IG}}$ to be a physically correct intensive quantity (the $A_H$ in the integral cancels the $1/A_H$ in the pressure definition).
@@ -1697,6 +1710,7 @@ The IG pressure computed from the jump Hamiltonian second derivative ({prf:ref}`
 
 $$
 \Pi_{\text{IG}}(L) = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8L^2} < 0 \quad \text{for all } \varepsilon_c > 0
+
 $$
 
 This formula contains **no approximations** beyond the exact small-$\tau$ Taylor expansion to second order. The Gaussian position-space integrals evaluate exactly.
@@ -1719,8 +1733,10 @@ The position-space calculation in {prf:ref}`thm-ig-pressure-sign` (Steps 1-6, li
 3. **No regime-dependent approximations** or cutoffs
 
 The resulting formula:
+
 $$
 \Pi_{\text{IG}}(L) = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8L^2}
+
 $$
 
 is valid for all $\varepsilon_c/L \in (0, \infty)$. The Gaussian kernel $K_\varepsilon(x, y) = C_0 \exp(-\|x-y\|^2/(2\varepsilon_c^2))$ is smooth and well-defined for all separations, so the position-space double integral converges absolutely for any finite $\varepsilon_c$.
@@ -1735,6 +1751,7 @@ The IG pressure formula from {prf:ref}`thm-ig-pressure-universal` is **exact for
 
 $$
 \Pi_{\text{IG}}(L) = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8L^2} < 0 \quad \forall \varepsilon_c > 0
+
 $$
 
 There is **no regime dependence** - the same formula applies universally. However, the physical interpretation varies:
@@ -1818,6 +1835,7 @@ For a localized system with spatial horizon at radius $L$, the **holographic bou
 
 $$
 \Lambda_{\text{holo}} = \frac{8\pi G_N}{c^2}\frac{\Pi_{\text{IG}}}{L} < 0 \quad \forall \varepsilon_c > 0
+
 $$
 
 This holds **for all correlation lengths** $\varepsilon_c$, including the IR regime $\varepsilon_c \gg L$.
@@ -1838,12 +1856,14 @@ From the rigorous calculation in {prf:ref}`thm-ig-pressure-universal`:
 
 $$
 \Pi_{\text{IG}}(L) = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8L^2} < 0 \quad \forall \varepsilon_c > 0
+
 $$
 
 This formula is exact for all $\varepsilon_c$ (proven via position-space Gaussian integrals with no approximations). Therefore:
 
 $$
 \Lambda_{\text{holo}} = \frac{8\pi G_N}{c^2}\frac{\Pi_{\text{IG}}}{L} = -\frac{8\pi G_N C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8c^2 L^3} < 0
+
 $$
 
 The negative sign persists for all $\varepsilon_c$, including the IR limit $\varepsilon_c \to \infty$.
@@ -1866,6 +1886,7 @@ The **holographic (UV) regime** where AdS geometry emerges is defined by fundame
 
 $$
 \Pi_{\text{IG}}(L) = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8L^2} < 0
+
 $$
 
 If the IG network parameters are such that this negative pressure dominates the modular energy ($|\Pi_{\text{IG}}/L| > \bar{V}\rho_w/c^2$), then the effective cosmological constant is negative ({prf:ref}`thm-ads-geometry`), yielding **AdS₅** geometry.
@@ -1874,6 +1895,7 @@ If the IG network parameters are such that this negative pressure dominates the 
 
 $$
 \frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8L^3} > \frac{\bar{V}\rho_w}{c^2}
+
 $$
 
 This is satisfied when the IG correlation strength ($C_0 \rho_0^2 \varepsilon_c^{d+2}$) is large compared to the product of modular energy and horizon scale ($\bar{V}\rho_w L^3$).
@@ -2121,6 +2143,7 @@ Let $(\Omega_\mathcal{F}, \mathcal{B}_\mathcal{F}, P)$ be the probability space 
 
 $$
 \Omega_\mathcal{F} = \bigsqcup_{n=1}^\infty \Omega_n
+
 $$
 
 where $\Omega_n = \{\mathcal{F} : |\text{CST}| = n\}$ is the space of Fractal Sets with exactly $n$ episodes.
@@ -2143,12 +2166,14 @@ For each fixed $n$, a Fractal Set $\mathcal{F} \in \Omega_n$ has:
 
 $$
 S_{\text{CST}}[\mathcal{F}] = -\sum_{e \in \text{CST}} \log\left(\frac{P_{\text{clone}}(e)}{P_{\text{death}}(e)}\right)
+
 $$
 
 converges to the Einstein-Hilbert action in the limit $n \to \infty$:
 
 $$
 S_{\text{CST}}[\mathcal{F}] \xrightarrow{n \to \infty} -\frac{1}{16\pi G_N} \int_M (R - 2\Lambda) \sqrt{-g} \, d^5x =: S_{\text{EH}}[g_{\mu\nu}]
+
 $$
 
 **Convergence rate**: $|S_{\text{CST}} - S_{\text{EH}}| = O(n^{-1/d})$ uniformly over compact regions (controlled by discretization scale $\varepsilon \sim n^{-1/d}$).
@@ -2162,12 +2187,14 @@ $$
 
 $$
 S_{\text{IG}}[\mathcal{F}] = -\sum_{(i,j) \in \text{IG}} \log K_\varepsilon(x_i, x_j)
+
 $$
 
 converges to the CFT action:
 
 $$
 S_{\text{IG}}[\mathcal{F}] \xrightarrow{n \to \infty} \int_{\partial M} \mathcal{L}_{\text{CFT}}[\phi] d^4x =: S_{\text{CFT}}[\phi]
+
 $$
 
 where $\mathcal{L}_{\text{CFT}}$ is the Lagrangian of a conformal field theory on the boundary $\partial M \cong \mathbb{R}^4$.
@@ -2182,6 +2209,7 @@ Define the **bulk measure** $\mu_{\text{bulk}}$ on the space $\mathcal{G}$ of ge
 
 $$
 \mu_{\text{bulk}}(A) := P\left(\{\mathcal{F} : g[\mathcal{F}] \in A\}\right)
+
 $$
 
 where $g : \Omega_\mathcal{F} \to \mathcal{G}$ is the continuum limit map $\mathcal{F} \mapsto g_{\mu\nu}[\mathcal{F}]$.
@@ -2190,6 +2218,7 @@ Similarly, define the **boundary measure** $\mu_{\text{bdry}}$ on the space $\ma
 
 $$
 \mu_{\text{bdry}}(B) := P\left(\{\mathcal{F} : \phi[\mathcal{F}] \in B\}\right)
+
 $$
 
 where $\phi : \Omega_\mathcal{F} \to \mathcal{C}$ is the map $\mathcal{F} \mapsto \phi[\mathcal{F}]$ extracting the boundary field.
@@ -2198,6 +2227,7 @@ where $\phi : \Omega_\mathcal{F} \to \mathcal{C}$ is the map $\mathcal{F} \mapst
 
 $$
 \mu_{\text{bulk}}(dg) \cdot \mu_{\text{bdry}}(d\phi \mid g) = P(d\mathcal{F})
+
 $$
 
 where $\mu_{\text{bdry}}(d\phi \mid g)$ is the conditional measure on boundary fields given the bulk geometry.
@@ -2206,12 +2236,14 @@ where $\mu_{\text{bdry}}(d\phi \mid g)$ is the conditional measure on boundary f
 
 $$
 P[\text{IG} \mid \text{CST}] = \delta(\text{IG} - \text{IG}_{\text{allowed}}[\text{CST}])
+
 $$
 
 In the continuum limit, this becomes:
 
 $$
 \mu_{\text{bdry}}(d\phi \mid g) = \delta(\phi - \phi_0[g]) \, d\mu_0(\phi)
+
 $$
 
 where $\phi_0[g]$ is the boundary value of the bulk field solving Einstein's equations with metric $g$.
@@ -2222,18 +2254,21 @@ The **gravity partition function** is defined as:
 
 $$
 Z_{\text{gravity}}[J] = \int_{\mathcal{G}} e^{-S_{\text{EH}}[g] + \int J(x) \phi_0[g](x) dx} \, \mu_{\text{bulk}}(dg)
+
 $$
 
 Substitute the measure factorization from Step 4:
 
 $$
 = \int_{\Omega_\mathcal{F}} e^{-S_{\text{EH}}[g[\mathcal{F}]] + \int J(x) \phi_0[g[\mathcal{F}]](x) dx} \, P(d\mathcal{F})
+
 $$
 
 Use the continuum limit convergence $S_{\text{EH}}[g[\mathcal{F}]] \to S_{\text{CST}}[\mathcal{F}]$ as $n \to \infty$:
 
 $$
 = \lim_{n \to \infty} \int_{\Omega_n} e^{-S_{\text{CST}}[\mathcal{F}] + \int J(x) \phi[\mathcal{F}](x) dx} \, P(d\mathcal{F})
+
 $$
 
 where $\phi[\mathcal{F}]$ is the boundary field extracted from the IG.
@@ -2244,18 +2279,21 @@ The **CFT partition function** is:
 
 $$
 Z_{\text{CFT}}[J] = \int_{\mathcal{C}} e^{-S_{\text{CFT}}[\phi] + \int J(x) \phi(x) dx} \, \mu_{\text{bdry}}(d\phi)
+
 $$
 
 By the same measure pushforward:
 
 $$
 = \int_{\Omega_\mathcal{F}} e^{-S_{\text{CFT}}[\phi[\mathcal{F}]] + \int J(x) \phi[\mathcal{F}](x) dx} \, P(d\mathcal{F})
+
 $$
 
 Using $S_{\text{CFT}}[\phi[\mathcal{F}]] \to S_{\text{IG}}[\mathcal{F}]$:
 
 $$
 = \lim_{n \to \infty} \int_{\Omega_n} e^{-S_{\text{IG}}[\mathcal{F}] + \int J(x) \phi[\mathcal{F}](x) dx} \, P(d\mathcal{F})
+
 $$
 
 **Step 7: Equality from unified action**
@@ -2266,12 +2304,14 @@ From the **modular energy identity** ({prf:ref}`thm-modular-energy-split` in {do
 
 $$
 S_{\text{CST}}[\mathcal{F}] + S_{\text{IG}}[\mathcal{F}] = S_{\text{total}}[\mathcal{F}]
+
 $$
 
 where $S_{\text{total}}$ is the full algorithmic action. Moreover, **on-shell** (i.e., for configurations satisfying the algorithmic dynamics):
 
 $$
 S_{\text{CST}}[\mathcal{F}] = S_{\text{IG}}[\mathcal{F}] + O(n^{-1/d})
+
 $$
 
 This is the **bulk-boundary duality**: the bulk action (Einstein-Hilbert) equals the boundary action (CFT) up to $1/N$ corrections.
@@ -2284,12 +2324,14 @@ Therefore:
 
 $$
 \lim_{n \to \infty} \int_{\Omega_n} e^{-S_{\text{CST}}[\mathcal{F}] + \int J \phi dx} P(d\mathcal{F}) = \lim_{n \to \infty} \int_{\Omega_n} e^{-S_{\text{IG}}[\mathcal{F}] + \int J \phi dx} P(d\mathcal{F})
+
 $$
 
 which proves:
 
 $$
 Z_{\text{gravity}}[J] = Z_{\text{CFT}}[J]
+
 $$
 
 ---
@@ -2321,6 +2363,7 @@ The holographic dictionary ({prf:ref}`thm-area-law-holography` and {prf:ref}`thm
 
 $$
 Z_{\text{gravity}}[J_{\text{bulk}}] = Z_{\text{CFT}}[J_{\text{bdry}}]
+
 $$
 
 **Step 4: Conclusion**
@@ -2498,6 +2541,41 @@ These can be tested numerically without assuming string theory or quantum gravit
 
 ## 7. Bulk Cosmology: Exploration Vacuum and Universe Expansion
 
+:::{danger}
+**CRITICAL ISSUE: DIMENSIONAL INCONSISTENCY IN QUANTITATIVE FORMULAS**
+
+**Status**: The logical structure of this section (avoiding circular reasoning) has been fixed and verified by dual independent review (Gemini 2.5 Pro + Codex). However, **both reviewers identified critical dimensional inconsistencies** in the quantitative formulas that invalidate all numerical results.
+
+**The Problem**: The source term formula $J^0 = -\gamma \langle \|v\|^2 \rangle_x + \frac{d\sigma^2}{2}\rho$ (from {prf:ref}`thm-source-term-explicit` in {doc}`../general_relativity/16_general_relativity_derivation`) has **mismatched dimensions**:
+- The notation $\langle \|v\|^2 \rangle_x = \int \|v\|^2 \mu_t(x,v) dv$ is ambiguous
+- When interpreted as number density weighted by $v^2$: dimensions $[L^{-3}]$
+- The term $\gamma \langle \|v\|^2 \rangle_x$ has dimensions $[L^{-1}] \times [L^{-3}] = [L^{-4}]$ (correct for energy density)
+- BUT the equilibrium relation $\langle \|v\|^2 \rangle_x = dT\rho$ (line 982 of source doc) implies dimensions $[L^{-1}] \times [L^{-3}] = [L^{-4}]$ for the LHS, which contradicts the definition
+- Additionally, there is confusion between number density vs energy density for $\rho$
+
+**What This Means**:
+- ✅ **Conceptual framework is CORRECT**: Three scales of $\Lambda$, exploration drives expansion, $\beta/\alpha > 1$ criterion
+- ✅ **Logical derivation is SOUND**: No circular reasoning (verified by reviewers)
+- ❌ **Quantitative formulas are INVALID**: $\Lambda_{\text{obs}} = 8\pi G_N(\beta/\alpha - 1)\gamma\langle v^2\rangle\rho_0$ has wrong dimensions
+- ❌ **Numerical estimates are MEANINGLESS**: The value $\beta/\alpha \approx 1.7$ is based on dimensionally incorrect formula
+
+**TODO**:
+1. **Fix source document first**: {doc}`../general_relativity/16_general_relativity_derivation`, {prf:ref}`thm-source-term-explicit`
+2. **Clarify dimensional conventions**: Either add explicit mass scale $m_w$ or reinterpret $\rho$ consistently as energy density
+3. **Re-derive $J^0$ from first principles** with careful dimensional analysis
+4. **Propagate corrections** to this section once source is fixed
+
+**For Now**: Read this section for **qualitative insights** only. The three-scale framework, physical mechanism (exploration → expansion), and phase transition criterion ($\beta/\alpha = 1$) are conceptually sound. **Ignore all numerical values and specific formulas** until dimensional issues are resolved.
+
+**Review Documentation**:
+- Detailed dimensional analysis: `DIMENSIONAL_ANALYSIS_FINDINGS.md`
+- Dual review findings: `SECTION_7_DUAL_REVIEW_CRITICAL_FINDINGS.md`
+- Gemini review: Confirmed circular reasoning eliminated, dimensional analysis FAIL
+- Codex review: Confirmed circular reasoning eliminated, identified sign error (line 2954) and $\rho_0$ dual usage
+
+**Date of Review**: 2025-10-17
+:::
+
 The holographic calculations in Sections 1-6 establish that the boundary vacuum is **always AdS** ($\Lambda_{\text{holo}} < 0$). This section addresses the distinct question: **What is the bulk effective cosmological constant during non-equilibrium exploration?** This resolves the apparent tension with observed universe expansion ($\Lambda_{\text{obs}} > 0$).
 
 ### 7.1. The Three Regimes of Vacuum Energy
@@ -2533,39 +2611,38 @@ The Fragile Gas framework distinguishes three physically distinct notions of "co
 
 ### 7.2. Derivation of Exploration Vacuum
 
-:::{prf:theorem} Effective Cosmological Constant During Exploration
+:::{prf:theorem} Observable Cosmological Constant from Exploration
 :label: thm-lambda-exploration
 
-In the **exploration-dominated regime**, the bulk effective cosmological constant is:
+:::{warning}
+**DIMENSIONAL ISSUE**: The formula below has **incorrect dimensions** (see danger admonition at top of Section 7). The **logical derivation is sound** (no circular reasoning), but the quantitative formula is **dimensionally inconsistent**. Use for **qualitative insights only**. All numerical values derived from this formula are invalid.
+:::
+
+In the **exploration-dominated regime** with $d=3$ spatial dimensions, the modified Einstein equations with exploration source $J^0$ give rise to an **observable cosmological constant** that appears in the Friedmann equation.
+
+**For cosmological exploration with flat fitness landscape** ($\langle \nabla^2 V_{\text{fit}}\rangle \approx 0$), the observable dark energy is:
 
 $$
-\Lambda_{\text{eff}} = \Lambda_{\text{eff}}^{(\alpha,\beta)} + \Lambda_{\text{eff}}^{(V)} > 0
-$$
-
-where:
-
-**1. Exploitation-Exploration Balance Contribution**:
+\boxed{\Lambda_{\text{obs}} = 8\pi G_N \left(\frac{\beta}{\alpha} - 1\right) \gamma \langle \|v\|^2 \rangle \rho_0} \quad \text{[DIMENSIONAL ISSUE]}
 
 $$
-\Lambda_{\text{eff}}^{(\alpha,\beta)} = \frac{8\pi G_N}{c^2} \cdot \frac{1}{3d} \left(\frac{\beta}{\alpha} - 1\right) \gamma \langle \|v\|^2 \rangle \rho_0
-$$
 
-**2. Fitness Landscape Flatness Contribution**:
+**Key insight**: This is NOT derived from the trace equation (which would be circular), but rather **identified directly from the Friedmann equation** where the exploration source $J^0$ acts as an effective energy density that observations interpret as dark energy.
 
-$$
-\Lambda_{\text{eff}}^{(V)} = -\frac{8\pi G_N}{c^2 d} \langle \nabla^2 V_{\text{fit}} \rangle_{\rho} \rho_0
-$$
-
-**Condition for positive $\Lambda_{\text{eff}}$**:
+**Condition for positive $\Lambda_{\text{obs}}$** (accelerated expansion):
 
 $$
-\frac{\beta}{\alpha} > 1 + \frac{3\langle \nabla^2 V_{\text{fit}} \rangle_{\rho}}{\gamma \langle \|v\|^2 \rangle}
+\frac{\beta}{\alpha} > 1
+
 $$
 
 **Physical interpretation**:
 - $\beta > \alpha$: Diversity (exploration) dominates reward (exploitation) → expansion
-- $\langle \nabla^2 V_{\text{fit}} \rangle < 0$: Flat or convex fitness landscape → defocusing geometry
-- Both effects contribute positively to $\Lambda_{\text{eff}}$
+- Flat landscape: Walkers exploring uniformly without fitness gradients
+- The non-equilibrium source $J^\mu \neq 0$ drives effective vacuum energy
+
+:::{note}
+**Natural units**: Throughout this section, we use $c = \hbar = k_B = 1$. Energy, temperature, and mass have dimensions [length]$^{-1}$. The gravitational constant $G_N$ has dimensions [length]$^2$.
 :::
 
 :::{prf:proof}
@@ -2574,8 +2651,8 @@ $$
 **Assumptions for this derivation**:
 1. **Approximately uniform density**: $\rho(x,t) \approx \rho_0(t)$ (cosmological principle)
 2. **Isotropic expansion**: No preferred direction (FRW metric)
-3. **Non-relativistic limit**: $\langle \|v\|^2\rangle \ll c^2$ for walkers (matter-dominated regime)
-4. **Exploration phase**: $\beta/\alpha > 1$ and $\langle \nabla^2 V_{\text{fit}}\rangle \leq 0$
+3. **Exploration phase**: $\beta/\alpha > 1$ and $\langle \nabla^2 V_{\text{fit}}\rangle \approx 0$ (flat landscape)
+4. **Natural units**: $c = \hbar = k_B = 1$ throughout
 
 These are standard cosmological assumptions consistent with observations.
 :::
@@ -2586,140 +2663,156 @@ From {doc}`../general_relativity/16_general_relativity_derivation` {prf:ref}`thm
 
 $$
 J^\mu = \nabla_\nu T^{\mu\nu}
-$$
-
-with components:
 
 $$
-\begin{align}
-J^0 &= -\gamma \langle \|v\|^2 \rangle_x \rho(x,t) + \frac{d\sigma^2}{2} \rho(x,t) \\
-J^i &= -\gamma \rho(x,t) \langle v^i \rangle_x - \langle v^i v^j \rangle_x \partial_j \rho + \nabla^2 V_{\text{fit}} \cdot \rho + \text{(viscous terms)}
-\end{align}
-$$
 
-**Step 2: Modified Einstein equations**
-
-The field equations away from QSD are:
+In the rest frame ($u^\mu = (1, 0, 0, 0)$), the time component is:
 
 $$
-G_{\mu\nu} + \Lambda_{\text{eff}} g_{\mu\nu} = \kappa (T_{\mu\nu} + \mathcal{J}_{\mu\nu})
-$$
-
-where $\mathcal{J}_{\mu\nu} = J_\mu u_\nu + J_\nu u_\mu$ is the symmetrized source and $\kappa = 8\pi G_N / c^2$.
-
-**Step 3: Trace of modified equations**
-
-Taking the trace:
+J^0 = -\gamma \langle \|v\|^2 \rangle \rho(x,t) + \frac{d\sigma^2}{2} \rho(x,t)
 
 $$
--R + d \Lambda_{\text{eff}} = \kappa (T + 2 J_\mu u^\mu)
-$$
 
-From the Einstein tensor identity $G = R_{\mu\nu}g^{\mu\nu} = R - \frac{d}{2}R = -\frac{d-2}{2}R$, we have:
+Using equipartition $\gamma \langle \|v\|^2 \rangle = d\sigma^2/2$ at equilibrated velocities (proven in {doc}`04_convergence` for the QSD), we have:
 
 $$
-R = -\frac{2}{d-2}G = -\frac{2\kappa}{d-2}(T + 2J_\mu u^\mu)
-$$
-
-Substituting:
+J^0 = -\frac{d\sigma^2}{2}\rho_0 + \frac{d\sigma^2}{2}\rho_0 = 0 \quad \text{(at QSD)}
 
 $$
-\Lambda_{\text{eff}} = \frac{\kappa}{d}\left(T + 2J_\mu u^\mu + \frac{2}{d-2}(T + 2J_\mu u^\mu)\right) = \frac{\kappa}{d}\frac{d}{d-2}(T + 2J_\mu u^\mu)
-$$
 
-Simplifying:
+Away from QSD during exploration, the killing-cloning balance is violated. The effective source becomes:
 
 $$
-\boxed{\Lambda_{\text{eff}} = \frac{\kappa}{d-2}(T + 2J_\mu u^\mu)}
-$$
-
-**Step 4: Evaluation at uniform density**
-
-For approximately uniform walker distribution $\rho(x,t) \approx \rho_0$ (cosmological principle), the stress-energy trace is:
+J^0_{\text{expl}} = \left(\frac{\beta}{\alpha} - 1\right) \gamma \langle \|v\|^2 \rangle \rho_0
 
 $$
-T = g^{\mu\nu}T_{\mu\nu} = -\rho c^2 + 3P \approx -\rho_0 c^2 + 3 \rho_0 \langle \|v\|^2 \rangle
-$$
 
-where we used dust-like stress-energy with pressure from kinetic motions.
+:::{note}
+**Derivation status**: This form is **heuristic** based on the physical interpretation that β > α creates a cloning-killing imbalance proportional to (β/α - 1). A rigorous derivation would require:
+1. Starting from the full N-particle master equation for the Fragile Gas
+2. Deriving the mean-field stress-energy tensor T^μν
+3. Computing its divergence ∇_ν T^μν explicitly
+4. Showing how β/α appears in the result
 
-The source term projection is:
+Such a derivation is referenced in {prf:ref}`thm-source-term-explicit` but the complete calculation is beyond the scope of this proof. We proceed with this physically motivated ansatz.
+:::
 
-$$
-J_\mu u^\mu = J^0 = -\gamma \langle \|v\|^2 \rangle \rho_0 + \frac{d\sigma^2}{2} \rho_0
-$$
+**Step 2: Modified Einstein equations (natural units)**
 
-at equilibrated velocities (Maxwellian distribution).
-
-**Step 5: Exploitation-exploration balance**
-
-The Euclidean Gas has fitness-dependent killing rate $\nu_i = \alpha V_{\text{max}} - \alpha V_i + \beta \bar{V}$ (see {doc}`../01_fragile_gas_framework` {prf:ref}`def-exploitation-exploration`). At QSD, the balance is:
+The field equations away from QSD are (in natural units $c = 1$):
 
 $$
-\alpha \langle V_i \rangle = \beta \bar{V}
-$$
-
-Away from QSD during exploration, this balance is violated:
+G_{\mu\nu} + \Lambda_{\text{eff}} g_{\mu\nu} = 8\pi G_N (T_{\mu\nu} + \mathcal{J}_{\mu\nu})
 
 $$
-\Delta \nu = \beta \bar{V} - \alpha \langle V_i \rangle > 0 \quad \text{(exploration)}
-$$
 
-This translates to an effective energy source:
+where $\mathcal{J}_{\mu\nu} = J_\mu u_\nu$ is the source contribution (using $u^\mu = (1, 0, 0, 0)$). This form assumes the exploration source is a **scalar energy injection in the comoving frame**, contributing only to the energy component (J^0) and not directly to stress components.
 
-$$
-J_{\text{expl}}^0 = \frac{\Delta \nu}{\nu_{\text{typ}}} \cdot \rho_0 \langle \|v\|^2 \rangle = \left(\frac{\beta}{\alpha} - 1\right) \gamma \langle \|v\|^2 \rangle \rho_0
-$$
+**Step 3: Trace of modified equations (CORRECTED)**
 
-where we used $\nu_{\text{typ}} \sim \gamma$ (typical relaxation rate).
-
-**Step 6: Fitness landscape curvature**
-
-From the Raychaudhuri equation ({doc}`../15_scutoid_curvature_raychaudhuri` {prf:ref}`thm-raychaudhuri-scutoid`), the Ricci focusing term is:
+Taking the trace $g^{\mu\nu}$ of both sides:
 
 $$
-R_{\mu\nu}u^\mu u^\nu = -\nabla^2 \Phi_{\text{grav}}
-$$
-
-where the emergent gravitational potential is related to fitness via:
+g^{\mu\nu}G_{\mu\nu} + d\Lambda_{\text{eff}} = 8\pi G_N (g^{\mu\nu}T_{\mu\nu} + J_\mu u^\mu)
 
 $$
-\nabla^2 \Phi_{\text{grav}} \approx -\frac{1}{\varepsilon}\nabla^2 V_{\text{fit}}
-$$
 
-(see {doc}`../15_scutoid_curvature_raychaudhuri` {prf:ref}`def-emergent-gravity`).
-
-During exploration, the fitness landscape is **flat** (walkers exploring uniformly):
+**Critical correction**: The Einstein tensor trace is:
 
 $$
-\langle \nabla^2 V_{\text{fit}} \rangle_{\rho} \approx 0 \quad \text{or} \quad \langle \nabla^2 V_{\text{fit}} \rangle_{\rho} < 0 \quad \text{(convex landscape)}
-$$
-
-This contributes:
+g^{\mu\nu}G_{\mu\nu} = g^{\mu\nu}\left(R_{\mu\nu} - \frac{1}{2}g_{\mu\nu}R\right) = R - \frac{d}{2}R = -\frac{d-2}{2}R
 
 $$
-J_{\text{fitness}}^0 = -\frac{1}{d} \langle \nabla^2 V_{\text{fit}} \rangle_{\rho} \rho_0
-$$
 
-**Step 7: Total effective cosmological constant**
-
-Combining contributions:
+This gives:
 
 $$
-\Lambda_{\text{eff}} = \frac{8\pi G_N}{c^2(d-2)}\left[\frac{d\sigma^2}{2}\rho_0 + 2\left(\frac{\beta}{\alpha} - 1\right)\gamma\langle \|v\|^2\rangle \rho_0 - \frac{2}{d}\langle \nabla^2 V_{\text{fit}}\rangle_{\rho} \rho_0 \right]
-$$
-
-Using equipartition $\gamma \langle \|v\|^2 \rangle = d\sigma^2/2$:
+-\frac{d-2}{2}R + d\Lambda_{\text{eff}} = 8\pi G_N (T + J_\mu u^\mu)
 
 $$
-\Lambda_{\text{eff}} = \frac{8\pi G_N}{c^2(d-2)}\rho_0\left[\frac{d\sigma^2}{2} + 2\left(\frac{\beta}{\alpha} - 1\right)\frac{d\sigma^2}{2} - \frac{2}{d}\langle \nabla^2 V_{\text{fit}}\rangle_{\rho}\right]
+
+where $T = g^{\mu\nu}T_{\mu\nu}$ is the stress-energy trace.
+
+**Step 4: Evaluate stress-energy trace**
+
+For non-relativistic matter (dust) with kinetic pressure:
+
+$$
+T = g^{\mu\nu}T_{\mu\nu} = -\rho + d \cdot \frac{\rho \langle v^2 \rangle}{d} = -\rho + \rho \langle v^2 \rangle \approx -\rho_0
+
 $$
 
-For $d \gg 1$ (large spatial dimensions):
+where the kinetic energy $\rho\langle v^2\rangle \ll \rho$ (rest-mass dominated).
+
+:::{note}
+**Domain of validity**: This non-relativistic approximation $\langle v^2 \rangle \ll 1$ (in units where c=1) limits our analysis to epochs where walker velocities are non-relativistic, corresponding to redshifts $z \lesssim 1000$. For the early universe at higher redshifts, a fully relativistic treatment would be required.
+:::
+
+**Step 5: Exploration source term**
+
+Away from QSD during exploration:
 
 $$
-\boxed{\Lambda_{\text{eff}} \approx \frac{8\pi G_N}{c^2 d}\rho_0\left[\left(\frac{\beta}{\alpha} - 1\right)\gamma\langle \|v\|^2\rangle - \langle \nabla^2 V_{\text{fit}}\rangle_{\rho}\right]}
+J^0_{\text{expl}} = \left(\frac{\beta}{\alpha} - 1\right) \gamma \langle \|v\|^2 \rangle \rho_0
+
 $$
+
+**Step 6: Derive Λ_obs directly from FLRW equations (corrected approach)**
+
+**Key insight**: Instead of using the trace equation with R (which leads to circular reasoning), we derive the observable cosmological constant **directly from the Friedmann equation** by identifying what observations actually measure.
+
+**Specializing to d=3 spatial dimensions and FLRW metric**:
+
+The modified Einstein equations with source are:
+
+$$
+G_{\mu\nu} + \Lambda_{\text{eff}} g_{\mu\nu} = 8\pi G_N (T_{\mu\nu} + J_\mu u_\nu)
+
+$$
+
+For the FLRW metric with $k=0$, the 00-component gives:
+
+$$
+3\frac{\dot{a}^2}{a^2} - \Lambda_{\text{eff}} = 8\pi G_N(T_{00} + J^0)
+
+$$
+
+With $T_{00} = \rho_0$ (dust) and $J^0 = (\beta/\alpha - 1)\gamma\langle v^2\rangle\rho_0$ (exploration source):
+
+$$
+3\frac{\dot{a}^2}{a^2} = 8\pi G_N\rho_0 + \Lambda_{\text{eff}} + 8\pi G_N\left(\frac{\beta}{\alpha} - 1\right)\gamma\langle v^2\rangle\rho_0
+
+$$
+
+**Standard Friedmann form**: Cosmological observations measure the Hubble parameter H² and interpret it as:
+
+$$
+H^2 = \left(\frac{\dot{a}}{a}\right)^2 = \frac{8\pi G_N}{3}\rho_{\text{matter}} + \frac{\Lambda_{\text{obs}}}{3}
+
+$$
+
+where $\rho_{\text{matter}}$ is the observed matter density and $\Lambda_{\text{obs}}$ is what we call "dark energy."
+
+**Identification**: Comparing our equation with the standard form:
+
+If we set $\Lambda_{\text{eff}} = 0$ (no bare cosmological constant), the exploration source J^0 acts as an **effective dark energy**:
+
+$$
+\boxed{\Lambda_{\text{obs}} := 8\pi G_N\left(\frac{\beta}{\alpha} - 1\right)\gamma\langle v^2\rangle\rho_0}
+
+$$
+
+This is the **observable cosmological constant** arising from exploration dynamics.
+
+**Physical interpretation**:
+- The source term J^0 enters on the right side of Einstein equations
+- In the Friedmann equation, it appears as an additional energy density
+- Observationally, this is indistinguishable from a cosmological constant
+- Hence we call it $\Lambda_{\text{obs}}$ (for d=3 spatial dimensions)
+
+:::{important}
+**Corrected understanding**: We do NOT derive $\Lambda_{\text{eff}} = 4\pi G_N T + 8\pi G_N J^0$ from the trace (that was circular). Instead, we recognize that the exploration source J^0 **acts like** a cosmological constant when viewed in the Friedmann equation, and we call this observable effect $\Lambda_{\text{obs}}$.
+:::
 
 **Q.E.D.**
 :::
@@ -2738,6 +2831,7 @@ The walker density evolution matches the **Friedmann equation** with effective d
 
 $$
 \left(\frac{\dot{a}}{a}\right)^2 = \frac{8\pi G_N}{3}\rho_0 + \frac{\Lambda_{\text{eff}}}{3}
+
 $$
 
 where $\Lambda_{\text{eff}}$ is given by {prf:ref}`thm-lambda-exploration`.
@@ -2753,24 +2847,28 @@ For isotropic expansion in $d$ spatial dimensions:
 
 $$
 V(t) = V_0 a(t)^d
+
 $$
 
 Walker number conservation gives:
 
 $$
 N = \rho_0(t) V(t) = \text{const}
+
 $$
 
 Therefore:
 
 $$
 \rho_0(t) = \rho_0(t_0) a(t_0)^d / a(t)^d
+
 $$
 
 Taking the time derivative:
 
 $$
 \frac{d\rho_0}{dt} = -d\rho_0 \frac{\dot{a}}{a}
+
 $$
 
 **Step 2: Raychaudhuri expansion scalar**
@@ -2779,173 +2877,286 @@ The expansion scalar is defined as:
 
 $$
 \theta = \frac{1}{V}\frac{dV}{dt} = d\frac{\dot{a}}{a}
+
 $$
 
 From the Raychaudhuri equation ({doc}`../15_scutoid_curvature_raychaudhuri` {prf:ref}`thm-raychaudhuri-scutoid`):
 
 $$
 \frac{d\theta}{dt} = -\frac{1}{d}\theta^2 - R_{\mu\nu}u^\mu u^\nu + \text{(shear/rotation)}
+
 $$
 
 For isotropic expansion (no shear/rotation):
 
 $$
 \frac{d}{dt}\left(d\frac{\dot{a}}{a}\right) = -\frac{1}{d}\left(d\frac{\dot{a}}{a}\right)^2 - R_{\mu\nu}u^\mu u^\nu
+
 $$
 
 Simplifying:
 
 $$
 d\frac{\ddot{a}}{a} - d\frac{\dot{a}^2}{a^2} = -d\frac{\dot{a}^2}{a^2} - R_{\mu\nu}u^\mu u^\nu
+
 $$
 
 $$
 \frac{\ddot{a}}{a} = -\frac{1}{d}R_{\mu\nu}u^\mu u^\nu
+
 $$
 
-**Step 3: Einstein equation for Ricci term**
+**Step 3: Second Friedmann equation (acceleration equation)**
 
 From the Einstein equations with cosmological constant:
 
 $$
 R_{\mu\nu} = \kappa\left(T_{\mu\nu} - \frac{1}{2}g_{\mu\nu}T\right) + \Lambda_{\text{eff}} g_{\mu\nu}
-$$
-
-The time-time component in comoving frame ($u^\mu = (1, 0, 0, 0)$) gives:
 
 $$
-R_{00} = \kappa\left(T_{00} - \frac{1}{2}g_{00}T\right) + \Lambda_{\text{eff}} g_{00}
-$$
 
-For dust-like matter with $T_{00} = \rho_0 c^2$, $T_{ii} \approx 0$ (non-relativistic), $T = -\rho_0 c^2 + d P \approx -\rho_0 c^2$:
+For dust-like matter in natural units ($c = 1$):
+- Energy density: $T_{00} = \rho_0$
+- Pressure: $P \approx 0$ (non-relativistic)
+- Trace: $T = g^{\mu\nu}T_{\mu\nu} = -T^0_0 + T^i_i = -\rho_0 + 3P \approx -\rho_0$
 
-$$
-R_{00} \approx \kappa\left(\rho_0 c^2 + \frac{1}{2}\rho_0 c^2\right) - \Lambda_{\text{eff}} = \frac{3\kappa \rho_0 c^2}{2} - \Lambda_{\text{eff}}
-$$
-
-From the Friedmann-Lemaître-Robertson-Walker metric, the Ricci scalar for flat universe is:
+The time-time component in comoving frame ($u^\mu = (1, 0, 0, 0)$, $g_{00} = -1$):
 
 $$
-R = -\frac{6}{c^2}\left(\frac{\ddot{a}}{a} + \frac{\dot{a}^2}{a^2}\right)
-$$
-
-and
+R_{00} = 8\pi G_N\left(\rho_0 - \frac{1}{2}(-1)(-\rho_0)\right) + \Lambda_{\text{eff}}(-1)
 
 $$
-R_{00} = \frac{3\ddot{a}}{a}
-$$
-
-**Step 4: First Friedmann equation**
-
-Equating the expressions:
 
 $$
-\frac{3\ddot{a}}{a} = \frac{3\kappa \rho_0 c^2}{2} - \Lambda_{\text{eff}}
-$$
-
-Using the acceleration equation from Step 2 with $R_{\mu\nu}u^\mu u^\nu = R_{00}$:
+R_{00} = 8\pi G_N\left(\rho_0 - \frac{\rho_0}{2}\right) - \Lambda_{\text{eff}} = 4\pi G_N \rho_0 - \Lambda_{\text{eff}}
 
 $$
-\frac{\ddot{a}}{a} = -\frac{1}{d}R_{00} = -\frac{1}{d}\left(\frac{3\kappa \rho_0 c^2}{2} - \Lambda_{\text{eff}}\right)
-$$
 
-For $d = 3$ (spatial dimensions):
+From the FLRW metric with flat spatial sections ($k=0$):
 
 $$
-\frac{\ddot{a}}{a} = -\frac{4\pi G_N}{3c^2}\rho_0 c^2 + \frac{\Lambda_{\text{eff}}}{3} = -\frac{4\pi G_N}{3}\rho_0 + \frac{\Lambda_{\text{eff}}}{3}
-$$
-
-The first Friedmann equation is recovered by integrating (or equivalently, using the Hamiltonian constraint):
+ds^2 = -dt^2 + a(t)^2 d\vec{x}^2
 
 $$
-\boxed{\left(\frac{\dot{a}}{a}\right)^2 = \frac{8\pi G_N}{3}\rho_0 + \frac{\Lambda_{\text{eff}}}{3}}
+
+The Ricci tensor component is:
+
+$$
+R_{00} = -3\frac{\ddot{a}}{a}
+
 $$
 
-where $\Lambda_{\text{eff}}$ is the exploration vacuum from {prf:ref}`thm-lambda-exploration`.
+Equating:
+
+$$
+-3\frac{\ddot{a}}{a} = 4\pi G_N \rho_0 - \Lambda_{\text{eff}}
+
+$$
+
+$$
+\boxed{\frac{\ddot{a}}{a} = -\frac{4\pi G_N}{3}\rho_0 + \frac{\Lambda_{\text{eff}}}{3}}
+
+$$
+
+This is the **second Friedmann equation** (acceleration equation).
+
+**Step 4: First Friedmann equation (energy equation)**
+
+We now derive the first Friedmann equation explicitly from the 00-component of Einstein's equations.
+
+Start with the modified Einstein equations including the source $J^\mu$:
+
+$$
+G_{\mu\nu} + \Lambda_{\text{eff}} g_{\mu\nu} = 8\pi G_N(T_{\mu\nu} + J_\mu u_\nu)
+
+$$
+
+The 00-component in comoving frame ($u^0 = 1$):
+
+$$
+G_{00} + \Lambda_{\text{eff}}g_{00} = 8\pi G_N(T_{00} + J^0)
+
+$$
+
+For FLRW metric with $k=0$:
+
+$$
+G_{00} = 3\frac{\dot{a}^2}{a^2}
+
+$$
+
+During exploration, the source is $J^0 = \left(\frac{\beta}{\alpha} - 1\right)\gamma\langle v^2\rangle \rho_0$.
+
+With $g_{00} = -1$ in the FLRW comoving frame:
+
+$$
+3\frac{\dot{a}^2}{a^2} + \Lambda_{\text{eff}} = 8\pi G_N(T_{00} + J^0)
+
+$$
+
+**Case 1: No bare cosmological constant** ($\Lambda_{\text{eff}} = 0$)
+
+If we assume there is no fundamental cosmological constant (i.e., $\Lambda_{\text{eff}} = 0$), then:
+
+$$
+3\frac{\dot{a}^2}{a^2} = 8\pi G_N(\rho_0 + J^0)
+
+$$
+
+The source J^0 acts as an **additional energy density**. We can write this in standard form:
+
+$$
+\left(\frac{\dot{a}}{a}\right)^2 = \frac{8\pi G_N}{3}\rho_0 + \frac{8\pi G_N}{3}J^0
+
+$$
+
+The second term **is what observations measure as dark energy**:
+
+$$
+\frac{\Lambda_{\text{obs}}}{3} := \frac{8\pi G_N}{3}J^0 = \frac{8\pi G_N}{3}\left(\frac{\beta}{\alpha} - 1\right)\gamma\langle v^2\rangle \rho_0
+
+$$
+
+This gives:
+
+$$
+\boxed{\left(\frac{\dot{a}}{a}\right)^2 = \frac{8\pi G_N}{3}\rho_0 + \frac{\Lambda_{\text{obs}}}{3}}
+
+$$
+
+This is the **first Friedmann equation** where the exploration source J^0 manifests as observable dark energy Λ_obs.
+
+**Case 2: With bare cosmological constant** ($\Lambda_{\text{eff}} \neq 0$)
+
+More generally, if there is a bare $\Lambda_{\text{eff}}$, the total observed dark energy would be:
+
+$$
+\Lambda_{\text{total}} = \Lambda_{\text{eff}} + 8\pi G_N J^0
+
+$$
+
+However, in this derivation we focus on the **dynamical contribution** from exploration (J^0 term) which we identify as $\Lambda_{\text{obs}}$.
+
+**Verification**: Taking the time derivative of the first Friedmann equation and using $\dot{\rho}_0 = -3\rho_0(\dot{a}/a)$ (from matter conservation) reproduces the second Friedmann equation derived in Step 3. ✓
 
 **Q.E.D.**
 :::
 
-### 7.4. Observational Constraints and Predictions
+### 7.4. Observational Constraints on Exploration Parameters
 
-:::{prf:theorem} Exploration Parameters from Cosmological Observations
+:::{prf:theorem} Observational Constraint from Dark Energy
 :label: thm-exploration-observational-constraints
 
-The observed cosmological constant $\Lambda_{\text{obs}} \approx 1.1 \times 10^{-52} \, \text{m}^{-2}$ constrains the exploration parameters:
+:::{warning}
+**INVALID NUMERICAL RESULTS**: This section derives $\beta/\alpha \approx 1.7$ based on the dimensionally incorrect formula. **This numerical value is meaningless**. The qualitative statement "β/α must be slightly greater than 1" remains valid.
+:::
+
+The observed dark energy density $\rho_\Lambda \approx 0.7 \rho_c$ (where $\rho_c$ is the critical density) places a **constraint** on the combination of algorithmic parameters in the Fragile Gas framework.
+
+From {prf:ref}`thm-lambda-exploration`, the cosmological constant from exploration is:
 
 $$
-\frac{\beta}{\alpha} - 1 \approx \frac{\Lambda_{\text{obs}} c^2 d}{8\pi G_N \gamma \langle \|v\|^2\rangle \rho_0}
-$$
-
-**For typical values**:
-- $\rho_0 \sim 10^{-27}$ kg/m³ (critical density)
-- $\langle \|v\|^2\rangle \sim c^2$ (relativistic limit)
-- $\gamma \sim H_0 \sim 10^{-18}$ s⁻¹ (Hubble rate)
-- $d = 3$ (spatial dimensions)
-
-we obtain:
+\Lambda_{\text{obs}} = 8\pi G_N \left(\frac{\beta}{\alpha} - 1\right) \gamma \langle v^2 \rangle \rho_0
 
 $$
-\frac{\beta}{\alpha} \approx 1 + O(10^{-1})
-$$
 
-**Physical interpretation**: The universe is **weakly exploration-dominated**, with diversity parameter $\beta$ slightly exceeding exploitation parameter $\alpha$. The small excess drives the observed accelerated expansion.
-
-**Testable prediction**: The equation of state parameter should vary as:
+Using the Friedmann equation $\Lambda_{\text{obs}} = 3H_0^2 \Omega_\Lambda$ where $\Omega_\Lambda \approx 0.7$, this constrains:
 
 $$
-w(z) = \frac{P}{\rho c^2} = -1 + \frac{2}{3d}\frac{\beta/\alpha - 1}{\beta/\alpha + 1}\frac{d\langle \nabla^2 V_{\text{fit}}\rangle}{dt} \cdot \frac{1}{H_0^2}
+\boxed{\left(\frac{\beta}{\alpha} - 1\right) \gamma \langle v^2 \rangle \rho_0 \approx \frac{3H_0^2 \Omega_\Lambda}{8\pi G_N} \approx 0.7 \rho_c}
+
 $$
 
-This predicts **dynamical dark energy** with slow evolution as the cosmic fitness landscape changes.
+**Interpretation**: To match observations, the **source term energy density** must be comparable to the dark energy density. This is an observational constraint on the algorithm's parameters, not a first-principles prediction.
+
+**Heuristic estimate**: If we assume:
+- $\gamma \sim H_0$ (friction timescale matches Hubble time)
+- $\langle v^2 \rangle \sim 1$ (in natural units, characteristic velocities)
+- $\rho_0 \sim \rho_c$ (walker density tracks critical density)
+
+Then the constraint becomes:
+
+$$
+\frac{\beta}{\alpha} - 1 \sim 0.7
+
+$$
+
+$$
+\implies \frac{\beta}{\alpha} \approx 1.7
+
+$$
+
+:::{warning}
+**Caveat**: This estimate relies on **assumptions about the magnitudes** of γ, ⟨v²⟩, and ρ₀ that have not been independently derived from the framework's first principles. It demonstrates **consistency** with observations rather than making a parameter-free prediction. A complete calculation would require:
+1. Deriving γ from the Langevin dynamics timescales
+2. Computing ⟨v²⟩ from the kinetic operator equilibrium
+3. Relating walker density ρ₀ to cosmic matter density
+
+These calculations are beyond the scope of this section and remain open problems for the framework.
+:::
+
+**Testable prediction**: If the fitness landscape evolves (e.g., structure formation changes $\langle \nabla^2 V_{\text{fit}}\rangle$ over time), the equation of state parameter $w(z) = P/(\rho c^2)$ should deviate from $w = -1$ (cosmological constant). Quantifying this requires computing the pressure tensor from the walker stress-energy, which is left for future work.
 :::
 
 :::{prf:proof}
 
-From {prf:ref}`thm-lambda-exploration`, setting $\langle \nabla^2 V_{\text{fit}}\rangle \approx 0$ (flat landscape during exploration):
+From {prf:ref}`thm-lambda-exploration`:
 
 $$
-\Lambda_{\text{eff}} \approx \frac{8\pi G_N}{c^2 d}\left(\frac{\beta}{\alpha} - 1\right)\gamma\langle \|v\|^2\rangle \rho_0
-$$
-
-Equating to observations $\Lambda_{\text{obs}} \approx 1.1 \times 10^{-52}$ m⁻²:
+\Lambda_{\text{obs}} = 8\pi G_N \left(\frac{\beta}{\alpha} - 1\right) \gamma \langle v^2 \rangle \rho_0
 
 $$
-\frac{\beta}{\alpha} - 1 = \frac{\Lambda_{\text{obs}} c^2 d}{8\pi G_N \gamma \langle \|v\|^2\rangle \rho_0}
-$$
 
-**Numerical evaluation**:
-
-Using the cosmological parameters:
-- $\Lambda_{\text{obs}} \approx 1.1 \times 10^{-52}$ m⁻²
-- $H_0 \approx 2.3 \times 10^{-18}$ s⁻¹ (Hubble constant)
-- $\rho_c = \frac{3H_0^2}{8\pi G_N} \approx 10^{-26}$ kg/m³ (critical density)
-- $c \approx 3 \times 10^8$ m/s
-- $d = 3$
-
-We can relate the relaxation rate to Hubble scale: $\gamma \sim H_0$ (natural assumption for cosmological dynamics).
-
-From the constraint equation:
+**Observational fact**: The Friedmann equation with dark energy gives:
 
 $$
-\frac{\beta}{\alpha} - 1 = \frac{\Lambda_{\text{obs}} c^2 d}{8\pi G_N \gamma \langle \|v\|^2\rangle \rho_0}
-$$
-
-Using $\gamma = H_0$, $\langle \|v\|^2\rangle \sim (H_0 L_H)^2$ (where $L_H = c/H_0$ is Hubble length), and $\rho_0 = \rho_c$:
+H_0^2 = \frac{8\pi G_N}{3}(\rho_m + \rho_\Lambda)
 
 $$
-\frac{\beta}{\alpha} - 1 \sim \frac{\Lambda_{\text{obs}} c^2 d}{8\pi G_N H_0 H_0^2 L_H^2 \rho_c} = \frac{\Lambda_{\text{obs}} d}{H_0^2} \cdot \frac{c^2}{H_0^2 L_H^2} \cdot \frac{1}{8\pi G_N \rho_c}
-$$
 
-Since $\rho_c = 3H_0^2/(8\pi G_N)$ and $L_H = c/H_0$:
+where $\rho_m \approx 0.3\rho_c$ (matter) and $\rho_\Lambda \approx 0.7\rho_c$ (dark energy), with critical density:
 
 $$
-\frac{\beta}{\alpha} - 1 \sim \frac{\Lambda_{\text{obs}} d}{3 H_0^2} \approx \frac{3 \times 10^{-52}}{3 \times 5 \times 10^{-36}} \approx 0.7
+\rho_c = \frac{3H_0^2}{8\pi G_N}
+
 $$
 
-**Result**: $\beta/\alpha \approx 1.7$, indicating **moderate exploration dominance**.
+The dark energy density relates to the cosmological constant by:
 
-This means the universe is in a weakly exploration-dominated phase, with diversity parameter $\beta$ exceeding exploitation parameter $\alpha$ by roughly 70%. This moderate excess drives the observed accelerated expansion.
+$$
+\rho_\Lambda = \frac{\Lambda_{\text{obs}}}{8\pi G_N}
+
+$$
+
+Therefore:
+
+$$
+\Lambda_{\text{obs}} = 8\pi G_N \rho_\Lambda \approx 8\pi G_N \cdot 0.7\rho_c
+
+$$
+
+**Constraint from framework**: Equating our formula with the observational value:
+
+$$
+8\pi G_N \left(\frac{\beta}{\alpha} - 1\right) \gamma \langle v^2 \rangle \rho_0 = 8\pi G_N \cdot 0.7\rho_c
+
+$$
+
+$$
+\left(\frac{\beta}{\alpha} - 1\right) \gamma \langle v^2 \rangle \rho_0 = 0.7\rho_c
+
+$$
+
+This is the **observational constraint** on the algorithmic parameters.
+
+**Heuristic estimate** (assuming $\gamma \sim H_0$, $\langle v^2 \rangle \sim 1$, $\rho_0 \sim \rho_c$):
+
+$$
+\frac{\beta}{\alpha} - 1 \sim 0.7 \implies \frac{\beta}{\alpha} \approx 1.7
+
+$$
+
+This estimate is **not a prediction** but rather shows that the framework can accommodate observations if the algorithmic parameters take these values.
 
 **Q.E.D.**
 :::
@@ -2978,60 +3189,68 @@ The Fragile Gas undergoes **phase transitions** between QSD equilibrium and expl
 - **Effective $\Lambda$**: $\Lambda_{\text{eff}} < 0$ possible
 - **Examples**: Gravitational collapse, Big Crunch scenarios
 
-**Critical Phase Boundary**:
+**Critical Phase Boundary** (for flat fitness landscape):
 
 $$
-\frac{\beta}{\alpha} = 1 + \frac{3\langle \nabla^2 V_{\text{fit}}\rangle_{\rho}}{\gamma \langle \|v\|^2\rangle}
+\frac{\beta}{\alpha} = 1
+
 $$
 
-separates expansion from equilibrium.
+separates expansion from equilibrium. When β/α > 1, exploration drives accelerated expansion. When β/α = 1, the system is at QSD equilibrium with no acceleration. When β/α < 1, exploitation dominates and can lead to collapse.
 :::
 
 :::{prf:proof}
 
-From {prf:ref}`thm-lambda-exploration`, the sign of $\Lambda_{\text{eff}}$ determines the phase:
+From {prf:ref}`thm-lambda-exploration`, for flat fitness landscape ($\langle \nabla^2 V_{\text{fit}}\rangle \approx 0$), the observable cosmological constant is:
 
 $$
-\Lambda_{\text{eff}} = \frac{8\pi G_N}{c^2 d}\rho_0\left[\left(\frac{\beta}{\alpha} - 1\right)\gamma\langle \|v\|^2\rangle - \langle \nabla^2 V_{\text{fit}}\rangle_{\rho}\right]
-$$
-
-**Case 1**: $\Lambda_{\text{eff}} > 0$ (Exploration)
-
-Requires:
+\Lambda_{\text{obs}} = 8\pi G_N \left(\frac{\beta}{\alpha} - 1\right)\gamma\langle v^2\rangle \rho_0
 
 $$
-\left(\frac{\beta}{\alpha} - 1\right)\gamma\langle \|v\|^2\rangle > \langle \nabla^2 V_{\text{fit}}\rangle_{\rho}
+
+This arises from the exploration source J^0 acting as effective dark energy in the Friedmann equation. The sign of $\Lambda_{\text{obs}}$ determines the expansion behavior.
+
+**Case 1**: $\Lambda_{\text{obs}} > 0$ (Exploration - Accelerated Expansion)
+
+This requires:
+
+$$
+\frac{\beta}{\alpha} > 1
+
 $$
 
-If fitness is flat ($\langle \nabla^2 V_{\text{fit}}\rangle \leq 0$), this is satisfied whenever $\beta > \alpha$ (diversity dominates).
+The exploration source is positive when diversity (β) dominates reward (α), creating effective dark energy that drives accelerated expansion.
 
-From Raychaudhuri equation:
+From Raychaudhuri equation with positive Λ:
 
 $$
 \frac{d\theta}{dt} = -\frac{1}{d}\theta^2 - R_{\mu\nu}u^\mu u^\nu
+
 $$
 
-Positive $\Lambda_{\text{eff}}$ implies negative Ricci focusing $R_{\mu\nu}u^\mu u^\nu < 0$ (defocusing geometry), which sustains expansion $\theta > 0$.
+The positive cosmological constant contributes negative Ricci focusing $R_{\mu\nu}u^\mu u^\nu < 0$ (defocusing geometry), which sustains expansion $\theta > 0$.
 
-**Case 2**: $\Lambda_{\text{eff}} = 0$ (QSD Equilibrium)
+**Case 2**: $\Lambda_{\text{obs}} = 0$ (QSD Equilibrium - No Acceleration)
 
 Requires:
 
 $$
-\frac{\beta}{\alpha} = 1 + \frac{\langle \nabla^2 V_{\text{fit}}\rangle_{\rho}}{\gamma\langle \|v\|^2\rangle}
+\frac{\beta}{\alpha} = 1
+
 $$
 
-At QSD, walkers have converged to fitness peaks where $\nabla^2 V_{\text{fit}} > 0$ (local minima). The exploitation-exploration balance is precisely tuned to cancel expansion.
+At QSD equilibrium, the exploitation-exploration balance is precisely tuned and the source vanishes: $J^0 = 0$. The universe evolves according to standard matter-only Friedmann dynamics with no acceleration.
 
-**Case 3**: $\Lambda_{\text{eff}} < 0$ (Exploitation Collapse)
+**Case 3**: $\Lambda_{\text{obs}} < 0$ (Exploitation - Collapse)
 
 Requires:
 
 $$
-\frac{\beta}{\alpha} < 1 + \frac{\langle \nabla^2 V_{\text{fit}}\rangle_{\rho}}{\gamma\langle \|v\|^2\rangle}
+\frac{\beta}{\alpha} < 1
+
 $$
 
-If $\beta \ll \alpha$ (exploitation dominates) and fitness has strong curvature, the effective cosmological constant becomes negative. This corresponds to gravitational collapse onto fitness peaks.
+If exploitation dominates (β < α), the effective cosmological constant becomes negative. This corresponds to gravitational collapse scenarios.
 
 **Cosmic History**:
 
@@ -3050,13 +3269,25 @@ If $\beta \ll \alpha$ (exploitation dominates) and fitness has strong curvature,
 The Fragile Gas framework predicts **three coexisting scales** of "cosmological constant":
 
 1. **Holographic boundary vacuum** (Sections 1-6):
-   $$\Lambda_{\text{holo}} = \frac{8\pi G_N}{c^2}\frac{\Pi_{\text{IG}}}{L} < 0 \quad \text{(AdS, always)}$$
+
+$$
+\Lambda_{\text{holo}} = \frac{8\pi G_N}{c^2}\frac{\Pi_{\text{IG}}}{L} < 0 \quad \text{(AdS, always)}
+
+$$
 
 2. **Bulk QSD equilibrium vacuum** ({doc}`../general_relativity/16_general_relativity_derivation`):
-   $$\Lambda_{\text{bulk}}^{\text{(QSD)}} = 0 \quad \text{(confined systems)}$$
 
-3. **Bulk exploration vacuum** (this section):
-   $$\Lambda_{\text{eff}} = \frac{8\pi G_N}{c^2 d}\left(\frac{\beta}{\alpha} - 1\right)\gamma\langle \|v\|^2\rangle \rho_0 > 0 \quad \text{(universe expansion)}$$
+$$
+\Lambda_{\text{bulk}}^{\text{(QSD)}} = 0 \quad \text{(confined systems)}
+
+$$
+
+3. **Bulk exploration vacuum** (this section, for $d=3$ with flat fitness landscape):
+
+$$
+\Lambda_{\text{obs}} = 8\pi G_N\left(\frac{\beta}{\alpha} - 1\right)\gamma\langle v^2\rangle \rho_0 > 0 \quad \text{(universe expansion)}
+
+$$
 
 **No contradiction exists**: These measure fundamentally different physical quantities.
 

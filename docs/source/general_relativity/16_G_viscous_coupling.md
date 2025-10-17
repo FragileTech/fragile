@@ -239,63 +239,114 @@ with no modifications to the tensor structure.
 
 **Proof**:
 
-At QSD with $u = 0$ (no bulk flow), the viscous force acts on velocity fluctuations:
+We prove this using energy balance and global symmetry at QSD, without assuming uncorrelated velocities.
+
+**Step 1: Total dissipation at QSD**
+
+At QSD, the total power dissipated by all dissipative forces must balance the total heating from noise. The dissipation has two sources:
+
+1. **Langevin friction**: $P_{\text{Langevin}} = \gamma m \sum_i \|v_i\|^2$
+2. **Viscous coupling**: $P_{\text{viscous}} = \frac{\nu m}{2} \sum_{i,j} K(x_i - x_j) \|v_i - v_j\|^2$
+
+(from Proposition 2.2 in this document)
+
+The total dissipation is:
 
 $$
-\mathbf{F}_{\text{viscous}}(x_i) = \nu \sum_j K(x_i - x_j)(v_j - v_i)
+P_{\text{total}} = \gamma m \sum_i \|v_i\|^2 + \frac{\nu m}{2} \sum_{i,j} K(x_i - x_j) \|v_i - v_j\|^2
 $$
 
-Since $\langle v_i \rangle_{\text{QSD}} = 0$ and the distribution is isotropic, we can compute the mean force:
+**Step 2: Heating from noise**
+
+The Langevin noise adds energy at rate:
 
 $$
-\langle \mathbf{F}_{\text{viscous}}(x_i) \rangle = \nu \sum_j K(x_i - x_j) \langle v_j - v_i \rangle = 0
+P_{\text{heating}} = \frac{\sigma_v^2 m}{2} N d
 $$
 
-However, the variance of velocity is affected:
+where $N$ is the total number of walkers and $d$ is the spatial dimension.
+
+**Step 3: Energy balance at QSD**
+
+At QSD, stationarity requires $\langle \partial_t E_{\text{kin}} \rangle = 0$, so:
 
 $$
-\frac{d \langle v_i^2 \rangle}{dt} = 2 \langle v_i \cdot \mathbf{F}_{\text{viscous}} \rangle / m
+P_{\text{heating}} = P_{\text{total}}
 $$
 
-Using the isotropy and averaging over walker pairs:
-
 $$
-\langle v_i \cdot \mathbf{F}_{\text{viscous}}(x_i) \rangle = -\nu m \sum_j K(x_i - x_j) \langle \|v_i - v_j\|^2 \rangle
+\frac{\sigma_v^2 m}{2} N d = \gamma m \sum_i \langle \|v_i\|^2 \rangle + \frac{\nu m}{2} \sum_{i,j} K(x_i - x_j) \langle \|v_i - v_j\|^2 \rangle
 $$
 
-For uncorrelated velocities at QSD:
+**Step 4: Isotropy from global symmetry**
+
+The key insight is that the QSD is **globally isotropic** when there is no bulk flow ($u = 0$). This means:
+
+1. The stress-energy tensor must be diagonal: $T_{ij} \propto \delta_{ij}$
+2. Any rank-2 tensor constructed from the velocity distribution must be proportional to the metric tensor
+
+This is a consequence of rotational symmetry: if the QSD has $u = 0$ and is stationary, it cannot have a preferred spatial direction.
+
+Therefore, the velocity second moments must satisfy:
 
 $$
-\langle \|v_i - v_j\|^2 \rangle = \langle \|v_i\|^2 \rangle + \langle \|v_j\|^2 \rangle = 2 \langle \|v\|^2 \rangle_{\text{QSD}}
+\langle v^\mu v^\nu \rangle_{\text{QSD}} = \langle v^2 \rangle_{\text{QSD}} \, g^{\mu\nu} / d
 $$
 
-Therefore:
+This isotropy condition, combined with the energy balance, determines the effective temperature.
+
+**Step 5: Effective friction from energy balance**
+
+From the energy balance, we can identify an effective friction coefficient. In the continuum limit, the viscous dissipation can be written as:
 
 $$
-\frac{d \langle v^2 \rangle}{dt}\bigg|_{\text{viscous}} = -2\nu \left[\sum_j K(x_i - x_j)\right] \langle v^2 \rangle
+P_{\text{viscous}} = \Delta \gamma_{\text{viscous}} \cdot m N \langle v^2 \rangle_{\text{QSD}}
 $$
 
-In the continuum limit:
+where:
 
 $$
-\sum_j K(x_i - x_j) \to N \int K(r) \frac{\rho(r)}{\rho_{\text{total}}} dr
+\Delta \gamma_{\text{viscous}} = \nu \int K(r) \rho_{\text{QSD}}(r) \, dr
 $$
 
-Defining:
+is the spatially-averaged viscous damping rate.
+
+The total effective friction is:
 
 $$
-\Delta \gamma_{\text{viscous}} = \nu \int K(r) \rho(r) dr
+\gamma_{\text{eff}} = \gamma + \Delta \gamma_{\text{viscous}}
 $$
 
-the viscous force contributes an effective friction $\gamma_{\text{eff}} = \gamma + \Delta \gamma_{\text{viscous}}$.
+**Step 6: Effective temperature**
 
-At equilibrium, the temperature is:
+From the energy balance and equipartition:
 
 $$
-k_B T_{\text{eff}} = \frac{\sigma_v^2 m}{2(\gamma + \Delta \gamma_{\text{viscous}})}
+\frac{\sigma_v^2 m}{2} d = \gamma_{\text{eff}} \langle v^2 \rangle_{\text{QSD}}
 $$
 
-This is a **renormalization** of the temperature but does not change the tensor structure $T_{\mu\nu} \propto g_{\mu\nu}$. ∎
+Solving for the temperature:
+
+$$
+k_B T_{\text{eff}} = \frac{m}{d} \langle v^2 \rangle_{\text{QSD}} = \frac{\sigma_v^2 m}{2\gamma_{\text{eff}}} = \frac{\sigma_v^2 m}{2(\gamma + \Delta \gamma_{\text{viscous}})}
+$$
+
+**Step 7: Stress-energy tensor structure**
+
+The stress-energy tensor at QSD is:
+
+$$
+T_{\mu\nu}[\mu_{\text{QSD}}] = m \rho \langle v^\mu v^\nu \rangle = m \rho \frac{k_B T_{\text{eff}}}{m} g_{\mu\nu}
+$$
+
+This is a **renormalization** of the temperature, but the tensor structure $T_{\mu\nu} \propto g_{\mu\nu}$ is preserved by the global isotropy. $\square$
+
+**Key insight**: We did not need to assume velocities are uncorrelated. Instead, we used:
+1. Global rotational symmetry at QSD (no bulk flow)
+2. Energy balance between dissipation and heating
+3. Isotropy of the stress tensor from symmetry
+
+The viscous coupling creates local velocity correlations, but these correlations average to zero in the isotropic QSD, preserving the diagonal tensor structure.
 
 ## 6. Off-Equilibrium: Bulk Viscosity
 

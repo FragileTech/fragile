@@ -2254,7 +2254,7 @@ encode how to translate configurations from one representation to another.
 $$
 \begin{aligned}
 \pi_{\text{swarm} \to \text{Fractal}}: &\quad (X, V) \mapsto (CST, IG) \quad \text{(via episodic decomposition)} \\
-\pi_{\text{Fractal} \to \text{scutoid}}: &\quad (CST, IG) \mapsto \{\mathcal{S}_i(t)\} \quad \text{(Algorithm 6.2 in [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md))} \\
+\pi_{\text{Fractal} \to \text{scutoid}}: &\quad (CST, IG) \mapsto \{\mathcal{S}_i(t)\} \quad \text{Algorithm 6.2 in scutoidgeometryframework} \\
 \pi_{\text{scutoid} \to \text{lattice}}: &\quad \{\mathcal{S}_i(t)\} \mapsto \{\phi_n\} \quad \text{(scutoid CoM → lattice site)} \\
 \pi_{\text{swarm} \to \text{mean-field}}: &\quad (X, V) \mapsto f_N = \frac{1}{N}\sum_i \delta_{(x_i, v_i)} \quad \text{(empirical measure)}
 \end{aligned}
@@ -2355,26 +2355,48 @@ where:
 
 **Theorem (Scutoid-Fractal Equivalence):**
 
-:::{prf:theorem} Scutoid and Fractal Set ε-Machines are Isomorphic under Lossless Projection
+:::{prf:theorem} Scutoid and Fractal Set ε-Machines have Equal Statistical Complexity
 :label: thm-scutoid-fractal-equivalence
 
-Under the lossless scutoid construction map $\pi_{\text{Fractal} \to \text{scutoid}}$ (Algorithm 6.2 in [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)):
+Under the scutoid construction map $\pi_{\text{Fractal} \to \text{scutoid}}$ (Definition {prf:ref}`def-scutoid-construction` in [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)):
 
 $$
 C_\mu^{\text{scutoid}} = C_\mu^{\text{Fractal}}
 $$
 
-and the causal state spaces are isomorphic:
+**Proof:**
+
+1. **Lossless state encoding:** The scutoid tessellation provides a **lossless geometric encoding** of the Fractal Set state space (Reconstruction Theorem 4.1 in [01_fractal_set.md](01_fractal_set.md)). All walker trajectories, cloning events, and correlations can be uniquely reconstructed from scutoid geometry:
+   - CST edges: Scutoid vertical boundaries encode temporal evolution
+   - IG edges: Scutoid horizontal adjacencies encode spatial coupling
+
+2. **Entropy preservation:** Since the map $\pi_{\text{Fractal} \to \text{scutoid}}$ is bijective on the state space $\Omega_{\text{Fractal}} \cong \Omega_{\text{scutoid}}$, the joint entropy of configurations is preserved:
+
+   $$
+   H(\Omega_{\text{scutoid}}) = H(\Omega_{\text{Fractal}})
+   $$
+
+3. **Statistical complexity equality:** By Lemma {prf:ref}`lem-causal-state-entropy-edges`, the statistical complexity equals the process entropy. Since the process entropy is preserved by lossless encoding:
+
+   $$
+   C_\mu^{\text{scutoid}} = H(\Sigma_\varepsilon^{\text{scutoid}}) = H(\Omega_{\text{scutoid}}) = H(\Omega_{\text{Fractal}}) = H(\Sigma_\varepsilon^{\text{Fractal}}) = C_\mu^{\text{Fractal}}
+   $$
+
+∎
+:::
+
+:::{note}
+**Stronger claim (open question):** We conjecture that the causal state spaces are **isomorphic**: $\Sigma_\varepsilon^{\text{scutoid}} \cong \Sigma_\varepsilon^{\text{Fractal}}$. This would require proving that $\pi_{\text{Fractal} \to \text{scutoid}}$ is a **causal homomorphism**: for any two Fractal Set histories $H_F, H_F'$,
 
 $$
-\Sigma_\varepsilon^{\text{scutoid}} \cong \Sigma_\varepsilon^{\text{Fractal}}
+H_F \sim_\varepsilon H_F' \quad \Leftrightarrow \quad \pi(H_F) \sim_\varepsilon \pi(H_F')
 $$
 
-**Proof:** The scutoid tessellation is a **lossless encoding** of the Fractal Set (Theorem 4.1 in [01_fractal_set.md](01_fractal_set.md)). All CST edges and IG edges can be uniquely reconstructed from scutoid geometry:
-- CST edges: Scutoid vertical boundaries encode temporal evolution
-- IG edges: Scutoid horizontal adjacencies encode spatial coupling
+where $\sim_\varepsilon$ denotes causal equivalence. While the lossless encoding guarantees equal statistical complexity, proving that the causal equivalence relation is preserved under the geometric projection remains an open problem.
+:::
 
-Since the projection is bijective on information, causal states are preserved. ∎
+:::{warning}
+**Distinction:** "Equal statistical complexity" ($C_\mu^{\text{scutoid}} = C_\mu^{\text{Fractal}}$) means the total entropy of causal states is the same. "Causal state isomorphism" ($\Sigma_\varepsilon^{\text{scutoid}} \cong \Sigma_\varepsilon^{\text{Fractal}}$) is stronger: it requires a bijection between causal states that preserves the transition structure. The latter implies the former, but not vice versa.
 :::
 
 #### 11.3.4. Lattice QFT ε-Machine
@@ -2500,10 +2522,14 @@ $$
 **Corollary (Representation Hierarchy):**
 
 $$
-\text{Swarm} \cong \text{Fractal Set} \cong \text{Scutoid} \quad \Rightarrow \quad \text{Lattice QFT} \quad \Rightarrow \quad \text{Mean-Field}
+\text{Swarm} \cong_I \text{Fractal Set} \cong_I \text{Scutoid} \quad \Rightarrow \quad \text{Lattice QFT} \quad \Rightarrow \quad \text{Mean-Field}
 $$
 
-where $\cong$ denotes information equivalence, and $\Rightarrow$ denotes lossy coarse-graining (reduction in $C_\mu$).
+where:
+- $\cong_I$ denotes **informational equivalence** (equal statistical complexity: $C_\mu^{\mathcal{R}} = C_\mu^{\mathcal{R}'}$)
+- $\Rightarrow$ denotes **lossy coarse-graining** (reduction in $C_\mu$: $C_\mu^{\text{macro}} \le C_\mu^{\text{micro}}$)
+
+**Note:** Informational equivalence ($\cong_I$) is weaker than causal state isomorphism ($\cong$). For the first three representations, we have proven equal statistical complexity but not full ε-machine isomorphism.
 
 ### 11.5. Cross-Representation Closure Analysis
 
@@ -2521,26 +2547,37 @@ where $\cong$ denotes information equivalence, and $\Rightarrow$ denotes lossy c
 
 ## 12. Information-Geometric Characterization of ε-Machines
 
-### 12.1. Fisher Information Metric on Causal State Space
+### 12.1. Fisher Information Distance on Causal State Space
 
-Closure theory identifies causal states as equivalence classes of histories. Information geometry provides a **metric structure** on these causal states.
+Closure theory identifies causal states as equivalence classes of histories. Information geometry provides a **metric structure** on these causal states, even when the state space is discrete or fractal.
 
-:::{prf:definition} Fisher Metric on ε-Machine State Space
+:::{prf:definition} Fisher Information Distance on ε-Machine State Space
 :label: def-fisher-metric-epsilon-machine
 
-Let $\Sigma_\varepsilon$ be the causal state space of an ε-machine, and $P(\sigma)$ the QSD-weighted probability distribution over causal states.
+Let $\Sigma_\varepsilon$ be the causal state space of an ε-machine (which may be discrete, continuous, or fractal), and $P(\sigma)$ the QSD-weighted probability distribution over causal states.
 
-**Fisher information metric:** For causal states $\sigma, \sigma' \in \Sigma_\varepsilon$, define the **Fisher distance**:
+**Fisher information distance:** For any two causal states $\sigma, \sigma' \in \Sigma_\varepsilon$, define the **Fisher distance** via the Kullback-Leibler divergence between their conditional future distributions:
 
 $$
-g_{ij}^{\text{Fisher}} := \mathbb{E}\left[ \frac{\partial \log P(F \mid \sigma)}{\partial \sigma^i} \cdot \frac{\partial \log P(F \mid \sigma)}{\partial \sigma^j} \right]
+d_{\text{Fisher}}(\sigma, \sigma') := \sqrt{D_{\text{KL}}(P(F \mid \sigma) \| P(F \mid \sigma')) + D_{\text{KL}}(P(F \mid \sigma') \| P(F \mid \sigma))}
 $$
 
-where $F$ denotes future observations, and $\{\sigma^i\}$ are coordinates on $\Sigma_\varepsilon$.
+where:
+- $F$ denotes future observations
+- $D_{\text{KL}}(p \| q) := \sum_f p(f) \log \frac{p(f)}{q(f)}$ is the KL-divergence (sum for discrete, integral for continuous)
+- The symmetrized form uses the **Jeffreys divergence** to ensure $d_{\text{Fisher}}(\sigma, \sigma') = d_{\text{Fisher}}(\sigma', \sigma)$
 
-**Interpretation:** $g^{\text{Fisher}}$ measures how quickly the conditional distribution $P(F \mid \sigma)$ changes as we move through causal state space. High Fisher information → causal states that are informationally distant → high predictive sensitivity.
+**Interpretation:** $d_{\text{Fisher}}(\sigma, \sigma')$ measures how distinguishable the future prediction distributions are when conditioned on different causal states. High Fisher distance → causal states that are informationally distant → high predictive sensitivity.
 
-**Riemannian structure:** $(\Sigma_\varepsilon, g^{\text{Fisher}})$ is a Riemannian manifold called the **ε-machine information manifold**.
+**Metric space structure:** $(\Sigma_\varepsilon, d_{\text{Fisher}})$ is a metric space called the **ε-machine information space**.
+
+**Connection to differential geometry:** For smooth parameter families $\sigma(\theta)$ where $\Sigma_\varepsilon$ is parameterized by $\theta \in \mathbb{R}^m$, the Fisher distance induces the standard Fisher-Rao metric tensor in the limit:
+
+$$
+g_{ij}(\theta) = \lim_{\epsilon \to 0} \frac{d_{\text{Fisher}}(\sigma(\theta), \sigma(\theta + \epsilon e_i))^2}{2\epsilon^2} = \mathbb{E}\left[ \frac{\partial \log P(F \mid \theta)}{\partial \theta^i} \cdot \frac{\partial \log P(F \mid \theta)}{\partial \theta^j} \right]
+$$
+
+However, this differential structure is **not required** for the discrete causal state spaces typical of ε-machines.
 :::
 
 **Connection to existing framework:** The Adaptive Gas already has Fisher information machinery (Definition 8.2 in [08_emergent_geometry.md](../08_emergent_geometry.md)):
@@ -2553,31 +2590,57 @@ where $\rho(x, v)$ is the phase space density.
 
 **Theorem (Fisher Metric Functoriality):**
 
-:::{prf:theorem} Fisher Information under Coarse-Graining
+:::{prf:theorem} Fisher Distance Contraction under Coarse-Graining
 :label: thm-fisher-coarse-graining
 
-Let $\pi: \Sigma_\varepsilon^{\text{micro}} \to \Sigma_\varepsilon^{\text{macro}}$ be a coarse-graining of causal states.
+Let $\pi: \Sigma_\varepsilon^{\text{micro}} \to \Sigma_\varepsilon^{\text{macro}}$ be a coarse-graining map between causal state spaces.
 
-**Fisher information inequality:**
+**Data processing inequality for Fisher distance:** For any two micro-causal states $\sigma, \sigma' \in \Sigma_\varepsilon^{\text{micro}}$:
 
 $$
-g^{\text{Fisher}}_{\text{macro}} \le (\pi_*)^{-1} g^{\text{Fisher}}_{\text{micro}}
+d_{\text{Fisher}}(\pi(\sigma), \pi(\sigma')) \le d_{\text{Fisher}}(\sigma, \sigma')
 $$
 
-where $(\pi_*)^{-1}$ is the pull-back of the metric.
+**Interpretation:** Coarse-graining is a **contraction** on the information space—macro-causal states are never more distinguishable than the micro-causal states they aggregate.
 
-**Equality (computational closure criterion):** If $g^{\text{Fisher}}_{\text{macro}} = (\pi_*)^{-1} g^{\text{Fisher}}_{\text{micro}}$, then the coarse-graining preserves all predictive information, i.e., **computational closure** holds.
+**Equality (computational closure criterion):** If $d_{\text{Fisher}}(\pi(\sigma), \pi(\sigma')) = d_{\text{Fisher}}(\sigma, \sigma')$ for all $\sigma, \sigma'$, then $\pi$ is an **isometry** on the information space. This means **computational closure** holds: the coarse-graining preserves all predictive information.
 
-**Proof:** Fisher information quantifies the distinguishability of probability distributions (data processing inequality). Coarse-graining can only reduce distinguishability, hence $g_{\text{macro}} \le (\pi_*)^{-1} g_{\text{micro}}$. Equality iff no information is lost. ∎
+**Proof:**
+
+1. **Data processing inequality for KL-divergence:** By the standard data processing inequality (Cover & Thomas, 2006), for any random variables $X, Y, Z$ forming a Markov chain $X \to Y \to Z$:
+
+   $$
+   D_{\text{KL}}(P_{Z \mid X=x} \| P_{Z \mid X=x'}) \le D_{\text{KL}}(P_{Y \mid X=x} \| P_{Y \mid X=x'})
+   $$
+
+2. **Apply to coarse-graining:** The Markov chain is: Future $F$ → Micro-causal state $\sigma$ → Macro-causal state $\pi(\sigma)$. By the data processing inequality:
+
+   $$
+   D_{\text{KL}}(P(F \mid \pi(\sigma)) \| P(F \mid \pi(\sigma'))) \le D_{\text{KL}}(P(F \mid \sigma) \| P(F \mid \sigma'))
+   $$
+
+3. **Same inequality for reversed KL:** By symmetry:
+
+   $$
+   D_{\text{KL}}(P(F \mid \pi(\sigma')) \| P(F \mid \pi(\sigma))) \le D_{\text{KL}}(P(F \mid \sigma') \| P(F \mid \sigma))
+   $$
+
+4. **Sum and take square root:** Adding inequalities and taking square root preserves the inequality (since $\sqrt{\cdot}$ is monotone):
+
+   $$
+   d_{\text{Fisher}}(\pi(\sigma), \pi(\sigma')) = \sqrt{D_{\text{KL}}(\cdot) + D_{\text{KL}}(\cdot)}_{\text{macro}} \le \sqrt{D_{\text{KL}}(\cdot) + D_{\text{KL}}(\cdot)}_{\text{micro}} = d_{\text{Fisher}}(\sigma, \sigma')
+   $$
+
+5. **Equality condition:** Equality holds iff the data processing inequality is tight, which occurs iff $P(F \mid \sigma)$ depends on $\sigma$ only through $\pi(\sigma)$. This is precisely the definition of computational closure. ∎
 :::
 
-**Corollary (Fisher Information as Closure Diagnostic):**
+**Corollary (Fisher Distance as Closure Diagnostic):**
 
 $$
-\text{Computational Closure} \iff g^{\text{Fisher}}_{\text{macro}} = (\pi_*)^{-1} g^{\text{Fisher}}_{\text{micro}}
+\text{Computational Closure} \iff d_{\text{Fisher}}(\pi(\sigma), \pi(\sigma')) = d_{\text{Fisher}}(\sigma, \sigma') \quad \forall \sigma, \sigma'
 $$
 
-This provides a **computable criterion**: measure Fisher information in both representations and check if the coarse-graining preserves it.
+This provides a **computable criterion**: measure Fisher distances in both representations (via KL-divergences between conditional future distributions) and check if the coarse-graining is an isometry.
 
 ### 12.2. Mutual Information Between CST and IG
 
@@ -2602,6 +2665,46 @@ where:
 **Interpretation:** $I(E_{\text{CST}}; E_{\text{IG}}) > 0$ means the temporal evolution and spatial coupling are **correlated**—knowledge of cloning genealogy provides information about viscous coupling structure, and vice versa.
 :::
 
+**Lemma (Causal State Entropy Equals Process Entropy):**
+
+:::{prf:lemma} Causal State Entropy from Edge Configurations
+:label: lem-causal-state-entropy-edges
+
+For an ergodic Fractal Set process generated by the BAOAB Markov chain:
+
+$$
+H(\Sigma_\varepsilon^{\text{Fractal}}) = H(E_{\text{CST}}, E_{\text{IG}})
+$$
+
+where the left side is the entropy of the causal state partition, and the right side is the joint entropy of CST and IG edge configurations under the QSD.
+
+**Proof:**
+
+1. **ε-machine as minimal sufficient statistic:** By construction (Definition {prf:ref}`def-causal-states-fractal-set` in §3.2), the ε-machine provides the minimal sufficient statistic for predicting the future given the past. The causal state $\sigma$ is the equivalence class of pasts with identical conditional future distributions.
+
+2. **Asymptotic equipartition property (AEP):** For an ergodic stochastic process, the entropy rate equals the entropy of the stationary distribution (Cover & Thomas, 2006, Theorem 4.2.1):
+
+   $$
+   h = H(\text{stationary distribution of process})
+   $$
+
+3. **Fractal Set process stationarity:** The BAOAB Markov chain converges to a unique QSD $\mu_{\text{QSD}}$ (Theorem 2.1 in [02_computational_equivalence.md](02_computational_equivalence.md)), which is ergodic. The Fractal Set process is the sequence of edge configurations $(E_{\text{CST}}, E_{\text{IG}})$ sampled from $\mu_{\text{QSD}}$.
+
+4. **Causal states generate the process:** The causal state $\sigma_k$ at time $k$ determines the joint distribution of future edge configurations. By the definition of causal equivalence, all pasts in the same causal state have identical conditional future distributions.
+
+5. **Entropy equality:** The entropy of the minimal sufficient statistic (causal states) equals the entropy of the process (edge configurations) because the causal state is a **lossless compression** of the history:
+
+   $$
+   H(\Sigma_\varepsilon^{\text{Fractal}}) = H(\text{sufficient statistic}) = H(\text{process}) = H(E_{\text{CST}}, E_{\text{IG}})
+   $$
+
+   This follows from the data processing inequality: compression loses information unless the compression is sufficient. The ε-machine, by definition, is the minimal sufficient statistic, so it preserves all information about the process entropy. ∎
+:::
+
+:::{note}
+**Intuition:** The causal state space partitions the history space by predictive equivalence. Since the Fractal Set is a complete encoding of the BAOAB dynamics (Theorem 4.1 in [01_fractal_set.md](01_fractal_set.md)), the entropy of causal states equals the entropy of the joint (CST, IG) configuration space under the stationary measure.
+:::
+
 **Theorem (CST-IG Mutual Information Bounds Statistical Complexity):**
 
 :::{prf:theorem} Mutual Information Decomposition of $C_\mu^{\text{Fractal}}$
@@ -2613,19 +2716,39 @@ $$
 C_\mu^{\text{Fractal}} = C_\mu^{\text{CST}} + C_\mu^{\text{IG}} - I(E_{\text{CST}}; E_{\text{IG}})
 $$
 
-**Proof:** By the chain rule for entropy:
+**Proof:**
 
-$$
-H(E_{\text{CST}}, E_{\text{IG}}) = H(E_{\text{CST}}) + H(E_{\text{IG}} \mid E_{\text{CST}})
-$$
+1. **Apply Lemma {prf:ref}`lem-causal-state-entropy-edges`:**
 
-Rearranging:
+   $$
+   C_\mu^{\text{Fractal}} = H(\Sigma_\varepsilon^{\text{Fractal}}) = H(E_{\text{CST}}, E_{\text{IG}})
+   $$
 
-$$
-H(E_{\text{CST}}, E_{\text{IG}}) = H(E_{\text{CST}}) + H(E_{\text{IG}}) - I(E_{\text{CST}}; E_{\text{IG}})
-$$
+2. **Apply chain rule for entropy:**
 
-Since $C_\mu^{\text{Fractal}} = H(\Sigma_\varepsilon^{\text{Fractal}})$ and causal states partition CST+IG configurations, the result follows. ∎
+   $$
+   H(E_{\text{CST}}, E_{\text{IG}}) = H(E_{\text{CST}}) + H(E_{\text{IG}} \mid E_{\text{CST}})
+   $$
+
+3. **Substitute definition of mutual information:** By definition, $I(E_{\text{CST}}; E_{\text{IG}}) = H(E_{\text{IG}}) - H(E_{\text{IG}} \mid E_{\text{CST}})$, so:
+
+   $$
+   H(E_{\text{IG}} \mid E_{\text{CST}}) = H(E_{\text{IG}}) - I(E_{\text{CST}}; E_{\text{IG}})
+   $$
+
+4. **Combine:** Substituting into the chain rule:
+
+   $$
+   H(E_{\text{CST}}, E_{\text{IG}}) = H(E_{\text{CST}}) + H(E_{\text{IG}}) - I(E_{\text{CST}}; E_{\text{IG}})
+   $$
+
+5. **Identify components:** Setting $C_\mu^{\text{CST}} := H(E_{\text{CST}})$ and $C_\mu^{\text{IG}} := H(E_{\text{IG}})$:
+
+   $$
+   C_\mu^{\text{Fractal}} = C_\mu^{\text{CST}} + C_\mu^{\text{IG}} - I(E_{\text{CST}}; E_{\text{IG}})
+   $$
+
+∎
 :::
 
 **Implications:**
@@ -2698,12 +2821,16 @@ If this bound is violated, computational closure fails.
 
 ### 12.4. Information Geometry of the Renormalization Group Flow
 
-The RG flow can be viewed as a **gradient flow** on the ε-machine information manifold.
+The RG flow can be viewed as a **gradient flow** on the ε-machine information space when the ε-machines are parameterized by continuous coupling constants.
+
+:::{note}
+**Caveat:** This section assumes ε-machines are parameterized by a continuous parameter vector (e.g., coupling constants $g$) so that differential geometry applies. For discrete, unparameterized causal state spaces, the Fisher distance $d_{\text{Fisher}}$ from §12.1 should be used directly without differential structure.
+:::
 
 :::{prf:definition} RG Flow as Information-Geometric Gradient Flow
 :label: def-rg-info-geometric-flow
 
-Let $\mathcal{M}_{\text{ε-machine}}$ be the space of all ε-machines (modulo isomorphism), equipped with the Fisher metric $g^{\text{Fisher}}$.
+Let $\mathcal{M}_{\text{ε-machine}}$ be a smooth parametric family of ε-machines, parametrized by coupling constants $g \in \mathbb{R}^m$. Equip this family with the Fisher-Rao metric $g^{\text{Fisher}}(g)$ (the limit form from Definition {prf:ref}`def-fisher-metric-epsilon-machine`).
 
 **RG flow:** A curve $\varepsilon(a)$ in $\mathcal{M}_{\text{ε-machine}}$ parametrized by lattice spacing $a$, satisfying:
 
@@ -2773,7 +2900,9 @@ $$
 \left| \mathbb{E}[\mathcal{O} \mid H_k^{\text{macro}}] - \mathbb{E}[\mathcal{O} \mid H_k^{\text{micro}}] \right| \le L_{\mathcal{O}} \cdot \varepsilon_{\text{lump}}
 $$
 
-where $L_{\mathcal{O}}$ is the Lipschitz constant of $\mathcal{O}$ and $\varepsilon_{\text{lump}}$ is the lumpability error (Definition 10.4.2).
+where:
+- $L_{\mathcal{O}}$ is the Lipschitz constant of $\mathcal{O}$
+- $\varepsilon_{\text{lump}}$ is the **lumpability error** of the coarse-graining, defined as the maximum total variation distance between micro-to-macro transition probabilities (Definition {prf:ref}`def-epsilon-lumpability-scutoid` in §10.4 for the scutoid case, generalizes to arbitrary coarse-grainings)
 :::
 
 **Examples:**
@@ -2825,6 +2954,15 @@ Observables with small Lipschitz constants (smooth, slowly varying functions) ar
 - Closure verification: YES/NO
 - Error estimates: $\{\varepsilon_{\text{lump}}(b)\}$ for different block sizes $b$
 - Recommended block size $b^*$ achieving $\varepsilon_{\text{lump}} < \epsilon_{\text{tol}}$
+
+:::{warning}
+**Computational Complexity:** Steps 4 and 5 (computing statistical complexity $C_\mu$ and Fisher distances $d_{\text{Fisher}}$) are **computationally intensive** and may be intractable for complex systems:
+
+- **Step 4:** Computing $C_\mu = H(\Sigma_\varepsilon)$ requires identifying all causal states and their probabilities, which is **NP-hard** in the general case (estimating causal states from finite data is an open problem in computational mechanics).
+- **Step 5:** Computing Fisher distances requires estimating high-dimensional conditional probability distributions $P(F \mid \sigma)$ and their KL-divergences, which suffers from the curse of dimensionality.
+
+**Practical recommendation:** Use Step 3 (observable preservation) as the **primary practical criterion**, as it is directly computable. Steps 4-5 should be viewed as **conceptual verification steps** that provide theoretical guarantees but may require approximations (e.g., block-entropy lower bounds for $C_\mu$, or Monte Carlo estimates for $d_{\text{Fisher}}$) in practice.
+:::
 
 **Procedure:**
 

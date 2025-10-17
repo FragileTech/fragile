@@ -803,7 +803,7 @@ The Fragile Framework has **two complementary paths** to proving the LSI:
 - **Logic**: Assume only basic axioms (confining $U$, friction $\gamma > 0$, noise $\sigma_v^2 > 0$) → Prove LSI via hypocoercive Bakry-Émery
 - **Strength**: No restrictions on $r(x)$ shape, handles multi-modal landscapes
 - **When to use**: Complex optimization, multi-objective problems, unknown reward structure
-- **Status**: ⏳ Under development in {doc}`10_V_unconditional_lsi_hypocoercivity.md`
+- **Status**: ⏳ Under development in {doc}`../10_kl_convergence/10_V_unconditional_lsi_hypocoercivity.md`
 
 **For Millennium Prizes**: Use Path A (this document) + Lemma {prf:ref}`lem-log-concave-yang-mills`.
 
@@ -1518,7 +1518,7 @@ $$
 
 ### 6.2. Main Result
 
-Combining Theorem {prf:ref}`thm-composition-lsi` and Theorem {prf:ref}`thm-lsi-implies-kl-convergence`:
+Combining Theorem {prf:ref}`thm-main-lsi-composition` and Theorem {prf:ref}`thm-lsi-implies-kl-convergence`:
 
 :::{prf:theorem} KL-Convergence of the Euclidean Gas (Main Result)
 :label: thm-main-kl-final
@@ -1546,7 +1546,7 @@ where $\gamma$ is the friction coefficient, $\kappa_{\text{conf}}$ is the confin
 
 :::{prf:proof}
 Direct application of:
-1. Theorem {prf:ref}`thm-quantitative-lsi` (explicit LSI constant)
+1. Corollary {prf:ref}`cor-quantitative-lsi-final` (explicit LSI constant)
 2. Theorem {prf:ref}`thm-lsi-implies-kl-convergence` (LSI implies KL-convergence)
 3. The existence and uniqueness of $\pi_{\text{QSD}}$ from Theorem 8.1 in [04_convergence.md](04_convergence.md)
 :::
@@ -1644,8 +1644,8 @@ This document has established:
 
 1. **Hypocoercive LSI for kinetic operator:** Explicit constants via Villani's framework (Theorem {prf:ref}`thm-kinetic-lsi`)
 2. **Tensorization:** N-particle LSI with **no degradation** in constant (Corollary {prf:ref}`cor-n-particle-kinetic-lsi`)
-3. **LSI preservation under cloning:** Controlled degradation proportional to $1/\kappa_x$ (Corollary {prf:ref}`cor-cloning-lsi`)
-4. **Composition theorem:** LSI for $\Psi_{\text{total}}$ with additive constants (Theorem {prf:ref}`thm-composition-lsi`)
+3. **LSI preservation under cloning:** Controlled degradation proportional to $1/\kappa_x$ (Theorem {prf:ref}`thm-cloning-entropy-contraction` and Lemma {prf:ref}`lem-entropy-transport-dissipation`)
+4. **Composition theorem:** LSI for $\Psi_{\text{total}}$ with additive constants (Theorem {prf:ref}`thm-main-lsi-composition`)
 5. **Exponential KL-convergence:** $D_{\text{KL}}(\mu_t \| \pi_{\text{QSD}}) = O(e^{-\lambda t})$ with $\lambda = \Theta(\gamma \kappa_{\text{conf}} \kappa_x)$ (Theorem {prf:ref}`thm-main-kl-final`)
 6. **Perturbation stability:** Extension to adaptive model with ρ-dependent critical threshold (Corollary {prf:ref}`cor-adaptive-lsi`)
 
@@ -1669,7 +1669,7 @@ This document has established:
 ### 8.3. Open Problems
 
 **Problem 8.1: Optimal LSI constant**
-- Can the constants in Theorem {prf:ref}`thm-quantitative-lsi` be improved?
+- Can the constants in Corollary {prf:ref}`cor-quantitative-lsi-final` be improved?
 - Is there a matching lower bound showing optimality?
 
 **Problem 8.2: Mean-field limit**
@@ -1776,7 +1776,7 @@ where $\kappa_{W,\min} > 0$ is the N-uniform lower bound on the Wasserstein cont
 :::{prf:proof}
 **Proof.**
 
-1. From Corollary {prf:ref}`cor-lsi-from-hwi-composition` (Section 6.2), the LSI constant for the N-particle system is given by:
+1. From Corollary {prf:ref}`cor-quantitative-lsi-final` (Section 5.6), the LSI constant for the N-particle system is given by:
    $$
    C_{\text{LSI}}(N) = O\left(\frac{1}{\min(\gamma, \kappa_{\text{conf}}) \cdot \kappa_W(N) \cdot \delta^2}\right)
    $$
