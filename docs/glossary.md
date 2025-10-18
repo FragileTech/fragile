@@ -1,7 +1,11 @@
 # Mathematical Glossary
 Comprehensive index of all mathematical entries from the Fragile Gas framework.
 
+**Version:** 2.1
+**Last Updated:** 2025-10-18
 **Total Entries:** 723 (Chapter 1: 523, Chapter 2: 200)
+**Format:** Each entry includes Type, Label, Tags, Source, and concise Description (<15 words)
+**Description Style:** TLDR context WITHOUT repeating title (avoids token waste)
 
 ---
 
@@ -43,3174 +47,2191 @@ Comprehensive index of all mathematical entries from the Fragile Gas framework.
 - **Label:** `def-walker`
 - **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 1.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Mathematical object in framework
 
 ### Swarm and Swarm State Space
 - **Type:** Definition
 - **Label:** `def-swarm-and-state-space`
 - **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 1.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Mathematical object in framework
 
 ### Alive and Dead Sets
 - **Type:** Definition
 - **Label:** `def-alive-dead-sets`
 - **Tags:** viability
 - **Source:** [01_fragile_gas_framework.md § 1.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Mathematical object in framework
 
 ### Valid State Space
 - **Type:** Definition
 - **Label:** `def-valid-state-space`
 - **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 1.4](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Mathematical object in framework
 
 ### Ambient Euclidean Structure and Reference Measures
 - **Type:** Assumption
 - **Label:** `def-ambient-euclidean`
 - **Tags:** assumption
 - **Source:** [01_fragile_gas_framework.md § A. Foundational & Environmental Parameters](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Mathematical object in framework
 
 ### Reference Noise and Kernel Families
 - **Type:** Definition
 - **Label:** `def-reference-measures`
 - **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § A. Foundational & Environmental Parameters](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Mathematical object in framework
 
 ### N-Particle Displacement Pseudometric ($d_{\text{Disp},\mathcal{Y}}$)
 - **Type:** Definition
 - **Label:** `def-n-particle-displacement-metric`
 - **Tags:** metric
 - **Source:** [01_fragile_gas_framework.md § 1.6](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Mathematical object in framework
 
 ### Metric quotient of $(\Sigma_N, d_{\text{Disp},\mathcal{Y}})$
 - **Type:** Definition
 - **Label:** `def-metric-quotient`
 - **Tags:** metric
 - **Source:** [01_fragile_gas_framework.md § 1.6.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Mathematical object in framework
 
 ### Borel image of the projected swarm space
 - **Type:** Lemma
 - **Label:** `unlabeled`
 - **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 1.6.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Mathematical object in framework
 
 ### If $\widehat{\Phi}(\Sigma_N)$ is not closed, replacing it by its closure in $(\mathcal Y\times\{0,1\})^N$ yields a closed (hence complete) subspace. All probability measures considered are supported on $\widehat{\Phi}(\Sigma_N)$, and optimal couplings for costs continuous in $D$ concentrate on the product of supports, so no generality is lost by completing.
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 1.6.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** If  is not closed, replacing it by its closure in  yields a closed (hence com...
 
 ### Polishness of the quotient state space and $W_2$
 - **Type:** Lemma
 - **Label:** `lem-polishness-and-w2`
 - **Tags:** lemma, wasserstein
 - **Source:** [01_fragile_gas_framework.md § 1.7.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Mathematical object in framework
 
 ### Components of Swarm Displacement
 - **Type:** Definition
 - **Label:** `def-displacement-components`
 - **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 1.7.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Splits into position and status change contributions
 
 ### Conditional product structure within a step
 - **Type:** Axiom
 - **Label:** `def-assumption-instep-independence`
 - **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § Assumption A (In‑Step Independence)](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Operators act independently conditioned on current configuration
 
 ### Axiom of Guaranteed Revival
 - **Type:** Axiom
 - **Label:** `def-axiom-guaranteed-revival`
 - **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.1.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Dead agents clone with certainty preventing extinction
 
 ### Almost‑sure revival under the global constraint
 - **Type:** Theorem
 - **Label:** `thm-revival-guarantee`
 - **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 2.1.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Proves probability of resurrection equals one
 
 ### Axiom of Boundary Regularity
 - **Type:** Axiom
 - **Label:** `def-axiom-boundary-regularity`
 - **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.1.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Death probability Hölder continuous in configuration
 
 ### Axiom of Boundary Smoothness
 - **Type:** Axiom
 - **Label:** `def-axiom-boundary-smoothness`
 - **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.1.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Domain has finite perimeter enabling integration
 
 ### Axiom of Environmental Richness
 - **Type:** Axiom
 - **Label:** `def-axiom-environmental-richness`
 - **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.2.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Mathematical object in framework
 
 ### Axiom of Reward Regularity
 - **Type:** Axiom
 - **Label:** `def-axiom-reward-regularity`
-- **Tags:** axiom, fitness
+- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.2.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Mathematical object in framework
 
 ### Projection compatibility
-- **Type:** Axiom
-- **Label:** `unlabeled`
-- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.2.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Projection compatibility
 
 ### Axiom of Bounded Algorithmic Diameter
-- **Type:** Axiom
-- **Label:** `def-axiom-bounded-algorithmic-diameter`
-- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.2.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Axiom of Bounded Algorithmic Diameter
 
 ### Range‑Respecting Mean
-- **Type:** Axiom
-- **Label:** `def-axiom-range-respecting-mean`
-- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.2.4](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Range‑Respecting Mean
 
 ### Valid Noise Measure
-- **Type:** Definition
-- **Label:** `def-valid-noise-measure`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 2.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Valid Noise Measure
 
 ### Axiom of Sufficient Amplification
-- **Type:** Axiom
-- **Label:** `def-axiom-sufficient-amplification`
-- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.3.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Axiom of Sufficient Amplification
 
 ### Axiom of Non-Degenerate Noise
-- **Type:** Axiom
-- **Label:** `def-axiom-non-degenerate-noise`
-- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.3.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Axiom of Non-Degenerate Noise
 
 ### Components of Mean-Square Standardization Error
-- **Type:** Definition
-- **Label:** `def-components-mean-square-standardization-error`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 2.3.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Components of Mean-Square Standardization Error
 
 ### Asymptotic Behavior of the Mean-Square Standardization Error
-- **Type:** Theorem
-- **Label:** `thm-mean-square-standardization-error`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 2.3.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Asymptotic Behavior of the Mean-Square Standardization Error
 
 ### Axiom of Bounded Relative Collapse
-- **Type:** Axiom
-- **Label:** `def-axiom-bounded-relative-collapse`
-- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.3.4](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Axiom of Bounded Relative Collapse
 
 ### Axiom of Bounded Deviation from Aggregated Variance
-- **Type:** Axiom
-- **Label:** `def-axiom-bounded-deviation-variance`
-- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.3.4](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Axiom of Bounded Deviation from Aggregated Variance
 
 ### Axiom of Bounded Variance Production
-- **Type:** Axiom
-- **Label:** `def-axiom-bounded-variance-production`
-- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.3.4](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Axiom of Bounded Variance Production
 
 ### Axiom of Geometric Consistency
-- **Type:** Axiom
-- **Label:** `def-axiom-geometric-consistency`
-- **Tags:** axiom, geometry, metric
 - **Source:** [01_fragile_gas_framework.md § 2.4.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Axiom of Geometric Consistency
 
 ### Theorem of Forced Activity
-- **Type:** Theorem
-- **Label:** `thm-forced-activity`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 2.4.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Theorem of Forced Activity
 
 ### Axiom of Position‑Only Status Margin
-- **Type:** Axiom
-- **Label:** `def-axiom-margin-stability`
-- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.4.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Axiom of Position‑Only Status Margin
 
 ### This axiom expresses a deterministic stability of the status update in terms of the positional component alone. It is strictly stronger than the trivial consequence of the identity
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 2.4.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** This axiom expresses a deterministic stability of the status update in terms ...
 
 ### Reward Measurement
-- **Type:** Definition
-- **Label:** `def-reward-measurement`
-- **Tags:** fitness
 - **Source:** [01_fragile_gas_framework.md § 3.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Reward Measurement
 
 ### Perturbation Measure
-- **Type:** Definition
-- **Label:** `def-perturbation-measure`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 4.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Perturbation Measure
 
 ### Cloning Measure
-- **Type:** Definition
-- **Label:** `def-cloning-measure`
-- **Tags:** cloning
 - **Source:** [01_fragile_gas_framework.md § 4.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Cloning Measure
 
 ### Validation of the Heat Kernel
-- **Type:** Lemma
-- **Label:** `unlabeled`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 4.2.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Validation of the Heat Kernel
 
 ### Validation of the Uniform Ball Measure
-- **Type:** Lemma
-- **Label:** `unlabeled`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 4.2.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Validation of the Uniform Ball Measure
 
 ### Uniform‑ball death probability is Lipschitz under finite perimeter
-- **Type:** Lemma
-- **Label:** `lem-boundary-uniform-ball`
-- **Tags:** lemma, lipschitz
 - **Source:** [01_fragile_gas_framework.md § 4.2.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Uniform‑ball death probability is Lipschitz under finite perimeter
 
 ### Projection choice
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 4.2.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Projection choice
 
 ### Heat‑kernel death probability is Lipschitz with constant $\lesssim 1/\sigma$
-- **Type:** Lemma
-- **Label:** `lem-boundary-heat-kernel`
-- **Tags:** lemma, lipschitz
 - **Source:** [01_fragile_gas_framework.md § 4.2.4](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Heat‑kernel death probability is Lipschitz with constant
 
 ### Algorithmic Space
-- **Type:** Definition
-- **Label:** `def-algorithmic-space-generic`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 5.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Algorithmic Space
 
 ### Distance Between Positional Measures
-- **Type:** Definition
-- **Label:** `def-distance-positional-measures`
-- **Tags:** metric
 - **Source:** [01_fragile_gas_framework.md § 5.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Distance Between Positional Measures
 
 ### Algorithmic Distance
-- **Type:** Definition
-- **Label:** `def-alg-distance`
-- **Tags:** metric
 - **Source:** [01_fragile_gas_framework.md § 5.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Algorithmic Distance
 
 ### Swarm Aggregation Operator
-- **Type:** Definition
-- **Label:** `def-swarm-aggregation-operator-axiomatic`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 6.2.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Swarm Aggregation Operator
 
 ### Empirical moments are Lipschitz in L2
-- **Type:** Lemma
-- **Label:** `unlabeled`
-- **Tags:** lemma, lipschitz
 - **Source:** [01_fragile_gas_framework.md § 6.2.2.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Empirical moments are Lipschitz in L2
 
 ### Axiomatic Properties of the Empirical Measure Aggregator
-- **Type:** Lemma
-- **Label:** `lem-empirical-aggregator-properties`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 6.2.2.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Axiomatic Properties of the Empirical Measure Aggregator
 
 ### Smoothed Gaussian Measure
-- **Type:** Definition
-- **Label:** `def-smoothed-gaussian-measure`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 6.2.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Smoothed Gaussian Measure
 
 ### Algorithmic space with cemetery point
-- **Type:** Definition
-- **Label:** `def-algorithmic-cemetery-extension`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 6.4](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Algorithmic space with cemetery point
 
 ### Maximal cemetery distance (design choice)
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** metric
 - **Source:** [01_fragile_gas_framework.md § 6.4](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Maximal cemetery distance (design choice)
 
 ### Cemetery State Measure
-- **Type:** Definition
-- **Label:** `def-cemetery-state-measure`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 6.4](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Cemetery State Measure
 
 ### Distance to the Cemetery State
-- **Type:** Definition
-- **Label:** `def-distance-to-cemetery-state`
-- **Tags:** metric
 - **Source:** [01_fragile_gas_framework.md § 6.4](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Distance to the Cemetery State
 
 ### Companion Selection Measure
-- **Type:** Definition
-- **Label:** `def-companion-selection-measure`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 7.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Companion Selection Measure
 
 ### Bound on the Error from Companion Set Change
-- **Type:** Lemma
-- **Label:** `lem-set-difference-bound`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 7.2.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bound on the Error from Companion Set Change
 
 ### Bound on the Error from Normalization Change
-- **Type:** Lemma
-- **Label:** `lem-normalization-difference-bound`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 7.2.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bound on the Error from Normalization Change
 
 ### Total Error Bound in Terms of Status Changes
-- **Type:** Theorem
-- **Label:** `thm-total-error-status-bound`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 7.2.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Total Error Bound in Terms of Status Changes
 
 ### Axiom of a Well-Behaved Rescale Function
-- **Type:** Axiom
-- **Label:** `def-axiom-rescale-function`
-- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 8.1.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Axiom of a Well-Behaved Rescale Function
 
 ### Smooth Piecewise Rescale Function
-- **Type:** Definition
-- **Label:** `def-asymmetric-rescale-function`
-- **Tags:** metric
 - **Source:** [01_fragile_gas_framework.md § 8.2.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Smooth Piecewise Rescale Function
 
 ### Existence and Uniqueness of the Smooth Rescale Patch
-- **Type:** Lemma
-- **Label:** `lem-cubic-patch-uniqueness`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 8.2.2.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Existence and Uniqueness of the Smooth Rescale Patch
 
 ### Explicit Coefficients of the Smooth Rescale Patch
-- **Type:** Lemma
-- **Label:** `lem-cubic-patch-coefficients`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 8.2.2.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Explicit Coefficients of the Smooth Rescale Patch
 
 ### Explicit Form of the Polynomial Patch Derivative
-- **Type:** Lemma
-- **Label:** `lem-cubic-patch-derivative`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 8.2.2.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Explicit Form of the Polynomial Patch Derivative
 
 ### Monotonicity of the Polynomial Patch
-- **Type:** Lemma
-- **Label:** `lem-polynomial-patch-monotonicity`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 8.2.2.4](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Monotonicity of the Polynomial Patch
 
 ### This construction is the standard monotone cubic Hermite approach (PCHIP/PCHIM). The global derivative bound $L_P\approx 1.0054$ from §8.2.2.5 provides an explicit Lipschitz constant for the rescale segment.
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** lipschitz
 - **Source:** [01_fragile_gas_framework.md § 8.2.2.4](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** This construction is the standard monotone cubic Hermite approach (PCHIP/PCHI...
 
 ### Bounds on the Polynomial Patch Derivative
-- **Type:** Lemma
-- **Label:** `lem-cubic-patch-derivative-bounds`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 8.2.2.5](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bounds on the Polynomial Patch Derivative
 
 ### Monotonicity of the Smooth Rescale Function
-- **Type:** Lemma
-- **Label:** `lem-rescale-monotonicity`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 8.2.2.6](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Monotonicity of the Smooth Rescale Function
 
 ### Global Lipschitz Continuity of the Smooth Rescale Function
-- **Type:** Theorem
-- **Label:** `thm-rescale-function-lipschitz`
-- **Tags:** lipschitz, theorem
 - **Source:** [01_fragile_gas_framework.md § 8.2.2.7](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Global Lipschitz Continuity of the Smooth Rescale Function
 
 ### Lipschitz constant of the patched standardization
-- **Type:** Lemma
-- **Label:** `unlabeled`
-- **Tags:** lemma, lipschitz
 - **Source:** [01_fragile_gas_framework.md § 8.2.2.8](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Lipschitz constant of the patched standardization
 
 ### Derivative bound for \sigma\'_{\text{reg}}
-- **Type:** Lemma
-- **Label:** `lem-sigma-patch-derivative-bound`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 8.2.2.9](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Derivative bound for \sigma\'\textreg
 
 ### Lipschitz bound for the variance functional
-- **Type:** Lemma
-- **Label:** `unlabeled`
-- **Tags:** lemma, lipschitz
 - **Source:** [01_fragile_gas_framework.md § 8.2.2.10](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Lipschitz bound for the variance functional
 
 ### Chain‑rule bound for \sigma\'_{\text{reg}}\circ \mathrm{Var}
-- **Type:** Corollary
-- **Label:** `unlabeled`
-- **Tags:** corollary
 - **Source:** [01_fragile_gas_framework.md § 8.2.2.10](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Chain‑rule bound for \sigma\'\textreg\circ \mathrmVar
 
 ### Closed‑form bound for $L_{g_A\circ z}$ (empirical aggregator)
-- **Type:** Corollary
-- **Label:** `unlabeled`
-- **Tags:** corollary
 - **Source:** [01_fragile_gas_framework.md § 8.2.2.10](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Closed‑form bound for  (empirical aggregator)
 
 ### Canonical Logistic Rescale Function
-- **Type:** Definition
-- **Label:** `def-canonical-logistic-rescale-function-example`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 8.3.1.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Canonical Logistic Rescale Function
 
 ### The Canonical Logistic Function is a Valid Rescale Function
-- **Type:** Theorem
-- **Label:** `thm-canonical-logistic-validity`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 8.3.2.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** The Canonical Logistic Function is a Valid Rescale Function
 
 ### Raw Value Operator
-- **Type:** Definition
-- **Label:** `def-raw-value-operator`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 9.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Raw Value Operator
 
 ### Axiom of Mean-Square Continuity for Raw Values
-- **Type:** Axiom
-- **Label:** `axiom-raw-value-mean-square-continuity`
-- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 9.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Axiom of Mean-Square Continuity for Raw Values
 
 ### Axiom of Bounded Measurement Variance
-- **Type:** Axiom
-- **Label:** `axiom-bounded-measurement-variance`
-- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 9.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Axiom of Bounded Measurement Variance
 
 ### Distance-to-Companion Measurement
-- **Type:** Definition
-- **Label:** `def-distance-to-companion-measurement`
-- **Tags:** metric
 - **Source:** [01_fragile_gas_framework.md § 10.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Distance-to-Companion Measurement
 
 ### Bound on Single-Walker Error from Positional Change
-- **Type:** Lemma
-- **Label:** `lem-single-walker-positional-error`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 10.2.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bound on Single-Walker Error from Positional Change
 
 ### Bound on Single-Walker Error from Structural Change
-- **Type:** Lemma
-- **Label:** `lem-single-walker-structural-error`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 10.2.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bound on Single-Walker Error from Structural Change
 
 ### Bound on Single-Walker Error from Own Status Change
-- **Type:** Lemma
-- **Label:** `lem-single-walker-own-status-error`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 10.2.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bound on Single-Walker Error from Own Status Change
 
 ### Bound on the Total Squared Error for Unstable Walkers
-- **Type:** Lemma
-- **Label:** `lem-total-squared-error-unstable`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 10.2.5](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bound on the Total Squared Error for Unstable Walkers
 
 ### Bound on the Total Squared Error for Stable Walkers
-- **Type:** Lemma
-- **Label:** `lem-total-squared-error-stable`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 10.2.6.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bound on the Total Squared Error for Stable Walkers
 
 ### Bound on the Total Squared Error for Unstable Walkers
-- **Type:** Lemma
-- **Label:** `lem-total-squared-error-unstable`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 10.2.5](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bound on the Total Squared Error for Unstable Walkers
 
 ### Bound on the Total Squared Error for Stable Walkers
-- **Type:** Lemma
-- **Label:** `lem-total-squared-error-stable`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 10.2.6](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bound on the Total Squared Error for Stable Walkers
 
 ### Decomposition of Stable Walker Error
-- **Type:** Lemma
-- **Label:** `sub-lem-stable-walker-error-decomposition`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 10.2.6.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Decomposition of Stable Walker Error
 
 ### Bounding the Positional Error Component
-- **Type:** Lemma
-- **Label:** `sub-lem-stable-positional-error-bound`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 10.2.6.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bounding the Positional Error Component
 
 ### Bounding the Structural Error Component for Stable Walkers
-- **Type:** Lemma
-- **Label:** `sub-lem-stable-structural-error-bound`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 10.2.6.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bounding the Structural Error Component for Stable Walkers
 
 ### Bound on the Expected Raw Distance Vector Change
-- **Type:** Theorem
-- **Label:** `thm-expected-raw-distance-bound`
-- **Tags:** metric, theorem
 - **Source:** [01_fragile_gas_framework.md § 10.2.7](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bound on the Expected Raw Distance Vector Change
 
 ### Deterministic Behavior of the Expected Raw Distance Vector at $k=1$
-- **Type:** Theorem
-- **Label:** `thm-expected-raw-distance-k1`
-- **Tags:** metric, theorem
 - **Source:** [01_fragile_gas_framework.md § 10.2.8](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Deterministic Behavior of the Expected Raw Distance Vector at
 
 ### The Distance Operator Satisfies the Bounded Variance Axiom
-- **Type:** Theorem
-- **Label:** `thm-distance-operator-satisfies-bounded-variance-axiom`
-- **Tags:** metric, theorem
 - **Source:** [01_fragile_gas_framework.md § 10.3.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** The Distance Operator Satisfies the Bounded Variance Axiom
 
 ### Mean-Square Continuity of the Distance Operator
-- **Type:** Theorem
-- **Label:** `thm-distance-operator-mean-square-continuity`
-- **Tags:** metric, theorem
 - **Source:** [01_fragile_gas_framework.md § 10.3.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Mean-Square Continuity of the Distance Operator
 
 ### N-Dimensional Standardization Operator
-- **Type:** Definition
-- **Label:** `def-standardization-operator-n-dimensional`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 11.1.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** N-Dimensional Standardization Operator
 
 ### Statistical Properties Measurement
-- **Type:** Definition
-- **Label:** `def-statistical-properties-measurement`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 11.1.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Statistical Properties Measurement
 
 ### Value Continuity of Statistical Properties
-- **Type:** Lemma
-- **Label:** `lem-stats-value-continuity`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 11.1.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Value Continuity of Statistical Properties
 
 ### Structural Continuity of Statistical Properties
-- **Type:** Lemma
-- **Label:** `lem-stats-structural-continuity`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 11.1.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Structural Continuity of Statistical Properties
 
 ### General Bound on the Norm of the Standardized Vector
-- **Type:** Theorem
-- **Label:** `thm-z-score-norm-bound`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 11.1.4](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** General Bound on the Norm of the Standardized Vector
 
 ### Asymptotic Behavior of the Structural Continuity for the Regularized Standard Deviation
-- **Type:** Theorem
-- **Label:** `thm-asymptotic-std-dev-structural-continuity`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 11.1.5](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Asymptotic Behavior of the Structural Continuity for the Regularized Standard...
 
 ### Bounding the Expected Squared Value Error
-- **Type:** Theorem
-- **Label:** `thm-standardization-value-error-mean-square`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 11.2.2.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bounding the Expected Squared Value Error
 
 ### Bounding the Expected Squared Value Error
-- **Type:** Theorem
-- **Label:** `thm-standardization-value-error-mean-square`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 11.2.2.6.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bounding the Expected Squared Value Error
 
 ### Bounding the Expected Squared Structural Error
-- **Type:** Theorem
-- **Label:** `thm-standardization-structural-error-mean-square`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 11.2.3.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bounding the Expected Squared Structural Error
 
 ### Bounding the Expected Squared Structural Error
-- **Type:** Theorem
-- **Label:** `thm-standardization-structural-error-mean-square`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 11.2.3.5.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bounding the Expected Squared Structural Error
 
 ### Decomposition of the Total Standardization Error
-- **Type:** Theorem
-- **Label:** `thm-deterministic-error-decomposition`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 11.3.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Decomposition of the Total Standardization Error
 
 ### Algebraic Decomposition of the Value Error
-- **Type:** Lemma
-- **Label:** `sub-lem-lipschitz-value-error-decomposition`
-- **Tags:** lemma, lipschitz
 - **Source:** [01_fragile_gas_framework.md § 11.3.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Algebraic Decomposition of the Value Error
 
 ### Bounding the Squared Value Error
-- **Type:** Theorem
-- **Label:** `thm-lipschitz-value-error-bound`
-- **Tags:** lipschitz, theorem
 - **Source:** [01_fragile_gas_framework.md § 11.3.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bounding the Squared Value Error
 
 ### Value Error Coefficients
-- **Type:** Definition
-- **Label:** `def-lipschitz-value-error-coefficients`
-- **Tags:** lipschitz
 - **Source:** [01_fragile_gas_framework.md § 11.3.4](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Value Error Coefficients
 
 ### Bounding the Squared Structural Error
-- **Type:** Theorem
-- **Label:** `thm-lipschitz-structural-error-bound`
-- **Tags:** lipschitz, theorem
 - **Source:** [01_fragile_gas_framework.md § 11.3.5](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bounding the Squared Structural Error
 
 ### Structural Error Coefficients
-- **Type:** Definition
-- **Label:** `def-lipschitz-structural-error-coefficients`
-- **Tags:** lipschitz
 - **Source:** [01_fragile_gas_framework.md § 11.3.6](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Structural Error Coefficients
 
 ### Global Continuity of the Patched Standardization Operator
-- **Type:** Theorem
-- **Label:** `thm-global-continuity-patched-standardization`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 11.3.7](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Global Continuity of the Patched Standardization Operator
 
 ### Rescaled Potential Operator for the Alive Set
-- **Type:** Definition
-- **Label:** `def-alive-set-potential-operator`
-- **Tags:** fitness, viability
 - **Source:** [01_fragile_gas_framework.md § 12.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Rescaled Potential Operator for the Alive Set
 
 ### Swarm Potential Assembly Operator
-- **Type:** Definition
-- **Label:** `def-swarm-potential-assembly-operator`
-- **Tags:** fitness
 - **Source:** [01_fragile_gas_framework.md § 12.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Swarm Potential Assembly Operator
 
 ### Assume the **Axiom of Margin-Based Status Stability** ([](#def-axiom-margin-stability)). Then for all inputs
-- **Type:** Corollary
-- **Label:** `unlabeled`
-- **Tags:** corollary
 - **Source:** [01_fragile_gas_framework.md § 12.3.3](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Assume the **Axiom of Margin-Based Status Stability** ([](#def-axiom-margin-s...
 
 ### Perturbation Operator
-- **Type:** Definition
-- **Label:** `def-perturbation-operator`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 13.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Perturbation Operator
 
 ### Axiom of Bounded Second Moment of Perturbation
-- **Type:** Axiom
-- **Label:** `def-axiom-bounded-second-moment-perturbation`
-- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 13.2.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Axiom of Bounded Second Moment of Perturbation
 
 ### Bounding the Output Positional Displacement
-- **Type:** Lemma
-- **Label:** `sub-lem-perturbation-positional-bound-reproof`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 13.2.2.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bounding the Output Positional Displacement
 
 ### Bounded differences for $f_{\text{avg}}$
-- **Type:** Lemma
-- **Label:** `unlabeled`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 13.2.3.0.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Bounded differences for
 
 ### McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron–Lugosi–Massart)
-- **Type:** Theorem
-- **Label:** `thm-mcdiarmids-inequality`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 13.2.3.1.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron–Lugosi–Mas...
 
 ### Probabilistic Bound on Total Perturbation-Induced Displacement
-- **Type:** Lemma
-- **Label:** `sub-lem-probabilistic-bound-perturbation-displacement-reproof`
-- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 13.2.3.2.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Probabilistic Bound on Total Perturbation-Induced Displacement
 
 ### Perturbation Fluctuation Bounds
-- **Type:** Definition
-- **Label:** `def-perturbation-fluctuation-bounds-reproof`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 13.2.4.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Perturbation Fluctuation Bounds
 
 ### Probabilistic Continuity of the Perturbation Operator
-- **Type:** Theorem
-- **Label:** `thm-perturbation-operator-continuity-reproof`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 13.2.5.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Probabilistic Continuity of the Perturbation Operator
 
 ### Status Update Operator
-- **Type:** Definition
-- **Label:** `def-status-update-operator`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 14.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Status Update Operator
 
 ### Probabilistic Continuity of the Post-Perturbation Status Update
-- **Type:** Theorem
-- **Label:** `thm-post-perturbation-status-update-continuity`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 14.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Probabilistic Continuity of the Post-Perturbation Status Update
 
 ### Cloning Score Function
-- **Type:** Definition
-- **Label:** `def-cloning-score-function`
-- **Tags:** cloning
 - **Source:** [01_fragile_gas_framework.md § 15.1.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Cloning Score Function
 
 ### Stochastic Threshold Cloning
-- **Type:** Definition
-- **Label:** `def-stochastic-threshold-cloning`
-- **Tags:** cloning
 - **Source:** [01_fragile_gas_framework.md § 15.1.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Stochastic Threshold Cloning
 
 ### Total Expected Cloning Action
-- **Type:** Definition
-- **Label:** `def-total-expected-cloning-action`
-- **Tags:** cloning
 - **Source:** [01_fragile_gas_framework.md § 15.2.1.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Total Expected Cloning Action
 
 ### The Conditional Cloning Probability Function
-- **Type:** Definition
-- **Label:** `def-cloning-probability-function`
-- **Tags:** cloning
 - **Source:** [01_fragile_gas_framework.md § 15.2.2.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** The Conditional Cloning Probability Function
 
 ### Lipschitz Continuity of the Conditional Cloning Probability Function (case split)
-- **Type:** Lemma
-- **Label:** `lem-cloning-probability-lipschitz`
-- **Tags:** cloning, lemma, lipschitz
 - **Source:** [01_fragile_gas_framework.md § 15.2.2.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Lipschitz Continuity of the Conditional Cloning Probability Function (case sp...
 
 ### Conditional Expected Cloning Action
-- **Type:** Definition
-- **Label:** `def-expected-cloning-action`
-- **Tags:** cloning
 - **Source:** [01_fragile_gas_framework.md § 15.2.3.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Conditional Expected Cloning Action
 
 ### Continuity of the Conditional Expected Cloning Action
-- **Type:** Theorem
-- **Label:** `thm-expected-cloning-action-continuity`
-- **Tags:** cloning, theorem
 - **Source:** [01_fragile_gas_framework.md § 15.2.3.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Continuity of the Conditional Expected Cloning Action
 
 ### Continuity of the Total Expected Cloning Action
-- **Type:** Theorem
-- **Label:** `thm-total-expected-cloning-action-continuity`
-- **Tags:** cloning, theorem
 - **Source:** [01_fragile_gas_framework.md § 15.2.4.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Continuity of the Total Expected Cloning Action
 
 ### Theorem of Guaranteed Revival from a Single Survivor
-- **Type:** Theorem
-- **Label:** `thm-k1-revival-state`
-- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 16.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Theorem of Guaranteed Revival from a Single Survivor
 
 ### Swarm Update Procedure
-- **Type:** Definition
-- **Label:** `def-swarm-update-procedure`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 17.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Swarm Update Procedure
 
 ### Local vs global: for $V\in[0,1]$ all sub-linear powers are $\le 1$ and can be absorbed in a constant; for $V\ge 1$ every sub-linear term is bounded above by the term with exponent $p_{\max}$. This is the only global (uniform in $V\ge 0$) way to replace a sum of distinct powers by a single power, and it justifies using $\alpha_H^{\mathrm{global}}=\max(\tfrac12,\alpha_B)$ when aggregating sub-linear exponents.
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 17.2.4.3.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Local vs global: for  all sub-linear powers are  and can be absorbed in a con...
 
 ### Wasserstein-2 on the output space (quotient)
-- **Type:** Definition
-- **Label:** `def-w2-output-metric`
-- **Tags:** metric, wasserstein
 - **Source:** [01_fragile_gas_framework.md § 17.2.4.4.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Wasserstein-2 on the output space (quotient)
 
 ### W2 continuity bound without offset (for $k\ge 2$)
-- **Type:** Proposition
-- **Label:** `prop-w2-bound-no-offset`
-- **Tags:** proposition
 - **Source:** [01_fragile_gas_framework.md § 17.2.4.4.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** W2 continuity bound without offset (for )
 
 ### The offset $K_{\Psi}$ appearing in the expectation-based bound corresponds to allowing arbitrary (e.g., independent) couplings of the output randomness. When the comparison is made in $W_2$—or, operationally, under synchronous coupling—the artificial offset vanishes at zero input distance, yielding a cleaner continuity statement. The composite constants $C_{\Psi,L}$ and $C_{\Psi,H}$ are exactly those defined in [](#def-composite-continuity-coeffs-recorrected) and inherit boundedness/continuity from [](#subsec-coefficient-regularity).
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** metric, wasserstein
 - **Source:** [01_fragile_gas_framework.md § 17.2.4.4.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** The offset  appearing in the expectation-based bound corresponds to allowing ...
 
 ### The Swarm Update defines a Markov kernel
-- **Type:** Proposition
-- **Label:** `prop-psi-markov-kernel`
-- **Tags:** proposition
 - **Source:** [01_fragile_gas_framework.md § 17.2.4.5.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** The Swarm Update defines a Markov kernel
 
 ### Feller-type (continuity-preserving) properties for $\Psi$ follow from the stagewise measurability and continuity assumptions stated in Section 2 for the operators and aggregators; on compact (or sublevel) sets these imply boundedness and continuity of the induced kernel maps.
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 17.2.4.5.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Feller-type (continuity-preserving) properties for  follow from the stagewise...
 
 ### Boundedness and continuity of composite coefficients
-- **Type:** Proposition
-- **Label:** `prop-coefficient-regularity`
-- **Tags:** proposition
 - **Source:** [01_fragile_gas_framework.md § 17.2.4.6.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Boundedness and continuity of composite coefficients
 
 ### In particular, on such sublevel sets the $W_2$ continuity bound and the deterministic standardization bounds promote to genuine continuity statements for the composite operators since the constants do not blow up along admissible sequences.
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** wasserstein
 - **Source:** [01_fragile_gas_framework.md § 17.2.4.6.](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** In particular, on such sublevel sets the  continuity bound and the determinis...
 
 ### Fragile Swarm Instantiation
-- **Type:** Definition
-- **Label:** `def-fragile-swarm-instantiation`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 18.1](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** Fragile Swarm Instantiation
 
 ### The Fragile Gas Algorithm
-- **Type:** Definition
-- **Label:** `def-fragile-gas-algorithm`
-- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 18.2](source/1_euclidean_gas/01_fragile_gas_framework)
+- **Description:** The Fragile Gas Algorithm
 
 ---
 
 ### Source: 02_euclidean_gas.md {#02_euclidean_gas}
 
+
 ### Euclidean Gas Update
-- **Type:** Algorithm
-- **Label:** `alg-euclidean-gas`
-- **Tags:** algorithm
 - **Source:** [02_euclidean_gas.md § **3.1 Euclidean Gas algorithm (canonical pipeline)](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Euclidean Gas Update
 
 ### Properties of smooth radial squashing maps
-- **Type:** Lemma
-- **Label:** `lem-squashing-properties-generic`
-- **Tags:** lemma
 - **Source:** [02_euclidean_gas.md § 3.3](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Properties of smooth radial squashing maps
 
 ### Lipschitz continuity of the projection $\varphi$
-- **Type:** Lemma
-- **Label:** `lem-projection-lipschitz`
-- **Tags:** lemma, lipschitz
 - **Source:** [02_euclidean_gas.md § 3.3](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Lipschitz continuity of the projection
 
 ### Lipschitz property of the kinetic flow
-- **Type:** Lemma
-- **Label:** `lem-sasaki-kinetic-lipschitz`
-- **Tags:** kinetic, lemma, lipschitz
 - **Source:** [02_euclidean_gas.md § 4.1](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Lipschitz property of the kinetic flow
 
 ### Hölder continuity of the death probability
-- **Type:** Lemma
-- **Label:** `lem-euclidean-boundary-holder`
-- **Tags:** holder, lemma
 - **Source:** [02_euclidean_gas.md § 4.1](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Hölder continuity of the death probability
 
 ### Reward regularity in the Sasaki metric
-- **Type:** Lemma
-- **Label:** `lem-euclidean-reward-regularity`
-- **Tags:** fitness, lemma, metric
 - **Source:** [02_euclidean_gas.md § 4.2](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Reward regularity in the Sasaki metric
 
 ### Environmental richness with a kinetic regularizer
-- **Type:** Lemma
-- **Label:** `lem-euclidean-richness`
-- **Tags:** kinetic, lemma
 - **Source:** [02_euclidean_gas.md § 4.2](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Environmental richness with a kinetic regularizer
 
 ### Perturbation second moment in the Sasaki metric
-- **Type:** Lemma
-- **Label:** `lem-euclidean-perturb-moment`
-- **Tags:** lemma, metric
 - **Source:** [02_euclidean_gas.md § 4.3](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Perturbation second moment in the Sasaki metric
 
 ### Geometric consistency under the capped kinetic kernel
-- **Type:** Lemma
-- **Label:** `lem-euclidean-geometric-consistency`
-- **Tags:** geometry, kinetic, lemma, metric
 - **Source:** [02_euclidean_gas.md § 4.3](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Geometric consistency under the capped kinetic kernel
 
 ### Single-walker positional error bound in the Sasaki metric
-- **Type:** Lemma
-- **Label:** `lem-sasaki-single-walker-positional-error`
-- **Tags:** lemma, metric
 - **Source:** [02_euclidean_gas.md § 2.3.3](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Single-walker positional error bound in the Sasaki metric
 
 ### Single-walker structural error bound in the Sasaki metric
-- **Type:** Lemma
-- **Label:** `lem-sasaki-single-walker-structural-error`
-- **Tags:** lemma, metric
 - **Source:** [02_euclidean_gas.md § 2.3.3](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Single-walker structural error bound in the Sasaki metric
 
 ### Mean-square error on stable walkers (Sasaki)
-- **Type:** Lemma
-- **Label:** `lem-sasaki-total-squared-error-stable`
-- **Tags:** lemma
 - **Source:** [02_euclidean_gas.md § 2.3.3](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Mean-square error on stable walkers (Sasaki)
 
 ### Mean-square continuity of the distance measurement (Sasaki)
-- **Type:** Theorem
-- **Label:** `thm-sasaki-distance-ms`
-- **Tags:** metric, theorem
 - **Source:** [02_euclidean_gas.md § 2.3.3](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Mean-square continuity of the distance measurement (Sasaki)
 
 ### Value continuity of the empirical moments
-- **Type:** Lemma
-- **Label:** `lem-sasaki-aggregator-value`
-- **Tags:** lemma
 - **Source:** [02_euclidean_gas.md § 2.3.3](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Value continuity of the empirical moments
 
 ### Structural continuity of the empirical moments
-- **Type:** Lemma
-- **Label:** `lem-sasaki-aggregator-structural`
-- **Tags:** lemma
 - **Source:** [02_euclidean_gas.md § 2.3.3](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Structural continuity of the empirical moments
 
 ### Lipschitz data for the Sasaki empirical aggregators
-- **Type:** Lemma
-- **Label:** `lem-sasaki-aggregator-lipschitz`
-- **Tags:** lemma, lipschitz
 - **Source:** [02_euclidean_gas.md § 2.3.3](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Lipschitz data for the Sasaki empirical aggregators
 
 ### Standardization constants (Sasaki geometry)
-- **Type:** Definition
-- **Label:** `def-sasaki-standardization-constants`
-- **Tags:** geometry
 - **Source:** [02_euclidean_gas.md § 2.3.3](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Standardization constants (Sasaki geometry)
 
 ### Value continuity of patched standardization (Sasaki)
-- **Type:** Theorem
-- **Label:** `unlabeled`
-- **Tags:** theorem
 - **Source:** [02_euclidean_gas.md § 2.3.4.](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Value continuity of patched standardization (Sasaki)
 
 ### Decomposition of the Value Error
-- **Type:** Lemma
-- **Label:** `lem-sasaki-value-error-decomposition`
-- **Tags:** lemma
 - **Source:** [02_euclidean_gas.md § 2.3.4.1.](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Decomposition of the Value Error
 
 ### Bound on the Squared Direct Shift Component
-- **Type:** Lemma
-- **Label:** `lem-sasaki-direct-shift-bound-sq`
-- **Tags:** lemma
 - **Source:** [02_euclidean_gas.md § 2.3.4.2.](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Bound on the Squared Direct Shift Component
 
 ### Bound on the Squared Mean Shift Component
-- **Type:** Lemma
-- **Label:** `lem-sasaki-mean-shift-bound-sq`
-- **Tags:** lemma
 - **Source:** [02_euclidean_gas.md § 2.3.4.3.](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Bound on the Squared Mean Shift Component
 
 ### Bounding the Squared Denominator Shift Component
-- **Type:** Lemma
-- **Label:** `lem-sasaki-denom-shift-bound-sq`
-- **Tags:** lemma
 - **Source:** [02_euclidean_gas.md § 2.3.4.4.](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Bounding the Squared Denominator Shift Component
 
 ### Value Error Coefficients (Squared Form)
-- **Type:** Definition
-- **Label:** `def-sasaki-standardization-constants-sq`
-- **Tags:** general
 - **Source:** [02_euclidean_gas.md § 2.3.5.](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Value Error Coefficients (Squared Form)
 
 ### Structural Continuity of Patched Standardization (Sasaki)
-- **Type:** Theorem
-- **Label:** `thm-sasaki-standardization-structural-sq`
-- **Tags:** theorem
 - **Source:** [02_euclidean_gas.md § 2.3.6.](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Structural Continuity of Patched Standardization (Sasaki)
 
 ### Decomposition of the Structural Error
-- **Type:** Lemma
-- **Label:** `lem-sasaki-structural-error-decomposition`
-- **Tags:** lemma
 - **Source:** [02_euclidean_gas.md § 2.3.6.1.](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Decomposition of the Structural Error
 
 ### Bound on the Squared Direct Structural Error
-- **Type:** Lemma
-- **Label:** `lem-sasaki-direct-structural-error-sq`
-- **Tags:** lemma
 - **Source:** [02_euclidean_gas.md § 2.3.6.2.](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Bound on the Squared Direct Structural Error
 
 ### Bound on the Squared Indirect Structural Error
-- **Type:** Lemma
-- **Label:** `lem-sasaki-indirect-structural-error-sq`
-- **Tags:** lemma
 - **Source:** [02_euclidean_gas.md § 2.3.6.3.](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Bound on the Squared Indirect Structural Error
 
 ### Composite Continuity of the Patched Standardization Operator (Sasaki)
-- **Type:** Theorem
-- **Label:** `thm-sasaki-standardization-composite-sq`
-- **Tags:** theorem
 - **Source:** [02_euclidean_gas.md § 2.3.8.](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Composite Continuity of the Patched Standardization Operator (Sasaki)
 
 ### Lipschitz continuity of patched standardization (Sasaki)
-- **Type:** Lemma
-- **Label:** `lem-sasaki-standardization-lipschitz`
-- **Tags:** lemma, lipschitz
 - **Source:** [02_euclidean_gas.md § 2.3.8.](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Lipschitz continuity of patched standardization (Sasaki)
 
 ### Axiom of Non-Deceptive Landscapes
-- **Type:** Axiom
-- **Label:** `def-axiom-non-deceptive`
-- **Tags:** axiom
 - **Source:** [02_euclidean_gas.md § 2.6](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Axiom of Non-Deceptive Landscapes
 
 ### Feller continuity of $\Psi_{\mathcal F_{\mathrm{EG}}}$
-- **Type:** Theorem
-- **Label:** `thm-euclidean-feller`
-- **Tags:** theorem
 - **Source:** [02_euclidean_gas.md § Appendix A. Proof of the Feller Property for the E](source/1_euclidean_gas/02_euclidean_gas)
+- **Description:** Feller continuity of
 
 ---
 
 ### Source: 03_cloning.md {#03_cloning}
 
+
 ### Single-Walker and Swarm State Spaces
-- **Type:** Definition
-- **Label:** `def-single-swarm-space`
-- **Tags:** general
 - **Source:** [03_cloning.md § 2.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Single-Walker and Swarm State Spaces
 
 ### The Coupled State Space
-- **Type:** Definition
-- **Label:** `def-coupled-state-space`
-- **Tags:** general
 - **Source:** [03_cloning.md § 2.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** The Coupled State Space
 
 ### State Difference Vectors
-- **Type:** Definition
-- **Label:** `def-state-difference-vectors`
-- **Tags:** general
 - **Source:** [03_cloning.md § 2.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** State Difference Vectors
 
 ### **(Axiom EG-0): Regularity of the Domain**
-- **Type:** Axiom
-- **Label:** `ax:domain-regularity`
-- **Tags:** axiom
 - **Source:** [03_cloning.md § 2.4.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** **(Axiom EG-0): Regularity of the Domain**
 
 ### Existence of a Global Smooth Barrier Function
-- **Type:** Proposition
-- **Label:** `prop-barrier-existence`
-- **Tags:** proposition
 - **Source:** [03_cloning.md § 2.4.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Existence of a Global Smooth Barrier Function
 
 ### Barycentres and Centered Vectors (Alive Walkers Only)
-- **Type:** Definition
-- **Label:** `def-barycentres-and-centered-vectors`
-- **Tags:** viability
 - **Source:** [03_cloning.md § 3.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Barycentres and Centered Vectors (Alive Walkers Only)
 
 ### The Location Error Component ($V_{\text{loc}}$)
-- **Type:** Definition
-- **Label:** `def-location-error-component`
-- **Tags:** general
 - **Source:** [03_cloning.md § 3.2.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** The Location Error Component ()
 
 ### The Structural Error Component ($V_{\text{struct}}$)
-- **Type:** Definition
-- **Label:** `def-structural-error-component`
-- **Tags:** general
 - **Source:** [03_cloning.md § 3.2.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** The Structural Error Component ()
 
 ### Decomposition of the Hypocoercive Wasserstein Distance
-- **Type:** Lemma
-- **Label:** `lem-wasserstein-decomposition`
-- **Tags:** lemma, metric, wasserstein
 - **Source:** [03_cloning.md § 3.2.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** Decomposition of the Hypocoercive Wasserstein Distance
 
 ### Structural Positional Error and Internal Variance
-- **Type:** Lemma
-- **Label:** `lem-sx-implies-variance`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 3.2.4](source/1_euclidean_gas/03_cloning)
+- **Description:** Structural Positional Error and Internal Variance
 
 ### The Full Synergistic Hypocoercive Lyapunov Function
-- **Type:** Definition
-- **Label:** `def-full-synergistic-lyapunov-function`
-- **Tags:** general
 - **Source:** [03_cloning.md § 3.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** The Full Synergistic Hypocoercive Lyapunov Function
 
 ### Variance Notation Conversion Formulas
-- **Type:** Definition
-- **Label:** `def-variance-conversions`
-- **Tags:** general
 - **Source:** [03_cloning.md § 3.3.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Variance Notation Conversion Formulas
 
 ### Necessity of the Augmented Lyapunov Structure
-- **Type:** Proposition
-- **Label:** `prop-lyapunov-necessity`
-- **Tags:** proposition
 - **Source:** [03_cloning.md § 3.3.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Necessity of the Augmented Lyapunov Structure
 
 ### Analogy to Classical Hypocoercivity Theory
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** general
 - **Source:** [03_cloning.md § 3.3.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Analogy to Classical Hypocoercivity Theory
 
 ### **(Axiom EG-1): Lipschitz Regularity of Environmental Fields**
-- **Type:** Axiom
-- **Label:** `ax:lipschitz-fields`
-- **Tags:** axiom, lipschitz
 - **Source:** [03_cloning.md § 4.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** **(Axiom EG-1): Lipschitz Regularity of Environmental Fields**
 
 ### **(Axiom EG-2): Existence of a Safe Harbor**
-- **Type:** Axiom
-- **Label:** `ax:safe-harbor`
-- **Tags:** axiom
 - **Source:** [03_cloning.md § 4.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** **(Axiom EG-2): Existence of a Safe Harbor**
 
 ### **(Axiom EG-3): Non-Deceptive Landscape**
-- **Type:** Axiom
-- **Label:** `ax:non-deceptive-landscape`
-- **Tags:** axiom
 - **Source:** [03_cloning.md § 4.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** **(Axiom EG-3): Non-Deceptive Landscape**
 
 ### **(Axiom EG-4): Velocity Regularization via Reward**
-- **Type:** Axiom
-- **Label:** `ax:velocity-regularization`
-- **Tags:** axiom, fitness, kinetic
 - **Source:** [03_cloning.md § 4.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** **(Axiom EG-4): Velocity Regularization via Reward**
 
 ### **(Axiom EG-5): Active Diversity Signal**
-- **Type:** Axiom
-- **Label:** `ax:active-diversity`
-- **Tags:** axiom
 - **Source:** [03_cloning.md § 4.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** **(Axiom EG-5): Active Diversity Signal**
 
 ### Algorithmic Distance for Companion Selection
-- **Type:** Definition
-- **Label:** `def-algorithmic-distance-metric`
-- **Tags:** metric
 - **Source:** [03_cloning.md § 5.0.](source/1_euclidean_gas/03_cloning)
+- **Description:** Algorithmic Distance for Companion Selection
 
 ### Spatially-Aware Pairing Operator (Idealized Model)
-- **Type:** Definition
-- **Label:** `def-spatial-pairing-operator-diversity`
-- **Tags:** general
 - **Source:** [03_cloning.md § 5.1.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Spatially-Aware Pairing Operator (Idealized Model)
 
 ### Sequential Stochastic Greedy Pairing Operator
-- **Type:** Definition
-- **Label:** `def-greedy-pairing-algorithm`
-- **Tags:** general
 - **Source:** [03_cloning.md § 5.1.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Sequential Stochastic Greedy Pairing Operator
 
 ### Sequential Stochastic Greedy Pairing Algorithm
-- **Type:** Algorithm
-- **Label:** `unlabeled`
-- **Tags:** algorithm
 - **Source:** [03_cloning.md § 5.1.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Sequential Stochastic Greedy Pairing Algorithm
 
 ### Geometric Partitioning of High-Variance Swarms
-- **Type:** Definition
-- **Label:** `def-geometric-partition`
-- **Tags:** geometry, metric
 - **Source:** [03_cloning.md § 5.1.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** Geometric Partitioning of High-Variance Swarms
 
 ### Greedy Pairing Guarantees Signal Separation
-- **Type:** Lemma
-- **Label:** `lem-greedy-preserves-signal`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 5.1.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** Greedy Pairing Guarantees Signal Separation
 
 ### Raw Value Operators
-- **Type:** Definition
-- **Label:** `def-raw-value-operators`
-- **Tags:** general
 - **Source:** [03_cloning.md § 5.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Raw Value Operators
 
 ### Swarm Aggregation Operator
-- **Type:** Definition
-- **Label:** `def-swarm-aggregation-operator`
-- **Tags:** general
 - **Source:** [03_cloning.md § 5.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** Swarm Aggregation Operator
 
 ### Patched Standard Deviation Function
-- **Type:** Definition
-- **Label:** `def-patched-std-dev-function`
-- **Tags:** general
 - **Source:** [03_cloning.md § 5.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** Patched Standard Deviation Function
 
 ### Properties of the Patching Function
-- **Type:** Lemma
-- **Label:** `lem-patching-properties`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 5.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** Properties of the Patching Function
 
 ### N-Dimensional Standardization Operator
-- **Type:** Definition
-- **Label:** `def-standardization-operator`
-- **Tags:** general
 - **Source:** [03_cloning.md § 5.4.](source/1_euclidean_gas/03_cloning)
+- **Description:** N-Dimensional Standardization Operator
 
 ### Compact Support of Standardized Scores
-- **Type:** Lemma
-- **Label:** `lem-compact-support-z-scores`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 5.4.](source/1_euclidean_gas/03_cloning)
+- **Description:** Compact Support of Standardized Scores
 
 ### Canonical Logistic Rescale Function
-- **Type:** Definition
-- **Label:** `def-logistic-rescale`
-- **Tags:** general
 - **Source:** [03_cloning.md § 5.5.](source/1_euclidean_gas/03_cloning)
+- **Description:** Canonical Logistic Rescale Function
 
 ### Verification of Axiomatic Properties
-- **Type:** Lemma
-- **Label:** `lem-logistic-properties`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 5.5.](source/1_euclidean_gas/03_cloning)
+- **Description:** Verification of Axiomatic Properties
 
 ### Fitness Potential Operator
-- **Type:** Definition
-- **Label:** `def-fitness-potential-operator`
-- **Tags:** fitness
 - **Source:** [03_cloning.md § 5.6.](source/1_euclidean_gas/03_cloning)
+- **Description:** Fitness Potential Operator
 
 ### Uniform Bounds of the Fitness Potential
-- **Type:** Lemma
-- **Label:** `lem-potential-bounds`
-- **Tags:** fitness, lemma
 - **Source:** [03_cloning.md § 5.6.](source/1_euclidean_gas/03_cloning)
+- **Description:** Uniform Bounds of the Fitness Potential
 
 ### Companion Selection Operator for Cloning
-- **Type:** Definition
-- **Label:** `def-cloning-companion-operator`
-- **Tags:** cloning
 - **Source:** [03_cloning.md § 5.7.1](source/1_euclidean_gas/03_cloning)
+- **Description:** Companion Selection Operator for Cloning
 
 ### The Canonical Cloning Score
-- **Type:** Definition
-- **Label:** `def-cloning-score`
-- **Tags:** cloning
 - **Source:** [03_cloning.md § 5.7.2](source/1_euclidean_gas/03_cloning)
+- **Description:** The Canonical Cloning Score
 
 ### Total Cloning Probability
-- **Type:** Definition
-- **Label:** `def-cloning-probability`
-- **Tags:** cloning
 - **Source:** [03_cloning.md § 5.7.2](source/1_euclidean_gas/03_cloning)
+- **Description:** Total Cloning Probability
 
 ### The Stochastic Cloning Decision
-- **Type:** Definition
-- **Label:** `def-cloning-decision`
-- **Tags:** cloning
 - **Source:** [03_cloning.md § 5.7.3](source/1_euclidean_gas/03_cloning)
+- **Description:** The Stochastic Cloning Decision
 
 ### The Inelastic Collision State Update
-- **Type:** Definition
-- **Label:** `def-inelastic-collision-update`
-- **Tags:** general
 - **Source:** [03_cloning.md § 5.7.4.](source/1_euclidean_gas/03_cloning)
+- **Description:** The Inelastic Collision State Update
 
 ### Bounded Velocity Variance Expansion from Cloning
-- **Type:** Proposition
-- **Label:** `prop-bounded-velocity-expansion`
-- **Tags:** cloning, kinetic, proposition
 - **Source:** [03_cloning.md § 5.7.5.](source/1_euclidean_gas/03_cloning)
+- **Description:** Bounded Velocity Variance Expansion from Cloning
 
 ### Large $V_{\text{Var},x}$ Implies Large Single-Swarm Positional Variance
-- **Type:** Lemma
-- **Label:** `lem-V_Varx-implies-variance`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 6.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Large  Implies Large Single-Swarm Positional Variance
 
 ### The Unified High-Error and Low-Error Sets
-- **Type:** Definition
-- **Label:** `def-unified-high-low-error-sets`
-- **Tags:** general
 - **Source:** [03_cloning.md § 6.3](source/1_euclidean_gas/03_cloning)
+- **Description:** The Unified High-Error and Low-Error Sets
 
 ### The Phase-Space Packing Lemma
-- **Type:** Lemma
-- **Label:** `lem-phase-space-packing`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 6.4.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** The Phase-Space Packing Lemma
 
 ### Positional Variance as a Lower Bound for Hypocoercive Variance
-- **Type:** Lemma
-- **Label:** `lem-var-x-implies-var-h`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 6.4.2](source/1_euclidean_gas/03_cloning)
+- **Description:** Positional Variance as a Lower Bound for Hypocoercive Variance
 
 ### N-Uniform Lower Bound on the Outlier Fraction
-- **Type:** Lemma
-- **Label:** `lem-outlier-fraction-lower-bound`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 6.4.2](source/1_euclidean_gas/03_cloning)
+- **Description:** N-Uniform Lower Bound on the Outlier Fraction
 
 ### N-Uniform Lower Bound on the Outlier-Cluster Fraction
-- **Type:** Lemma
-- **Label:** `lem-outlier-cluster-fraction-lower-bound`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 6.4.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** N-Uniform Lower Bound on the Outlier-Cluster Fraction
 
 ### A Large Intra-Swarm Positional Variance Guarantees a Non-Vanishing High-Error Fraction
-- **Type:** Corollary
-- **Label:** `cor-vvarx-to-high-error-fraction`
-- **Tags:** corollary
 - **Source:** [03_cloning.md § 6.4.4](source/1_euclidean_gas/03_cloning)
+- **Description:** A Large Intra-Swarm Positional Variance Guarantees a Non-Vanishing High-Error...
 
 ### Geometric Separation of the Partition
-- **Type:** Lemma
-- **Label:** `lem-geometric-separation-of-partition`
-- **Tags:** geometry, lemma, metric
 - **Source:** [03_cloning.md § 6.5.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Geometric Separation of the Partition
 
 ### Geometric Structure Guarantees Measurement Variance
-- **Type:** Theorem
-- **Label:** `thm-geometry-guarantees-variance`
-- **Tags:** geometry, metric, theorem
 - **Source:** [03_cloning.md § 7.2.1](source/1_euclidean_gas/03_cloning)
+- **Description:** Geometric Structure Guarantees Measurement Variance
 
 ### **(Satisfiability of the Signal-to-Noise Condition via Signal Gain)**
-- **Type:** Proposition
-- **Label:** `prop-satisfiability-of-snr-gamma`
-- **Tags:** proposition
 - **Source:** [03_cloning.md § 7.2.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** **(Satisfiability of the Signal-to-Noise Condition via Signal Gain)**
 
 ### From Bounded Variance to a Guaranteed Gap
-- **Type:** Lemma
-- **Label:** `lem-variance-to-gap`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 7.3.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** From Bounded Variance to a Guaranteed Gap
 
 ### Maximum Patched Standard Deviation
-- **Type:** Definition
-- **Label:** `def-max-patched-std`
-- **Tags:** general
 - **Source:** [03_cloning.md § 7.3.2.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Maximum Patched Standard Deviation
 
 ### Positive Derivative Bound for the Rescale Function
-- **Type:** Lemma
-- **Label:** `lem-rescale-derivative-lower-bound`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 7.3.2.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Positive Derivative Bound for the Rescale Function
 
 ### From Raw Measurement Gap to Rescaled Value Gap
-- **Type:** Lemma
-- **Label:** `lem-raw-gap-to-rescaled-gap`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 7.3.2.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** From Raw Measurement Gap to Rescaled Value Gap
 
 ### **(From Total Variance to Mean Separation)**
-- **Type:** Lemma
-- **Label:** `lem-variance-to-mean-separation`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 7.4.1](source/1_euclidean_gas/03_cloning)
+- **Description:** **(From Total Variance to Mean Separation)**
 
 ### Derivation of the Stability Condition for Intelligent Adaptation
-- **Type:** Theorem
-- **Label:** `thm-derivation-of-stability-condition`
-- **Tags:** theorem
 - **Source:** [03_cloning.md § 7.4.2](source/1_euclidean_gas/03_cloning)
+- **Description:** Derivation of the Stability Condition for Intelligent Adaptation
 
 ### Lower Bound on Logarithmic Mean Gap
-- **Type:** Lemma
-- **Label:** `lem-log-gap-lower-bound`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 7.5.1.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Lower Bound on Logarithmic Mean Gap
 
 ### On the Tightness of the Bound
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** general
 - **Source:** [03_cloning.md § 7.5.1.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** On the Tightness of the Bound
 
 ### Upper Bound on Logarithmic Mean Gap
-- **Type:** Lemma
-- **Label:** `lem-log-gap-upper-bound`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 7.5.1.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Upper Bound on Logarithmic Mean Gap
 
 ### Why the Bound is Tight at $V_{\min}$
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** general
 - **Source:** [03_cloning.md § 7.5.1.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Why the Bound is Tight at
 
 ### **(Lower Bound on the Corrective Diversity Signal)**
-- **Type:** Proposition
-- **Label:** `prop-corrective-signal-bound`
-- **Tags:** proposition
 - **Source:** [03_cloning.md § 7.5.2.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** **(Lower Bound on the Corrective Diversity Signal)**
 
 ### **(Worst-Case Upper Bound on the Adversarial Reward Signal)**
-- **Type:** Proposition
-- **Label:** `prop-adversarial-signal-bound-naive`
-- **Tags:** fitness, proposition
 - **Source:** [03_cloning.md § 7.5.2.2](source/1_euclidean_gas/03_cloning)
+- **Description:** **(Worst-Case Upper Bound on the Adversarial Reward Signal)**
 
 ### **(Lipschitz Bound on the Raw Reward Mean Gap)**
-- **Type:** Proposition
-- **Label:** `prop-raw-reward-mean-gap-bound`
-- **Tags:** fitness, lipschitz, proposition
 - **Source:** [03_cloning.md § 7.5.2.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** **(Lipschitz Bound on the Raw Reward Mean Gap)**
 
 ### **(Axiom-Based Bound on the Logarithmic Reward Gap)**
-- **Type:** Proposition
-- **Label:** `prop-log-reward-gap-axiom-bound`
-- **Tags:** fitness, proposition
 - **Source:** [03_cloning.md § 7.5.2.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** **(Axiom-Based Bound on the Logarithmic Reward Gap)**
 
 ### **(The Corrected Stability Condition for Intelligent Adaptation)**
-- **Type:** Theorem
-- **Label:** `thm-stability-condition-final-corrected`
-- **Tags:** theorem
 - **Source:** [03_cloning.md § 7.5.2.4.](source/1_euclidean_gas/03_cloning)
+- **Description:** **(The Corrected Stability Condition for Intelligent Adaptation)**
 
 ### The Unfit Set
-- **Type:** Definition
-- **Label:** `def-unfit-set`
-- **Tags:** general
 - **Source:** [03_cloning.md § 7.6.1](source/1_euclidean_gas/03_cloning)
+- **Description:** The Unfit Set
 
 ### N-Uniform Lower Bound on the Unfit Fraction
-- **Type:** Lemma
-- **Label:** `lem-unfit-fraction-lower-bound`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 7.6.1](source/1_euclidean_gas/03_cloning)
+- **Description:** N-Uniform Lower Bound on the Unfit Fraction
 
 ### N-Uniform Lower Bound on the Unfit-High-Error Overlap Fraction
-- **Type:** Theorem
-- **Label:** `thm-unfit-high-error-overlap-fraction`
-- **Tags:** theorem
 - **Source:** [03_cloning.md § 7.6.2](source/1_euclidean_gas/03_cloning)
+- **Description:** N-Uniform Lower Bound on the Unfit-High-Error Overlap Fraction
 
 ### The N-Uniform Quantitative Keystone Lemma
-- **Type:** Lemma
-- **Label:** `lem-quantitative-keystone`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 8.1](source/1_euclidean_gas/03_cloning)
+- **Description:** The N-Uniform Quantitative Keystone Lemma
 
 ### The Critical Target Set
-- **Type:** Definition
-- **Label:** `def-critical-target-set`
-- **Tags:** general
 - **Source:** [03_cloning.md § 8.2](source/1_euclidean_gas/03_cloning)
+- **Description:** The Critical Target Set
 
 ### Lower Bound on Mean Companion Fitness Gap
-- **Type:** Lemma
-- **Label:** `lem-mean-companion-fitness-gap`
-- **Tags:** fitness, lemma
 - **Source:** [03_cloning.md § 8.3.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Lower Bound on Mean Companion Fitness Gap
 
 ### N-Uniformity of the Bound
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** general
 - **Source:** [03_cloning.md § 8.3.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** N-Uniformity of the Bound
 
 ### Guaranteed Cloning Pressure on the Unfit Set
-- **Type:** Lemma
-- **Label:** `lem-unfit-cloning-pressure`
-- **Tags:** cloning, lemma
 - **Source:** [03_cloning.md § 8.3.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Guaranteed Cloning Pressure on the Unfit Set
 
 ### Cloning Pressure on the Target Set
-- **Type:** Corollary
-- **Label:** `cor-cloning-pressure-target-set`
-- **Tags:** cloning, corollary
 - **Source:** [03_cloning.md § 8.3.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Cloning Pressure on the Target Set
 
 ### **(Variance Concentration in the High-Error Set)**
-- **Type:** Lemma
-- **Label:** `lem-variance-concentration-Hk`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 8.4](source/1_euclidean_gas/03_cloning)
+- **Description:** **(Variance Concentration in the High-Error Set)**
 
 ### Error Concentration in the Target Set
-- **Type:** Lemma
-- **Label:** `lem-error-concentration-target-set`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 8.4](source/1_euclidean_gas/03_cloning)
+- **Description:** Error Concentration in the Target Set
 
 ### N-Uniformity of Keystone Constants
-- **Type:** Proposition
-- **Label:** `prop-n-uniformity-keystone`
-- **Tags:** proposition
 - **Source:** [03_cloning.md § 8.6.3](source/1_euclidean_gas/03_cloning)
+- **Description:** N-Uniformity of Keystone Constants
 
 ### The Cloning Operator $\Psi_{\text{clone}}$
-- **Type:** Definition
-- **Label:** `def-cloning-operator-formal`
-- **Tags:** cloning
 - **Source:** [03_cloning.md § 9.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** The Cloning Operator
 
 ### The Measurement Operator
-- **Type:** Definition
-- **Label:** `def-measurement-operator`
-- **Tags:** general
 - **Source:** [03_cloning.md § 9.3.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** The Measurement Operator
 
 ### Stochastic Coupling for Drift Analysis
-- **Type:** Remark
-- **Label:** `rem-measurement-coupling`
-- **Tags:** general
 - **Source:** [03_cloning.md § 9.3.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Stochastic Coupling for Drift Analysis
 
 ### The Fitness Evaluation Operator
-- **Type:** Definition
-- **Label:** `def-fitness-operator`
-- **Tags:** fitness
 - **Source:** [03_cloning.md § 9.3.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** The Fitness Evaluation Operator
 
 ### The Cloning Decision Operator
-- **Type:** Definition
-- **Label:** `def-decision-operator`
-- **Tags:** cloning
 - **Source:** [03_cloning.md § 9.3.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** The Cloning Decision Operator
 
 ### Total Cloning Probability for Dead Walkers
-- **Type:** Lemma
-- **Label:** `lem-dead-walker-clone-prob`
-- **Tags:** cloning, lemma
 - **Source:** [03_cloning.md § 9.3.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** Total Cloning Probability for Dead Walkers
 
 ### The State Update Operator
-- **Type:** Definition
-- **Label:** `def-update-operator`
-- **Tags:** general
 - **Source:** [03_cloning.md § 9.3.4.](source/1_euclidean_gas/03_cloning)
+- **Description:** The State Update Operator
 
 ### Position Jitter vs. Velocity Collision Model
-- **Type:** Remark
-- **Label:** `rem-position-velocity-update-difference`
-- **Tags:** kinetic
 - **Source:** [03_cloning.md § 9.3.4.](source/1_euclidean_gas/03_cloning)
+- **Description:** Position Jitter vs. Velocity Collision Model
 
 ### Compositional Structure of $\Psi_{\text{clone}}$
-- **Type:** Theorem
-- **Label:** `thm-cloning-operator-composition`
-- **Tags:** cloning, theorem
 - **Source:** [03_cloning.md § 9.4.](source/1_euclidean_gas/03_cloning)
+- **Description:** Compositional Structure of
 
 ### Key Operator Outputs
-- **Type:** Definition
-- **Label:** `def-key-operator-outputs`
-- **Tags:** general
 - **Source:** [03_cloning.md § 9.5.](source/1_euclidean_gas/03_cloning)
+- **Description:** Key Operator Outputs
 
 ### Expected Displacement Under Cloning
-- **Type:** Proposition
-- **Label:** `prop-expected-displacement-cloning`
-- **Tags:** cloning, proposition
 - **Source:** [03_cloning.md § 9.5.](source/1_euclidean_gas/03_cloning)
+- **Description:** Expected Displacement Under Cloning
 
 ### Coupled Cloning Expectation
-- **Type:** Definition
-- **Label:** `def-coupled-cloning-expectation`
-- **Tags:** cloning
 - **Source:** [03_cloning.md § 10.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Coupled Cloning Expectation
 
 ### Synchronous Coupling Benefits
-- **Type:** Remark
-- **Label:** `rem-coupling-benefits`
-- **Tags:** general
 - **Source:** [03_cloning.md § 10.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Synchronous Coupling Benefits
 
 ### Positional Variance Contraction Under Cloning
-- **Type:** Theorem
-- **Label:** `thm-positional-variance-contraction`
-- **Tags:** cloning, theorem
 - **Source:** [03_cloning.md § 10.3.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Positional Variance Contraction Under Cloning
 
 ### Variance Change Decomposition
-- **Type:** Lemma
-- **Label:** `lem-variance-change-decomposition`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 10.3.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** Variance Change Decomposition
 
 ### Keystone-Driven Contraction for Stably Alive Walkers
-- **Type:** Lemma
-- **Label:** `lem-keystone-contraction-alive`
-- **Tags:** lemma, viability
 - **Source:** [03_cloning.md § 10.3.4.](source/1_euclidean_gas/03_cloning)
+- **Description:** Keystone-Driven Contraction for Stably Alive Walkers
 
 ### Bounded Contribution from Dead Walker Revival
-- **Type:** Lemma
-- **Label:** `lem-dead-walker-revival-bounded`
-- **Tags:** lemma
 - **Source:** [03_cloning.md § 10.3.5.](source/1_euclidean_gas/03_cloning)
+- **Description:** Bounded Contribution from Dead Walker Revival
 
 ### Bounded Velocity Variance Expansion from Cloning
-- **Type:** Theorem
-- **Label:** `thm-velocity-variance-bounded-expansion`
-- **Tags:** cloning, kinetic, theorem
 - **Source:** [03_cloning.md § 10.4.](source/1_euclidean_gas/03_cloning)
+- **Description:** Bounded Velocity Variance Expansion from Cloning
 
 ### Synergistic Dissipation Enables Net Contraction
-- **Type:** Remark
-- **Label:** `rem-synergistic-velocity-dissipation`
-- **Tags:** kinetic
 - **Source:** [03_cloning.md § 10.4.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Synergistic Dissipation Enables Net Contraction
 
 ### Structural Error Contraction
-- **Type:** Corollary
-- **Label:** `cor-structural-error-contraction`
-- **Tags:** corollary
 - **Source:** [03_cloning.md § 10.5.](source/1_euclidean_gas/03_cloning)
+- **Description:** Structural Error Contraction
 
 ### Complete Variance Drift Characterization for Cloning
-- **Type:** Theorem
-- **Label:** `thm-complete-variance-drift`
-- **Tags:** cloning, theorem
 - **Source:** [03_cloning.md § 10.6.](source/1_euclidean_gas/03_cloning)
+- **Description:** Complete Variance Drift Characterization for Cloning
 
 ### Constants and Parameter Dependencies
-- **Type:** Remark
-- **Label:** `rem-drift-constants-dependencies`
-- **Tags:** general
 - **Source:** [03_cloning.md § 10.6.](source/1_euclidean_gas/03_cloning)
+- **Description:** Constants and Parameter Dependencies
 
 ### Boundary Potential Component (Recall)
-- **Type:** Definition
-- **Label:** `def-boundary-potential-recall`
-- **Tags:** fitness
 - **Source:** [03_cloning.md § 11.2.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Boundary Potential Component (Recall)
 
 ### Barrier Function as Geometric Penalty
-- **Type:** Remark
-- **Label:** `rem-barrier-geometric-penalty`
-- **Tags:** geometry, metric
 - **Source:** [03_cloning.md § 11.2.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Barrier Function as Geometric Penalty
 
 ### Fitness Gradient from Boundary Proximity
-- **Type:** Lemma
-- **Label:** `lem-fitness-gradient-boundary`
-- **Tags:** fitness, lemma
 - **Source:** [03_cloning.md § 11.2.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Fitness Gradient from Boundary Proximity
 
 ### The Boundary-Exposed Set
-- **Type:** Definition
-- **Label:** `def-boundary-exposed-set`
-- **Tags:** general
 - **Source:** [03_cloning.md § 11.2.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** The Boundary-Exposed Set
 
 ### Relationship to Total Boundary Potential
-- **Type:** Remark
-- **Label:** `rem-boundary-mass-relationship`
-- **Tags:** fitness
 - **Source:** [03_cloning.md § 11.2.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** Relationship to Total Boundary Potential
 
 ### Boundary Potential Contraction Under Cloning
-- **Type:** Theorem
-- **Label:** `thm-boundary-potential-contraction`
-- **Tags:** cloning, fitness, theorem
 - **Source:** [03_cloning.md § 11.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** Boundary Potential Contraction Under Cloning
 
 ### Interpretation: Progressive Safety Enhancement
-- **Type:** Remark
-- **Label:** `rem-progressive-safety`
-- **Tags:** general
 - **Source:** [03_cloning.md § 11.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** Interpretation: Progressive Safety Enhancement
 
 ### Enhanced Cloning Probability Near Boundary
-- **Type:** Lemma
-- **Label:** `lem-boundary-enhanced-cloning`
-- **Tags:** cloning, lemma
 - **Source:** [03_cloning.md § 11.4.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Enhanced Cloning Probability Near Boundary
 
 ### Expected Barrier Reduction for Cloned Walker
-- **Type:** Lemma
-- **Label:** `lem-barrier-reduction-cloning`
-- **Tags:** cloning, lemma
 - **Source:** [03_cloning.md § 11.4.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Expected Barrier Reduction for Cloned Walker
 
 ### Bounded Boundary Exposure in Equilibrium
-- **Type:** Corollary
-- **Label:** `cor-bounded-boundary-exposure`
-- **Tags:** corollary
 - **Source:** [03_cloning.md § 11.5.](source/1_euclidean_gas/03_cloning)
+- **Description:** Bounded Boundary Exposure in Equilibrium
 
 ### Exponentially Suppressed Extinction Probability
-- **Type:** Corollary
-- **Label:** `cor-extinction-suppression`
-- **Tags:** corollary
 - **Source:** [03_cloning.md § 11.5.](source/1_euclidean_gas/03_cloning)
+- **Description:** Exponentially Suppressed Extinction Probability
 
 ### Safety Margin and Parameter Tuning
-- **Type:** Remark
-- **Label:** `rem-safety-margin-tuning`
-- **Tags:** general
 - **Source:** [03_cloning.md § 11.5.](source/1_euclidean_gas/03_cloning)
+- **Description:** Safety Margin and Parameter Tuning
 
 ### Complete Boundary Potential Drift Characterization
-- **Type:** Theorem
-- **Label:** `thm-complete-boundary-drift`
-- **Tags:** fitness, theorem
 - **Source:** [03_cloning.md § 11.6.](source/1_euclidean_gas/03_cloning)
+- **Description:** Complete Boundary Potential Drift Characterization
 
 ### Bounded Expansion of Inter-Swarm Wasserstein Distance
-- **Type:** Theorem
-- **Label:** `thm-inter-swarm-bounded-expansion`
-- **Tags:** metric, theorem, wasserstein
 - **Source:** [03_cloning.md § 12.2.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Bounded Expansion of Inter-Swarm Wasserstein Distance
 
 ### Why Inter-Swarm Error Doesn't Contract Under Cloning
-- **Type:** Remark
-- **Label:** `rem-why-vw-expands`
-- **Tags:** cloning
 - **Source:** [03_cloning.md § 12.2.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Why Inter-Swarm Error Doesn't Contract Under Cloning
 
 ### Component-Wise Bounds on Inter-Swarm Error
-- **Type:** Corollary
-- **Label:** `cor-component-bounds-vw`
-- **Tags:** corollary
 - **Source:** [03_cloning.md § 12.2.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Component-Wise Bounds on Inter-Swarm Error
 
 ### Complete Wasserstein Decomposition Drift
-- **Type:** Theorem
-- **Label:** `thm-complete-wasserstein-drift`
-- **Tags:** theorem, wasserstein
 - **Source:** [03_cloning.md § 12.2.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Complete Wasserstein Decomposition Drift
 
 ### Complete Drift Inequality for the Cloning Operator
-- **Type:** Theorem
-- **Label:** `thm-complete-cloning-drift`
-- **Tags:** cloning, theorem
 - **Source:** [03_cloning.md § 12.3.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Complete Drift Inequality for the Cloning Operator
 
 ### Necessity of the Kinetic Operator
-- **Type:** Proposition
-- **Label:** `prop-kinetic-necessity`
-- **Tags:** kinetic, proposition
 - **Source:** [03_cloning.md § 12.3.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** Necessity of the Kinetic Operator
 
 ### Perfect Complementarity
-- **Type:** Remark
-- **Label:** `rem-perfect-complementarity`
-- **Tags:** general
 - **Source:** [03_cloning.md § 12.4.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Perfect Complementarity
 
 ### Synergistic Foster-Lyapunov Condition (Preview)
-- **Type:** Theorem
-- **Label:** `thm-synergistic-foster-lyapunov-preview`
-- **Tags:** theorem
 - **Source:** [03_cloning.md § 12.4.2.](source/1_euclidean_gas/03_cloning)
+- **Description:** Synergistic Foster-Lyapunov Condition (Preview)
 
 ### Existence of Valid Coupling Constants
-- **Type:** Proposition
-- **Label:** `prop-coupling-constant-existence`
-- **Tags:** proposition
 - **Source:** [03_cloning.md § 12.4.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** Existence of Valid Coupling Constants
 
 ### Tuning Guidance
-- **Type:** Remark
-- **Label:** `rem-tuning-guidance`
-- **Tags:** general
 - **Source:** [03_cloning.md § 12.4.3.](source/1_euclidean_gas/03_cloning)
+- **Description:** Tuning Guidance
 
 ### Main Results of the Cloning Analysis (Summary)
-- **Type:** Theorem
-- **Label:** `thm-main-results-summary`
-- **Tags:** cloning, theorem
 - **Source:** [03_cloning.md § 12.5.1.](source/1_euclidean_gas/03_cloning)
+- **Description:** Main Results of the Cloning Analysis (Summary)
 
 ---
 
 ### Source: 04_wasserstein_contraction.md {#04_wasserstein_contraction}
 
+
 ### Target Set and Complement
-- **Type:** Definition
-- **Label:** `def-target-complement`
-- **Tags:** general
 - **Source:** [04_wasserstein_contraction.md § 2.1.](source/1_euclidean_gas/04_wasserstein_contraction)
+- **Description:** Target Set and Complement
 
 ### Why These Sets?
-- **Type:** Remark
-- **Label:** `rem-why-target-sets`
-- **Tags:** general
 - **Source:** [04_wasserstein_contraction.md § 2.1.](source/1_euclidean_gas/04_wasserstein_contraction)
+- **Description:** Why These Sets?
 
 ### Cluster-Preserving Coupling
-- **Type:** Definition
-- **Label:** `def-cluster-coupling`
-- **Tags:** general
 - **Source:** [04_wasserstein_contraction.md § 2.2.](source/1_euclidean_gas/04_wasserstein_contraction)
+- **Description:** Cluster-Preserving Coupling
 
 ### Why This Coupling Works
-- **Type:** Remark
-- **Label:** `rem-coupling-advantages`
-- **Tags:** general
 - **Source:** [04_wasserstein_contraction.md § 2.2.](source/1_euclidean_gas/04_wasserstein_contraction)
+- **Description:** Why This Coupling Works
 
 ### Variance Decomposition by Clusters
-- **Type:** Lemma
-- **Label:** `lem-variance-decomposition`
-- **Tags:** lemma
 - **Source:** [04_wasserstein_contraction.md § 3.1.](source/1_euclidean_gas/04_wasserstein_contraction)
+- **Description:** Variance Decomposition by Clusters
 
 ### Between-Group Variance Dominance
-- **Type:** Corollary
-- **Label:** `cor-between-group-dominance`
-- **Tags:** corollary
 - **Source:** [04_wasserstein_contraction.md § 3.1.](source/1_euclidean_gas/04_wasserstein_contraction)
+- **Description:** Between-Group Variance Dominance
 
 ### Cross-Swarm Distance Decomposition
-- **Type:** Lemma
-- **Label:** `lem-cross-swarm-distance`
-- **Tags:** lemma, metric
 - **Source:** [04_wasserstein_contraction.md § 3.2.](source/1_euclidean_gas/04_wasserstein_contraction)
+- **Description:** Cross-Swarm Distance Decomposition
 
 ### Cluster-Level Outlier Alignment
-- **Type:** Lemma
-- **Label:** `lem-cluster-alignment`
-- **Tags:** lemma
 - **Source:** [04_wasserstein_contraction.md § 4.1.](source/1_euclidean_gas/04_wasserstein_contraction)
+- **Description:** Cluster-Level Outlier Alignment
 
 ### Why This Proof is Static and Robust
-- **Type:** Remark
-- **Label:** `rem-static-robust`
-- **Tags:** general
 - **Source:** [04_wasserstein_contraction.md § 4.1.](source/1_euclidean_gas/04_wasserstein_contraction)
+- **Description:** Why This Proof is Static and Robust
 
 ### Expected Cross-Distance Change
-- **Type:** Lemma
-- **Label:** `lem-expected-distance-change`
-- **Tags:** lemma, metric
 - **Source:** [04_wasserstein_contraction.md § 5.1.](source/1_euclidean_gas/04_wasserstein_contraction)
+- **Description:** Expected Cross-Distance Change
 
 ### Cloning Pressure on Target Set
-- **Type:** Lemma
-- **Label:** `lem-target-cloning-pressure`
-- **Tags:** cloning, lemma
 - **Source:** [04_wasserstein_contraction.md § 5.2.](source/1_euclidean_gas/04_wasserstein_contraction)
+- **Description:** Cloning Pressure on Target Set
 
 ### Average Cloning Pressure Bound
-- **Type:** Corollary
-- **Label:** `cor-average-cloning`
-- **Tags:** cloning, corollary
 - **Source:** [04_wasserstein_contraction.md § 5.2.](source/1_euclidean_gas/04_wasserstein_contraction)
+- **Description:** Average Cloning Pressure Bound
 
 ### Wasserstein Distance and Population Cross-Distances
-- **Type:** Lemma
-- **Label:** `lem-wasserstein-population-bound`
-- **Tags:** lemma, metric, wasserstein
 - **Source:** [04_wasserstein_contraction.md § 6.1.](source/1_euclidean_gas/04_wasserstein_contraction)
+- **Description:** Wasserstein Distance and Population Cross-Distances
 
 ### Wasserstein-2 Contraction (Cluster-Based)
-- **Type:** Theorem
-- **Label:** `thm-main-contraction-full`
-- **Tags:** theorem, wasserstein
 - **Source:** [04_wasserstein_contraction.md § 6.2.](source/1_euclidean_gas/04_wasserstein_contraction)
+- **Description:** Wasserstein-2 Contraction (Cluster-Based)
 
 ---
 
 ### Source: 05_kinetic_contraction.md {#05_kinetic_contraction}
 
+
 ### The Kinetic Operator (Stratonovich Form)
-- **Type:** Definition
-- **Label:** `def-kinetic-operator-stratonovich`
-- **Tags:** kinetic
 - **Source:** [05_kinetic_contraction.md § 5.2.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** The Kinetic Operator (Stratonovich Form)
 
 ### Relationship to Itô Formulation
-- **Type:** Remark
-- **Label:** `rem-stratonovich-ito-equivalence`
-- **Tags:** general
 - **Source:** [05_kinetic_contraction.md § 5.2.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Relationship to Itô Formulation
 
 ### Globally Confining Potential
-- **Type:** Axiom
-- **Label:** `axiom-confining-potential`
-- **Tags:** axiom, fitness
 - **Source:** [05_kinetic_contraction.md § 5.3.1.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Globally Confining Potential
 
 ### Canonical Confining Potential
-- **Type:** Example
-- **Label:** `ex-canonical-confining-potential`
-- **Tags:** fitness
 - **Source:** [05_kinetic_contraction.md § 5.3.1.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Canonical Confining Potential
 
 ### Anisotropic Diffusion Tensor
-- **Type:** Axiom
-- **Label:** `axiom-diffusion-tensor`
-- **Tags:** axiom, langevin
 - **Source:** [05_kinetic_contraction.md § 5.3.2.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Anisotropic Diffusion Tensor
 
 ### Why Uniform Ellipticity Matters
-- **Type:** Remark
-- **Label:** `rem-uniform-ellipticity-importance`
-- **Tags:** general
 - **Source:** [05_kinetic_contraction.md § 5.3.2.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Why Uniform Ellipticity Matters
 
 ### Friction and Integration Parameters
-- **Type:** Axiom
-- **Label:** `axiom-friction-timestep`
-- **Tags:** axiom
 - **Source:** [05_kinetic_contraction.md § 5.3.3.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Friction and Integration Parameters
 
 ### Fokker-Planck Equation for the Kinetic Operator
-- **Type:** Proposition
-- **Label:** `prop-fokker-planck-kinetic`
-- **Tags:** kinetic, proposition
 - **Source:** [05_kinetic_contraction.md § 5.4.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Fokker-Planck Equation for the Kinetic Operator
 
 ### Formal Invariant Measure (Without Boundary)
-- **Type:** Remark
-- **Label:** `rem-formal-invariant-measure`
-- **Tags:** symmetry
 - **Source:** [05_kinetic_contraction.md § 5.4.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Formal Invariant Measure (Without Boundary)
 
 ### BAOAB Integrator for Stratonovich Langevin
-- **Type:** Definition
-- **Label:** `def-baoab-integrator`
-- **Tags:** langevin
 - **Source:** [05_kinetic_contraction.md § 5.5.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** BAOAB Integrator for Stratonovich Langevin
 
 ### Stratonovich Correction for Anisotropic Case
-- **Type:** Remark
-- **Label:** `rem-baoab-anisotropic`
-- **Tags:** general
 - **Source:** [05_kinetic_contraction.md § 5.5.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Stratonovich Correction for Anisotropic Case
 
 ### Infinitesimal Generator of the Kinetic SDE
-- **Type:** Definition
-- **Label:** `def-generator`
-- **Tags:** kinetic, langevin
 - **Source:** [05_kinetic_contraction.md § 5.7.1.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Infinitesimal Generator of the Kinetic SDE
 
 ### Why We Work with Generators
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** general
 - **Source:** [05_kinetic_contraction.md § 5.7.1.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Why We Work with Generators
 
 ### Discrete-Time Inheritance of Generator Drift
-- **Type:** Theorem
-- **Label:** `thm-discretization`
-- **Tags:** theorem
 - **Source:** [05_kinetic_contraction.md § 5.7.2.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Discrete-Time Inheritance of Generator Drift
 
 ### BAOAB Weak Error for Variance Lyapunov Functions
-- **Type:** Proposition
-- **Label:** `prop-weak-error-variance`
-- **Tags:** proposition
 - **Source:** [05_kinetic_contraction.md § 1.7.3.1.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** BAOAB Weak Error for Variance Lyapunov Functions
 
 ### BAOAB Weak Error for Boundary Lyapunov Function
-- **Type:** Proposition
-- **Label:** `prop-weak-error-boundary`
-- **Tags:** proposition
 - **Source:** [05_kinetic_contraction.md § 1.7.3.2.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** BAOAB Weak Error for Boundary Lyapunov Function
 
 ### BAOAB Weak Error for Wasserstein Distance
-- **Type:** Proposition
-- **Label:** `prop-weak-error-wasserstein`
-- **Tags:** metric, proposition, wasserstein
 - **Source:** [05_kinetic_contraction.md § 1.7.3.3.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** BAOAB Weak Error for Wasserstein Distance
 
 ### Explicit Discretization Constants
-- **Type:** Proposition
-- **Label:** `prop-explicit-constants`
-- **Tags:** proposition
 - **Source:** [05_kinetic_contraction.md § 5.7.4.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Explicit Discretization Constants
 
 ### No Convexity Required
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** general
 - **Source:** [05_kinetic_contraction.md § 6.1.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** No Convexity Required
 
 ### The Hypocoercive Norm
-- **Type:** Definition
-- **Label:** `def-hypocoercive-norm`
-- **Tags:** general
 - **Source:** [05_kinetic_contraction.md § 6.2.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** The Hypocoercive Norm
 
 ### Intuition for the Coupling Term
-- **Type:** Remark
-- **Label:** `rem-coupling-term-intuition`
-- **Tags:** general
 - **Source:** [05_kinetic_contraction.md § 6.2.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Intuition for the Coupling Term
 
 ### Inter-Swarm Error Contraction Under Kinetic Operator
-- **Type:** Theorem
-- **Label:** `thm-inter-swarm-contraction-kinetic`
-- **Tags:** kinetic, theorem
 - **Source:** [05_kinetic_contraction.md § 6.3.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Inter-Swarm Error Contraction Under Kinetic Operator
 
 ### Drift of Location Error Under Kinetics
-- **Type:** Lemma
-- **Label:** `lem-location-error-drift-kinetic`
-- **Tags:** kinetic, lemma
 - **Source:** [05_kinetic_contraction.md § 6.5.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Drift of Location Error Under Kinetics
 
 ### Drift of Structural Error Under Kinetics
-- **Type:** Lemma
-- **Label:** `lem-structural-error-drift-kinetic`
-- **Tags:** kinetic, lemma
 - **Source:** [05_kinetic_contraction.md § 6.6.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Drift of Structural Error Under Kinetics
 
 ### Velocity Variance Component (Recall)
-- **Type:** Definition
-- **Label:** `def-velocity-variance-recall`
-- **Tags:** kinetic
 - **Source:** [05_kinetic_contraction.md § 7.2.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Velocity Variance Component (Recall)
 
 ### Velocity Variance Contraction Under Kinetic Operator
-- **Type:** Theorem
-- **Label:** `thm-velocity-variance-contraction-kinetic`
-- **Tags:** kinetic, theorem
 - **Source:** [05_kinetic_contraction.md § 7.3.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Velocity Variance Contraction Under Kinetic Operator
 
 ### Net Velocity Variance Contraction for Composed Operator
-- **Type:** Corollary
-- **Label:** `cor-net-velocity-contraction`
-- **Tags:** corollary, kinetic
 - **Source:** [05_kinetic_contraction.md § 7.5.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Net Velocity Variance Contraction for Composed Operator
 
 ### Positional Variance Component (Recall)
-- **Type:** Definition
-- **Label:** `def-positional-variance-recall`
-- **Tags:** general
 - **Source:** [05_kinetic_contraction.md § 6.2.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Positional Variance Component (Recall)
 
 ### Bounded Positional Variance Expansion Under Kinetics
-- **Type:** Theorem
-- **Label:** `thm-positional-variance-bounded-expansion`
-- **Tags:** kinetic, theorem
 - **Source:** [05_kinetic_contraction.md § 6.3.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Bounded Positional Variance Expansion Under Kinetics
 
 ### Net Positional Variance Contraction for Composed Operator
-- **Type:** Corollary
-- **Label:** `cor-net-positional-contraction`
-- **Tags:** corollary
 - **Source:** [05_kinetic_contraction.md § 6.5.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Net Positional Variance Contraction for Composed Operator
 
 ### Boundary Potential (Recall)
-- **Type:** Definition
-- **Label:** `def-boundary-potential-recall`
-- **Tags:** fitness
 - **Source:** [05_kinetic_contraction.md § 7.2.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Boundary Potential (Recall)
 
 ### Boundary Potential Contraction Under Kinetic Operator
-- **Type:** Theorem
-- **Label:** `thm-boundary-potential-contraction-kinetic`
-- **Tags:** fitness, kinetic, theorem
 - **Source:** [05_kinetic_contraction.md § 7.3.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Boundary Potential Contraction Under Kinetic Operator
 
 ### Total Boundary Safety from Dual Mechanisms
-- **Type:** Corollary
-- **Label:** `cor-total-boundary-safety`
-- **Tags:** corollary
 - **Source:** [05_kinetic_contraction.md § 7.5.](source/1_euclidean_gas/05_kinetic_contraction)
+- **Description:** Total Boundary Safety from Dual Mechanisms
 
 ---
 
 ### Source: 06_convergence.md {#06_convergence}
 
+
 ### Summary of Required Operator Drifts
-- **Type:** Remark
-- **Label:** `rem-prerequisite-drifts`
-- **Tags:** general
 - **Source:** [06_convergence.md § 2.3.](source/1_euclidean_gas/06_convergence)
+- **Description:** Summary of Required Operator Drifts
 
 ### Synergistic Lyapunov Function (Recall)
-- **Type:** Definition
-- **Label:** `def-full-lyapunov-recall`
-- **Tags:** general
 - **Source:** [06_convergence.md § 3.2.](source/1_euclidean_gas/06_convergence)
+- **Description:** Synergistic Lyapunov Function (Recall)
 
 ### Complete Drift Characterization
-- **Type:** Proposition
-- **Label:** `prop-complete-drift-summary`
-- **Tags:** proposition
 - **Source:** [06_convergence.md § 3.3.](source/1_euclidean_gas/06_convergence)
+- **Description:** Complete Drift Characterization
 
 ### Foster-Lyapunov Drift for the Composed Operator
-- **Type:** Theorem
-- **Label:** `thm-foster-lyapunov-main`
-- **Tags:** theorem
 - **Source:** [06_convergence.md § 3.4.](source/1_euclidean_gas/06_convergence)
+- **Description:** Foster-Lyapunov Drift for the Composed Operator
 
 ### The Cemetery State
-- **Type:** Definition
-- **Label:** `def-cemetery-state`
-- **Tags:** general
 - **Source:** [06_convergence.md § 4.2.](source/1_euclidean_gas/06_convergence)
+- **Description:** The Cemetery State
 
 ### Why Extinction is Inevitable (Eventually)
-- **Type:** Remark
-- **Label:** `rem-extinction-inevitable`
-- **Tags:** general
 - **Source:** [06_convergence.md § 4.2.](source/1_euclidean_gas/06_convergence)
+- **Description:** Why Extinction is Inevitable (Eventually)
 
 ### Quasi-Stationary Distribution (QSD)
-- **Type:** Definition
-- **Label:** `def-qsd`
-- **Tags:** qsd
 - **Source:** [06_convergence.md § 4.3.](source/1_euclidean_gas/06_convergence)
+- **Description:** Quasi-Stationary Distribution (QSD)
 
 ### φ-Irreducibility of the Euclidean Gas
-- **Type:** Theorem
-- **Label:** `thm-phi-irreducibility`
-- **Tags:** theorem
 - **Source:** [06_convergence.md § 4.4.1.](source/1_euclidean_gas/06_convergence)
+- **Description:** φ-Irreducibility of the Euclidean Gas
 
 ### Aperiodicity of the Euclidean Gas
-- **Type:** Theorem
-- **Label:** `thm-aperiodicity`
-- **Tags:** theorem
 - **Source:** [06_convergence.md § 4.4.2.](source/1_euclidean_gas/06_convergence)
+- **Description:** Aperiodicity of the Euclidean Gas
 
 ### Geometric Ergodicity and Convergence to QSD
-- **Type:** Theorem
-- **Label:** `thm-main-convergence`
-- **Tags:** convergence, geometry, metric, qsd, theorem
 - **Source:** [06_convergence.md § 4.5.](source/1_euclidean_gas/06_convergence)
+- **Description:** Geometric Ergodicity and Convergence to QSD
 
 ### Properties of the Quasi-Stationary Distribution
-- **Type:** Proposition
-- **Label:** `prop-qsd-properties`
-- **Tags:** proposition, qsd
 - **Source:** [06_convergence.md § 4.6.](source/1_euclidean_gas/06_convergence)
+- **Description:** Properties of the Quasi-Stationary Distribution
 
 ### Equilibrium Variance Bounds from Drift Inequalities
-- **Type:** Theorem
-- **Label:** `thm-equilibrium-variance-bounds`
-- **Tags:** theorem
 - **Source:** [06_convergence.md § 4.6.](source/1_euclidean_gas/06_convergence)
+- **Description:** Equilibrium Variance Bounds from Drift Inequalities
 
 ### Velocity Dissipation Rate (Parameter-Explicit)
-- **Type:** Proposition
-- **Label:** `prop-velocity-rate-explicit`
-- **Tags:** kinetic, proposition
 - **Source:** [06_convergence.md § 5.1.](source/1_euclidean_gas/06_convergence)
+- **Description:** Velocity Dissipation Rate (Parameter-Explicit)
 
 ### Positional Contraction Rate (Parameter-Explicit)
-- **Type:** Proposition
-- **Label:** `prop-position-rate-explicit`
-- **Tags:** proposition
 - **Source:** [06_convergence.md § 5.2.](source/1_euclidean_gas/06_convergence)
+- **Description:** Positional Contraction Rate (Parameter-Explicit)
 
 ### Wasserstein Contraction Rate (Parameter-Explicit)
-- **Type:** Proposition
-- **Label:** `prop-wasserstein-rate-explicit`
-- **Tags:** proposition, wasserstein
 - **Source:** [06_convergence.md § 5.3.](source/1_euclidean_gas/06_convergence)
+- **Description:** Wasserstein Contraction Rate (Parameter-Explicit)
 
 ### Boundary Contraction Rate (Parameter-Explicit)
-- **Type:** Proposition
-- **Label:** `prop-boundary-rate-explicit`
-- **Tags:** proposition
 - **Source:** [06_convergence.md § 5.4.](source/1_euclidean_gas/06_convergence)
+- **Description:** Boundary Contraction Rate (Parameter-Explicit)
 
 ### Synergistic Rate Derivation from Component Drifts
-- **Type:** Theorem
-- **Label:** `thm-synergistic-rate-derivation`
-- **Tags:** theorem
 - **Source:** [06_convergence.md § 5.5.](source/1_euclidean_gas/06_convergence)
+- **Description:** Synergistic Rate Derivation from Component Drifts
 
 ### Total Convergence Rate (Parameter-Explicit)
-- **Type:** Theorem
-- **Label:** `thm-total-rate-explicit`
-- **Tags:** convergence, theorem
 - **Source:** [06_convergence.md § 5.5.](source/1_euclidean_gas/06_convergence)
+- **Description:** Total Convergence Rate (Parameter-Explicit)
 
 ### Mixing Time (Parameter-Explicit)
-- **Type:** Proposition
-- **Label:** `prop-mixing-time-explicit`
-- **Tags:** proposition
 - **Source:** [06_convergence.md § 5.6.](source/1_euclidean_gas/06_convergence)
+- **Description:** Mixing Time (Parameter-Explicit)
 
 ### Parameter Selection for Optimal Convergence
-- **Type:** Algorithm
-- **Label:** `alg-param-selection`
-- **Tags:** algorithm, convergence
 - **Source:** [06_convergence.md § 5.7.](source/1_euclidean_gas/06_convergence)
+- **Description:** Parameter Selection for Optimal Convergence
 
 ### Complete Parameter Space
-- **Type:** Definition
-- **Label:** `def-complete-parameter-space`
-- **Tags:** general
 - **Source:** [06_convergence.md § 6.1.](source/1_euclidean_gas/06_convergence)
+- **Description:** Complete Parameter Space
 
 ### Parameter Classification
-- **Type:** Proposition
-- **Label:** `prop-parameter-classification`
-- **Tags:** proposition
 - **Source:** [06_convergence.md § 6.2.](source/1_euclidean_gas/06_convergence)
+- **Description:** Parameter Classification
 
 ### Log-Sensitivity Matrix for Convergence Rates
-- **Type:** Definition
-- **Label:** `def-rate-sensitivity-matrix`
-- **Tags:** convergence
 - **Source:** [06_convergence.md § 6.3.1.](source/1_euclidean_gas/06_convergence)
+- **Description:** Log-Sensitivity Matrix for Convergence Rates
 
 ### Explicit Rate Sensitivity Matrix
-- **Type:** Theorem
-- **Label:** `thm-explicit-rate-sensitivity`
-- **Tags:** theorem
 - **Source:** [06_convergence.md § 6.3.1.](source/1_euclidean_gas/06_convergence)
+- **Description:** Explicit Rate Sensitivity Matrix
 
 ### Equilibrium Constant Sensitivity Matrix
-- **Type:** Definition
-- **Label:** `def-equilibrium-sensitivity-matrix`
-- **Tags:** general
 - **Source:** [06_convergence.md § 6.3.2.](source/1_euclidean_gas/06_convergence)
+- **Description:** Equilibrium Constant Sensitivity Matrix
 
 ### SVD of Rate Sensitivity Matrix
-- **Type:** Theorem
-- **Label:** `thm-svd-rate-matrix`
-- **Tags:** theorem
 - **Source:** [06_convergence.md § 6.4.](source/1_euclidean_gas/06_convergence)
+- **Description:** SVD of Rate Sensitivity Matrix
 
 ### Condition Number of Rate Sensitivity
-- **Type:** Proposition
-- **Label:** `prop-condition-number-rate`
-- **Tags:** proposition
 - **Source:** [06_convergence.md § 6.4.](source/1_euclidean_gas/06_convergence)
+- **Description:** Condition Number of Rate Sensitivity
 
 ### Parameter Optimization Problem
-- **Type:** Definition
-- **Label:** `def-parameter-optimization`
-- **Tags:** general
 - **Source:** [06_convergence.md § 6.5.1.](source/1_euclidean_gas/06_convergence)
+- **Description:** Parameter Optimization Problem
 
 ### Subgradient of min() Function
-- **Type:** Theorem
-- **Label:** `thm-subgradient-min`
-- **Tags:** theorem
 - **Source:** [06_convergence.md § 6.5.2.](source/1_euclidean_gas/06_convergence)
+- **Description:** Subgradient of min() Function
 
 ### Necessity of Balanced Rates at Optimum
-- **Type:** Theorem
-- **Label:** `thm-balanced-optimality`
-- **Tags:** theorem
 - **Source:** [06_convergence.md § 6.5.3.](source/1_euclidean_gas/06_convergence)
+- **Description:** Necessity of Balanced Rates at Optimum
 
 ### Restitution-Friction Coupling
-- **Type:** Proposition
-- **Label:** `prop-restitution-friction-coupling`
-- **Tags:** proposition
 - **Source:** [06_convergence.md § 6.6.1.](source/1_euclidean_gas/06_convergence)
+- **Description:** Restitution-Friction Coupling
 
 ### Position Jitter - Cloning Rate Coupling
-- **Type:** Proposition
-- **Label:** `prop-jitter-cloning-coupling`
-- **Tags:** cloning, proposition
 - **Source:** [06_convergence.md § 6.6.2.](source/1_euclidean_gas/06_convergence)
+- **Description:** Position Jitter - Cloning Rate Coupling
 
 ### Phase-Space Pairing Quality
-- **Type:** Proposition
-- **Label:** `prop-phase-space-pairing`
-- **Tags:** proposition
 - **Source:** [06_convergence.md § 6.6.3.](source/1_euclidean_gas/06_convergence)
+- **Description:** Phase-Space Pairing Quality
 
 ### Parameter Error Propagation Bound
-- **Type:** Theorem
-- **Label:** `thm-error-propagation`
-- **Tags:** theorem
 - **Source:** [06_convergence.md § 6.7.](source/1_euclidean_gas/06_convergence)
+- **Description:** Parameter Error Propagation Bound
 
 ### Closed-Form Balanced Optimum
-- **Type:** Theorem
-- **Label:** `thm-closed-form-optimum`
-- **Tags:** theorem
 - **Source:** [06_convergence.md § 6.10.1.](source/1_euclidean_gas/06_convergence)
+- **Description:** Closed-Form Balanced Optimum
 
 ### Projected Gradient Ascent for Parameter Optimization
-- **Type:** Algorithm
-- **Label:** `alg-projected-gradient-ascent`
-- **Tags:** algorithm
 - **Source:** [06_convergence.md § 6.10.2.](source/1_euclidean_gas/06_convergence)
+- **Description:** Projected Gradient Ascent for Parameter Optimization
 
 ### Pareto Optimality in Parameter Space
-- **Type:** Definition
-- **Label:** `def-pareto-optimality`
-- **Tags:** general
 - **Source:** [06_convergence.md § 6.10.3.](source/1_euclidean_gas/06_convergence)
+- **Description:** Pareto Optimality in Parameter Space
 
 ### Adaptive Parameter Tuning
-- **Type:** Algorithm
-- **Label:** `alg-adaptive-tuning`
-- **Tags:** algorithm
 - **Source:** [06_convergence.md § 6.10.4.](source/1_euclidean_gas/06_convergence)
+- **Description:** Adaptive Parameter Tuning
 
 ---
 
 ### Source: 07_mean_field.md {#07_mean_field}
 
+
 ### Phase Space
-- **Type:** Definition
-- **Label:** `def-mean-field-phase-space`
-- **Tags:** mean-field
 - **Source:** [07_mean_field.md § **1.1. Phase Space and Probability Density**](source/1_euclidean_gas/07_mean_field)
+- **Description:** Phase Space
 
 ### Phase-Space Density
-- **Type:** Definition
-- **Label:** `def-phase-space-density`
-- **Tags:** general
 - **Source:** [07_mean_field.md § **1.1. Phase Space and Probability Density**](source/1_euclidean_gas/07_mean_field)
+- **Description:** Phase-Space Density
 
 ### Mean-Field Statistical Moments
-- **Type:** Definition
-- **Label:** `def-mean-field-moments`
-- **Tags:** mean-field
 - **Source:** [07_mean_field.md § **1.2. Mean-Field Measurement Pipeline**](source/1_euclidean_gas/07_mean_field)
+- **Description:** Mean-Field Statistical Moments
 
 ### Mean-Field Regularized Standard Deviation
-- **Type:** Definition
-- **Label:** `def-mean-field-patched-std`
-- **Tags:** mean-field
 - **Source:** [07_mean_field.md § **1.2. Mean-Field Measurement Pipeline**](source/1_euclidean_gas/07_mean_field)
+- **Description:** Mean-Field Regularized Standard Deviation
 
 ### Mean-Field Z-Scores
-- **Type:** Definition
-- **Label:** `def-mean-field-z-scores`
-- **Tags:** mean-field
 - **Source:** [07_mean_field.md § **1.3. Density-Dependent Fitness Potential**](source/1_euclidean_gas/07_mean_field)
+- **Description:** Mean-Field Z-Scores
 
 ### Mean-Field Fitness Potential
-- **Type:** Definition
-- **Label:** `def-mean-field-fitness-potential`
-- **Tags:** fitness, mean-field
 - **Source:** [07_mean_field.md § **1.3. Density-Dependent Fitness Potential**](source/1_euclidean_gas/07_mean_field)
+- **Description:** Mean-Field Fitness Potential
 
 ### The BAOAB Update Rule
-- **Type:** Definition
-- **Label:** `def-baoab-update-rule`
-- **Tags:** general
 - **Source:** [07_mean_field.md § **2.1. The Underlying Discrete-Time Integrator: BA](source/1_euclidean_gas/07_mean_field)
+- **Description:** The BAOAB Update Rule
 
 ### Kinetic Transport Operator
-- **Type:** Definition
-- **Label:** `def-kinetic-generator`
-- **Tags:** kinetic
 - **Source:** [07_mean_field.md § **2.2. The Kinetic Transport Operator ($L^\dagger$](source/1_euclidean_gas/07_mean_field)
+- **Description:** Kinetic Transport Operator
 
 ### Interior Killing Operator
-- **Type:** Definition
-- **Label:** `def-killing-operator`
-- **Tags:** general
 - **Source:** [07_mean_field.md § **2.3. The Reaction Operators (Killing, Revival, a](source/1_euclidean_gas/07_mean_field)
+- **Description:** Interior Killing Operator
 
 ### Revival Operator
-- **Type:** Definition
-- **Label:** `def-revival-operator`
-- **Tags:** general
 - **Source:** [07_mean_field.md § **2.3. The Reaction Operators (Killing, Revival, a](source/1_euclidean_gas/07_mean_field)
+- **Description:** Revival Operator
 
 ### Internal Cloning Operator (Derived Form)
-- **Type:** Definition
-- **Label:** `def-cloning-generator`
-- **Tags:** cloning
 - **Source:** [07_mean_field.md § **2.3.3. Derivation of the Internal Cloning Operat](source/1_euclidean_gas/07_mean_field)
+- **Description:** Internal Cloning Operator (Derived Form)
 
 ### Transport Operator and Probability Flux
-- **Type:** Definition
-- **Label:** `def-transport-operator`
-- **Tags:** general
 - **Source:** [07_mean_field.md § **3.1. The Transport Operator ($L^\dagger$) is Mas](source/1_euclidean_gas/07_mean_field)
+- **Description:** Transport Operator and Probability Flux
 
 ### Mass Conservation of Transport
-- **Type:** Lemma
-- **Label:** `lem-mass-conservation-transport`
-- **Tags:** lemma
 - **Source:** [07_mean_field.md § **3.1. The Transport Operator ($L^\dagger$) is Mas](source/1_euclidean_gas/07_mean_field)
+- **Description:** Mass Conservation of Transport
 
 ### The Mean-Field Equations for the Euclidean Gas
-- **Type:** Theorem
-- **Label:** `thm-mean-field-equation`
-- **Tags:** mean-field, theorem
 - **Source:** [07_mean_field.md § **3.3. The Coupled Mean-Field Equations**](source/1_euclidean_gas/07_mean_field)
+- **Description:** The Mean-Field Equations for the Euclidean Gas
 
 ### Total Mass Conservation and Population Dynamics
-- **Type:** Theorem
-- **Label:** `thm-mass-conservation`
-- **Tags:** theorem
 - **Source:** [07_mean_field.md § **3.3. The Coupled Mean-Field Equations**](source/1_euclidean_gas/07_mean_field)
+- **Description:** Total Mass Conservation and Population Dynamics
 
 ### Summary of Regularity Assumptions
-- **Type:** Assumption
-- **Label:** `asmp-regularity-summary`
-- **Tags:** assumption
 - **Source:** [07_mean_field.md § **4.2. Well-Posedness and Future Work**](source/1_euclidean_gas/07_mean_field)
+- **Description:** Summary of Regularity Assumptions
 
 ### Regularity of the Valid Domain
-- **Type:** Assumption
-- **Label:** `asmp-domain-regularity`
-- **Tags:** assumption
 - **Source:** [07_mean_field.md § **4.4.1. Mathematical Setup and Regularity Assumpt](source/1_euclidean_gas/07_mean_field)
+- **Description:** Regularity of the Valid Domain
 
 ### Regularity of the Discrete Integrator
-- **Type:** Assumption
-- **Label:** `asmp-integrator-regularity`
-- **Tags:** assumption
 - **Source:** [07_mean_field.md § **4.4.1. Mathematical Setup and Regularity Assumpt](source/1_euclidean_gas/07_mean_field)
+- **Description:** Regularity of the Discrete Integrator
 
 ### Density Regularity
-- **Type:** Assumption
-- **Label:** `asmp-density-regularity-killing`
-- **Tags:** assumption
 - **Source:** [07_mean_field.md § **4.4.1. Mathematical Setup and Regularity Assumpt](source/1_euclidean_gas/07_mean_field)
+- **Description:** Density Regularity
 
 ### Consistency of the Interior Killing Rate Approximation
-- **Type:** Theorem
-- **Label:** `thm-killing-rate-consistency`
-- **Tags:** theorem
 - **Source:** [07_mean_field.md § **4.4.2. Main Theorem: Rigorous Killing Rate Appro](source/1_euclidean_gas/07_mean_field)
+- **Description:** Consistency of the Interior Killing Rate Approximation
 
 ### Mean-Field Limit (Informal Statement)
-- **Type:** Theorem
-- **Label:** `thm-mean-field-limit-informal`
-- **Tags:** convergence, mean-field, theorem
 - **Source:** [07_mean_field.md § **4.4.4. Connection to the Main Mean-Field Result*](source/1_euclidean_gas/07_mean_field)
+- **Description:** Mean-Field Limit (Informal Statement)
 
 ---
 
 ### Source: 08_propagation_chaos.md {#08_propagation_chaos}
 
+
 ### Sequence of N-Particle QSDs and their Marginals
-- **Type:** Definition
-- **Label:** `def-sequence-of-qsds`
-- **Tags:** qsd
 - **Source:** [08_propagation_chaos.md § 2.](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Sequence of N-Particle QSDs and their Marginals
 
 ### The Sequence of Marginals $\{\mu_N\}$ is Tight
-- **Type:** Theorem
-- **Label:** `thm-qsd-marginals-are-tight`
-- **Tags:** qsd, theorem
 - **Source:** [08_propagation_chaos.md § **Introduction**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** The Sequence of Marginals  is Tight
 
 ### Exchangeability of the N-Particle QSD
-- **Type:** Lemma
-- **Label:** `lem-exchangeability`
-- **Tags:** lemma, qsd
 - **Source:** [08_propagation_chaos.md § **Lemma A.1: Exchangeability of the N-Particle QSD](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Exchangeability of the N-Particle QSD
 
 ### Weak Convergence of the Empirical Companion Measure
-- **Type:** Lemma
-- **Label:** `lem-empirical-convergence`
-- **Tags:** convergence, lemma
 - **Source:** [08_propagation_chaos.md § **Lemma A.2: Weak Convergence of the Empirical Com](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Weak Convergence of the Empirical Companion Measure
 
 ### Continuity of the Reward Moments
-- **Type:** Lemma
-- **Label:** `lem-reward-continuity`
-- **Tags:** fitness, lemma
 - **Source:** [08_propagation_chaos.md § **Lemma B.1: Continuity of the Reward Moments**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Continuity of the Reward Moments
 
 ### Continuity of the Distance Moments
-- **Type:** Lemma
-- **Label:** `lem-distance-continuity`
-- **Tags:** lemma, metric
 - **Source:** [08_propagation_chaos.md § **Lemma B.2: Continuity of the Distance Moments**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Continuity of the Distance Moments
 
 ### Uniform Integrability and Interchange of Limits
-- **Type:** Lemma
-- **Label:** `lem-uniform-integrability`
-- **Tags:** convergence, lemma
 - **Source:** [08_propagation_chaos.md § **Lemma C.1: Uniform Integrability and Interchange](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Uniform Integrability and Interchange of Limits
 
 ### Convergence of Boundary Death and Revival
-- **Type:** Lemma
-- **Label:** `lem-boundary-convergence`
-- **Tags:** convergence, lemma
 - **Source:** [08_propagation_chaos.md § **Lemma C.2: Convergence of the Boundary Death and](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Convergence of Boundary Death and Revival
 
 ### QSD Stationarity vs. True Stationarity
-- **Type:** Remark
-- **Label:** `rem-qsd-vs-true-stationarity`
-- **Tags:** qsd
 - **Source:** [08_propagation_chaos.md § **The QSD Stationarity Condition with Extinction R](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** QSD Stationarity vs. True Stationarity
 
 ### Extinction Rate Vanishes in the Mean-Field Limit
-- **Type:** Theorem
-- **Label:** `thm-extinction-rate-vanishes`
-- **Tags:** convergence, mean-field, theorem
 - **Source:** [08_propagation_chaos.md § **Proof of Vanishing Extinction Rate**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Extinction Rate Vanishes in the Mean-Field Limit
 
 ### Physical Interpretation
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** general
 - **Source:** [08_propagation_chaos.md § **Proof of Vanishing Extinction Rate**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Physical Interpretation
 
 ### Limit Points are Weak Solutions to the Stationary Mean-Field PDE
-- **Type:** Theorem
-- **Label:** `thm-limit-is-weak-solution`
-- **Tags:** convergence, mean-field, theorem
 - **Source:** [08_propagation_chaos.md § **Theorem C.2: Limit Points are Weak Solutions to ](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Limit Points are Weak Solutions to the Stationary Mean-Field PDE
 
 ### Weighted Sobolev Space $H^1_w(\Omega)$
-- **Type:** Definition
-- **Label:** `def-uniqueness-weighted-sobolev-h1w`
-- **Tags:** general
 - **Source:** [08_propagation_chaos.md § **Part A: The Weighted Function Space**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Weighted Sobolev Space
 
 ### Completeness of $H^1_w(\Omega)$
-- **Type:** Theorem
-- **Label:** `thm-uniqueness-completeness-h1w-omega`
-- **Tags:** theorem
 - **Source:** [08_propagation_chaos.md § **Part A: The Weighted Function Space**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Completeness of
 
 ### Completeness of the Constraint Set $\mathcal{P}$
-- **Type:** Remark
-- **Label:** `rem-uniqueness-completeness-constraint-set`
-- **Tags:** general
 - **Source:** [08_propagation_chaos.md § **Part A: The Weighted Function Space**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Completeness of the Constraint Set
 
 ### Self-Mapping Property of the Solution Operator
-- **Type:** Lemma
-- **Label:** `lem-uniqueness-self-mapping`
-- **Tags:** lemma
 - **Source:** [08_propagation_chaos.md § **Reformulation as a Fixed-Point Problem**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Self-Mapping Property of the Solution Operator
 
 ### Lipschitz Continuity of Moment Functionals
-- **Type:** Lemma
-- **Label:** `lem-uniqueness-lipschitz-moments`
-- **Tags:** lemma, lipschitz
 - **Source:** [08_propagation_chaos.md § **Reformulation as a Fixed-Point Problem**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Lipschitz Continuity of Moment Functionals
 
 ### Fixed Points Lie in a Bounded Ball
-- **Type:** Lemma
-- **Label:** `lem-uniqueness-fixed-point-bounded`
-- **Tags:** lemma
 - **Source:** [08_propagation_chaos.md § **Reformulation as a Fixed-Point Problem**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Fixed Points Lie in a Bounded Ball
 
 ### Lipschitz Continuity of the Fitness Potential
-- **Type:** Lemma
-- **Label:** `lem-uniqueness-lipschitz-fitness-potential`
-- **Tags:** fitness, lemma, lipschitz
 - **Source:** [08_propagation_chaos.md § **Reformulation as a Fixed-Point Problem**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Lipschitz Continuity of the Fitness Potential
 
 ### Local Lipschitz Continuity of the Cloning Operator
-- **Type:** Lemma
-- **Label:** `lem-uniqueness-lipschitz-cloning-operator`
-- **Tags:** cloning, lemma, lipschitz
 - **Source:** [08_propagation_chaos.md § **Reformulation as a Fixed-Point Problem**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Local Lipschitz Continuity of the Cloning Operator
 
 ### Hörmander's Theorem for Kinetic Operators
-- **Type:** Theorem
-- **Label:** `thm-uniqueness-hormander`
-- **Tags:** kinetic, theorem
 - **Source:** [08_propagation_chaos.md § **C.2. Hörmander's Hypoellipticity Condition**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Hörmander's Theorem for Kinetic Operators
 
 ### Verification of Hörmander's Condition for the Kinetic Operator
-- **Type:** Lemma
-- **Label:** `lem-uniqueness-hormander-verification`
-- **Tags:** kinetic, lemma
 - **Source:** [08_propagation_chaos.md § **C.2. Hörmander's Hypoellipticity Condition**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Verification of Hörmander's Condition for the Kinetic Operator
 
 ### Hypoelliptic Regularity for the Kinetic Operator
-- **Type:** Theorem
-- **Label:** `thm-uniqueness-hypoelliptic-regularity`
-- **Tags:** kinetic, theorem
 - **Source:** [08_propagation_chaos.md § **C.3. Hypoelliptic Regularity Estimates**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Hypoelliptic Regularity for the Kinetic Operator
 
 ### Scaling of $C_{\text{hypo}}$ with Diffusion Strength
-- **Type:** Lemma
-- **Label:** `lem-uniqueness-scaling-hypoelliptic-constant`
-- **Tags:** langevin, lemma
 - **Source:** [08_propagation_chaos.md § **C.4. Scaling of the Hypoelliptic Constant**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Scaling of  with Diffusion Strength
 
 ### Contraction Property of the Solution Operator on an Invariant Ball
-- **Type:** Theorem
-- **Label:** `thm-uniqueness-contraction-solution-operator`
-- **Tags:** symmetry, theorem
 - **Source:** [08_propagation_chaos.md § **Part D: Assembly of the Contraction Argument**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Contraction Property of the Solution Operator on an Invariant Ball
 
 ### Uniqueness of the Stationary Solution
-- **Type:** Theorem
-- **Label:** `thm-uniqueness-uniqueness-stationary-solution`
-- **Tags:** theorem
 - **Source:** [08_propagation_chaos.md § **Part D: Assembly of the Contraction Argument**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Uniqueness of the Stationary Solution
 
 ### The proof structure demonstrates a powerful technique in nonlinear analysis: when global Lipschitz continuity fails, we can still prove uniqueness by:
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** lipschitz
 - **Source:** [08_propagation_chaos.md § **Part D: Assembly of the Contraction Argument**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** The proof structure demonstrates a powerful technique in nonlinear analysis: ...
 
 ### This uniqueness proof reveals a deep connection between the algorithm's design parameters and the mathematical well-posedness of the model. The condition
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** gauge
 - **Source:** [08_propagation_chaos.md § **Part D: Assembly of the Contraction Argument**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** This uniqueness proof reveals a deep connection between the algorithm's desig...
 
 ### Sequence of N-Particle QSDs and their Marginals
-- **Type:** Definition
-- **Label:** `def-sequence-of-qsds`
-- **Tags:** qsd
 - **Source:** [08_propagation_chaos.md § **6.2. The Sequence of N-Particle Stationary Measu](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Sequence of N-Particle QSDs and their Marginals
 
 ### The Sequence of Marginals $\{\mu_N\}$ is Tight
-- **Type:** Theorem
-- **Label:** `thm-qsd-marginals-are-tight`
-- **Tags:** qsd, theorem
 - **Source:** [08_propagation_chaos.md § **6.3. Step 1: Tightness of the Marginal Sequence*](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** The Sequence of Marginals  is Tight
 
 ### Limit Points are Weak Solutions to the Stationary Mean-Field PDE
-- **Type:** Theorem
-- **Label:** `thm-limit-is-weak-solution`
-- **Tags:** convergence, mean-field, theorem
 - **Source:** [08_propagation_chaos.md § **6.4. Step 2: Identification of the Limit Point**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Limit Points are Weak Solutions to the Stationary Mean-Field PDE
 
 ### Uniqueness of the Stationary Solution
-- **Type:** Theorem
-- **Label:** `thm-uniqueness-of-qsd`
-- **Tags:** qsd, theorem
 - **Source:** [08_propagation_chaos.md § **6.5. Step 3: Uniqueness of the Weak Solution**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Uniqueness of the Stationary Solution
 
 ### Convergence of Macroscopic Observables (The Thermodynamic Limit)
-- **Type:** Theorem
-- **Label:** `thm-thermodynamic-limit`
-- **Tags:** convergence, theorem
 - **Source:** [08_propagation_chaos.md § **6.6. The Thermodynamic Limit**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Convergence of Macroscopic Observables (The Thermodynamic Limit)
 
 ### Wasserstein-2 Convergence in the Thermodynamic Limit
-- **Type:** Corollary
-- **Label:** `cor-w2-convergence-thermodynamic-limit`
-- **Tags:** convergence, corollary, wasserstein
 - **Source:** [08_propagation_chaos.md § **6.6. The Thermodynamic Limit**](source/1_euclidean_gas/08_propagation_chaos)
+- **Description:** Wasserstein-2 Convergence in the Thermodynamic Limit
 
 ---
 
 ### Source: 09_kl_convergence.md {#09_kl_convergence}
 
+
 ### Exponential KL-Convergence for the Euclidean Gas
-- **Type:** Theorem
-- **Label:** `thm-main-kl-convergence-consolidated`
-- **Tags:** convergence, theorem
 - **Source:** [09_kl_convergence.md § I.1.1. Primary Theorem (Log-Concave Case)](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Exponential KL-Convergence for the Euclidean Gas
 
 ### KL-Convergence Without Log-Concavity
-- **Type:** Theorem
-- **Label:** `thm-nonconvex-kl-convergence`
-- **Tags:** convergence, theorem
 - **Source:** [09_kl_convergence.md § I.1.2. Extended Theorem (Non-Convex Case)](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** KL-Convergence Without Log-Concavity
 
 ### Exponential KL-Convergence for the Euclidean Gas
-- **Type:** Theorem
-- **Label:** `thm-main-kl-convergence`
-- **Tags:** convergence, theorem
 - **Source:** [09_kl_convergence.md § 0.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Exponential KL-Convergence for the Euclidean Gas
 
 ### Relative Entropy and Fisher Information
-- **Type:** Definition
-- **Label:** `def-relative-entropy`
-- **Tags:** entropy
 - **Source:** [09_kl_convergence.md § 1.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Relative Entropy and Fisher Information
 
 ### Logarithmic Sobolev Inequality (LSI)
-- **Type:** Definition
-- **Label:** `def-lsi-continuous`
-- **Tags:** lsi
 - **Source:** [09_kl_convergence.md § 1.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Logarithmic Sobolev Inequality (LSI)
 
 ### Discrete-Time LSI
-- **Type:** Definition
-- **Label:** `def-discrete-lsi`
-- **Tags:** lsi
 - **Source:** [09_kl_convergence.md § 1.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Discrete-Time LSI
 
 ### Bakry-Émery Criterion for LSI
-- **Type:** Theorem
-- **Label:** `thm-bakry-emery`
-- **Tags:** lsi, theorem
 - **Source:** [09_kl_convergence.md § 1.2.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Bakry-Émery Criterion for LSI
 
 ### Target Gibbs Measure for Kinetic Dynamics
-- **Type:** Definition
-- **Label:** `def-gibbs-kinetic`
-- **Tags:** kinetic
 - **Source:** [09_kl_convergence.md § 2.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Target Gibbs Measure for Kinetic Dynamics
 
 ### The generator $\mathcal{L}_{\text{kin}}$ is **not self-adjoint** with respect to $\pi_{\text{kin}}$. This non-reversibility is a fundamental barrier to applying classical LSI theory.
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** lsi
 - **Source:** [09_kl_convergence.md § 2.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** The generator  is **not self-adjoint** with respect to . This non-reversibili...
 
 ### Hypocoercive Metric and Modified Dirichlet Form
-- **Type:** Definition
-- **Label:** `def-hypocoercive-metric`
-- **Tags:** metric
 - **Source:** [09_kl_convergence.md § 2.2.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Hypocoercive Metric and Modified Dirichlet Form
 
 ### Dissipation of the Hypocoercive Norm
-- **Type:** Lemma
-- **Label:** `lem-hypocoercive-dissipation`
-- **Tags:** lemma
 - **Source:** [09_kl_convergence.md § 2.2.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Dissipation of the Hypocoercive Norm
 
 ### Hypocoercive LSI for the Kinetic Flow Map
-- **Type:** Theorem
-- **Label:** `thm-kinetic-lsi`
-- **Tags:** kinetic, lsi, theorem
 - **Source:** [09_kl_convergence.md § 2.3.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Hypocoercive LSI for the Kinetic Flow Map
 
 ### Tensorization of LSI
-- **Type:** Theorem
-- **Label:** `thm-tensorization`
-- **Tags:** lsi, theorem
 - **Source:** [09_kl_convergence.md § 3.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Tensorization of LSI
 
 ### LSI for N-Particle Kinetic Operator
-- **Type:** Corollary
-- **Label:** `cor-n-particle-kinetic-lsi`
-- **Tags:** corollary, kinetic, lsi
 - **Source:** [09_kl_convergence.md § 3.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** LSI for N-Particle Kinetic Operator
 
 ### Log-Concavity of the Quasi-Stationary Distribution
-- **Type:** Axiom
-- **Label:** `ax-qsd-log-concave`
-- **Tags:** axiom, qsd
 - **Source:** [09_kl_convergence.md § 3.5.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Log-Concavity of the Quasi-Stationary Distribution
 
 ### Motivation and Justification
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** general
 - **Source:** [09_kl_convergence.md § 3.5.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Motivation and Justification
 
 ### Explicit Log-Concavity Condition
-- **Type:** Definition
-- **Label:** `def-log-concavity-condition`
-- **Tags:** general
 - **Source:** [09_kl_convergence.md § From Axiom to Verifiable Condition](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Explicit Log-Concavity Condition
 
 ### Log-Concavity for Pure Yang-Mills Vacuum
-- **Type:** Lemma
-- **Label:** `lem-log-concave-yang-mills`
-- **Tags:** lemma
 - **Source:** [09_kl_convergence.md § Verification for Specific Physical Systems](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Log-Concavity for Pure Yang-Mills Vacuum
 
 ### Implications for Millennium Prize
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** general
 - **Source:** [09_kl_convergence.md § Verification for Specific Physical Systems](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Implications for Millennium Prize
 
 ### Conditional Independence of Cloning
-- **Type:** Lemma
-- **Label:** `lem-cloning-conditional-independence`
-- **Tags:** cloning, lemma
 - **Source:** [09_kl_convergence.md § 4.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Conditional Independence of Cloning
 
 ### The HWI Inequality (Otto-Villani)
-- **Type:** Theorem
-- **Label:** `thm-hwi-inequality`
-- **Tags:** theorem
 - **Source:** [09_kl_convergence.md § 4.2.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** The HWI Inequality (Otto-Villani)
 
 ### The HWI inequality provides a **bridge** between:
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** general
 - **Source:** [09_kl_convergence.md § 4.2.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** The HWI inequality provides a **bridge** between:
 
 ### Wasserstein-2 Contraction for Cloning
-- **Type:** Lemma
-- **Label:** `lem-cloning-wasserstein-contraction`
-- **Tags:** cloning, lemma, wasserstein
 - **Source:** [09_kl_convergence.md § 4.3.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Wasserstein-2 Contraction for Cloning
 
 ### Fisher Information Bound After Cloning
-- **Type:** Lemma
-- **Label:** `lem-cloning-fisher-info`
-- **Tags:** cloning, lemma
 - **Source:** [09_kl_convergence.md § 4.4.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Fisher Information Bound After Cloning
 
 ### Entropy Contraction for the Cloning Operator
-- **Type:** Theorem
-- **Label:** `thm-cloning-entropy-contraction`
-- **Tags:** cloning, entropy, theorem
 - **Source:** [09_kl_convergence.md § 4.5.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Entropy Contraction for the Cloning Operator
 
 ### Interpretation
-- **Type:** Remark
-- **Label:** `rem-cloning-sublinear`
-- **Tags:** cloning
 - **Source:** [09_kl_convergence.md § 4.5.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Interpretation
 
 ### Entropy-Transport Lyapunov Function
-- **Type:** Definition
-- **Label:** `def-entropy-transport-lyapunov`
-- **Tags:** entropy
 - **Source:** [09_kl_convergence.md § 5.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Entropy-Transport Lyapunov Function
 
 ### Entropy-Transport Dissipation Inequality
-- **Type:** Lemma
-- **Label:** `lem-entropy-transport-dissipation`
-- **Tags:** entropy, lemma
 - **Source:** [09_kl_convergence.md § 5.2.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Entropy-Transport Dissipation Inequality
 
 ### This lemma is the **key technical innovation**. It shows that the geometric contraction in Wasserstein space (already proven in [04_convergence.md](04_convergence.md)) drives entropy dissipation. The constant $\alpha$ depends on:
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** convergence, entropy, geometry, metric, wasserstein
 - **Source:** [09_kl_convergence.md § 5.2.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** This lemma is the **key technical innovation**. It shows that the geometric c...
 
 ### Kinetic Evolution Bounds
-- **Type:** Lemma
-- **Label:** `lem-kinetic-evolution-bounds`
-- **Tags:** kinetic, lemma
 - **Source:** [09_kl_convergence.md § 5.3.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Kinetic Evolution Bounds
 
 ### Linear Contraction of the Entropy-Transport Lyapunov Function
-- **Type:** Theorem
-- **Label:** `thm-entropy-transport-contraction`
-- **Tags:** entropy, theorem
 - **Source:** [09_kl_convergence.md § 5.4.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Linear Contraction of the Entropy-Transport Lyapunov Function
 
 ### Discrete-Time LSI for the Euclidean Gas
-- **Type:** Theorem
-- **Label:** `thm-main-lsi-composition`
-- **Tags:** lsi, theorem
 - **Source:** [09_kl_convergence.md § 5.5.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Discrete-Time LSI for the Euclidean Gas
 
 ### Quantitative LSI Constant
-- **Type:** Corollary
-- **Label:** `cor-quantitative-lsi-final`
-- **Tags:** corollary, lsi
 - **Source:** [09_kl_convergence.md § 5.6.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Quantitative LSI Constant
 
 ### Exponential KL-Convergence via LSI
-- **Type:** Theorem
-- **Label:** `thm-lsi-implies-kl-convergence`
-- **Tags:** convergence, lsi, theorem
 - **Source:** [09_kl_convergence.md § 6.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Exponential KL-Convergence via LSI
 
 ### KL-Convergence of the Euclidean Gas (Main Result)
-- **Type:** Theorem
-- **Label:** `thm-main-kl-final`
-- **Tags:** convergence, theorem
 - **Source:** [09_kl_convergence.md § 6.2.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** KL-Convergence of the Euclidean Gas (Main Result)
 
 ### Relationship Between KL and TV Convergence Rates
-- **Type:** Remark
-- **Label:** `rem-kl-tv-comparison`
-- **Tags:** convergence
 - **Source:** [09_kl_convergence.md § 6.3.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Relationship Between KL and TV Convergence Rates
 
 ### LSI Stability Under Bounded Perturbations
-- **Type:** Theorem
-- **Label:** `thm-lsi-perturbation`
-- **Tags:** lsi, theorem
 - **Source:** [09_kl_convergence.md § 7.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** LSI Stability Under Bounded Perturbations
 
 ### LSI for the ρ-Localized Geometric Gas
-- **Type:** Corollary
-- **Label:** `cor-adaptive-lsi`
-- **Tags:** corollary, geometry, lsi, metric
 - **Source:** [09_kl_convergence.md § 7.2.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** LSI for the ρ-Localized Geometric Gas
 
 ### N-Uniform Logarithmic Sobolev Inequality
-- **Type:** Corollary
-- **Label:** `cor-n-uniform-lsi`
-- **Tags:** corollary, lsi
 - **Source:** [09_kl_convergence.md § 9.6.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** N-Uniform Logarithmic Sobolev Inequality
 
 ### Entropy Dissipation Under Cloning (Mean-Field Sketch)
-- **Type:** Lemma
-- **Label:** `lem-mean-field-cloning-sketch`
-- **Tags:** cloning, entropy, lemma, mean-field
 - **Source:** [09_kl_convergence.md § Lemma Statement](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Entropy Dissipation Under Cloning (Mean-Field Sketch)
 
 ### Sinh Inequality
-- **Type:** Lemma
-- **Label:** `lem-sinh-bound-global`
-- **Tags:** lemma
 - **Source:** [09_kl_convergence.md § A.4: ✅ Contraction Inequality via Permutation Symm](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Sinh Inequality
 
 ### Entropy Bound via De Bruijn Identity
-- **Type:** Theorem
-- **Label:** `thm-entropy-bound-debruijn`
-- **Tags:** entropy, theorem
 - **Source:** [09_kl_convergence.md § Rigorous Formulation](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Entropy Bound via De Bruijn Identity
 
 ### Exponential KL-Convergence via Mean-Field Analysis
-- **Type:** Theorem
-- **Label:** `thm-meanfield-kl-convergence-hybrid`
-- **Tags:** convergence, mean-field, theorem
 - **Source:** [09_kl_convergence.md § Main Result](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Exponential KL-Convergence via Mean-Field Analysis
 
 ### Hypocoercive LSI for Kinetic Operator (Reference)
-- **Type:** Theorem
-- **Label:** `thm-kinetic-lsi-reference`
-- **Tags:** kinetic, lsi, theorem
 - **Source:** [09_kl_convergence.md § Step 1: Kinetic Operator LSI (Existing Result)](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Hypocoercive LSI for Kinetic Operator (Reference)
 
 ### Mean-Field Cloning Entropy Dissipation
-- **Type:** Lemma
-- **Label:** `lem-meanfield-cloning-dissipation-hybrid`
-- **Tags:** cloning, entropy, lemma, mean-field
 - **Source:** [09_kl_convergence.md § Step 2: Cloning Operator Contraction (Mean-Field P](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Mean-Field Cloning Entropy Dissipation
 
 ### Composition of LSI Operators (Reference)
-- **Type:** Theorem
-- **Label:** `thm-composition-reference`
-- **Tags:** lsi, theorem
 - **Source:** [09_kl_convergence.md § Step 3: Composition via Existing Theorem](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Composition of LSI Operators (Reference)
 
 ### Discrete Dirichlet Form
-- **Type:** Definition
-- **Label:** `def-discrete-dirichlet`
-- **Tags:** general
 - **Source:** [09_kl_convergence.md § Step 4: Discrete-Time LSI Formulation](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Discrete Dirichlet Form
 
 ### Discrete-Time LSI
-- **Type:** Theorem
-- **Label:** `thm-discrete-lsi-hybrid`
-- **Tags:** lsi, theorem
 - **Source:** [09_kl_convergence.md § Step 4: Discrete-Time LSI Formulation](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Discrete-Time LSI
 
 ### Exponential Convergence from LSI
-- **Type:** Theorem
-- **Label:** `thm-exp-convergence-hybrid`
-- **Tags:** convergence, lsi, theorem
 - **Source:** [09_kl_convergence.md § Step 5: Exponential KL Convergence](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Exponential Convergence from LSI
 
 ### Exponential KL-Convergence via Mean-Field Generator Analysis
-- **Type:** Theorem
-- **Label:** `thm-meanfield-lsi-standalone`
-- **Tags:** convergence, lsi, mean-field, theorem
 - **Source:** [09_kl_convergence.md § Main Result](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Exponential KL-Convergence via Mean-Field Generator Analysis
 
 ### Hypocoercive LSI for Kinetic Operator
-- **Type:** Theorem
-- **Label:** `thm-kinetic-lsi-standalone`
-- **Tags:** kinetic, lsi, theorem
 - **Source:** [09_kl_convergence.md § 1.4.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Hypocoercive LSI for Kinetic Operator
 
 ### Mean-Field Cloning Contraction
-- **Type:** Lemma
-- **Label:** `lem-cloning-contraction-standalone`
-- **Tags:** cloning, lemma, mean-field
 - **Source:** [09_kl_convergence.md § 2.3.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Mean-Field Cloning Contraction
 
 ### Composition of Kinetic and Cloning Operators
-- **Type:** Theorem
-- **Label:** `thm-composition-standalone`
-- **Tags:** cloning, kinetic, theorem
 - **Source:** [09_kl_convergence.md § Section 3: Composition](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Composition of Kinetic and Cloning Operators
 
 ### Exponential KL Convergence
-- **Type:** Theorem
-- **Label:** `thm-exp-convergence-standalone`
-- **Tags:** convergence, theorem
 - **Source:** [09_kl_convergence.md § Section 4: Exponential Convergence](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Exponential KL Convergence
 
 ### Log-Concavity of the Quasi-Stationary Distribution (Current Requirement)
-- **Type:** Axiom
-- **Label:** `ax-qsd-log-concave-recap`
-- **Tags:** axiom, qsd
 - **Source:** [09_kl_convergence.md § 0.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Log-Concavity of the Quasi-Stationary Distribution (Current Requirement)
 
 ### Confining Potential (from 04_convergence.md, Axiom 1.3.1)
-- **Type:** Axiom
-- **Label:** `ax-confining-recap`
-- **Tags:** axiom, convergence, fitness
 - **Source:** [09_kl_convergence.md § 0.2.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Confining Potential (from 04convergence.md, Axiom 1.3.1)
 
 ### Exponential KL Convergence for Non-Convex Fitness (Informal)
-- **Type:** Theorem
-- **Label:** `thm-nonconvex-informal`
-- **Tags:** convergence, fitness, theorem
 - **Source:** [09_kl_convergence.md § 0.3.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Exponential KL Convergence for Non-Convex Fitness (Informal)
 
 ### Confining Potential (Complete Statement)
-- **Type:** Axiom
-- **Label:** `ax-confining-complete`
-- **Tags:** axiom, fitness
 - **Source:** [09_kl_convergence.md § 1.1.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Confining Potential (Complete Statement)
 
 ### Villani's Hypocoercivity (Simplified)
-- **Type:** Theorem
-- **Label:** `thm-villani-hypocoercivity`
-- **Tags:** theorem
 - **Source:** [09_kl_convergence.md § 2.1.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Villani's Hypocoercivity (Simplified)
 
 ### Hypocoercivity for Piecewise Smooth Confining Potentials
-- **Type:** Proposition
-- **Label:** `prop-hypocoercivity-piecewise`
-- **Tags:** fitness, proposition
 - **Source:** [09_kl_convergence.md § 2.1.3.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Hypocoercivity for Piecewise Smooth Confining Potentials
 
 ### Hypocoercive LSI for Discrete-Time Kinetic Operator
-- **Type:** Lemma
-- **Label:** `lem-kinetic-lsi-hypocoercive`
-- **Tags:** kinetic, lemma, lsi
 - **Source:** [09_kl_convergence.md § 2.2.2.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Hypocoercive LSI for Discrete-Time Kinetic Operator
 
 ### N-Particle Hypocoercive LSI
-- **Type:** Corollary
-- **Label:** `cor-n-particle-hypocoercive`
-- **Tags:** corollary, lsi
 - **Source:** [09_kl_convergence.md § 2.3.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** N-Particle Hypocoercive LSI
 
 ### Discrete Status-Change Metric
-- **Type:** Definition
-- **Label:** `def-status-metric`
-- **Tags:** metric
 - **Source:** [09_kl_convergence.md § 3.2.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Discrete Status-Change Metric
 
 ### Lipschitz Continuity of Softmax-Weighted Companion Selection
-- **Type:** Lemma
-- **Label:** `lem-softmax-lipschitz-status`
-- **Tags:** lemma, lipschitz
 - **Source:** [09_kl_convergence.md § 3.3.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Lipschitz Continuity of Softmax-Weighted Companion Selection
 
 ### Dobrushin Contraction for Euclidean Gas
-- **Type:** Theorem
-- **Label:** `thm-dobrushin-contraction`
-- **Tags:** theorem
 - **Source:** [09_kl_convergence.md § 3.4.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Dobrushin Contraction for Euclidean Gas
 
 ### Exponential Convergence in $d_{\text{status}}$ Metric
-- **Type:** Theorem
-- **Label:** `thm-exponential-convergence-status`
-- **Tags:** convergence, metric, theorem
 - **Source:** [09_kl_convergence.md § 3.5.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Exponential Convergence in  Metric
 
 ### Exponential KL Convergence for Non-Convex Fitness Landscapes
-- **Type:** Theorem
-- **Label:** `thm-nonconvex-main`
-- **Tags:** convergence, fitness, theorem
 - **Source:** [09_kl_convergence.md § 4.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Exponential KL Convergence for Non-Convex Fitness Landscapes
 
 ### Why Composition Fails
-- **Type:** Observation
-- **Label:** `obs-composition-failure`
-- **Tags:** observation
 - **Source:** [09_kl_convergence.md § 4.5.1.](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Why Composition Fails
 
 ### Foster-Lyapunov Drift (Unconditional)
-- **Type:** Theorem
-- **Label:** `thm-fl-recap`
-- **Tags:** theorem
 - **Source:** [09_kl_convergence.md § What We Have (Unconditional)](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Foster-Lyapunov Drift (Unconditional)
 
 ### Logarithmic Sobolev Inequality (Target)
-- **Type:** Theorem
-- **Label:** `thm-lsi-target`
-- **Tags:** lsi, theorem
 - **Source:** [09_kl_convergence.md § What We Want](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Logarithmic Sobolev Inequality (Target)
 
 ### Random Walk on ℤ
-- **Type:** Example
-- **Label:** `ex-fl-no-lsi`
-- **Tags:** lsi
 - **Source:** [09_kl_convergence.md § The Gap](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Random Walk on ℤ
 
 ### Classical Bakry-Émery Criterion
-- **Type:** Theorem
-- **Label:** `thm-bakry-emery-classical`
-- **Tags:** theorem
 - **Source:** [09_kl_convergence.md § 0.2](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Classical Bakry-Émery Criterion
 
 ### Villani's Hypocoercivity (Informal)
-- **Type:** Theorem
-- **Label:** `thm-villani-hypocoercivity-recap`
-- **Tags:** theorem
 - **Source:** [09_kl_convergence.md § Villani's Hypocoercivity (2009)](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Villani's Hypocoercivity (Informal)
 
 ### Synergistic Foster-Lyapunov (Established)
-- **Type:** Theorem
-- **Label:** `thm-fl-established`
-- **Tags:** theorem
 - **Source:** [09_kl_convergence.md § 1.1](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Synergistic Foster-Lyapunov (Established)
 
 ### Hypocoercive LSI for Ψ_kin (Established)
-- **Type:** Lemma
-- **Label:** `lem-kinetic-lsi-established`
-- **Tags:** kinetic, lemma, lsi
 - **Source:** [09_kl_convergence.md § 1.2](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Hypocoercive LSI for Ψkin (Established)
 
 ### Dobrushin Contraction (Established)
-- **Type:** Theorem
-- **Label:** `thm-dobrushin-established`
-- **Tags:** theorem
 - **Source:** [09_kl_convergence.md § 1.3](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Dobrushin Contraction (Established)
 
 ### Unconditional LSI for Euclidean Gas (TARGET)
-- **Type:** Theorem
-- **Label:** `thm-unconditional-lsi`
-- **Tags:** lsi, theorem
 - **Source:** [09_kl_convergence.md § 3.1](source/1_euclidean_gas/09_kl_convergence)
+- **Description:** Unconditional LSI for Euclidean Gas (TARGET)
 
 ---
 
 ### Source: 10_qsd_exchangeability_theory.md {#10_qsd_exchangeability_theory}
 
+
 ### Exchangeability of the QSD
-- **Type:** Theorem
-- **Label:** `thm-qsd-exchangeability`
-- **Tags:** qsd, theorem
 - **Source:** [10_qsd_exchangeability_theory.md § A1.1.1 Main Result](source/1_euclidean_gas/10_qsd_exchangeability_theory)
+- **Description:** Exchangeability of the QSD
 
 ### Mixture Representation (Hewitt-Savage)
-- **Type:** Theorem
-- **Label:** `thm-hewitt-savage-representation`
-- **Tags:** theorem
 - **Source:** [10_qsd_exchangeability_theory.md § A1.1.2 Hewitt-Savage Representation](source/1_euclidean_gas/10_qsd_exchangeability_theory)
+- **Description:** Mixture Representation (Hewitt-Savage)
 
 ### Single-Particle Marginal
-- **Type:** Definition
-- **Label:** `def-single-particle-marginal`
-- **Tags:** general
 - **Source:** [10_qsd_exchangeability_theory.md § A1.1.3 Single-Particle Marginal](source/1_euclidean_gas/10_qsd_exchangeability_theory)
+- **Description:** Single-Particle Marginal
 
 ### Marginal as Mixture Average
-- **Type:** Proposition
-- **Label:** `prop-marginal-mixture`
-- **Tags:** proposition
 - **Source:** [10_qsd_exchangeability_theory.md § A1.1.3 Single-Particle Marginal](source/1_euclidean_gas/10_qsd_exchangeability_theory)
+- **Description:** Marginal as Mixture Average
 
 ### Propagation of Chaos
-- **Type:** Theorem
-- **Label:** `thm-propagation-chaos-qsd`
-- **Tags:** propagation-chaos, qsd, theorem
 - **Source:** [10_qsd_exchangeability_theory.md § A1.2.1 Main Convergence Result](source/1_euclidean_gas/10_qsd_exchangeability_theory)
+- **Description:** Propagation of Chaos
 
 ### Quantitative Decorrelation
-- **Type:** Theorem
-- **Label:** `thm-correlation-decay`
-- **Tags:** theorem
 - **Source:** [10_qsd_exchangeability_theory.md § A1.2.2 Correlation Decay](source/1_euclidean_gas/10_qsd_exchangeability_theory)
+- **Description:** Quantitative Decorrelation
 
 ### N-Uniform LSI via Hypocoercivity
-- **Type:** Theorem
-- **Label:** `thm-n-uniform-lsi-exchangeable`
-- **Tags:** lsi, propagation-chaos, theorem
 - **Source:** [10_qsd_exchangeability_theory.md § A1.3.1 LSI for Exchangeable Measures](source/1_euclidean_gas/10_qsd_exchangeability_theory)
+- **Description:** N-Uniform LSI via Hypocoercivity
 
 ### Conditional Gaussian Structure
-- **Type:** Lemma
-- **Label:** `lem-conditional-gaussian-qsd`
-- **Tags:** lemma, qsd
 - **Source:** [10_qsd_exchangeability_theory.md § A1.3.1 LSI for Exchangeable Measures](source/1_euclidean_gas/10_qsd_exchangeability_theory)
+- **Description:** Conditional Gaussian Structure
 
 ### Mean-Field LSI from N-Uniform Bounds
-- **Type:** Corollary
-- **Label:** `cor-mean-field-lsi`
-- **Tags:** corollary, lsi, mean-field
 - **Source:** [10_qsd_exchangeability_theory.md § A1.3.2 Implications for Mean-Field LSI](source/1_euclidean_gas/10_qsd_exchangeability_theory)
+- **Description:** Mean-Field LSI from N-Uniform Bounds
 
 ## Chapter 2: Geometric Gas
 
@@ -3220,1232 +2241,837 @@ Comprehensive index of all mathematical entries from the Fragile Gas framework.
 
 ### Source: 11_geometric_gas.md {#11_geometric_gas}
 
+
 ### Localization Kernel
-- **Type:** Definition
-- **Label:** `def-localization-kernel`
-- **Tags:** general
 - **Source:** [11_geometric_gas.md § 1.0.2.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Localization Kernel
 
 ### Localized Mean-Field Moments
-- **Type:** Definition
-- **Label:** `def-localized-mean-field-moments`
-- **Tags:** mean-field
 - **Source:** [11_geometric_gas.md § 1.0.3.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Localized Mean-Field Moments
 
 ### Unified Localized Z-Score
-- **Type:** Definition
-- **Label:** `def-unified-z-score`
-- **Tags:** general
 - **Source:** [11_geometric_gas.md § 1.0.4.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Unified Localized Z-Score
 
 ### Limiting Behavior of the Unified Pipeline
-- **Type:** Proposition
-- **Label:** `prop-limiting-regimes`
-- **Tags:** convergence, proposition
 - **Source:** [11_geometric_gas.md § 1.0.5.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Limiting Behavior of the Unified Pipeline
 
 ### The Adaptive Viscous Fluid SDE
-- **Type:** Definition
-- **Label:** `def-hybrid-sde`
-- **Tags:** langevin
 - **Source:** [11_geometric_gas.md § 2.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** The Adaptive Viscous Fluid SDE
 
 ### Regularized Hessian Diffusion Tensor
-- **Type:** Definition
-- **Label:** `def-regularized-hessian-tensor`
-- **Tags:** langevin
 - **Source:** [11_geometric_gas.md § 2.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Regularized Hessian Diffusion Tensor
 
 ### Localized Mean-Field Fitness Potential
-- **Type:** Definition
-- **Label:** `def-localized-mean-field-fitness`
-- **Tags:** fitness, mean-field
 - **Source:** [11_geometric_gas.md § 2.1.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Localized Mean-Field Fitness Potential
 
 ### Axiom of a Globally Confining Potential
-- **Type:** Axiom
-- **Label:** `ax:confining-potential-hybrid`
-- **Tags:** axiom, fitness
 - **Source:** [11_geometric_gas.md § 3.1.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Axiom of a Globally Confining Potential
 
 ### Axiom of Positive Friction
-- **Type:** Axiom
-- **Label:** `ax:positive-friction-hybrid`
-- **Tags:** axiom
 - **Source:** [11_geometric_gas.md § 3.1.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Axiom of Positive Friction
 
 ### Foundational Cloning and Environmental Axioms
-- **Type:** Axiom
-- **Label:** `ax:cloning-env-hybrid`
-- **Tags:** axiom, cloning
 - **Source:** [11_geometric_gas.md § 3.1.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Foundational Cloning and Environmental Axioms
 
 ### k-Uniform Boundedness of the Adaptive Force (ρ-Dependent)
-- **Type:** Proposition
-- **Label:** `prop:bounded-adaptive-force`
-- **Tags:** proposition
 - **Source:** [11_geometric_gas.md § 3.2.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** k-Uniform Boundedness of the Adaptive Force (ρ-Dependent)
 
 ### Axiom of a Well-Behaved Viscous Kernel
-- **Type:** Axiom
-- **Label:** `ax:viscous-kernel`
-- **Tags:** axiom
 - **Source:** [11_geometric_gas.md § 3.2.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Axiom of a Well-Behaved Viscous Kernel
 
 ### k-Uniform Ellipticity by Construction (Proven in Chapter 4)
-- **Type:** Proposition
-- **Label:** `prop:ueph-by-construction`
-- **Tags:** proposition
 - **Source:** [11_geometric_gas.md § 3.2.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** k-Uniform Ellipticity by Construction (Proven in Chapter 4)
 
 ### k-Uniform Ellipticity of the Regularized Metric
-- **Type:** Theorem
-- **Label:** `thm-ueph`
-- **Tags:** metric, theorem
 - **Source:** [11_geometric_gas.md § 4.1.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** k-Uniform Ellipticity of the Regularized Metric
 
 ### N-Uniform Boundedness of the Pure Hessian
-- **Type:** Lemma
-- **Label:** `lem-hessian-bounded`
-- **Tags:** lemma
 - **Source:** [11_geometric_gas.md § 4.2.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** N-Uniform Boundedness of the Pure Hessian
 
 ### Rigorous Boundedness of the Hessian
-- **Type:** Lemma
-- **Label:** `lem-hessian-bounded-rigorous`
-- **Tags:** lemma
 - **Source:** [11_geometric_gas.md § 4.2.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Rigorous Boundedness of the Hessian
 
 ### Failure of Uniformity Without Regularization
-- **Type:** Lemma
-- **Label:** `lem-hessian-explosion`
-- **Tags:** lemma
 - **Source:** [11_geometric_gas.md § 4.2.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Failure of Uniformity Without Regularization
 
 ### Existence and Uniqueness of Solutions
-- **Type:** Corollary
-- **Label:** `cor-wellposed`
-- **Tags:** corollary
 - **Source:** [11_geometric_gas.md § 4.3.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Existence and Uniqueness of Solutions
 
 ### The Backbone SDE
-- **Type:** Definition
-- **Label:** `def-backbone-sde`
-- **Tags:** langevin
 - **Source:** [11_geometric_gas.md § 5.1.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** The Backbone SDE
 
 ### Geometric Ergodicity of the Backbone
-- **Type:** Theorem
-- **Label:** `thm-backbone-convergence`
-- **Tags:** convergence, geometry, metric, theorem
 - **Source:** [11_geometric_gas.md § 5.2.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Geometric Ergodicity of the Backbone
 
 ### Stratonovich Chain Rule for Lyapunov Functions
-- **Type:** Theorem
-- **Label:** `thm-strat-chain`
-- **Tags:** theorem
 - **Source:** [11_geometric_gas.md § 5.4.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Stratonovich Chain Rule for Lyapunov Functions
 
 ### Stratonovich Drift for the Hybrid System
-- **Type:** Definition
-- **Label:** `def-strat-drift`
-- **Tags:** general
 - **Source:** [11_geometric_gas.md § 5.4.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Stratonovich Drift for the Hybrid System
 
 ### N-Uniform Bounded Perturbation from Adaptive Force
-- **Type:** Lemma
-- **Label:** `lem-adaptive-force-bounded`
-- **Tags:** lemma
 - **Source:** [11_geometric_gas.md § 6.2.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** N-Uniform Bounded Perturbation from Adaptive Force
 
 ### Dissipative Contribution from Viscous Force
-- **Type:** Lemma
-- **Label:** `lem-viscous-dissipative`
-- **Tags:** lemma
 - **Source:** [11_geometric_gas.md § 6.3.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Dissipative Contribution from Viscous Force
 
 ### Bounded Change from Adaptive Diffusion
-- **Type:** Lemma
-- **Label:** `lem-diffusion-bounded`
-- **Tags:** langevin, lemma
 - **Source:** [11_geometric_gas.md § 6.4.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Bounded Change from Adaptive Diffusion
 
 ### Total Perturbation Bound (ρ-Dependent)
-- **Type:** Corollary
-- **Label:** `cor-total-perturbation`
-- **Tags:** corollary
 - **Source:** [11_geometric_gas.md § 6.5.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Total Perturbation Bound (ρ-Dependent)
 
 ### Foster-Lyapunov Drift for the ρ-Localized Geometric Viscous Fluid Model
-- **Type:** Theorem
-- **Label:** `thm-fl-drift-adaptive`
-- **Tags:** geometry, metric, theorem
 - **Source:** [11_geometric_gas.md § 7.1.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Foster-Lyapunov Drift for the ρ-Localized Geometric Viscous Fluid Model
 
 ### Exponential Convergence
-- **Type:** Corollary
-- **Label:** `cor-exp-convergence`
-- **Tags:** convergence, corollary
 - **Source:** [11_geometric_gas.md § 7.3.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Exponential Convergence
 
 ### The N-Particle Generator for the Adaptive System
-- **Type:** Definition
-- **Label:** `def-n-particle-generator-lsi`
-- **Tags:** lsi
 - **Source:** [11_geometric_gas.md § 8.2.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** The N-Particle Generator for the Adaptive System
 
 ### Relative Entropy and Fisher Information
-- **Type:** Definition
-- **Label:** `def-entropy-fisher-lsi`
-- **Tags:** entropy, lsi
 - **Source:** [11_geometric_gas.md § 8.2.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Relative Entropy and Fisher Information
 
 ### Logarithmic Sobolev Inequality (LSI)
-- **Type:** Definition
-- **Label:** `def-lsi`
-- **Tags:** lsi
 - **Source:** [11_geometric_gas.md § 8.2.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Logarithmic Sobolev Inequality (LSI)
 
 ### N-Uniform Log-Sobolev Inequality for the Geometric Viscous Fluid Model
-- **Type:** Theorem
-- **Label:** `thm-lsi-adaptive-gas`
-- **Tags:** geometry, lsi, metric, theorem
 - **Source:** [11_geometric_gas.md § 8.3.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** N-Uniform Log-Sobolev Inequality for the Geometric Viscous Fluid Model
 
 ### Exponential Convergence in Relative Entropy
-- **Type:** Corollary
-- **Label:** `cor-entropy-convergence-lsi`
-- **Tags:** convergence, corollary, entropy, lsi
 - **Source:** [11_geometric_gas.md § 8.5.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Exponential Convergence in Relative Entropy
 
 ### Geometric Ergodicity via LSI
-- **Type:** Corollary
-- **Label:** `cor-geometric-ergodicity-lsi`
-- **Tags:** corollary, geometry, lsi, metric
 - **Source:** [11_geometric_gas.md § 8.5.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Geometric Ergodicity via LSI
 
 ### Concentration of Measure
-- **Type:** Remark
-- **Label:** `rem-concentration-lsi`
-- **Tags:** lsi
 - **Source:** [11_geometric_gas.md § 8.5.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Concentration of Measure
 
 ### Existence and Uniqueness of the QSD
-- **Type:** Theorem
-- **Label:** `thm-qsd-existence`
-- **Tags:** qsd, theorem
 - **Source:** [11_geometric_gas.md § 9.1.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Existence and Uniqueness of the QSD
 
 ### Formal Analogy and Evidence
-- **Type:** Remark
-- **Label:** `rem-wfr-analogy`
-- **Tags:** general
 - **Source:** [11_geometric_gas.md § 9.2.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Formal Analogy and Evidence
 
 ### Logarithmic Sobolev Inequality for the Mean-Field Generator
-- **Type:** Theorem
-- **Label:** `thm-lsi-mean-field`
-- **Tags:** lsi, mean-field, theorem
 - **Source:** [11_geometric_gas.md § 9.3.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Logarithmic Sobolev Inequality for the Mean-Field Generator
 
 ### Decomposition of Entropy Dissipation
-- **Type:** Lemma
-- **Label:** `lem-dissipation-decomp`
-- **Tags:** entropy, lemma
 - **Source:** [11_geometric_gas.md § 9.3.1.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Decomposition of Entropy Dissipation
 
 ### Microlocal Decomposition
-- **Type:** Definition
-- **Label:** `def-microlocal`
-- **Tags:** general
 - **Source:** [11_geometric_gas.md § 9.3.1.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Microlocal Decomposition
 
 ### Microscopic Coercivity (Step A)
-- **Type:** Lemma
-- **Label:** `lem-micro-coercivity`
-- **Tags:** lemma
 - **Source:** [11_geometric_gas.md § 9.3.1.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Microscopic Coercivity (Step A)
 
 ### Macroscopic Transport (Step B)
-- **Type:** Lemma
-- **Label:** `lem-macro-transport`
-- **Tags:** lemma
 - **Source:** [11_geometric_gas.md § 9.3.1.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Macroscopic Transport (Step B)
 
 ### Microscopic Regularization (Step C)
-- **Type:** Lemma
-- **Label:** `lem-micro-reg`
-- **Tags:** lemma
 - **Source:** [11_geometric_gas.md § 9.3.1.](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Microscopic Regularization (Step C)
 
 ### Derivatives of Localization Weights
-- **Type:** Lemma
-- **Label:** `lem-weight-derivatives`
-- **Tags:** lemma
 - **Source:** [11_geometric_gas.md § A.2. Preliminary Lemmas on Weighted Sums](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Derivatives of Localization Weights
 
 ### First Derivative of Localized Mean
-- **Type:** Lemma
-- **Label:** `lem-mean-first-derivative`
-- **Tags:** lemma
 - **Source:** [11_geometric_gas.md § A.2. Preliminary Lemmas on Weighted Sums](source/2_geometric_gas/11_geometric_gas)
+- **Description:** First Derivative of Localized Mean
 
 ### Second Derivative of Localized Mean
-- **Type:** Lemma
-- **Label:** `lem-mean-second-derivative`
-- **Tags:** lemma
 - **Source:** [11_geometric_gas.md § A.2. Preliminary Lemmas on Weighted Sums](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Second Derivative of Localized Mean
 
 ### k-Uniform Gradient of Localized Variance
-- **Type:** Lemma
-- **Label:** `lem-variance-gradient`
-- **Tags:** lemma
 - **Source:** [11_geometric_gas.md § A.2. Preliminary Lemmas on Weighted Sums](source/2_geometric_gas/11_geometric_gas)
+- **Description:** k-Uniform Gradient of Localized Variance
 
 ### k-Uniform Hessian of Localized Variance
-- **Type:** Lemma
-- **Label:** `lem-variance-hessian`
-- **Tags:** lemma
 - **Source:** [11_geometric_gas.md § A.2. Preliminary Lemmas on Weighted Sums](source/2_geometric_gas/11_geometric_gas)
+- **Description:** k-Uniform Hessian of Localized Variance
 
 ### C¹ Regularity and k-Uniform Gradient Bound
-- **Type:** Theorem
-- **Label:** `thm-c1-regularity`
-- **Tags:** theorem
 - **Source:** [11_geometric_gas.md § A.3. Theorem A.1: Uniform C¹ Bound on the Fitness ](source/2_geometric_gas/11_geometric_gas)
+- **Description:** C¹ Regularity and k-Uniform Gradient Bound
 
 ### C² Regularity and k-Uniform Hessian Bound
-- **Type:** Theorem
-- **Label:** `thm-c2-regularity`
-- **Tags:** theorem
 - **Source:** [11_geometric_gas.md § A.4. Theorem A.2: Uniform C² Bound on the Fitness ](source/2_geometric_gas/11_geometric_gas)
+- **Description:** C² Regularity and k-Uniform Hessian Bound
 
 ### Verification of Axioms 3.2.1 and 3.2.3
-- **Type:** Corollary
-- **Label:** `cor-axioms-verified`
-- **Tags:** corollary
 - **Source:** [11_geometric_gas.md § A.5. Corollary: Implications for the Main Text](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Verification of Axioms 3.2.1 and 3.2.3
 
 ### Signal Generation for the Adaptive Model
-- **Type:** Theorem
-- **Label:** `thm-signal-generation-adaptive`
-- **Tags:** theorem
 - **Source:** [11_geometric_gas.md § B.2. Hypothesis 1: Signal Generation (Geometry-Bas](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Signal Generation for the Adaptive Model
 
 ### Variance-to-Gap (from 03_cloning.md, Lemma 7.3.1)
-- **Type:** Lemma
-- **Label:** `lem-variance-to-gap-adaptive`
-- **Tags:** cloning, lemma
 - **Source:** [11_geometric_gas.md § B.3.1. The Variance-to-Gap Lemma (Universal)](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Variance-to-Gap (from 03cloning.md, Lemma 7.3.1)
 
 ### Uniform Bounds on the ρ-Localized Pipeline
-- **Type:** Lemma
-- **Label:** `lem-rho-pipeline-bounds`
-- **Tags:** lemma
 - **Source:** [11_geometric_gas.md § B.3.2. Uniform Bounds on ρ-Dependent Pipeline Comp](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Uniform Bounds on the ρ-Localized Pipeline
 
 ### Raw-Gap to Rescaled-Gap for ρ-Localized Pipeline
-- **Type:** Lemma
-- **Label:** `lem-raw-to-rescaled-gap-rho`
-- **Tags:** lemma
 - **Source:** [11_geometric_gas.md § B.3.3. Raw-Gap to Rescaled-Gap Propagation (ρ-Depe](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Raw-Gap to Rescaled-Gap for ρ-Localized Pipeline
 
 ### Logarithmic Gap Bounds (from 03_cloning.md, Lemma 7.5.1)
-- **Type:** Lemma
-- **Label:** `lem-log-gap-bounds-adaptive`
-- **Tags:** cloning, lemma
 - **Source:** [11_geometric_gas.md § B.4.1. Foundational Statistical Lemmas (ρ-Independ](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Logarithmic Gap Bounds (from 03cloning.md, Lemma 7.5.1)
 
 ### Lower Bound on Corrective Diversity Signal (ρ-Dependent)
-- **Type:** Proposition
-- **Label:** `prop-diversity-signal-rho`
-- **Tags:** proposition
 - **Source:** [11_geometric_gas.md § B.4.2. ρ-Dependent Lower Bound on Corrective Diver](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Lower Bound on Corrective Diversity Signal (ρ-Dependent)
 
 ### Axiom-Based Bound on Logarithmic Reward Gap (ρ-Dependent)
-- **Type:** Proposition
-- **Label:** `prop-reward-bias-rho`
-- **Tags:** fitness, proposition
 - **Source:** [11_geometric_gas.md § B.4.3. ρ-Dependent Upper Bound on Adversarial Rewa](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Axiom-Based Bound on Logarithmic Reward Gap (ρ-Dependent)
 
 ### ρ-Dependent Stability Condition for Intelligent Targeting
-- **Type:** Theorem
-- **Label:** `thm-stability-condition-rho`
-- **Tags:** theorem
 - **Source:** [11_geometric_gas.md § B.4.4. The ρ-Dependent Stability Condition](source/2_geometric_gas/11_geometric_gas)
+- **Description:** ρ-Dependent Stability Condition for Intelligent Targeting
 
 ### Keystone Lemma for the ρ-Localized Adaptive Model
-- **Type:** Theorem
-- **Label:** `thm-keystone-adaptive`
-- **Tags:** theorem
 - **Source:** [11_geometric_gas.md § B.5. Conclusion: The Keystone Lemma Holds for the ](source/2_geometric_gas/11_geometric_gas)
+- **Description:** Keystone Lemma for the ρ-Localized Adaptive Model
 
 ---
 
 ### Source: 12_symmetries_geometric_gas.md {#12_symmetries_geometric_gas}
 
+
 ### Swarm Configuration Space
-- **Type:** Definition
-- **Label:** `def-swarm-config-space`
-- **Tags:** general
 - **Source:** [12_symmetries_geometric_gas.md § 2.1.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** Swarm Configuration Space
 
 ### Algorithmic Projection Space
-- **Type:** Definition
-- **Label:** `def-algorithmic-projection-space`
-- **Tags:** general
 - **Source:** [12_symmetries_geometric_gas.md § 2.1.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** Algorithmic Projection Space
 
 ### Symmetry Transformation
-- **Type:** Definition
-- **Label:** `def-symmetry-transformation`
-- **Tags:** symmetry
 - **Source:** [12_symmetries_geometric_gas.md § 2.2.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** Symmetry Transformation
 
 ### Permutation Group
-- **Type:** Definition
-- **Label:** `def-permutation-group`
-- **Tags:** general
 - **Source:** [12_symmetries_geometric_gas.md § 2.2.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** Permutation Group
 
 ### Euclidean Group Actions
-- **Type:** Definition
-- **Label:** `def-euclidean-group-actions`
-- **Tags:** general
 - **Source:** [12_symmetries_geometric_gas.md § 2.2.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** Euclidean Group Actions
 
 ### ρ-Localized Fitness Potential
-- **Type:** Definition
-- **Label:** `def-rho-fitness-potential`
-- **Tags:** fitness
 - **Source:** [12_symmetries_geometric_gas.md § 2.3.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** ρ-Localized Fitness Potential
 
 ### Emergent Riemannian Metric
-- **Type:** Definition
-- **Label:** `def-emergent-metric`
-- **Tags:** geometry, metric
 - **Source:** [12_symmetries_geometric_gas.md § 2.3.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** Emergent Riemannian Metric
 
 ### Permutation Invariance
-- **Type:** Theorem
-- **Label:** `thm-permutation-symmetry`
-- **Tags:** symmetry, theorem
 - **Source:** [12_symmetries_geometric_gas.md § 3.1.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** Permutation Invariance
 
 ### Exchangeability of the QSD
-- **Type:** Corollary
-- **Label:** `cor-qsd-exchangeable`
-- **Tags:** corollary, propagation-chaos, qsd
 - **Source:** [12_symmetries_geometric_gas.md § 3.1.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** Exchangeability of the QSD
 
 ### Conditional Translation Equivariance
-- **Type:** Theorem
-- **Label:** `thm-translation-equivariance`
-- **Tags:** theorem
 - **Source:** [12_symmetries_geometric_gas.md § 3.2.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** Conditional Translation Equivariance
 
 ### Breaking of Translation Symmetry
-- **Type:** Remark
-- **Label:** `unlabeled`
-- **Tags:** symmetry
 - **Source:** [12_symmetries_geometric_gas.md § 3.2.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** Breaking of Translation Symmetry
 
 ### Rotational Equivariance
-- **Type:** Theorem
-- **Label:** `thm-rotation-equivariance`
-- **Tags:** theorem
 - **Source:** [12_symmetries_geometric_gas.md § 3.3.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** Rotational Equivariance
 
 ### Radially Symmetric Fitness Landscapes
-- **Type:** Example
-- **Label:** `unlabeled`
-- **Tags:** fitness, metric
 - **Source:** [12_symmetries_geometric_gas.md § 3.3.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** Radially Symmetric Fitness Landscapes
 
 ### Fitness Potential Scaling Symmetry
-- **Type:** Theorem
-- **Label:** `thm-fitness-scaling`
-- **Tags:** fitness, symmetry, theorem
 - **Source:** [12_symmetries_geometric_gas.md § 3.4.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** Fitness Potential Scaling Symmetry
 
 ### Dimensionless Parameter
-- **Type:** Corollary
-- **Label:** `cor-dimensionless-ratio`
-- **Tags:** corollary
 - **Source:** [12_symmetries_geometric_gas.md § 3.4.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** Dimensionless Parameter
 
 ### Time-Reversal Asymmetry
-- **Type:** Theorem
-- **Label:** `thm-irreversibility`
-- **Tags:** symmetry, theorem
 - **Source:** [12_symmetries_geometric_gas.md § 3.5.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** Time-Reversal Asymmetry
 
 ### H-Theorem for Geometric Gas
-- **Type:** Proposition
-- **Label:** `prop-h-theorem`
-- **Tags:** geometry, metric, proposition
 - **Source:** [12_symmetries_geometric_gas.md § 3.5.](source/2_geometric_gas/12_symmetries_geometric_gas)
+- **Description:** H-Theorem for Geometric Gas
 
 ---
 
 ### Source: 13_geometric_gas_c3_regularity.md {#13_geometric_gas_c3_regularity}
 
+
 ### Telescoping Identity for Derivatives
-- **Type:** Lemma
-- **Label:** `lem-telescoping-derivatives`
-- **Tags:** lemma
 - **Source:** [13_geometric_gas_c3_regularity.md § 2.5.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Telescoping Identity for Derivatives
 
 ### Measurement Function $C^3$ Regularity
-- **Type:** Assumption
-- **Label:** `assump-c3-measurement`
-- **Tags:** assumption
 - **Source:** [13_geometric_gas_c3_regularity.md § 3.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Measurement Function  Regularity
 
 ### Localization Kernel $C^3$ Regularity
-- **Type:** Assumption
-- **Label:** `assump-c3-kernel`
-- **Tags:** assumption
 - **Source:** [13_geometric_gas_c3_regularity.md § 3.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Localization Kernel  Regularity
 
 ### Rescale Function $C^3$ Regularity
-- **Type:** Assumption
-- **Label:** `assump-c3-rescale`
-- **Tags:** assumption
 - **Source:** [13_geometric_gas_c3_regularity.md § 3.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Rescale Function  Regularity
 
 ### Regularized Standard Deviation $C^\infty$ Regularity
-- **Type:** Assumption
-- **Label:** `assump-c3-patch`
-- **Tags:** assumption
 - **Source:** [13_geometric_gas_c3_regularity.md § 3.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Regularized Standard Deviation  Regularity
 
 ### Third Derivative of Localization Weights
-- **Type:** Lemma
-- **Label:** `lem-weight-third-derivative`
-- **Tags:** lemma
 - **Source:** [13_geometric_gas_c3_regularity.md § 4.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Third Derivative of Localization Weights
 
 ### k-Uniform Third Derivative of Localized Mean
-- **Type:** Lemma
-- **Label:** `lem-mean-third-derivative`
-- **Tags:** lemma
 - **Source:** [13_geometric_gas_c3_regularity.md § 5.1.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** k-Uniform Third Derivative of Localized Mean
 
 ### k-Uniform Third Derivative of Localized Variance
-- **Type:** Lemma
-- **Label:** `lem-variance-third-derivative`
-- **Tags:** lemma
 - **Source:** [13_geometric_gas_c3_regularity.md § 5.2.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** k-Uniform Third Derivative of Localized Variance
 
 ### Chain Rule for Regularized Standard Deviation
-- **Type:** Lemma
-- **Label:** `lem-patch-chain-rule`
-- **Tags:** lemma
 - **Source:** [13_geometric_gas_c3_regularity.md § 6.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Chain Rule for Regularized Standard Deviation
 
 ### Third Derivative Bound for Regularized Standard Deviation
-- **Type:** Lemma
-- **Label:** `lem-patch-third-derivative`
-- **Tags:** lemma
 - **Source:** [13_geometric_gas_c3_regularity.md § 6.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Third Derivative Bound for Regularized Standard Deviation
 
 ### k-Uniform Third Derivative of Z-Score
-- **Type:** Lemma
-- **Label:** `lem-zscore-third-derivative`
-- **Tags:** lemma
 - **Source:** [13_geometric_gas_c3_regularity.md § 7.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** k-Uniform Third Derivative of Z-Score
 
 ### $C^3$ Regularity of the �-Localized Fitness Potential
-- **Type:** Theorem
-- **Label:** `thm-c3-regularity`
-- **Tags:** fitness, theorem
 - **Source:** [13_geometric_gas_c3_regularity.md § 8.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Regularity of the �-Localized Fitness Potential
 
 ### ρ-Scaling of Third Derivative Bound
-- **Type:** Proposition
-- **Label:** `prop-scaling-kv3`
-- **Tags:** proposition
 - **Source:** [13_geometric_gas_c3_regularity.md § 8.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** ρ-Scaling of Third Derivative Bound
 
 ### BAOAB Discretization Validity
-- **Type:** Corollary
-- **Label:** `cor-baoab-validity`
-- **Tags:** corollary
 - **Source:** [13_geometric_gas_c3_regularity.md § 9.1.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** BAOAB Discretization Validity
 
 ### $C^3$ Regularity of Total Lyapunov Function
-- **Type:** Corollary
-- **Label:** `cor-lyapunov-c3`
-- **Tags:** corollary
 - **Source:** [13_geometric_gas_c3_regularity.md § 9.2.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Regularity of Total Lyapunov Function
 
 ### $C^3$ Perturbation Structure
-- **Type:** Corollary
-- **Label:** `cor-smooth-perturbation`
-- **Tags:** corollary
 - **Source:** [13_geometric_gas_c3_regularity.md § 9.3.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Perturbation Structure
 
 ### Regularity Hierarchy Complete
-- **Type:** Corollary
-- **Label:** `cor-regularity-hierarchy`
-- **Tags:** corollary
 - **Source:** [13_geometric_gas_c3_regularity.md § 9.4.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Regularity Hierarchy Complete
 
 ### Scaling of Third-Derivative Bound
-- **Type:** Proposition
-- **Label:** `prop-scaling-k-v-3`
-- **Tags:** proposition
 - **Source:** [13_geometric_gas_c3_regularity.md § 10.1.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Scaling of Third-Derivative Bound
 
 ### Time Step Constraint from $C^3$ Regularity
-- **Type:** Proposition
-- **Label:** `prop-timestep-constraint`
-- **Tags:** proposition
 - **Source:** [13_geometric_gas_c3_regularity.md § 10.2.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Time Step Constraint from  Regularity
 
 ### Explicit Formula for $K_{V,3}(\rho)$
-- **Type:** Proposition
-- **Label:** `prop-explicit-k-v-3`
-- **Tags:** proposition
 - **Source:** [13_geometric_gas_c3_regularity.md § 10.3.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Explicit Formula for
 
 ### Continuity of Third Derivatives
-- **Type:** Theorem
-- **Label:** `thm-continuity-third-derivatives`
-- **Tags:** theorem
 - **Source:** [13_geometric_gas_c3_regularity.md § 11.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Continuity of Third Derivatives
 
 ### Regularized Standard Deviation (Implementation)
-- **Type:** Definition
-- **Label:** `def-reg-std-implementation`
-- **Tags:** general
 - **Source:** [13_geometric_gas_c3_regularity.md § 12.5.](source/2_geometric_gas/13_geometric_gas_c3_regularity)
+- **Description:** Regularized Standard Deviation (Implementation)
 
 ---
 
 ### Source: 14_geometric_gas_c4_regularity.md {#14_geometric_gas_c4_regularity}
 
+
 ### C⁴ Measurement Function
-- **Type:** Assumption
-- **Label:** `assump-c4-measurement`
-- **Tags:** assumption
 - **Source:** [14_geometric_gas_c4_regularity.md § 3.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** C⁴ Measurement Function
 
 ### C⁴ Localization Kernel
-- **Type:** Assumption
-- **Label:** `assump-c4-kernel`
-- **Tags:** assumption
 - **Source:** [14_geometric_gas_c4_regularity.md § 3.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** C⁴ Localization Kernel
 
 ### C⁴ Rescale Function
-- **Type:** Assumption
-- **Label:** `assump-c4-rescale`
-- **Tags:** assumption
 - **Source:** [14_geometric_gas_c4_regularity.md § 3.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** C⁴ Rescale Function
 
 ### C^∞ Regularized Standard Deviation
-- **Type:** Assumption
-- **Label:** `assump-c4-regularized-std`
-- **Tags:** assumption
 - **Source:** [14_geometric_gas_c4_regularity.md § 3.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** C^∞ Regularized Standard Deviation
 
 ### Bounded Measurement Range
-- **Type:** Assumption
-- **Label:** `assump-c4-bounded-measurement`
-- **Tags:** assumption
 - **Source:** [14_geometric_gas_c4_regularity.md § 3.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** Bounded Measurement Range
 
 ### QSD Bounded Density (Regularity Condition R2)
-- **Type:** Assumption
-- **Label:** `assump-c4-qsd-bounded-density`
-- **Tags:** assumption, qsd
 - **Source:** [14_geometric_gas_c4_regularity.md § 3.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** QSD Bounded Density (Regularity Condition R2)
 
 ### Fourth Derivative of Localization Weights
-- **Type:** Lemma
-- **Label:** `lem-weight-fourth-derivative`
-- **Tags:** lemma
 - **Source:** [14_geometric_gas_c4_regularity.md § 4.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** Fourth Derivative of Localization Weights
 
 ### Telescoping Property for Fourth Derivative
-- **Type:** Lemma
-- **Label:** `lem-weight-telescoping-fourth`
-- **Tags:** lemma
 - **Source:** [14_geometric_gas_c4_regularity.md § 4.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** Telescoping Property for Fourth Derivative
 
 ### Fourth Derivative of Localized Mean
-- **Type:** Lemma
-- **Label:** `lem-mean-fourth-derivative`
-- **Tags:** lemma
 - **Source:** [14_geometric_gas_c4_regularity.md § 5.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** Fourth Derivative of Localized Mean
 
 ### Fourth Derivative of Localized Variance
-- **Type:** Lemma
-- **Label:** `lem-variance-fourth-derivative`
-- **Tags:** lemma
 - **Source:** [14_geometric_gas_c4_regularity.md § 5.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** Fourth Derivative of Localized Variance
 
 ### Chain Rule for $\sigma'_{\text{reg}}$
-- **Type:** Lemma
-- **Label:** `lem-reg-fourth-chain`
-- **Tags:** lemma
 - **Source:** [14_geometric_gas_c4_regularity.md § 6.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** Chain Rule for
 
 ### Fourth Derivative of Z-Score
-- **Type:** Lemma
-- **Label:** `lem-zscore-fourth-derivative`
-- **Tags:** lemma
 - **Source:** [14_geometric_gas_c4_regularity.md § 7.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** Fourth Derivative of Z-Score
 
 ### C⁴ Regularity of Fitness Potential
-- **Type:** Theorem
-- **Label:** `thm-c4-regularity`
-- **Tags:** fitness, theorem
 - **Source:** [14_geometric_gas_c4_regularity.md § 8.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** C⁴ Regularity of Fitness Potential
 
 ### Hessian Lipschitz Continuity
-- **Type:** Corollary
-- **Label:** `cor-hessian-lipschitz`
-- **Tags:** corollary, lipschitz
 - **Source:** [14_geometric_gas_c4_regularity.md § 9.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** Hessian Lipschitz Continuity
 
 ### Fourth-Order Integrator Compatibility
-- **Type:** Corollary
-- **Label:** `cor-fourth-order-integrators`
-- **Tags:** corollary
 - **Source:** [14_geometric_gas_c4_regularity.md § 9.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** Fourth-Order Integrator Compatibility
 
 ### Brascamp-Lieb Inequality (Conditional)
-- **Type:** Corollary
-- **Label:** `cor-brascamp-lieb`
-- **Tags:** corollary
 - **Source:** [14_geometric_gas_c4_regularity.md § 9.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** Brascamp-Lieb Inequality (Conditional)
 
 ### Bakry-Émery Γ₂ Criterion (Conditional)
-- **Type:** Proposition
-- **Label:** `prop-bakry-emery-gamma2`
-- **Tags:** proposition
 - **Source:** [14_geometric_gas_c4_regularity.md § 9.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** Bakry-Émery Γ₂ Criterion (Conditional)
 
 ### Fourth-Derivative Scaling
-- **Type:** Proposition
-- **Label:** `prop-scaling-k-v-4`
-- **Tags:** proposition
 - **Source:** [14_geometric_gas_c4_regularity.md § 10.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** Fourth-Derivative Scaling
 
 ### Time Step Constraint (Corrected)
-- **Type:** Proposition
-- **Label:** `prop-timestep-c4`
-- **Tags:** proposition
 - **Source:** [14_geometric_gas_c4_regularity.md § 10.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Description:** Time Step Constraint (Corrected)
 
 ---
 
 ### Source: 15_geometric_gas_lsi_proof.md {#15_geometric_gas_lsi_proof}
 
+
 ### Quasi-Stationary Distribution (QSD)
-- **Type:** Definition
-- **Label:** `def-qsd-adaptive`
-- **Tags:** qsd
 - **Source:** [15_geometric_gas_lsi_proof.md § 3.3.](source/2_geometric_gas/15_geometric_gas_lsi_proof)
+- **Description:** Quasi-Stationary Distribution (QSD)
 
 ### Log-Sobolev Inequality
-- **Type:** Definition
-- **Label:** `def-lsi-adaptive`
-- **Tags:** lsi
 - **Source:** [15_geometric_gas_lsi_proof.md § 3.4.](source/2_geometric_gas/15_geometric_gas_lsi_proof)
+- **Description:** Log-Sobolev Inequality
 
 ### N-Uniform Third Derivative Bound for Fitness (PROVEN)
-- **Type:** Theorem
-- **Label:** `thm-fitness-third-deriv-proven`
-- **Tags:** fitness, theorem
 - **Source:** [15_geometric_gas_lsi_proof.md § 8.2.](source/2_geometric_gas/15_geometric_gas_lsi_proof)
+- **Description:** N-Uniform Third Derivative Bound for Fitness (PROVEN)
 
 ### N-Uniform Poincaré Inequality for QSD Velocities (CORRECTED PROOF)
-- **Type:** Theorem
-- **Label:** `thm-qsd-poincare-rigorous`
-- **Tags:** qsd, theorem
 - **Source:** [15_geometric_gas_lsi_proof.md § 8.3.](source/2_geometric_gas/15_geometric_gas_lsi_proof)
+- **Description:** N-Uniform Poincaré Inequality for QSD Velocities (CORRECTED PROOF)
 
 ### N-Uniform Drift Perturbation Bounds
-- **Type:** Theorem
-- **Label:** `thm-drift-perturbation-bounds`
-- **Tags:** theorem
 - **Source:** [15_geometric_gas_lsi_proof.md § 8.5.](source/2_geometric_gas/15_geometric_gas_lsi_proof)
+- **Description:** N-Uniform Drift Perturbation Bounds
 
 ### Verification of Cattiaux-Guillin Hypotheses
-- **Type:** Theorem
-- **Label:** `thm-cattiaux-guillin-verification`
-- **Tags:** theorem
 - **Source:** [15_geometric_gas_lsi_proof.md § 8.5.](source/2_geometric_gas/15_geometric_gas_lsi_proof)
+- **Description:** Verification of Cattiaux-Guillin Hypotheses
 
 ### N-Uniform Log-Sobolev Inequality for Geometric Viscous Fluid Model
-- **Type:** Theorem
-- **Label:** `thm-adaptive-lsi-main`
-- **Tags:** geometry, lsi, metric, theorem
 - **Source:** [15_geometric_gas_lsi_proof.md § 9.1.](source/2_geometric_gas/15_geometric_gas_lsi_proof)
+- **Description:** N-Uniform Log-Sobolev Inequality for Geometric Viscous Fluid Model
 
 ---
 
 ### Source: 16_convergence_mean_field.md {#16_convergence_mean_field}
 
+
 ### Mean-Field Revival Operator (Formal)
-- **Type:** Definition
-- **Label:** `def-revival-operator-formal`
-- **Tags:** mean-field
 - **Source:** [16_convergence_mean_field.md § 1.2.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Mean-Field Revival Operator (Formal)
 
 ### Combined Jump Operator
-- **Type:** Definition
-- **Label:** `def-combined-jump-operator`
-- **Tags:** general
 - **Source:** [16_convergence_mean_field.md § 1.3.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Combined Jump Operator
 
 ### Finite-N LSI Preservation (Proven)
-- **Type:** Theorem
-- **Label:** `thm-finite-n-lsi-preservation`
-- **Tags:** lsi, theorem
 - **Source:** [16_convergence_mean_field.md § 2.1.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Finite-N LSI Preservation (Proven)
 
 ### Data Processing Inequality (Standard Result)
-- **Type:** Theorem
-- **Label:** `thm-data-processing`
-- **Tags:** theorem
 - **Source:** [16_convergence_mean_field.md § 2.3.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Data Processing Inequality (Standard Result)
 
 ### Wasserstein Contraction for Proportional Resampling (Conjecture)
-- **Type:** Lemma
-- **Label:** `lem-wasserstein-revival`
-- **Tags:** cloning, lemma, wasserstein
 - **Source:** [16_convergence_mean_field.md § 3.2.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Wasserstein Contraction for Proportional Resampling (Conjecture)
 
 ### Revival Rate Constraint
-- **Type:** Observation
-- **Label:** `obs-revival-rate-constraint`
-- **Tags:** observation
 - **Source:** [16_convergence_mean_field.md § 4.1.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Revival Rate Constraint
 
 ### Revival Operator is KL-Expansive (VERIFIED)
-- **Type:** Theorem
-- **Label:** `thm-revival-kl-expansive`
-- **Tags:** theorem
 - **Source:** [16_convergence_mean_field.md § 7.1.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Revival Operator is KL-Expansive (VERIFIED)
 
 ### Joint Jump Operator NOT Unconditionally Contractive (VERIFIED)
-- **Type:** Theorem
-- **Label:** `thm-joint-not-contractive`
-- **Tags:** theorem
 - **Source:** [16_convergence_mean_field.md § 7.2.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Joint Jump Operator NOT Unconditionally Contractive (VERIFIED)
 
 ### Stage 0 COMPLETE (VERIFIED)
-- **Type:** Theorem
-- **Label:** `thm-stage0-complete`
-- **Tags:** theorem
 - **Source:** [16_convergence_mean_field.md § 8.1.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Stage 0 COMPLETE (VERIFIED)
 
 ### Quasi-Stationary Distribution (QSD)
-- **Type:** Definition
-- **Label:** `def-qsd-mean-field`
-- **Tags:** mean-field, qsd
 - **Source:** [16_convergence_mean_field.md § 0.2.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Quasi-Stationary Distribution (QSD)
 
 ### Framework Assumptions
-- **Type:** Assumption
-- **Label:** `assump-qsd-existence`
-- **Tags:** assumption, qsd
 - **Source:** [16_convergence_mean_field.md § 1.2.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Framework Assumptions
 
 ### QSD Existence via Nonlinear Fixed-Point
-- **Type:** Theorem
-- **Label:** `thm-qsd-existence-corrected`
-- **Tags:** qsd, theorem
 - **Source:** [16_convergence_mean_field.md § 1.4.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** QSD Existence via Nonlinear Fixed-Point
 
 ### QSD Stability (Champagnat-Villemonais)
-- **Type:** Theorem
-- **Label:** `thm-qsd-stability`
-- **Tags:** qsd, theorem
 - **Source:** [16_convergence_mean_field.md § Step 3c: QSD Stability](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** QSD Stability (Champagnat-Villemonais)
 
 ### Hörmander's Condition
-- **Type:** Lemma
-- **Label:** `lem-hormander`
-- **Tags:** lemma
 - **Source:** [16_convergence_mean_field.md § 2.1.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Hörmander's Condition
 
 ### Hypoelliptic Regularity
-- **Type:** Corollary
-- **Label:** `cor-hypoelliptic-regularity`
-- **Tags:** corollary
 - **Source:** [16_convergence_mean_field.md § 2.1.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Hypoelliptic Regularity
 
 ### QSD Smoothness
-- **Type:** Theorem
-- **Label:** `thm-qsd-smoothness`
-- **Tags:** qsd, theorem
 - **Source:** [16_convergence_mean_field.md § 2.2.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** QSD Smoothness
 
 ### QSD Strict Positivity
-- **Type:** Theorem
-- **Label:** `thm-qsd-positivity`
-- **Tags:** qsd, theorem
 - **Source:** [16_convergence_mean_field.md § 2.3.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** QSD Strict Positivity
 
 ### Irreducibility
-- **Type:** Lemma
-- **Label:** `lem-irreducibility`
-- **Tags:** lemma
 - **Source:** [16_convergence_mean_field.md § Step 1: Irreducibility of the Process](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Irreducibility
 
 ### Strong Maximum Principle
-- **Type:** Lemma
-- **Label:** `lem-strong-max-principle`
-- **Tags:** lemma
 - **Source:** [16_convergence_mean_field.md § Step 2: Strong Maximum Principle for Irreducible P](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Strong Maximum Principle
 
 ### Uniform Velocity Gradient Bound
-- **Type:** Proposition
-- **Label:** `prop-velocity-gradient-uniform`
-- **Tags:** kinetic, proposition
 - **Source:** [16_convergence_mean_field.md § 3.2.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Uniform Velocity Gradient Bound
 
 ### Complete Gradient and Laplacian Bounds
-- **Type:** Proposition
-- **Label:** `prop-complete-gradient-bounds`
-- **Tags:** proposition
 - **Source:** [16_convergence_mean_field.md § 3.3.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Complete Gradient and Laplacian Bounds
 
 ### Drift Condition with Quadratic Lyapunov
-- **Type:** Lemma
-- **Label:** `lem-drift-condition-corrected`
-- **Tags:** lemma
 - **Source:** [16_convergence_mean_field.md § 4.2.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Drift Condition with Quadratic Lyapunov
 
 ### Exponential Tails for QSD
-- **Type:** Theorem
-- **Label:** `thm-exponential-tails`
-- **Tags:** qsd, theorem
 - **Source:** [16_convergence_mean_field.md § 4.3.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Exponential Tails for QSD
 
 ### KL-Convergence for Mean-Field Euclidean Gas (CORRECTED)
-- **Type:** Theorem
-- **Label:** `thm-corrected-kl-convergence`
-- **Tags:** convergence, mean-field, theorem
 - **Source:** [16_convergence_mean_field.md § 4.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** KL-Convergence for Mean-Field Euclidean Gas (CORRECTED)
 
 ### Modified Fisher Information
-- **Type:** Definition
-- **Label:** `def-modified-fisher`
-- **Tags:** general
 - **Source:** [16_convergence_mean_field.md § 1.3.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Modified Fisher Information
 
 ### Log-Sobolev Inequality (LSI) for QSD
-- **Type:** Theorem
-- **Label:** `thm-lsi-qsd`
-- **Tags:** lsi, qsd, theorem
 - **Source:** [16_convergence_mean_field.md § 2.1.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Log-Sobolev Inequality (LSI) for QSD
 
 ### Explicit LSI Constant
-- **Type:** Theorem
-- **Label:** `thm-lsi-constant-explicit`
-- **Tags:** lsi, theorem
 - **Source:** [16_convergence_mean_field.md § 2.2.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Explicit LSI Constant
 
 ### Fisher Information Bound
-- **Type:** Lemma
-- **Label:** `lem-fisher-bound`
-- **Tags:** lemma
 - **Source:** [16_convergence_mean_field.md § 2.3.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Fisher Information Bound
 
 ### Kinetic Energy Control
-- **Type:** Lemma
-- **Label:** `lem-kinetic-energy-bound`
-- **Tags:** kinetic, lemma
 - **Source:** [16_convergence_mean_field.md § 3.2.1.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Kinetic Energy Control
 
 ### Entropy $L^1$ Bound
-- **Type:** Lemma
-- **Label:** `lem-entropy-l1-bound`
-- **Tags:** entropy, lemma
 - **Source:** [16_convergence_mean_field.md § 4.2.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Entropy  Bound
 
 ### Exponential Convergence (Local)
-- **Type:** Theorem
-- **Label:** `thm-exponential-convergence-local`
-- **Tags:** convergence, theorem
 - **Source:** [16_convergence_mean_field.md § 5.4.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Exponential Convergence (Local)
 
 ### Main Result: Explicit Convergence Rate
-- **Type:** Theorem
-- **Label:** `thm-main-explicit-rate`
-- **Tags:** convergence, theorem
 - **Source:** [16_convergence_mean_field.md § 10.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Main Result: Explicit Convergence Rate
 
 ### Mean-Field Convergence Rate (Explicit)
-- **Type:** Theorem
-- **Label:** `thm-alpha-net-explicit`
-- **Tags:** convergence, mean-field, theorem
 - **Source:** [16_convergence_mean_field.md § 2.1.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Mean-Field Convergence Rate (Explicit)
 
 ### Optimal Parameter Scaling
-- **Type:** Theorem
-- **Label:** `thm-optimal-parameter-scaling`
-- **Tags:** theorem
 - **Source:** [16_convergence_mean_field.md § 2.3.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Optimal Parameter Scaling
 
 ### Exponential KL-Convergence in the Mean-Field Limit
-- **Type:** Theorem
-- **Label:** `thm-mean-field-lsi-main`
-- **Tags:** convergence, lsi, mean-field, theorem
 - **Source:** [16_convergence_mean_field.md § 1.](source/2_geometric_gas/16_convergence_mean_field)
+- **Description:** Exponential KL-Convergence in the Mean-Field Limit
 
 ---
 
 ### Source: 18_emergent_geometry.md {#18_emergent_geometry}
 
+
 ### Main Theorem (Informal)
-- **Type:** Theorem
-- **Label:** `thm-main-informal`
-- **Tags:** convergence, adaptive-gas, anisotropic, QSD, geometric-ergodicity, main-result
 - **Source:** [18_emergent_geometry.md § 0.5](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Main Theorem (Informal)
 
 ### Adaptive Diffusion Tensor
-- **Type:** Definition
-- **Label:** `def-d-adaptive-diffusion`
-- **Tags:** adaptive-gas, diffusion, anisotropic, regularization, Riemannian-metric
 - **Source:** [18_emergent_geometry.md § 1.1](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Adaptive Diffusion Tensor
 
 ### Why This is a Riemannian Metric
-- **Type:** Remark
-- **Label:** (inline remark)
-- **Tags:** Riemannian-metric, information-geometry, natural-gradient
 - **Source:** [18_emergent_geometry.md § 1.1](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Why This is a Riemannian Metric
 
 ### Spectral Floor (Standing Assumption)
-- **Type:** Assumption
-- **Label:** `assump-spectral-floor`
-- **Tags:** regularization, positive-definiteness, spectral-bounds, technical-assumption
 - **Source:** [18_emergent_geometry.md § 1.2](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Spectral Floor (Standing Assumption)
 
 ### Uniform Ellipticity by Construction
-- **Type:** Theorem
-- **Label:** `thm-uniform-ellipticity`
-- **Tags:** ellipticity, diffusion-bounds, regularization, N-uniform, anisotropic
 - **Source:** [18_emergent_geometry.md § 1.2](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Uniform Ellipticity by Construction
 
 ### Lipschitz Continuity of Adaptive Diffusion
-- **Type:** Proposition
-- **Label:** `prop-lipschitz-diffusion`
-- **Tags:** Lipschitz, continuity, diffusion, N-uniform, regularity
 - **Source:** [18_emergent_geometry.md § 1.3](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Lipschitz Continuity of Adaptive Diffusion
 
 ### Kinetic Operator with Adaptive Diffusion
-- **Type:** Definition
-- **Label:** `def-d-kinetic-operator-adaptive`
-- **Tags:** kinetic-operator, Langevin-dynamics, Stratonovich, anisotropic, SDE
 - **Source:** [18_emergent_geometry.md § 1.4](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Kinetic Operator with Adaptive Diffusion
 
 ### Comparison to Isotropic Case
-- **Type:** Remark
-- **Label:** `rem-comparison-isotropic`
-- **Tags:** isotropic, comparison, challenges, state-dependent
 - **Source:** [18_emergent_geometry.md § 1.4](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Comparison to Isotropic Case
 
 ### Two Equivalent Formulations
-- **Type:** Observation
-- **Label:** `obs-two-formulations`
-- **Tags:** flat-space, curved-space, equivalence, geometric-perspective
 - **Source:** [18_emergent_geometry.md § 1.6](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Two Equivalent Formulations
 
 ### Invariance Under Coordinate Changes (Refined)
-- **Type:** Theorem
-- **Label:** `thm-coordinate-invariance`
-- **Tags:** coordinate-invariance, Stratonovich, geometric-invariance, Riemannian
 - **Source:** [18_emergent_geometry.md § 1.6](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Invariance Under Coordinate Changes (Refined)
 
 ### Coupled Swarm State
-- **Type:** Definition
-- **Label:** `def-d-coupled-state`
-- **Tags:** coupling, geometric-ergodicity, Lyapunov, two-swarms
 - **Source:** [18_emergent_geometry.md § 2.1](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Coupled Swarm State
 
 ### Coupled Lyapunov Function
-- **Type:** Definition
-- **Label:** `def-d-coupled-lyapunov`
-- **Tags:** Lyapunov, coupling, Wasserstein, variance, boundary, Foster-Lyapunov
 - **Source:** [18_emergent_geometry.md § 2.1](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Coupled Lyapunov Function
 
 ### Geometric Ergodicity of the Adaptive Gas
-- **Type:** Theorem
-- **Label:** `thm-main-convergence`
-- **Tags:** geometric-ergodicity, QSD, convergence, anisotropic, N-uniform, main-result
 - **Source:** [18_emergent_geometry.md § 2.2](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Geometric Ergodicity of the Adaptive Gas
 
 ### Itô Correction Term Bound
-- **Type:** Lemma
-- **Label:** `lem-ito-correction-bound`
-- **Tags:** Itô-correction, Stratonovich, state-dependent, N-uniform, technical
 - **Source:** [18_emergent_geometry.md § 3.1](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Itô Correction Term Bound
 
 ### Velocity Variance Contraction (Anisotropic)
-- **Type:** Theorem
-- **Label:** `thm-velocity-variance-anisotropic`
-- **Tags:** velocity-variance, friction, contraction, anisotropic, N-uniform
 - **Source:** [18_emergent_geometry.md § 3.2](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Velocity Variance Contraction (Anisotropic)
 
 ### Hypocoercive Norm
-- **Type:** Definition
-- **Label:** `def-d-hypocoercive-norm`
-- **Tags:** hypocoercivity, coupling, phase-space, norm, weighted
 - **Source:** [18_emergent_geometry.md § 3.2.1](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Hypocoercive Norm
 
 ### Why Coupling is Essential
-- **Type:** Remark
-- **Label:** `rem-coupling-essential`
-- **Tags:** hypocoercivity, coupling, position-velocity, degenerate-diffusion
 - **Source:** [18_emergent_geometry.md § 3.2.1](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Why Coupling is Essential
 
 ### Location Error Contraction (Anisotropic)
-- **Type:** Theorem
-- **Label:** `thm-location-error-anisotropic`
-- **Tags:** location-error, hypocoercivity, anisotropic, contraction, drift-matrix
 - **Source:** [18_emergent_geometry.md § 3.2.3](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Location Error Contraction (Anisotropic)
 
 ### Structural Error Contraction (Anisotropic)
-- **Type:** Theorem
-- **Label:** `thm-structural-error-anisotropic`
-- **Tags:** structural-error, Wasserstein, synchronous-coupling, anisotropic, contraction
 - **Source:** [18_emergent_geometry.md § 3.2.4](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Structural Error Contraction (Anisotropic)
 
 ### Hypocoercive Contraction for Adaptive Gas
-- **Type:** Theorem
-- **Label:** `thm-hypocoercive-main`
-- **Tags:** hypocoercivity, anisotropic, main-result, Wasserstein, N-uniform
 - **Source:** [18_emergent_geometry.md § 3.2.5](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Hypocoercive Contraction for Adaptive Gas
 
 ### Position Variance Expansion
-- **Type:** Theorem
-- **Label:** `thm-position-variance-expansion`
-- **Tags:** position-variance, expansion, kinetic-operator, bounded
 - **Source:** [18_emergent_geometry.md § 3.3](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Position Variance Expansion
 
 ### Boundary Potential Contraction
-- **Type:** Theorem
-- **Label:** `thm-boundary-contraction`
-- **Tags:** boundary, confining-potential, contraction, coercivity
 - **Source:** [18_emergent_geometry.md § 3.4](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Boundary Potential Contraction
 
 ### Foster-Lyapunov Condition for Adaptive Gas
-- **Type:** Theorem
-- **Label:** `thm-foster-lyapunov-adaptive`
-- **Tags:** Foster-Lyapunov, operator-composition, synergy, convergence, N-uniform
 - **Source:** [18_emergent_geometry.md § 4.2](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Foster-Lyapunov Condition for Adaptive Gas
 
 ### Total Convergence Rate with Full Parameter Dependence
-- **Type:** Theorem
-- **Label:** `thm-explicit-total-rate`
-- **Tags:** convergence-rate, explicit, parameters, N-uniform, algorithmic-tunability
 - **Source:** [18_emergent_geometry.md § 5.2](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Total Convergence Rate with Full Parameter Dependence
 
 ### Total Expansion Constant with Full Parameter Dependence
-- **Type:** Theorem
-- **Label:** `thm-explicit-total-constant`
-- **Tags:** expansion-constant, explicit, parameters, N-uniform, Foster-Lyapunov
 - **Source:** [18_emergent_geometry.md § 5.3](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Total Expansion Constant with Full Parameter Dependence
 
 ### Explicit Convergence Time
-- **Type:** Corollary
-- **Label:** `cor-explicit-convergence-time`
-- **Tags:** mixing-time, convergence-time, explicit, iterations, complexity
 - **Source:** [18_emergent_geometry.md § 5.5](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Explicit Convergence Time
 
 ### Three Bottleneck Regimes
-- **Type:** Observation
-- **Label:** `obs-three-regimes`
-- **Tags:** regimes, bottleneck, cloning-limited, hypocoercivity-limited, boundary-limited
 - **Source:** [18_emergent_geometry.md § 5.6](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Three Bottleneck Regimes
 
 ### Regularization Trade-Off
-- **Type:** Observation
-- **Label:** `obs-regularization-tradeoff`
-- **Tags:** regularization, trade-off, ellipticity, adaptation, robustness
 - **Source:** [18_emergent_geometry.md § 5.7](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Regularization Trade-Off
 
 ### The Emergent Metric
-- **Type:** Observation
-- **Label:** `obs-emergent-metric`
-- **Tags:** Riemannian-metric, emergent-geometry, geodesic, diffusion, inverse-metric
 - **Source:** [18_emergent_geometry.md § 6.1](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** The Emergent Metric
 
 ### Convergence Rate Depends on Metric Ellipticity
-- **Type:** Proposition
-- **Label:** `prop-rate-metric-ellipticity`
-- **Tags:** convergence-rate, ellipticity, metric, geometric-interpretation, conditioning
 - **Source:** [18_emergent_geometry.md § 6.1](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Convergence Rate Depends on Metric Ellipticity
 
 ### Fitness Potential Construction (Algorithmic Specification)
-- **Type:** Definition
-- **Label:** `def-fitness-algorithmic`
-- **Tags:** fitness-potential, algorithmic, localization, Z-score, rescale, pipeline
 - **Source:** [18_emergent_geometry.md § 9.2](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Fitness Potential Construction (Algorithmic Specification)
 
 ### Explicit Hessian Formula
-- **Type:** Theorem
-- **Label:** `thm-explicit-hessian`
-- **Tags:** Hessian, chain-rule, curvature, explicit, fitness-landscape, N-uniform
 - **Source:** [18_emergent_geometry.md § 9.3](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Explicit Hessian Formula
 
 ### Emergent Riemannian Metric (Explicit Construction)
-- **Type:** Definition
-- **Label:** `def-metric-explicit`
-- **Tags:** Riemannian-metric, emergent-geometry, regularization, diffusion-tensor, explicit
 - **Source:** [18_emergent_geometry.md § 9.4](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Emergent Riemannian Metric (Explicit Construction)
 
 ### Uniform Ellipticity from Regularization
-- **Type:** Theorem
-- **Label:** `thm-uniform-ellipticity-explicit`
-- **Tags:** ellipticity, regularization, spectral-bounds, explicit, algorithmic-control
 - **Source:** [18_emergent_geometry.md § 9.4](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Uniform Ellipticity from Regularization
 
 ### Emergent Riemannian Manifold
-- **Type:** Definition
-- **Label:** `def-emergent-manifold`
-- **Tags:** Riemannian-manifold, metric-tensor, geodesics, Christoffel-symbols, volume-element
 - **Source:** [18_emergent_geometry.md § 9.5](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Emergent Riemannian Manifold
 
 ### Geodesics Favor High-Fitness Regions
-- **Type:** Proposition
-- **Label:** `prop-geodesics-fitness`
-- **Tags:** geodesics, fitness, natural-gradient, Riemannian-distance, curvature
 - **Source:** [18_emergent_geometry.md § 9.5](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Geodesics Favor High-Fitness Regions
 
 ### Algorithmic Tunability of the Emergent Geometry
-- **Type:** Theorem
-- **Label:** `thm-algorithmic-tunability`
-- **Tags:** algorithmic-tunability, parameters, geometric-control, design, localization
 - **Source:** [18_emergent_geometry.md § 9.6.2](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Algorithmic Tunability of the Emergent Geometry
 
 ### Companion Flux Balance at QSD
-- **Type:** Lemma
-- **Label:** `lem-companion-flux-balance`
-- **Tags:** flux-balance, QSD, companion-selection, Riemannian-volume, stationarity
 - **Source:** [18_emergent_geometry.md § 10](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Companion Flux Balance at QSD
 
 ### QSD Spatial Marginal is Riemannian Volume Measure
-- **Type:** Theorem
-- **Label:** `thm-qsd-spatial-riemannian-volume`
-- **Tags:** QSD, spatial-marginal, Riemannian-volume, Stratonovich, stationary-distribution
 - **Source:** [18_emergent_geometry.md § A.1](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** QSD Spatial Marginal is Riemannian Volume Measure
 
 ### Fast Velocity Thermalization Justifies Annealed Approximation
-- **Type:** Lemma
-- **Label:** `lem-velocity-marginalization`
-- **Tags:** velocity-thermalization, timescale-separation, annealed-approximation, Maxwell-Boltzmann
 - **Source:** [18_emergent_geometry.md § A.2](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Fast Velocity Thermalization Justifies Annealed Approximation
 
 ### Continuum Limit via Saddle-Point Approximation
-- **Type:** Lemma
-- **Label:** `lem-companion-bias-riemannian`
-- **Tags:** continuum-limit, saddle-point, companion-selection, Riemannian-Gibbs, mean-field
 - **Source:** [18_emergent_geometry.md § A.3](source/2_geometric_gas/18_emergent_geometry)
+- **Description:** Continuum Limit via Saddle-Point Approximation

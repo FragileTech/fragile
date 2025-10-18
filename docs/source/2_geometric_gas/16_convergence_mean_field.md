@@ -5951,5 +5951,3 @@ These extensions are novel and may have applications beyond the Euclidean Gas fr
 
 **END OF DOCUMENT**
 
----
-

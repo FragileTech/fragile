@@ -417,7 +417,7 @@ PYTHONUNBUFFERED = "1"
 [tool.hatch.envs.docs.scripts]
 features = ["docs"]
 build = [
-    "python src/tools/convert_mermaid_blocks.py docs/source --in-place",
+    #"python src/tools/convert_mermaid_blocks.py docs/source --in-place",
     "jupyter-book build docs/",
     "uv pip freeze > docs/requirements.txt",
 ]

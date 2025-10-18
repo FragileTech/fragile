@@ -295,7 +295,7 @@ class CloningOperator:
         self.dtype = dtype
         self.bounds = bounds
 
-    def apply(self, state: SwarmState) -> SwarmState:
+    def apply(self, state: SwarmState, return_parents: bool = False) -> SwarmState | tuple[SwarmState, Tensor]:
         """
         Apply cloning operator with boundary enforcement.
 
@@ -312,9 +312,10 @@ class CloningOperator:
 
         Args:
             state: Current swarm state
+            return_parents: If True, return (new_state, parent_ids) tuple
 
         Returns:
-            Updated state after cloning
+            Updated state after cloning, or (state, parent_ids) if return_parents=True
         """
         N, d = state.N, state.d
 
@@ -324,6 +325,23 @@ class CloningOperator:
             alive_mask = self.bounds.contains(state.x)  # [N]
         else:
             alive_mask = torch.ones(N, dtype=torch.bool, device=self.device)
+
+        # SAFETY: If all walkers are dead, revive all within bounds
+        # This prevents permanent extinction (cemetery state)
+        n_alive = alive_mask.sum().item()
+        if n_alive == 0:
+            # Resurrect all walkers at random positions within bounds
+            if self.bounds is not None:
+                # Sample uniform positions within bounds
+                low = self.bounds.low.to(device=self.device, dtype=self.dtype)
+                high = self.bounds.high.to(device=self.device, dtype=self.dtype)
+                x_new = low + (high - low) * torch.rand(N, d, device=self.device, dtype=self.dtype)
+                # Reset velocities to small random values
+                v_new = torch.randn(N, d, device=self.device, dtype=self.dtype) * 0.1
+                return SwarmState(x_new, v_new)
+            else:
+                # No bounds defined - this shouldn't happen, but treat all as alive
+                alive_mask = torch.ones(N, dtype=torch.bool, device=self.device)
 
         # Get effective epsilon_c (defaults to sigma_x if not specified)
         epsilon_c = self.params.get_epsilon_c()
@@ -364,7 +382,12 @@ class CloningOperator:
             # Simple velocity reset: just copy companion velocity
             v_new = state.v[companions]
 
-        return SwarmState(x_new, v_new)
+        new_state = SwarmState(x_new, v_new)
+
+        if return_parents:
+            return new_state, companions
+        else:
+            return new_state
 
     def _inelastic_collision_velocity(self, state: SwarmState, companions: Tensor) -> Tensor:
         """
@@ -588,30 +611,46 @@ class EuclideanGas:
             v_init.to(device=self.device, dtype=self.dtype),
         )
 
-    def step(self, state: SwarmState) -> tuple[SwarmState, SwarmState]:
+    def step(self, state: SwarmState, return_parents: bool = False) -> tuple[SwarmState, SwarmState] | tuple[SwarmState, SwarmState, Tensor]:
         """
         Perform one full step: cloning followed by kinetic.
 
         Args:
             state: Current swarm state
+            return_parents: If True, return parent IDs from cloning
 
         Returns:
-            Tuple of (state_after_cloning, state_after_kinetic)
+            Tuple of (state_after_cloning, state_after_kinetic), or
+            (state_after_cloning, state_after_kinetic, parent_ids) if return_parents=True
         """
         freeze_mask = self._freeze_mask(state)
         reference_state = state.clone() if freeze_mask is not None else None
 
-        state_cloned = self.cloning_op.apply(state)
+        if return_parents:
+            state_cloned, parent_ids = self.cloning_op.apply(state, return_parents=True)
+        else:
+            state_cloned = self.cloning_op.apply(state, return_parents=False)
+
         if freeze_mask is not None and freeze_mask.any():
             state_cloned.copy_from(reference_state, freeze_mask)
 
         state_final = self.kinetic_op.apply(state_cloned)
         if freeze_mask is not None and freeze_mask.any():
             state_final.copy_from(reference_state, freeze_mask)
-        return state_cloned, state_final
+
+        if return_parents:
+            return state_cloned, state_final, parent_ids
+        else:
+            return state_cloned, state_final
 
     def run(
-        self, n_steps: int, x_init: Tensor | None = None, v_init: Tensor | None = None
+        self,
+        n_steps: int,
+        x_init: Tensor | None = None,
+        v_init: Tensor | None = None,
+        fractal_set: "FractalSet | None" = None,
+        record_fitness: bool = False,
+        scutoid_tessellation: "ScutoidTessellation | None" = None,
     ) -> dict:
         """
         Run Euclidean Gas for multiple steps.
@@ -620,6 +659,13 @@ class EuclideanGas:
             n_steps: Number of steps to run
             x_init: Initial positions (optional)
             v_init: Initial velocities (optional)
+            fractal_set: Optional FractalSet instance to record simulation data.
+                        If provided, all timesteps will be recorded in the graph.
+            record_fitness: If True and fractal_set is provided, compute and record
+                           fitness, potential, and reward at each step.
+            scutoid_tessellation: Optional ScutoidTessellation instance to record
+                                 spacetime tessellation. If provided, Voronoi cells
+                                 and scutoid cells will be computed at each step.
 
         Returns:
             Dictionary with trajectory data:
@@ -630,9 +676,14 @@ class EuclideanGas:
                 - 'n_alive': number of alive walkers [n_steps+1] or [t_final+1]
                 - 'terminated_early': True if stopped due to all walkers dead
                 - 'final_step': actual number of steps completed
+                - 'fractal_set': the FractalSet instance (if provided)
+                - 'scutoid_tessellation': the ScutoidTessellation instance (if provided)
 
         Note:
             Run stops early if all walkers become dead (out of bounds).
+            If fractal_set is provided, it will be populated during the run.
+            If scutoid_tessellation is provided, it will be populated with Voronoi
+            and scutoid cells at each timestep.
         """
         state = self.initialize_state(x_init, v_init)
 
@@ -649,6 +700,7 @@ class EuclideanGas:
             alive_mask = self.bounds.contains(state.x)
             n_alive = alive_mask.sum().item()
         else:
+            alive_mask = torch.ones(N, dtype=torch.bool, device=self.device)
             n_alive = N
 
         # Store initial state
@@ -657,6 +709,25 @@ class EuclideanGas:
         var_x_traj[0] = VectorizedOps.variance_position(state)
         var_v_traj[0] = VectorizedOps.variance_velocity(state)
         n_alive_traj[0] = n_alive
+
+        # Record initial state in FractalSet if provided
+        if fractal_set is not None:
+            self._record_fractal_set_timestep(
+                fractal_set=fractal_set,
+                state=state,
+                timestep=0,
+                alive_mask=alive_mask,
+                record_fitness=record_fitness,
+            )
+
+        # Record initial state in ScutoidTessellation if provided
+        if scutoid_tessellation is not None:
+            scutoid_tessellation.add_timestep(
+                state=state,
+                timestep=0,
+                t=0.0,
+                parent_ids=None,  # No parents at initial timestep
+            )
 
         # Check if initially all dead
         if n_alive == 0:
@@ -687,13 +758,20 @@ class EuclideanGas:
                     break
 
             # Perform step (safe because we know n_alive > 0)
-            _, state = self.step(state)
+            # Request parent IDs if we need them for scutoid tessellation
+            need_parents = scutoid_tessellation is not None and fractal_set is None
+            if need_parents:
+                _, state, parent_ids_tensor = self.step(state, return_parents=True)
+            else:
+                _, state = self.step(state, return_parents=False)
+                parent_ids_tensor = None
 
             # Update alive count after step
             if self.bounds is not None:
                 alive_mask = self.bounds.contains(state.x)
                 n_alive = alive_mask.sum().item()
             else:
+                alive_mask = torch.ones(N, dtype=torch.bool, device=self.device)
                 n_alive = N
 
             # Store new state
@@ -703,8 +781,39 @@ class EuclideanGas:
             var_v_traj[t + 1] = VectorizedOps.variance_velocity(state)
             n_alive_traj[t + 1] = n_alive
 
+            # Record in FractalSet if provided
+            if fractal_set is not None:
+                self._record_fractal_set_timestep(
+                    fractal_set=fractal_set,
+                    state=state,
+                    timestep=t + 1,
+                    alive_mask=alive_mask,
+                    record_fitness=record_fitness,
+                )
+
+            # Record in ScutoidTessellation if provided
+            if scutoid_tessellation is not None:
+                # Extract parent IDs from FractalSet if available, otherwise from cloning operator
+                if fractal_set is not None:
+                    # Use FractalSet as source of truth for parent tracking
+                    parent_ids_np = fractal_set.get_parent_ids(t + 1)
+                    parent_ids = torch.from_numpy(parent_ids_np).to(device=self.device)
+                elif parent_ids_tensor is not None:
+                    # Use parent IDs from cloning operator
+                    parent_ids = parent_ids_tensor
+                else:
+                    # Fallback: assume no cloning (each walker is its own parent)
+                    parent_ids = torch.arange(N, device=self.device)
+
+                scutoid_tessellation.add_timestep(
+                    state=state,
+                    timestep=t + 1,
+                    t=float(t + 1) * self.params.langevin.delta_t,
+                    parent_ids=parent_ids,
+                )
+
         # Return only the trajectory up to the final step
-        return {
+        result = {
             "x": x_traj[: final_step + 1],
             "v": v_traj[: final_step + 1],
             "var_x": var_x_traj[: final_step + 1],
@@ -713,3 +822,109 @@ class EuclideanGas:
             "terminated_early": terminated_early,
             "final_step": final_step,
         }
+
+        # Include FractalSet in result if provided
+        if fractal_set is not None:
+            result["fractal_set"] = fractal_set
+
+        # Include ScutoidTessellation in result if provided
+        if scutoid_tessellation is not None:
+            result["scutoid_tessellation"] = scutoid_tessellation
+
+        return result
+
+    def _record_fractal_set_timestep(
+        self,
+        fractal_set: "FractalSet",
+        state: SwarmState,
+        timestep: int,
+        alive_mask: Tensor,
+        record_fitness: bool,
+    ) -> None:
+        """
+        Record current timestep data into FractalSet.
+
+        Args:
+            fractal_set: FractalSet instance to record into
+            state: Current swarm state
+            timestep: Current timestep index
+            alive_mask: Boolean mask of alive walkers [N]
+            record_fitness: Whether to compute and record fitness metrics
+        """
+        from fragile.companion_selection import select_companions_softmax
+
+        # Compute high-error mask based on positional error
+        mu_x = torch.mean(state.x, dim=0, keepdim=True)
+        positional_error = torch.sqrt(torch.sum((state.x - mu_x) ** 2, dim=-1))
+        threshold = torch.median(positional_error)
+        high_error_mask = positional_error > threshold
+
+        # Compute fitness-related metrics if requested
+        if record_fitness:
+            # Potential and reward
+            potential = self.params.potential.evaluate(state.x)
+            reward = -potential
+
+            # Companions and distances
+            companions = select_companions_softmax(
+                state.x,
+                state.v,
+                alive_mask,
+                epsilon=self.params.cloning.get_epsilon_c(),
+                lambda_alg=self.params.cloning.lambda_alg,
+                exclude_self=True,
+            )
+
+            x_companion = state.x[companions]
+            v_companion = state.v[companions]
+            pos_diff_sq = torch.sum((state.x - x_companion) ** 2, dim=-1)
+            vel_diff_sq = torch.sum((state.v - v_companion) ** 2, dim=-1)
+            distances = torch.sqrt(
+                pos_diff_sq + self.params.cloning.lambda_alg * vel_diff_sq
+            )
+
+            # Simplified fitness (inverse distance)
+            fitness = 1.0 / (distances + 1e-6)
+
+            # Estimate cloning probabilities (simplified)
+            cloning_probs = torch.clamp(fitness / fitness.mean(), 0.0, 1.0)
+
+            # Compute rescaled reward (normalized by mean)
+            reward_mean = reward.mean()
+            reward_std = reward.std() + 1e-8
+            rescaled_reward = (reward - reward_mean) / reward_std
+
+            # Compute rescaled distance (normalized by mean)
+            dist_mean = distances.mean()
+            dist_std = distances.std() + 1e-8
+            rescaled_distance = (distances - dist_mean) / dist_std
+
+            # Generate uniform random samples for cloning decisions
+            clone_uniform_sample = torch.rand(state.N, device=self.device, dtype=self.dtype)
+        else:
+            potential = None
+            reward = None
+            companions = None
+            distances = None
+            fitness = None
+            cloning_probs = None
+            rescaled_reward = None
+            rescaled_distance = None
+            clone_uniform_sample = None
+
+        # Record timestep in FractalSet
+        fractal_set.add_timestep(
+            state=state,
+            timestep=timestep,
+            high_error_mask=high_error_mask,
+            alive_mask=alive_mask,
+            fitness=fitness,
+            potential=potential,
+            reward=reward,
+            companions=companions,
+            cloning_probs=cloning_probs,
+            distances=distances,
+            rescaled_reward=rescaled_reward,
+            rescaled_distance=rescaled_distance,
+            clone_uniform_sample=clone_uniform_sample,
+        )

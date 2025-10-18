@@ -267,4 +267,182 @@ class LennardJones(OptimBenchmark):
         return Bounds.from_tuples(bounds)
 
 
-ALL_BENCHMARKS = [Sphere, Rastrigin, EggHolder, StyblinskiTang, HolderTable, Easom]
+class MixtureOfGaussians(OptimBenchmark):
+    """Mixture of Gaussians benchmark function.
+
+    The function evaluates the negative log-likelihood of a Gaussian mixture:
+    f(x) = -log(Σ_k w_k * N(x | μ_k, Σ_k))
+
+    The global minimum occurs at the center of the highest-weighted Gaussian.
+
+    Args:
+        dims: Dimensionality of the space
+        n_gaussians: Number of Gaussian components in the mixture
+        centers: Optional array of shape [n_gaussians, dims] for Gaussian centers.
+                 If None, centers are randomly sampled within bounds.
+        stds: Optional array of shape [n_gaussians, dims] for standard deviations.
+              If None, stds are randomly sampled from [0.1, 2.0].
+        weights: Optional array of shape [n_gaussians] for mixture weights.
+                 If None, uniform weights are used.
+        bounds_range: Tuple (low, high) defining the bounds for each dimension.
+                      Default: (-10.0, 10.0)
+        seed: Random seed for reproducibility when generating random parameters
+    """
+
+    def __init__(
+        self,
+        dims: int,
+        n_gaussians: int = 3,
+        centers: torch.Tensor | np.ndarray | None = None,
+        stds: torch.Tensor | np.ndarray | None = None,
+        weights: torch.Tensor | np.ndarray | None = None,
+        bounds_range: tuple[float, float] = (-10.0, 10.0),
+        seed: int | None = None,
+        **kwargs
+    ):
+        self.n_gaussians = n_gaussians
+        self.bounds_range = bounds_range
+
+        # Set random seed for reproducibility
+        if seed is not None:
+            torch.manual_seed(seed)
+            np.random.seed(seed)
+
+        # Initialize or validate centers
+        if centers is None:
+            # Random centers within bounds
+            low, high = bounds_range
+            self.centers = torch.rand(n_gaussians, dims) * (high - low) + low
+        else:
+            self.centers = torch.as_tensor(centers, dtype=torch.float32)
+            if self.centers.shape != (n_gaussians, dims):
+                msg = f"Centers shape {self.centers.shape} doesn't match (n_gaussians={n_gaussians}, dims={dims})"
+                raise ValueError(msg)
+
+        # Initialize or validate standard deviations
+        if stds is None:
+            # Random stds between 0.1 and 2.0
+            self.stds = torch.rand(n_gaussians, dims) * 1.9 + 0.1
+        else:
+            self.stds = torch.as_tensor(stds, dtype=torch.float32)
+            if self.stds.shape != (n_gaussians, dims):
+                msg = f"Stds shape {self.stds.shape} doesn't match (n_gaussians={n_gaussians}, dims={dims})"
+                raise ValueError(msg)
+            if (self.stds <= 0).any():
+                msg = "All standard deviations must be positive"
+                raise ValueError(msg)
+
+        # Initialize or validate weights
+        if weights is None:
+            # Uniform weights
+            self.weights = torch.ones(n_gaussians) / n_gaussians
+        else:
+            self.weights = torch.as_tensor(weights, dtype=torch.float32)
+            if self.weights.shape != (n_gaussians,):
+                msg = f"Weights shape {self.weights.shape} doesn't match n_gaussians={n_gaussians}"
+                raise ValueError(msg)
+            if (self.weights < 0).any():
+                msg = "All weights must be non-negative"
+                raise ValueError(msg)
+            # Normalize weights
+            self.weights = self.weights / self.weights.sum()
+
+        # Create the mixture function
+        def mixture_function(x: torch.Tensor) -> torch.Tensor:
+            """Evaluate negative log-likelihood of Gaussian mixture.
+
+            Args:
+                x: Input tensor of shape [batch_size, dims]
+
+            Returns:
+                Negative log-likelihood of shape [batch_size]
+            """
+            batch_size = x.shape[0]
+            device = x.device
+            dtype = x.dtype
+
+            # Move parameters to the same device and dtype as input
+            centers = self.centers.to(device=device, dtype=dtype)
+            stds = self.stds.to(device=device, dtype=dtype)
+            weights = self.weights.to(device=device, dtype=dtype)
+
+            # Compute log-probabilities for each Gaussian component
+            # Shape: [batch_size, n_gaussians]
+            log_probs = torch.zeros(batch_size, self.n_gaussians, device=device, dtype=dtype)
+
+            for k in range(self.n_gaussians):
+                # Compute Gaussian log-probability
+                # log N(x | μ, σ²) = -0.5 * [log(2π) + log(σ²) + (x-μ)²/σ²]
+                diff = x - centers[k]  # [batch_size, dims]
+                normalized_diff = diff / stds[k]  # [batch_size, dims]
+
+                # Sum over dimensions
+                squared_dist = torch.sum(normalized_diff ** 2, dim=1)  # [batch_size]
+                log_det = torch.sum(torch.log(stds[k] ** 2))  # scalar
+
+                dims = x.shape[1]
+                log_prob_k = -0.5 * (
+                    dims * np.log(2 * np.pi) +
+                    log_det +
+                    squared_dist
+                )
+
+                # Add log weight
+                log_probs[:, k] = torch.log(weights[k]) + log_prob_k
+
+            # Log-sum-exp trick for numerical stability
+            # log(Σ exp(x_i)) = max(x_i) + log(Σ exp(x_i - max(x_i)))
+            max_log_prob = torch.max(log_probs, dim=1, keepdim=True)[0]
+            log_mixture = max_log_prob + torch.log(
+                torch.sum(torch.exp(log_probs - max_log_prob), dim=1, keepdim=True)
+            )
+
+            # Return negative log-likelihood
+            return -log_mixture.squeeze(1)
+
+        super().__init__(dims=dims, function=mixture_function, **kwargs)
+
+    def get_bounds(self, dims: int) -> Bounds:
+        """Get bounds for this instance."""
+        low, high = self.bounds_range
+        bounds = [(low, high) for _ in range(dims)]
+        return Bounds.from_tuples(bounds)
+
+    @property
+    def best_state(self) -> torch.Tensor:
+        """Return the center of the highest-weighted Gaussian."""
+        best_idx = torch.argmax(self.weights)
+        return self.centers[best_idx]
+
+    @property
+    def benchmark(self) -> torch.Tensor:
+        """Return the optimal value (negative log-likelihood at best center)."""
+        # At the center of the highest-weighted Gaussian, the negative log-likelihood
+        # is approximately -log(weight_max) (ignoring normalization constants)
+        best_weight = torch.max(self.weights)
+
+        # Evaluate the actual function at the best center
+        best_center = self.best_state.unsqueeze(0)  # [1, dims]
+        return self.function(best_center)[0]
+
+    def get_component_info(self) -> dict:
+        """Return information about the mixture components."""
+        return {
+            "n_gaussians": self.n_gaussians,
+            "centers": self.centers.clone(),
+            "stds": self.stds.clone(),
+            "weights": self.weights.clone(),
+            "dims": self.dims,
+            "bounds_range": self.bounds_range
+        }
+
+
+ALL_BENCHMARKS = [
+    Sphere,
+    Rastrigin,
+    EggHolder,
+    StyblinskiTang,
+    HolderTable,
+    Easom,
+    MixtureOfGaussians
+]

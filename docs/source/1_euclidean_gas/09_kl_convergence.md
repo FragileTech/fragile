@@ -3108,8 +3108,6 @@ Both rely on **log-concavity**, but exploit it differently:
 
 ## Section 12. Complete Resolution Summary and Meta-Analysis
 
----
-
 ## Summary
 
 All three critical gaps in the mean-field LSI proof have been resolved using a combination of **symmetry theory** and **heat flow analysis**.

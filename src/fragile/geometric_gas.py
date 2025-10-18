@@ -22,16 +22,16 @@ import torch
 from pydantic import BaseModel, Field
 from torch import Tensor
 
+from fragile.bounds import TorchBounds
 from fragile.euclidean_gas import (
+    CloningOperator,
+    CloningParams,
     EuclideanGasParams,
     KineticOperator,
     LangevinParams,
     PotentialParams,
     SwarmState,
 )
-
-if TYPE_CHECKING:
-    from fragile.bounds import TorchBounds
 
 
 class LocalizationKernelParams(BaseModel):
@@ -102,6 +102,17 @@ class GeometricGasParams(BaseModel):
     d: int = Field(gt=0, description="Spatial dimension")
     potential: PotentialParams = Field(description="Target potential parameters")
     langevin: LangevinParams = Field(description="Langevin dynamics parameters")
+    cloning: CloningParams = Field(
+        default_factory=lambda: CloningParams(
+            sigma_x=0.1,
+            lambda_alg=0.0,
+            epsilon_c=0.1,
+            companion_selection_method="hybrid",
+            alpha_restitution=0.5,
+            use_inelastic_collision=True
+        ),
+        description="Cloning operator parameters"
+    )
 
     # Geometric Gas extensions
     localization: LocalizationKernelParams = Field(description="Localization kernel parameters")
@@ -123,26 +134,12 @@ class GeometricGasParams(BaseModel):
 
     def to_euclidean_params(self) -> EuclideanGasParams:
         """Convert to EuclideanGasParams for backbone compatibility."""
-        # Note: We don't include cloning params since Geometric Gas
-        # may use different cloning strategy
-        from fragile.euclidean_gas import CloningParams
-
-        # Create minimal cloning params for compatibility
-        cloning = CloningParams(
-            sigma_x=0.1,  # Placeholder
-            lambda_alg=0.0,
-            epsilon_c=0.1,
-            companion_selection_method="hybrid",
-            alpha_restitution=0.5,
-            use_inelastic_collision=True
-        )
-
         return EuclideanGasParams(
             N=self.N,
             d=self.d,
             potential=self.potential,
             langevin=self.langevin,
-            cloning=cloning,
+            cloning=self.cloning,
             bounds=self.bounds,
             device=self.device,
             dtype=self.dtype,
@@ -589,9 +586,8 @@ class AdaptiveKineticOperator(KineticOperator):
         U = self.potential.evaluate(x_alive)  # [k]
         grad_U = torch.autograd.grad(U.sum(), x_alive, create_graph=False)[0]  # [k, d]
         v_alive = v_alive - self.dt / 2 * (grad_U - F_adapt - F_viscous)
-        x_alive.requires_grad_(False)
 
-        # First A step: x � x + (�t/2) * v
+        # First A step: x -> x + (dt/2) * v
         x_alive = x_alive + self.dt / 2 * v_alive
 
         # O step with adaptive diffusion
@@ -629,11 +625,10 @@ class AdaptiveKineticOperator(KineticOperator):
             torch.ones(k, dtype=torch.bool, device=self.device)
         )
 
-        x_alive.requires_grad_(True)
-        U = self.potential.evaluate(x_alive)
-        grad_U = torch.autograd.grad(U.sum(), x_alive, create_graph=False)[0]
+        x_temp = x_alive.detach().clone().requires_grad_(True)
+        U = self.potential.evaluate(x_temp)
+        grad_U = torch.autograd.grad(U.sum(), x_temp, create_graph=False)[0]
         v_alive = v_alive - self.dt / 2 * (grad_U - F_adapt - F_viscous)
-        x_alive.requires_grad_(False)
 
         # Update state with new alive walker values
         new_x = state.x.clone()
@@ -704,9 +699,13 @@ class GeometricGas:
             self.dtype
         )
 
-        # Note: Cloning operator could be added in future
-        # For now, we focus on the adaptive kinetic operator
-        # Future: implement geometric-aware cloning
+        # Initialize cloning operator (with boundary enforcement)
+        self.cloning_op = CloningOperator(
+            params.cloning,
+            self.device,
+            self.dtype,
+            bounds=self.bounds
+        )
 
     def initialize_state(
         self, x_init: Tensor | None = None, v_init: Tensor | None = None
@@ -791,10 +790,8 @@ class GeometricGas:
         freeze_mask = self._freeze_mask(state)
         reference_state = state.clone() if freeze_mask is not None else None
 
-        # Apply cloning (inherited from EuclideanGas)
-        # Note: This uses the base cloning operator
-        # Future enhancement: implement fitness-aware cloning
-        state_cloned = state.clone()  # Placeholder: skip cloning for now
+        # Apply cloning operator (handles boundary enforcement and resurrection)
+        state_cloned = self.cloning_op.apply(state)
 
         if freeze_mask is not None and freeze_mask.any():
             state_cloned.copy_from(reference_state, freeze_mask)
@@ -811,7 +808,9 @@ class GeometricGas:
         self,
         n_steps: int,
         x_init: Tensor | None = None,
-        v_init: Tensor | None = None
+        v_init: Tensor | None = None,
+        fractal_set: "FractalSet | None" = None,
+        record_fitness: bool = False,
     ) -> dict:
         """Run Geometric Gas for multiple steps.
 
@@ -819,6 +818,10 @@ class GeometricGas:
             n_steps: Number of steps to run
             x_init: Initial positions (optional)
             v_init: Initial velocities (optional)
+            fractal_set: Optional FractalSet instance to record simulation data.
+                        If provided, all timesteps will be recorded in the graph.
+            record_fitness: If True and fractal_set is provided, compute and record
+                           fitness, potential, and reward at each step.
 
         Returns:
             Dictionary with trajectory data (same format as EuclideanGas)
@@ -846,6 +849,16 @@ class GeometricGas:
                 state.x[alive_mask],
                 state.x[alive_mask],
                 alive_mask
+            )
+
+        # Record initial state in FractalSet if provided
+        if fractal_set is not None:
+            self._record_fractal_set_timestep(
+                fractal_set=fractal_set,
+                state=state,
+                timestep=0,
+                alive_mask=alive_mask,
+                record_fitness=record_fitness,
             )
 
         # Run steps
@@ -878,10 +891,113 @@ class GeometricGas:
                     alive_mask
                 )
 
-        return {
+            # Record in FractalSet if provided
+            if fractal_set is not None:
+                self._record_fractal_set_timestep(
+                    fractal_set=fractal_set,
+                    state=state,
+                    timestep=t + 1,
+                    alive_mask=alive_mask,
+                    record_fitness=record_fitness,
+                )
+
+        result = {
             "x": x_traj,
             "v": v_traj,
             "fitness": fitness_traj,
             "terminated_early": False,
             "final_step": n_steps
         }
+
+        # Include FractalSet in result if provided
+        if fractal_set is not None:
+            result["fractal_set"] = fractal_set
+
+        return result
+
+    def _record_fractal_set_timestep(
+        self,
+        fractal_set: "FractalSet",
+        state: SwarmState,
+        timestep: int,
+        alive_mask: Tensor,
+        record_fitness: bool,
+    ) -> None:
+        """
+        Record current timestep data into FractalSet.
+
+        Args:
+            fractal_set: FractalSet instance to record into
+            state: Current swarm state
+            timestep: Current timestep index
+            alive_mask: Boolean mask of alive walkers [N]
+            record_fitness: Whether to compute and record fitness metrics
+        """
+        # Compute high-error mask based on positional error
+        mu_x = torch.mean(state.x, dim=0, keepdim=True)
+        positional_error = torch.sqrt(torch.sum((state.x - mu_x) ** 2, dim=-1))
+        threshold = torch.median(positional_error)
+        high_error_mask = positional_error > threshold
+
+        # Compute fitness-related metrics if requested
+        if record_fitness:
+            # Potential and reward
+            potential = self.params.potential.evaluate(state.x)
+            reward = -potential
+
+            # For GeometricGas, fitness is computed via localized fitness potential
+            # Compute fitness for alive walkers
+            if alive_mask.any():
+                fitness_vals = torch.zeros(state.N, device=self.device, dtype=self.dtype)
+                fitness_vals[alive_mask] = self.fitness_potential.evaluate(
+                    state.x[alive_mask],
+                    state.x[alive_mask],
+                    alive_mask
+                )
+                fitness = fitness_vals
+            else:
+                fitness = torch.zeros(state.N, device=self.device, dtype=self.dtype)
+
+            # Note: GeometricGas doesn't use cloning in the same way as EuclideanGas
+            # So we don't compute companions, distances, and cloning_probs
+            companions = None
+            distances = None
+            cloning_probs = None
+
+            # Compute rescaled reward (normalized by mean)
+            reward_mean = reward.mean()
+            reward_std = reward.std() + 1e-8
+            rescaled_reward = (reward - reward_mean) / reward_std
+
+            # GeometricGas doesn't use algorithmic distance, so rescaled_distance is None
+            rescaled_distance = None
+
+            # No cloning uniform sample for GeometricGas
+            clone_uniform_sample = None
+        else:
+            potential = None
+            reward = None
+            fitness = None
+            companions = None
+            distances = None
+            cloning_probs = None
+            rescaled_reward = None
+            rescaled_distance = None
+            clone_uniform_sample = None
+
+        # Record timestep in FractalSet
+        fractal_set.add_timestep(
+            state=state,
+            timestep=timestep,
+            high_error_mask=high_error_mask,
+            alive_mask=alive_mask,
+            fitness=fitness,
+            potential=potential,
+            reward=reward,
+            companions=companions,
+            cloning_probs=cloning_probs,
+            distances=distances,
+            rescaled_reward=rescaled_reward,
+            rescaled_distance=rescaled_distance,
+            clone_uniform_sample=clone_uniform_sample,
+        )

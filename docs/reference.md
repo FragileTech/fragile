@@ -1,16 +1,22 @@
 # Mathematical Reference for the Fragile Gas Framework
 
-**Version:** 2.0 (Updated for new document structure)
-**Last Updated:** 2025-10-17
-**Total Entries:** 723 (Chapter 1: 523, Chapter 2: 200)
+**Version:** 2.1 (Enhanced with critical theorems and proofs)
+**Last Updated:** 2025-10-18
+**Total Entries:** 101 (curated from 723 total in glossary)
+**Coverage:** Chapter 1: ~60 entries, Chapter 2: ~41 entries
 
 ---
 
 ## Purpose and Usage
 
-This document provides a **comprehensive, searchable mathematical reference** optimized for LLM context when working with the Fragile Gas framework. It extracts and organizes key mathematical machinery from the full framework documents to enable rapid lookup without reading extensive proofs.
+This document provides a **curated TLDR reference** for the most important mathematical results in the Fragile Gas framework. It complements the comprehensive glossary with detailed explanations, plain-English interpretations, and practical context.
 
-**Target Audience:** Language models, researchers, and engineers needing quick mathematical reference.
+**Target Audience:** Language models, researchers, and engineers needing quick understanding of key theorems and proofs.
+
+**Relationship with Other Documents:**
+- **This document (reference.md)**: 101 curated entries with TLDR format, detailed explanations, and "why it matters" context
+- **docs/glossary.md**: Exhaustive index of all 723 mathematical entries with basic metadata (type, label, tags, source)
+- **Source documents**: Full rigorous proofs and detailed mathematical development
 
 **Design Philosophy:**
 - **TLDR Format:** Each entry includes plain-English interpretation, key formula, and impact statement
@@ -19,14 +25,17 @@ This document provides a **comprehensive, searchable mathematical reference** op
 - **Cross-Linked:** Extensive tagging and references for navigation
 
 **How to Use:**
-1. **Search by tag:** Use tags like `cloning`, `kinetic`, `lsi`, `qsd`, `convergence`, etc.
-2. **Browse by section:** Navigate conceptual hierarchy (foundations → operators → convergence → geometry)
-3. **Follow references:** Use labels and cross-references to explore related results
-4. **Consult source:** For full proofs, refer to source document and section
+1. **Start here** for understanding key results with context and motivation
+2. **Search by tag:** Use tags like `cloning`, `kinetic`, `lsi`, `qsd`, `convergence`, etc.
+3. **Browse by section:** Navigate conceptual hierarchy (foundations → operators → convergence → geometry)
+4. **Follow references:** Use labels and cross-references to explore related results
+5. **For exhaustive search:** Use **docs/glossary.md** to find all 723 entries by label/tag
+6. **For full proofs:** Consult source documents listed in each entry
 
 **Document Coverage:**
-- **Chapter 1: Euclidean Gas** (523 entries) - Core framework, operators, convergence theory
-- **Chapter 2: Geometric Gas** (200 entries) - Adaptive mechanisms, emergent Riemannian geometry, anisotropic diffusion
+- **Chapter 1: Euclidean Gas** (~60 curated entries) - Core framework, operators, convergence theory
+- **Chapter 2: Geometric Gas** (~41 curated entries) - Adaptive mechanisms, emergent Riemannian geometry, anisotropic diffusion
+- **Total**: 101 entries carefully selected from 723 total mathematical results in the framework
 
 ---
 
@@ -657,6 +666,100 @@ $$W_2^2(\mu_1, \mu_2) \leq V_{\text{loc}} + V_{\text{struct}}$$
 
 ---
 
+### Variance Decomposition by Clusters
+**Label:** `lem-variance-decomposition`
+**Source:** [04_wasserstein_contraction.md § 2.1](source/1_euclidean_gas/04_wasserstein_contraction)
+**Tags:** `variance`, `lemma`, `cloning`, `decomposition`
+
+**What it says:** Swarm variance decomposes into within-cluster and between-cluster components.
+
+**Math:**
+For a swarm $S_k$ partitioned into $I_k$ (target) and $J_k$ (complement) with population fractions $f_I = |I_k|/k$ and $f_J = |J_k|/k$:
+
+$$V_{\text{total}} = V_{\text{within}} + V_{\text{between}}$$
+
+where $V_{\text{within}} = f_I V_I + f_J V_J$ and $V_{\text{between}} = f_I f_J \|\bar{x}_I - \bar{x}_J\|^2$.
+
+**Why it matters:** Separates intra-cluster variance from inter-cluster separation. Key for analyzing cloning's effect on different population segments.
+
+**Related:** `cor-between-group-dominance`, `lem-cross-swarm-distance`
+
+---
+
+### Between-Group Variance Dominance
+**Label:** `cor-between-group-dominance`
+**Source:** [04_wasserstein_contraction.md § 2.1.1](source/1_euclidean_gas/04_wasserstein_contraction)
+**Tags:** `variance`, `corollary`, `clustering`
+
+**What it says:** For high-error swarms, between-group variance dominates.
+
+**Math:**
+When $V_{\text{struct}} > R^2_{\text{spread}}$:
+
+$$V_{\text{between}} \geq \frac{R^2_{\text{spread}}}{2}$$
+
+**Why it matters:** Ensures cloning pressure concentrates on cross-cluster alignment, not just internal compression.
+
+**Related:** `lem-variance-decomposition`, `lem-target-cloning-pressure`
+
+---
+
+### Cluster-Level Outlier Alignment
+**Label:** `lem-cluster-alignment`
+**Source:** [04_wasserstein_contraction.md § 2.2](source/1_euclidean_gas/04_wasserstein_contraction)
+**Tags:** `lemma`, `alignment`, `cloning`
+
+**What it says:** Cloning preferentially aligns outlier clusters (target sets) toward barycenter.
+
+**Math:**
+For two swarms $S_1, S_2$ satisfying cluster-preserving conditions, outliers in $J_k$ (complement) clone toward centroids $\bar{x}_{I_k}$ (target).
+
+**Why it matters:** Explains why cloning reduces Wasserstein distance: it systematically eliminates outliers.
+
+**Related:** `lem-expected-distance-change`, `cor-average-cloning`
+
+---
+
+### Cloning Pressure on Target Set
+**Label:** `lem-target-cloning-pressure`
+**Source:** [04_wasserstein_contraction.md § 2.4](source/1_euclidean_gas/04_wasserstein_contraction)
+**Tags:** `lemma`, `cloning`, `fitness`
+
+**What it says:** Walkers in the target set (high fitness) have higher cloning probability.
+
+**Math:**
+For any walker $i \in I_k$ (target set):
+
+$$\mathbb{P}[\text{clone}_i] \geq \frac{1}{2} + \frac{\epsilon_F}{4\sqrt{2\pi}}$$
+
+where $\epsilon_F$ is the fitness gap.
+
+**Why it matters:** Quantifies selective pressure. Larger $\epsilon_F$ means stronger concentration on high-fitness walkers.
+
+**Related:** `cor-average-cloning`, `lem-wasserstein-population-bound`
+
+---
+
+### Wasserstein-2 Contraction (Cluster-Based)
+**Label:** `thm-main-contraction-full`
+**Source:** [04_wasserstein_contraction.md § 2.5](source/1_euclidean_gas/04_wasserstein_contraction)
+**Tags:** `theorem`, `wasserstein`, `contraction`, `cloning`
+
+**What it says:** Cloning operator contracts Wasserstein-2 distance between swarm distributions.
+
+**Math:**
+Under cluster-preserving conditions with fitness gap $\epsilon_F > 0$:
+
+$$\mathbb{E}[W_2^2(S_1', S_2') \mid S_1, S_2] \leq (1 - c\epsilon_F) W_2^2(S_1, S_2)$$
+
+where $c > 0$ is a universal constant and $S'$ denotes post-cloning state.
+
+**Why it matters:** **Main contraction theorem for cloning operator.** Proves exponential convergence to QSD in Wasserstein metric. Foundation for all finite-N convergence theory.
+
+**Related:** `thm-main-convergence`, `thm-foster-lyapunov-adaptive`, `lem-wasserstein-decomposition`
+
+---
+
 ## 8. Hypocoercivity and Coupled Lyapunov Functions
 
 ### Full Synergistic Hypocoercive Lyapunov Function
@@ -925,6 +1028,144 @@ for any permutation $\sigma \in S_N$.
 
 ---
 
+### Tightness of QSD Marginals
+**Label:** `thm-qsd-marginals-are-tight`
+**Source:** [08_propagation_chaos.md § 2.1](source/1_euclidean_gas/08_propagation_chaos)
+**Tags:** `theorem`, `qsd`, `tightness`, `mean-field`
+
+**What it says:** The sequence of single-particle marginal measures $\{\mu_N\}_{N=2}^\infty$ is tight in $\mathcal{P}(\Omega)$.
+
+**Math:**
+For any $\epsilon > 0$, there exists compact $K_\epsilon \subset \Omega$ such that:
+
+$$\mu_N(K_\epsilon) \geq 1 - \epsilon \quad \forall N \geq 2$$
+
+**Why it matters:** Ensures existence of convergent subsequences. Prerequisite for all mean-field limit theorems.
+
+**Related:** `thm-limit-is-weak-solution`, `thm-uniqueness-of-qsd`
+
+---
+
+### Extinction Rate Vanishes in Mean-Field Limit
+**Label:** `thm-extinction-rate-vanishes`
+**Source:** [08_propagation_chaos.md § 2.2](source/1_euclidean_gas/08_propagation_chaos)
+**Tags:** `theorem`, `extinction`, `mean-field`
+
+**What it says:** The extinction rate $\lambda_N$ of the N-particle QSD vanishes as $N \to \infty$.
+
+**Math:**
+$$\lim_{N \to \infty} \lambda_N = 0$$
+
+**Why it matters:** In the thermodynamic limit, the system becomes stable—no mass loss through boundaries. The QSD becomes a true stationary distribution.
+
+**Related:** `thm-limit-is-weak-solution`, `def-qsd-adaptive`
+
+---
+
+### Weak Solution to Stationary Mean-Field PDE
+**Label:** `thm-limit-is-weak-solution`
+**Source:** [08_propagation_chaos.md § 2.3](source/1_euclidean_gas/08_propagation_chaos)
+**Tags:** `theorem`, `mean-field`, `pde`, `existence`
+
+**What it says:** Any limit point $\mu_\infty$ of the marginal sequence is a weak solution to the stationary mean-field coupled system.
+
+**Math:**
+$$L^\dagger \rho_0 + S[\rho_0] + B[\rho_0] = 0$$
+
+where $L^\dagger$ is kinetic adjoint, $S[\rho_0]$ is cloning source, $B[\rho_0]$ is boundary absorption.
+
+**Why it matters:** **Existence of mean-field stationary distribution.** Connects finite-N QSDs to continuum PDE.
+
+**Related:** `thm-uniqueness-of-qsd`, `thm-extinction-rate-vanishes`
+
+---
+
+### Hörmander's Theorem for Kinetic Operators
+**Label:** `thm-uniqueness-hormander`
+**Source:** [08_propagation_chaos.md § 3.2](source/1_euclidean_gas/08_propagation_chaos)
+**Tags:** `theorem`, `hypoellipticity`, `hormander`
+
+**What it says:** Kinetic operator $L$ satisfies Hörmander's condition, implying hypoellipticity.
+
+**Math:**
+The Lie algebra generated by drift and diffusion vector fields spans $\mathbb{R}^{2d}$ at every point.
+
+**Why it matters:** Guarantees regularity of solutions. Enables strong maximum principle and uniqueness arguments.
+
+**Related:** `thm-uniqueness-hypoelliptic-regularity`, `thm-uniqueness-of-qsd`
+
+---
+
+### Hypoelliptic Regularity
+**Label:** `thm-uniqueness-hypoelliptic-regularity`
+**Source:** [08_propagation_chaos.md § 3.3](source/1_euclidean_gas/08_propagation_chaos)
+**Tags:** `theorem`, `regularity`, `hypoellipticity`
+
+**What it says:** Solutions to $\mathcal{L}_{\text{lin}} u = f$ are $C^\infty$ in the interior.
+
+**Math:**
+If $f \in L^2_w(\Omega)$ and $\mathcal{L}_{\text{lin}} u = f$ in the weak sense, then $u \in C^\infty(\text{int}(\Omega))$.
+
+**Why it matters:** Elevates weak solutions to classical solutions. Enables pointwise estimates.
+
+**Related:** `thm-uniqueness-hormander`, `thm-uniqueness-uniqueness-stationary-solution`
+
+---
+
+### Uniqueness of Stationary Solution
+**Label:** `thm-uniqueness-of-qsd`
+**Source:** [08_propagation_chaos.md § 3.5](source/1_euclidean_gas/08_propagation_chaos)
+**Tags:** `theorem`, `uniqueness`, `qsd`, `mean-field`
+
+**What it says:** There is at most one probability density $\rho \in \mathcal{P}(\Omega)$ that is a weak solution to the stationary mean-field equation.
+
+**Math:**
+If $\rho_1, \rho_2$ are two weak solutions, then $\rho_1 = \rho_2$ almost everywhere.
+
+**Why it matters:** **Uniqueness of mean-field QSD.** Combined with existence, proves all subsequences converge to the same limit.
+
+**Related:** `thm-limit-is-weak-solution`, `thm-thermodynamic-limit`
+
+---
+
+### Thermodynamic Limit
+**Label:** `thm-thermodynamic-limit`
+**Source:** [08_propagation_chaos.md § 4.1](source/1_euclidean_gas/08_propagation_chaos)
+**Tags:** `theorem`, `convergence`, `mean-field`, `thermodynamic-limit`
+
+**What it says:** Macroscopic observables in N-particle QSD converge to mean-field expectations.
+
+**Math:**
+Let $\phi: \Omega \to \mathbb{R}$ be bounded and continuous. Then:
+
+$$\lim_{N \to \infty} \mathbb{E}_{\nu_{\text{QSD}}^{(N)}} \left[ \frac{1}{N} \sum_{i=1}^N \phi(x_i, v_i) \right] = \int_\Omega \phi(x, v) \, \rho_0(x, v) \, dx \, dv$$
+
+where $\rho_0$ is the unique mean-field stationary density.
+
+**Why it matters:** **Law of large numbers for QSD.** Justifies mean-field approximation for physical observables.
+
+**Related:** `cor-w2-convergence-thermodynamic-limit`, `thm-propagation-chaos-qsd`
+
+---
+
+### Wasserstein-2 Convergence in Thermodynamic Limit
+**Label:** `cor-w2-convergence-thermodynamic-limit`
+**Source:** [08_propagation_chaos.md § 4.2](source/1_euclidean_gas/08_propagation_chaos)
+**Tags:** `corollary`, `convergence`, `wasserstein`
+
+**What it says:** Empirical measure of N-particle QSD converges to $\rho_0$ in Wasserstein-2 metric.
+
+**Math:**
+$$\lim_{N \to \infty} W_2\left( \frac{1}{N} \sum_{i=1}^N \delta_{(x_i, v_i)}, \rho_0 \right) = 0$$
+
+in probability under $\nu_{\text{QSD}}^{(N)}$.
+
+**Why it matters:** Stronger than weak convergence. Guarantees convergence of all moments.
+
+**Related:** `thm-thermodynamic-limit`, `thm-uniqueness-of-qsd`
+
+---
+
 ## 12. KL-Divergence Convergence and LSI Theory
 
 ### Logarithmic Sobolev Inequality (LSI)
@@ -1132,6 +1373,100 @@ Regularization $\epsilon_\Sigma \in (0, 1)$ ensures uniform ellipticity.
 **Why it matters:** Anisotropic noise explores more along low-curvature directions. Accelerates escape from saddles.
 
 **Related:** `thm-uniform-ellipticity`, `def-d-adaptive-diffusion`
+
+---
+
+### Uniform Ellipticity of Regularized Hessian (UEPH)
+**Label:** `thm-ueph`
+**Source:** [11_geometric_gas.md § 3.2](source/2_geometric_gas/11_geometric_gas)
+**Tags:** `theorem`, `ellipticity`, `hessian`, `regularity`
+
+**What it says:** Regularized Hessian tensor is uniformly elliptic with N-independent bounds.
+
+**Math:**
+For all $i$ and all $\xi \in \mathbb{R}^d$:
+
+$$\epsilon_\Sigma \|\xi\|^2 \leq \xi^\top D_i \xi \leq (1 + C_V \epsilon_\Sigma) \|\xi\|^2$$
+
+where $C_V$ depends on $\|\nabla^2 V\|_\infty$ but not on $N$ or localization radius $\rho$.
+
+**Why it matters:** **Cornerstone of geometric gas theory.** Guarantees non-degenerate diffusion and enables hypocoercivity. Uniform bounds allow N-uniform LSI.
+
+**Related:** `def-regularized-hessian-tensor`, `thm-adaptive-lsi-main`, `prop-lipschitz-diffusion`
+
+---
+
+### Foster-Lyapunov Drift for Geometric Gas
+**Label:** `thm-fl-drift-adaptive`
+**Source:** [11_geometric_gas.md § 4.3](source/2_geometric_gas/11_geometric_gas)
+**Tags:** `theorem`, `convergence`, `foster-lyapunov`, `drift`
+
+**What it says:** Geometric Gas satisfies Foster-Lyapunov condition with critical fitness threshold $\epsilon_F^*(\rho)$.
+
+**Math:**
+There exist constants $\kappa > 0$, $C < \infty$ such that:
+
+$$\mathbb{E}[V_{\text{Lyap}}(S_{k+1}) \mid S_k] \leq (1 - \kappa \cdot \mathbb{1}_{\epsilon_F < \epsilon_F^*(\rho)}) V_{\text{Lyap}}(S_k) + C$$
+
+where $\epsilon_F^*(\rho) = O(\rho^{-3})$ is the critical threshold.
+
+**Why it matters:** Establishes exponential convergence to QSD neighborhood. Reveals fundamental tradeoff: smaller $\rho$ (more local) requires larger $\epsilon_F$ (stronger fitness signal).
+
+**Related:** `thm-main-convergence`, `thm-backbone-convergence`, `obs-regularization-tradeoff`
+
+---
+
+### Backbone Geometric Ergodicity
+**Label:** `thm-backbone-convergence`
+**Source:** [11_geometric_gas.md § 4.1](source/2_geometric_gas/11_geometric_gas)
+**Tags:** `theorem`, `ergodicity`, `convergence`
+
+**What it says:** The backbone system (Euclidean Gas without adaptive mechanisms) is geometrically ergodic.
+
+**Math:**
+$$\mathbb{E}[V_{\text{Lyap}}(S_{k+1}) \mid S_k] \leq (1 - \kappa_{\text{backbone}}) V_{\text{Lyap}}(S_k) + C_{\text{backbone}}$$
+
+for constants $\kappa_{\text{backbone}} > 0$ and $C_{\text{backbone}} < \infty$.
+
+**Why it matters:** Validates "stable backbone + adaptive perturbation" philosophy. Adaptive mechanisms perturb a provably convergent base system.
+
+**Related:** `thm-fl-drift-adaptive`, `def-hybrid-sde`
+
+---
+
+### Stratonovich Chain Rule for Lyapunov Functions
+**Label:** `thm-strat-chain`
+**Source:** [11_geometric_gas.md § 4.2](source/2_geometric_gas/11_geometric_gas)
+**Tags:** `theorem`, `stochastic-calculus`, `stratonovich`
+
+**What it says:** Lyapunov drift for Stratonovich SDE follows classical chain rule plus correction term.
+
+**Math:**
+$$d V(S_t) = \nabla V \cdot b_{\text{tot}} \, dt + \frac{1}{2} \text{Tr}(\nabla^2 V \cdot \Sigma_{\text{tot}}) dt + \nabla V \cdot \sigma_{\text{tot}} \circ dW_t$$
+
+where $\Sigma_{\text{tot}} = \sigma_{\text{tot}} \sigma_{\text{tot}}^\top$ is total diffusion matrix.
+
+**Why it matters:** Enables clean computation of expected drift. Stratonovich form avoids Itô correction clutter when working with geometric objects.
+
+**Related:** `thm-fl-drift-adaptive`, `lem-ito-correction-bound`
+
+---
+
+### Velocity Variance Contraction (Anisotropic)
+**Label:** `thm-velocity-variance-anisotropic`
+**Source:** [11_geometric_gas.md § 5.1](source/2_geometric_gas/11_geometric_gas)
+**Tags:** `theorem`, `variance`, `contraction`, `anisotropic`
+
+**What it says:** Anisotropic diffusion maintains velocity variance contraction.
+
+**Math:**
+$$\mathbb{E}[\text{Var}(v_{k+1}) \mid S_k] \leq (1 - \kappa_v) \text{Var}(v_k) + C_v$$
+
+where $\kappa_v$ depends on friction $\gamma$ and $C_v$ depends on diffusion ellipticity bounds.
+
+**Why it matters:** Proves adaptive mechanisms don't破坏 kinetic operator's dissipation. Anisotropic noise compatible with hypocoercivity.
+
+**Related:** `thm-hypocoercive-main`, `thm-ueph`
 
 ---
 
@@ -1801,6 +2136,15 @@ Constant $\lambda_P$ is spectral gap of generator.
 ---
 
 ## Document Change Log
+
+**v2.1 (2025-10-18):**
+- **Major expansion**: Added 18 critical theorems and proofs from Chapter 1 and Chapter 2
+- **Wasserstein Contraction (§7)**: Added main contraction theorem, variance decomposition, cloning pressure lemmas
+- **Propagation of Chaos (§11)**: Added tightness, uniqueness, thermodynamic limit theorems
+- **Geometric Gas (§13)**: Added UEPH, Foster-Lyapunov drift, backbone ergodicity, Stratonovich chain rule
+- **Total entries**: 101 (up from 83), carefully curated from 723 in comprehensive glossary
+- Clarified purpose: This is a **curated TLDR reference** with detailed explanations for key results
+- For exhaustive index of all 723 entries, see **docs/glossary.md**
 
 **v2.0 (2025-10-17):**
 - Updated for new document structure (1_euclidean_gas/, 2_geometric_gas/)
