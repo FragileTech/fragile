@@ -61,6 +61,20 @@ parts:
   - file: source/2_geometric_gas/18_emergent_geometry
     title: Emergent Geometry
 
+- caption: Part III - Analytical Foundations
+  numbered: false
+  chapters:
+  - file: source/3_brascamp_lieb/geometric_foundations_lsi
+    title: Geometric Foundations of LSI
+  - file: source/3_brascamp_lieb/README
+    title: Directory README
+  - file: source/3_brascamp_lieb/roadmap
+    title: Roadmap (Historical)
+  - file: source/3_brascamp_lieb/brascamp_lieb_proof
+    title: BL Proof (Deprecated)
+  - file: source/3_brascamp_lieb/eigenvalue_gap_research_note
+    title: Eigenvalue Gap Research Note
+
 - caption: Reference
   numbered: false
   chapters:

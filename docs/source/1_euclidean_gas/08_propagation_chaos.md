@@ -45,7 +45,7 @@ The proof is organized into four main sections corresponding to the classical pr
 
 The diagram below illustrates the logical flow:
 
-:::mermaid
+```{mermaid}
 graph TD
     subgraph "Prerequisites (External)"
         A["<b>06_convergence.md</b><br>Finite-N QSD ν_N exists & unique<br>Foster-Lyapunov: uniform moment bounds"]:::externalStyle
@@ -101,7 +101,7 @@ graph TD
     classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
     classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
     classDef externalStyle fill:#666,stroke:#999,stroke-width:2px,color:#eee,stroke-dasharray: 2 2
-:::
+```
 
 The document is structured as follows:
 

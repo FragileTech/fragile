@@ -95,10 +95,11 @@ The `docs/source/` directory contains rigorous mathematical specifications organ
   - `fix_math_formatting.py` - Fix LaTeX block spacing
   - `format_math_blocks.py` - Comprehensive formatting fixes
   - `fix_complex_subscripts.py` - Handle complex subscript notation
-  - `convert_mermaid_blocks.py` - Convert ````mermaid` to `:::mermaid` for Jupyter Book
+  - `convert_mermaid_blocks.py` - Convert mermaid blocks to MyST directive format
     - Automatically runs during `make build-docs`
     - Allows editing with GitHub-flavored markdown (````mermaid`) in VSCode
-    - Converts to Jupyter Book MyST directive format (`:::mermaid`) at build time
+    - Converts to Jupyter Book MyST directive format (` ```{mermaid} `) at build time
+    - Works with both ````mermaid` and `:::mermaid` source formats
 
 ## Development Commands
 

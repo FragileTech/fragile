@@ -139,31 +139,31 @@ $$
 
 ## Convergence Proof Strategy
 
-:::mermaid
+```{mermaid}
 flowchart TD
-    A[Axiomatic Framework] --> B[Euclidean Gas Definition]
-    B --> C[Cloning Keystone Principle]
-    B --> D[Kinetic Operator QSD Convergence]
+    A["Axiomatic Framework"] --> B["Euclidean Gas Definition"]
+    B --> C["Cloning Keystone Principle"]
+    B --> D["Kinetic Operator QSD Convergence"]
 
-    C --> E[Wasserstein Contraction<br/>Coupling Method]
+    C --> E["Wasserstein Contraction<br/>Coupling Method"]
     D --> E
 
-    E --> F[N-Particle KL-Convergence<br/>Synergistic Dissipation]
-    F --> G[✅ N-Uniform LSI<br/>Finite Swarm Convergence]
+    E --> F["N-Particle KL-Convergence<br/>Synergistic Dissipation"]
+    F --> G["✅ N-Uniform LSI<br/>Finite Swarm Convergence"]
 
-    B --> H[Mean-Field PDE<br/>McKean-Vlasov Limit]
+    B --> H["Mean-Field PDE<br/>McKean-Vlasov Limit"]
     C --> H
-    H --> I[Propagation of Chaos<br/>Weak Convergence]
+    H --> I["Propagation of Chaos<br/>Weak Convergence"]
 
-    I --> J[Mean-Field KL-Convergence<br/>Kinetic Dominance]
-    J --> K[✅ Mean-Field LSI<br/>Thermodynamic Limit Convergence]
+    I --> J["Mean-Field KL-Convergence<br/>Kinetic Dominance"]
+    J --> K["✅ Mean-Field LSI<br/>Thermodynamic Limit Convergence"]
 
     classDef proven fill:#d4f4dd,stroke:#4caf50,stroke-width:3px
     classDef foundation fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
 
     class G,K proven
     class A,B,C,D,E,H foundation
-:::
+```
 
 ---
 

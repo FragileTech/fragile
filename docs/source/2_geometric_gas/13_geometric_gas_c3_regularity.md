@@ -49,7 +49,7 @@ The $C^3$ analysis tracks how regularity and bounds vary across this entire cont
 
 The proof proceeds through a systematic analysis of the six-stage computational pipeline that defines the fitness potential. The diagram below illustrates the logical flow of the document, showing how regularity propagates from primitive assumptions through the full composition.
 
-:::mermaid
+```{mermaid}
 graph TD
     subgraph "Part I: Foundations (Ch 2-3)"
         A["<b>Ch 2: Mathematical Framework</b><br>State space, swarm configuration<br>Chain rules for third derivatives"]:::stateStyle
@@ -87,7 +87,7 @@ graph TD
     classDef axiomStyle fill:#8c6239,stroke:#d4a574,stroke-width:2px,stroke-dasharray: 5 5,color:#f4e8d8
     classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
     classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
-:::
+```
 
 **Proof Strategy Overview:**
 

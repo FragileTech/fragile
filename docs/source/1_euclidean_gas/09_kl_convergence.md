@@ -56,7 +56,7 @@ The proof architecture leverages the **complementary dissipation structure** of 
 
 The diagram below illustrates the logical structure. We establish hypocoercive LSI for the kinetic operator (§2.1-2.3), prove Wasserstein contraction and entropy bounds for the cloning operator (§2.4), construct the entropy-transport Lyapunov function that couples these effects (§2.5), and compose to obtain the main LSI result (§2.6-2.7). Sections 3-4 provide alternative approaches and extensions.
 
-:::mermaid
+```{mermaid}
 graph TD
     subgraph "Foundations & Preliminaries"
         A["<b>Axiom: Log-Concave QSD</b><br>Fundamental assumption for<br>displacement convexity approach"]:::axiomStyle
@@ -124,7 +124,7 @@ graph TD
     classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
     classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4e8d8
     classDef externalStyle fill:#5f5f5f,stroke:#a0a0a0,stroke-width:2px,stroke-dasharray: 3 3,color:#e8e8e8
-:::
+```
 
 **Document roadmap**:
 

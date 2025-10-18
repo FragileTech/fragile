@@ -44,7 +44,7 @@ The proof is constructed as a logical argument in three main parts: Foundations,
 
 The diagram below illustrates the logical flow of the proof. We first establish the mathematical foundations (Chapters 2-4). This framework is then used to build the multi-chapter proof of the Keystone Lemma (Chapters 5-8), which is the theoretical core of this work. Finally, the Keystone Lemma is applied as the central tool in the drift analysis (Chapters 9-12) to derive the main results of this document.
 
-:::mermaid
+```{mermaid}
 graph TD
     subgraph "Part I: Foundations (Ch 2-4)"
         A["<b>Ch 2: State Space & Metrics</b><br>Defines Empirical Measures & <br><b>Hypocoercive Wasserstein Distance (W_h²)</b>"]:::stateStyle
@@ -90,7 +90,7 @@ graph TD
     classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
     classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
     classDef externalStyle fill:#666,stroke:#999,stroke-width:2px,color:#eee,stroke-dasharray: 2 2
-:::
+```
 
 The document is structured as follows:
 *   **Chapters 2-4 (Foundations):** We begin by defining our analytical tools: the coupled state space for comparing swarms, the augmented hypocoercive Lyapunov function for measuring error, and the complete set of foundational axioms that any valid Fragile Gas must satisfy.

@@ -62,7 +62,7 @@ The proof is organized as a **five-stage research program**, where each stage es
 
 The diagram below illustrates the logical architecture. Stages 0-3 build the mathematical infrastructure (revival operator analysis, QSD regularity, entropy production equation, hypocoercivity constants, parameter formulas), while Stage 4 assembles these components into the complete convergence proof.
 
-:::mermaid
+```{mermaid}
 graph TD
     subgraph "Stage 0: Revival Operator KL-Properties"
         A["<b>Revival Operator Definition</b><br>Formal definition of killing + proportional revival"]:::stateStyle
@@ -125,7 +125,7 @@ graph TD
     classDef axiomStyle fill:#8c6239,stroke:#d4a574,stroke-width:2px,stroke-dasharray: 5 5,color:#f4e8d8
     classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
     classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
-:::
+```
 
 *Note: The diagram represents the logical structure. Actual section numbers in the current document may differ and are subject to change during revision.*
 

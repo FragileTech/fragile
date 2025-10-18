@@ -72,7 +72,7 @@ The documents in Part II are structured to support multiple reading paths depend
 
 The following diagram illustrates how the six chapters build upon each other and connect to Part I:
 
-:::mermaid
+```{mermaid}
 graph TB
     subgraph "Part I Foundation (Euclidean Gas)"
         P1_02["<b>Doc 02: Euclidean Gas</b><br>Langevin + Cloning<br>Baseline specification"]:::p1Style
@@ -129,7 +129,7 @@ graph TB
     classDef regularityStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
     classDef lsiStyle fill:#4a5f8c,stroke:#8fa4d4,stroke-width:3px,color:#e8eaf6
     classDef meanfieldStyle fill:#6b4a8c,stroke:#a47fd4,stroke-width:2px,color:#f0e8f6
-:::
+```
 
 **Key Dependencies**:
 

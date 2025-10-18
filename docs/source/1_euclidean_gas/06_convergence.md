@@ -43,7 +43,7 @@ The synergistic dissipation paradigm suggests a general principle for designing 
 
 The proof synthesizes results from two companion documents to establish full convergence. The diagram below illustrates how operator-level analyses compose into the main convergence theorem.
 
-:::mermaid
+```{mermaid}
 graph TD
     subgraph "Prerequisites: Operator-Level Analysis"
         A["<b>03_cloning.md: Cloning Operator</b><br>✓ Keystone Principle: V_Var,x contracts<br>✓ Safe Harbor: W_b contracts<br>⚠ V_Var,v expands boundedly"]:::axiomStyle
@@ -113,7 +113,7 @@ graph TD
     classDef axiomStyle fill:#8c6239,stroke:#d4a574,stroke-width:2px,stroke-dasharray: 5 5,color:#f4e8d8
     classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
     classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
-:::
+```
 
 **Chapter 3** synthesizes operator-level drift inequalities from prerequisite documents. By solving a system of inequalities for coupling constants $(c_V, c_B)$, we prove the composed operator satisfies a Foster-Lyapunov condition with explicit rate $\kappa_{\text{total}}$ and bias $C_{\text{total}}$.
 

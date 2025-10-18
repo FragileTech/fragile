@@ -55,7 +55,7 @@ The document builds the framework in four main parts: **Foundational Definitions
 
 The diagram below illustrates the logical dependencies and information flow through the framework:
 
-:::mermaid
+```{mermaid}
 graph TD
     subgraph "Part I: Foundations (§2-5)"
         A["<b>§3: Axiomatic Foundations</b><br>Defines 16 core axioms + 1 assumption <br>with quantifiable parameters"]:::axiomStyle
@@ -115,7 +115,7 @@ graph TD
     classDef axiomStyle fill:#8c6239,stroke:#d4a574,stroke-width:2px,stroke-dasharray: 5 5,color:#f4e8d8
     classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
     classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
-:::
+```
 
 **Document Structure**:
 

@@ -46,16 +46,16 @@ Symmetries are not merely mathematical conveniences—they encode fundamental ph
 
 The document proceeds as follows:
 
-:::mermaid
+```{mermaid}
 %%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#e8f4f8','primaryTextColor':'#1a1a1a','primaryBorderColor':'#4a90a4','lineColor':'#4a90a4','secondaryColor':'#f4e8d8','tertiaryColor':'#fff'}}}%%
 graph TB
-    A[§2: Foundational Definitions] --> B[§3: Flat Algorithmic Space Symmetries]
+    A["§2: Foundational Definitions"] --> B["§3: Flat Algorithmic Space Symmetries"]
 
-    B --> B1[§3.1: Permutation Invariance]
-    B --> B2[§3.2: Translation Equivariance]
-    B --> B3[§3.3: Rotation Equivariance]
-    B --> B4[§3.4: Scaling Symmetries]
-    B --> B5[§3.5: Time-Reversal Asymmetry]
+    B --> B1["§3.1: Permutation Invariance"]
+    B --> B2["§3.2: Translation Equivariance"]
+    B --> B3["§3.3: Rotation Equivariance"]
+    B --> B4["§3.4: Scaling Symmetries"]
+    B --> B5["§3.5: Time-Reversal Asymmetry"]
 
     style A fill:#e8f4f8,stroke:#4a90a4,stroke-width:2px
     style B fill:#f4e8d8,stroke:#a47d4a,stroke-width:2px
@@ -64,7 +64,7 @@ graph TB
     style B3 fill:#fff,stroke:#4a90a4,stroke-width:1px
     style B4 fill:#fff,stroke:#4a90a4,stroke-width:1px
     style B5 fill:#fff,stroke:#4a90a4,stroke-width:1px
-:::
+```
 
 **§2. Foundational Definitions**: We define the configuration space $\mathcal{C}_N = (\mathbb{R}^d \times \mathbb{R}^d)^N$ and introduce the symmetry groups that will act on swarm states: the permutation group $S_N$, the translation group $\mathbb{R}^d$, the rotation group $SO(d)$, and the scaling group $\mathbb{R}_{>0}$. We also establish the fitness potential $U := -\log R$ as the natural object for scaling analysis.
 

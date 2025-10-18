@@ -148,7 +148,7 @@ instead of the naive $O(\rho^{-4})$. This "one-order improvement" propagates thr
 
 The diagram below illustrates the logical flow of the proof. We systematically establish fourth-derivative bounds for each stage of the fitness pipeline (Sections 4-7), culminating in the main C⁴ regularity theorem (Section 8). Sections 9-11 analyze the implications for stability, functional inequalities, and ρ-scaling.
 
-:::mermaid
+```{mermaid}
 graph TD
     subgraph "Part I: Foundations & Assumptions (Sec 2-3)"
         A["<b>Sec 2: Mathematical Framework</b><br>Fitness pipeline, differential operators,<br>Faà di Bruno formula"]:::stateStyle
@@ -194,7 +194,7 @@ graph TD
     classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
     classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
     classDef externalStyle fill:#5f4a8c,stroke:#a48fd4,stroke-width:2px,stroke-dasharray: 3 3,color:#f0e8f6
-:::
+```
 
 **Document Roadmap**:
 

@@ -54,7 +54,7 @@ This synergistic architecture is fundamental to the Fragile Gas framework. The d
 
 The proof is organized into five main chapters, each establishing a specific drift inequality for one component of the Lyapunov function. The diagram below illustrates the logical dependencies and the role of each chapter in the overall convergence architecture.
 
-:::mermaid
+```{mermaid}
 graph TD
     subgraph "Foundations"
         A["<b>Ch 3: Kinetic Operator Definition</b><br>Stratonovich SDE, Axioms for U, Σ, γ<br>Fokker-Planck Equation"]:::stateStyle
@@ -103,7 +103,7 @@ graph TD
     classDef axiomStyle fill:#8c6239,stroke:#d4a574,stroke-width:2px,stroke-dasharray: 5 5,color:#f4e8d8
     classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
     classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
-:::
+```
 
 **Chapter-by-Chapter Overview:**
 

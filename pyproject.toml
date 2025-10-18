@@ -65,6 +65,7 @@ dependencies = [
     "jupyter-bokeh>=4.0.5",
     "plotly>=6.3.1",
     "sympy>=1.14.0",
+    "sphinxcontrib-mermaid>=1.0.0",
 ]
 
 [dependency-groups]
@@ -108,6 +109,7 @@ docs = [
     "sphinx-design",
     "sphinx-proof",
     "sphinx-math-dollar",
+    "sphinxcontrib-mermaid>=1.0.0",
 ]
 [tool.hatch.metadata]
 # direct dependency references, e.g `pip @ git+https://github.com/pypa/pip.git@master`

@@ -69,7 +69,7 @@ The proof is organized into three main parts, following a logical progression fr
 
 The diagram below illustrates the logical flow and dependencies between the major sections:
 
-:::mermaid
+```{mermaid}
 graph TD
     subgraph "Part I: Framework and Problem Setup (§2-4)"
         A["<b>§2: Existing Results & Gap</b><br>Backbone LSI (proven)<br>Uniform ellipticity (proven)<br>State-dependent diffusion (gap)"]:::stateStyle
@@ -115,7 +115,7 @@ graph TD
     classDef axiomStyle fill:#8c6239,stroke:#d4a574,stroke-width:2px,stroke-dasharray: 5 5,color:#f4e8d8
     classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
     classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
-:::
+```
 
 **Part I: Framework and Problem Setup** (Sections 2-4) establishes the mathematical setting and clarifies what has been proven versus what remains to be shown. Section 2 reviews the backbone LSI proof and uniform ellipticity results, identifying the diffusion perturbation as the primary gap. Section 3 introduces the measure-theoretic framework, entropy and Fisher information functionals, and precise LSI definitions. Section 4 decomposes the Geometric Gas generator into kinetic, cloning, and perturbative components, setting up the proof strategy.
 

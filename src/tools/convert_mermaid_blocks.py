@@ -15,7 +15,10 @@ from pathlib import Path
 
 
 def convert_mermaid_blocks(content: str) -> str:
-    """Convert ```mermaid blocks to :::mermaid directive blocks.
+    """Convert mermaid blocks to MyST mermaid directive format.
+
+    Converts both ```mermaid and :::mermaid blocks to the correct
+    ```{mermaid} MyST directive format for sphinxcontrib-mermaid.
 
     Args:
         content: Markdown file content
@@ -23,17 +26,21 @@ def convert_mermaid_blocks(content: str) -> str:
     Returns:
         Content with converted mermaid blocks
     """
-    # Pattern to match ```mermaid blocks
-    # Captures the mermaid code content between the fence markers
-    pattern = r"```mermaid\n(.*?)```"
+    # Pattern 1: Match ```mermaid blocks
+    pattern_backticks = r"```mermaid\n(.*?)```"
+
+    # Pattern 2: Match :::mermaid blocks
+    pattern_colons = r":::mermaid\n(.*?):::"
 
     def replace_block(match):
         mermaid_code = match.group(1).rstrip("\n")
-        # Convert to MyST directive format
-        return f":::mermaid\n{mermaid_code}\n:::"
+        # Convert to MyST directive format for sphinxcontrib-mermaid
+        # Using the ```{mermaid} directive syntax
+        return f"```{{mermaid}}\n{mermaid_code}\n```"
 
-    # Replace all occurrences
-    converted = re.sub(pattern, replace_block, content, flags=re.DOTALL)
+    # Replace all occurrences of both patterns
+    converted = re.sub(pattern_backticks, replace_block, content, flags=re.DOTALL)
+    converted = re.sub(pattern_colons, replace_block, converted, flags=re.DOTALL)
 
     return converted
 

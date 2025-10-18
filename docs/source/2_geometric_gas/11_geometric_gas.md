@@ -51,7 +51,7 @@ The ρ-parameterization unifies this framework: as $\rho \to \infty$, the locali
 
 The proof is organized into nine main chapters, establishing a logical progression from foundations through perturbation analysis to convergence theorems. The diagram below illustrates how the proof builds systematically on the backbone stability results.
 
-:::mermaid
+```{mermaid}
 graph TD
     subgraph "Foundations (Ch 1-3)"
         A["<b>Ch 1: ρ-Parameterized Measurement Pipeline</b><br>Unifies global (ρ→∞) and local (finite ρ)<br>Localization kernel, unified Z-score"]:::stateStyle
@@ -110,7 +110,7 @@ graph TD
     classDef axiomStyle fill:#8c6239,stroke:#d4a574,stroke-width:2px,stroke-dasharray: 5 5,color:#f4e8d8
     classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
     classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
-:::
+```
 
 **Chapter-by-Chapter Overview:**
 

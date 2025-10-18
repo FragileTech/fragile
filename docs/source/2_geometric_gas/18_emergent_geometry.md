@@ -102,7 +102,7 @@ The proof strategy is to extend the hypocoercivity framework from `../1_euclidea
 
 The diagram below shows the logical flow:
 
-:::mermaid
+```{mermaid}
 graph TD
     subgraph "Part I: Foundations and Framework (Ch 3-4)"
         A["<b>Ch 3: Emergent Geometry Framework</b><br>Define metric g = H + ε_Σ I<br>Prove <b>Uniform Ellipticity</b> & Lipschitz continuity"]:::stateStyle
@@ -160,7 +160,7 @@ graph TD
     classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
     classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
     classDef externalStyle fill:#666,stroke:#999,stroke-width:2px,color:#eee,stroke-dasharray: 2 2
-:::
+```
 
 **Chapter-by-chapter overview:**
 

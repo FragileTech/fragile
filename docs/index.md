@@ -42,8 +42,7 @@ Success spreads through cloning. Information flows through viscous coupling. Int
 
 The following diagram shows how all chapters connect, from foundational axioms through adaptive extensions to mean-field limits:
 
-```mermaid
-%%{init: {'theme':'base', 'themeVariables': {'primaryColor':'#e8f4f8','primaryTextColor':'#1a1a1a','primaryBorderColor':'#4a90a4','lineColor':'#4a90a4','secondaryColor':'#f4e8d8','tertiaryColor':'#fff','fontSize':'13px'}}}%%
+```{mermaid}
 graph TB
     subgraph "PART I: EUCLIDEAN GAS - The Stable Backbone"
         direction TB
