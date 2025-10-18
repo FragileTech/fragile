@@ -120,7 +120,9 @@ def test_notebook_workflow_step_by_step(device):
         assert torch.all(torch.isfinite(reward))
 
 
-@pytest.mark.skip(reason="Inplace operation causes gradient computation errors - needs investigation")
+@pytest.mark.skip(
+    reason="Inplace operation causes gradient computation errors - needs investigation"
+)
 def test_lennard_jones_workflow(device):
     """Test the Lennard-Jones optimization workflow from the notebook."""
 

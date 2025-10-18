@@ -13,18 +13,18 @@ Tests cover:
 - Full integration tests
 """
 
-import torch
 import pytest
+import torch
 
-from fragile.euclidean_gas import SimpleQuadraticPotential, LangevinParams
+from fragile.euclidean_gas import LangevinParams, SimpleQuadraticPotential
 from fragile.geometric_gas import (
+    AdaptiveKineticOperator,
+    AdaptiveParams,
+    FitnessPotential,
+    GeometricGas,
+    GeometricGasParams,
     LocalizationKernel,
     LocalizationKernelParams,
-    FitnessPotential,
-    AdaptiveParams,
-    GeometricGasParams,
-    GeometricGas,
-    AdaptiveKineticOperator,
 )
 
 
@@ -58,10 +58,7 @@ class TestLocalizationKernel:
         # Check normalization
         assert K.shape == (5, 10)
         torch.testing.assert_close(
-            K.sum(dim=1),
-            torch.ones(5, device=device, dtype=dtype),
-            atol=1e-6,
-            rtol=1e-6
+            K.sum(dim=1), torch.ones(5, device=device, dtype=dtype), atol=1e-6, rtol=1e-6
         )
 
     def test_gaussian_kernel_locality(self, device, dtype):
@@ -81,7 +78,7 @@ class TestLocalizationKernel:
 
     def test_uniform_kernel(self, device, dtype):
         """Test uniform kernel gives equal weights."""
-        params = LocalizationKernelParams(rho=float('inf'), kernel_type="uniform")
+        params = LocalizationKernelParams(rho=float("inf"), kernel_type="uniform")
         kernel = LocalizationKernel(params, device, dtype)
 
         x_query = torch.randn(3, 2, device=device, dtype=dtype)
@@ -127,12 +124,11 @@ class TestLocalizationKernel:
         sigma_sq_global = ((measurement - mu_global) ** 2).mean()
 
         # All query points should have similar moments to global
-        torch.testing.assert_close(mu_local, torch.full_like(mu_local, mu_global), atol=0.1, rtol=0.1)
         torch.testing.assert_close(
-            sigma_sq_local,
-            torch.full_like(sigma_sq_local, sigma_sq_global),
-            atol=0.1,
-            rtol=0.1
+            mu_local, torch.full_like(mu_local, mu_global), atol=0.1, rtol=0.1
+        )
+        torch.testing.assert_close(
+            sigma_sq_local, torch.full_like(sigma_sq_local, sigma_sq_global), atol=0.1, rtol=0.1
         )
 
 
@@ -151,16 +147,14 @@ class TestFitnessPotential:
             epsilon_Sigma=0.01,
             rescale_amplitude=1.0,
             sigma_var_min=0.1,
-            viscous_length_scale=1.0
+            viscous_length_scale=1.0,
         )
 
         def measurement_fn(x):
             # Simple quadratic measurement
             return -torch.sum(x**2, dim=-1)
 
-        return FitnessPotential(
-            localization, adaptive_params, measurement_fn, device, dtype
-        )
+        return FitnessPotential(localization, adaptive_params, measurement_fn, device, dtype)
 
     def test_z_score_regularization(self, fitness_potential, device, dtype):
         """Test that Z-score is well-defined even with zero variance."""
@@ -234,7 +228,7 @@ class TestAdaptiveKineticOperator:
             epsilon_Sigma=0.01,
             rescale_amplitude=1.0,
             sigma_var_min=0.1,
-            viscous_length_scale=1.0
+            viscous_length_scale=1.0,
         )
 
         def measurement_fn(x):
@@ -273,9 +267,7 @@ class TestAdaptiveKineticOperator:
         x_alive = torch.randn(5, 2, device=device, dtype=dtype)
         alive_mask = torch.ones(5, dtype=torch.bool, device=device)
 
-        Sigma_reg = kinetic_operator._compute_diffusion_tensor(
-            x_alive, x_alive, alive_mask
-        )
+        Sigma_reg = kinetic_operator._compute_diffusion_tensor(x_alive, x_alive, alive_mask)
 
         assert Sigma_reg.shape == (5, 2, 2)
 
@@ -303,10 +295,10 @@ class TestGeometricGas:
                 epsilon_Sigma=0.01,
                 rescale_amplitude=1.0,
                 sigma_var_min=0.1,
-                viscous_length_scale=1.0
+                viscous_length_scale=1.0,
             ),
             device=str(device),
-            dtype="float32" if dtype == torch.float32 else "float64"
+            dtype="float32" if dtype == torch.float32 else "float64",
         )
 
         return GeometricGas(params)
@@ -324,7 +316,7 @@ class TestGeometricGas:
         """Test that a single step executes without errors."""
         state = geometric_gas.initialize_state()
 
-        state_cloned, state_final = geometric_gas.step(state)
+        _state_cloned, state_final = geometric_gas.step(state)
 
         assert state_final.x.shape == (20, 2)
         assert state_final.v.shape == (20, 2)
@@ -349,7 +341,7 @@ class TestGeometricGas:
         result = geometric_gas.run(n_steps)
 
         # Initial and final positions
-        x_init = result["x"][0]
+        result["x"][0]
         x_final = result["x"][-1]
 
         # Check that walkers remain in reasonable bounds (not diverging)
@@ -374,7 +366,7 @@ class TestRhoDependentBehavior:
         ])
 
         measurement = torch.cat([
-            torch.ones(5, device=device, dtype=dtype),   # Group 1: high fitness
+            torch.ones(5, device=device, dtype=dtype),  # Group 1: high fitness
             torch.zeros(5, device=device, dtype=dtype),  # Group 2: low fitness
         ])
 
@@ -385,9 +377,7 @@ class TestRhoDependentBehavior:
         # Query point in Group 1
         x_query_group1 = torch.tensor([[-5.0, -5.0]], device=device, dtype=dtype)
 
-        mu_local, _ = kernel_small.compute_localized_moments(
-            x_query_group1, x_alive, measurement
-        )
+        mu_local, _ = kernel_small.compute_localized_moments(x_query_group1, x_alive, measurement)
 
         # Should be close to Group 1 mean (1.0), not global mean (0.5)
         # The distance between groups is 10*sqrt(2) ~ 14, much larger than rho=1.0
@@ -413,12 +403,12 @@ class TestRhoDependentBehavior:
 
         x_query_group1 = torch.tensor([[-5.0, 0.0]], device=device, dtype=dtype)
 
-        mu_global, _ = kernel_large.compute_localized_moments(
-            x_query_group1, x_alive, measurement
-        )
+        mu_global, _ = kernel_large.compute_localized_moments(x_query_group1, x_alive, measurement)
 
         # Should be close to global mean (0.5)
-        torch.testing.assert_close(mu_global[0], torch.tensor(0.5, dtype=dtype), atol=0.15, rtol=0.15)
+        torch.testing.assert_close(
+            mu_global[0], torch.tensor(0.5, dtype=dtype), atol=0.15, rtol=0.15
+        )
 
 
 if __name__ == "__main__":

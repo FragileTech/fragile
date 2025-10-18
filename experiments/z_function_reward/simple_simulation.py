@@ -4,27 +4,30 @@ Simplified Z-reward simulation to get empirical data quickly.
 Focus: Just run it, see if QSD localizes at zeta zeros.
 """
 
-import torch
-import numpy as np
 from pathlib import Path
 
+import matplotlib
+import numpy as np
+import torch
+from z_reward import get_first_zeta_zeros, ZFunctionReward
+
 from fragile.euclidean_gas import (
+    CloningParams,
     EuclideanGas,
     EuclideanGasParams,
     LangevinParams,
-    CloningParams,
     PotentialParams,
 )
-from z_reward import ZFunctionReward, get_first_zeta_zeros
 
-import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 
 # Global Z-reward instance (workaround for Pydantic)
 _global_z_reward = None
 _global_ell_conf = None
+
 
 class ZRewardPotential(PotentialParams):
     """Potential combining confinement and Z-function attraction."""
@@ -49,9 +52,9 @@ class ZRewardPotential(PotentialParams):
 def run_simulation():
     """Run the simulation and analyze results."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("Z-FUNCTION REWARD SIMULATION - EMPIRICAL INVESTIGATION")
-    print("="*70)
+    print("=" * 70)
 
     # Parameters
     N = 500
@@ -60,7 +63,7 @@ def run_simulation():
     epsilon = 0.5
     ell_conf = 50.0
 
-    print(f"\nParameters:")
+    print("\nParameters:")
     print(f"  N={N} walkers, d={d}")
     print(f"  ε={epsilon} (Z regularization)")
     print(f"  ℓ_conf={ell_conf}")
@@ -100,14 +103,16 @@ def run_simulation():
     radii_history = []
 
     for step in range(n_steps):
-        state_cloned, state = gas.step(state)
+        _state_cloned, state = gas.step(state)
 
         # Store radii
         radii = torch.norm(state.x, dim=-1).cpu().numpy()
         radii_history.append(radii)
 
         if (step + 1) % 1000 == 0:
-            print(f"  Step {step+1}/{n_steps}, mean r={radii.mean():.2f}, std r={radii.std():.2f}")
+            print(
+                f"  Step {step + 1}/{n_steps}, mean r={radii.mean():.2f}, std r={radii.std():.2f}"
+            )
 
     radii_history = np.array(radii_history)
 
@@ -123,24 +128,26 @@ def run_simulation():
     zeros = get_first_zeta_zeros(15)
     zeros_in_range = zeros[zeros < ell_conf]
 
-    print(f"\nFirst 10 zeta zeros:")
+    print("\nFirst 10 zeta zeros:")
     for i, t in enumerate(zeros[:10]):
-        print(f"  t_{i+1} = {t:.6f}")
+        print(f"  t_{i + 1} = {t:.6f}")
 
     # Plot results
-    fig, axes = plt.subplots(3, 1, figsize=(14, 12))
+    _fig, axes = plt.subplots(3, 1, figsize=(14, 12))
 
     # Plot 1: Time evolution of radii
     times = np.arange(n_steps)
     mean_r = radii_history.mean(axis=1)
     std_r = radii_history.std(axis=1)
 
-    axes[0].plot(times, mean_r, 'b-', linewidth=1.5, label='Mean radius')
+    axes[0].plot(times, mean_r, "b-", linewidth=1.5, label="Mean radius")
     axes[0].fill_between(times, mean_r - std_r, mean_r + std_r, alpha=0.3)
-    axes[0].axhline(zeros[0], color='r', linestyle='--', alpha=0.7, label=f'First zero t₁={zeros[0]:.2f}')
-    axes[0].set_xlabel('Step')
-    axes[0].set_ylabel('Radial coordinate')
-    axes[0].set_title('Convergence to QSD')
+    axes[0].axhline(
+        zeros[0], color="r", linestyle="--", alpha=0.7, label=f"First zero t₁={zeros[0]:.2f}"
+    )
+    axes[0].set_xlabel("Step")
+    axes[0].set_ylabel("Radial coordinate")
+    axes[0].set_title("Convergence to QSD")
     axes[0].legend()
     axes[0].grid(True, alpha=0.3)
 
@@ -149,34 +156,45 @@ def run_simulation():
     hist, bin_edges = np.histogram(qsd_radii, bins=bins, density=True)
     bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
 
-    axes[1].bar(bin_centers, hist, width=bin_centers[1]-bin_centers[0],
-                alpha=0.6, color='blue', label='QSD density')
+    axes[1].bar(
+        bin_centers,
+        hist,
+        width=bin_centers[1] - bin_centers[0],
+        alpha=0.6,
+        color="blue",
+        label="QSD density",
+    )
 
     for i, t in enumerate(zeros_in_range):
-        axes[1].axvline(t, color='red', linestyle='--', alpha=0.7, linewidth=2)
+        axes[1].axvline(t, color="red", linestyle="--", alpha=0.7, linewidth=2)
 
-    axes[1].set_xlabel('Radial coordinate ||x||')
-    axes[1].set_ylabel('Probability density')
-    axes[1].set_title('QSD Distribution vs Zeta Zero Locations')
+    axes[1].set_xlabel("Radial coordinate ||x||")
+    axes[1].set_ylabel("Probability density")
+    axes[1].set_title("QSD Distribution vs Zeta Zero Locations")
     axes[1].grid(True, alpha=0.3)
     axes[1].set_xlim(0, ell_conf)
 
     # Plot 3: Zoom on first zeros
-    t_max_zoom = zeros[min(4, len(zeros_in_range)-1)] * 1.3
+    t_max_zoom = zeros[min(4, len(zeros_in_range) - 1)] * 1.3
     mask = bin_centers < t_max_zoom
 
-    axes[2].bar(bin_centers[mask], hist[mask],
-                width=bin_centers[1]-bin_centers[0],
-                alpha=0.6, color='blue')
+    axes[2].bar(
+        bin_centers[mask],
+        hist[mask],
+        width=bin_centers[1] - bin_centers[0],
+        alpha=0.6,
+        color="blue",
+    )
 
     for i, t in enumerate(zeros[:5]):
         if t < t_max_zoom:
-            axes[2].axvline(t, color='red', linestyle='--', alpha=0.7,
-                           linewidth=2, label=f't_{i+1}={t:.2f}')
+            axes[2].axvline(
+                t, color="red", linestyle="--", alpha=0.7, linewidth=2, label=f"t_{i + 1}={t:.2f}"
+            )
 
-    axes[2].set_xlabel('Radial coordinate ||x||')
-    axes[2].set_ylabel('Probability density')
-    axes[2].set_title('QSD Distribution (Zoomed on First Zeros)')
+    axes[2].set_xlabel("Radial coordinate ||x||")
+    axes[2].set_ylabel("Probability density")
+    axes[2].set_title("QSD Distribution (Zoomed on First Zeros)")
     axes[2].legend(fontsize=9)
     axes[2].grid(True, alpha=0.3)
 
@@ -200,15 +218,17 @@ def run_simulation():
         nearest_idx = np.argmin(np.abs(zeros - peak))
         nearest_zero = zeros[nearest_idx]
         dist = abs(peak - nearest_zero)
-        print(f"  Peak {i+1}: r={peak:.4f}, nearest zero t_{nearest_idx+1}={nearest_zero:.4f}, dist={dist:.4f}")
+        print(
+            f"  Peak {i + 1}: r={peak:.4f}, nearest zero t_{nearest_idx + 1}={nearest_zero:.4f}, dist={dist:.4f}"
+        )
 
     # Save data
     np.save("experiments/z_function_reward/results/qsd_radii.npy", qsd_radii)
     np.save("experiments/z_function_reward/results/zeros.npy", zeros)
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("SUMMARY")
-    print("="*70)
+    print("=" * 70)
     print(f"QSD peaks: {len(peak_locs)}")
     print(f"Zeta zeros in range: {len(zeros_in_range)}")
 
@@ -219,7 +239,7 @@ def run_simulation():
         print("\n⚠ QSD doesn't show clear multi-peak structure")
         print("→ May need different parameters (smaller ε, larger N, more steps)")
 
-    print("="*70)
+    print("=" * 70)
 
     return qsd_radii, zeros
 

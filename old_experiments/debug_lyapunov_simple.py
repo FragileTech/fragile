@@ -1,16 +1,19 @@
 """
 Simple debug script to test individual components before full notebook.
 """
+
 import torch
+
+from fragile.bounds import TorchBounds
 from fragile.euclidean_gas import (
+    CloningParams,
     EuclideanGas,
     EuclideanGasParams,
     LangevinParams,
-    CloningParams,
     SimpleQuadraticPotential,
 )
-from fragile.bounds import TorchBounds
 from fragile.lyapunov import VectorizedOps
+
 
 print("=" * 80)
 print("SIMPLE LYAPUNOV DEBUG")
@@ -26,36 +29,20 @@ N = 20  # Small number for fast testing
 d = 2
 
 # Bounds
-bounds = TorchBounds(
-    high=torch.tensor([5.0, 5.0]),
-    low=torch.tensor([-5.0, -5.0]),
-    device=device
-)
+bounds = TorchBounds(high=torch.tensor([5.0, 5.0]), low=torch.tensor([-5.0, -5.0]), device=device)
 
 # Optimum at center
 x_opt = torch.tensor([0.0, 0.0], device=device)
 
 # Potential
-quadratic_potential = SimpleQuadraticPotential(
-    x_opt=x_opt,
-    reward_alpha=1.0,
-    reward_beta=0.0
-)
+quadratic_potential = SimpleQuadraticPotential(x_opt=x_opt, reward_alpha=1.0, reward_beta=0.0)
 
 # Langevin
-langevin_params = LangevinParams(
-    gamma=1.0,
-    beta=1.0,
-    delta_t=0.01,
-    integrator="baoab"
-)
+langevin_params = LangevinParams(gamma=1.0, beta=1.0, delta_t=0.01, integrator="baoab")
 
 # Cloning
 cloning_params = CloningParams(
-    sigma_x=0.5,
-    lambda_alg=1.0,
-    alpha_restitution=0.5,
-    use_inelastic_collision=True
+    sigma_x=0.5, lambda_alg=1.0, alpha_restitution=0.5, use_inelastic_collision=True
 )
 
 # Combined parameters
@@ -67,7 +54,7 @@ params = EuclideanGasParams(
     cloning=cloning_params,
     bounds=bounds,
     device=device,
-    dtype="float32"
+    dtype="float32",
 )
 
 print("✓ Parameters created successfully")
@@ -147,6 +134,7 @@ print("\n6. Testing clustering analysis (potential bottleneck)...")
 
 from fragile.lyapunov import identify_high_error_clusters
 
+
 # Reset to initial state
 state = gas.initialize_state(x_init, v_init)
 alive_mask = bounds.contains(state.x)
@@ -163,9 +151,7 @@ if alive_mask.sum() >= 2:
         print(f"  lambda_alg = {lambda_alg:.4f}")
 
         clusters = identify_high_error_clusters(
-            state, alive_mask,
-            epsilon=epsilon,
-            lambda_alg=lambda_alg
+            state, alive_mask, epsilon=epsilon, lambda_alg=lambda_alg
         )
 
         print("✓ Clustering completed")
@@ -175,6 +161,7 @@ if alive_mask.sum() >= 2:
     except Exception as e:
         print(f"✗ Clustering failed: {e}")
         import traceback
+
         traceback.print_exc()
 else:
     print("  Skipping: too few alive walkers")

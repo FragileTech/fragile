@@ -41,8 +41,7 @@ from fragile.euclidean_gas import SwarmState
 
 
 def compute_internal_variance_position(
-    state: SwarmState,
-    alive_mask: Tensor | None = None
+    state: SwarmState, alive_mask: Tensor | None = None
 ) -> Tensor:
     """Compute positional internal variance V_Var,x(S) (N-normalized).
 
@@ -88,14 +87,11 @@ def compute_internal_variance_position(
     squared_deviations = torch.sum(delta_x**2, dim=1)  # [k_alive]
 
     # N-normalized sum (framework definition)
-    V_var_x = squared_deviations.sum() / N
-
-    return V_var_x
+    return squared_deviations.sum() / N
 
 
 def compute_internal_variance_velocity(
-    state: SwarmState,
-    alive_mask: Tensor | None = None
+    state: SwarmState, alive_mask: Tensor | None = None
 ) -> Tensor:
     """Compute velocity internal variance V_Var,v(S) (N-normalized).
 
@@ -141,15 +137,10 @@ def compute_internal_variance_velocity(
     squared_deviations = torch.sum(delta_v**2, dim=1)  # [k_alive]
 
     # N-normalized sum (framework definition)
-    V_var_v = squared_deviations.sum() / N
-
-    return V_var_v
+    return squared_deviations.sum() / N
 
 
-def compute_total_lyapunov(
-    state: SwarmState,
-    alive_mask: Tensor | None = None
-) -> Tensor:
+def compute_total_lyapunov(state: SwarmState, alive_mask: Tensor | None = None) -> Tensor:
     """Compute total Lyapunov function V_total(S).
 
     Following the framework definition:

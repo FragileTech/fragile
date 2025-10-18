@@ -11,15 +11,16 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 import numpy as np
-import torch
 from scipy.stats import gaussian_kde
+import torch
 
 from fragile.benchmarks import MixtureOfGaussians
 from fragile.euclidean_gas import PotentialParams
 
+
 if TYPE_CHECKING:
-    from fragile.geometric_gas import GeometricGas
     from fragile.euclidean_gas import SwarmState
+    from fragile.geometric_gas import GeometricGas
 
 
 class MixtureBasedPotential(PotentialParams):
@@ -45,7 +46,7 @@ def create_multimodal_potential(
     stds: torch.Tensor | None = None,
     weights: torch.Tensor | None = None,
     bounds_range: tuple[float, float] = (-8.0, 8.0),
-    seed: int | None = None
+    seed: int | None = None,
 ) -> tuple[MixtureBasedPotential, MixtureOfGaussians]:
     """Create a multimodal potential for convergence testing.
 
@@ -65,9 +66,9 @@ def create_multimodal_potential(
         # Default: well-separated modes
         if dims == 2 and n_gaussians == 3:
             centers = torch.tensor([
-                [0.0, 0.0],    # Mode 1: Origin (highest weight)
-                [4.0, 3.0],    # Mode 2: Upper right
-                [-3.0, 2.5],   # Mode 3: Upper left
+                [0.0, 0.0],  # Mode 1: Origin (highest weight)
+                [4.0, 3.0],  # Mode 2: Upper right
+                [-3.0, 2.5],  # Mode 3: Upper left
             ])
         else:
             # Random centers
@@ -79,9 +80,9 @@ def create_multimodal_potential(
         # Default: varying spread
         if dims == 2 and n_gaussians == 3:
             stds = torch.tensor([
-                [0.8, 0.8],    # Mode 1: Tight peak
-                [1.0, 1.0],    # Mode 2: Medium spread
-                [1.2, 1.2],    # Mode 3: Wider peak
+                [0.8, 0.8],  # Mode 1: Tight peak
+                [1.0, 1.0],  # Mode 2: Medium spread
+                [1.2, 1.2],  # Mode 3: Wider peak
             ])
         else:
             stds = torch.ones(n_gaussians, dims) * 0.8
@@ -101,7 +102,7 @@ def create_multimodal_potential(
         stds=stds,
         weights=weights,
         bounds_range=bounds_range,
-        seed=seed
+        seed=seed,
     )
 
     # Wrap as potential
@@ -128,7 +129,7 @@ class ConvergenceMetrics:
         wasserstein_distance: float,
         lyapunov_value: float,
         mean_position: np.ndarray,
-        variance_position: float
+        variance_position: float,
     ):
         """Add metrics for a time step."""
         self.time.append(time)
@@ -162,9 +163,7 @@ class ConvergenceMetrics:
         return time_arr[valid_mask], kl_arr[valid_mask]
 
     def fit_exponential_decay(
-        self,
-        metric: str = "kl_divergence",
-        fit_start_time: int = 100
+        self, metric: str = "kl_divergence", fit_start_time: int = 100
     ) -> tuple[float, float] | None:
         """Fit exponential decay to a metric.
 
@@ -209,7 +208,7 @@ class ConvergenceAnalyzer:
         self,
         target_mixture: MixtureOfGaussians,
         target_centers: torch.Tensor,
-        target_weights: torch.Tensor
+        target_weights: torch.Tensor,
     ):
         """Initialize analyzer.
 
@@ -222,11 +221,7 @@ class ConvergenceAnalyzer:
         self.target_centers = target_centers
         self.target_weights = target_weights
 
-    def compute_kl_divergence_kde(
-        self,
-        samples: np.ndarray,
-        n_grid: int = 1000
-    ) -> float:
+    def compute_kl_divergence_kde(self, samples: np.ndarray, n_grid: int = 1000) -> float:
         """Approximate KL divergence using KDE for empirical distribution.
 
         KL(empirical || target) = ∫ p_emp(x) log(p_emp(x) / p_target(x)) dx
@@ -239,13 +234,13 @@ class ConvergenceAnalyzer:
             KL divergence (non-negative)
         """
         if len(samples) < 10:
-            return float('inf')
+            return float("inf")
 
         # Create KDE from samples
         try:
-            kde = gaussian_kde(samples.T, bw_method='scott')
+            kde = gaussian_kde(samples.T, bw_method="scott")
         except Exception:
-            return float('inf')
+            return float("inf")
 
         # Sample grid points from empirical distribution
         grid_samples = kde.resample(n_grid).T
@@ -258,12 +253,12 @@ class ConvergenceAnalyzer:
         U_vals = self.target_mixture(grid_samples_torch).numpy()
         p_target = np.exp(-U_vals)
         Z = p_target.sum()
-        p_target = p_target / Z
+        p_target /= Z
 
         # KL divergence (with numerical stability)
         mask = (p_emp > 1e-10) & (p_target > 1e-10)
         if not mask.any():
-            return float('inf')
+            return float("inf")
 
         kl = np.sum(p_emp[mask] * np.log(p_emp[mask] / p_target[mask])) / n_grid
 
@@ -335,7 +330,7 @@ class ConvergenceExperiment:
         self,
         gas: GeometricGas,
         analyzer: ConvergenceAnalyzer,
-        save_snapshots_at: list[int] | None = None
+        save_snapshots_at: list[int] | None = None,
     ):
         """Initialize experiment.
 
@@ -357,7 +352,7 @@ class ConvergenceExperiment:
         x_init: torch.Tensor | None = None,
         v_init: torch.Tensor | None = None,
         measure_every: int = 10,
-        verbose: bool = True
+        verbose: bool = True,
     ) -> tuple[ConvergenceMetrics, dict[int, torch.Tensor]]:
         """Run convergence experiment.
 
@@ -436,7 +431,7 @@ class ConvergenceExperiment:
             kappa_kl, C_kl = kl_fit
             summary["kl_convergence_rate"] = kappa_kl
             summary["kl_constant"] = C_kl
-            summary["kl_half_life"] = np.log(2) / kappa_kl if kappa_kl > 0 else float('inf')
+            summary["kl_half_life"] = np.log(2) / kappa_kl if kappa_kl > 0 else float("inf")
 
         if w2_fit is not None:
             kappa_w2, C_w2 = w2_fit

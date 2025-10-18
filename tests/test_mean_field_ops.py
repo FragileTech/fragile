@@ -51,7 +51,9 @@ class TestPatchedStdDev:
         expected_approx = torch.sqrt(var_large)
         relative_error = torch.abs(sigma_prime - expected_approx) / expected_approx
 
-        assert relative_error < 0.001, f"Should approximate sqrt for large V, got error {relative_error}"
+        assert (
+            relative_error < 0.001
+        ), f"Should approximate sqrt for large V, got error {relative_error}"
 
     def test_patched_std_dev_positive(self):
         """Should always be strictly positive."""
@@ -117,14 +119,14 @@ class TestDistanceToRandomCompanion:
 
     def test_phase_space_mode(self):
         """With lambda_alg>0, velocity should contribute."""
-        N, d = 2, 1
+        N, _d = 2, 1
         # Same position, different velocities
         x = torch.tensor([[0.0], [0.0]])
         v = torch.tensor([[0.0], [1.0]])
         alive_mask = torch.ones(N, dtype=torch.bool)
 
         dist_pos_only = distance_to_random_companion(x, v, alive_mask, lambda_alg=0.0)
-        dist_phase = distance_to_random_companion(x, v, alive_mask, lambda_alg=1.0)
+        distance_to_random_companion(x, v, alive_mask, lambda_alg=1.0)
 
         # Position-only should give 0, phase-space should give nonzero
         assert torch.allclose(dist_pos_only[0], torch.tensor(0.0), atol=1e-6) or torch.allclose(

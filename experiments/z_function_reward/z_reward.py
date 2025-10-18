@@ -10,11 +10,10 @@ eigenvalues reflect zero locations → RH proof via self-adjointness.
 
 from __future__ import annotations
 
-import torch
-from torch import Tensor
 import mpmath
 import numpy as np
-from typing import Callable
+import torch
+from torch import Tensor
 
 
 class ZFunctionReward:
@@ -69,9 +68,7 @@ class ZFunctionReward:
         t_grid = np.linspace(self.t_min, self.t_max, self.cache_size)
 
         # Compute Z(t) using mpmath (high precision)
-        z_values = np.array([
-            float(mpmath.siegelz(t)) for t in t_grid
-        ])
+        z_values = np.array([float(mpmath.siegelz(t)) for t in t_grid])
 
         # Store as torch tensors
         self.t_cache = torch.tensor(t_grid, dtype=torch.float32)
@@ -136,9 +133,7 @@ class ZFunctionReward:
         z = self.Z(r)  # [N]
 
         # Compute reward with regularization
-        reward = 1.0 / (z**2 + self.epsilon**2)
-
-        return reward
+        return 1.0 / (z**2 + self.epsilon**2)
 
     def reward_squared_z(self, x: Tensor) -> Tensor:
         """
@@ -154,7 +149,7 @@ class ZFunctionReward:
         """
         r = torch.norm(x, dim=-1)
         z = self.Z(r)
-        return -z**2
+        return -(z**2)
 
     def potential(self, x: Tensor) -> Tensor:
         """
@@ -212,7 +207,8 @@ def visualize_z_landscape(
         n_points: Number of points for plotting
     """
     import matplotlib
-    matplotlib.use('Agg')  # Non-interactive backend
+
+    matplotlib.use("Agg")  # Non-interactive backend
     import matplotlib.pyplot as plt
 
     t = np.linspace(t_range[0], t_range[1], n_points)
@@ -230,33 +226,38 @@ def visualize_z_landscape(
     zeros_in_range = zeros[zeros < t_range[1]]
 
     # Plot
-    fig, axes = plt.subplots(2, 1, figsize=(12, 8))
+    _fig, axes = plt.subplots(2, 1, figsize=(12, 8))
 
     # Plot Z function
-    axes[0].plot(t, z_values, 'b-', linewidth=1)
-    axes[0].axhline(0, color='k', linestyle='--', alpha=0.3)
-    axes[0].plot(zeros_in_range, np.zeros_like(zeros_in_range), 'ro',
-                 markersize=8, label='Zeta zeros')
-    axes[0].set_xlabel('t')
-    axes[0].set_ylabel('Z(t)')
-    axes[0].set_title('Riemann-Siegel Z Function')
+    axes[0].plot(t, z_values, "b-", linewidth=1)
+    axes[0].axhline(0, color="k", linestyle="--", alpha=0.3)
+    axes[0].plot(
+        zeros_in_range, np.zeros_like(zeros_in_range), "ro", markersize=8, label="Zeta zeros"
+    )
+    axes[0].set_xlabel("t")
+    axes[0].set_ylabel("Z(t)")
+    axes[0].set_title("Riemann-Siegel Z Function")
     axes[0].legend()
     axes[0].grid(True, alpha=0.3)
 
     # Plot reward landscape
-    axes[1].plot(t, rewards, 'g-', linewidth=1)
-    axes[1].plot(zeros_in_range,
-                 1.0 / z_reward.epsilon**2 * np.ones_like(zeros_in_range),
-                 'ro', markersize=8, label='Peak locations (zeros)')
-    axes[1].set_xlabel('t (radial coordinate ||x||)')
-    axes[1].set_ylabel('r(x) = 1/(Z²+ε²)')
-    axes[1].set_title(f'Reward Landscape (ε={z_reward.epsilon})')
+    axes[1].plot(t, rewards, "g-", linewidth=1)
+    axes[1].plot(
+        zeros_in_range,
+        1.0 / z_reward.epsilon**2 * np.ones_like(zeros_in_range),
+        "ro",
+        markersize=8,
+        label="Peak locations (zeros)",
+    )
+    axes[1].set_xlabel("t (radial coordinate ||x||)")
+    axes[1].set_ylabel("r(x) = 1/(Z²+ε²)")
+    axes[1].set_title(f"Reward Landscape (ε={z_reward.epsilon})")
     axes[1].legend()
     axes[1].grid(True, alpha=0.3)
-    axes[1].set_yscale('log')
+    axes[1].set_yscale("log")
 
     plt.tight_layout()
-    plt.savefig('experiments/z_function_reward/z_landscape.png', dpi=150)
+    plt.savefig("experiments/z_function_reward/z_landscape.png", dpi=150)
     print("Saved visualization to experiments/z_function_reward/z_landscape.png")
     plt.close()
 
@@ -279,14 +280,14 @@ if __name__ == "__main__":
     x_test = torch.tensor(zeros, dtype=torch.float32).unsqueeze(-1)  # [10, 1]
 
     rewards = z_reward.reward(x_test)
-    print(f"\nRewards at zero locations (should be high):")
+    print("\nRewards at zero locations (should be high):")
     for i, (t, r) in enumerate(zip(zeros, rewards)):
-        print(f"  t_{i+1} = {t:.4f}: r = {r:.4f}")
+        print(f"  t_{i + 1} = {t:.4f}: r = {r:.4f}")
 
     # Test at non-zero locations
     x_nonzero = torch.tensor([[15.5], [25.3], [35.7]], dtype=torch.float32)
     rewards_nonzero = z_reward.reward(x_nonzero)
-    print(f"\nRewards at non-zero locations (should be lower):")
+    print("\nRewards at non-zero locations (should be lower):")
     for x, r in zip(x_nonzero, rewards_nonzero):
         print(f"  t = {x[0]:.4f}: r = {r:.4f}")
 

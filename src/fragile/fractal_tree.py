@@ -1,6 +1,6 @@
 import torch
 
-from fragile.fractalai import calculate_clone, calculate_virtual_reward, clone_tensor
+from fragile.fractalai import calculate_clone, calculate_fitness, clone_tensor
 
 
 def get_is_cloned(compas_ix, will_clone):
@@ -94,7 +94,7 @@ class FractalTree:
         }
 
     def step_tree(self):
-        self.virtual_reward, self.distance_ix, self.distance = calculate_virtual_reward(
+        self.virtual_reward, self.distance_ix, self.distance = calculate_fitness(
             self.observ, -1 * self.reward, self.oobs, return_distance=True, return_compas=True
         )
         self.is_leaf = get_is_leaf(self.parent)

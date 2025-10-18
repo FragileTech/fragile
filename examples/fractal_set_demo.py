@@ -36,10 +36,10 @@ def main():
             sigma_x=0.5,
             lambda_alg=0.1,
             alpha_restitution=0.5,
-            companion_selection_method='softmax',
+            companion_selection_method="softmax",
         ),
-        device='cpu',
-        dtype='float32',
+        device="cpu",
+        dtype="float32",
     )
     gas = EuclideanGas(params)
     print(f"   Created EuclideanGas with N={params.N}, d={params.d}")
@@ -91,11 +91,13 @@ def main():
 
     # Cloning events
     events = fs.get_cloning_events()
-    print(f"\n   Cloning events:")
+    print("\n   Cloning events:")
     print(f"     - Total: {len(events)}")
     if events:
-        print(f"     - First event: parent={events[0]['parent_id']}, "
-              f"child={events[0]['child_id']}, t={events[0]['timestep']}")
+        print(
+            f"     - First event: parent={events[0]['parent_id']}, "
+            f"child={events[0]['child_id']}, t={events[0]['timestep']}"
+        )
 
     # 4. Save and load FractalSet
     print("\n4. Saving and loading FractalSet...")
@@ -113,8 +115,8 @@ def main():
 
     # Verify data matches
     stats_loaded = fs_loaded.summary_statistics()
-    assert stats_loaded['total_nodes'] == stats['total_nodes']
-    assert abs(stats_loaded['final_variance'] - stats['final_variance']) < 1e-6
+    assert stats_loaded["total_nodes"] == stats["total_nodes"]
+    assert abs(stats_loaded["final_variance"] - stats["final_variance"]) < 1e-6
     print("   Verification: Data matches original!")
 
     print("\n" + "=" * 80)
@@ -122,5 +124,5 @@ def main():
     print("=" * 80)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

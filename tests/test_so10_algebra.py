@@ -11,16 +11,19 @@ Usage:
     python tests/test_so10_algebra.py  # Run standalone
 """
 
+import sys
+from typing import Dict, List, Tuple
+
 import numpy as np
 import pytest
-from typing import Dict, Tuple, List
 
 
 # =============================================================================
 # Gamma Matrix Construction
 # =============================================================================
 
-def construct_gamma_matrices() -> Tuple[List[np.ndarray], np.ndarray]:
+
+def construct_gamma_matrices() -> tuple[list[np.ndarray], np.ndarray]:
     """
     Construct 10D Dirac gamma matrices Γ^A (A=0,...,9) satisfying:
         {Γ^A, Γ^B} = 2η^{AB} I_16
@@ -37,7 +40,7 @@ def construct_gamma_matrices() -> Tuple[List[np.ndarray], np.ndarray]:
     """
     # Define basic matrices
     I2 = np.eye(2, dtype=complex)
-    I4 = np.eye(4, dtype=complex)
+    np.eye(4, dtype=complex)
 
     # Pauli matrices
     sigma1 = np.array([[0, 1], [1, 0]], dtype=complex)
@@ -46,10 +49,10 @@ def construct_gamma_matrices() -> Tuple[List[np.ndarray], np.ndarray]:
 
     # 4D gamma matrices (Dirac representation, corrected signs)
     # These must satisfy {γ^μ, γ^ν} = 2η^{μν} with η^{00} = -1, η^{ii} = +1
-    gamma0 = 1j * np.block([[I2, np.zeros((2,2))], [np.zeros((2,2)), -I2]])
-    gamma1 = 1j * np.block([[np.zeros((2,2)), sigma1], [-sigma1, np.zeros((2,2))]])
-    gamma2 = 1j * np.block([[np.zeros((2,2)), sigma2], [-sigma2, np.zeros((2,2))]])
-    gamma3 = 1j * np.block([[np.zeros((2,2)), sigma3], [-sigma3, np.zeros((2,2))]])
+    gamma0 = 1j * np.block([[I2, np.zeros((2, 2))], [np.zeros((2, 2)), -I2]])
+    gamma1 = 1j * np.block([[np.zeros((2, 2)), sigma1], [-sigma1, np.zeros((2, 2))]])
+    gamma2 = 1j * np.block([[np.zeros((2, 2)), sigma2], [-sigma2, np.zeros((2, 2))]])
+    gamma3 = 1j * np.block([[np.zeros((2, 2)), sigma3], [-sigma3, np.zeros((2, 2))]])
 
     # Chirality operator (γ^5 = iγ^0γ^1γ^2γ^3)
     gamma5 = gamma0 @ gamma1 @ gamma2 @ gamma3 / (1j)  # Remove the extra 1j from product
@@ -75,16 +78,16 @@ def construct_gamma_matrices() -> Tuple[List[np.ndarray], np.ndarray]:
 
     # Embed into 16×16: γ⁵ ⊗ (8×8 Cl(6) matrix)
     gammas = [
-        kron3(gamma0, I2, I2),           # Γ⁰
-        kron3(gamma1, I2, I2),           # Γ¹
-        kron3(gamma2, I2, I2),           # Γ²
-        kron3(gamma3, I2, I2),           # Γ³
-        np.kron(gamma5, cl6_gamma1),     # Γ⁴
-        np.kron(gamma5, cl6_gamma2),     # Γ⁵
-        np.kron(gamma5, cl6_gamma3),     # Γ⁶
-        np.kron(gamma5, cl6_gamma4),     # Γ⁷
-        np.kron(gamma5, cl6_gamma5),     # Γ⁸
-        np.kron(gamma5, cl6_gamma6),     # Γ⁹
+        kron3(gamma0, I2, I2),  # Γ⁰
+        kron3(gamma1, I2, I2),  # Γ¹
+        kron3(gamma2, I2, I2),  # Γ²
+        kron3(gamma3, I2, I2),  # Γ³
+        np.kron(gamma5, cl6_gamma1),  # Γ⁴
+        np.kron(gamma5, cl6_gamma2),  # Γ⁵
+        np.kron(gamma5, cl6_gamma3),  # Γ⁶
+        np.kron(gamma5, cl6_gamma4),  # Γ⁷
+        np.kron(gamma5, cl6_gamma5),  # Γ⁸
+        np.kron(gamma5, cl6_gamma6),  # Γ⁹
     ]
 
     # Metric tensor
@@ -96,6 +99,7 @@ def construct_gamma_matrices() -> Tuple[List[np.ndarray], np.ndarray]:
 # =============================================================================
 # Test: Clifford Algebra
 # =============================================================================
+
 
 def test_clifford_algebra():
     """Test {Γ^A, Γ^B} = 2η^{AB} I_16 for all A, B."""
@@ -113,18 +117,20 @@ def test_clifford_algebra():
 
             if diff > tol:
                 failures.append({
-                    'A': A,
-                    'B': B,
-                    'diff': diff,
-                    'anticomm_trace': np.trace(anticomm),
-                    'expected_trace': np.trace(expected)
+                    "A": A,
+                    "B": B,
+                    "diff": diff,
+                    "anticomm_trace": np.trace(anticomm),
+                    "expected_trace": np.trace(expected),
                 })
 
     if failures:
         print("\n❌ CLIFFORD ALGEBRA FAILURES:")
         for f in failures:
             print(f"  {{Γ^{f['A']}, Γ^{f['B']}}} - 2η^{{AB}}I = {f['diff']:.2e}")
-            print(f"    Tr(anticomm) = {f['anticomm_trace']:.2f}, expected = {f['expected_trace']:.2f}")
+            print(
+                f"    Tr(anticomm) = {f['anticomm_trace']:.2f}, expected = {f['expected_trace']:.2f}"
+            )
 
     assert len(failures) == 0, f"Clifford algebra violated in {len(failures)} cases"
 
@@ -133,7 +139,8 @@ def test_clifford_algebra():
 # Test: SO(10) Generators
 # =============================================================================
 
-def construct_so10_generators(gammas: List[np.ndarray]) -> Dict[Tuple[int, int], np.ndarray]:
+
+def construct_so10_generators(gammas: list[np.ndarray]) -> dict[tuple[int, int], np.ndarray]:
     """
     Construct 45 SO(10) generators T^{AB} = (1/4)[Γ^A, Γ^B].
 
@@ -142,9 +149,9 @@ def construct_so10_generators(gammas: List[np.ndarray]) -> Dict[Tuple[int, int],
     """
     generators = {}
     for A in range(10):
-        for B in range(A+1, 10):
+        for B in range(A + 1, 10):
             T_AB = 0.25 * (gammas[A] @ gammas[B] - gammas[B] @ gammas[A])
-            generators[(A, B)] = T_AB
+            generators[A, B] = T_AB
     return generators
 
 
@@ -186,8 +193,8 @@ def test_so10_lie_algebra():
     ]
 
     for (A, B), (C, D) in test_pairs:
-        T_AB = generators[(A, B)]
-        T_CD = generators[(C, D)]
+        T_AB = generators[A, B]
+        T_CD = generators[C, D]
 
         commutator = T_AB @ T_CD - T_CD @ T_AB
 
@@ -223,7 +230,8 @@ def test_so10_lie_algebra():
 # Test: SU(3) Embedding
 # =============================================================================
 
-def construct_su3_generators(gammas: List[np.ndarray]) -> List[np.ndarray]:
+
+def construct_su3_generators(gammas: list[np.ndarray]) -> list[np.ndarray]:
     """
     Construct 8 SU(3) generators from SO(10) gamma matrices.
 
@@ -254,23 +262,23 @@ def construct_su3_generators(gammas: List[np.ndarray]) -> List[np.ndarray]:
     try:
         # Cartan subalgebra
         T3 = 0.25 * (
-            (idx[indices[0]] @ idx[indices[1]] - idx[indices[1]] @ idx[indices[0]]) -
-            (idx[indices[2]] @ idx[indices[3]] - idx[indices[3]] @ idx[indices[2]])
+            (idx[indices[0]] @ idx[indices[1]] - idx[indices[1]] @ idx[indices[0]])
+            - (idx[indices[2]] @ idx[indices[3]] - idx[indices[3]] @ idx[indices[2]])
         )
         su3_gens.append(T3)
 
         if len(indices) >= 6:
             T8 = (0.25 / np.sqrt(3)) * (
-                (idx[indices[0]] @ idx[indices[1]] - idx[indices[1]] @ idx[indices[0]]) +
-                (idx[indices[2]] @ idx[indices[3]] - idx[indices[3]] @ idx[indices[2]]) -
-                2 * (idx[indices[4]] @ idx[indices[5]] - idx[indices[5]] @ idx[indices[4]])
+                (idx[indices[0]] @ idx[indices[1]] - idx[indices[1]] @ idx[indices[0]])
+                + (idx[indices[2]] @ idx[indices[3]] - idx[indices[3]] @ idx[indices[2]])
+                - 2 * (idx[indices[4]] @ idx[indices[5]] - idx[indices[5]] @ idx[indices[4]])
             )
             su3_gens.append(T8)
 
         # Raising operators (ladder operators)
         T1 = 0.25 * (
-            (idx[indices[0]] @ idx[indices[2]] - idx[indices[2]] @ idx[indices[0]]) +
-            (idx[indices[1]] @ idx[indices[3]] - idx[indices[3]] @ idx[indices[1]])
+            (idx[indices[0]] @ idx[indices[2]] - idx[indices[2]] @ idx[indices[0]])
+            + (idx[indices[1]] @ idx[indices[3]] - idx[indices[3]] @ idx[indices[1]])
         )
         su3_gens.append(T1)
 
@@ -327,6 +335,7 @@ def test_su3_lie_algebra():
 # Test: Normalization
 # =============================================================================
 
+
 def test_generator_normalization():
     """Test Tr[T^{AB} T^{CD}] = (1/2)δ^{AB,CD}."""
     gammas, _ = construct_gamma_matrices()
@@ -347,7 +356,9 @@ def test_generator_normalization():
 
             diff = abs(trace - expected)
             if diff > tol:
-                failures.append(f"Tr[T^{{{A1}{B1}}} T^{{{A2}{B2}}}] = {trace:.3f}, expected {expected}")
+                failures.append(
+                    f"Tr[T^{{{A1}{B1}}} T^{{{A2}{B2}}}] = {trace:.3f}, expected {expected}"
+                )
 
     if failures:
         print("\n❌ NORMALIZATION FAILURES:")
@@ -361,25 +372,26 @@ def test_generator_normalization():
 # Summary Report
 # =============================================================================
 
+
 def print_test_summary():
     """Print a summary of all tests."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("SO(10) GUT Algebra Verification Summary")
-    print("="*70)
+    print("=" * 70)
 
     gammas, eta = construct_gamma_matrices()
     generators = construct_so10_generators(gammas)
 
     print(f"✓ Constructed {len(gammas)} gamma matrices (16×16 complex)")
     print(f"✓ Constructed {len(generators)} SO(10) generators")
-    print(f"✓ Metric: η = diag({', '.join(str(int(eta[i,i])) for i in range(10))})")
+    print(f"✓ Metric: η = diag({', '.join(str(int(eta[i, i])) for i in range(10))})")
     print("\nTests:")
     print("  1. Clifford algebra: {Γ^A, Γ^B} = 2η^{AB} I_16")
     print("  2. SO(10) generators: antisymmetric, traceless")
     print("  3. SO(10) Lie algebra: [T^{AB}, T^{CD}] structure")
     print("  4. SU(3) embedding: generator availability and closure")
     print("  5. Normalization: Tr[T^{AB} T^{CD}] = (1/2)δ^{AB,CD}")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
 
 # =============================================================================
@@ -420,9 +432,9 @@ if __name__ == "__main__":
             print(f"💥 {name} (error: {e})")
             failed += 1
 
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print(f"Results: {passed} passed, {failed} failed, {skipped} skipped")
-    print(f"{'='*70}\n")
+    print(f"{'=' * 70}\n")
 
     if failed > 0:
-        exit(1)
+        sys.exit(1)

@@ -31,12 +31,7 @@ class TestMixtureOfGaussians:
         assert mixture.weights.shape == (5,)
 
         # Check weights are normalized
-        torch.testing.assert_close(
-            mixture.weights.sum(),
-            torch.tensor(1.0),
-            atol=1e-6,
-            rtol=1e-6
-        )
+        torch.testing.assert_close(mixture.weights.sum(), torch.tensor(1.0), atol=1e-6, rtol=1e-6)
 
         # Check stds are positive
         assert (mixture.stds > 0).all()
@@ -47,26 +42,14 @@ class TestMixtureOfGaussians:
         n_gaussians = 3
 
         # Define custom parameters
-        centers = torch.tensor([
-            [0.0, 0.0],
-            [5.0, 5.0],
-            [-3.0, 2.0]
-        ])
+        centers = torch.tensor([[0.0, 0.0], [5.0, 5.0], [-3.0, 2.0]])
 
-        stds = torch.tensor([
-            [1.0, 1.0],
-            [0.5, 0.5],
-            [2.0, 1.5]
-        ])
+        stds = torch.tensor([[1.0, 1.0], [0.5, 0.5], [2.0, 1.5]])
 
         weights = torch.tensor([0.5, 0.3, 0.2])
 
         mixture = MixtureOfGaussians(
-            dims=dims,
-            n_gaussians=n_gaussians,
-            centers=centers,
-            stds=stds,
-            weights=weights
+            dims=dims, n_gaussians=n_gaussians, centers=centers, stds=stds, weights=weights
         )
 
         # Check parameters are stored correctly
@@ -81,11 +64,7 @@ class TestMixtureOfGaussians:
         weights = torch.tensor([2.0, 3.0])  # Not normalized
 
         mixture = MixtureOfGaussians(
-            dims=2,
-            n_gaussians=2,
-            centers=centers,
-            stds=stds,
-            weights=weights
+            dims=2, n_gaussians=2, centers=centers, stds=stds, weights=weights
         )
 
         # Should be normalized to [0.4, 0.6]
@@ -105,11 +84,7 @@ class TestMixtureOfGaussians:
 
     def test_minimum_at_best_center(self):
         """Test that minimum is at the center of highest-weighted Gaussian."""
-        centers = torch.tensor([
-            [0.0, 0.0],
-            [5.0, 5.0],
-            [10.0, 10.0]
-        ])
+        centers = torch.tensor([[0.0, 0.0], [5.0, 5.0], [10.0, 10.0]])
 
         stds = torch.ones(3, 2) * 0.5
 
@@ -117,11 +92,7 @@ class TestMixtureOfGaussians:
         weights = torch.tensor([0.6, 0.3, 0.1])
 
         mixture = MixtureOfGaussians(
-            dims=2,
-            n_gaussians=3,
-            centers=centers,
-            stds=stds,
-            weights=weights
+            dims=2, n_gaussians=3, centers=centers, stds=stds, weights=weights
         )
 
         # Best state should be the first center
@@ -155,12 +126,7 @@ class TestMixtureOfGaussians:
     def test_bounds(self):
         """Test that bounds are set correctly."""
         bounds_range = (-5.0, 15.0)
-        mixture = MixtureOfGaussians(
-            dims=3,
-            n_gaussians=2,
-            bounds_range=bounds_range,
-            seed=42
-        )
+        mixture = MixtureOfGaussians(dims=3, n_gaussians=2, bounds_range=bounds_range, seed=42)
 
         assert mixture.bounds_range == bounds_range
 
@@ -177,7 +143,7 @@ class TestMixtureOfGaussians:
             MixtureOfGaussians(
                 dims=3,  # dims=3 but centers have dims=2
                 n_gaussians=3,
-                centers=centers
+                centers=centers,
             )
 
     def test_invalid_stds_shape(self):
@@ -188,7 +154,7 @@ class TestMixtureOfGaussians:
             MixtureOfGaussians(
                 dims=3,
                 n_gaussians=3,  # n_gaussians=3 but stds have n_gaussians=2
-                stds=stds
+                stds=stds,
             )
 
     def test_invalid_stds_values(self):
@@ -196,11 +162,7 @@ class TestMixtureOfGaussians:
         stds = torch.tensor([[1.0, -0.5], [0.5, 1.0]])  # Negative std
 
         with pytest.raises(ValueError, match="positive"):
-            MixtureOfGaussians(
-                dims=2,
-                n_gaussians=2,
-                stds=stds
-            )
+            MixtureOfGaussians(dims=2, n_gaussians=2, stds=stds)
 
     def test_invalid_weights_shape(self):
         """Test that invalid weights shape raises error."""
@@ -210,7 +172,7 @@ class TestMixtureOfGaussians:
             MixtureOfGaussians(
                 dims=2,
                 n_gaussians=2,  # n_gaussians=2 but weights have length 3
-                weights=weights
+                weights=weights,
             )
 
     def test_invalid_weights_values(self):
@@ -218,11 +180,7 @@ class TestMixtureOfGaussians:
         weights = torch.tensor([0.5, -0.3, 0.8])
 
         with pytest.raises(ValueError, match="non-negative"):
-            MixtureOfGaussians(
-                dims=2,
-                n_gaussians=3,
-                weights=weights
-            )
+            MixtureOfGaussians(dims=2, n_gaussians=3, weights=weights)
 
     def test_numpy_input(self):
         """Test that numpy arrays can be used for parameters."""
@@ -231,11 +189,7 @@ class TestMixtureOfGaussians:
         weights_np = np.array([0.5, 0.5])
 
         mixture = MixtureOfGaussians(
-            dims=2,
-            n_gaussians=2,
-            centers=centers_np,
-            stds=stds_np,
-            weights=weights_np
+            dims=2, n_gaussians=2, centers=centers_np, stds=stds_np, weights=weights_np
         )
 
         # Should be converted to tensors
@@ -259,12 +213,7 @@ class TestMixtureOfGaussians:
             assert values_cuda.device.type == "cuda"
 
             # Results should be close
-            torch.testing.assert_close(
-                values_cpu,
-                values_cuda.cpu(),
-                atol=1e-5,
-                rtol=1e-5
-            )
+            torch.testing.assert_close(values_cpu, values_cuda.cpu(), atol=1e-5, rtol=1e-5)
 
     def test_gradient_computation(self):
         """Test that gradients can be computed for the mixture function."""
@@ -288,11 +237,7 @@ class TestMixtureOfGaussians:
         weights = torch.tensor([0.4, 0.6])
 
         mixture = MixtureOfGaussians(
-            dims=2,
-            n_gaussians=2,
-            centers=centers,
-            stds=stds,
-            weights=weights
+            dims=2, n_gaussians=2, centers=centers, stds=stds, weights=weights
         )
 
         info = mixture.get_component_info()
@@ -322,11 +267,7 @@ class TestMixtureOfGaussians:
         weight = torch.tensor([1.0])
 
         mixture = MixtureOfGaussians(
-            dims=3,
-            n_gaussians=1,
-            centers=center,
-            stds=std,
-            weights=weight
+            dims=3, n_gaussians=1, centers=center, stds=std, weights=weight
         )
 
         # Should work like a single Gaussian

@@ -4,22 +4,25 @@ Tests the potential creation and parameter initialization without running full s
 """
 
 import sys
-sys.path.insert(0, '../src')
 
-import torch
+
+sys.path.insert(0, "../src")
+
 import numpy as np
+import torch
 
-from fragile.geometric_gas import (
-    GeometricGas,
-    GeometricGasParams,
-    LocalizationKernelParams,
-    AdaptiveParams,
-)
+from fragile.benchmarks import MixtureOfGaussians
 from fragile.euclidean_gas import (
     LangevinParams,
     PotentialParams,
 )
-from fragile.benchmarks import MixtureOfGaussians
+from fragile.geometric_gas import (
+    AdaptiveParams,
+    GeometricGas,
+    GeometricGasParams,
+    LocalizationKernelParams,
+)
+
 
 print("=" * 60)
 print("Testing Notebook 03 Setup")
@@ -53,10 +56,11 @@ target_mixture = MixtureOfGaussians(
     centers=centers,
     stds=stds,
     weights=weights,
-    bounds_range=(-8.0, 8.0)
+    bounds_range=(-8.0, 8.0),
 )
 
 print(f"\n✓ Created mixture with {n_gaussians} modes")
+
 
 # Create potential wrapper
 class MixtureBasedPotential(PotentialParams):
@@ -68,6 +72,7 @@ class MixtureBasedPotential(PotentialParams):
 
     def evaluate(self, x: torch.Tensor) -> torch.Tensor:
         return self.mixture(x)
+
 
 potential = MixtureBasedPotential(mixture=target_mixture)
 print("✓ Created potential wrapper")
@@ -84,32 +89,27 @@ params = GeometricGasParams(
     N=N,
     d=dims,
     potential=potential,
-    langevin=LangevinParams(
-        gamma=1.0,
-        beta=1.0,
-        delta_t=0.05
-    ),
-    localization=LocalizationKernelParams(
-        rho=2.0,
-        kernel_type="gaussian"
-    ),
+    langevin=LangevinParams(gamma=1.0, beta=1.0, delta_t=0.05),
+    localization=LocalizationKernelParams(rho=2.0, kernel_type="gaussian"),
     adaptive=AdaptiveParams(
         epsilon_F=0.05,
         nu=0.02,
         epsilon_Sigma=0.01,
         rescale_amplitude=1.0,
         sigma_var_min=0.1,
-        viscous_length_scale=2.0
+        viscous_length_scale=2.0,
     ),
     device="cpu",
-    dtype="float32"
+    dtype="float32",
 )
 
 print("✓ Created GeometricGasParams")
 
+
 # Create measurement function
 def measurement_fn(x):
     return -potential.evaluate(x)
+
 
 # Create Geometric Gas instance
 gas = GeometricGas(params, measurement_fn=measurement_fn)
@@ -125,7 +125,7 @@ print(f"✓ Initialized state with {state.N} walkers")
 print("\nTesting single step...")
 try:
     _, new_state = gas.step(state)
-    print(f"✓ Single step successful")
+    print("✓ Single step successful")
     print(f"  Position range: [{new_state.x.min():.2f}, {new_state.x.max():.2f}]")
     print(f"  Velocity range: [{new_state.v.min():.2f}, {new_state.v.max():.2f}]")
 except Exception as e:

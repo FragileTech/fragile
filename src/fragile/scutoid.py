@@ -13,13 +13,13 @@ geometry of the Fragile Gas evolution.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable
+from dataclasses import dataclass
+from typing import Callable, TYPE_CHECKING
 
 import numpy as np
-import torch
 from scipy.spatial import Voronoi
 from torch import Tensor
+
 
 if TYPE_CHECKING:
     from fragile.euclidean_gas import SwarmState
@@ -33,6 +33,7 @@ class SpacetimePoint:
         x: Spatial coordinates [d]
         t: Temporal coordinate (scalar)
     """
+
     x: np.ndarray  # Shape: (d,)
     t: float
 
@@ -61,6 +62,7 @@ class VoronoiCell:
         t: Timestep at which this cell exists
         volume: Spatial volume of the cell (computed)
     """
+
     walker_id: int
     center: np.ndarray  # Shape: (d,)
     vertices: list[np.ndarray]  # List of vertex positions
@@ -90,6 +92,7 @@ class Scutoid:
         top_center: Walker position at t_end
         volume: Spacetime volume (computed)
     """
+
     walker_id: int
     parent_id: int
     t_start: float
@@ -145,6 +148,7 @@ class MetricFunction:
         epsilon_sigma: Regularization parameter
         alpha: Temporal scale factor (default=1)
     """
+
     fitness_hessian: Callable[[np.ndarray, float], np.ndarray]
     epsilon_sigma: float
     alpha: float = 1.0
@@ -179,7 +183,7 @@ class MetricFunction:
         # Build block diagonal matrix
         g_ST = np.zeros((d + 1, d + 1))
         g_ST[:d, :d] = g_spatial
-        g_ST[d, d] = self.alpha ** 2
+        g_ST[d, d] = self.alpha**2
 
         return g_ST
 
@@ -298,7 +302,7 @@ class ScutoidTessellation:
         Returns:
             List of VoronoiCell objects, one per walker
         """
-        N, d = positions.shape
+        N, _d = positions.shape
 
         # Compute Voronoi diagram using scipy
         vor = Voronoi(positions)
@@ -353,7 +357,7 @@ class ScutoidTessellation:
                 other = ridge_points[0] if ridge_points[1] == walker_id else ridge_points[1]
                 neighbors.add(other)
 
-        return sorted(list(neighbors))
+        return sorted(neighbors)
 
     def _construct_scutoids(
         self,
@@ -402,7 +406,8 @@ class ScutoidTessellation:
     def compute_volumes(self) -> None:
         """Compute volumes for all scutoid cells using the metric function."""
         if self.metric_fn is None:
-            raise ValueError("Cannot compute volumes without metric function")
+            msg = "Cannot compute volumes without metric function"
+            raise ValueError(msg)
 
         for scutoid_list in self.scutoid_cells:
             for scutoid in scutoid_list:
@@ -473,11 +478,11 @@ class ScutoidTessellation:
                     total_volume += scutoid.volume
 
         return {
-            'n_timesteps': len(self.voronoi_cells),
-            'n_intervals': len(self.scutoid_cells),
-            'n_prisms': n_prisms,
-            'n_scutoids': n_scutoids,
-            'total_spacetime_volume': total_volume,
-            'N': self.N,
-            'd': self.d,
+            "n_timesteps": len(self.voronoi_cells),
+            "n_intervals": len(self.scutoid_cells),
+            "n_prisms": n_prisms,
+            "n_scutoids": n_scutoids,
+            "total_spacetime_volume": total_volume,
+            "N": self.N,
+            "d": self.d,
         }

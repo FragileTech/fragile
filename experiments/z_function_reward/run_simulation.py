@@ -9,16 +9,18 @@ This experiment tests the hypothesis that:
 
 from __future__ import annotations
 
-import torch
-import numpy as np
 from pathlib import Path
 
-from fragile.euclidean_gas import EuclideanGas, EuclideanGasParams, SwarmState
-from fragile.gas_parameters import LangevinParams, CloningParams, PotentialParams
-from z_reward import ZFunctionReward, get_first_zeta_zeros
-
 import matplotlib
-matplotlib.use('Agg')
+import numpy as np
+import torch
+from z_reward import get_first_zeta_zeros, ZFunctionReward
+
+from fragile.euclidean_gas import EuclideanGas, EuclideanGasParams, SwarmState
+from fragile.gas_parameters import CloningParams, LangevinParams, PotentialParams
+
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 
@@ -82,16 +84,16 @@ def run_z_reward_simulation(
     """
     Path(output_dir).mkdir(parents=True, exist_ok=True)
 
-    print(f"\n{'='*60}")
-    print(f"Z-FUNCTION REWARD SIMULATION")
-    print(f"{'='*60}")
-    print(f"Parameters:")
+    print(f"\n{'=' * 60}")
+    print("Z-FUNCTION REWARD SIMULATION")
+    print(f"{'=' * 60}")
+    print("Parameters:")
     print(f"  N = {n_walkers} walkers")
     print(f"  d = {d} dimensions")
     print(f"  ε = {epsilon} (Z-function regularization)")
     print(f"  ℓ_conf = {ell_conf} (confinement scale)")
     print(f"  Steps = {n_steps}")
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
     # Create Z-function reward
     z_reward = ZFunctionReward(epsilon=epsilon, t_max=ell_conf * 1.5)
@@ -149,7 +151,7 @@ def run_z_reward_simulation(
         reward_history.append(rewards.copy())
 
         if (step + 1) % 500 == 0:
-            print(f"  Step {step+1}/{n_steps}")
+            print(f"  Step {step + 1}/{n_steps}")
             print(f"    Mean radius: {radii.mean():.3f}")
             print(f"    Std radius:  {radii.std():.3f}")
             print(f"    Mean reward: {rewards.mean():.3f}")
@@ -184,9 +186,9 @@ def analyze_qsd_localization(
         z_reward: ZFunctionReward instance
         output_dir: Directory for saving plots
     """
-    print(f"\n{'='*60}")
-    print(f"QSD LOCALIZATION ANALYSIS")
-    print(f"{'='*60}\n")
+    print(f"\n{'=' * 60}")
+    print("QSD LOCALIZATION ANALYSIS")
+    print(f"{'=' * 60}\n")
 
     # Use last 1000 steps as QSD samples
     qsd_radii = radii_history[-1000:].flatten()
@@ -196,9 +198,9 @@ def analyze_qsd_localization(
     zeros_in_range = zeros[zeros < z_reward.t_max]
 
     print(f"Analyzing {len(qsd_radii)} QSD samples...")
-    print(f"First 10 zeta zeros:")
+    print("First 10 zeta zeros:")
     for i, t in enumerate(zeros[:10]):
-        print(f"  t_{i+1} = {t:.6f}")
+        print(f"  t_{i + 1} = {t:.6f}")
 
     # Compute histogram
     bins = np.linspace(0, z_reward.t_max, 200)
@@ -206,47 +208,65 @@ def analyze_qsd_localization(
     bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
 
     # Plot QSD distribution vs zeta zeros
-    fig, axes = plt.subplots(2, 1, figsize=(14, 10))
+    _fig, axes = plt.subplots(2, 1, figsize=(14, 10))
 
     # Plot 1: QSD histogram with zero locations
-    axes[0].bar(bin_centers, hist, width=bin_centers[1]-bin_centers[0],
-                alpha=0.6, color='blue', label='QSD density')
+    axes[0].bar(
+        bin_centers,
+        hist,
+        width=bin_centers[1] - bin_centers[0],
+        alpha=0.6,
+        color="blue",
+        label="QSD density",
+    )
 
     # Mark zeta zeros
-    max_density = hist.max()
+    hist.max()
     for t in zeros_in_range:
-        axes[0].axvline(t, color='red', linestyle='--', alpha=0.7, linewidth=2)
+        axes[0].axvline(t, color="red", linestyle="--", alpha=0.7, linewidth=2)
 
-    axes[0].set_xlabel('Radial coordinate ||x||')
-    axes[0].set_ylabel('Probability density')
-    axes[0].set_title('QSD Distribution vs Zeta Zero Locations')
+    axes[0].set_xlabel("Radial coordinate ||x||")
+    axes[0].set_ylabel("Probability density")
+    axes[0].set_title("QSD Distribution vs Zeta Zero Locations")
     axes[0].legend()
     axes[0].grid(True, alpha=0.3)
 
     # Plot 2: Zoom on first few zeros
-    t_zoom_max = zeros[min(5, len(zeros_in_range)-1)]
+    t_zoom_max = zeros[min(5, len(zeros_in_range) - 1)]
     mask = bin_centers < t_zoom_max * 1.2
-    axes[1].bar(bin_centers[mask], hist[mask],
-                width=bin_centers[1]-bin_centers[0],
-                alpha=0.6, color='blue', label='QSD density')
+    axes[1].bar(
+        bin_centers[mask],
+        hist[mask],
+        width=bin_centers[1] - bin_centers[0],
+        alpha=0.6,
+        color="blue",
+        label="QSD density",
+    )
 
     for t in zeros[:5]:
         if t < t_zoom_max * 1.2:
-            axes[1].axvline(t, color='red', linestyle='--', alpha=0.7,
-                           linewidth=2, label=f't_{zeros.tolist().index(t)+1}={t:.2f}')
+            axes[1].axvline(
+                t,
+                color="red",
+                linestyle="--",
+                alpha=0.7,
+                linewidth=2,
+                label=f"t_{zeros.tolist().index(t) + 1}={t:.2f}",
+            )
 
-    axes[1].set_xlabel('Radial coordinate ||x||')
-    axes[1].set_ylabel('Probability density')
-    axes[1].set_title('QSD Distribution (Zoomed on First Zeros)')
+    axes[1].set_xlabel("Radial coordinate ||x||")
+    axes[1].set_ylabel("Probability density")
+    axes[1].set_title("QSD Distribution (Zoomed on First Zeros)")
     axes[1].grid(True, alpha=0.3)
 
     # Create custom legend for first plot zeros
     from matplotlib.lines import Line2D
+
     legend_elements = [
-        Line2D([0], [0], color='blue', alpha=0.6, linewidth=10, label='QSD'),
-        Line2D([0], [0], color='red', linestyle='--', linewidth=2, label='Zeta zeros')
+        Line2D([0], [0], color="blue", alpha=0.6, linewidth=10, label="QSD"),
+        Line2D([0], [0], color="red", linestyle="--", linewidth=2, label="Zeta zeros"),
     ]
-    axes[0].legend(handles=legend_elements, loc='upper right')
+    axes[0].legend(handles=legend_elements, loc="upper right")
 
     plt.tight_layout()
     plt.savefig(f"{output_dir}/qsd_localization.png", dpi=150)
@@ -260,7 +280,7 @@ def analyze_qsd_localization(
     from scipy.signal import find_peaks
 
     # Find peaks in histogram
-    peaks, properties = find_peaks(hist, height=hist.max() * 0.1, distance=5)
+    peaks, _properties = find_peaks(hist, height=hist.max() * 0.1, distance=5)
     peak_locations = bin_centers[peaks]
 
     print(f"\nFound {len(peak_locations)} peaks:")
@@ -269,7 +289,9 @@ def analyze_qsd_localization(
         nearest_zero_idx = np.argmin(np.abs(zeros - peak))
         nearest_zero = zeros[nearest_zero_idx]
         distance = abs(peak - nearest_zero)
-        print(f"  Peak {i+1}: r = {peak:.4f}, nearest zero t_{nearest_zero_idx+1} = {nearest_zero:.4f}, distance = {distance:.4f}")
+        print(
+            f"  Peak {i + 1}: r = {peak:.4f}, nearest zero t_{nearest_zero_idx + 1} = {nearest_zero:.4f}, distance = {distance:.4f}"
+        )
 
     return peak_locations, zeros_in_range
 
@@ -287,10 +309,10 @@ if __name__ == "__main__":
     # Analyze QSD localization
     peak_locations, zeros = analyze_qsd_localization(radii_history, z_reward)
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SUMMARY")
-    print("="*60)
+    print("=" * 60)
     print(f"QSD has {len(peak_locations)} peaks")
     print(f"First {len(zeros)} zeta zeros in range")
     print("\nNext step: Compute Yang-Mills eigenvalues and compare with zeros")
-    print("="*60)
+    print("=" * 60)

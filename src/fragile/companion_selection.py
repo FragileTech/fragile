@@ -5,6 +5,9 @@ of docs/source/03_cloning.md. The mechanisms use distance-dependent random match
 on the algorithmic distance metric d_alg(i,j)^2 = ||x_i - x_j||^2 + λ_alg ||v_i - v_j||^2.
 """
 
+from typing import Literal
+
+from pydantic import BaseModel, Field, field_validator
 import torch
 
 
@@ -113,7 +116,7 @@ def select_companions_softmax(
     row_sums = weights.sum(dim=1, keepdim=True)  # [N, 1]
 
     # Handle numerical underflow: if all weights are ~0, fallback to uniform
-    underflow_rows = (row_sums.squeeze() < 1e-30)
+    underflow_rows = row_sums.squeeze() < 1e-30
     if underflow_rows.any():
         # For underflow rows, use uniform distribution over valid companions
         # Match dtype of weights to avoid dtype mismatch
@@ -124,7 +127,7 @@ def select_companions_softmax(
 
     # Edge case: If a walker has no valid companions (e.g., single walker with exclude_self=True),
     # allow self-selection for that walker to avoid multinomial error
-    no_companion_rows = (row_sums.squeeze() < 1e-30)
+    no_companion_rows = row_sums.squeeze() < 1e-30
     if no_companion_rows.any():
         # For these rows, allow self-selection
         self_mask = torch.eye(N, dtype=torch.bool, device=x.device)
@@ -391,3 +394,162 @@ def sequential_greedy_pairing(
     # If one walker remains unpaired (odd number), it already maps to itself
 
     return companion_map
+
+
+class CompanionSelection(BaseModel):
+    """Pydantic configuration for companion selection mechanisms.
+
+    This class parameterizes all companion selection operators defined in Chapter 5
+    of docs/source/03_cloning.md. It provides a unified interface for selecting
+    companions based on different strategies (softmax, uniform, pairing, etc.).
+
+    From docs/source/03_cloning.md § 5.0 ({prf:ref}`def-algorithmic-distance-metric`):
+    All distance-dependent methods use the algorithmic distance metric:
+
+    $$
+    d_{alg}(i, j)^2 := ||x_i - x_j||^2 + λ_{alg} ||v_i - v_j||^2
+    $$
+
+    Attributes:
+        method: Selection strategy to use. Options:
+            - "softmax": Distance-dependent softmax (§ 9.3.3, {prf:ref}`def-decision-operator`)
+            - "uniform": Uniform random selection (ε → ∞ limit)
+            - "random_pairing": Random mutual pairing via Fisher-Yates
+            - "cloning": Hybrid cloning operator (§ 5.7.1, {prf:ref}`def-cloning-companion-operator`)
+            - "greedy_pairing": Sequential greedy pairing (§ 5.1.2, {prf:ref}`def-greedy-pairing-algorithm`)
+        epsilon: Interaction range parameter (ε_c for cloning, ε_d for diversity).
+            Used for "softmax", "cloning", and "greedy_pairing" methods.
+        lambda_alg: Weight for velocity contribution in distance metric (default 0.0).
+            λ_alg = 0: Position-only model
+            λ_alg > 0: Phase-space aware model
+            λ_alg = 1: Balanced phase-space model
+        exclude_self: Whether to exclude self-pairing in softmax selection (default True).
+            For alive walkers, typically True. For dead walkers, typically False.
+
+    Example:
+        >>> # Cloning companion selection
+        >>> selector = CompanionSelection(method="cloning", epsilon=0.1, lambda_alg=0.0)
+        >>> companions = selector(x, v, alive_mask)
+        >>>
+        >>> # Diversity measurement pairing
+        >>> pairing = CompanionSelection(
+        ...     method="greedy_pairing", epsilon=0.05, lambda_alg=0.5
+        ... )
+        >>> pairs = pairing(x, v, alive_mask)
+        >>>
+        >>> # Fast uniform baseline
+        >>> uniform = CompanionSelection(method="uniform")
+        >>> companions = uniform(x, v, alive_mask)
+
+    Note:
+        The `epsilon` parameter is required for distance-dependent methods
+        (softmax, cloning, greedy_pairing) but ignored for uniform and random_pairing.
+    """
+
+    method: Literal["softmax", "uniform", "random_pairing", "cloning", "greedy_pairing"] = Field(
+        default="cloning",
+        description="Companion selection strategy",
+    )
+
+    epsilon: float = Field(
+        default=0.1,
+        gt=0.0,
+        description="Interaction range parameter (ε_c or ε_d)",
+    )
+
+    lambda_alg: float = Field(
+        default=0.0,
+        ge=0.0,
+        description="Weight for velocity contribution in algorithmic distance",
+    )
+
+    exclude_self: bool = Field(
+        default=True,
+        description="Exclude self-pairing in softmax selection (alive walkers)",
+    )
+
+    @field_validator("method")
+    @classmethod
+    def validate_method(cls, v: str) -> str:
+        """Validate method is a supported selection strategy."""
+        valid_methods = {"softmax", "uniform", "random_pairing", "cloning", "greedy_pairing"}
+        if v not in valid_methods:
+            msg = f"Invalid method '{v}'. Must be one of {valid_methods}"
+            raise ValueError(msg)
+        return v
+
+    def __call__(
+        self,
+        x: torch.Tensor,
+        v: torch.Tensor,
+        alive_mask: torch.Tensor,
+        lambda_alg: float | None = None,
+    ) -> torch.Tensor:
+        """Select companions using the configured strategy.
+
+        Args:
+            x: Positions of all walkers, shape [N, d]
+            v: Velocities of all walkers, shape [N, d]
+            alive_mask: Boolean mask indicating alive walkers, shape [N]
+            lambda_alg: Optional override for velocity weight in distance metric.
+                If None, uses self.lambda_alg.
+
+        Returns:
+            Companion indices for each walker, shape [N]
+            - For "softmax", "cloning": indices in [0, N), dead walkers may be -1 (softmax)
+            - For "uniform": indices in [0, N), all map to alive walkers
+            - For "random_pairing", "greedy_pairing": mutual pairing map, shape [N]
+              Paired walkers have c(i) = j and c(j) = i
+              Unpaired walkers (dead or singleton) map to self
+
+        Raises:
+            ValueError: If no walkers are alive (methods that require alive walkers)
+            ValueError: If method is not recognized (should not happen after validation)
+
+        Note:
+            The return semantics differ between selection methods:
+            - Selection methods (softmax, uniform, cloning): Each walker independently
+              selects a companion. Multiple walkers can select the same companion.
+            - Pairing methods (random_pairing, greedy_pairing): Create mutual pairs
+              where c(i) = j implies c(j) = i. Each walker appears in at most one pair.
+        """
+        lambda_alg = lambda_alg if lambda_alg is not None else self.lambda_alg
+        if self.method == "softmax":
+            return select_companions_softmax(
+                x=x,
+                v=v,
+                alive_mask=alive_mask,
+                epsilon=self.epsilon,
+                lambda_alg=lambda_alg,
+                exclude_self=self.exclude_self,
+            )
+        if self.method == "uniform":
+            return select_companions_uniform(alive_mask=alive_mask)
+        if self.method == "random_pairing":
+            return random_pairing_fisher_yates(alive_mask=alive_mask)
+        if self.method == "cloning":
+            return select_companions_for_cloning(
+                x=x,
+                v=v,
+                alive_mask=alive_mask,
+                epsilon_c=self.epsilon,
+                lambda_alg=lambda_alg,
+            )
+        if self.method == "greedy_pairing":
+            return sequential_greedy_pairing(
+                x=x,
+                v=v,
+                alive_mask=alive_mask,
+                epsilon_d=self.epsilon,
+                lambda_alg=lambda_alg,
+            )
+        # This should never happen due to validator, but needed for type checking
+        msg = f"Unknown companion selection method: {self.method}"
+        raise ValueError(msg)
+
+    class Config:
+        """Pydantic configuration."""
+
+        frozen = False  # Allow mutation for interactive tuning
+        validate_assignment = True  # Validate on attribute assignment
+        extra = "forbid"  # Forbid extra fields

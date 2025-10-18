@@ -25,12 +25,13 @@ References:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any, TYPE_CHECKING
 
 import networkx as nx
 import numpy as np
 import torch
 from torch import Tensor
+
 
 if TYPE_CHECKING:
     from fragile.euclidean_gas import EuclideanGas, SwarmState
@@ -88,16 +89,16 @@ class FractalSet:
         self.d = d
 
         # Initialize graph attributes
-        self.graph.graph['N'] = N
-        self.graph.graph['d'] = d
-        self.graph.graph['n_steps'] = 0
-        self.graph.graph['parameters'] = params or {}
+        self.graph.graph["N"] = N
+        self.graph.graph["d"] = d
+        self.graph.graph["n_steps"] = 0
+        self.graph.graph["parameters"] = params or {}
 
         # Trajectories (will be updated as we add timesteps)
-        self.graph.graph['var_x_trajectory'] = []
-        self.graph.graph['var_v_trajectory'] = []
-        self.graph.graph['n_alive_trajectory'] = []
-        self.graph.graph['centroid_trajectory'] = []
+        self.graph.graph["var_x_trajectory"] = []
+        self.graph.graph["var_v_trajectory"] = []
+        self.graph.graph["n_alive_trajectory"] = []
+        self.graph.graph["centroid_trajectory"] = []
 
         # Current timestep
         self.current_step = 0
@@ -145,7 +146,7 @@ class FractalSet:
         v_centroid = v_np.mean(axis=0)
 
         # Compute positional errors
-        positional_errors = np.sqrt(np.sum((x_np - centroid[None, :])**2, axis=1))
+        positional_errors = np.sqrt(np.sum((x_np - centroid[None, :]) ** 2, axis=1))
 
         # Default masks if not provided
         if high_error_mask is None:
@@ -165,36 +166,36 @@ class FractalSet:
             node_id = (i, timestep)
 
             node_attrs = {
-                'walker_id': i,
-                'timestep': timestep,
-                'x': x_np[i],
-                'v': v_np[i],
-                'high_error': bool(high_error_np[i]),
-                'positional_error': float(positional_errors[i]),
-                'alive': bool(alive_np[i]),
+                "walker_id": i,
+                "timestep": timestep,
+                "x": x_np[i],
+                "v": v_np[i],
+                "high_error": bool(high_error_np[i]),
+                "positional_error": float(positional_errors[i]),
+                "alive": bool(alive_np[i]),
             }
 
             # Add optional attributes
             if fitness is not None:
-                node_attrs['fitness'] = float(fitness[i].item())
+                node_attrs["fitness"] = float(fitness[i].item())
             if potential is not None:
-                node_attrs['potential'] = float(potential[i].item())
+                node_attrs["potential"] = float(potential[i].item())
             if reward is not None:
-                node_attrs['reward'] = float(reward[i].item())
+                node_attrs["reward"] = float(reward[i].item())
 
             # Add new required attributes
             if rescaled_reward is not None:
-                node_attrs['rescaled_reward'] = float(rescaled_reward[i].item())
+                node_attrs["rescaled_reward"] = float(rescaled_reward[i].item())
             if distances is not None:
-                node_attrs['distance_to_companion'] = float(distances[i].item())
+                node_attrs["distance_to_companion"] = float(distances[i].item())
             if rescaled_distance is not None:
-                node_attrs['rescaled_distance_to_companion'] = float(rescaled_distance[i].item())
+                node_attrs["rescaled_distance_to_companion"] = float(rescaled_distance[i].item())
             if companions is not None:
-                node_attrs['companion_index'] = int(companions[i].item())
+                node_attrs["companion_index"] = int(companions[i].item())
             if cloning_probs is not None:
-                node_attrs['clone_score'] = float(cloning_probs[i].item())
+                node_attrs["clone_score"] = float(cloning_probs[i].item())
             if clone_uniform_sample is not None:
-                node_attrs['clone_uniform_sample'] = float(clone_uniform_sample[i].item())
+                node_attrs["clone_uniform_sample"] = float(clone_uniform_sample[i].item())
 
             self.graph.add_node(node_id, **node_attrs)
 
@@ -206,14 +207,14 @@ class FractalSet:
 
                 # Default edge: kinetic evolution
                 edge_attrs = {
-                    'edge_type': 'kinetic',
+                    "edge_type": "kinetic",
                 }
 
                 # Add distance if available
                 if distances is not None and i < len(distances):
                     dist_val = float(distances[i].item())
-                    edge_attrs['distance'] = dist_val
-                    edge_attrs['algorithmic_distance'] = dist_val  # Alias for compatibility
+                    edge_attrs["distance"] = dist_val
+                    edge_attrs["algorithmic_distance"] = dist_val  # Alias for compatibility
 
                 # If we have companion information, this might be a cloning edge
                 if companions is not None and cloning_probs is not None:
@@ -221,13 +222,13 @@ class FractalSet:
                     cloning_prob = float(cloning_probs[i].item())
 
                     # Store companion probability
-                    edge_attrs['companion_probability'] = cloning_prob
+                    edge_attrs["companion_probability"] = cloning_prob
 
                     # If cloning probability is high, mark as cloning edge
                     if cloning_prob > 0.5:
-                        edge_attrs['edge_type'] = 'cloning'
-                        edge_attrs['companion_id'] = companion_id
-                        edge_attrs['cloning_prob'] = cloning_prob
+                        edge_attrs["edge_type"] = "cloning"
+                        edge_attrs["companion_id"] = companion_id
+                        edge_attrs["cloning_prob"] = cloning_prob
 
                         # Add edge from companion (parent) to current walker (child)
                         parent_node = (companion_id, timestep - 1)
@@ -245,11 +246,11 @@ class FractalSet:
         var_v = np.mean(np.sum((v_np - v_centroid) ** 2, axis=-1))
         n_alive = int(alive_np.sum())
 
-        self.graph.graph['var_x_trajectory'].append(float(var_x))
-        self.graph.graph['var_v_trajectory'].append(float(var_v))
-        self.graph.graph['n_alive_trajectory'].append(n_alive)
-        self.graph.graph['centroid_trajectory'].append(centroid.tolist())
-        self.graph.graph['n_steps'] = timestep + 1
+        self.graph.graph["var_x_trajectory"].append(float(var_x))
+        self.graph.graph["var_v_trajectory"].append(float(var_v))
+        self.graph.graph["n_alive_trajectory"].append(n_alive)
+        self.graph.graph["centroid_trajectory"].append(centroid.tolist())
+        self.graph.graph["n_steps"] = timestep + 1
 
         self.current_step = timestep
 
@@ -269,7 +270,7 @@ class FractalSet:
         if timestep <= 0:
             raise ValueError(f"Cannot get parent IDs for timestep {timestep} (must be > 0)")
 
-        if timestep >= self.graph.graph.get('n_steps', 0):
+        if timestep >= self.graph.graph.get("n_steps", 0):
             raise ValueError(
                 f"Timestep {timestep} out of range (n_steps={self.graph.graph.get('n_steps', 0)})"
             )
@@ -291,8 +292,7 @@ class FractalSet:
                 parent_id, parent_time = parent_node
 
                 # Verify parent is from previous timestep
-                assert parent_time == timestep - 1, \
-                    f"Parent time {parent_time} != {timestep - 1}"
+                assert parent_time == timestep - 1, f"Parent time {parent_time} != {timestep - 1}"
 
                 parent_ids[i] = parent_id
             else:
@@ -326,13 +326,12 @@ class FractalSet:
             FractalSet with complete run history
         """
         from fragile.companion_selection import select_companions_softmax
-        from fragile.euclidean_gas import VectorizedOps
 
         # Initialize fractal set
         fractal_set = cls(
             N=gas.params.N,
             d=gas.params.d,
-            params={'euclidean_gas_params': gas.params.model_dump()}
+            params={"euclidean_gas_params": gas.params.model_dump()},
         )
 
         # Initialize state
@@ -350,16 +349,18 @@ class FractalSet:
 
             # Compute companions and distances
             companions = select_companions_softmax(
-                state.x, state.v, alive_mask,
+                state.x,
+                state.v,
+                alive_mask,
                 epsilon=gas.params.cloning.get_epsilon_c(),
                 lambda_alg=gas.params.cloning.lambda_alg,
-                exclude_self=True
+                exclude_self=True,
             )
 
             x_companion = state.x[companions]
             v_companion = state.v[companions]
-            pos_diff_sq = torch.sum((state.x - x_companion)**2, dim=-1)
-            vel_diff_sq = torch.sum((state.v - v_companion)**2, dim=-1)
+            pos_diff_sq = torch.sum((state.x - x_companion) ** 2, dim=-1)
+            vel_diff_sq = torch.sum((state.v - v_companion) ** 2, dim=-1)
             distances = torch.sqrt(pos_diff_sq + gas.params.cloning.lambda_alg * vel_diff_sq)
 
             # Simplified fitness (just use distance as proxy)
@@ -373,7 +374,7 @@ class FractalSet:
 
         # Compute high-error mask
         mu_x = torch.mean(state.x, dim=0, keepdim=True)
-        positional_error = torch.sqrt(torch.sum((state.x - mu_x)**2, dim=-1))
+        positional_error = torch.sqrt(torch.sum((state.x - mu_x) ** 2, dim=-1))
         threshold = torch.median(positional_error)
         high_error_mask = positional_error > threshold
 
@@ -413,16 +414,18 @@ class FractalSet:
                 reward = -potential
 
                 companions = select_companions_softmax(
-                    state.x, state.v, alive_mask,
+                    state.x,
+                    state.v,
+                    alive_mask,
                     epsilon=gas.params.cloning.get_epsilon_c(),
                     lambda_alg=gas.params.cloning.lambda_alg,
-                    exclude_self=True
+                    exclude_self=True,
                 )
 
                 x_companion = state.x[companions]
                 v_companion = state.v[companions]
-                pos_diff_sq = torch.sum((state.x - x_companion)**2, dim=-1)
-                vel_diff_sq = torch.sum((state.v - v_companion)**2, dim=-1)
+                pos_diff_sq = torch.sum((state.x - x_companion) ** 2, dim=-1)
+                vel_diff_sq = torch.sum((state.v - v_companion) ** 2, dim=-1)
                 distances = torch.sqrt(pos_diff_sq + gas.params.cloning.lambda_alg * vel_diff_sq)
 
                 fitness = 1.0 / (distances + 1e-6)
@@ -439,7 +442,7 @@ class FractalSet:
 
             # Compute high-error mask
             mu_x = torch.mean(state.x, dim=0, keepdim=True)
-            positional_error = torch.sqrt(torch.sum((state.x - mu_x)**2, dim=-1))
+            positional_error = torch.sqrt(torch.sum((state.x - mu_x) ** 2, dim=-1))
             threshold = torch.median(positional_error)
             high_error_mask = positional_error > threshold
 
@@ -475,27 +478,27 @@ class FractalSet:
                 - (optional) fitness, potential, reward
         """
         trajectory = {
-            'timesteps': [],
-            'positions': [],
-            'velocities': [],
-            'high_error': [],
-            'alive': [],
+            "timesteps": [],
+            "positions": [],
+            "velocities": [],
+            "high_error": [],
+            "alive": [],
         }
 
-        for t in range(self.graph.graph['n_steps']):
+        for t in range(self.graph.graph["n_steps"]):
             node_id = (walker_id, t)
             if not self.graph.has_node(node_id):
                 break
 
             node_data = self.graph.nodes[node_id]
-            trajectory['timesteps'].append(t)
-            trajectory['positions'].append(node_data['x'])
-            trajectory['velocities'].append(node_data['v'])
-            trajectory['high_error'].append(node_data['high_error'])
-            trajectory['alive'].append(node_data['alive'])
+            trajectory["timesteps"].append(t)
+            trajectory["positions"].append(node_data["x"])
+            trajectory["velocities"].append(node_data["v"])
+            trajectory["high_error"].append(node_data["high_error"])
+            trajectory["alive"].append(node_data["alive"])
 
             # Add optional attributes if present
-            for attr in ['fitness', 'potential', 'reward']:
+            for attr in ["fitness", "potential", "reward"]:
                 if attr in node_data:
                     if attr not in trajectory:
                         trajectory[attr] = []
@@ -525,7 +528,7 @@ class FractalSet:
             cloning_parent = None
             for parent in parents:
                 edge_data = self.graph.edges[parent, current]
-                if edge_data.get('edge_type') == 'cloning':
+                if edge_data.get("edge_type") == "cloning":
                     cloning_parent = parent
                     break
 
@@ -572,25 +575,25 @@ class FractalSet:
                 continue
 
             node_data = self.graph.nodes[node_id]
-            positions.append(node_data['x'])
-            velocities.append(node_data['v'])
-            high_error.append(node_data['high_error'])
-            alive.append(node_data['alive'])
+            positions.append(node_data["x"])
+            velocities.append(node_data["v"])
+            high_error.append(node_data["high_error"])
+            alive.append(node_data["alive"])
 
             # Collect optional attributes
-            for attr in ['fitness', 'potential', 'reward']:
+            for attr in ["fitness", "potential", "reward"]:
                 if attr in node_data:
                     if attr not in optional_attrs:
                         optional_attrs[attr] = []
                     optional_attrs[attr].append(node_data[attr])
 
         snapshot = {
-            'positions': np.array(positions),
-            'velocities': np.array(velocities),
-            'high_error_mask': np.array(high_error),
-            'alive_mask': np.array(alive),
-            'centroid': self.graph.graph['centroid_trajectory'][timestep],
-            'variance': self.graph.graph['var_x_trajectory'][timestep],
+            "positions": np.array(positions),
+            "velocities": np.array(velocities),
+            "high_error_mask": np.array(high_error),
+            "alive_mask": np.array(alive),
+            "centroid": self.graph.graph["centroid_trajectory"][timestep],
+            "variance": self.graph.graph["var_x_trajectory"][timestep],
         }
 
         # Add optional attributes
@@ -614,18 +617,18 @@ class FractalSet:
         """
         events = []
 
-        for (u, v, data) in self.graph.edges(data=True):
-            if data.get('edge_type') == 'cloning':
-                parent_id, parent_t = u
+        for u, v, data in self.graph.edges(data=True):
+            if data.get("edge_type") == "cloning":
+                parent_id, _parent_t = u
                 child_id, child_t = v
 
                 event = {
-                    'timestep': child_t,
-                    'parent_id': parent_id,
-                    'child_id': child_id,
-                    'cloning_prob': data.get('cloning_prob'),
-                    'parent_pos': self.graph.nodes[u]['x'],
-                    'child_pos': self.graph.nodes[v]['x'],
+                    "timestep": child_t,
+                    "parent_id": parent_id,
+                    "child_id": child_id,
+                    "cloning_prob": data.get("cloning_prob"),
+                    "parent_pos": self.graph.nodes[u]["x"],
+                    "child_pos": self.graph.nodes[v]["x"],
                 }
 
                 events.append(event)
@@ -647,40 +650,40 @@ class FractalSet:
                 - mean_high_error_fraction: average fraction in H_k over time
         """
         n_cloning = sum(
-            1 for _, _, d in self.graph.edges(data=True)
-            if d.get('edge_type') == 'cloning'
+            1 for _, _, d in self.graph.edges(data=True) if d.get("edge_type") == "cloning"
         )
 
-        var_traj = np.array(self.graph.graph['var_x_trajectory'])
+        var_traj = np.array(self.graph.graph["var_x_trajectory"])
 
         stats = {
-            'total_nodes': self.graph.number_of_nodes(),
-            'total_edges': self.graph.number_of_edges(),
-            'n_cloning_events': n_cloning,
-            'n_steps': self.graph.graph['n_steps'],
+            "total_nodes": self.graph.number_of_nodes(),
+            "total_edges": self.graph.number_of_edges(),
+            "n_cloning_events": n_cloning,
+            "n_steps": self.graph.graph["n_steps"],
         }
 
         # Only add variance stats if we have data
         if len(var_traj) > 0:
             initial_var = var_traj[0]
             final_var = var_traj[-1]
-            stats['initial_variance'] = float(initial_var)
-            stats['final_variance'] = float(final_var)
-            stats['variance_reduction'] = float(1.0 - final_var / (initial_var + 1e-10))
+            stats["initial_variance"] = float(initial_var)
+            stats["final_variance"] = float(final_var)
+            stats["variance_reduction"] = float(1.0 - final_var / (initial_var + 1e-10))
 
         # Compute mean high-error fraction
-        if self.graph.graph['n_steps'] > 0:
+        if self.graph.graph["n_steps"] > 0:
             high_error_fractions = []
-            for t in range(self.graph.graph['n_steps']):
+            for t in range(self.graph.graph["n_steps"]):
                 n_high_error = sum(
-                    1 for i in range(self.N)
-                    if self.graph.has_node((i, t)) and self.graph.nodes[(i, t)]['high_error']
+                    1
+                    for i in range(self.N)
+                    if self.graph.has_node((i, t)) and self.graph.nodes[i, t]["high_error"]
                 )
                 high_error_fractions.append(n_high_error / self.N)
 
-            stats['mean_high_error_fraction'] = float(np.mean(high_error_fractions))
+            stats["mean_high_error_fraction"] = float(np.mean(high_error_fractions))
         else:
-            stats['mean_high_error_fraction'] = 0.0
+            stats["mean_high_error_fraction"] = 0.0
 
         return stats
 
@@ -693,26 +696,31 @@ class FractalSet:
         """
         import json
 
-        if not filepath.endswith('.graphml'):
-            filepath += '.graphml'
+        if not filepath.endswith(".graphml"):
+            filepath += ".graphml"
 
         # Create a copy of the graph for serialization
         graph_copy = self.graph.copy()
 
         # Convert dict parameters to JSON string (GraphML doesn't support dicts)
-        if 'parameters' in graph_copy.graph and isinstance(graph_copy.graph['parameters'], dict):
-            graph_copy.graph['parameters'] = json.dumps(graph_copy.graph['parameters'])
+        if "parameters" in graph_copy.graph and isinstance(graph_copy.graph["parameters"], dict):
+            graph_copy.graph["parameters"] = json.dumps(graph_copy.graph["parameters"])
 
         # Convert numpy arrays to lists for serialization
         for node_id in graph_copy.nodes():
             node_data = graph_copy.nodes[node_id]
-            if 'x' in node_data and isinstance(node_data['x'], np.ndarray):
-                graph_copy.nodes[node_id]['x'] = json.dumps(node_data['x'].tolist())
-            if 'v' in node_data and isinstance(node_data['v'], np.ndarray):
-                graph_copy.nodes[node_id]['v'] = json.dumps(node_data['v'].tolist())
+            if "x" in node_data and isinstance(node_data["x"], np.ndarray):
+                graph_copy.nodes[node_id]["x"] = json.dumps(node_data["x"].tolist())
+            if "v" in node_data and isinstance(node_data["v"], np.ndarray):
+                graph_copy.nodes[node_id]["v"] = json.dumps(node_data["v"].tolist())
 
         # Convert list attributes to JSON strings
-        for attr in ['var_x_trajectory', 'var_v_trajectory', 'n_alive_trajectory', 'centroid_trajectory']:
+        for attr in [
+            "var_x_trajectory",
+            "var_v_trajectory",
+            "n_alive_trajectory",
+            "centroid_trajectory",
+        ]:
             if attr in graph_copy.graph and isinstance(graph_copy.graph[attr], list):
                 graph_copy.graph[attr] = json.dumps(graph_copy.graph[attr])
 
@@ -734,34 +742,36 @@ class FractalSet:
         graph = nx.read_graphml(filepath, node_type=str)
 
         # Create instance
-        fractal_set = cls(
-            N=int(graph.graph['N']),
-            d=int(graph.graph['d'])
-        )
+        fractal_set = cls(N=int(graph.graph["N"]), d=int(graph.graph["d"]))
 
         # Convert JSON strings back to Python objects
-        if 'parameters' in graph.graph and isinstance(graph.graph['parameters'], str):
-            graph.graph['parameters'] = json.loads(graph.graph['parameters'])
+        if "parameters" in graph.graph and isinstance(graph.graph["parameters"], str):
+            graph.graph["parameters"] = json.loads(graph.graph["parameters"])
 
-        for attr in ['var_x_trajectory', 'var_v_trajectory', 'n_alive_trajectory', 'centroid_trajectory']:
+        for attr in [
+            "var_x_trajectory",
+            "var_v_trajectory",
+            "n_alive_trajectory",
+            "centroid_trajectory",
+        ]:
             if attr in graph.graph and isinstance(graph.graph[attr], str):
                 graph.graph[attr] = json.loads(graph.graph[attr])
 
         # Convert node attribute JSON strings back to lists/arrays
         for node_id in graph.nodes():
             node_data = graph.nodes[node_id]
-            if 'x' in node_data and isinstance(node_data['x'], str):
-                graph.nodes[node_id]['x'] = np.array(json.loads(node_data['x']))
-            if 'v' in node_data and isinstance(node_data['v'], str):
-                graph.nodes[node_id]['v'] = np.array(json.loads(node_data['v']))
+            if "x" in node_data and isinstance(node_data["x"], str):
+                graph.nodes[node_id]["x"] = np.array(json.loads(node_data["x"]))
+            if "v" in node_data and isinstance(node_data["v"], str):
+                graph.nodes[node_id]["v"] = np.array(json.loads(node_data["v"]))
 
         # Convert string tuples back to int tuples for node IDs
         # (GraphML serializes tuples as strings)
         mapping = {}
         for node_id in list(graph.nodes()):
-            if isinstance(node_id, str) and ',' in node_id:
+            if isinstance(node_id, str) and "," in node_id:
                 # Parse tuple string
-                parts = node_id.strip('()').split(',')
+                parts = node_id.strip("()").split(",")
                 new_id = (int(parts[0]), int(parts[1]))
                 mapping[node_id] = new_id
 

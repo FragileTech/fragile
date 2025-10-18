@@ -18,12 +18,12 @@ References:
 - Georgi, H. (1999). Lie Algebras in Particle Physics
 """
 
-import numpy as np
-from typing import Dict, List, Tuple
 import sys
 
+import numpy as np
 
-def construct_gamma_matrices_dirac() -> Tuple[List[np.ndarray], np.ndarray]:
+
+def construct_gamma_matrices_dirac() -> tuple[list[np.ndarray], np.ndarray]:
     """
     Construct 10D Dirac gamma matrices (32×32) for Cl(1,9).
 
@@ -84,7 +84,7 @@ def construct_gamma_matrices_dirac() -> Tuple[List[np.ndarray], np.ndarray]:
     return Gamma, eta
 
 
-def construct_weyl_projection(Gamma_dirac: List[np.ndarray]) -> List[np.ndarray]:
+def construct_weyl_projection(Gamma_dirac: list[np.ndarray]) -> list[np.ndarray]:
     """
     Project 32×32 Dirac gammas to 16×16 Weyl (chiral) representation.
 
@@ -99,7 +99,7 @@ def construct_weyl_projection(Gamma_dirac: List[np.ndarray]) -> List[np.ndarray]
     # Construct Γ^11 = Γ^0 · Γ^1 · ... · Γ^9
     Gamma11 = np.eye(32, dtype=complex)
     for G in Gamma_dirac:
-        Gamma11 = Gamma11 @ G
+        Gamma11 @= G
 
     # Chiral projector
     I32 = np.eye(32, dtype=complex)
@@ -116,17 +116,18 @@ def construct_weyl_projection(Gamma_dirac: List[np.ndarray]) -> List[np.ndarray]
     return Gamma_weyl
 
 
-def verify_clifford_algebra(Gamma: List[np.ndarray], eta: np.ndarray,
-                           name: str = "Clifford", tol: float = 1e-10) -> bool:
+def verify_clifford_algebra(
+    Gamma: list[np.ndarray], eta: np.ndarray, name: str = "Clifford", tol: float = 1e-10
+) -> bool:
     """
     Verify {Γ^A, Γ^B} = 2η^{AB} I.
 
     Returns:
         True if all relations satisfied within tolerance
     """
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print(f"Verifying {name} Algebra")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     n = len(Gamma)
     dim = Gamma[0].shape[0]
@@ -134,7 +135,7 @@ def verify_clifford_algebra(Gamma: List[np.ndarray], eta: np.ndarray,
 
     print(f"Dimension: {dim}×{dim}")
     print(f"Number of gamma matrices: {n}")
-    print(f"Testing {n*(n+1)//2} anticommutation relations...")
+    print(f"Testing {n * (n + 1) // 2} anticommutation relations...")
 
     failures = []
     max_error = 0.0
@@ -154,22 +155,21 @@ def verify_clifford_algebra(Gamma: List[np.ndarray], eta: np.ndarray,
         for A, B, err in failures[:5]:
             print(f"   {{Γ^{A}, Γ^{B}}} error = {err:.2e}")
         return False
-    else:
-        print(f"✅ PASSED: All relations satisfied")
-        print(f"   Maximum error: {max_error:.2e}")
-        return True
+    print("✅ PASSED: All relations satisfied")
+    print(f"   Maximum error: {max_error:.2e}")
+    return True
 
 
-def verify_so10_generators(Gamma: List[np.ndarray], tol: float = 1e-10) -> bool:
+def verify_so10_generators(Gamma: list[np.ndarray], tol: float = 1e-10) -> bool:
     """
     Verify SO(10) generators T^{AB} = (1/4)[Γ^A, Γ^B] are traceless.
 
     Returns:
         True if all generators are traceless
     """
-    print(f"\n{'='*70}")
-    print(f"Verifying SO(10) Generators")
-    print(f"{'='*70}")
+    print(f"\n{'=' * 70}")
+    print("Verifying SO(10) Generators")
+    print(f"{'=' * 70}")
 
     n = len(Gamma)
     n_generators = n * (n - 1) // 2
@@ -178,7 +178,7 @@ def verify_so10_generators(Gamma: List[np.ndarray], tol: float = 1e-10) -> bool:
     failures = []
 
     for A in range(n):
-        for B in range(A+1, n):
+        for B in range(A + 1, n):
             T_AB = 0.25 * (Gamma[A] @ Gamma[B] - Gamma[B] @ Gamma[A])
             trace = np.trace(T_AB)
 
@@ -190,9 +190,8 @@ def verify_so10_generators(Gamma: List[np.ndarray], tol: float = 1e-10) -> bool:
         for A, B, tr in failures[:5]:
             print(f"   T^{{{A}{B}}} trace = {tr:.2e}")
         return False
-    else:
-        print(f"✅ PASSED: All {n_generators} generators traceless")
-        return True
+    print(f"✅ PASSED: All {n_generators} generators traceless")
+    return True
 
 
 def verify_su3_indices(n_gamma: int = 10) -> bool:
@@ -207,11 +206,11 @@ def verify_su3_indices(n_gamma: int = 10) -> bool:
     Returns:
         True if all SU(3) indices are valid
     """
-    print(f"\n{'='*70}")
-    print(f"Verifying SU(3) Embedding Indices")
-    print(f"{'='*70}")
+    print(f"\n{'=' * 70}")
+    print("Verifying SU(3) Embedding Indices")
+    print(f"{'=' * 70}")
 
-    print(f"Available gamma matrices: Γ^0 ... Γ^{n_gamma-1}")
+    print(f"Available gamma matrices: Γ^0 ... Γ^{n_gamma - 1}")
 
     # SU(3) generators use compact indices 4-9
     su3_indices = list(range(4, 10))
@@ -222,12 +221,11 @@ def verify_su3_indices(n_gamma: int = 10) -> bool:
 
     if invalid:
         print(f"❌ FAILED: Invalid indices {invalid}")
-        print(f"   These indices are not defined!")
+        print("   These indices are not defined!")
         return False
-    else:
-        print(f"✅ PASSED: All SU(3) indices are defined")
-        print(f"   No undefined Γ^{{10}} or higher")
-        return True
+    print("✅ PASSED: All SU(3) indices are defined")
+    print("   No undefined Γ^{10} or higher")
+    return True
 
 
 def verify_standard_model_content():
@@ -237,9 +235,9 @@ def verify_standard_model_content():
 
     This is a representation theory check, not numerical.
     """
-    print(f"\n{'='*70}")
-    print(f"Verifying Standard Model Content")
-    print(f"{'='*70}")
+    print(f"\n{'=' * 70}")
+    print("Verifying Standard Model Content")
+    print(f"{'=' * 70}")
 
     print("\nSO(10) ⊃ SU(5) ⊃ SU(3) × SU(2) × U(1)")
     print("\nOne generation in 16-dimensional Weyl spinor:")
@@ -257,11 +255,10 @@ def verify_standard_model_content():
     # Verify decomposition
     total = 6 + 2 + 6 + 1 + 1
     if total == 16:
-        print(f"\n✅ PASSED: One generation fits exactly in 16D Weyl spinor")
+        print("\n✅ PASSED: One generation fits exactly in 16D Weyl spinor")
         return True
-    else:
-        print(f"\n❌ FAILED: Count mismatch (got {total}, expected 16)")
-        return False
+    print(f"\n❌ FAILED: Count mismatch (got {total}, expected 16)")
+    return False
 
 
 def verify_citations():
@@ -270,9 +267,9 @@ def verify_citations():
 
     This is a documentation check.
     """
-    print(f"\n{'='*70}")
-    print(f"Verifying Citations")
-    print(f"{'='*70}")
+    print(f"\n{'=' * 70}")
+    print("Verifying Citations")
+    print(f"{'=' * 70}")
 
     citations = {
         "Slansky1981": {
@@ -292,31 +289,33 @@ def verify_citations():
             "publisher": "Westview Press",
             "year": "1999",
             "isbn": "978-0738202334",
-        }
+        },
     }
 
     print("\nKey References:")
     print(f"\n1. {citations['Slansky1981']['author']} ({citations['Slansky1981']['year']})")
     print(f"   {citations['Slansky1981']['title']}")
-    print(f"   {citations['Slansky1981']['journal']} {citations['Slansky1981']['volume']}({citations['Slansky1981']['number']}):{citations['Slansky1981']['pages']}")
+    print(
+        f"   {citations['Slansky1981']['journal']} {citations['Slansky1981']['volume']}({citations['Slansky1981']['number']}):{citations['Slansky1981']['pages']}"
+    )
     print(f"   DOI: {citations['Slansky1981']['doi']}")
-    print(f"   Status: Canonical reference for SO(10) representation theory ✅")
+    print("   Status: Canonical reference for SO(10) representation theory ✅")
 
     print(f"\n2. {citations['Georgi1999']['author']} ({citations['Georgi1999']['year']})")
     print(f"   {citations['Georgi1999']['title']} ({citations['Georgi1999']['edition']} ed.)")
     print(f"   {citations['Georgi1999']['publisher']}")
     print(f"   ISBN: {citations['Georgi1999']['isbn']}")
-    print(f"   Status: Standard textbook with SO(10) chapter ✅")
+    print("   Status: Standard textbook with SO(10) chapter ✅")
 
-    print(f"\n✅ PASSED: Citations are correct and accessible")
+    print("\n✅ PASSED: Citations are correct and accessible")
     return True
 
 
 def main():
     """Run all verification tests."""
-    print("="*70)
+    print("=" * 70)
     print("SO(10) GUT Citation Approach: Comprehensive Verification")
-    print("="*70)
+    print("=" * 70)
     print("\nThis script verifies that the citation approach is mathematically sound.")
     print("Even though we cite Slansky (1981) rather than deriving everything,")
     print("we computationally verify that the claimed structure actually exists.")
@@ -324,47 +323,49 @@ def main():
     results = {}
 
     # Test 1: Construct and verify 32×32 Dirac representation
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 1: Dirac Representation (32×32)")
-    print("="*70)
+    print("=" * 70)
     Gamma_dirac, eta = construct_gamma_matrices_dirac()
-    results['clifford_dirac'] = verify_clifford_algebra(Gamma_dirac, eta, "Cl(1,9) Dirac")
-    results['so10_dirac'] = verify_so10_generators(Gamma_dirac)
+    results["clifford_dirac"] = verify_clifford_algebra(Gamma_dirac, eta, "Cl(1,9) Dirac")
+    results["so10_dirac"] = verify_so10_generators(Gamma_dirac)
 
     # Test 2: Construct and verify 16×16 Weyl projection
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 2: Weyl (Chiral) Projection (16×16)")
-    print("="*70)
+    print("=" * 70)
     print("\nThis is the representation used in SO(10) GUT!")
     Gamma_weyl = construct_weyl_projection(Gamma_dirac)
 
-    print(f"\n✅ Successfully projected to {Gamma_weyl[0].shape[0]}×{Gamma_weyl[0].shape[0]} Weyl spinor")
-    results['weyl_projection'] = True
+    print(
+        f"\n✅ Successfully projected to {Gamma_weyl[0].shape[0]}×{Gamma_weyl[0].shape[0]} Weyl spinor"
+    )
+    results["weyl_projection"] = True
 
     # Note: Weyl projection breaks some Clifford relations (expected)
     # We don't test Clifford algebra on Weyl rep - it's a chiral sector only
 
     # Test 3: SU(3) indices
-    results['su3_indices'] = verify_su3_indices()
+    results["su3_indices"] = verify_su3_indices()
 
     # Test 4: Standard Model content
-    results['sm_content'] = verify_standard_model_content()
+    results["sm_content"] = verify_standard_model_content()
 
     # Test 5: Citations
-    results['citations'] = verify_citations()
+    results["citations"] = verify_citations()
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("VERIFICATION SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     tests = [
-        ("Clifford Algebra (32×32 Dirac)", results['clifford_dirac']),
-        ("SO(10) Generators (Dirac)", results['so10_dirac']),
-        ("Weyl Projection (16×16)", results['weyl_projection']),
-        ("SU(3) Embedding Indices", results['su3_indices']),
-        ("Standard Model Content", results['sm_content']),
-        ("Citations", results['citations']),
+        ("Clifford Algebra (32×32 Dirac)", results["clifford_dirac"]),
+        ("SO(10) Generators (Dirac)", results["so10_dirac"]),
+        ("Weyl Projection (16×16)", results["weyl_projection"]),
+        ("SU(3) Embedding Indices", results["su3_indices"]),
+        ("Standard Model Content", results["sm_content"]),
+        ("Citations", results["citations"]),
     ]
 
     for name, passed in tests:
@@ -374,9 +375,9 @@ def main():
     total = len(tests)
     passed = sum(1 for _, p in tests if p)
 
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print(f"OVERALL: {passed}/{total} tests passed")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     if passed == total:
         print("\n✅ ALL VERIFICATION TESTS PASSED")
@@ -387,10 +388,9 @@ def main():
         print("  - Citations are correct and accessible")
         print("\nReady to update document with citation approach.")
         return 0
-    else:
-        print(f"\n❌ {total - passed} TESTS FAILED")
-        print("\nPlease review failures before updating document.")
-        return 1
+    print(f"\n❌ {total - passed} TESTS FAILED")
+    print("\nPlease review failures before updating document.")
+    return 1
 
 
 if __name__ == "__main__":

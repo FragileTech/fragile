@@ -12,14 +12,18 @@ Usage:
     python tests/test_so10_algebra_correct.py
 """
 
-import numpy as np
+import sys
 from typing import List, Tuple
+
+import numpy as np
+
 
 # =============================================================================
 # CORRECT Gamma Matrix Construction (32×32 Dirac)
 # =============================================================================
 
-def construct_gamma_matrices_dirac() -> Tuple[List[np.ndarray], np.ndarray]:
+
+def construct_gamma_matrices_dirac() -> tuple[list[np.ndarray], np.ndarray]:
     """
     Construct 10D Dirac gamma matrices Γ^A (A=0,...,9) as 32×32 complex matrices.
 
@@ -59,12 +63,12 @@ def construct_gamma_matrices_dirac() -> Tuple[List[np.ndarray], np.ndarray]:
 
     # Six mutually anticommuting Euclidean gammas
     Sigma = [
-        kron3(sigma1, I2, I2),           # Σ¹
-        kron3(sigma2, I2, I2),           # Σ²
-        kron3(sigma3, sigma1, I2),       # Σ³
-        kron3(sigma3, sigma2, I2),       # Σ⁴
-        kron3(sigma3, sigma3, sigma1),   # Σ⁵
-        kron3(sigma3, sigma3, sigma2),   # Σ⁶
+        kron3(sigma1, I2, I2),  # Σ¹
+        kron3(sigma2, I2, I2),  # Σ²
+        kron3(sigma3, sigma1, I2),  # Σ³
+        kron3(sigma3, sigma2, I2),  # Σ⁴
+        kron3(sigma3, sigma3, sigma1),  # Σ⁵
+        kron3(sigma3, sigma3, sigma2),  # Σ⁶
     ]
 
     # Assemble 10D gammas
@@ -77,7 +81,7 @@ def construct_gamma_matrices_dirac() -> Tuple[List[np.ndarray], np.ndarray]:
     return Gamma, eta
 
 
-def construct_weyl_projection(Gamma_dirac: List[np.ndarray]) -> List[np.ndarray]:
+def construct_weyl_projection(Gamma_dirac: list[np.ndarray]) -> list[np.ndarray]:
     """
     Project 32×32 Dirac gammas to 16×16 Weyl (chiral) representation.
 
@@ -92,7 +96,7 @@ def construct_weyl_projection(Gamma_dirac: List[np.ndarray]) -> List[np.ndarray]
     # Chirality operator Γ^11 = product of all 10 gammas
     Gamma11 = Gamma_dirac[0].copy()
     for g in Gamma_dirac[1:]:
-        Gamma11 = Gamma11 @ g
+        Gamma11 @= g
 
     # Positive chirality projector P_+ = (1 + Γ^11) / 2
     I32 = np.eye(32, dtype=complex)
@@ -112,11 +116,12 @@ def construct_weyl_projection(Gamma_dirac: List[np.ndarray]) -> List[np.ndarray]
 # Computational Verification
 # =============================================================================
 
+
 def test_clifford_algebra_dirac():
     """Test {Γ^A, Γ^B} = 2η^{AB} I_32 for 32×32 Dirac representation."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 1: Clifford Algebra (32×32 Dirac Representation)")
-    print("="*70)
+    print("=" * 70)
 
     Gamma, eta = construct_gamma_matrices_dirac()
     dim = Gamma[0].shape[0]
@@ -141,7 +146,7 @@ def test_clifford_algebra_dirac():
         for A, B, diff in failures[:5]:
             print(f"  {{Γ^{A}, Γ^{B}}} error: {diff:.2e}")
     else:
-        print(f"✅ PASSED: All 55 Clifford relations satisfied")
+        print("✅ PASSED: All 55 Clifford relations satisfied")
         print(f"   Maximum error < {tol}")
 
     return len(failures) == 0
@@ -149,9 +154,9 @@ def test_clifford_algebra_dirac():
 
 def test_so10_generators():
     """Test SO(10) generators T^{AB} = (1/4)[Γ^A, Γ^B]."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 2: SO(10) Generator Properties")
-    print("="*70)
+    print("=" * 70)
 
     Gamma, _ = construct_gamma_matrices_dirac()
     tol = 1e-10
@@ -159,12 +164,12 @@ def test_so10_generators():
     # Construct 45 generators
     generators = {}
     for A in range(10):
-        for B in range(A+1, 10):
+        for B in range(A + 1, 10):
             T_AB = 0.25 * (Gamma[A] @ Gamma[B] - Gamma[B] @ Gamma[A])
-            generators[(A, B)] = T_AB
+            generators[A, B] = T_AB
 
     print(f"Constructed {len(generators)} SO(10) generators")
-    print(f"Testing tracelessness and Lie algebra structure...\n")
+    print("Testing tracelessness and Lie algebra structure...\n")
 
     failures = []
     for (A, B), T_AB in generators.items():
@@ -180,9 +185,9 @@ def test_so10_generators():
     ]
 
     for (A, B), (C, D), (E, F) in sample_tests:
-        T_AB = generators[(A, B)]
-        T_CD = generators[(C, D)]
-        T_EF = generators[(E, F)]
+        T_AB = generators[A, B]
+        T_CD = generators[C, D]
+        generators[E, F]
 
         # Compute [T^AB, T^CD]
         commutator = T_AB @ T_CD - T_CD @ T_AB
@@ -197,19 +202,19 @@ def test_so10_generators():
         for msg in failures[:5]:
             print(f"  {msg}")
     else:
-        print(f"✅ PASSED: All generators traceless")
-        print(f"   Lie algebra structure verified on sample relations")
+        print("✅ PASSED: All generators traceless")
+        print("   Lie algebra structure verified on sample relations")
 
     return len(failures) == 0
 
 
 def test_weyl_projection():
     """Test that Weyl projection gives 16×16 matrices."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 3: Weyl (Chiral) Projection")
-    print("="*70)
+    print("=" * 70)
 
-    Gamma_dirac, eta = construct_gamma_matrices_dirac()
+    Gamma_dirac, _eta = construct_gamma_matrices_dirac()
     Gamma_weyl = construct_weyl_projection(Gamma_dirac)
 
     print(f"Projected from {Gamma_dirac[0].shape[0]}×{Gamma_dirac[0].shape[0]} Dirac")
@@ -228,14 +233,14 @@ def test_weyl_projection():
 
 def test_su3_indices():
     """Test that we can build SU(3) embedding using indices 4-9."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 4: SU(3) Embedding Indices")
-    print("="*70)
+    print("=" * 70)
 
     Gamma, _ = construct_gamma_matrices_dirac()
 
-    print(f"Available gamma matrices: Γ^0 ... Γ^9 (indices 0-9)")
-    print(f"SU(3) uses compact indices: 4, 5, 6, 7, 8, 9")
+    print("Available gamma matrices: Γ^0 ... Γ^9 (indices 0-9)")
+    print("SU(3) uses compact indices: 4, 5, 6, 7, 8, 9")
     print()
 
     # Check we can access all needed indices
@@ -256,9 +261,9 @@ def test_su3_indices():
 # =============================================================================
 
 if __name__ == "__main__":
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("SO(10) GUT Algebra: Correct Construction & Verification")
-    print("="*70)
+    print("=" * 70)
     print("\nReferences:")
     print("- Slansky, R. (1981). Physics Reports 79:1-128")
     print("- Codex verification (2025-10-16)")
@@ -271,9 +276,9 @@ if __name__ == "__main__":
         test_su3_indices(),
     ]
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("FINAL RESULTS")
-    print("="*70)
+    print("=" * 70)
 
     passed = sum(results)
     total = len(results)
@@ -284,7 +289,7 @@ if __name__ == "__main__":
         print("\n✅ ALL TESTS PASSED")
         print("\nThe construction is mathematically correct and computationally verified.")
         print("Ready to use in SO(10) GUT document with proper citations.")
-        exit(0)
+        sys.exit(0)
     else:
         print(f"\n❌ {total - passed} TESTS FAILED")
-        exit(1)
+        sys.exit(1)

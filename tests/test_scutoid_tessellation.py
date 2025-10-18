@@ -25,10 +25,10 @@ def simple_gas():
             sigma_x=0.5,
             lambda_alg=0.1,
             alpha_restitution=0.5,
-            companion_selection_method='softmax'
+            companion_selection_method="softmax",
         ),
-        device='cpu',
-        dtype='float32'
+        device="cpu",
+        dtype="float32",
     )
     return EuclideanGas(params)
 
@@ -62,7 +62,7 @@ class TestScutoidTessellation:
         assert len(tessellation.voronoi_cells) == n_steps + 1
         assert len(tessellation.scutoid_cells) == n_steps
         assert tessellation.n_steps == n_steps + 1
-        assert result['scutoid_tessellation'] is tessellation
+        assert result["scutoid_tessellation"] is tessellation
 
     def test_voronoi_cells_created(self, simple_gas):
         """Test that Voronoi cells are created at each timestep."""
@@ -72,7 +72,7 @@ class TestScutoidTessellation:
         )
 
         n_steps = 3
-        result = simple_gas.run(n_steps=n_steps, scutoid_tessellation=tessellation)
+        simple_gas.run(n_steps=n_steps, scutoid_tessellation=tessellation)
 
         # Check each timestep has N Voronoi cells
         for t in range(n_steps + 1):
@@ -95,7 +95,7 @@ class TestScutoidTessellation:
         )
 
         n_steps = 3
-        result = simple_gas.run(n_steps=n_steps, scutoid_tessellation=tessellation)
+        simple_gas.run(n_steps=n_steps, scutoid_tessellation=tessellation)
 
         # Check each interval has N scutoid cells
         for interval in range(n_steps):
@@ -120,7 +120,7 @@ class TestScutoidTessellation:
         )
 
         n_steps = 3
-        result = simple_gas.run(n_steps=n_steps, scutoid_tessellation=tessellation)
+        simple_gas.run(n_steps=n_steps, scutoid_tessellation=tessellation)
 
         # Check classification methods work
         for interval in range(n_steps):
@@ -145,22 +145,22 @@ class TestScutoidTessellation:
         )
 
         n_steps = 5
-        result = simple_gas.run(n_steps=n_steps, scutoid_tessellation=tessellation)
+        simple_gas.run(n_steps=n_steps, scutoid_tessellation=tessellation)
 
         stats = tessellation.summary_statistics()
 
-        assert 'n_timesteps' in stats
-        assert 'n_intervals' in stats
-        assert 'n_prisms' in stats
-        assert 'n_scutoids' in stats
-        assert 'total_spacetime_volume' in stats
-        assert 'N' in stats
-        assert 'd' in stats
+        assert "n_timesteps" in stats
+        assert "n_intervals" in stats
+        assert "n_prisms" in stats
+        assert "n_scutoids" in stats
+        assert "total_spacetime_volume" in stats
+        assert "N" in stats
+        assert "d" in stats
 
-        assert stats['n_timesteps'] == n_steps + 1
-        assert stats['n_intervals'] == n_steps
-        assert stats['N'] == simple_gas.params.N
-        assert stats['d'] == simple_gas.params.d
+        assert stats["n_timesteps"] == n_steps + 1
+        assert stats["n_intervals"] == n_steps
+        assert stats["N"] == simple_gas.params.N
+        assert stats["d"] == simple_gas.params.d
 
     def test_get_scutoid(self, simple_gas):
         """Test retrieving specific scutoid cells."""
@@ -170,7 +170,7 @@ class TestScutoidTessellation:
         )
 
         n_steps = 3
-        result = simple_gas.run(n_steps=n_steps, scutoid_tessellation=tessellation)
+        simple_gas.run(n_steps=n_steps, scutoid_tessellation=tessellation)
 
         # Get scutoid for walker 0 at timestep 0
         scutoid = tessellation.get_scutoid(walker_id=0, timestep=0)
@@ -189,9 +189,9 @@ class TestScutoidTessellation:
         result = simple_gas.run(n_steps=n_steps)
 
         # Should work normally without scutoid_tessellation
-        assert 'x' in result
-        assert 'v' in result
-        assert 'scutoid_tessellation' not in result
+        assert "x" in result
+        assert "v" in result
+        assert "scutoid_tessellation" not in result
 
     def test_timestep_tracking(self, simple_gas):
         """Test that timesteps are correctly tracked."""
@@ -202,7 +202,7 @@ class TestScutoidTessellation:
 
         n_steps = 4
         dt = simple_gas.params.langevin.delta_t
-        result = simple_gas.run(n_steps=n_steps, scutoid_tessellation=tessellation)
+        simple_gas.run(n_steps=n_steps, scutoid_tessellation=tessellation)
 
         # Check timesteps are recorded correctly
         assert len(tessellation.timesteps) == n_steps + 1
@@ -210,5 +210,5 @@ class TestScutoidTessellation:
             assert t == pytest.approx(i * dt, abs=1e-6)
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

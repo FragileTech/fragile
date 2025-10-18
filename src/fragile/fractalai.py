@@ -24,13 +24,91 @@ def l2_norm(x: Tensor, y: Tensor) -> Tensor:
     return torch.norm(x - y, dim=1)
 
 
-def relativize(x: Tensor) -> Tensor:
+def asymmetric_rescale(x: Tensor) -> Tensor:
     """Normalize the data using a custom smoothing technique."""
     std = x.std()
     if std == 0 or torch.isnan(std) or torch.isinf(std):
         return torch.ones_like(x)
     standard = (x - x.mean()) / std
     return torch.where(standard > 0.0, torch.log(1.0 + standard) + 1.0, torch.exp(standard))
+
+
+def logistic_rescale(z: Tensor, A: float = 1.0) -> Tensor:
+    """Logistic rescale function mapping R -> [0, A].
+
+    Implements g_A(z) = A / (1 + exp(-z)), a smooth, bounded, monotone increasing
+    function used in the fitness potential V_fit[f, ρ](x) = g_A(Z_ρ[f, d, x]).
+
+    Reference: Definition def-localized-mean-field-fitness in 11_geometric_gas.md
+
+    Args:
+        z: Input tensor (typically Z-scores)
+        A: Upper bound of the output range (default: 1.0)
+
+    Returns:
+        Tensor with values in [0, A]
+    """
+    return A / (1.0 + torch.exp(-z))
+
+
+def patched_standardization(
+    values: Tensor,
+    alive: Tensor,
+    rho: float | None = None,
+    sigma_min: float = 1e-8,
+) -> Tensor:
+    """Compute Z-scores using only alive walkers for statistics.
+
+    Implements the patched standardization Z_ρ[f, d, x] where statistics (mean, std)
+    are computed only over alive walkers to prevent contamination from dead walkers.
+
+    For the global case (rho=None), computes:
+        Z[f, d, x_i] = (d(x_i) - μ[d|alive]) / σ'[d|alive]
+
+    where μ and σ are computed using only alive walkers, and σ' includes regularization:
+        σ'[d|alive] = sqrt(σ²[d|alive] + σ²_min)
+
+    Reference: Definition def-unified-z-score in 11_geometric_gas.md
+
+    Args:
+        values: Tensor of shape [N] containing measurement values for all walkers
+        alive: Boolean tensor of shape [N], True for alive walkers
+        rho: Localization scale parameter (not yet implemented for finite rho)
+        sigma_min: Regularization constant ensuring σ' ≥ σ_min > 0
+
+    Returns:
+        Z-scores tensor of shape [N]. Dead walkers receive Z-score of 0.0.
+
+    Note:
+        Current implementation is for the global case (rho → ∞). For finite rho,
+        localization kernel K_ρ(x_i, x_j) would weight contributions from nearby
+        alive walkers. See def-localized-mean-field-moments in 11_geometric_gas.md.
+    """
+    if rho is not None:
+        msg = "Localized standardization (finite rho) not yet implemented"
+        raise NotImplementedError(msg)
+
+    # Extract alive walker values
+    alive_values = values[alive]
+
+    if alive_values.numel() == 0:
+        # No alive walkers - return zeros
+        return torch.zeros_like(values)
+
+    # Compute statistics over alive walkers only
+    mu = alive_values.mean()
+    sigma_sq = alive_values.var(unbiased=False)  # Population variance
+
+    # Regularized standard deviation: σ'[d|alive] = sqrt(σ²[d|alive] + σ²_min)
+    sigma_reg = torch.sqrt(sigma_sq + sigma_min**2)
+
+    # Compute Z-scores for all walkers
+    z_scores = (values - mu) / sigma_reg
+
+    # Set Z-scores of dead walkers to 0.0 (they don't participate in dynamics)
+    z_scores = torch.where(alive, z_scores, torch.zeros_like(z_scores))
+
+    return z_scores
 
 
 def get_alive_indexes(oobs: Tensor):
@@ -70,7 +148,7 @@ def calculate_distance(
         compas = random_alive_compas(oobs, observs)
     flattened_observs = observs.view(observs.shape[0], -1)
     distance = distance_function(flattened_observs, flattened_observs[compas])
-    distance_norm = relativize(distance.flatten())
+    distance_norm = asymmetric_rescale(distance.flatten())
     return distance_norm if not return_compas else (distance_norm, compas)
 
 
@@ -89,7 +167,7 @@ def cross_distance(
     flattened_observs = observ.view(observ.shape[0], -1)
     flattened_dst_observs = dst_observ.view(dst_observ.shape[0], -1)
     distance = distance_function(flattened_observs, flattened_dst_observs[compas])
-    distance_norm = relativize(distance.flatten())
+    distance_norm = asymmetric_rescale(distance.flatten())
     data = (distance_norm,)
     if return_compas:
         data = (*data, compas)
@@ -97,8 +175,7 @@ def cross_distance(
         data = (*data, distance)
     return data[0] if len(data) == 1 else tuple(data)
 
-
-def calculate_virtual_reward(
+def calculate_fitness(
     observs: Tensor,
     rewards: Tensor,
     oobs: Tensor = None,
@@ -114,8 +191,8 @@ def calculate_virtual_reward(
     flattened_observs = observs.reshape(len(compas), -1)
     other_reward = other_reward.flatten() if isinstance(other_reward, Tensor) else other_reward
     distance = distance_function(flattened_observs, flattened_observs[compas])
-    distance_norm = relativize(distance.flatten())
-    rewards_norm = relativize(rewards.flatten())
+    distance_norm = asymmetric_rescale(distance.flatten())
+    rewards_norm = asymmetric_rescale(rewards.flatten())
     virtual_reward = distance_norm**dist_coef * rewards_norm**reward_coef * other_reward
     return_data = (virtual_reward,)
     if return_compas:
@@ -146,7 +223,7 @@ def cross_virtual_reward(
         return_compas=True,
         return_distance=True,
     )
-    rewards_norm = relativize(rewards.flatten())
+    rewards_norm = asymmetric_rescale(rewards.flatten())
     virtual_reward = distance_norm**dist_coef * rewards_norm**reward_coef * other_reward
     return_data = (virtual_reward,)
     if return_compas:
@@ -210,7 +287,7 @@ def fai_iteration(
         if oobs is not None
         else torch.zeros(rewards.shape, dtype=torch.bool, device=rewards.device)
     )
-    virtual_reward = calculate_virtual_reward(
+    virtual_reward = calculate_fitness(
         observs,
         rewards,
         oobs,

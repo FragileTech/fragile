@@ -43,10 +43,7 @@ class TestCompanionSelectionMethods:
     def test_hybrid_method_default(self, base_params):
         """Test hybrid method (default behavior)."""
         cloning = CloningParams(
-            sigma_x=0.1,
-            lambda_alg=0.5,
-            alpha_restitution=0.5,
-            companion_selection_method="hybrid"
+            sigma_x=0.1, lambda_alg=0.5, alpha_restitution=0.5, companion_selection_method="hybrid"
         )
         params = EuclideanGasParams(**base_params, cloning=cloning)
         gas = EuclideanGas(params)
@@ -65,7 +62,7 @@ class TestCompanionSelectionMethods:
             sigma_x=0.1,
             lambda_alg=0.5,
             alpha_restitution=0.5,
-            companion_selection_method="softmax"
+            companion_selection_method="softmax",
         )
         params = EuclideanGasParams(**base_params, cloning=cloning)
         gas = EuclideanGas(params)
@@ -84,7 +81,7 @@ class TestCompanionSelectionMethods:
             sigma_x=0.1,
             lambda_alg=0.5,
             alpha_restitution=0.5,
-            companion_selection_method="uniform"
+            companion_selection_method="uniform",
         )
         params = EuclideanGasParams(**base_params, cloning=cloning)
         gas = EuclideanGas(params)
@@ -103,7 +100,7 @@ class TestCompanionSelectionMethods:
             sigma_x=0.1,
             lambda_alg=0.5,
             alpha_restitution=0.5,
-            companion_selection_method="invalid_method"
+            companion_selection_method="invalid_method",
         )
         params = EuclideanGasParams(**base_params, cloning=cloning)
         gas = EuclideanGas(params)
@@ -123,7 +120,7 @@ class TestEpsilonCParameter:
             sigma_x=0.1,
             lambda_alg=0.5,
             alpha_restitution=0.5,
-            epsilon_c=None  # Should default to sigma_x
+            epsilon_c=None,  # Should default to sigma_x
         )
 
         assert cloning.get_epsilon_c() == 0.1
@@ -134,7 +131,7 @@ class TestEpsilonCParameter:
             sigma_x=0.1,
             lambda_alg=0.5,
             alpha_restitution=0.5,
-            epsilon_c=0.2  # Explicit value
+            epsilon_c=0.2,  # Explicit value
         )
 
         assert cloning.get_epsilon_c() == 0.2
@@ -147,7 +144,7 @@ class TestEpsilonCParameter:
             lambda_alg=0.0,
             alpha_restitution=0.5,
             epsilon_c=0.01,  # Very small
-            companion_selection_method="softmax"
+            companion_selection_method="softmax",
         )
         params_small = EuclideanGasParams(**base_params, cloning=cloning_small)
         gas_small = EuclideanGas(params_small)
@@ -158,7 +155,7 @@ class TestEpsilonCParameter:
             lambda_alg=0.0,
             alpha_restitution=0.5,
             epsilon_c=10.0,  # Very large
-            companion_selection_method="softmax"
+            companion_selection_method="softmax",
         )
         params_large = EuclideanGasParams(**base_params, cloning=cloning_large)
         gas_large = EuclideanGas(params_large)
@@ -181,10 +178,7 @@ class TestBoundsIntegration:
     def test_hybrid_with_bounds(self, bounded_params):
         """Test hybrid method with bounds creates correct alive_mask."""
         cloning = CloningParams(
-            sigma_x=0.5,
-            lambda_alg=0.5,
-            alpha_restitution=0.5,
-            companion_selection_method="hybrid"
+            sigma_x=0.5, lambda_alg=0.5, alpha_restitution=0.5, companion_selection_method="hybrid"
         )
         params = EuclideanGasParams(**bounded_params, cloning=cloning)
         gas = EuclideanGas(params)
@@ -205,21 +199,21 @@ class TestBoundsIntegration:
     def test_bounds_enforce_alive_mask(self, bounded_params, test_device):
         """Test that bounds correctly create alive_mask for companion selection."""
         cloning = CloningParams(
-            sigma_x=0.5,
-            lambda_alg=0.5,
-            alpha_restitution=0.5,
-            companion_selection_method="hybrid"
+            sigma_x=0.5, lambda_alg=0.5, alpha_restitution=0.5, companion_selection_method="hybrid"
         )
         params = EuclideanGasParams(**bounded_params, cloning=cloning)
         gas = EuclideanGas(params)
 
         # Create state with known out-of-bounds walkers on correct device
-        x = torch.tensor([
-            [0.0, 0.0],   # In bounds
-            [10.0, 0.0],  # Out of bounds (x > 5)
-            [0.0, 10.0],  # Out of bounds (y > 5)
-            [2.0, 2.0],   # In bounds
-        ], device=test_device)
+        x = torch.tensor(
+            [
+                [0.0, 0.0],  # In bounds
+                [10.0, 0.0],  # Out of bounds (x > 5)
+                [0.0, 10.0],  # Out of bounds (y > 5)
+                [2.0, 2.0],  # In bounds
+            ],
+            device=test_device,
+        )
         v = torch.zeros(4, 2, device=test_device)
         state = SwarmState(x, v)
 

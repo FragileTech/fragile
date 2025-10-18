@@ -4,20 +4,23 @@ Test boundary handling: verify walkers die and resurrect correctly.
 """
 
 import sys
-sys.path.insert(0, '../../src')
 
-import torch
+
+sys.path.insert(0, "../../src")
+
 import numpy as np
+import torch
 
+from fragile.bounds import TorchBounds
+from fragile.euclidean_gas import LangevinParams
 from fragile.experiments import create_multimodal_potential
 from fragile.geometric_gas import (
+    AdaptiveParams,
     GeometricGas,
     GeometricGasParams,
     LocalizationKernelParams,
-    AdaptiveParams,
 )
-from fragile.euclidean_gas import LangevinParams
-from fragile.bounds import TorchBounds
+
 
 # Set seeds
 torch.manual_seed(42)
@@ -33,19 +36,13 @@ print("=" * 70)
 print("\n[1/4] Setting up potential and bounds...")
 
 potential, target_mixture = create_multimodal_potential(
-    dims=2,
-    n_gaussians=3,
-    bounds_range=(-8.0, 8.0),
-    seed=42
+    dims=2, n_gaussians=3, bounds_range=(-8.0, 8.0), seed=42
 )
 
 # Define strict bounds
-bounds = TorchBounds(
-    low=torch.tensor([-8.0, -8.0]),
-    high=torch.tensor([8.0, 8.0])
-)
+bounds = TorchBounds(low=torch.tensor([-8.0, -8.0]), high=torch.tensor([8.0, 8.0]))
 
-print(f"  ✓ Created potential")
+print("  ✓ Created potential")
 print(f"  ✓ Bounds: [{bounds.low.tolist()}, {bounds.high.tolist()}]")
 
 # ============================================================================
@@ -56,8 +53,10 @@ print("\n[2/4] Initializing swarm near boundary...")
 N = 50
 dims = 2
 
+
 def measurement_fn(x):
     return -potential.evaluate(x)
+
 
 params = GeometricGasParams(
     N=N,
@@ -71,11 +70,11 @@ params = GeometricGasParams(
         epsilon_Sigma=0.01,
         rescale_amplitude=1.0,
         sigma_var_min=0.1,
-        viscous_length_scale=2.0
+        viscous_length_scale=2.0,
     ),
     bounds=bounds,  # <- Critical!
     device="cpu",
-    dtype="float32"
+    dtype="float32",
 )
 
 gas = GeometricGas(params, measurement_fn=measurement_fn)
@@ -131,12 +130,14 @@ for step in range(n_steps):
 
     # Report every 100 steps
     if (step + 1) % 100 == 0:
-        print(f"  Step {step + 1:3d}: {n_alive:2d}/{N} alive, "
-              f"pos range [{state.x.min():.2f}, {state.x.max():.2f}]")
+        print(
+            f"  Step {step + 1:3d}: {n_alive:2d}/{N} alive, "
+            f"pos range [{state.x.min():.2f}, {state.x.max():.2f}]"
+        )
 
 n_alive_final = alive_counts[-1]
 
-print(f"\n  ✓ Simulation complete")
+print("\n  ✓ Simulation complete")
 print(f"  ✓ Final alive: {n_alive_final}/{N}")
 
 # ============================================================================
@@ -156,24 +157,26 @@ if len(death_events) > 0:
     if len(death_events) > 1:
         print(f"  Sample events: {death_events[:5]}")
 else:
-    print(f"  ⚠️  No deaths observed!")
+    print("  ⚠️  No deaths observed!")
 
 # Resurrection events
 total_resurrections = sum(n for _, n in resurrection_events)
 print(f"\nResurrection Events: {len(resurrection_events)} times, {total_resurrections} total")
 if len(resurrection_events) > 0:
-    print(f"  First resurrection at step {resurrection_events[0][0]}: {resurrection_events[0][1]} walkers")
+    print(
+        f"  First resurrection at step {resurrection_events[0][0]}: {resurrection_events[0][1]} walkers"
+    )
     if len(resurrection_events) > 1:
         print(f"  Sample events: {resurrection_events[:5]}")
 else:
-    print(f"  ⚠️  No resurrections observed!")
+    print("  ⚠️  No resurrections observed!")
 
 # Alive count statistics
 min_alive = min(alive_counts)
 max_alive = max(alive_counts)
 avg_alive = np.mean(alive_counts)
 
-print(f"\nAlive Walker Statistics:")
+print("\nAlive Walker Statistics:")
 print(f"  Initial: {n_alive_init}/{N}")
 print(f"  Minimum: {min_alive}/{N}")
 print(f"  Maximum: {max_alive}/{N}")
@@ -204,14 +207,15 @@ else:
 
 # Check if swarm is confined
 final_pos = state.x.detach().numpy()
-in_bounds = ((final_pos >= bounds.low.numpy()).all(axis=1) &
-             (final_pos <= bounds.high.numpy()).all(axis=1))
+in_bounds = (final_pos >= bounds.low.numpy()).all(axis=1) & (final_pos <= bounds.high.numpy()).all(
+    axis=1
+)
 n_in_bounds = in_bounds.sum()
 
-print(f"\n✓ Final position check:")
+print("\n✓ Final position check:")
 print(f"  Walkers in bounds: {n_in_bounds}/{N}")
 if n_in_bounds == N:
-    print(f"  ✓ All walkers within boundary!")
+    print("  ✓ All walkers within boundary!")
 else:
     print(f"  ⚠️  {N - n_in_bounds} walkers outside bounds (but marked as dead)")
 

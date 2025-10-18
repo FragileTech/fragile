@@ -9,9 +9,9 @@ Usage:
     python convert_mermaid_blocks.py docs/source --in-place  # Process directory
 """
 
+from pathlib import Path
 import re
 import sys
-from pathlib import Path
 
 
 def convert_mermaid_blocks(content: str) -> str:
@@ -40,9 +40,7 @@ def convert_mermaid_blocks(content: str) -> str:
 
     # Replace all occurrences of both patterns
     converted = re.sub(pattern_backticks, replace_block, content, flags=re.DOTALL)
-    converted = re.sub(pattern_colons, replace_block, converted, flags=re.DOTALL)
-
-    return converted
+    return re.sub(pattern_colons, replace_block, converted, flags=re.DOTALL)
 
 
 def process_file(input_path: Path, output_path: Path | None = None) -> None:

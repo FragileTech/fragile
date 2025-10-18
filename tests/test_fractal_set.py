@@ -1,7 +1,7 @@
 """Tests for FractalSet: Graph-based representation of swarm evolution."""
 
-import tempfile
 from pathlib import Path
+import tempfile
 
 import networkx as nx
 import numpy as np
@@ -40,10 +40,10 @@ def simple_gas():
             sigma_x=0.5,
             lambda_alg=0.1,
             alpha_restitution=0.5,
-            companion_selection_method='softmax'
+            companion_selection_method="softmax",
         ),
-        device='cpu',
-        dtype='float32'
+        device="cpu",
+        dtype="float32",
     )
     return EuclideanGas(params)
 
@@ -60,9 +60,9 @@ class TestFractalSetBasics:
         assert fs.d == d
         assert fs.current_step == 0
         assert fs.graph.number_of_nodes() == 0
-        assert fs.graph.graph['N'] == N
-        assert fs.graph.graph['d'] == d
-        assert fs.graph.graph['n_steps'] == 0
+        assert fs.graph.graph["N"] == N
+        assert fs.graph.graph["d"] == d
+        assert fs.graph.graph["n_steps"] == 0
 
     def test_add_single_timestep(self, simple_state):
         """Test adding a single timestep."""
@@ -74,7 +74,7 @@ class TestFractalSetBasics:
         # Check nodes were created
         assert fs.graph.number_of_nodes() == N
         assert fs.current_step == 0
-        assert fs.graph.graph['n_steps'] == 1
+        assert fs.graph.graph["n_steps"] == 1
 
         # Check node attributes
         for i in range(N):
@@ -82,13 +82,13 @@ class TestFractalSetBasics:
             assert fs.graph.has_node(node_id)
             node_data = fs.graph.nodes[node_id]
 
-            assert 'x' in node_data
-            assert 'v' in node_data
-            assert 'high_error' in node_data
-            assert 'alive' in node_data
-            assert 'positional_error' in node_data
-            assert len(node_data['x']) == d
-            assert len(node_data['v']) == d
+            assert "x" in node_data
+            assert "v" in node_data
+            assert "high_error" in node_data
+            assert "alive" in node_data
+            assert "positional_error" in node_data
+            assert len(node_data["x"]) == d
+            assert len(node_data["v"]) == d
 
     def test_add_multiple_timesteps(self, simple_state):
         """Test adding multiple timesteps creates edges."""
@@ -105,14 +105,14 @@ class TestFractalSetBasics:
         # Check nodes and edges
         assert fs.graph.number_of_nodes() == 2 * N
         assert fs.graph.number_of_edges() == N  # N temporal edges
-        assert fs.graph.graph['n_steps'] == 2
+        assert fs.graph.graph["n_steps"] == 2
 
         # Check edges exist
         for i in range(N):
             edge = ((i, 0), (i, 1))
             assert fs.graph.has_edge(*edge)
             edge_data = fs.graph.edges[edge]
-            assert edge_data['edge_type'] == 'kinetic'
+            assert edge_data["edge_type"] == "kinetic"
 
     def test_high_error_partitioning(self):
         """Test that high-error attribute is recorded for all walkers."""
@@ -128,16 +128,13 @@ class TestFractalSetBasics:
 
         # Check that all nodes have high_error attribute
         for i in range(N):
-            assert 'high_error' in fs.graph.nodes[(i, 0)]
-            assert isinstance(fs.graph.nodes[(i, 0)]['high_error'], bool)
-            assert 'positional_error' in fs.graph.nodes[(i, 0)]
+            assert "high_error" in fs.graph.nodes[i, 0]
+            assert isinstance(fs.graph.nodes[i, 0]["high_error"], bool)
+            assert "positional_error" in fs.graph.nodes[i, 0]
 
         # With random positions, typically we'll have both sets
         # But not strictly required, so just check attribute exists
-        n_high_error = sum(
-            1 for i in range(N)
-            if fs.graph.nodes[(i, 0)]['high_error']
-        )
+        n_high_error = sum(1 for i in range(N) if fs.graph.nodes[i, 0]["high_error"])
 
         # Should have some reasonable split (allow edge cases)
         assert 0 <= n_high_error <= N
@@ -155,10 +152,10 @@ class TestFractalSetBasics:
             fs.add_timestep(state=state, timestep=t)
 
         # Check trajectories
-        assert len(fs.graph.graph['var_x_trajectory']) == n_steps
-        assert len(fs.graph.graph['var_v_trajectory']) == n_steps
-        assert len(fs.graph.graph['n_alive_trajectory']) == n_steps
-        assert len(fs.graph.graph['centroid_trajectory']) == n_steps
+        assert len(fs.graph.graph["var_x_trajectory"]) == n_steps
+        assert len(fs.graph.graph["var_v_trajectory"]) == n_steps
+        assert len(fs.graph.graph["n_alive_trajectory"]) == n_steps
+        assert len(fs.graph.graph["centroid_trajectory"]) == n_steps
 
 
 class TestFractalSetFromRun:
@@ -172,10 +169,10 @@ class TestFractalSetFromRun:
         # Check basic properties
         assert fs.N == simple_gas.params.N
         assert fs.d == simple_gas.params.d
-        assert fs.graph.graph['n_steps'] <= n_steps + 1  # Might stop early
+        assert fs.graph.graph["n_steps"] <= n_steps + 1  # Might stop early
 
         # Check all timesteps have nodes
-        for t in range(fs.graph.graph['n_steps']):
+        for t in range(fs.graph.graph["n_steps"]):
             for i in range(fs.N):
                 assert fs.graph.has_node((i, t))
 
@@ -188,9 +185,9 @@ class TestFractalSetFromRun:
         sample_node = (0, 0)
         node_data = fs.graph.nodes[sample_node]
 
-        assert 'fitness' in node_data
-        assert 'potential' in node_data
-        assert 'reward' in node_data
+        assert "fitness" in node_data
+        assert "potential" in node_data
+        assert "reward" in node_data
 
     def test_from_run_without_fitness(self, simple_gas):
         """Test that run works without fitness recording."""
@@ -201,16 +198,16 @@ class TestFractalSetFromRun:
         sample_node = (0, 0)
         node_data = fs.graph.nodes[sample_node]
 
-        assert 'fitness' not in node_data
-        assert 'potential' not in node_data
-        assert 'reward' not in node_data
+        assert "fitness" not in node_data
+        assert "potential" not in node_data
+        assert "reward" not in node_data
 
     def test_from_run_convergence(self, simple_gas):
         """Test that variance trajectory is recorded and reasonable."""
         n_steps = 20
         fs = FractalSet.from_run(simple_gas, n_steps=n_steps)
 
-        var_traj = np.array(fs.graph.graph['var_x_trajectory'])
+        var_traj = np.array(fs.graph.graph["var_x_trajectory"])
 
         # Just check that variance trajectory exists and has reasonable values
         assert len(var_traj) > 0
@@ -229,15 +226,15 @@ class TestFractalSetQueries:
         walker_id = 0
         traj = fs.get_walker_trajectory(walker_id)
 
-        assert len(traj['timesteps']) == fs.graph.graph['n_steps']
-        assert len(traj['positions']) == fs.graph.graph['n_steps']
-        assert len(traj['velocities']) == fs.graph.graph['n_steps']
-        assert len(traj['high_error']) == fs.graph.graph['n_steps']
-        assert len(traj['alive']) == fs.graph.graph['n_steps']
+        assert len(traj["timesteps"]) == fs.graph.graph["n_steps"]
+        assert len(traj["positions"]) == fs.graph.graph["n_steps"]
+        assert len(traj["velocities"]) == fs.graph.graph["n_steps"]
+        assert len(traj["high_error"]) == fs.graph.graph["n_steps"]
+        assert len(traj["alive"]) == fs.graph.graph["n_steps"]
 
         # Check positions change over time
-        positions = np.array(traj['positions'])
-        assert positions.shape == (fs.graph.graph['n_steps'], simple_gas.params.d)
+        positions = np.array(traj["positions"])
+        assert positions.shape == (fs.graph.graph["n_steps"], simple_gas.params.d)
 
     def test_get_timestep_snapshot(self, simple_gas):
         """Test extracting complete swarm state at a timestep."""
@@ -247,12 +244,12 @@ class TestFractalSetQueries:
         t = 5
         snapshot = fs.get_timestep_snapshot(t)
 
-        assert snapshot['positions'].shape == (simple_gas.params.N, simple_gas.params.d)
-        assert snapshot['velocities'].shape == (simple_gas.params.N, simple_gas.params.d)
-        assert len(snapshot['high_error_mask']) == simple_gas.params.N
-        assert len(snapshot['alive_mask']) == simple_gas.params.N
-        assert 'centroid' in snapshot
-        assert 'variance' in snapshot
+        assert snapshot["positions"].shape == (simple_gas.params.N, simple_gas.params.d)
+        assert snapshot["velocities"].shape == (simple_gas.params.N, simple_gas.params.d)
+        assert len(snapshot["high_error_mask"]) == simple_gas.params.N
+        assert len(snapshot["alive_mask"]) == simple_gas.params.N
+        assert "centroid" in snapshot
+        assert "variance" in snapshot
 
     def test_get_lineage(self, simple_gas):
         """Test tracing walker lineage backwards."""
@@ -282,11 +279,11 @@ class TestFractalSetQueries:
 
         # Check structure of events
         for event in events:
-            assert 'timestep' in event
-            assert 'parent_id' in event
-            assert 'child_id' in event
-            assert 'parent_pos' in event
-            assert 'child_pos' in event
+            assert "timestep" in event
+            assert "parent_id" in event
+            assert "child_id" in event
+            assert "parent_pos" in event
+            assert "child_pos" in event
 
     def test_summary_statistics(self, simple_gas):
         """Test computing summary statistics."""
@@ -295,18 +292,18 @@ class TestFractalSetQueries:
 
         stats = fs.summary_statistics()
 
-        assert 'total_nodes' in stats
-        assert 'total_edges' in stats
-        assert 'n_cloning_events' in stats
-        assert 'initial_variance' in stats
-        assert 'final_variance' in stats
-        assert 'variance_reduction' in stats
-        assert 'mean_high_error_fraction' in stats
+        assert "total_nodes" in stats
+        assert "total_edges" in stats
+        assert "n_cloning_events" in stats
+        assert "initial_variance" in stats
+        assert "final_variance" in stats
+        assert "variance_reduction" in stats
+        assert "mean_high_error_fraction" in stats
 
         # Check values are reasonable
-        assert stats['total_nodes'] > 0
-        assert stats['total_edges'] >= 0
-        assert 0.0 <= stats['mean_high_error_fraction'] <= 1.0
+        assert stats["total_nodes"] > 0
+        assert stats["total_edges"] >= 0
+        assert 0.0 <= stats["mean_high_error_fraction"] <= 1.0
 
 
 class TestFractalSetSerialization:
@@ -335,7 +332,7 @@ class TestFractalSetSerialization:
             assert fs_loaded.graph.number_of_edges() == fs_original.graph.number_of_edges()
 
             # Check graph attributes match
-            assert fs_loaded.graph.graph['n_steps'] == fs_original.graph.graph['n_steps']
+            assert fs_loaded.graph.graph["n_steps"] == fs_original.graph.graph["n_steps"]
 
     def test_save_with_extension_handling(self, simple_gas):
         """Test that .graphml extension is added if missing."""
@@ -347,7 +344,7 @@ class TestFractalSetSerialization:
             fs.save(str(filepath))
 
             # Check that .graphml was added
-            expected_path = Path(str(filepath) + '.graphml')
+            expected_path = Path(str(filepath) + ".graphml")
             assert expected_path.exists()
 
 
@@ -360,9 +357,9 @@ class TestFractalSetEdgeCases:
 
         # Should handle empty case gracefully
         stats = fs.summary_statistics()
-        assert stats['total_nodes'] == 0
-        assert stats['total_edges'] == 0
-        assert stats['n_steps'] == 0
+        assert stats["total_nodes"] == 0
+        assert stats["total_edges"] == 0
+        assert stats["n_steps"] == 0
 
     def test_single_walker(self):
         """Test FractalSet with N=1."""
@@ -375,10 +372,10 @@ class TestFractalSetEdgeCases:
                 sigma_x=0.5,
                 lambda_alg=0.1,
                 alpha_restitution=0.5,
-                companion_selection_method='uniform'
+                companion_selection_method="uniform",
             ),
-            device='cpu',
-            dtype='float32'
+            device="cpu",
+            dtype="float32",
         )
         gas = EuclideanGas(params)
 
@@ -399,7 +396,7 @@ class TestFractalSetEdgeCases:
         traj = fs.get_walker_trajectory(invalid_id)
 
         # Should return empty trajectory
-        assert len(traj['timesteps']) == 0
+        assert len(traj["timesteps"]) == 0
 
 
 class TestFractalSetGraphProperties:
@@ -418,9 +415,9 @@ class TestFractalSetGraphProperties:
         fs = FractalSet.from_run(simple_gas, n_steps=n_steps)
 
         # All edges should go forward in time
-        for (u, v) in fs.graph.edges():
-            u_walker, u_time = u
-            v_walker, v_time = v
+        for u, v in fs.graph.edges():
+            _u_walker, u_time = u
+            _v_walker, v_time = v
 
             assert v_time > u_time  # Edges go forward in time
 
@@ -446,5 +443,5 @@ class TestFractalSetGraphProperties:
         assert n_components <= simple_gas.params.N
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

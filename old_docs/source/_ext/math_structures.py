@@ -5,14 +5,12 @@ This extension provides custom directives for definitions, theorems, algorithms,
 with proper styling and cross-referencing support.
 """
 
-import json
 import re
 
 from docutils import nodes
-from docutils.parsers.rst import Directive, directives
+from docutils.parsers.rst import directives
 from docutils.statemachine import StringList
 from sphinx.domains import Domain
-from sphinx.locale import _
 from sphinx.roles import XRefRole
 from sphinx.util.docutils import SphinxDirective
 from sphinx.util.nodes import make_id
@@ -301,10 +299,8 @@ class ScienceDirective(SphinxDirective):
 
     def _process_content_with_math(self, parent):
         """Process content, converting $$ math $$ to proper math nodes."""
-        import re
 
         from docutils import nodes
-        from docutils.statemachine import StringList
 
         content_text = "\n".join(self.content)
 

@@ -3,8 +3,9 @@
 Consolidate all mean-field convergence documents into a single source of truth.
 """
 
-import re
 from pathlib import Path
+import re
+
 
 # Source directory
 SOURCE_DIR = Path("docs/source/11_mean_field_convergence")
@@ -19,24 +20,25 @@ STAGE_FILES = [
     "11_stage3_parameter_analysis.md",
 ]
 
+
 def read_file(filepath: Path) -> str:
     """Read file content."""
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, encoding="utf-8") as f:
         return f.read()
+
 
 def extract_mathematical_content(content: str, filename: str) -> str:
     """Extract mathematical content, removing redundant headers."""
     # Remove document status and parent document references
-    content = re.sub(r'\*\*Document Status\*\*:.*?\n', '', content)
-    content = re.sub(r'\*\*Purpose\*\*:.*?\n\n', '', content)
-    content = re.sub(r'\*\*Parent documents\*\*:.*?---', '---', content, flags=re.DOTALL)
-    content = re.sub(r'\*\*Relationship to.*?\*\*:.*?\n', '', content)
+    content = re.sub(r"\*\*Document Status\*\*:.*?\n", "", content)
+    content = re.sub(r"\*\*Purpose\*\*:.*?\n\n", "", content)
+    content = re.sub(r"\*\*Parent documents\*\*:.*?---", "---", content, flags=re.DOTALL)
+    content = re.sub(r"\*\*Relationship to.*?\*\*:.*?\n", "", content)
 
     # Update cross-references (remove directory paths since everything is in one file)
-    content = re.sub(r'\[([^\]]+)\]\([\.\/]*11_stage\d+[^)]*\.md\)', r'(see below)', content)
-    content = re.sub(r'\[([^\]]+)\]\([\.\/]*MATHEMATICAL_REFERENCE\.md\)', r'\1', content)
+    content = re.sub(r"\[([^\]]+)\]\([\.\/]*11_stage\d+[^)]*\.md\)", r"(see below)", content)
+    return re.sub(r"\[([^\]]+)\]\([\.\/]*MATHEMATICAL_REFERENCE\.md\)", r"\1", content)
 
-    return content
 
 def create_consolidated_document():
     """Create the consolidated document."""
@@ -49,7 +51,11 @@ def create_consolidated_document():
     consolidated = []
 
     # Add header from original (up to the roadmap section)
-    header_match = re.search(r'(# KL-Divergence Convergence.*?)(^## 3\. Detailed Three-Stage Roadmap)', original, re.DOTALL | re.MULTILINE)
+    header_match = re.search(
+        r"(# KL-Divergence Convergence.*?)(^## 3\. Detailed Three-Stage Roadmap)",
+        original,
+        re.DOTALL | re.MULTILINE,
+    )
     if header_match:
         consolidated.append(header_match.group(1))
 
@@ -83,23 +89,26 @@ This document consolidates ALL mathematical results from the mean-field converge
         # Extract stage name for header
         stage_name = stage_file.replace("11_", "").replace(".md", "").replace("_", " ").title()
 
-        consolidated.append(f"# {stage_name}\n\n")
-        consolidated.append(extract_mathematical_content(content, stage_file))
-        consolidated.append("\n\n---\n\n")
+        consolidated.extend((
+            f"# {stage_name}\n\n",
+            extract_mathematical_content(content, stage_file),
+            "\n\n---\n\n",
+        ))
 
     # Write consolidated document
     final_content = "".join(consolidated)
 
     # Clean up multiple blank lines
-    final_content = re.sub(r'\n\n\n+', '\n\n', final_content)
+    final_content = re.sub(r"\n\n\n+", "\n\n", final_content)
 
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         f.write(final_content)
 
     print(f"\nConsolidated document written to: {OUTPUT_FILE}")
     print(f"Total length: {len(final_content)} characters")
     print(f"Approximate lines: {final_content.count(chr(10))}")
+
 
 if __name__ == "__main__":
     create_consolidated_document()

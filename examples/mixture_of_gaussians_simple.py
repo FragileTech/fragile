@@ -5,8 +5,8 @@ This script demonstrates basic usage of the MixtureOfGaussians benchmark
 without requiring visualization.
 """
 
-import torch
 import numpy as np
+import torch
 
 from fragile.benchmarks import MixtureOfGaussians
 
@@ -18,12 +18,7 @@ def example_random_mixture():
     print("=" * 60)
 
     # Create a random mixture
-    mixture = MixtureOfGaussians(
-        dims=2,
-        n_gaussians=4,
-        bounds_range=(-8.0, 8.0),
-        seed=42
-    )
+    mixture = MixtureOfGaussians(dims=2, n_gaussians=4, bounds_range=(-8.0, 8.0), seed=42)
 
     print(f"Created mixture with {mixture.n_gaussians} components in {mixture.dims}D")
     print(f"Best state: {mixture.best_state}")
@@ -34,13 +29,13 @@ def example_random_mixture():
         [0.0, 0.0],
         [1.0, 1.0],
         [-2.0, 2.0],
-        mixture.best_state.numpy()  # Best point
+        mixture.best_state.numpy(),  # Best point
     ])
     values = mixture(test_points)
 
     print("\nEvaluation at test points:")
     for i, (point, value) in enumerate(zip(test_points, values)):
-        print(f"  Point {i+1}: {point.numpy()} -> Value: {value:.4f}")
+        print(f"  Point {i + 1}: {point.numpy()} -> Value: {value:.4f}")
 
     print()
 
@@ -53,15 +48,15 @@ def example_custom_mixture():
 
     # Define a specific mixture with known structure
     centers = torch.tensor([
-        [0.0, 0.0],    # High-weighted peak at origin
-        [4.0, 4.0],    # Medium-weighted peak
-        [-3.0, 3.0],   # Low-weighted peak
+        [0.0, 0.0],  # High-weighted peak at origin
+        [4.0, 4.0],  # Medium-weighted peak
+        [-3.0, 3.0],  # Low-weighted peak
     ])
 
     stds = torch.tensor([
-        [0.8, 0.8],    # Tight peak
-        [1.5, 1.5],    # Wider peak
-        [1.0, 2.0],    # Anisotropic peak
+        [0.8, 0.8],  # Tight peak
+        [1.5, 1.5],  # Wider peak
+        [1.0, 2.0],  # Anisotropic peak
     ])
 
     weights = torch.tensor([0.6, 0.3, 0.1])  # Decreasing weights
@@ -72,7 +67,7 @@ def example_custom_mixture():
         centers=centers,
         stds=stds,
         weights=weights,
-        bounds_range=(-6.0, 6.0)
+        bounds_range=(-6.0, 6.0),
     )
 
     print("Created custom mixture:")
@@ -84,11 +79,11 @@ def example_custom_mixture():
     # Get component info
     info = mixture.get_component_info()
     print("\nComponent Information:")
-    for i in range(info['n_gaussians']):
-        center = info['centers'][i]
-        std = info['stds'][i]
-        weight = info['weights'][i]
-        print(f"  Component {i+1}:")
+    for i in range(info["n_gaussians"]):
+        center = info["centers"][i]
+        std = info["stds"][i]
+        weight = info["weights"][i]
+        print(f"  Component {i + 1}:")
         print(f"    Center: {center.numpy()}")
         print(f"    Std:    {std.numpy()}")
         print(f"    Weight: {weight:.3f}")
@@ -113,7 +108,7 @@ def example_optimization():
         centers=centers,
         stds=stds,
         weights=weights,
-        bounds_range=(-5.0, 5.0)
+        bounds_range=(-5.0, 5.0),
     )
 
     # Run simple gradient descent
@@ -138,7 +133,9 @@ def example_optimization():
         x.grad.zero_()
 
         if (step + 1) % 10 == 0:
-            print(f"  Step {step+1}: position = {x.detach().numpy()}, value = {value.item():.4f}")
+            print(
+                f"  Step {step + 1}: position = {x.detach().numpy()}, value = {value.item():.4f}"
+            )
 
     final_pos = x.detach().numpy()
     best_pos = mixture.best_state.numpy()
@@ -160,11 +157,7 @@ def example_high_dimensional():
     dims = 10
     n_gaussians = 5
 
-    mixture = MixtureOfGaussians(
-        dims=dims,
-        n_gaussians=n_gaussians,
-        seed=123
-    )
+    mixture = MixtureOfGaussians(dims=dims, n_gaussians=n_gaussians, seed=123)
 
     print(f"Created {dims}D mixture with {n_gaussians} components")
 
@@ -225,7 +218,7 @@ def example_reproducibility():
     stds_match = torch.allclose(mixture1.stds, mixture2.stds)
     weights_match = torch.allclose(mixture1.weights, mixture2.weights)
 
-    print(f"Same seed produces identical mixtures:")
+    print("Same seed produces identical mixtures:")
     print(f"  Centers match: {centers_match}")
     print(f"  Stds match: {stds_match}")
     print(f"  Weights match: {weights_match}")

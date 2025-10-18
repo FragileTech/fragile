@@ -5,9 +5,10 @@ A simpler version that just prints statistics and creates a single static
 visualization of the final FractalSet graph.
 """
 
-import numpy as np
 import matplotlib
-matplotlib.use('Agg')  # Use non-interactive backend
+
+
+matplotlib.use("Agg")  # Use non-interactive backend
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -42,10 +43,10 @@ def main():
             sigma_x=0.3,
             lambda_alg=0.1,
             alpha_restitution=0.5,
-            companion_selection_method='softmax'
+            companion_selection_method="softmax",
         ),
-        device='cpu',
-        dtype='float32'
+        device="cpu",
+        dtype="float32",
     )
     gas = EuclideanGas(params)
 
@@ -62,20 +63,22 @@ def main():
     print("=" * 80)
 
     stats = fs.summary_statistics()
-    print(f"\nGraph Structure:")
+    print("\nGraph Structure:")
     print(f"  Total nodes: {stats['total_nodes']}")
     print(f"  Total edges: {stats['total_edges']}")
     print(f"  Nodes per timestep: {N}")
     print(f"  Expected total nodes: {N * (n_steps + 1)}")
 
-    print(f"\nEdge Types:")
+    print("\nEdge Types:")
     print(f"  Kinetic edges (self-evolution): {stats['total_edges'] - stats['n_cloning_events']}")
     print(f"  Cloning edges (parent→child): {stats['n_cloning_events']}")
 
-    print(f"\nSwarm Evolution:")
+    print("\nSwarm Evolution:")
     print(f"  Initial variance: {stats['initial_variance']:.4f}")
     print(f"  Final variance: {stats['final_variance']:.4f}")
-    print(f"  Variance reduction: {stats['variance_reduction']:.4f} ({stats['variance_reduction']*100:.1f}%)")
+    print(
+        f"  Variance reduction: {stats['variance_reduction']:.4f} ({stats['variance_reduction'] * 100:.1f}%)"
+    )
 
     # Print parent tracking examples
     print(f"\n{'=' * 80}")
@@ -117,20 +120,20 @@ def main():
     print("Creating Visualization")
     print("=" * 80)
 
-    fig, axes = plt.subplots(1, 2, figsize=(16, 8))
+    _fig, axes = plt.subplots(1, 2, figsize=(16, 8))
 
     # Plot 1: Spatial trajectories
     ax1 = axes[0]
-    x_traj = result['x'].cpu().numpy()
+    x_traj = result["x"].cpu().numpy()
 
     for i in range(N):
-        ax1.plot(x_traj[:, i, 0], x_traj[:, i, 1], '-', alpha=0.3, label=f'Walker {i}')
-        ax1.plot(x_traj[0, i, 0], x_traj[0, i, 1], 'go', markersize=10)  # Initial
-        ax1.plot(x_traj[-1, i, 0], x_traj[-1, i, 1], 'rs', markersize=10)  # Final
+        ax1.plot(x_traj[:, i, 0], x_traj[:, i, 1], "-", alpha=0.3, label=f"Walker {i}")
+        ax1.plot(x_traj[0, i, 0], x_traj[0, i, 1], "go", markersize=10)  # Initial
+        ax1.plot(x_traj[-1, i, 0], x_traj[-1, i, 1], "rs", markersize=10)  # Final
 
-    ax1.set_xlabel('x')
-    ax1.set_ylabel('y')
-    ax1.set_title('Walker Trajectories in Position Space')
+    ax1.set_xlabel("x")
+    ax1.set_ylabel("y")
+    ax1.set_title("Walker Trajectories in Position Space")
     ax1.legend(fontsize=8)
     ax1.grid(True, alpha=0.3)
 
@@ -144,7 +147,7 @@ def main():
     # Draw nodes colored by walker ID
     node_colors = []
     for node in fs.graph.nodes():
-        walker_id, timestep = node
+        walker_id, _timestep = node
         node_colors.append(walker_id)
 
     nx.draw_networkx_nodes(
@@ -152,26 +155,24 @@ def main():
         pos,
         node_color=node_colors,
         node_size=50,
-        cmap='tab10',
+        cmap="tab10",
         alpha=0.7,
         ax=ax2,
     )
 
     # Draw edges (kinetic in blue, cloning in red)
     kinetic_edges = [
-        (u, v) for u, v in fs.graph.edges()
-        if fs.graph.edges[(u, v)].get('edge_type') == 'kinetic'
+        (u, v) for u, v in fs.graph.edges() if fs.graph.edges[u, v].get("edge_type") == "kinetic"
     ]
     cloning_edges = [
-        (u, v) for u, v in fs.graph.edges()
-        if fs.graph.edges[(u, v)].get('edge_type') == 'cloning'
+        (u, v) for u, v in fs.graph.edges() if fs.graph.edges[u, v].get("edge_type") == "cloning"
     ]
 
     nx.draw_networkx_edges(
         fs.graph,
         pos,
         edgelist=kinetic_edges,
-        edge_color='blue',
+        edge_color="blue",
         alpha=0.2,
         width=0.5,
         ax=ax2,
@@ -181,7 +182,7 @@ def main():
         fs.graph,
         pos,
         edgelist=cloning_edges,
-        edge_color='red',
+        edge_color="red",
         alpha=0.5,
         width=1.5,
         arrows=True,
@@ -189,26 +190,46 @@ def main():
         ax=ax2,
     )
 
-    ax2.set_title(f'FractalSet Graph Structure\n{stats["total_nodes"]} nodes, {stats["total_edges"]} edges')
-    ax2.axis('off')
+    ax2.set_title(
+        f'FractalSet Graph Structure\n{stats["total_nodes"]} nodes, {stats["total_edges"]} edges'
+    )
+    ax2.axis("off")
 
     # Add legend
     from matplotlib.lines import Line2D
+
     legend_elements = [
-        Line2D([0], [0], marker='o', color='w', markerfacecolor='g', markersize=10, label='Initial positions'),
-        Line2D([0], [0], marker='s', color='w', markerfacecolor='r', markersize=10, label='Final positions'),
-        Line2D([0], [0], color='blue', linewidth=2, alpha=0.5, label='Kinetic edges'),
-        Line2D([0], [0], color='red', linewidth=2, alpha=0.5, label='Cloning edges'),
+        Line2D(
+            [0],
+            [0],
+            marker="o",
+            color="w",
+            markerfacecolor="g",
+            markersize=10,
+            label="Initial positions",
+        ),
+        Line2D(
+            [0],
+            [0],
+            marker="s",
+            color="w",
+            markerfacecolor="r",
+            markersize=10,
+            label="Final positions",
+        ),
+        Line2D([0], [0], color="blue", linewidth=2, alpha=0.5, label="Kinetic edges"),
+        Line2D([0], [0], color="red", linewidth=2, alpha=0.5, label="Cloning edges"),
     ]
-    ax2.legend(handles=legend_elements, loc='upper right', fontsize=8)
+    ax2.legend(handles=legend_elements, loc="upper right", fontsize=8)
 
     plt.tight_layout()
 
     # Save figure
     import os
-    os.makedirs('data', exist_ok=True)
-    output_file = 'data/fractal_set_simple_demo.png'
-    plt.savefig(output_file, dpi=150, bbox_inches='tight')
+
+    os.makedirs("data", exist_ok=True)
+    output_file = "data/fractal_set_simple_demo.png"
+    plt.savefig(output_file, dpi=150, bbox_inches="tight")
     print(f"\n✓ Saved visualization to {output_file}")
 
     print(f"\n{'=' * 80}")
@@ -216,5 +237,5 @@ def main():
     print("=" * 80)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

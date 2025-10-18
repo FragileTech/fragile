@@ -66,7 +66,7 @@ class TestAlgorithmicDistance:
 
     def test_phase_space_mode(self):
         """With lambda_alg>0, both position and velocity contribute."""
-        N, d = 2, 1
+        _N, _d = 2, 1
         # Same position, different velocities
         x = torch.tensor([[0.0], [0.0]])
         v = torch.tensor([[0.0], [1.0]])
@@ -89,16 +89,16 @@ class TestCompanionSelectionProperties:
         N, d = 20, 2
         x = torch.randn(N, d, device=test_device)
         v = torch.randn(N, d, device=test_device)
-        alive_mask = torch.tensor([True] * 15 + [False] * 5, device=test_device)  # 15 alive, 5 dead
+        alive_mask = torch.tensor(
+            [True] * 15 + [False] * 5, device=test_device
+        )  # 15 alive, 5 dead
 
         # Test all selection functions
         companions_softmax = select_companions_softmax(
             x, v, alive_mask, epsilon=1.0, exclude_self=True
         )
         companions_uniform = select_companions_uniform(alive_mask)
-        companions_cloning = select_companions_for_cloning(
-            x, v, alive_mask, epsilon_c=0.5
-        )
+        companions_cloning = select_companions_for_cloning(x, v, alive_mask, epsilon_c=0.5)
 
         # Get alive indices
         alive_indices = torch.where(alive_mask)[0]
@@ -106,21 +106,21 @@ class TestCompanionSelectionProperties:
         # Check softmax: alive walkers should only select alive companions
         for i in range(N):
             if alive_mask[i] and companions_softmax[i] != -1:
-                assert companions_softmax[i] in alive_indices, (
-                    f"Alive walker {i} selected dead companion {companions_softmax[i].item()}"
-                )
+                assert (
+                    companions_softmax[i] in alive_indices
+                ), f"Alive walker {i} selected dead companion {companions_softmax[i].item()}"
 
         # Check uniform: all companions should be alive
         for i in range(N):
-            assert companions_uniform[i] in alive_indices, (
-                f"Walker {i} selected dead companion {companions_uniform[i].item()}"
-            )
+            assert (
+                companions_uniform[i] in alive_indices
+            ), f"Walker {i} selected dead companion {companions_uniform[i].item()}"
 
         # Check cloning: all companions should be alive
         for i in range(N):
-            assert companions_cloning[i] in alive_indices, (
-                f"Walker {i} selected dead companion {companions_cloning[i].item()}"
-            )
+            assert (
+                companions_cloning[i] in alive_indices
+            ), f"Walker {i} selected dead companion {companions_cloning[i].item()}"
 
     def test_dead_walkers_uniform_selection(self):
         """Property: Dead walkers choose companions uniformly."""
@@ -150,7 +150,7 @@ class TestCompanionSelectionProperties:
         # Test uniformity using chi-square test
         # Expected: each alive walker selected ~10*1000/40 = 250 times
         expected_count = (n_trials * 10) / 40
-        relative_freq = dead_companion_counts / (n_trials * 10)
+        dead_companion_counts / (n_trials * 10)
 
         # With uniform distribution, frequencies should be close to 1/40 = 0.025
         # Check that no walker is selected too rarely or too often (tolerance: ±50%)
@@ -235,17 +235,17 @@ class TestPairingProperties:
             i = idx.item()
             j = companion_map_greedy[i].item()
             if i != j:  # Not self-paired
-                assert companion_map_greedy[j].item() == i, (
-                    f"Greedy pairing not mutual: c({i})={j} but c({j})={companion_map_greedy[j].item()}"
-                )
+                assert (
+                    companion_map_greedy[j].item() == i
+                ), f"Greedy pairing not mutual: c({i})={j} but c({j})={companion_map_greedy[j].item()}"
 
         for idx in alive_indices:
             i = idx.item()
             j = companion_map_random[i].item()
             if i != j:  # Not self-paired
-                assert companion_map_random[j].item() == i, (
-                    f"Random pairing not mutual: c({i})={j} but c({j})={companion_map_random[j].item()}"
-                )
+                assert (
+                    companion_map_random[j].item() == i
+                ), f"Random pairing not mutual: c({i})={j} but c({j})={companion_map_random[j].item()}"
 
     def test_pairing_covers_alive_walkers(self):
         """Property: All alive walkers should be paired (or singleton if odd)."""
@@ -255,9 +255,7 @@ class TestPairingProperties:
         v = torch.randn(N, d)
         alive_mask = torch.tensor([True] * 19 + [False] * 2)  # 19 alive (odd)
 
-        companion_map = sequential_greedy_pairing(
-            x, v, alive_mask, epsilon_d=1.0, lambda_alg=0.0
-        )
+        companion_map = sequential_greedy_pairing(x, v, alive_mask, epsilon_d=1.0, lambda_alg=0.0)
 
         alive_indices = torch.where(alive_mask)[0]
 
@@ -296,8 +294,8 @@ class TestEdgeCases:
     def test_single_alive_walker(self):
         """With only one alive walker, functions should handle gracefully."""
         N, d = 5, 2
-        x = torch.randn(N, d)
-        v = torch.randn(N, d)
+        torch.randn(N, d)
+        torch.randn(N, d)
         alive_mask = torch.tensor([True, False, False, False, False])
 
         # Uniform selection: all should map to walker 0
@@ -341,9 +339,9 @@ class TestEdgeCases:
             # No alive walker should select itself
             for i in range(N):
                 if alive_mask[i]:
-                    assert companions[i].item() != i, (
-                        f"Walker {i} selected itself despite exclude_self=True"
-                    )
+                    assert (
+                        companions[i].item() != i
+                    ), f"Walker {i} selected itself despite exclude_self=True"
 
 
 class TestDeterminism:
@@ -367,8 +365,8 @@ class TestDeterminism:
     def test_pairing_reproducible(self):
         """Same seed should give same pairing."""
         N, d = 10, 2
-        x = torch.randn(N, d)
-        v = torch.randn(N, d)
+        torch.randn(N, d)
+        torch.randn(N, d)
         alive_mask = torch.tensor([True] * N)
 
         torch.manual_seed(123)

@@ -10,14 +10,15 @@ separated from visualization code. This allows for:
 
 from fragile.experiments.convergence_analysis import (
     ConvergenceAnalyzer,
-    ConvergenceMetrics,
     ConvergenceExperiment,
+    ConvergenceMetrics,
     create_multimodal_potential,
 )
 
+
 __all__ = [
     "ConvergenceAnalyzer",
-    "ConvergenceMetrics",
     "ConvergenceExperiment",
+    "ConvergenceMetrics",
     "create_multimodal_potential",
 ]

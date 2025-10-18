@@ -298,7 +298,7 @@ class MixtureOfGaussians(OptimBenchmark):
         weights: torch.Tensor | np.ndarray | None = None,
         bounds_range: tuple[float, float] = (-10.0, 10.0),
         seed: int | None = None,
-        **kwargs
+        **kwargs,
     ):
         self.n_gaussians = n_gaussians
         self.bounds_range = bounds_range
@@ -345,7 +345,7 @@ class MixtureOfGaussians(OptimBenchmark):
                 msg = "All weights must be non-negative"
                 raise ValueError(msg)
             # Normalize weights
-            self.weights = self.weights / self.weights.sum()
+            self.weights /= self.weights.sum()
 
         # Create the mixture function
         def mixture_function(x: torch.Tensor) -> torch.Tensor:
@@ -377,15 +377,11 @@ class MixtureOfGaussians(OptimBenchmark):
                 normalized_diff = diff / stds[k]  # [batch_size, dims]
 
                 # Sum over dimensions
-                squared_dist = torch.sum(normalized_diff ** 2, dim=1)  # [batch_size]
+                squared_dist = torch.sum(normalized_diff**2, dim=1)  # [batch_size]
                 log_det = torch.sum(torch.log(stds[k] ** 2))  # scalar
 
                 dims = x.shape[1]
-                log_prob_k = -0.5 * (
-                    dims * np.log(2 * np.pi) +
-                    log_det +
-                    squared_dist
-                )
+                log_prob_k = -0.5 * (dims * np.log(2 * np.pi) + log_det + squared_dist)
 
                 # Add log weight
                 log_probs[:, k] = torch.log(weights[k]) + log_prob_k
@@ -419,7 +415,7 @@ class MixtureOfGaussians(OptimBenchmark):
         """Return the optimal value (negative log-likelihood at best center)."""
         # At the center of the highest-weighted Gaussian, the negative log-likelihood
         # is approximately -log(weight_max) (ignoring normalization constants)
-        best_weight = torch.max(self.weights)
+        torch.max(self.weights)
 
         # Evaluate the actual function at the best center
         best_center = self.best_state.unsqueeze(0)  # [1, dims]
@@ -433,7 +429,7 @@ class MixtureOfGaussians(OptimBenchmark):
             "stds": self.stds.clone(),
             "weights": self.weights.clone(),
             "dims": self.dims,
-            "bounds_range": self.bounds_range
+            "bounds_range": self.bounds_range,
         }
 
 
@@ -444,5 +440,5 @@ ALL_BENCHMARKS = [
     StyblinskiTang,
     HolderTable,
     Easom,
-    MixtureOfGaussians
+    MixtureOfGaussians,
 ]

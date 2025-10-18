@@ -47,63 +47,63 @@ Comprehensive index of all mathematical entries from the Fragile Gas framework.
 - **Label:** `def-walker`
 - **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 1.1](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Mathematical object in framework
+- **Description:** Tuple w=(x,v,s) with position, velocity, and survival status
 
 ### Swarm and Swarm State Space
 - **Type:** Definition
 - **Label:** `def-swarm-and-state-space`
 - **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 1.2](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Mathematical object in framework
+- **Description:** Product space Σ_N containing N-tuples of agents
 
 ### Alive and Dead Sets
 - **Type:** Definition
 - **Label:** `def-alive-dead-sets`
 - **Tags:** viability
 - **Source:** [01_fragile_gas_framework.md § 1.2](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Mathematical object in framework
+- **Description:** Partition A and D based on survival status bit
 
 ### Valid State Space
 - **Type:** Definition
 - **Label:** `def-valid-state-space`
 - **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 1.4](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Mathematical object in framework
+- **Description:** Polish metric space X_valid with Borel reference measure
 
 ### Ambient Euclidean Structure and Reference Measures
 - **Type:** Assumption
 - **Label:** `def-ambient-euclidean`
 - **Tags:** assumption
 - **Source:** [01_fragile_gas_framework.md § A. Foundational & Environmental Parameters](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Mathematical object in framework
+- **Description:** Assumes R^d embedding with heat kernel and uniform ball
 
 ### Reference Noise and Kernel Families
 - **Type:** Definition
 - **Label:** `def-reference-measures`
 - **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § A. Foundational & Environmental Parameters](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Mathematical object in framework
+- **Description:** Heat kernels P_σ and uniform balls Q_δ for stochastic operations
 
 ### N-Particle Displacement Pseudometric ($d_{\text{Disp},\mathcal{Y}}$)
 - **Type:** Definition
 - **Label:** `def-n-particle-displacement-metric`
 - **Tags:** metric
 - **Source:** [01_fragile_gas_framework.md § 1.6](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Mathematical object in framework
+- **Description:** Measures positional and status differences across population
 
 ### Metric quotient of $(\Sigma_N, d_{\text{Disp},\mathcal{Y}})$
 - **Type:** Definition
 - **Label:** `def-metric-quotient`
 - **Tags:** metric
 - **Source:** [01_fragile_gas_framework.md § 1.6.1](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Mathematical object in framework
+- **Description:** Kolmogorov construction identifying permutation-equivalent configurations
 
 ### Borel image of the projected swarm space
 - **Type:** Lemma
 - **Label:** `unlabeled`
 - **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 1.6.2](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Mathematical object in framework
+- **Description:** Projection Φ maps to Borel measurable subset
 
 ### If $\widehat{\Phi}(\Sigma_N)$ is not closed, replacing it by its closure in $(\mathcal Y\times\{0,1\})^N$ yields a closed (hence complete) subspace. All probability measures considered are supported on $\widehat{\Phi}(\Sigma_N)$, and optimal couplings for costs continuous in $D$ concentrate on the product of supports, so no generality is lost by completing.
 - **Source:** [01_fragile_gas_framework.md § 1.6.2](source/1_euclidean_gas/01_fragile_gas_framework)
@@ -114,7 +114,7 @@ Comprehensive index of all mathematical entries from the Fragile Gas framework.
 - **Label:** `lem-polishness-and-w2`
 - **Tags:** lemma, wasserstein
 - **Source:** [01_fragile_gas_framework.md § 1.7.1](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Mathematical object in framework
+- **Description:** Enables Wasserstein-2 metric on complete separable quotient
 
 ### Components of Swarm Displacement
 - **Type:** Definition
@@ -163,132 +163,219 @@ Comprehensive index of all mathematical entries from the Fragile Gas framework.
 - **Label:** `def-axiom-environmental-richness`
 - **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.2.1](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Mathematical object in framework
+- **Description:** Requires sufficient variation in rewards for discrimination
 
 ### Axiom of Reward Regularity
 - **Type:** Axiom
 - **Label:** `def-axiom-reward-regularity`
 - **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.2.2](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Mathematical object in framework
+- **Description:** R(x) is L_R-Lipschitz continuous
 
 ### Projection compatibility
+- **Type:** Axiom
+- **Label:** `def-axiom-projection-compatibility`
+- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.2.3](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Projection compatibility
+- **Description:** Map φ compatible with metric structure
 
 ### Axiom of Bounded Algorithmic Diameter
+- **Type:** Axiom
+- **Label:** `def-axiom-bounded-algorithmic-diameter`
+- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.2.3](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Axiom of Bounded Algorithmic Diameter
+- **Description:** Projected space Y has finite diameter D_Y
 
 ### Range‑Respecting Mean
+- **Type:** Axiom
+- **Label:** `def-axiom-range-respecting-mean`
+- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.2.4](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Range‑Respecting Mean
+- **Description:** Aggregator g_A maps to interval [inf V, sup V]
 
 ### Valid Noise Measure
+- **Type:** Definition
+- **Label:** `def-valid-noise-measure`
+- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 2.3](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Valid Noise Measure
+- **Description:** Feller kernel with bounded second moment
 
 ### Axiom of Sufficient Amplification
+- **Type:** Axiom
+- **Label:** `def-axiom-sufficient-amplification`
+- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.3.1](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Axiom of Sufficient Amplification
+- **Description:** Rescaling amplifies fitness differences adequately
 
 ### Axiom of Non-Degenerate Noise
+- **Type:** Axiom
+- **Label:** `def-axiom-non-degenerate-noise`
+- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.3.2](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Axiom of Non-Degenerate Noise
+- **Description:** Perturbations have full-dimensional support
 
 ### Components of Mean-Square Standardization Error
+- **Type:** Definition
+- **Label:** `def-components-mean-square-standardization-error`
+- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 2.3.3](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Components of Mean-Square Standardization Error
+- **Description:** Splits into value and structural contributions
 
 ### Asymptotic Behavior of the Mean-Square Standardization Error
+- **Type:** Theorem
+- **Label:** `thm-mean-square-standardization-error`
+- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 2.3.3](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Asymptotic Behavior of the Mean-Square Standardization Error
+- **Description:** Growth rates O(1/N) for both components
 
 ### Axiom of Bounded Relative Collapse
+- **Type:** Axiom
+- **Label:** `def-axiom-bounded-relative-collapse`
+- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.3.4](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Axiom of Bounded Relative Collapse
+- **Description:** Local variance doesn't collapse faster than global
 
 ### Axiom of Bounded Deviation from Aggregated Variance
+- **Type:** Axiom
+- **Label:** `def-axiom-bounded-deviation-variance`
+- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.3.4](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Axiom of Bounded Deviation from Aggregated Variance
+- **Description:** Individual variances close to population aggregate
 
 ### Axiom of Bounded Variance Production
+- **Type:** Axiom
+- **Label:** `def-axiom-bounded-variance-production`
+- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.3.4](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Axiom of Bounded Variance Production
+- **Description:** Distance operator generates limited spread
 
 ### Axiom of Geometric Consistency
+- **Type:** Axiom
+- **Label:** `def-axiom-geometric-consistency`
+- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.4.1](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Axiom of Geometric Consistency
+- **Description:** Projection φ respects viability constraints
 
 ### Theorem of Forced Activity
+- **Type:** Theorem
+- **Label:** `thm-forced-activity`
+- **Tags:** theorem
 - **Source:** [01_fragile_gas_framework.md § 2.4.2](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Theorem of Forced Activity
+- **Description:** Guarantees non-stagnation via fitness signal
 
 ### Axiom of Position‑Only Status Margin
+- **Type:** Axiom
+- **Label:** `def-axiom-margin-stability`
+- **Tags:** axiom
 - **Source:** [01_fragile_gas_framework.md § 2.4.3](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Axiom of Position‑Only Status Margin
+- **Description:** Survival determined by position with margin ε_margin
 
 ### This axiom expresses a deterministic stability of the status update in terms of the positional component alone. It is strictly stronger than the trivial consequence of the identity
 - **Source:** [01_fragile_gas_framework.md § 2.4.3](source/1_euclidean_gas/01_fragile_gas_framework)
 - **Description:** This axiom expresses a deterministic stability of the status update in terms ...
 
 ### Reward Measurement
+- **Type:** Definition
+- **Label:** `def-reward-measurement`
+- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 3.1](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Reward Measurement
+- **Description:** Integrates R(x) against positional measure
 
 ### Perturbation Measure
+- **Type:** Definition
+- **Label:** `def-perturbation-measure`
+- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 4.1](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Perturbation Measure
+- **Description:** Kernel P_σ for random walk exploration
 
 ### Cloning Measure
+- **Type:** Definition
+- **Label:** `def-cloning-measure`
+- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 4.1](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Cloning Measure
+- **Description:** Kernel Q_δ for displacement during replication
 
 ### Validation of the Heat Kernel
+- **Type:** Lemma
+- **Label:** `lem-validation-heat-kernel`
+- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 4.2.1](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Validation of the Heat Kernel
+- **Description:** Gaussian P_σ satisfies Feller and moment conditions
 
 ### Validation of the Uniform Ball Measure
+- **Type:** Lemma
+- **Label:** `lem-validation-uniform-ball`
+- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 4.2.2](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Validation of the Uniform Ball Measure
+- **Description:** Uniform ball Q_δ satisfies all axioms
 
 ### Uniform‑ball death probability is Lipschitz under finite perimeter
+- **Type:** Lemma
+- **Label:** `lem-boundary-uniform-ball`
+- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 4.2.3](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Uniform‑ball death probability is Lipschitz under finite perimeter
+- **Description:** Boundary exit has Lipschitz constant proportional to perimeter
 
 ### Projection choice
+- **Type:** Remark
+- **Label:** `unlabeled`
+- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 4.2.3](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Projection choice
+- **Description:** Map φ can be identity or custom embedding
 
 ### Heat‑kernel death probability is Lipschitz with constant $\lesssim 1/\sigma$
+- **Type:** Lemma
+- **Label:** `lem-boundary-heat-kernel`
+- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 4.2.4](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Heat‑kernel death probability is Lipschitz with constant
+- **Description:** Gaussian exit probability has constant ∼ 1/σ
 
 ### Algorithmic Space
+- **Type:** Definition
+- **Label:** `def-algorithmic-space-generic`
+- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 5.1](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Algorithmic Space
+- **Description:** Pair (Y, d_Y) where agents project and compare
 
 ### Distance Between Positional Measures
+- **Type:** Definition
+- **Label:** `def-distance-positional-measures`
+- **Tags:** metric
 - **Source:** [01_fragile_gas_framework.md § 5.2](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Distance Between Positional Measures
+- **Description:** 1-Wasserstein on projected empirical distributions
 
 ### Algorithmic Distance
+- **Type:** Definition
+- **Label:** `def-alg-distance`
+- **Tags:** metric
 - **Source:** [01_fragile_gas_framework.md § 5.3](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Algorithmic Distance
+- **Description:** Metric d_alg(y_1, y_2) on projected points
 
 ### Swarm Aggregation Operator
+- **Type:** Definition
+- **Label:** `def-swarm-aggregation-operator-axiomatic`
+- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 6.2.1](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Swarm Aggregation Operator
+- **Description:** Maps N fitnesses to probability on R
 
 ### Empirical moments are Lipschitz in L2
+- **Type:** Lemma
+- **Label:** `lem-empirical-moments-lipschitz`
+- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 6.2.2.](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Empirical moments are Lipschitz in L2
+- **Description:** Mean and variance continuous in W_2 metric
 
 ### Axiomatic Properties of the Empirical Measure Aggregator
+- **Type:** Lemma
+- **Label:** `lem-empirical-aggregator-properties`
+- **Tags:** lemma
 - **Source:** [01_fragile_gas_framework.md § 6.2.2.](source/1_euclidean_gas/01_fragile_gas_framework)
-- **Description:** Axiomatic Properties of the Empirical Measure Aggregator
+- **Description:** Sample mean satisfies range-respecting property
 
 ### Smoothed Gaussian Measure
+- **Type:** Definition
+- **Label:** `def-smoothed-gaussian-measure`
+- **Tags:** general
 - **Source:** [01_fragile_gas_framework.md § 6.2.3](source/1_euclidean_gas/01_fragile_gas_framework)
 - **Description:** Smoothed Gaussian Measure
 

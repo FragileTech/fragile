@@ -16,10 +16,10 @@ All tensors are vectorized with the first dimension being the number of alive wa
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable
+from typing import Callable
 
-import torch
 from pydantic import BaseModel, Field
+import torch
 from torch import Tensor
 
 from fragile.bounds import TorchBounds
@@ -67,10 +67,7 @@ class AdaptiveParams(BaseModel):
     epsilon_Sigma: float = Field(gt=0, description="Hessian regularization (�_�)")
     rescale_amplitude: float = Field(gt=0, description="Rescale function amplitude (A)")
     sigma_var_min: float = Field(gt=0, description="Minimum variance regularization (�'_min)")
-    viscous_length_scale: float = Field(
-        gt=0,
-        description="Length scale for viscous kernel"
-    )
+    viscous_length_scale: float = Field(gt=0, description="Length scale for viscous kernel")
 
     def critical_threshold(self, rho: float, kappa_backbone: float) -> float:
         """Compute critical adaptation rate threshold �_F*(�).
@@ -109,9 +106,9 @@ class GeometricGasParams(BaseModel):
             epsilon_c=0.1,
             companion_selection_method="hybrid",
             alpha_restitution=0.5,
-            use_inelastic_collision=True
+            use_inelastic_collision=True,
         ),
-        description="Cloning operator parameters"
+        description="Cloning operator parameters",
     )
 
     # Geometric Gas extensions
@@ -123,8 +120,7 @@ class GeometricGasParams(BaseModel):
     device: str = Field("cpu", description="PyTorch device (cpu/cuda)")
     dtype: str = Field("float32", description="PyTorch dtype (float32/float64)")
     freeze_best: bool = Field(
-        False,
-        description="Keep highest-fitness walker untouched during updates"
+        False, description="Keep highest-fitness walker untouched during updates"
     )
 
     @property
@@ -143,7 +139,7 @@ class GeometricGasParams(BaseModel):
             bounds=self.bounds,
             device=self.device,
             dtype=self.dtype,
-            freeze_best=self.freeze_best
+            freeze_best=self.freeze_best,
         )
 
 
@@ -155,12 +151,7 @@ class LocalizationKernel:
     position x' when computing statistics for walker at position x.
     """
 
-    def __init__(
-        self,
-        params: LocalizationKernelParams,
-        device: torch.device,
-        dtype: torch.dtype
-    ):
+    def __init__(self, params: LocalizationKernelParams, device: torch.device, dtype: torch.dtype):
         self.params = params
         self.device = device
         self.dtype = dtype
@@ -177,11 +168,10 @@ class LocalizationKernel:
         """
         if self.params.kernel_type == "gaussian":
             return self._gaussian_kernel(x, x_alive)
-        elif self.params.kernel_type == "uniform":
+        if self.params.kernel_type == "uniform":
             return self._uniform_kernel(x, x_alive)
-        else:
-            msg = f"Unknown kernel type: {self.params.kernel_type}"
-            raise ValueError(msg)
+        msg = f"Unknown kernel type: {self.params.kernel_type}"
+        raise ValueError(msg)
 
     def _gaussian_kernel(self, x: Tensor, x_alive: Tensor) -> Tensor:
         """Gaussian localization kernel.
@@ -222,10 +212,7 @@ class LocalizationKernel:
         return torch.ones(N_query, k, device=self.device, dtype=self.dtype) / k
 
     def compute_localized_moments(
-        self,
-        x_query: Tensor,
-        x_alive: Tensor,
-        measurement: Tensor
+        self, x_query: Tensor, x_alive: Tensor, measurement: Tensor
     ) -> tuple[Tensor, Tensor]:
         """Compute �-localized mean and variance.
 
@@ -269,7 +256,7 @@ class FitnessPotential:
         adaptive_params: AdaptiveParams,
         measurement_fn: Callable[[Tensor], Tensor],
         device: torch.device,
-        dtype: torch.dtype
+        dtype: torch.dtype,
     ):
         self.localization = localization
         self.params = adaptive_params
@@ -322,19 +309,14 @@ class FitnessPotential:
         )
 
         # Regularized standard deviation
-        sigma_min_sq = self.params.sigma_var_min ** 2
+        sigma_min_sq = self.params.sigma_var_min**2
         sigma_prime = torch.sqrt(sigma_sq_rho + sigma_min_sq)  # [N_query]
 
         # Z-score
-        z_score = (measurement_query - mu_rho) / sigma_prime  # [N_query]
-
-        return z_score
+        return (measurement_query - mu_rho) / sigma_prime  # [N_query]
 
     def evaluate(
-        self,
-        x_query: Tensor,
-        x_alive: Tensor,
-        alive_mask: Tensor | None = None
+        self, x_query: Tensor, x_alive: Tensor, alive_mask: Tensor | None = None
     ) -> Tensor:
         """Evaluate fitness potential V_fit[f_k, �](x).
 
@@ -350,10 +332,7 @@ class FitnessPotential:
         return self._rescale_function(z_score)
 
     def compute_gradient(
-        self,
-        x_query: Tensor,
-        x_alive: Tensor,
-        alive_mask: Tensor | None = None
+        self, x_query: Tensor, x_alive: Tensor, alive_mask: Tensor | None = None
     ) -> Tensor:
         """Compute gradient V_fit using PyTorch autodiff.
 
@@ -369,19 +348,14 @@ class FitnessPotential:
         V_fit = self.evaluate(x_query, x_alive, alive_mask)  # [N_query]
 
         # Compute gradient for each query point
-        grad = torch.autograd.grad(
+        return torch.autograd.grad(
             V_fit.sum(),
             x_query,
-            create_graph=True  # For second derivatives if needed
+            create_graph=True,  # For second derivatives if needed
         )[0]  # [N_query, d]
 
-        return grad
-
     def compute_hessian(
-        self,
-        x_query: Tensor,
-        x_alive: Tensor,
-        alive_mask: Tensor | None = None
+        self, x_query: Tensor, x_alive: Tensor, alive_mask: Tensor | None = None
     ) -> Tensor:
         """Compute Hessian �V_fit for each query point.
 
@@ -406,10 +380,7 @@ class FitnessPotential:
             # Compute second derivative w.r.t. each dimension
             grad_i = grad[:, i]  # [N_query]
             hess_i = torch.autograd.grad(
-                grad_i.sum(),
-                x_query,
-                create_graph=False,
-                retain_graph=(i < d - 1)
+                grad_i.sum(), x_query, create_graph=False, retain_graph=(i < d - 1)
             )[0]  # [N_query, d]
             hessian[:, i, :] = hess_i
 
@@ -432,7 +403,7 @@ class AdaptiveKineticOperator(KineticOperator):
         fitness_potential: FitnessPotential,
         adaptive_params: AdaptiveParams,
         device: torch.device,
-        dtype: torch.dtype
+        dtype: torch.dtype,
     ):
         super().__init__(params, potential, device, dtype)
         self.fitness_potential = fitness_potential
@@ -465,11 +436,11 @@ class AdaptiveKineticOperator(KineticOperator):
         dist = torch.norm(diff, dim=-1)  # [k, k]
 
         # Gaussian viscous kernel
-        ell_sq = self.adaptive_params.viscous_length_scale ** 2
-        K = torch.exp(-dist**2 / (2 * ell_sq))  # [k, k]
+        ell_sq = self.adaptive_params.viscous_length_scale**2
+        K = torch.exp(-(dist**2) / (2 * ell_sq))  # [k, k]
 
         # Set diagonal to zero (no self-interaction)
-        K = K * (1.0 - torch.eye(k, device=self.device, dtype=self.dtype))
+        K *= 1.0 - torch.eye(k, device=self.device, dtype=self.dtype)
 
         # Degree normalization
         deg = K.sum(dim=1, keepdim=True)  # [k, 1]
@@ -478,15 +449,10 @@ class AdaptiveKineticOperator(KineticOperator):
         # Viscous force: F_i = Sum_j [K_ij / deg_i] (v_j - v_i)
         # = (1/deg_i) Sum_j K_ij v_j - v_i
         weighted_v = torch.matmul(K, v_alive) / deg  # [k, d]
-        F_viscous = self.adaptive_params.nu * (weighted_v - v_alive)  # [k, d]
-
-        return F_viscous
+        return self.adaptive_params.nu * (weighted_v - v_alive)  # [k, d]
 
     def _compute_diffusion_tensor(
-        self,
-        x_alive: Tensor,
-        x_all_alive: Tensor,
-        alive_mask: Tensor
+        self, x_alive: Tensor, x_all_alive: Tensor, alive_mask: Tensor
     ) -> Tensor:
         """Compute regularized diffusion tensor �_reg = (H + �_� I)^(-1/2).
 
@@ -504,9 +470,7 @@ class AdaptiveKineticOperator(KineticOperator):
         _k, d = x_alive.shape
 
         # Compute Hessian of fitness potential
-        H = self.fitness_potential.compute_hessian(
-            x_alive, x_all_alive, alive_mask
-        )  # [k, d, d]
+        H = self.fitness_potential.compute_hessian(x_alive, x_all_alive, alive_mask)  # [k, d, d]
 
         # Regularize: H_reg = H + epsilon_Sigma * I
         eps_I = self.adaptive_params.epsilon_Sigma * torch.eye(
@@ -526,18 +490,11 @@ class AdaptiveKineticOperator(KineticOperator):
 
         # Sigma_reg = Q diag(sqrt(Lambda)) Q^T
         sqrt_diag = torch.diag_embed(torch.sqrt(eigenvalues))  # [k, d, d]
-        sigma_reg = torch.matmul(
-            torch.matmul(eigenvectors, sqrt_diag),
-            eigenvectors.transpose(-2, -1)
+        return torch.matmul(
+            torch.matmul(eigenvectors, sqrt_diag), eigenvectors.transpose(-2, -1)
         )  # [k, d, d]
 
-        return sigma_reg
-
-    def apply(
-        self,
-        state: SwarmState,
-        alive_mask: Tensor | None = None
-    ) -> SwarmState:
+    def apply(self, state: SwarmState, alive_mask: Tensor | None = None) -> SwarmState:
         """Apply adaptive BAOAB integrator with geometric mechanisms.
 
         The integration follows the backbone BAOAB structure but adds:
@@ -577,31 +534,29 @@ class AdaptiveKineticOperator(KineticOperator):
 
         # Compute viscous force
         F_viscous = self._viscous_force(
-            SwarmState(x_alive, v_alive),
-            torch.ones(k, dtype=torch.bool, device=self.device)
+            SwarmState(x_alive, v_alive), torch.ones(k, dtype=torch.bool, device=self.device)
         )  # [k, d]
 
         # First B step: v � v - (�t/2) * [U(x) - F_adapt - F_viscous]
         x_alive.requires_grad_(True)
         U = self.potential.evaluate(x_alive)  # [k]
         grad_U = torch.autograd.grad(U.sum(), x_alive, create_graph=False)[0]  # [k, d]
-        v_alive = v_alive - self.dt / 2 * (grad_U - F_adapt - F_viscous)
+        v_alive -= self.dt / 2 * (grad_U - F_adapt - F_viscous)
 
         # First A step: x -> x + (dt/2) * v
-        x_alive = x_alive + self.dt / 2 * v_alive
+        x_alive += self.dt / 2 * v_alive
 
         # O step with adaptive diffusion
         if self.adaptive_params.epsilon_Sigma > 0 and self.adaptive_params.epsilon_F > 0:
             # Use regularized Hessian diffusion
             Sigma_reg = self._compute_diffusion_tensor(
-                x_alive, x_alive,
-                torch.ones(k, dtype=torch.bool, device=self.device)
+                x_alive, x_alive, torch.ones(k, dtype=torch.bool, device=self.device)
             )  # [k, d, d]
 
             # Ornstein-Uhlenbeck with anisotropic noise
             xi = torch.randn(k, d, device=self.device, dtype=self.dtype)  # [k, d]
             # Sigma_reg @ xi for each walker
-            anisotropic_noise = torch.einsum('kij,kj->ki', Sigma_reg, xi)  # [k, d]
+            anisotropic_noise = torch.einsum("kij,kj->ki", Sigma_reg, xi)  # [k, d]
             v_alive = self.c1 * v_alive + self.c2 * anisotropic_noise
         else:
             # Standard isotropic noise (backbone)
@@ -609,26 +564,23 @@ class AdaptiveKineticOperator(KineticOperator):
             v_alive = self.c1 * v_alive + self.c2 * xi
 
         # Second A step: x � x + (�t/2) * v
-        x_alive = x_alive + self.dt / 2 * v_alive
+        x_alive += self.dt / 2 * v_alive
 
         # Second B step: v � v - (�t/2) * [U(x) - F_adapt - F_viscous]
         # Recompute forces at new positions
         F_adapt = torch.zeros_like(v_alive)
         if self.adaptive_params.epsilon_F > 0:
-            grad_V_fit = self.fitness_potential.compute_gradient(
-                x_alive, x_alive, alive_mask
-            )
+            grad_V_fit = self.fitness_potential.compute_gradient(x_alive, x_alive, alive_mask)
             F_adapt = self.adaptive_params.epsilon_F * grad_V_fit
 
         F_viscous = self._viscous_force(
-            SwarmState(x_alive, v_alive),
-            torch.ones(k, dtype=torch.bool, device=self.device)
+            SwarmState(x_alive, v_alive), torch.ones(k, dtype=torch.bool, device=self.device)
         )
 
         x_temp = x_alive.detach().clone().requires_grad_(True)
         U = self.potential.evaluate(x_temp)
         grad_U = torch.autograd.grad(U.sum(), x_temp, create_graph=False)[0]
-        v_alive = v_alive - self.dt / 2 * (grad_U - F_adapt - F_viscous)
+        v_alive -= self.dt / 2 * (grad_U - F_adapt - F_viscous)
 
         # Update state with new alive walker values
         new_x = state.x.clone()
@@ -652,9 +604,7 @@ class GeometricGas:
     """
 
     def __init__(
-        self,
-        params: GeometricGasParams,
-        measurement_fn: Callable[[Tensor], Tensor] | None = None
+        self, params: GeometricGasParams, measurement_fn: Callable[[Tensor], Tensor] | None = None
     ):
         """Initialize Geometric Gas.
 
@@ -669,24 +619,20 @@ class GeometricGas:
 
         # Default measurement: negative potential (higher is better)
         if measurement_fn is None:
+
             def default_measurement(x: Tensor) -> Tensor:
                 return -params.potential.evaluate(x)
+
             self.measurement_fn = default_measurement
         else:
             self.measurement_fn = measurement_fn
 
         # Initialize localization kernel
-        self.localization = LocalizationKernel(
-            params.localization, self.device, self.dtype
-        )
+        self.localization = LocalizationKernel(params.localization, self.device, self.dtype)
 
         # Initialize fitness potential
         self.fitness_potential = FitnessPotential(
-            self.localization,
-            params.adaptive,
-            self.measurement_fn,
-            self.device,
-            self.dtype
+            self.localization, params.adaptive, self.measurement_fn, self.device, self.dtype
         )
 
         # Initialize adaptive kinetic operator
@@ -696,15 +642,12 @@ class GeometricGas:
             self.fitness_potential,
             params.adaptive,
             self.device,
-            self.dtype
+            self.dtype,
         )
 
         # Initialize cloning operator (with boundary enforcement)
         self.cloning_op = CloningOperator(
-            params.cloning,
-            self.device,
-            self.dtype,
-            bounds=self.bounds
+            params.cloning, self.device, self.dtype, bounds=self.bounds
         )
 
     def initialize_state(
@@ -726,9 +669,7 @@ class GeometricGas:
 
         if v_init is None:
             # Initialize velocities from thermal distribution
-            v_std = 1.0 / torch.sqrt(
-                torch.tensor(self.params.langevin.beta, dtype=self.dtype)
-            )
+            v_std = 1.0 / torch.sqrt(torch.tensor(self.params.langevin.beta, dtype=self.dtype))
             v_init = v_std * torch.randn(N, d, device=self.device, dtype=self.dtype)
 
         return SwarmState(
@@ -751,11 +692,9 @@ class GeometricGas:
             return None
 
         # Compute fitness for alive walkers
-        fitness = torch.full((state.N,), float('-inf'), device=self.device, dtype=self.dtype)
+        fitness = torch.full((state.N,), float("-inf"), device=self.device, dtype=self.dtype)
         x_alive = state.x[alive_mask]
-        fitness[alive_mask] = self.fitness_potential.evaluate(
-            x_alive, x_alive, alive_mask
-        )
+        fitness[alive_mask] = self.fitness_potential.evaluate(x_alive, x_alive, alive_mask)
 
         # Select best walker
         best_idx = torch.argmax(fitness)
@@ -764,9 +703,7 @@ class GeometricGas:
         return mask
 
     def step(
-        self,
-        state: SwarmState,
-        alive_mask: Tensor | None = None
+        self, state: SwarmState, alive_mask: Tensor | None = None
     ) -> tuple[SwarmState, SwarmState]:
         """Perform one full step: cloning followed by adaptive kinetic.
 
@@ -782,9 +719,7 @@ class GeometricGas:
             if self.bounds is not None:
                 alive_mask = self.bounds.contains(state.x)
             else:
-                alive_mask = torch.ones(
-                    state.N, dtype=torch.bool, device=self.device
-                )
+                alive_mask = torch.ones(state.N, dtype=torch.bool, device=self.device)
 
         # Freeze best walker if requested
         freeze_mask = self._freeze_mask(state)
@@ -809,7 +744,7 @@ class GeometricGas:
         n_steps: int,
         x_init: Tensor | None = None,
         v_init: Tensor | None = None,
-        fractal_set: "FractalSet | None" = None,
+        fractal_set: FractalSet | None = None,
         record_fitness: bool = False,
     ) -> dict:
         """Run Geometric Gas for multiple steps.
@@ -846,9 +781,7 @@ class GeometricGas:
 
         if alive_mask.any():
             fitness_traj[0, alive_mask] = self.fitness_potential.evaluate(
-                state.x[alive_mask],
-                state.x[alive_mask],
-                alive_mask
+                state.x[alive_mask], state.x[alive_mask], alive_mask
             )
 
         # Record initial state in FractalSet if provided
@@ -869,11 +802,11 @@ class GeometricGas:
                 if not alive_mask.any():
                     # All walkers dead, stop early
                     return {
-                        "x": x_traj[:t+1],
-                        "v": v_traj[:t+1],
-                        "fitness": fitness_traj[:t+1],
+                        "x": x_traj[: t + 1],
+                        "v": v_traj[: t + 1],
+                        "fitness": fitness_traj[: t + 1],
                         "terminated_early": True,
-                        "final_step": t
+                        "final_step": t,
                     }
 
             # Perform step
@@ -886,9 +819,7 @@ class GeometricGas:
             # Compute fitness
             if alive_mask.any():
                 fitness_traj[t + 1, alive_mask] = self.fitness_potential.evaluate(
-                    state.x[alive_mask],
-                    state.x[alive_mask],
-                    alive_mask
+                    state.x[alive_mask], state.x[alive_mask], alive_mask
                 )
 
             # Record in FractalSet if provided
@@ -906,7 +837,7 @@ class GeometricGas:
             "v": v_traj,
             "fitness": fitness_traj,
             "terminated_early": False,
-            "final_step": n_steps
+            "final_step": n_steps,
         }
 
         # Include FractalSet in result if provided
@@ -917,7 +848,7 @@ class GeometricGas:
 
     def _record_fractal_set_timestep(
         self,
-        fractal_set: "FractalSet",
+        fractal_set: FractalSet,
         state: SwarmState,
         timestep: int,
         alive_mask: Tensor,
@@ -950,9 +881,7 @@ class GeometricGas:
             if alive_mask.any():
                 fitness_vals = torch.zeros(state.N, device=self.device, dtype=self.dtype)
                 fitness_vals[alive_mask] = self.fitness_potential.evaluate(
-                    state.x[alive_mask],
-                    state.x[alive_mask],
-                    alive_mask
+                    state.x[alive_mask], state.x[alive_mask], alive_mask
                 )
                 fitness = fitness_vals
             else:

@@ -95,12 +95,10 @@ class CloningParams(BaseModel):
     sigma_x: float = Field(gt=0, description="Positional jitter scale (σ_x)")
     lambda_alg: float = Field(ge=0, description="Velocity weight in algorithmic distance (λ_alg)")
     epsilon_c: float | None = Field(
-        None,
-        description="Companion selection range (ε_c). If None, defaults to sigma_x"
+        None, description="Companion selection range (ε_c). If None, defaults to sigma_x"
     )
     companion_selection_method: str = Field(
-        "hybrid",
-        description="Companion selection method: 'hybrid', 'softmax', or 'uniform'"
+        "hybrid", description="Companion selection method: 'hybrid', 'softmax', or 'uniform'"
     )
     alpha_restitution: float = Field(
         ge=0, le=1, description="Coefficient of restitution [0,1]: 0=fully inelastic, 1=elastic"
@@ -124,7 +122,9 @@ class EuclideanGasParams(BaseModel):
     potential: PotentialParams = Field(description="Target potential parameters")
     langevin: LangevinParams = Field(description="Langevin dynamics parameters")
     cloning: CloningParams = Field(description="Cloning operator parameters")
-    bounds: TorchBounds | None = Field(None, description="Position bounds (optional, TorchBounds only)")
+    bounds: TorchBounds | None = Field(
+        None, description="Position bounds (optional, TorchBounds only)"
+    )
     device: str = Field("cpu", description="PyTorch device (cpu/cuda)")
     dtype: str = Field("float32", description="PyTorch dtype (float32/float64)")
     freeze_best: bool = Field(
@@ -295,7 +295,9 @@ class CloningOperator:
         self.dtype = dtype
         self.bounds = bounds
 
-    def apply(self, state: SwarmState, return_parents: bool = False) -> SwarmState | tuple[SwarmState, Tensor]:
+    def apply(
+        self, state: SwarmState, return_parents: bool = False
+    ) -> SwarmState | tuple[SwarmState, Tensor]:
         """
         Apply cloning operator with boundary enforcement.
 
@@ -339,9 +341,8 @@ class CloningOperator:
                 # Reset velocities to small random values
                 v_new = torch.randn(N, d, device=self.device, dtype=self.dtype) * 0.1
                 return SwarmState(x_new, v_new)
-            else:
-                # No bounds defined - this shouldn't happen, but treat all as alive
-                alive_mask = torch.ones(N, dtype=torch.bool, device=self.device)
+            # No bounds defined - this shouldn't happen, but treat all as alive
+            alive_mask = torch.ones(N, dtype=torch.bool, device=self.device)
 
         # Get effective epsilon_c (defaults to sigma_x if not specified)
         epsilon_c = self.params.get_epsilon_c()
@@ -351,17 +352,21 @@ class CloningOperator:
         if method == "hybrid":
             # Hybrid mode: alive use softmax, dead use uniform (matches old behavior)
             companions = select_companions_for_cloning(
-                state.x, state.v, alive_mask,
+                state.x,
+                state.v,
+                alive_mask,
                 epsilon_c=epsilon_c,
-                lambda_alg=self.params.lambda_alg
+                lambda_alg=self.params.lambda_alg,
             )
         elif method == "softmax":
             # All walkers use distance-dependent softmax selection
             companions = select_companions_softmax(
-                state.x, state.v, alive_mask,
+                state.x,
+                state.v,
+                alive_mask,
                 epsilon=epsilon_c,
                 lambda_alg=self.params.lambda_alg,
-                exclude_self=True
+                exclude_self=True,
             )
         elif method == "uniform":
             # All walkers use uniform random selection
@@ -386,8 +391,7 @@ class CloningOperator:
 
         if return_parents:
             return new_state, companions
-        else:
-            return new_state
+        return new_state
 
     def _inelastic_collision_velocity(self, state: SwarmState, companions: Tensor) -> Tensor:
         """
@@ -611,7 +615,9 @@ class EuclideanGas:
             v_init.to(device=self.device, dtype=self.dtype),
         )
 
-    def step(self, state: SwarmState, return_parents: bool = False) -> tuple[SwarmState, SwarmState] | tuple[SwarmState, SwarmState, Tensor]:
+    def step(
+        self, state: SwarmState, return_parents: bool = False
+    ) -> tuple[SwarmState, SwarmState] | tuple[SwarmState, SwarmState, Tensor]:
         """
         Perform one full step: cloning followed by kinetic.
 
@@ -640,17 +646,16 @@ class EuclideanGas:
 
         if return_parents:
             return state_cloned, state_final, parent_ids
-        else:
-            return state_cloned, state_final
+        return state_cloned, state_final
 
     def run(
         self,
         n_steps: int,
         x_init: Tensor | None = None,
         v_init: Tensor | None = None,
-        fractal_set: "FractalSet | None" = None,
+        fractal_set: FractalSet | None = None,
         record_fitness: bool = False,
-        scutoid_tessellation: "ScutoidTessellation | None" = None,
+        scutoid_tessellation: ScutoidTessellation | None = None,
     ) -> dict:
         """
         Run Euclidean Gas for multiple steps.
@@ -835,7 +840,7 @@ class EuclideanGas:
 
     def _record_fractal_set_timestep(
         self,
-        fractal_set: "FractalSet",
+        fractal_set: FractalSet,
         state: SwarmState,
         timestep: int,
         alive_mask: Tensor,
@@ -879,9 +884,7 @@ class EuclideanGas:
             v_companion = state.v[companions]
             pos_diff_sq = torch.sum((state.x - x_companion) ** 2, dim=-1)
             vel_diff_sq = torch.sum((state.v - v_companion) ** 2, dim=-1)
-            distances = torch.sqrt(
-                pos_diff_sq + self.params.cloning.lambda_alg * vel_diff_sq
-            )
+            distances = torch.sqrt(pos_diff_sq + self.params.cloning.lambda_alg * vel_diff_sq)
 
             # Simplified fitness (inverse distance)
             fitness = 1.0 / (distances + 1e-6)

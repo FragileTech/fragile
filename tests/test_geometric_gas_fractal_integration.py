@@ -21,7 +21,7 @@ def simple_geometric_gas():
         d=2,
         potential=SimpleQuadraticPotential(),
         langevin=LangevinParams(gamma=1.0, beta=1.0, delta_t=0.01),
-        localization=LocalizationKernelParams(rho=1.0, kernel_type='gaussian'),
+        localization=LocalizationKernelParams(rho=1.0, kernel_type="gaussian"),
         adaptive=AdaptiveParams(
             epsilon_F=0.1,
             nu=0.05,
@@ -30,8 +30,8 @@ def simple_geometric_gas():
             sigma_var_min=0.1,
             viscous_length_scale=1.0,
         ),
-        device='cpu',
-        dtype='float32',
+        device="cpu",
+        dtype="float32",
         freeze_best=False,
     )
     return GeometricGas(params)
@@ -51,40 +51,40 @@ class TestGeometricGasFractalSetIntegration:
 
         # Check that FractalSet was populated
         assert fs.graph.number_of_nodes() == simple_geometric_gas.params.N * (n_steps + 1)
-        assert fs.graph.graph['n_steps'] == n_steps + 1
-        assert result['fractal_set'] is fs
+        assert fs.graph.graph["n_steps"] == n_steps + 1
+        assert result["fractal_set"] is fs
 
     def test_run_with_fitness_recording(self, simple_geometric_gas):
         """Test that fitness data is recorded when requested."""
         fs = FractalSet(N=simple_geometric_gas.params.N, d=simple_geometric_gas.params.d)
 
         n_steps = 5
-        result = simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
+        simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
 
         # Check fitness attributes exist
         sample_node = (0, 0)
         node_data = fs.graph.nodes[sample_node]
 
-        assert 'fitness' in node_data
-        assert 'potential' in node_data
-        assert 'reward' in node_data
-        assert node_data['fitness'] is not None
+        assert "fitness" in node_data
+        assert "potential" in node_data
+        assert "reward" in node_data
+        assert node_data["fitness"] is not None
 
     def test_run_without_fitness_recording(self, simple_geometric_gas):
         """Test that fitness data is not recorded when not requested."""
         fs = FractalSet(N=simple_geometric_gas.params.N, d=simple_geometric_gas.params.d)
 
         n_steps = 5
-        result = simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=False)
+        simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=False)
 
         # Check fitness attributes don't exist or are None
         sample_node = (0, 0)
         node_data = fs.graph.nodes[sample_node]
 
         # Attributes should be None when record_fitness=False
-        assert node_data.get('fitness') is None
-        assert node_data.get('potential') is None
-        assert node_data.get('reward') is None
+        assert node_data.get("fitness") is None
+        assert node_data.get("potential") is None
+        assert node_data.get("reward") is None
 
     def test_run_backward_compatibility(self, simple_geometric_gas):
         """Test that run() works without FractalSet parameter."""
@@ -92,17 +92,17 @@ class TestGeometricGasFractalSetIntegration:
         result = simple_geometric_gas.run(n_steps=n_steps)
 
         # Should work normally without FractalSet
-        assert 'x' in result
-        assert 'v' in result
-        assert 'fitness' in result
-        assert 'fractal_set' not in result
+        assert "x" in result
+        assert "v" in result
+        assert "fitness" in result
+        assert "fractal_set" not in result
 
     def test_fractal_set_high_error_mask(self, simple_geometric_gas):
         """Test that high-error mask is computed for all timesteps."""
         fs = FractalSet(N=simple_geometric_gas.params.N, d=simple_geometric_gas.params.d)
 
         n_steps = 5
-        result = simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs)
+        simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs)
 
         # Check all nodes have high_error attribute
         for t in range(n_steps + 1):
@@ -111,24 +111,24 @@ class TestGeometricGasFractalSetIntegration:
                 assert fs.graph.has_node(node_id)
                 node_data = fs.graph.nodes[node_id]
 
-                assert 'high_error' in node_data
-                assert isinstance(node_data['high_error'], bool)
-                assert 'positional_error' in node_data
+                assert "high_error" in node_data
+                assert isinstance(node_data["high_error"], bool)
+                assert "positional_error" in node_data
 
     def test_fractal_set_edges_created(self, simple_geometric_gas):
         """Test that temporal edges are created between timesteps."""
         fs = FractalSet(N=simple_geometric_gas.params.N, d=simple_geometric_gas.params.d)
 
         n_steps = 5
-        result = simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
+        simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
 
         # Should have at least N * n_steps temporal edges
         assert fs.graph.number_of_edges() >= simple_geometric_gas.params.N * n_steps
 
         # Check temporal ordering
-        for (u, v) in fs.graph.edges():
-            u_walker, u_time = u
-            v_walker, v_time = v
+        for u, v in fs.graph.edges():
+            _u_walker, u_time = u
+            _v_walker, v_time = v
 
             # Edges should go forward in time
             assert v_time > u_time
@@ -138,12 +138,13 @@ class TestGeometricGasFractalSetIntegration:
         fs = FractalSet(N=simple_geometric_gas.params.N, d=simple_geometric_gas.params.d)
 
         n_steps = 10
-        result = simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
+        simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
 
         # Check that no cloning edges exist (GeometricGas doesn't use cloning)
         cloning_edges = [
-            (u, v) for (u, v) in fs.graph.edges()
-            if fs.graph.edges[(u, v)].get('edge_type') == 'cloning'
+            (u, v)
+            for (u, v) in fs.graph.edges()
+            if fs.graph.edges[u, v].get("edge_type") == "cloning"
         ]
 
         # GeometricGas should have zero cloning edges
@@ -151,8 +152,9 @@ class TestGeometricGasFractalSetIntegration:
 
         # All edges should be kinetic
         kinetic_edges = [
-            (u, v) for (u, v) in fs.graph.edges()
-            if fs.graph.edges[(u, v)].get('edge_type') == 'kinetic'
+            (u, v)
+            for (u, v) in fs.graph.edges()
+            if fs.graph.edges[u, v].get("edge_type") == "kinetic"
         ]
         assert len(kinetic_edges) == fs.graph.number_of_edges()
 
@@ -161,41 +163,44 @@ class TestGeometricGasFractalSetIntegration:
         fs = FractalSet(N=simple_geometric_gas.params.N, d=simple_geometric_gas.params.d)
 
         n_steps = 10
-        result = simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
+        simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
 
         stats = fs.summary_statistics()
 
-        assert 'total_nodes' in stats
-        assert 'total_edges' in stats
-        assert 'n_steps' in stats
-        assert 'initial_variance' in stats
-        assert 'final_variance' in stats
+        assert "total_nodes" in stats
+        assert "total_edges" in stats
+        assert "n_steps" in stats
+        assert "initial_variance" in stats
+        assert "final_variance" in stats
 
-        assert stats['total_nodes'] == simple_geometric_gas.params.N * (n_steps + 1)
-        assert stats['n_steps'] == n_steps + 1
-        assert stats['n_cloning_events'] == 0  # GeometricGas has no cloning
+        assert stats["total_nodes"] == simple_geometric_gas.params.N * (n_steps + 1)
+        assert stats["n_steps"] == n_steps + 1
+        assert stats["n_cloning_events"] == 0  # GeometricGas has no cloning
 
     def test_fractal_set_query_methods(self, simple_geometric_gas):
         """Test that FractalSet query methods work after run."""
         fs = FractalSet(N=simple_geometric_gas.params.N, d=simple_geometric_gas.params.d)
 
         n_steps = 10
-        result = simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
+        simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
 
         # Test get_walker_trajectory
         walker_id = 0
         traj = fs.get_walker_trajectory(walker_id)
 
-        assert len(traj['timesteps']) == n_steps + 1
-        assert len(traj['positions']) == n_steps + 1
-        assert len(traj['velocities']) == n_steps + 1
+        assert len(traj["timesteps"]) == n_steps + 1
+        assert len(traj["positions"]) == n_steps + 1
+        assert len(traj["velocities"]) == n_steps + 1
 
         # Test get_timestep_snapshot
         snapshot = fs.get_timestep_snapshot(5)
 
-        assert snapshot['positions'].shape == (simple_geometric_gas.params.N, simple_geometric_gas.params.d)
-        assert 'centroid' in snapshot
-        assert 'variance' in snapshot
+        assert snapshot["positions"].shape == (
+            simple_geometric_gas.params.N,
+            simple_geometric_gas.params.d,
+        )
+        assert "centroid" in snapshot
+        assert "variance" in snapshot
 
         # Test get_lineage (should just be linear for GeometricGas)
         lineage = fs.get_lineage(walker_id, n_steps)
@@ -214,7 +219,7 @@ class TestGeometricGasFractalSetIntegration:
         fs = FractalSet(N=simple_geometric_gas.params.N, d=simple_geometric_gas.params.d)
 
         n_steps = 5
-        result = simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
+        simple_geometric_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
 
         # Check that fitness values are recorded
         for t in range(n_steps + 1):
@@ -223,13 +228,13 @@ class TestGeometricGasFractalSetIntegration:
                 node_data = fs.graph.nodes[node_id]
 
                 # Should have fitness value
-                assert 'fitness' in node_data
-                assert node_data['fitness'] is not None
-                assert isinstance(node_data['fitness'], float)
+                assert "fitness" in node_data
+                assert node_data["fitness"] is not None
+                assert isinstance(node_data["fitness"], float)
 
                 # Fitness should be non-negative (it's from fitness potential)
-                assert node_data['fitness'] >= 0.0
+                assert node_data["fitness"] >= 0.0
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

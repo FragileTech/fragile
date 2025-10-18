@@ -95,7 +95,7 @@ class TestAlgorithmicDistance:
         """Test that large lambda_alg emphasizes velocity differences."""
         x = torch.randn(5, 2)
         v = torch.randn(5, 2)
-        state = SwarmState(x, v)
+        SwarmState(x, v)
 
         # Small lambda: position-dominated
         dist_small = compute_algorithmic_distance_matrix(x, v, 0.01)

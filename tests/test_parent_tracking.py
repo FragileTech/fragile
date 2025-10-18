@@ -26,10 +26,10 @@ def simple_gas():
             sigma_x=0.5,
             lambda_alg=0.1,
             alpha_restitution=0.5,
-            companion_selection_method='softmax'
+            companion_selection_method="softmax",
         ),
-        device='cpu',
-        dtype='float32'
+        device="cpu",
+        dtype="float32",
     )
     return EuclideanGas(params)
 
@@ -42,7 +42,7 @@ class TestParentTracking:
         fs = FractalSet(N=simple_gas.params.N, d=simple_gas.params.d)
 
         n_steps = 5
-        result = simple_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
+        simple_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
 
         # Extract parent IDs for each timestep
         for t in range(1, n_steps + 1):
@@ -59,7 +59,7 @@ class TestParentTracking:
         fs = FractalSet(N=simple_gas.params.N, d=simple_gas.params.d)
 
         n_steps = 3
-        result = simple_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
+        simple_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
 
         # Timestep 0 should error (no parents)
         with pytest.raises(ValueError, match="must be > 0"):
@@ -77,7 +77,7 @@ class TestParentTracking:
         )
 
         n_steps = 5
-        result = simple_gas.run(n_steps=n_steps, scutoid_tessellation=tessellation)
+        simple_gas.run(n_steps=n_steps, scutoid_tessellation=tessellation)
 
         # Check that scutoids have correct parent IDs
         for interval in range(n_steps):
@@ -95,7 +95,7 @@ class TestParentTracking:
         )
 
         n_steps = 5
-        result = simple_gas.run(
+        simple_gas.run(
             n_steps=n_steps,
             fractal_set=fs,
             record_fitness=True,
@@ -150,7 +150,7 @@ class TestParentTracking:
         )
 
         n_steps = 10
-        result = simple_gas.run(
+        simple_gas.run(
             n_steps=n_steps,
             fractal_set=fs,
             record_fitness=True,
@@ -168,32 +168,33 @@ class TestParentTracking:
 
             # Check they match
             for i in range(simple_gas.params.N):
-                assert fs_parents[i] == scutoid_parents[i], \
-                    f"Mismatch at timestep {t}, walker {i}: FractalSet={fs_parents[i]}, Scutoid={scutoid_parents[i]}"
+                assert (
+                    fs_parents[i] == scutoid_parents[i]
+                ), f"Mismatch at timestep {t}, walker {i}: FractalSet={fs_parents[i]}, Scutoid={scutoid_parents[i]}"
 
     def test_cloning_edges_in_fractal_set(self, simple_gas):
         """Test that cloning edges are properly recorded in FractalSet."""
         fs = FractalSet(N=simple_gas.params.N, d=simple_gas.params.d)
 
         n_steps = 10
-        result = simple_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
+        simple_gas.run(n_steps=n_steps, fractal_set=fs, record_fitness=True)
 
         # Count cloning edges
         n_cloning = 0
         n_kinetic = 0
 
-        for (u, v) in fs.graph.edges():
-            edge_data = fs.graph.edges[(u, v)]
-            edge_type = edge_data.get('edge_type', 'kinetic')
+        for u, v in fs.graph.edges():
+            edge_data = fs.graph.edges[u, v]
+            edge_type = edge_data.get("edge_type", "kinetic")
 
-            if edge_type == 'cloning':
+            if edge_type == "cloning":
                 n_cloning += 1
                 # Verify cloning edge structure
                 parent_id, parent_t = u
-                child_id, child_t = v
+                _child_id, child_t = v
                 assert child_t == parent_t + 1
-                assert edge_data.get('companion_id') == parent_id
-            elif edge_type == 'kinetic':
+                assert edge_data.get("companion_id") == parent_id
+            elif edge_type == "kinetic":
                 n_kinetic += 1
                 # Verify kinetic edge structure
                 walker_id_prev, t_prev = u
@@ -211,11 +212,11 @@ class TestParentTracking:
         n_steps = 5
         result = simple_gas.run(n_steps=n_steps)
 
-        assert 'x' in result
-        assert 'v' in result
-        assert 'fractal_set' not in result
-        assert 'scutoid_tessellation' not in result
+        assert "x" in result
+        assert "v" in result
+        assert "fractal_set" not in result
+        assert "scutoid_tessellation" not in result
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

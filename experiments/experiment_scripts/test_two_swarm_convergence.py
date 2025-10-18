@@ -7,24 +7,27 @@ conditions converge to the same QSD, with exponential Lyapunov decay.
 """
 
 import sys
-sys.path.insert(0, '../../src')
 
-import torch
+
+sys.path.insert(0, "../../src")
+
 import numpy as np
+import torch
 
+from fragile.euclidean_gas import LangevinParams
 from fragile.experiments import create_multimodal_potential
 from fragile.geometric_gas import (
+    AdaptiveParams,
     GeometricGas,
     GeometricGasParams,
     LocalizationKernelParams,
-    AdaptiveParams,
 )
-from fragile.euclidean_gas import LangevinParams
 from fragile.lyapunov import (
     compute_internal_variance_position,
     compute_internal_variance_velocity,
     compute_total_lyapunov,
 )
+
 
 # Set seeds
 torch.manual_seed(42)
@@ -40,13 +43,10 @@ print("=" * 70)
 print("\n[1/5] Creating multimodal potential...")
 
 potential, target_mixture = create_multimodal_potential(
-    dims=2,
-    n_gaussians=3,
-    bounds_range=(-8.0, 8.0),
-    seed=42
+    dims=2, n_gaussians=3, bounds_range=(-8.0, 8.0), seed=42
 )
 
-print(f"  ✓ Created 3-mode Gaussian mixture")
+print("  ✓ Created 3-mode Gaussian mixture")
 print(f"  ✓ Centers: {target_mixture.centers.numpy()}")
 print(f"  ✓ Weights: {target_mixture.weights.numpy()}")
 
@@ -59,8 +59,10 @@ N = 50  # Walkers per swarm
 dims = 2
 n_steps = 1000
 
+
 def measurement_fn(x):
     return -potential.evaluate(x)
+
 
 params = GeometricGasParams(
     N=N,
@@ -74,10 +76,10 @@ params = GeometricGasParams(
         epsilon_Sigma=0.01,
         rescale_amplitude=1.0,
         sigma_var_min=0.1,
-        viscous_length_scale=2.0
+        viscous_length_scale=2.0,
     ),
     device="cpu",
-    dtype="float32"
+    dtype="float32",
 )
 
 # Create two independent Gas instances
@@ -94,7 +96,7 @@ x2_init = torch.rand(N, dims) * 2.0 - 7.0
 v2_init = torch.randn(N, dims) * 0.1
 state2 = gas2.initialize_state(x2_init, v2_init)
 
-print(f"  ✓ Created two independent swarms")
+print("  ✓ Created two independent swarms")
 print(f"  ✓ Swarm 1 initial: [{x1_init.min():.2f}, {x1_init.max():.2f}]")
 print(f"  ✓ Swarm 2 initial: [{x2_init.min():.2f}, {x2_init.max():.2f}]")
 
@@ -118,12 +120,12 @@ mu_x_1_init = state1.x.mean(dim=0)
 mu_x_2_init = state2.x.mean(dim=0)
 com_distance_init = torch.norm(mu_x_1_init - mu_x_2_init).item()
 
-print(f"\n  Swarm 1 (initial):")
+print("\n  Swarm 1 (initial):")
 print(f"    V_Var,x: {V_var_x_1_init.item():.6f}")
 print(f"    V_Var,v: {V_var_v_1_init.item():.6f}")
 print(f"    V_total: {V_total_1_init.item():.6f}")
 
-print(f"\n  Swarm 2 (initial):")
+print("\n  Swarm 2 (initial):")
 print(f"    V_Var,x: {V_var_x_2_init.item():.6f}")
 print(f"    V_Var,v: {V_var_v_2_init.item():.6f}")
 print(f"    V_total: {V_total_2_init.item():.6f}")
@@ -136,9 +138,9 @@ print(f"\n  Inter-swarm distance: {com_distance_init:.4f}")
 print(f"\n[4/5] Running simulation for {n_steps} steps...")
 
 metrics = {
-    'V_total_1': [V_total_1_init.item()],
-    'V_total_2': [V_total_2_init.item()],
-    'com_distance': [com_distance_init],
+    "V_total_1": [V_total_1_init.item()],
+    "V_total_2": [V_total_2_init.item()],
+    "com_distance": [com_distance_init],
 }
 
 # Run simulation
@@ -156,16 +158,18 @@ for step in range(n_steps):
         mu_x_2 = state2.x.mean(dim=0)
         com_distance = torch.norm(mu_x_1 - mu_x_2).item()
 
-        metrics['V_total_1'].append(V_total_1)
-        metrics['V_total_2'].append(V_total_2)
-        metrics['com_distance'].append(com_distance)
+        metrics["V_total_1"].append(V_total_1)
+        metrics["V_total_2"].append(V_total_2)
+        metrics["com_distance"].append(com_distance)
 
-        print(f"  Step {step + 1:4d}: "
-              f"V1={V_total_1:.4f}, "
-              f"V2={V_total_2:.4f}, "
-              f"dist={com_distance:.4f}")
+        print(
+            f"  Step {step + 1:4d}: "
+            f"V1={V_total_1:.4f}, "
+            f"V2={V_total_2:.4f}, "
+            f"dist={com_distance:.4f}"
+        )
 
-print(f"\n  ✓ Simulation complete")
+print("\n  ✓ Simulation complete")
 
 # ============================================================================
 # STEP 5: Analyze Results
@@ -196,31 +200,31 @@ print("\n" + "=" * 70)
 print("CONVERGENCE RESULTS")
 print("=" * 70)
 
-print(f"\nSwarm 1 (final):")
+print("\nSwarm 1 (final):")
 print(f"  V_Var,x: {V_var_x_1_final.item():.6f}")
 print(f"  V_Var,v: {V_var_v_1_final.item():.6f}")
 print(f"  V_total: {V_total_1_final.item():.6f}")
 print(f"  Mean position: {mean1}")
 
-print(f"\nSwarm 2 (final):")
+print("\nSwarm 2 (final):")
 print(f"  V_Var,x: {V_var_x_2_final.item():.6f}")
 print(f"  V_Var,v: {V_var_v_2_final.item():.6f}")
 print(f"  V_total: {V_total_2_final.item():.6f}")
 print(f"  Mean position: {mean2}")
 
-print(f"\nInter-swarm convergence:")
+print("\nInter-swarm convergence:")
 print(f"  Initial distance: {com_distance_init:.4f}")
 print(f"  Final distance: {com_distance_final:.4f}")
-print(f"  Reduction: {100 * (1 - com_distance_final/com_distance_init):.2f}%")
+print(f"  Reduction: {100 * (1 - com_distance_final / com_distance_init):.2f}%")
 
-print(f"\nFinal distribution agreement:")
+print("\nFinal distribution agreement:")
 print(f"  Mean difference: {mean_diff:.6f}")
 
 # Lyapunov decay
 V1_reduction = 100 * (1 - V_total_1_final.item() / V_total_1_init.item())
 V2_reduction = 100 * (1 - V_total_2_final.item() / V_total_2_init.item())
 
-print(f"\nLyapunov function decay:")
+print("\nLyapunov function decay:")
 print(f"  Swarm 1 reduction: {V1_reduction:.2f}%")
 print(f"  Swarm 2 reduction: {V2_reduction:.2f}%")
 

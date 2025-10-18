@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from fragile.fractalai import calculate_clone, calculate_virtual_reward, clone_tensor, relativize
+from fragile.fractalai import asymmetric_rescale, calculate_clone, calculate_fitness, clone_tensor
 
 
 def get_is_cloned(compas_ix, will_clone):
@@ -292,7 +292,7 @@ class FractalTree(BaseFractalTree):
 
     def step_tree(self):
         visits_reward = self.calculate_visits_reward()
-        self.virtual_reward, self.distance_ix, self.distance = calculate_virtual_reward(
+        self.virtual_reward, self.distance_ix, self.distance = calculate_fitness(
             self.observ,
             self.cum_reward,
             self.oobs,
@@ -376,4 +376,4 @@ class FractalTree(BaseFractalTree):
         obs = self.observ.numpy(force=True).astype(np.int64)
         x, y, room_ix = obs[:, 0], obs[:, 1], obs[:, 2]
         visits_val = torch.tensor(visits[room_ix, y, x], device=self.device, dtype=torch.float32)
-        return relativize(-visits_val)
+        return asymmetric_rescale(-visits_val)
