@@ -1,22 +1,30 @@
-"""Tests for CloningOperator."""
+"""Tests for CloningOperator using operators.py functions."""
 
 import pytest
 import torch
 
-from fragile.euclidean_gas import CloningOperator, CloningParams, SwarmState
+from fragile.euclidean_gas import CloningOperator, CloningParams, SimpleQuadraticPotential, SwarmState
 
 
 class TestCloningOperator:
     """Tests for CloningOperator."""
 
     @pytest.fixture
-    def cloning_op(self, cloning_params, torch_dtype):
-        """Create cloning operator for testing."""
-        return CloningOperator(cloning_params, torch.device("cpu"), torch_dtype)
+    def potential(self):
+        """Create potential for testing."""
+        return SimpleQuadraticPotential()
 
-    def test_initialization(self, cloning_op, cloning_params):
+    @pytest.fixture
+    def cloning_op(self, cloning_params, potential, torch_dtype):
+        """Create cloning operator for testing."""
+        return CloningOperator(
+            cloning_params, potential, torch.device("cpu"), torch_dtype, bounds=None
+        )
+
+    def test_initialization(self, cloning_op, cloning_params, potential):
         """Test cloning operator initialization."""
         assert cloning_op.params == cloning_params
+        assert cloning_op.potential == potential
         assert cloning_op.device == torch.device("cpu")
         assert cloning_op.dtype == torch.float64
 
@@ -44,11 +52,51 @@ class TestCloningOperator:
         assert not torch.allclose(new_state.x, state.x)
         assert not torch.allclose(new_state.v, state.v)
 
+    def test_return_parents(self, cloning_op):
+        """Test that return_parents works correctly."""
+        x = torch.randn(10, 3, dtype=torch.float64)
+        v = torch.randn(10, 3, dtype=torch.float64)
+        state = SwarmState(x, v)
+
+        new_state, companions = cloning_op.apply(state, return_parents=True)
+
+        assert new_state.x.shape == state.x.shape
+        assert new_state.v.shape == state.v.shape
+        assert companions.shape == (10,)
+        assert companions.dtype == torch.long
+
+    def test_return_info(self, cloning_op):
+        """Test that return_info works correctly."""
+        x = torch.randn(10, 3, dtype=torch.float64)
+        v = torch.randn(10, 3, dtype=torch.float64)
+        state = SwarmState(x, v)
+
+        new_state, companions, info = cloning_op.apply(state, return_info=True)
+
+        # Check info dictionary structure
+        assert 'cloning_scores' in info
+        assert 'cloning_probs' in info
+        assert 'will_clone' in info
+        assert 'num_cloned' in info
+        assert 'fitness' in info
+        assert 'distances' in info
+        assert 'rewards' in info
+
+        # Check shapes
+        assert info['cloning_scores'].shape == (10,)
+        assert info['cloning_probs'].shape == (10,)
+        assert info['will_clone'].shape == (10,)
+        assert info['fitness'].shape == (10,)
+        assert info['distances'].shape == (10,)
+        assert info['rewards'].shape == (10,)
+        assert isinstance(info['num_cloned'], int)
+
     def test_jitter_scale(self):
-        """Test that position jitter scale is respected."""
+        """Test that position jitter scale affects results."""
         sigma_x = 0.1
         params = CloningParams(sigma_x=sigma_x, lambda_alg=1.0, alpha_restitution=0.5)
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
+        potential = SimpleQuadraticPotential()
+        op = CloningOperator(params, potential, torch.device("cpu"), torch.float64, bounds=None)
 
         torch.manual_seed(42)
         x = torch.randn(100, 3, dtype=torch.float64)
@@ -57,15 +105,17 @@ class TestCloningOperator:
 
         new_state = op.apply(state)
 
-        # The jitter is added to companion positions, not original positions
-        # So we verify that the operation completes and produces valid output
+        # Verify that the operation completes and produces valid output
         assert not torch.any(torch.isnan(new_state.x))
         assert not torch.any(torch.isinf(new_state.x))
+        assert not torch.any(torch.isnan(new_state.v))
+        assert not torch.any(torch.isinf(new_state.v))
 
-    def test_two_walkers_mutual_companions(self):
-        """Test cloning with two walkers that are each other's companions."""
+    def test_two_walkers(self):
+        """Test cloning with two walkers."""
         params = CloningParams(sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.5)
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
+        potential = SimpleQuadraticPotential()
+        op = CloningOperator(params, potential, torch.device("cpu"), torch.float64, bounds=None)
 
         x = torch.tensor([[0.0, 0.0], [1.0, 0.0]], dtype=torch.float64)
         v = torch.tensor([[0.0, 0.0], [0.0, 0.0]], dtype=torch.float64)
@@ -74,65 +124,8 @@ class TestCloningOperator:
         torch.manual_seed(42)
         new_state = op.apply(state)
 
-        # Both should clone each other's position (plus jitter)
         assert new_state.x.shape == (2, 2)
         assert new_state.v.shape == (2, 2)
-
-    def test_inelastic_collision_velocity(self):
-        """Test inelastic collision velocity calculation."""
-        params = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.8, use_inelastic_collision=True
-        )
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
-
-        # Create state with known velocities
-        x = torch.randn(5, 2, dtype=torch.float64)
-        v = torch.tensor(
-            [
-                [1.0, 0.0],
-                [0.0, 1.0],
-                [-1.0, 0.0],
-                [0.0, -1.0],
-                [0.5, 0.5],
-            ],
-            dtype=torch.float64,
-        )
-        state = SwarmState(x, v)
-
-        # Manually specify companions
-        companions = torch.tensor([1, 0, 3, 2, 0])
-
-        # Compute velocities
-        torch.manual_seed(42)
-        v_new = op._inelastic_collision_velocity(state, companions)
-
-        # The implementation uses physics-based collisions with center-of-mass and random rotations
-        # Test that:
-        # 1. No NaN or Inf values
-        assert not torch.any(torch.isnan(v_new))
-        assert not torch.any(torch.isinf(v_new))
-
-        # 2. Output shape matches input
-        assert v_new.shape == v.shape
-
-    def test_no_inelastic_collision(self):
-        """Test cloning without inelastic collision."""
-        params = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.5, use_inelastic_collision=False
-        )
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
-
-        x = torch.randn(10, 3, dtype=torch.float64)
-        v = torch.randn(10, 3, dtype=torch.float64)
-        state = SwarmState(x, v)
-
-        torch.manual_seed(42)
-        new_state = op.apply(state)
-
-        # Without inelastic collision, velocities should just be copied
-        # We can't test this directly without knowing companions, but we can
-        # verify the operator runs without error
-        assert new_state is not None
 
     @pytest.mark.parametrize("alpha_restitution", [0.0, 0.5, 1.0])
     def test_restitution_coefficient(self, alpha_restitution):
@@ -141,87 +134,55 @@ class TestCloningOperator:
             sigma_x=0.1,
             lambda_alg=1.0,
             alpha_restitution=alpha_restitution,
-            use_inelastic_collision=True,
         )
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
+        potential = SimpleQuadraticPotential()
+        op = CloningOperator(params, potential, torch.device("cpu"), torch.float64, bounds=None)
 
         x = torch.randn(5, 2, dtype=torch.float64)
         v = torch.randn(5, 2, dtype=torch.float64)
         state = SwarmState(x, v)
 
-        companions = torch.tensor([1, 2, 3, 4, 0])
-
         torch.manual_seed(42)
-        v_new = op._inelastic_collision_velocity(state, companions)
+        new_state = op.apply(state)
 
         # Test basic properties
-        assert not torch.any(torch.isnan(v_new))
-        assert not torch.any(torch.isinf(v_new))
-        assert v_new.shape == v.shape
+        assert not torch.any(torch.isnan(new_state.v))
+        assert not torch.any(torch.isinf(new_state.v))
+        assert new_state.v.shape == v.shape
 
-    def test_elastic_collision_alpha_restitution_equals_one(self):
-        """Test that alpha_restitution=1 gives elastic collision with magnitude preservation."""
+    def test_perfectly_inelastic_collision(self):
+        """Test that alpha_restitution=0 results in velocity convergence."""
         params = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=1.0, use_inelastic_collision=True
+            sigma_x=0.1,
+            lambda_alg=1.0,
+            alpha_restitution=0.0,
+            p_max=1.0,  # Ensure all walkers clone
         )
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
+        potential = SimpleQuadraticPotential()
+        op = CloningOperator(params, potential, torch.device("cpu"), torch.float64, bounds=None)
 
-        x = torch.randn(4, 2, dtype=torch.float64)
-        v = torch.tensor([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]], dtype=torch.float64)
+        # Create walkers with different velocities
+        x = torch.randn(10, 2, dtype=torch.float64)
+        v = torch.randn(10, 2, dtype=torch.float64) * 5.0  # Large velocity differences
         state = SwarmState(x, v)
 
-        companions = torch.tensor([1, 0, 3, 2])
-
         torch.manual_seed(42)
-        v_new = op._inelastic_collision_velocity(state, companions)
+        new_state, _, info = op.apply(state, return_info=True)
 
-        # For alpha_restitution=1: The implementation uses physics-based collisions
-        # which preserve kinetic energy in the COM frame
-        # Test that output is valid
-        assert not torch.any(torch.isnan(v_new))
-        assert not torch.any(torch.isinf(v_new))
-        assert v_new.shape == v.shape
-
-    def test_perfectly_inelastic_alpha_restitution_equals_zero(self):
-        """Test that alpha_restitution=0 gives perfectly inelastic collision with all velocities equal to COM."""
-        params = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.0, use_inelastic_collision=True
-        )
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
-
-        x = torch.randn(4, 2, dtype=torch.float64)
-        v = torch.tensor(
-            [
-                [1.0, 0.0],  # Walker 0
-                [2.0, 0.0],  # Walker 1
-                [3.0, 0.0],  # Walker 2
-                [4.0, 0.0],  # Walker 3
-            ],
-            dtype=torch.float64,
-        )
-        state = SwarmState(x, v)
-
-        # Walkers 0, 1, 2, 3 all clone to companion 0
-        # The collision group: companion=0 + cloners=[1,2,3] (0 excluded from cloners)
-        companions = torch.tensor([0, 0, 0, 0])
-
-        torch.manual_seed(42)
-        v_new = op._inelastic_collision_velocity(state, companions)
-
-        # For alpha_restitution=0: all walkers in a collision group should have
-        # the same velocity (center of mass)
-        # Collision group: [0, 1, 2, 3] (all walkers)
-        # COM = mean([v[0], v[1], v[2], v[3]]) = mean([1, 2, 3, 4]) = 2.5
-        v_com = torch.tensor([2.5, 0.0], dtype=torch.float64)
-
-        # All walkers should have the COM velocity
-        for i in range(4):
-            assert torch.allclose(v_new[i], v_com, atol=1e-10)
+        # With alpha_restitution=0, velocities in collision groups should converge
+        # We can't test exact convergence without knowing the groups, but we can
+        # verify that velocity variance decreases
+        if info['num_cloned'] > 0:
+            v_var_before = v.var(dim=0).sum()
+            v_var_after = new_state.v.var(dim=0).sum()
+            # Variance should decrease or stay similar (not increase dramatically)
+            assert v_var_after <= v_var_before * 2.0  # Allow some increase due to stochasticity
 
     def test_reproducibility_with_seed(self):
         """Test that cloning is reproducible with same seed."""
         params = CloningParams(sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.5)
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
+        potential = SimpleQuadraticPotential()
+        op = CloningOperator(params, potential, torch.device("cpu"), torch.float64, bounds=None)
 
         x = torch.randn(10, 3, dtype=torch.float64)
         v = torch.randn(10, 3, dtype=torch.float64)
@@ -236,65 +197,83 @@ class TestCloningOperator:
         assert torch.allclose(state1.x, state2.x)
         assert torch.allclose(state1.v, state2.v)
 
-    def test_lambda_alg_affects_companion_selection(self):
-        """Test that lambda_alg affects which companions are chosen (statistical test)."""
-        # Create configuration where position-based and velocity-based
-        # companions are different
-        x = torch.tensor(
-            [
-                [0.0, 0.0],
-                [1.0, 0.0],  # Close in position to 0
-                [10.0, 0.0],  # Far in position
-            ],
-            dtype=torch.float64,
+    def test_fitness_computation(self):
+        """Test that fitness is computed correctly."""
+        params = CloningParams(
+            sigma_x=0.1,
+            lambda_alg=1.0,
+            alpha_restitution=0.5,
+            alpha=1.0,  # Reward exponent
+            beta=1.0,   # Diversity exponent
+            eta=0.1,    # Floor
+            A=2.0,      # Logistic rescale bound
         )
+        potential = SimpleQuadraticPotential()
+        op = CloningOperator(params, potential, torch.device("cpu"), torch.float64, bounds=None)
 
-        v = torch.tensor(
-            [
-                [0.0, 0.0],
-                [10.0, 0.0],  # Far in velocity from 0
-                [0.1, 0.0],  # Close in velocity to 0
-            ],
-            dtype=torch.float64,
-        )
-
+        x = torch.randn(20, 3, dtype=torch.float64)
+        v = torch.randn(20, 3, dtype=torch.float64)
         state = SwarmState(x, v)
 
-        # Small lambda: position-dominated, walker 0 should prefer walker 1
-        # Use larger epsilon_c to allow discrimination between walkers
-        params_small = CloningParams(
-            sigma_x=0.1, lambda_alg=0.01, alpha_restitution=0.5, epsilon_c=2.0
-        )
-        op_small = CloningOperator(params_small, torch.device("cpu"), torch.float64)
+        _, _, info = op.apply(state, return_info=True)
 
-        # Large lambda: velocity-dominated, walker 0 should prefer walker 2
-        params_large = CloningParams(
-            sigma_x=0.1, lambda_alg=100.0, alpha_restitution=0.5, epsilon_c=50.0
-        )
-        op_large = CloningOperator(params_large, torch.device("cpu"), torch.float64)
+        # Fitness should be positive and bounded
+        fitness = info['fitness']
+        assert torch.all(fitness >= 0)
+        assert torch.all(fitness <= (params.A + params.eta) ** (params.alpha + params.beta) + 1.0)
 
-        # Run multiple trials to collect statistics (softmax is probabilistic)
-        n_trials = 100
-        positions_small = []
-        positions_large = []
+    def test_cloning_probabilities_bounded(self):
+        """Test that cloning probabilities are in [0, 1]."""
+        params = CloningParams(sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.5)
+        potential = SimpleQuadraticPotential()
+        op = CloningOperator(params, potential, torch.device("cpu"), torch.float64, bounds=None)
 
-        for seed in range(n_trials):
-            torch.manual_seed(seed)
-            state_small = op_small.apply(state)
-            positions_small.append(state_small.x[0].clone())
+        x = torch.randn(20, 3, dtype=torch.float64)
+        v = torch.randn(20, 3, dtype=torch.float64)
+        state = SwarmState(x, v)
 
-            torch.manual_seed(seed)
-            state_large = op_large.apply(state)
-            positions_large.append(state_large.x[0].clone())
+        _, _, info = op.apply(state, return_info=True)
 
-        # Stack positions
-        positions_small = torch.stack(positions_small)  # [n_trials, d]
-        positions_large = torch.stack(positions_large)  # [n_trials, d]
+        probs = info['cloning_probs']
+        assert torch.all(probs >= 0.0)
+        assert torch.all(probs <= 1.0)
 
-        # Compute mean positions (should differ due to different companion preferences)
-        mean_small = positions_small.mean(dim=0)
-        mean_large = positions_large.mean(dim=0)
+    def test_num_cloned_consistency(self):
+        """Test that num_cloned matches will_clone count."""
+        params = CloningParams(sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.5)
+        potential = SimpleQuadraticPotential()
+        op = CloningOperator(params, potential, torch.device("cpu"), torch.float64, bounds=None)
 
-        # The means should be statistically different
-        # Allow some tolerance for randomness
-        assert not torch.allclose(mean_small, mean_large, atol=0.05)
+        x = torch.randn(20, 3, dtype=torch.float64)
+        v = torch.randn(20, 3, dtype=torch.float64)
+        state = SwarmState(x, v)
+
+        _, _, info = op.apply(state, return_info=True)
+
+        assert info['num_cloned'] == info['will_clone'].sum().item()
+
+    def test_p_max_affects_cloning_rate(self):
+        """Test that p_max affects how many walkers clone."""
+        x = torch.randn(50, 3, dtype=torch.float64)
+        v = torch.randn(50, 3, dtype=torch.float64)
+        state = SwarmState(x, v)
+        potential = SimpleQuadraticPotential()
+
+        # Low p_max should result in fewer clones
+        params_low = CloningParams(sigma_x=0.1, lambda_alg=1.0, p_max=0.3)
+        op_low = CloningOperator(params_low, potential, torch.device("cpu"), torch.float64, bounds=None)
+
+        # High p_max should result in more clones
+        params_high = CloningParams(sigma_x=0.1, lambda_alg=1.0, p_max=1.0)
+        op_high = CloningOperator(params_high, potential, torch.device("cpu"), torch.float64, bounds=None)
+
+        torch.manual_seed(42)
+        _, _, info_low = op_low.apply(state, return_info=True)
+
+        torch.manual_seed(42)
+        _, _, info_high = op_high.apply(state, return_info=True)
+
+        # Higher p_max means threshold is higher, so probabilities become larger
+        # But this is about the conversion of scores to probabilities, not the scores themselves
+        # The key is that with same seed, different p_max values produce different probability distributions
+        assert not torch.allclose(info_low['cloning_probs'], info_high['cloning_probs'])

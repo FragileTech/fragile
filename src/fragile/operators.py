@@ -371,3 +371,110 @@ def clone_position(
     x_new[cloner_indices] = companion_positions + sigma_x * zeta
 
     return x_new
+
+
+def clone_walkers(
+    positions: Tensor,
+    velocities: Tensor,
+    fitness: Tensor,
+    companions: Tensor,
+    alive: Tensor,
+    p_max: float = 1.0,
+    epsilon_clone: float = 0.01,
+    sigma_x: float = 0.1,
+    alpha_restitution: float = 0.5,
+) -> tuple[Tensor, Tensor, Tensor, dict]:
+    """Execute complete cloning operator Ψ_clone.
+
+    Implements the full cloning pipeline from Chapter 9 of 03_cloning.md:
+    1. Compute cloning scores: S_i = (V_c - V_i) / (V_i + ε)
+    2. Convert scores to probabilities: π(S) = clip(S / p_max, 0, 1)
+    3. Make stochastic cloning decisions
+    4. Update positions: x'_i = x_c + σ_x ζ_i^x for cloners
+    5. Update velocities: inelastic collision model
+
+    Reference: Chapter 9, Sections 9.3-9.4 in 03_cloning.md
+
+    Args:
+        positions: Walker positions [N, d]
+        velocities: Walker velocities [N, d]
+        fitness: Fitness potential values [N] from compute_fitness
+        companions: Companion indices [N] from compute_fitness
+        alive: Boolean mask [N], True for alive walkers
+        p_max: Maximum cloning probability threshold (default: 1.0)
+        epsilon_clone: Regularization for cloning score (default: 0.01)
+        sigma_x: Position jitter scale (default: 0.1)
+        alpha_restitution: Velocity restitution coefficient (default: 0.5)
+
+    Returns:
+        positions_new: Updated positions [N, d]
+        velocities_new: Updated velocities [N, d]
+        alive_new: All walkers alive after cloning [N] (all True)
+        info: Dictionary with intermediate results:
+            - 'cloning_scores': Cloning scores [N]
+            - 'cloning_probs': Cloning probabilities [N]
+            - 'will_clone': Boolean mask [N] of walkers that cloned
+            - 'num_cloned': Number of walkers that cloned
+            - 'companions': Companion indices [N] (same as input)
+
+    Note:
+        - Dead walkers (alive=False) should have fitness=0, giving them maximum
+          cloning pressure to be revived
+        - All output walkers have alive_new=True (intermediate all-alive state)
+        - Positions updated before velocities to maintain proper state
+        - Momentum conserved within each collision group
+    """
+    N = positions.shape[0]
+    device = positions.device
+
+    # Dead walkers should always clone (they need to be revived)
+    # They should have fitness=0 from compute_fitness, which gives maximum score
+    # But we enforce it explicitly here for robustness
+
+    # Step 1: Compute cloning scores for all walkers
+    # S_i = (V_fit,c_i - V_fit,i) / (V_fit,i + ε_clone)
+    companion_fitness = fitness[companions]
+    cloning_scores = compute_cloning_score(
+        fitness, companion_fitness, epsilon_clone=epsilon_clone
+    )
+
+    # Dead walkers get maximum positive score to guarantee cloning
+    if not alive.all():
+        cloning_scores = torch.where(
+            alive, cloning_scores, torch.tensor(float('inf'), device=device)
+        )
+
+    # Step 2: Convert scores to probabilities via clipping function
+    # π(S) = min(1, max(0, S / p_max))
+    cloning_probs = compute_cloning_probability(cloning_scores, p_max=p_max)
+
+    # Step 3: Make stochastic cloning decisions
+    # Sample uniform thresholds and compare to probabilities
+    thresholds = torch.rand(N, device=device)
+    will_clone = cloning_probs > thresholds
+
+    # Step 4: Update positions with Gaussian jitter
+    # x'_i = x_c + σ_x ζ_i^x for cloners
+    positions_new = clone_position(
+        positions, companions, will_clone, sigma_x=sigma_x
+    )
+
+    # Step 5: Update velocities via inelastic collision
+    # Conserves momentum within each collision group
+    velocities_new = inelastic_collision_velocity(
+        velocities, companions, will_clone, alpha_restitution=alpha_restitution
+    )
+
+    # Step 6: All walkers are alive in intermediate state
+    alive_new = torch.ones_like(alive)
+
+    # Collect intermediate results for analysis
+    info = {
+        'cloning_scores': cloning_scores,
+        'cloning_probs': cloning_probs,
+        'will_clone': will_clone,
+        'num_cloned': will_clone.sum().item(),
+        'companions': companions,
+    }
+
+    return positions_new, velocities_new, alive_new, info

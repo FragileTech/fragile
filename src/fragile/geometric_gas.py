@@ -23,14 +23,19 @@ import torch
 from torch import Tensor
 
 from fragile.bounds import TorchBounds
+from fragile.companion_selection import CompanionSelection
 from fragile.euclidean_gas import (
-    CloningOperator,
     CloningParams,
     EuclideanGasParams,
     KineticOperator,
     LangevinParams,
     PotentialParams,
     SwarmState,
+)
+from fragile.fractal_set import FractalSet
+from fragile.operators import (
+    clone_walkers,
+    compute_fitness,
 )
 
 
@@ -538,13 +543,13 @@ class AdaptiveKineticOperator(KineticOperator):
         )  # [k, d]
 
         # First B step: v � v - (�t/2) * [U(x) - F_adapt - F_viscous]
-        x_alive.requires_grad_(True)
-        U = self.potential.evaluate(x_alive)  # [k]
-        grad_U = torch.autograd.grad(U.sum(), x_alive, create_graph=False)[0]  # [k, d]
-        v_alive -= self.dt / 2 * (grad_U - F_adapt - F_viscous)
+        x_temp = x_alive.detach().clone().requires_grad_(True)
+        U = self.potential.evaluate(x_temp)  # [k]
+        grad_U = torch.autograd.grad(U.sum(), x_temp, create_graph=False)[0]  # [k, d]
+        v_alive = v_alive - self.dt / 2 * (grad_U - F_adapt - F_viscous)
 
         # First A step: x -> x + (dt/2) * v
-        x_alive += self.dt / 2 * v_alive
+        x_alive = x_alive + self.dt / 2 * v_alive
 
         # O step with adaptive diffusion
         if self.adaptive_params.epsilon_Sigma > 0 and self.adaptive_params.epsilon_F > 0:
@@ -564,7 +569,7 @@ class AdaptiveKineticOperator(KineticOperator):
             v_alive = self.c1 * v_alive + self.c2 * xi
 
         # Second A step: x � x + (�t/2) * v
-        x_alive += self.dt / 2 * v_alive
+        x_alive = x_alive + self.dt / 2 * v_alive
 
         # Second B step: v � v - (�t/2) * [U(x) - F_adapt - F_viscous]
         # Recompute forces at new positions
@@ -580,7 +585,7 @@ class AdaptiveKineticOperator(KineticOperator):
         x_temp = x_alive.detach().clone().requires_grad_(True)
         U = self.potential.evaluate(x_temp)
         grad_U = torch.autograd.grad(U.sum(), x_temp, create_graph=False)[0]
-        v_alive -= self.dt / 2 * (grad_U - F_adapt - F_viscous)
+        v_alive = v_alive - self.dt / 2 * (grad_U - F_adapt - F_viscous)
 
         # Update state with new alive walker values
         new_x = state.x.clone()
@@ -645,10 +650,8 @@ class GeometricGas:
             self.dtype,
         )
 
-        # Initialize cloning operator (with boundary enforcement)
-        self.cloning_op = CloningOperator(
-            params.cloning, self.device, self.dtype, bounds=self.bounds
-        )
+        # Store cloning parameters (cloning is done via operators.py functions)
+        self.cloning_params = params.cloning
 
     def initialize_state(
         self, x_init: Tensor | None = None, v_init: Tensor | None = None
@@ -703,16 +706,28 @@ class GeometricGas:
         return mask
 
     def step(
-        self, state: SwarmState, alive_mask: Tensor | None = None
-    ) -> tuple[SwarmState, SwarmState]:
-        """Perform one full step: cloning followed by adaptive kinetic.
+        self, state: SwarmState, alive_mask: Tensor | None = None, return_info: bool = False
+    ) -> tuple[SwarmState, SwarmState] | tuple[SwarmState, SwarmState, dict]:
+        """Perform one full step: compute fitness, clone, then adaptive kinetic.
+
+        Uses operators.py functions directly to compute:
+        1. Rewards from potential
+        2. Fitness using compute_fitness (but with geometric measurements)
+        3. Cloning using clone_walkers
+        4. Adaptive kinetic update
 
         Args:
             state: Current swarm state
             alive_mask: Boolean mask for alive walkers [N] (optional)
+            return_info: If True, return full cloning info dictionary
 
         Returns:
-            Tuple of (state_after_cloning, state_after_kinetic)
+            Tuple of (state_after_cloning, state_after_kinetic), or
+            (state_after_cloning, state_after_kinetic, info) if return_info=True
+
+        Note:
+            The info dict contains: fitness, distances, companions, rewards,
+            cloning_scores, cloning_probs, will_clone, num_cloned
         """
         # Determine alive mask
         if alive_mask is None:
@@ -725,18 +740,101 @@ class GeometricGas:
         freeze_mask = self._freeze_mask(state)
         reference_state = state.clone() if freeze_mask is not None else None
 
-        # Apply cloning operator (handles boundary enforcement and resurrection)
-        state_cloned = self.cloning_op.apply(state)
+        # Step 1: Compute rewards from potential
+        rewards = -self.params.potential.evaluate(state.x)  # [N]
 
+        # SAFETY: If all walkers are dead, revive all within bounds
+        if alive_mask.sum().item() == 0:
+            if self.bounds is not None:
+                low = self.bounds.low.to(device=self.device, dtype=self.dtype)
+                high = self.bounds.high.to(device=self.device, dtype=self.dtype)
+                x_new = low + (high - low) * torch.rand(
+                    state.N, state.d, device=self.device, dtype=self.dtype
+                )
+                v_new = torch.randn(state.N, state.d, device=self.device, dtype=self.dtype) * 0.1
+                state_cloned = SwarmState(x_new, v_new)
+                state_final = self.kinetic_op.apply(state_cloned, alive_mask)
+
+                if return_info:
+                    # Return minimal info for resurrection case
+                    info = {
+                        'fitness': torch.zeros(state.N, device=self.device),
+                        'rewards': rewards,
+                        'distances': torch.zeros(state.N, device=self.device),
+                        'companions': torch.arange(state.N, device=self.device),
+                        'cloning_scores': torch.zeros(state.N, device=self.device),
+                        'cloning_probs': torch.ones(state.N, device=self.device),
+                        'will_clone': torch.ones(state.N, dtype=torch.bool, device=self.device),
+                        'num_cloned': state.N,
+                    }
+                    return state_cloned, state_final, info
+                return state_cloned, state_final
+            alive_mask = torch.ones(state.N, dtype=torch.bool, device=self.device)
+
+        # Step 2: Compute fitness using geometric fitness potential
+        # Note: GeometricGas uses its own fitness evaluation via FitnessPotential
+        # We still need to select companions and compute distances for cloning
+        # So we use compute_fitness but will override the fitness values with geometric ones
+
+        fitness_euclidean, distances, companions = compute_fitness(
+            positions=state.x,
+            velocities=state.v,
+            rewards=rewards,
+            alive=alive_mask,
+            companion_selection=self.cloning_params.companion_selection,
+            alpha=self.cloning_params.alpha,
+            beta=self.cloning_params.beta,
+            eta=self.cloning_params.eta,
+            lambda_alg=self.cloning_params.lambda_alg,
+            sigma_min=self.cloning_params.sigma_min,
+            A=self.cloning_params.A,
+        )
+
+        # Override with geometric fitness if alive
+        if alive_mask.any():
+            x_alive = state.x[alive_mask]
+            fitness_geometric = torch.zeros(state.N, device=self.device, dtype=self.dtype)
+            fitness_geometric[alive_mask] = self.fitness_potential.evaluate(
+                x_alive, x_alive, alive_mask
+            )
+            fitness = fitness_geometric
+        else:
+            fitness = fitness_euclidean
+
+        # Step 3: Execute cloning using operators.py
+        x_cloned, v_cloned, _, clone_info = clone_walkers(
+            positions=state.x,
+            velocities=state.v,
+            fitness=fitness,
+            companions=companions,
+            alive=alive_mask,
+            p_max=self.cloning_params.p_max,
+            epsilon_clone=self.cloning_params.epsilon_clone,
+            sigma_x=self.cloning_params.sigma_x,
+            alpha_restitution=self.cloning_params.alpha_restitution,
+        )
+
+        state_cloned = SwarmState(x_cloned, v_cloned)
+
+        # Apply freeze mask if needed
         if freeze_mask is not None and freeze_mask.any():
             state_cloned.copy_from(reference_state, freeze_mask)
 
-        # Apply adaptive kinetic operator
+        # Step 4: Adaptive kinetic update
         state_final = self.kinetic_op.apply(state_cloned, alive_mask)
-
         if freeze_mask is not None and freeze_mask.any():
             state_final.copy_from(reference_state, freeze_mask)
 
+        if return_info:
+            # Combine all computed data into info dict
+            info = {
+                'fitness': fitness,
+                'rewards': rewards,
+                'distances': distances,
+                'companions': companions,
+                **clone_info,  # Adds: cloning_scores, cloning_probs, will_clone, num_cloned
+            }
+            return state_cloned, state_final, info
         return state_cloned, state_final
 
     def run(
@@ -786,12 +884,51 @@ class GeometricGas:
 
         # Record initial state in FractalSet if provided
         if fractal_set is not None:
+            # For initial state, we need to compute info if record_fitness is True
+            if record_fitness:
+                # Compute rewards and fitness for initial state
+                rewards = -self.params.potential.evaluate(state.x)
+
+                # For GeometricGas, compute geometric fitness
+                if alive_mask.any():
+                    fitness_vals = torch.zeros(N, device=self.device, dtype=self.dtype)
+                    fitness_vals[alive_mask] = self.fitness_potential.evaluate(
+                        state.x[alive_mask], state.x[alive_mask], alive_mask
+                    )
+                    fitness = fitness_vals
+                else:
+                    fitness = torch.zeros(N, device=self.device, dtype=self.dtype)
+
+                # Get companions and distances
+                _, distances, companions = compute_fitness(
+                    positions=state.x,
+                    velocities=state.v,
+                    rewards=rewards,
+                    alive=alive_mask,
+                    companion_selection=self.cloning_params.companion_selection,
+                    alpha=self.cloning_params.alpha,
+                    beta=self.cloning_params.beta,
+                    eta=self.cloning_params.eta,
+                    lambda_alg=self.cloning_params.lambda_alg,
+                    sigma_min=self.cloning_params.sigma_min,
+                    A=self.cloning_params.A,
+                )
+                initial_info = {
+                    'fitness': fitness,
+                    'rewards': rewards,
+                    'distances': distances,
+                    'companions': companions,
+                }
+            else:
+                initial_info = None
+
             self._record_fractal_set_timestep(
                 fractal_set=fractal_set,
                 state=state,
                 timestep=0,
                 alive_mask=alive_mask,
                 record_fitness=record_fitness,
+                info=initial_info,
             )
 
         # Run steps
@@ -801,16 +938,24 @@ class GeometricGas:
                 alive_mask = self.bounds.contains(state.x)
                 if not alive_mask.any():
                     # All walkers dead, stop early
-                    return {
+                    result = {
                         "x": x_traj[: t + 1],
                         "v": v_traj[: t + 1],
                         "fitness": fitness_traj[: t + 1],
                         "terminated_early": True,
                         "final_step": t,
                     }
+                    if fractal_set is not None:
+                        result["fractal_set"] = fractal_set
+                    return result
 
-            # Perform step
-            _, state = self.step(state, alive_mask)
+            # Perform step with return_info if we need to record fitness or fractal set
+            need_info = fractal_set is not None and record_fitness
+            if need_info:
+                _, state, info = self.step(state, alive_mask, return_info=True)
+            else:
+                _, state = self.step(state, alive_mask, return_info=False)
+                info = None
 
             # Store new state
             x_traj[t + 1] = state.x
@@ -830,6 +975,7 @@ class GeometricGas:
                     timestep=t + 1,
                     alive_mask=alive_mask,
                     record_fitness=record_fitness,
+                    info=info,  # Pass pre-computed info
                 )
 
         result = {
@@ -853,16 +999,19 @@ class GeometricGas:
         timestep: int,
         alive_mask: Tensor,
         record_fitness: bool,
+        info: dict | None = None,
     ) -> None:
         """
-        Record current timestep data into FractalSet.
+        Record current timestep data into FractalSet using pre-computed info.
 
         Args:
             fractal_set: FractalSet instance to record into
             state: Current swarm state
             timestep: Current timestep index
             alive_mask: Boolean mask of alive walkers [N]
-            record_fitness: Whether to compute and record fitness metrics
+            record_fitness: Whether to record fitness metrics
+            info: Pre-computed info dict from step() containing fitness, rewards, etc.
+                  If None and record_fitness=True, will compute on the fly.
         """
         # Compute high-error mask based on positional error
         mu_x = torch.mean(state.x, dim=0, keepdim=True)
@@ -870,45 +1019,87 @@ class GeometricGas:
         threshold = torch.median(positional_error)
         high_error_mask = positional_error > threshold
 
-        # Compute fitness-related metrics if requested
+        # Use pre-computed fitness metrics if available
         if record_fitness:
-            # Potential and reward
-            potential = self.params.potential.evaluate(state.x)
-            reward = -potential
+            if info is not None:
+                # Use pre-computed values from step()
+                fitness = info['fitness']
+                reward = info['rewards']
+                companions = info['companions']
+                distances = info['distances']
+                potential = -reward  # Reverse the sign
 
-            # For GeometricGas, fitness is computed via localized fitness potential
-            # Compute fitness for alive walkers
-            if alive_mask.any():
-                fitness_vals = torch.zeros(state.N, device=self.device, dtype=self.dtype)
-                fitness_vals[alive_mask] = self.fitness_potential.evaluate(
-                    state.x[alive_mask], state.x[alive_mask], alive_mask
+                # Compute cloning scores and probabilities from fitness
+                from fragile.operators import compute_cloning_probability, compute_cloning_score
+
+                companion_fitness = fitness[companions]
+                cloning_scores = compute_cloning_score(
+                    fitness, companion_fitness, epsilon_clone=self.cloning_params.epsilon_clone
                 )
-                fitness = fitness_vals
+                cloning_probs = compute_cloning_probability(
+                    cloning_scores, p_max=self.cloning_params.p_max
+                )
             else:
-                fitness = torch.zeros(state.N, device=self.device, dtype=self.dtype)
+                # Fallback: compute if not provided (e.g., for initial state)
+                potential = self.params.potential.evaluate(state.x)
+                reward = -potential
 
-            # Note: GeometricGas doesn't use cloning in the same way as EuclideanGas
-            # So we don't compute companions, distances, and cloning_probs
-            companions = None
-            distances = None
-            cloning_probs = None
+                # For GeometricGas, fitness is computed via localized fitness potential
+                if alive_mask.any():
+                    fitness_vals = torch.zeros(state.N, device=self.device, dtype=self.dtype)
+                    fitness_vals[alive_mask] = self.fitness_potential.evaluate(
+                        state.x[alive_mask], state.x[alive_mask], alive_mask
+                    )
+                    fitness = fitness_vals
+                else:
+                    fitness = torch.zeros(state.N, device=self.device, dtype=self.dtype)
 
-            # Compute rescaled reward (normalized by mean)
-            reward_mean = reward.mean()
-            reward_std = reward.std() + 1e-8
-            rescaled_reward = (reward - reward_mean) / reward_std
+                # Use compute_fitness to get companions and distances
+                _, distances, companions = compute_fitness(
+                    positions=state.x,
+                    velocities=state.v,
+                    rewards=reward,
+                    alive=alive_mask,
+                    companion_selection=self.cloning_params.companion_selection,
+                    alpha=self.cloning_params.alpha,
+                    beta=self.cloning_params.beta,
+                    eta=self.cloning_params.eta,
+                    lambda_alg=self.cloning_params.lambda_alg,
+                    sigma_min=self.cloning_params.sigma_min,
+                    A=self.cloning_params.A,
+                )
 
-            # GeometricGas doesn't use algorithmic distance, so rescaled_distance is None
-            rescaled_distance = None
+                # Compute cloning scores and probabilities
+                from fragile.operators import compute_cloning_probability, compute_cloning_score
 
-            # No cloning uniform sample for GeometricGas
-            clone_uniform_sample = None
+                companion_fitness = fitness[companions]
+                cloning_scores = compute_cloning_score(
+                    fitness, companion_fitness, epsilon_clone=self.cloning_params.epsilon_clone
+                )
+                cloning_probs = compute_cloning_probability(
+                    cloning_scores, p_max=self.cloning_params.p_max
+                )
+
+            # Compute rescaled reward using patched standardization
+            from fragile.operators import patched_standardization
+
+            rescaled_reward = patched_standardization(
+                reward, alive_mask, sigma_min=self.cloning_params.sigma_min
+            )
+
+            # Compute rescaled distance using patched standardization
+            rescaled_distance = patched_standardization(
+                distances, alive_mask, sigma_min=self.cloning_params.sigma_min
+            )
+
+            # Generate uniform random samples for cloning decisions
+            clone_uniform_sample = torch.rand(state.N, device=self.device, dtype=self.dtype)
         else:
             potential = None
             reward = None
-            fitness = None
             companions = None
             distances = None
+            fitness = None
             cloning_probs = None
             rescaled_reward = None
             rescaled_distance = None
