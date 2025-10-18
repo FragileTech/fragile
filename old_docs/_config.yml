@@ -10,7 +10,7 @@ author                      : "Guillem Duran Ballester"  # The author of the boo
 copyright                   : "2025"  # Copyright year to be placed in the footer
 logo                        : "logo.png"  # A path to the book logo
 # Patterns to skip when building the book. Can be glob-style (e.g. "*skip.ipynb")
-exclude_patterns            : [_build, Thumbs.db, .DS_Store, "**.ipynb_checkpoints", "**/empty.md", "**/2_neural_nets", "**/4_riemanian_gas", "**/5_relativistic_gas", "**/agent_output"]
+exclude_patterns            : [_build, Thumbs.db, .DS_Store, "**.ipynb_checkpoints", "**/empty.md", "**/2_neural_nets", "**/4_riemanian_gas", "**/5_relativistic_gas"]
 # Auto-exclude files not in the toc
 only_build_toc_files        : false
 
@@ -107,6 +107,7 @@ sphinx:
     - sphinx.ext.coverage
     - sphinx.ext.viewcode
     - sphinx.ext.napoleon
+    - sphinx.ext.autosectionlabel
     - sphinx.ext.autodoc.typehints
     - sphinx.ext.githubpages
     - sphinxcontrib.mermaid
@@ -131,16 +132,16 @@ sphinx:
       use_download_button     : true
       use_fullscreen_button   : true
       use_repository_button   : false
+    autosectionlabel_prefix_document : true
     myst_heading_anchors      : 3
     suppress_warnings         :
+      - "autosectionlabel.*"
       - "myst.header"
       - "myst.directive_unknown"
       - "myst.directive_parse"
       - "toc.not_readable"
       - "toc.circular"
-      - "etoc.toctree"
-      - "ref.myst"
-      - "duplicate"
+      - "document isn't included in any toctree"
     mathjax_path: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
     mathjax3_config:
       tex:
@@ -153,7 +154,7 @@ sphinx:
     html_static_path          : ["_static"]
     html_css_files            : ["custom.css"]
     # Bibliography configuration
-    bibtex_bibfiles           : ["references.bib"]
+    bibtex_bibfiles           : ["source/references.bib"]
     bibtex_reference_style    : "author_year"
     # Enable figure, table, and equation numbering
 #    numfig: true

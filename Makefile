@@ -1,4 +1,4 @@
-.PHONY: help install sync clean test cov no-cov doctest debug style check lint typing build-docs serve-docs docs sphinx all
+.PHONY: help install sync clean clean-docs test cov no-cov doctest debug style check lint typing build-docs serve-docs docs sphinx pdf all
 
 # Default target - show help
 help:
@@ -8,6 +8,7 @@ help:
 	@echo "  make install      - Install project with dependencies using uv"
 	@echo "  make sync         - Sync dependencies"
 	@echo "  make clean        - Clean build artifacts and caches"
+	@echo "  make clean-docs   - Clean documentation build artifacts"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test         - Run tests"
@@ -23,10 +24,11 @@ help:
 	@echo "  make lint         - Run all lint checks (style + check + typing)"
 	@echo ""
 	@echo "Documentation:"
-	@echo "  make build-docs   - Build Jupyter Book documentation"
+	@echo "  make build-docs   - Build Jupyter Book documentation (auto-converts mermaid blocks)"
 	@echo "  make serve-docs   - Serve documentation (after building)"
 	@echo "  make docs         - Build and serve documentation"
 	@echo "  make sphinx       - Build with Sphinx directly"
+	@echo "  make pdf          - Build PDF documentation (requires LaTeX)"
 	@echo ""
 	@echo "Complete Workflow:"
 	@echo "  make all          - Run lint, build docs, and test"
@@ -42,6 +44,9 @@ clean:
 	rm -rf build/ dist/ *.egg-info .pytest_cache .ruff_cache .mypy_cache
 	find . -type d -name __pycache__ -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
+
+clean-docs:
+	rm -rf docs/_build
 
 # Testing commands
 test:
@@ -84,6 +89,10 @@ docs:
 
 sphinx:
 	uv run hatch run docs:sphinx
+
+pdf:
+	uv run hatch run docs:pdf
+	@echo "✓ PDF generated at docs/_build/latex/book.pdf"
 
 # Complete workflow
 all: lint build-docs test

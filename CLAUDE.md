@@ -41,16 +41,13 @@ All parameters use Pydantic models with validation:
 
 The `docs/source/` directory contains rigorous mathematical specifications organized in two ways:
 
-**1. Comprehensive Mathematical Reference:**
-- **`00_index.md`** - Compressed index of all 677 mathematical entries (quick navigation)
+**1. Mathematical Glossary:**
+- **`docs/glossary.md`** - Comprehensive glossary of all 683 mathematical entries (quick navigation)
   - **Use this first** when you need to find definitions, theorems, or understand the framework
   - Provides: entry type, label, tags, and source document references
-  - Organized by topic with cross-references and tags for searchability
+  - Organized by document with cross-references for searchability
   - Fast lookup for navigating the framework structure
-- **`00_reference.md`** - Complete detailed reference of all mathematical results (5,789+ lines)
-  - Use this when you need full mathematical statements and detailed proofs
-  - Each entry includes: type, label, source, tags, complete mathematical statement, related results
-  - Covers 13+ framework documents: foundational axioms, cloning, kinetic operator, mean-field limits, KL-convergence, symmetries, gauge theory, fractal set theory
+  - Covers both Euclidean Gas (Chapter 1, 523 entries) and Geometric Gas (Chapter 2, 160 entries)
 
 **2. Detailed Framework Documents:**
 - `01_fragile_gas_framework.md` - Core axioms and foundational definitions
@@ -68,9 +65,9 @@ The `docs/source/` directory contains rigorous mathematical specifications organ
 - `13_fractal_set/` - Discrete spacetime and lattice QFT
 
 **Workflow:**
-1. **For quick lookup**: Use `00_index.md` to find definitions, theorems, constants by tags/labels
-2. **For detailed statements**: Use `00_reference.md` for full mathematical proofs and statements
-3. **For deep understanding**: Read the full framework documents
+1. **For quick lookup**: Use `docs/glossary.md` to find definitions, theorems, constants by tags/labels
+2. **For detailed statements**: Read the source documents directly (they contain full proofs)
+3. **For deep understanding**: Read the full framework documents from beginning to end
 4. **For implementation**: Code mirrors mathematical notation from these documents
 
 ### Visualization and Analysis
@@ -93,10 +90,15 @@ The `docs/source/` directory contains rigorous mathematical specifications organ
 ### Tools and Utilities
 
 - `src/tools/` - Markdown processing tools for mathematical documentation
-  - Scripts to convert Unicode math to LaTeX
-  - Format LaTeX blocks in markdown
-  - Fix complex subscript notation
-  - These tools process the markdown documentation files
+  - `convert_unicode_math.py` - Convert Unicode math to LaTeX
+  - `convert_backticks_to_math.py` - Convert backticks to dollar signs
+  - `fix_math_formatting.py` - Fix LaTeX block spacing
+  - `format_math_blocks.py` - Comprehensive formatting fixes
+  - `fix_complex_subscripts.py` - Handle complex subscript notation
+  - `convert_mermaid_blocks.py` - Convert ````mermaid` to `:::mermaid` for Jupyter Book
+    - Automatically runs during `make build-docs`
+    - Allows editing with GitHub-flavored markdown (````mermaid`) in VSCode
+    - Converts to Jupyter Book MyST directive format (`:::mermaid`) at build time
 
 ## Development Commands
 
@@ -140,7 +142,7 @@ make lint
 
 ### Documentation
 ```bash
-# Build Jupyter Book documentation
+# Build Jupyter Book documentation (auto-converts ```mermaid to :::mermaid)
 make build-docs
 
 # Build and serve documentation
@@ -151,6 +153,9 @@ make serve-docs
 
 # Build with Sphinx directly
 make sphinx
+
+# Manually convert mermaid blocks (usually not needed)
+python src/tools/convert_mermaid_blocks.py docs/source --in-place
 ```
 
 ### Setup and Maintenance
@@ -326,24 +331,24 @@ Always inform the user when you make changes to GEMINI.md and explain your reaso
 When writing or reviewing mathematical documentation, **you MUST follow this workflow**:
 
 #### Step 0: Consult the Mathematical Index (Prerequisite)
-**ALWAYS START HERE**: Before drafting or reviewing any mathematical content, consult `docs/source/00_index.md` to:
+**ALWAYS START HERE**: Before drafting or reviewing any mathematical content, consult `docs/glossary.md` to:
 - Check if related definitions, theorems, or lemmas already exist (search by tags/labels)
 - Understand how your work fits into the larger framework
 - Identify dependencies and cross-references
 - Navigate quickly to relevant source documents
 - Ensure consistency with established notation and conventions
-- For full mathematical statements, refer to `docs/source/00_reference.md` or the source documents
+- For full mathematical statements, refer to the source documents directly
 
 **Example workflow:**
-- Writing about LSI? → Search `00_index.md` for entries tagged with `kl-convergence` or `lsi`
+- Writing about LSI? → Search `docs/glossary.md` for entries tagged with `kl-convergence` or `lsi`
 - Working on cloning? → Search for tags like `cloning`, `measurement`, `fitness`
-- Adding a theorem? → Search for related results using labels and tags, then check full statements in `00_reference.md`
+- Adding a theorem? → Search for related results using labels and tags, then check full statements in source documents
 
 #### Step 1: Draft or Modify Content
-- Read relevant sections of existing documents (both framework docs and reference)
+- Read relevant sections of existing documents
 - Draft new content or modifications following the style requirements above
 - Ensure all mathematical notation is consistent with framework conventions
-- Add proper labels and cross-references to entries in `00_reference.md`
+- Add proper labels for cross-referencing (entries will be indexed in glossary)
 
 #### Step 2: Dual Independent Review via MCP (Gemini + Codex)
 **MANDATORY**: Before finalizing any mathematical content, submit it for review using BOTH independent reviewers:
@@ -357,7 +362,7 @@ When writing or reviewing mathematical documentation, **you MUST follow this wor
 - Run both reviews in parallel when possible (single message with two tool calls)
 - Always verify claims by checking against framework documents before accepting feedback
 
-**NOTE**: Gemini will automatically consult `00_index.md` (and `00_reference.md` when needed) as part of its review protocol (see GEMINI.md § 4).
+**NOTE**: Gemini will automatically consult `docs/glossary.md` as part of its review protocol (see GEMINI.md § 4).
 
 **Prompt Templates** (use identical prompt for both reviewers):
 - **Rigor check**: "Review this proof for mathematical rigor and completeness. Check all claims, verify logical steps, identify gaps, and assess whether the proof meets publication standards."
@@ -375,14 +380,14 @@ Each reviewer will provide:
 1. **Consensus Issues** (both reviewers agree): High confidence → prioritize these
 2. **Discrepancies** (reviewers contradict): Potential hallucination → verify manually against framework docs
 3. **Unique Issues** (only one reviewer identifies): Medium confidence → verify before accepting
-4. **Cross-Validation**: Always check specific claims against `00_index.md` and `00_reference.md` before implementing
+4. **Cross-Validation**: Always check specific claims against `docs/glossary.md` and source documents before implementing
 
 EXTREMELY IMPORTANT: ALWAYS USE GEMINI 2.5 PRO (never flash or other variants)
 
 #### Step 3: Critical Evaluation of Dual Feedback
 **IMPORTANT**: You must critically evaluate BOTH reviewers' feedback:
 - **Compare outputs**: Identify where reviewers agree (high confidence) vs. disagree (requires investigation)
-- **Cross-check suggestions** against existing framework definitions in `00_index.md` and `00_reference.md`
+- **Cross-check suggestions** against existing framework definitions in `docs/glossary.md` and source documents
 - **Verify mathematical correctness** of proposed fixes by checking proofs and definitions
 - **Assess preservation** of algorithmic intent and framework consistency
 - **Investigate discrepancies**: When reviewers contradict, manually verify against source documents
@@ -413,7 +418,7 @@ When you disagree with feedback from either reviewer (Gemini or Codex):
 
 **DO:**
 - Explain the mathematical reasoning behind your position with specific references
-- Reference specific framework axioms or established results from `00_index.md`/`00_reference.md`
+- Reference specific framework axioms or established results from `docs/glossary.md` and source documents
 - Verify your position by checking source documents before disagreeing
 - Propose alternative solutions that maintain rigor
 - Present all perspectives (yours, Gemini's, Codex's) to the user

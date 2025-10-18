@@ -1,0 +1,104 @@
+/* Custom CSS for FractalAI Documentation */
+
+/* Mathematical structure styling */
+.math-structure {
+    margin: 1.5em 0;
+    padding: 1em;
+    border-left: 4px solid;
+    background-color: #f8f9fa;
+}
+
+.math-structure-header {
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+.math-structure-label {
+    float: right;
+    font-size: 0.9em;
+    color: #6c757d;
+    font-family: monospace;
+}
+
+.math-structure-content {
+    margin-top: 0.5em;
+}
+
+/* Type-specific colors */
+.math-definition {
+    border-left-color: #007bff;
+}
+
+.math-theorem {
+    border-left-color: #e83e8c;
+}
+
+.math-algorithm {
+    border-left-color: #fd7e14;
+}
+
+.math-lemma {
+    border-left-color: #6f42c1;
+}
+
+.math-property {
+    border-left-color: #17a2b8;
+}
+
+.math-proof {
+    border-left-color: #28a745;
+}
+
+.math-proof-qed {
+    text-align: right;
+    font-weight: bold;
+    margin-top: 0.5em;
+}
+
+/* Science boxes */
+.science {
+    margin: 1.5em 0;
+    padding: 1em;
+    border-radius: 4px;
+    border-left: 4px solid;
+}
+
+.science.blue {
+    background-color: #e7f3ff;
+    border-left-color: #007bff;
+}
+
+.science.green {
+    background-color: #e7f9e7;
+    border-left-color: #28a745;
+}
+
+.science.orange {
+    background-color: #fff3e0;
+    border-left-color: #fd7e14;
+}
+
+.science.purple {
+    background-color: #f3e5f5;
+    border-left-color: #6f42c1;
+}
+
+.science-title {
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+.science-content {
+    margin-top: 0.5em;
+}
+
+/* Math display centering */
+.math-display {
+    text-align: center;
+    margin: 1em 0;
+}
+
+/* Table of contents styling */
+.tableofcontents {
+    margin: 2em 0;
+}

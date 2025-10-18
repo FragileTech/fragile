@@ -3,30 +3,68 @@
 
 format: jb-book
 root: index
-title: Volume I - Fractal Calculus
+title: Fragile Framework Documentation
 defaults:
   maxdepth: 3
   titlesonly: False
 
 parts:
-- caption: Chapters
+- caption: Part I - Euclidean Gas
   numbered: false
   chapters:
-  - file: source/01_fractal_gas_framework
-    title: Fractal Gas Framework
-  - file: source/02_euclidean_gas
+  - file: source/1_euclidean_gas/intro_euclidean_gas
+    title: Introduction
+  - file: source/1_euclidean_gas/01_fragile_gas_framework
+    title: Fragile Gas Framework
+  - file: source/1_euclidean_gas/02_euclidean_gas
     title: Euclidean Gas
-  - file: source/03_cloning
-    title: Cloning
-  - file: source/04_convergence
-    title: Convergence
-  - file: source/05_mean_field
-    title: Mean Field
-  - file: source/06_propagation_chaos
+  - file: source/1_euclidean_gas/03_cloning
+    title: Cloning Operator
+  - file: source/1_euclidean_gas/04_wasserstein_contraction
+    title: Wasserstein Contraction
+  - file: source/1_euclidean_gas/05_kinetic_contraction
+    title: Kinetic Contraction
+  - file: source/1_euclidean_gas/06_convergence
+    title: Convergence Analysis
+  - file: source/1_euclidean_gas/07_mean_field
+    title: Mean Field Limit
+  - file: source/1_euclidean_gas/08_propagation_chaos
     title: Propagation of Chaos
-  - file: source/07_adaptative_gas
-    title: Adaptive Gas
-  - file: source/08_fractal_set
-    title: The Fractal Set
-  - file: source/09_yang_mills
-    title: Yang-Mills from Episode Dynamics
+  - file: source/1_euclidean_gas/09_kl_convergence
+    title: KL Divergence Convergence
+  - file: source/1_euclidean_gas/10_qsd_exchangeability_theory
+    title: QSD Exchangeability Theory
+  - file: source/1_euclidean_gas/11_hk_convergence
+    title: Hellinger-Kantorovich Convergence
+  - file: source/1_euclidean_gas/12_quantitative_error_bounds
+    title: Quantitative Error Bounds
+
+- caption: Part II - Geometric Gas
+  numbered: false
+  chapters:
+  - file: source/2_geometric_gas/00_intro_geometric_gas
+    title: Introduction
+  - file: source/2_geometric_gas/11_geometric_gas
+    title: Geometric Gas Framework
+  - file: source/2_geometric_gas/12_symmetries_geometric_gas
+    title: Symmetries of Geometric Gas
+  - file: source/2_geometric_gas/13_geometric_gas_c3_regularity
+    title: C³ Regularity
+  - file: source/2_geometric_gas/14_geometric_gas_c4_regularity
+    title: C⁴ Regularity
+  - file: source/2_geometric_gas/15_geometric_gas_lsi_proof
+    title: LSI Proof for Geometric Gas
+  - file: source/2_geometric_gas/16_convergence_mean_field
+    title: Mean Field Convergence
+  - file: source/2_geometric_gas/17_qsd_exchangeability_geometric
+    title: QSD Exchangeability Theory
+  - file: source/2_geometric_gas/18_emergent_geometry
+    title: Emergent Geometry
+
+- caption: Reference
+  numbered: false
+  chapters:
+  - file: reference
+    title: Mathematical Reference
+  - file: glossary
+    title: Mathematical Glossary

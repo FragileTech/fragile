@@ -88,7 +88,7 @@ fragile = "fragile.__main__:run"
 docs = [
     "autoapi",
     "jupyter-book",
-    "sphinx",
+    "sphinx>=7.0.0",
     "linkify-it-py",
     "myst-parser",
     "myst-nb",
@@ -104,6 +104,10 @@ docs = [
     "sphinx-togglebutton",
     "sphinxext-opengraph",
     "sphinxcontrib-bibtex",
+    "sphinx-inline-tabs",
+    "sphinx-design",
+    "sphinx-proof",
+    "sphinx-math-dollar",
 ]
 [tool.hatch.metadata]
 # direct dependency references, e.g `pip @ git+https://github.com/pypa/pip.git@master`
@@ -403,7 +407,7 @@ N = "auto"
 # Docs environment
 [tool.hatch.envs.docs]
 description = "Build and serve documentation using Jupyter Book and Sphinx"
-python = "3.12"
+python = "3.10"
 features = ["docs"]
 [tool.hatch.envs.docs.env-vars]
 SOURCE_DATE_EPOCH = "1580601600"
@@ -411,11 +415,8 @@ PYTHONUNBUFFERED = "1"
 [tool.hatch.envs.docs.scripts]
 features = ["docs"]
 build = [
-    "cp AUTHORS.md docs/source/project/",
-    "cp CHANGELOG.md docs/source/project/",
-    "cp CONTRIBUTING.md docs/source/project/",
-    "cp README.md docs/source/project/",
-    "jupyter-book build docs/ ",
+    "python src/tools/convert_mermaid_blocks.py docs/source --in-place",
+    "jupyter-book build docs/",
     "uv pip freeze > docs/requirements.txt",
 ]
 validate = "linkchecker --config .linkcheckerrc --ignore-url=/reference --ignore-url=None site"
@@ -426,12 +427,15 @@ sphinx = [
     "sphinx-build -b html docs/ docs/_build/html",
     "uv pip freeze > docs/requirements.txt",
 ]
+pdf = [
+    "jupyter-book build docs/ --builder pdflatex",
+]
 docs = ["build", "serve"]
 # Lint environment
 [tool.hatch.envs.lint]
 description = "Run linting checks with ruff and mypy"
 template = "lint"  # don't inherit from default!
-python = "3.12"
+python = "3.10"
 skip-install = true
 [tool.hatch.envs.lint.scripts]
 typing = [

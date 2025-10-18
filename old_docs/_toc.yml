@@ -1,0 +1,32 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: index
+title: Volume I - Fractal Calculus
+defaults:
+  maxdepth: 3
+  titlesonly: False
+
+parts:
+- caption: Chapters
+  numbered: false
+  chapters:
+  - file: source/01_fractal_gas_framework
+    title: Fractal Gas Framework
+  - file: source/02_euclidean_gas
+    title: Euclidean Gas
+  - file: source/03_cloning
+    title: Cloning
+  - file: source/04_convergence
+    title: Convergence
+  - file: source/05_mean_field
+    title: Mean Field
+  - file: source/06_propagation_chaos
+    title: Propagation of Chaos
+  - file: source/07_adaptative_gas
+    title: Adaptive Gas
+  - file: source/08_fractal_set
+    title: The Fractal Set
+  - file: source/09_yang_mills
+    title: Yang-Mills from Episode Dynamics

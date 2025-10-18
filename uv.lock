@@ -700,6 +700,10 @@ docs = [
     { name = "sphinx-autodoc2" },
     { name = "sphinx-book-theme" },
     { name = "sphinx-copybutton" },
+    { name = "sphinx-design" },
+    { name = "sphinx-inline-tabs" },
+    { name = "sphinx-math-dollar" },
+    { name = "sphinx-proof" },
     { name = "sphinx-rtd-theme" },
     { name = "sphinx-togglebutton" },
     { name = "sphinxcontrib-bibtex" },
@@ -747,11 +751,15 @@ requires-dist = [
     { name = "ray", specifier = ">=2.37.0" },
     { name = "ruyaml", marker = "extra == 'docs'" },
     { name = "shaolin" },
-    { name = "sphinx", marker = "extra == 'docs'" },
+    { name = "sphinx", marker = "extra == 'docs'", specifier = ">=7.0.0" },
     { name = "sphinx-autoapi", marker = "extra == 'docs'" },
     { name = "sphinx-autodoc2", marker = "extra == 'docs'" },
     { name = "sphinx-book-theme", marker = "extra == 'docs'" },
     { name = "sphinx-copybutton", marker = "extra == 'docs'" },
+    { name = "sphinx-design", marker = "extra == 'docs'" },
+    { name = "sphinx-inline-tabs", marker = "extra == 'docs'" },
+    { name = "sphinx-math-dollar", marker = "extra == 'docs'" },
+    { name = "sphinx-proof", marker = "extra == 'docs'" },
     { name = "sphinx-rtd-theme", marker = "extra == 'docs'" },
     { name = "sphinx-togglebutton", marker = "extra == 'docs'" },
     { name = "sphinxcontrib-bibtex", marker = "extra == 'docs'" },
@@ -3062,6 +3070,18 @@ wheels = [
 ]
 
 [[package]]
+name = "sphinx-inline-tabs"
+version = "2023.4.21"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "sphinx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/48/f5/f8a2be63ed7be9f91a4c2bea0e25bcb56aa4c5cc37ec4d8ead8065f926b1/sphinx_inline_tabs-2023.4.21.tar.gz", hash = "sha256:5df2f13f602c158f3f5f6c509e008aeada199a8c76d97ba3aa2822206683bebc", size = 42664 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9d/60/1e4c9017d722b9c7731abc11f39ac8b083b479fbcefe12015b57e457a296/sphinx_inline_tabs-2023.4.21-py3-none-any.whl", hash = "sha256:06809ac613f7c48ddd6e2fa588413e3fe92cff2397b56e2ccf0b0218f9ef6a78", size = 6850 },
+]
+
+[[package]]
 name = "sphinx-jupyterbook-latex"
 version = "1.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3075,6 +3095,18 @@ wheels = [
 ]
 
 [[package]]
+name = "sphinx-math-dollar"
+version = "1.2.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "sphinx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9f/63/9227668066d044b6b6a582f000ade4b9e679978466555710dd2a15f21a3a/sphinx-math-dollar-1.2.1.tar.gz", hash = "sha256:03427240f21fdf23c7b8415289aa1a0e307ac32c198e02f840c59a4b1b0d950c", size = 25758 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/96/58/f4df1f1cd8a2bd7c5720870fcd1373fbd6de934f74c887bbc40eef9d8328/sphinx_math_dollar-1.2.1-py3-none-any.whl", hash = "sha256:0b1523a4d7023b9020ddf3a9301f651d64427a0f1d802af534a87eaf24fbdf19", size = 8074 },
+]
+
+[[package]]
 name = "sphinx-multitoc-numbering"
 version = "0.1.3"
 source = { registry = "https://pypi.org/simple" }
@@ -3084,6 +3116,20 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/37/1e/577bae038372885ebc34bd8c0f290295785a0250cac6528eb6d50e4b92d5/sphinx-multitoc-numbering-0.1.3.tar.gz", hash = "sha256:c9607671ac511236fa5d61a7491c1031e700e8d498c9d2418e6c61d1251209ae", size = 4542 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ec/9f/902f2030674cd9473fdbe5a2c2dec2618c27ec853484c35f82cf8df40ece/sphinx_multitoc_numbering-0.1.3-py3-none-any.whl", hash = "sha256:33d2e707a9b2b8ad636b3d4302e658a008025106fe0474046c651144c26d8514", size = 4616 },
+]
+
+[[package]]
+name = "sphinx-proof"
+version = "0.2.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "docutils" },
+    { name = "sphinx" },
+    { name = "sphinx-book-theme" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/0d/cc/2c46bf395d796565f01546fc179f8b99a9e765fe400b55e83b3a91f5d384/sphinx-proof-0.2.1.tar.gz", hash = "sha256:5f01801242c375d7e1151c39a60d9979f95dff5f46f28e6bba4eb516b0813aad", size = 11253 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/60/49/1b9f1b7882dbb752ea4c7696c96758b66c544f9c61d2497234021d621dd8/sphinx_proof-0.2.1-py3-none-any.whl", hash = "sha256:91fc6bd101ae8a82335099225468f4278cda7b8ce99d85fd42919a41dc0911db", size = 13134 },
 ]
 
 [[package]]
