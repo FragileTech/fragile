@@ -1,18 +1,6 @@
 # Scutoid Renormalization: A Conditional Framework for Geometric Compression and RG Flow
 
-**Document Status:** 🚧 Research Program - Iterative Development
-
-**Dual Review Status:**
-- ✅ Round 1: Reviewed by Gemini 2.5 Pro (2025-10-19) - Framework structure validated
-- ✅ Round 1: Reviewed by Codex (2025-10-19) - Framework structure validated
-- ⚠️ Round 2: Critical fixes attempted but incomplete (dimensional error in correlation length)
-- ✅ Round 3: Verification review (2025-10-19) - Dimensional errors caught by Codex
-- ✅ Round 4: Final verification review (2025-10-19) - All critical issues resolved
-- ✅ **FIXED (Round 3)**: Correlation length formula corrected: $\xi = \sqrt{D\gamma}/\rho$ (was $\sqrt{D/(\gamma\rho)}$)
-- ✅ **FIXED (Round 3)**: Added explicit spatial locality assumptions (references [15_closure_theory.md](13_fractal_set_new/15_closure_theory.md))
-- ✅ **FIXED (Round 2)**: Dimensional inconsistency in `lem-weyl-centroid-divergence` (added $r_\alpha^{-1}$ factor)
-- ✅ **FIXED (Round 4)**: Geodesic deviation downgraded from Proposition to Conjecture ({prf:ref}`conj-centroid-geodesic-deviation`)
-- ✅ **FIXED (Round 4)**: Observable definition corrected with conditional expectation ({prf:ref}`def-coarse-observable`)
+**Document Status:** Research Framework - Conditional Theory
 
 **Scope:** This chapter presents a **conditional theoretical framework** and an **empirical research program** for understanding the Fixed-Node Scutoid Tessellation ({prf:ref}`def-fixed-node-scutoid`, [fragile_lqcd.md](fragile_lqcd.md)) as a principled Renormalization Group (RG) transformation. The framework is conditional on the **Information Closure Hypothesis** (unproven), which states that the scutoid renormalization map preserves predictive information.
 
@@ -288,8 +276,6 @@ The scutoid renormalization map $\mathcal{R}_{\text{scutoid},b}: \Omega^{(N)} \t
 
 **Proof:**
 
-**Corrected Argument (Dual Review Round 1):** The previous proof claimed the CVT map is everywhere continuous, which is false. Lloyd's algorithm can have discontinuities when a walker switches cluster allegiance. The corrected proof uses measure-theoretic arguments.
-
 1. **CVT map is continuous almost everywhere:**
    - Lloyd's algorithm with deterministic initialization and tie-breaking produces a measurable selection from the (possibly multi-valued) CVT correspondence.
    - Discontinuities occur on a set $D \subset \mathcal{X}^N$ of **Lebesgue measure zero** (Du et al., 1999, §3.2). Specifically, $D$ consists of configurations where walker positions lie on Voronoi cell boundaries.
@@ -371,9 +357,7 @@ where $\mathcal{X} \subset \mathbb{R}^d$ is the compact spatial domain.
 :::{prf:remark} Geometric Information as Derived Observables
 :class: important
 
-**Critical Correction (Dual Review Round 1):** The previous definition included tessellations $\mathcal{V}_k, \mathcal{S}_k$ in the state, which created a non-Markovian dependence: the scutoid $\mathcal{S}_k$ depends on $X_{k+1}$ (the future). This invalidated the Markov chain structure.
-
-**Corrected Approach:** Tessellations are **derived observables**, not part of the fundamental state:
+Tessellations are **derived observables**, not part of the fundamental state:
 
 - **Voronoi tessellation:** $\mathcal{V}_k = \text{Voronoi}(X_k)$ is a deterministic function of the current positions $X_k$
 
@@ -568,7 +552,7 @@ The continuum limit $\delta_x, \delta_v \to 0$ yields a dense (possibly infinite
 ### 3.5. Topological Structure of Tessellation Spaces
 
 :::{important}
-**Formalization Note:** The following rigorously defines the mathematical structure of tessellation spaces, addressing the critical gap identified in dual review (Gemini Issue #1, Codex Issue #1). Without this structure, the renormalization map and all subsequent claims cannot be made precise.
+**Formalization Note:** The following rigorously defines the mathematical structure of tessellation spaces. Without this structure, the renormalization map and all subsequent claims cannot be made precise.
 :::
 
 :::{prf:definition} Hausdorff Metric on Tessellations
@@ -624,8 +608,6 @@ The space $(\text{Tess}_{\text{nd}}(\mathcal{X}, N, \delta), d_{\text{Tess}})$ e
 
 3. **Locally Compact:** Every point has a compact neighborhood
 
-**Critical Correction (Dual Review Round 1):** The previous version claimed $\text{Tess}(\mathcal{X}, N)$ (without the non-degeneracy restriction) is complete. **Codex correctly identified this is FALSE.** Counterexample: In $[0,1]$ with $N=2$, the sequence of generators $G_k = \{0, \frac{1}{2k}\}$ is Cauchy but converges to the degenerate configuration $\{0, 0\}$, which is not a valid tessellation.
-
 **Proof Sketch:**
 
 *Completeness:* Let $\{\mathcal{V}^{(k)}\}$ be a Cauchy sequence in $\text{Tess}_{\text{nd}}(\mathcal{X}, N, \delta)$ with generators $G^{(k)} = (g_1^{(k)}, \ldots, g_N^{(k)})$.
@@ -665,12 +647,10 @@ The Hausdorff metric induces a Borel σ-algebra $\mathcal{B}(\text{Tess}_{\text{
 **Note:** Tessellations are derived observables (§3.1), not part of the fundamental state space $\Omega^{(N)} = \mathcal{X}^N \times \mathbb{R}^{Nd}$, which is already Polish without restrictions.
 :::
 
-:::{prf:remark} Obsolete: Extension to Scutoid Tessellations
-:class: warning
+:::{prf:remark} Scutoid Tessellations as Transition Observables
+:class: note
 
-**Deprecated (Dual Review Round 1):** The previous framework included scutoid tessellations $\mathcal{S}_k$ in the state, which made the process non-Markovian (the scutoid depends on the future). This section is retained for historical reference but is no longer part of the corrected framework.
-
-Scutoid tessellations are now treated as **transition-dependent observables** computed from successive Voronoi tessellations, not as state components.
+Scutoid tessellations are treated as **transition-dependent observables** computed from successive Voronoi tessellations, not as state components. This ensures the underlying process remains Markovian.
 :::
 
 ---
@@ -903,10 +883,6 @@ Integrating over one timestep and summing over all coarse cells gives the lumpab
 
 ### 5.4. Geodesic Deviation Conjecture
 
-:::{important}
-**Status Update (Dual Review Round 4):** This section has been downgraded from "Proposition" to "Conjecture" following independent feedback from both Gemini and Codex reviewers. The geodesic deviation mechanism is physically motivated and geometrically plausible, but requires rigorous derivation from discrete stochastic BAOAB dynamics before it can be claimed as proven.
-:::
-
 :::{prf:conjecture} Centroid Evolution Under Background Curvature
 :label: conj-centroid-geodesic-deviation
 
@@ -996,11 +972,9 @@ where:
 - LHS: $|\dot{c}_\alpha - \dot{c}'_\alpha|$ has units [length/time]
 - RHS: $[\text{length}^{-2}] \cdot \frac{[\text{length}^2]}{[\text{length}]} \cdot [\text{length}^2/\text{time}^2] \cdot [\text{time}] = [\text{length/time}]$ ✓
 
-**Proof:** Integrate the geodesic deviation equation ({prf:ref}`conj-centroid-geodesic-deviation`) over one timestep, using $\delta c(0) = 0$ and $\delta \dot{c}(0) = 0$. The factor $r_\alpha^{-1}$ arises from the coupling between the Weyl tensor (which has dimensions of inverse length squared) and the dimensionless shape anisotropy $\|S - S'\|_F / r_\alpha^2$.
+**Proof:** The geodesic deviation equation couples the Weyl tensor to shape differences. Since the coupling must be to a dimensionless measure of shape anisotropy, we write the shape tensor in dimensionless form as $\hat{S} = S/\text{tr}(S) = S/r_\alpha^2$. The deviation equation then yields a velocity divergence $|\delta \dot{c}| \propto \|C\| \cdot \|\hat{S} - \hat{S}'\|_F$. Substituting $\|\hat{S} - \hat{S}'\|_F \approx \|S - S'\|_F / r_\alpha^2$ and integrating over one timestep with $\delta c(0) = 0$ and $\delta \dot{c}(0) = 0$ gives the stated bound. The factor $r_\alpha^{-1}$ emerges from the denominator in the dimensionless shape anisotropy.
 
 **Interpretation:** The Weyl tensor acts as a **shape-dependent force**. Two clusters with the same centroid but different shapes experience different accelerations, leading to velocity divergence proportional to the shape difference relative to cluster size.
-
-**Critical Correction (Dual Review Round 2):** This corrects the dimensional inconsistency identified by Codex. The previous version omitted the $r_\alpha^{-1}$ factor, making the bound dimensionally incorrect.
 :::
 
 :::{prf:lemma} Weyl Contribution to Lumpability Error (Preliminary Bound)
@@ -1806,10 +1780,6 @@ $$
 
 ### 14.1. Spatial Correlation Decay from LSI
 
-:::{important}
-**Critical Addition (Dual Review Round 2):** This section adds the missing lemma on spatial correlation decay, identified as a CRITICAL gap by both Gemini and Codex. This lemma is foundational for all quantitative RG bounds.
-:::
-
 :::{prf:lemma} LSI Implies Exponential Spatial Correlation Decay
 :label: lem-lsi-spatial-decay
 
@@ -1884,9 +1854,7 @@ The proof follows the standard route from LSI to exponential correlation decay v
    $$
    \xi = \frac{v_{\text{eff}}}{\lambda_1} = \frac{\sqrt{D\gamma}}{\rho}
    $$
-   using $\lambda_1 \geq \rho/2$ from step 1.
-
-   **Critical Correction (Dual Review Round 3):** The previous version incorrectly had $v_{\text{eff}} = \sqrt{D/\gamma}$, leading to $\xi = \sqrt{D/(\gamma\rho)}$ which has wrong dimensions [length·√time]. The corrected formula has $v_{\text{eff}} = \sqrt{D\gamma}$, giving $\xi$ with correct dimensions [length].
+   using $\lambda_1 \geq \rho/2$ from step 1, where $v_{\text{eff}} = \sqrt{D\gamma}$ is the effective propagation speed with correct dimensions [length/time].
 
 6. **Constants:** The dimension-dependent constant $C'_d$ arises from the precise cluster expansion estimates and depends on the geometry of $\mathcal{X} \subset \mathbb{R}^d$.
 
@@ -1901,7 +1869,7 @@ The proof follows the standard route from LSI to exponential correlation decay v
 
 **Physical Interpretation:** The correlation length $\xi \sim \sqrt{D\gamma}/\rho$ has the following dependencies:
 - **Increases with $\sqrt{D}$**: Stronger diffusion creates longer-range correlations
-- **Increases with $\sqrt{\gamma}$**: Higher friction increases the effective propagation speed $v_{\text{eff}} = \sqrt{D\gamma}$
+- **Increases with $\sqrt{\gamma}$**: The correlation length grows with friction because $\xi$ is set by the effective propagation speed $v_{\text{eff}} = \sqrt{D\gamma}$, which characterizes how quickly localized perturbations are transmitted through frictional coupling before being damped by the spectral gap $\rho$
 - **Decreases with $\rho$**: Stronger LSI contractivity (larger spectral gap) suppresses correlations faster
 
 The balance between diffusive spreading ($D$), frictional coupling ($\gamma$), and contractivity ($\rho$) determines the characteristic length scale over which information propagates.
@@ -2020,31 +1988,7 @@ See `fragile_lqcd.md` for full lattice gauge theory formulation.
 
 ## 15. The Path to Rigor: Missing Proofs and Open Problems
 
-### 15.1. Critical Review Summary
-
-**Dual Review Status:**
-
-**Round 1 (2025-10-19):**
-- ✅ Gemini 2.5 Pro: Identified central hypothesis as unproven, framework structure issues
-- ✅ Codex: Identified topological charge claim as potentially incorrect, missing lemmas
-
-**Round 2 (2025-10-19) - Critical Fixes Implemented:**
-- ✅ **Issue #1 FIXED**: Added Lemma `lem-lsi-spatial-decay` connecting LSI to spatial correlation decay
-- ✅ **Issue #2 FIXED**: Corrected dimensional inconsistency in `lem-weyl-centroid-divergence` (added $r_\alpha^{-1}$ factor)
-- ⚠️ **Issue #3 REMAINING**: Geodesic deviation proposition needs rigorous derivation
-- ⚠️ **Issue #4 REMAINING**: Coarse observable definition needs correction
-
-**Consensus Critical Issues (Updated Round 3):**
-1. Information Closure Hypothesis ({prf:ref}`hyp-scutoid-information-closure`) is UNPROVEN (unchanged)
-2. All downstream "theorems" are conditional on this hypothesis (unchanged)
-3. ~~Missing correlation-length lemma~~ **FIXED (Round 2)** - Now {prf:ref}`lem-lsi-spatial-decay`
-4. ~~Correlation length dimensional error~~ **FIXED (Round 3)** - Corrected formula: $\xi = \sqrt{D\gamma}/\rho$
-5. ~~Spatial locality assumptions missing~~ **FIXED (Round 3)** - References {prf:ref}`prop-scutoid-lumpability-sufficient`
-6. ~~Dimensional error in Weyl-lumpability chain~~ **FIXED (Round 2)** - Corrected bound with $r_\alpha^{-1}$ factor
-7. Geodesic deviation is heuristic, not derived (needs resolution)
-8. Observable preservation theorem has type errors (needs correction)
-
-### 15.2. The Checklist of Missing Proofs
+### 15.1. The Checklist of Missing Proofs
 
 :::{prf:observation} Required Proofs for Full Rigor
 :label: obs-missing-proofs-checklist
@@ -2056,11 +2000,9 @@ See `fragile_lqcd.md` for full lattice gauge theory formulation.
   - Strategy: Either analytical (derive from BAOAB+CVT structure) or empirical (measure $I(\overrightarrow{\tilde{Z}} ; \overleftarrow{\tilde{Z}})$ vs. $I(\overrightarrow{\tilde{Z}} ; \overleftarrow{Z})$)
   - Timeline: 6-12 months (analytical) or 3-6 months (empirical)
 
-- [x] **~~Add Missing Spatial Correlation Decay Lemma~~** (COMPLETED Round 2, CORRECTED Round 3)
-  - Added {prf:ref}`lem-lsi-spatial-decay` deriving correlation length
-  - **Round 2**: Initial version had wrong formula $\xi = C'\sqrt{D/(\gamma\rho)}$ [length·√time] ✗
-  - **Round 3 FIX**: Corrected to $\xi = C'\sqrt{D\gamma}/\rho$ [length] ✓
-  - **Round 3 FIX**: Added explicit spatial locality assumption (references {prf:ref}`prop-scutoid-lumpability-sufficient` in [15_closure_theory.md](13_fractal_set_new/15_closure_theory.md))
+- [x] **Spatial Correlation Decay from LSI**
+  - {prf:ref}`lem-lsi-spatial-decay` derives correlation length $\xi = C'\sqrt{D\gamma}/\rho$ from Log-Sobolev inequality
+  - Spatial locality assumption references {prf:ref}`prop-scutoid-lumpability-sufficient` in [15_closure_theory.md](13_fractal_set_new/15_closure_theory.md)
   - Connects LSI constant to exponential correlation decay
   - Enables quantitative lumpability bounds
 
@@ -2071,17 +2013,11 @@ See `fragile_lqcd.md` for full lattice gauge theory formulation.
 
 **Priority 2 (Major - Gamma Channel Theory):**
 
-- [x] **~~Fix Dimensional Inconsistency in Weyl-Centroid Bound~~** (COMPLETED Round 2)
-  - Corrected {prf:ref}`lem-weyl-centroid-divergence` with $r_\alpha^{-1}$ factor
-  - Now dimensionally consistent: [length/time] on both sides
-  - Updated downstream lemma {prf:ref}`lem-weyl-lumpability-preliminary`
-
-- [x] **~~Prove or Downgrade Geodesic Deviation~~** ({prf:ref}`conj-centroid-geodesic-deviation`) **COMPLETED Round 4**
-  - **Action taken**: Downgraded from Proposition to Conjecture
-  - Now explicitly marked as heuristic statement pending rigorous proof
-  - Added "Path to Rigorous Proof" section with required steps (Itô calculus, overdamped limit, etc.)
-  - Updated {prf:ref}`lem-weyl-centroid-divergence` to be conditional on the conjecture
-  - Timeline for full proof: 2-4 months (future work)
+- [ ] **Prove Geodesic Deviation Conjecture** ({prf:ref}`conj-centroid-geodesic-deviation`)
+  - Currently a heuristic statement based on geometric analogy
+  - Required steps: Itô calculus treatment, overdamped limit, second-order expansion, Weyl identification, error bounds
+  - {prf:ref}`lem-weyl-centroid-divergence` is conditional on this conjecture
+  - Timeline: 2-4 months
 
 - [ ] **Complete Weyl-Lumpability Connection** ({prf:ref}`conj-weyl-bounds-lumpability`)
   - Depends on geodesic deviation resolution
@@ -2105,11 +2041,6 @@ See `fragile_lqcd.md` for full lattice gauge theory formulation.
   - Solution: Use proper lattice gauge theory error analysis (Fréchet derivatives or block-spin estimates)
   - Timeline: 2-3 months
 
-- [ ] **Add Missing Correlation-Length Lemma**
-  - Define `lem-local-lsi-spatial-decay` relating LSI constant to spatial correlation decay
-  - Prove or cite from existing KL-convergence literature
-  - Timeline: 1 month
-
 **Priority 4 (Lower - Intrinsic Scales):**
 
 - [ ] **Empirical Scale Discovery for Test System**
@@ -2125,20 +2056,17 @@ See `fragile_lqcd.md` for full lattice gauge theory formulation.
 ### 15.3. The Iteration Strategy
 
 **Stage 1 (Current): Conditional Framework**
-- ✅ Document reframed with clear hypothesis marking
+- ✅ Document framework with clear hypothesis marking
 - ✅ Gamma channel conceptual theory developed
 - ✅ Intrinsic scale discovery methods formalized
-- 🚧 Awaiting second-round dual review
 
 **Stage 2 (Next 3 months): Foundations**
 - Formalize tessellation spaces (topology + measure)
-- Add missing correlation-length lemma
 - Fix topological charge and Wilson loop claims
 
 **Stage 3 (3-6 months): First Complete Proof**
 - Select one key result to prove rigorously (e.g., Weyl-lumpability for simplified case)
 - Write step-by-step proof meeting publication standards
-- Submit to dual review for validation
 
 **Stage 4 (6-12 months): Empirical Validation**
 - Implement gamma channel experiments
@@ -2308,9 +2236,8 @@ for n in n_cell_values:
 ### 18.2. The Path Forward
 
 **Immediate next steps (you and collaborators):**
-1. Second-round dual review of this revised document (especially Part II gamma channel theory)
-2. Formalize tessellation spaces (add topology and measure structure)
-3. Run minimal empirical experiment ({prf:ref}`alg-minimal-empirical-test`) on 2D system
+1. Formalize tessellation spaces (add topology and measure structure)
+2. Run minimal empirical experiment ({prf:ref}`alg-minimal-empirical-test`) on 2D system
 
 **Short-term (3-6 months):**
 1. Prove Weyl-lumpability connection for simplified case (e.g., conformally flat metrics)
