@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import torch
 
-from fragile.companion_selection import (
+from fragile.core.companion_selection import (
     compute_algorithmic_distance_matrix,
     random_pairing_fisher_yates,
     select_companions_for_cloning,

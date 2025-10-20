@@ -23,7 +23,10 @@ import torch
 from torch import Tensor
 
 from fragile.bounds import TorchBounds
-from fragile.companion_selection import CompanionSelection
+from fragile.core.cloning import (
+    clone_walkers,
+)
+from fragile.core.fitness import compute_fitness, FitnessParams
 from fragile.euclidean_gas import (
     CloningParams,
     EuclideanGasParams,
@@ -33,10 +36,6 @@ from fragile.euclidean_gas import (
     SwarmState,
 )
 from fragile.fractal_set import FractalSet
-from fragile.operators import (
-    clone_walkers,
-    compute_fitness,
-)
 
 
 class LocalizationKernelParams(BaseModel):
@@ -114,6 +113,10 @@ class GeometricGasParams(BaseModel):
             use_inelastic_collision=True,
         ),
         description="Cloning operator parameters",
+    )
+    fitness: FitnessParams | None = Field(
+        default=None,
+        description="Fitness operator parameters (required if using adaptive kinetics features)",
     )
 
     # Geometric Gas extensions
@@ -650,7 +653,7 @@ class GeometricGas:
             self.dtype,
         )
 
-        # Store cloning parameters (cloning is done via operators.py functions)
+        # Store cloning parameters (cloning is done via cloning.py functions)
         self.cloning_params = params.cloning
 
     def initialize_state(
@@ -710,7 +713,7 @@ class GeometricGas:
     ) -> tuple[SwarmState, SwarmState] | tuple[SwarmState, SwarmState, dict]:
         """Perform one full step: compute fitness, clone, then adaptive kinetic.
 
-        Uses operators.py functions directly to compute:
+        Uses cloning.py functions directly to compute:
         1. Rewards from potential
         2. Fitness using compute_fitness (but with geometric measurements)
         3. Cloning using clone_walkers
@@ -758,14 +761,14 @@ class GeometricGas:
                 if return_info:
                     # Return minimal info for resurrection case
                     info = {
-                        'fitness': torch.zeros(state.N, device=self.device),
-                        'rewards': rewards,
-                        'distances': torch.zeros(state.N, device=self.device),
-                        'companions': torch.arange(state.N, device=self.device),
-                        'cloning_scores': torch.zeros(state.N, device=self.device),
-                        'cloning_probs': torch.ones(state.N, device=self.device),
-                        'will_clone': torch.ones(state.N, dtype=torch.bool, device=self.device),
-                        'num_cloned': state.N,
+                        "fitness": torch.zeros(state.N, device=self.device),
+                        "rewards": rewards,
+                        "distances": torch.zeros(state.N, device=self.device),
+                        "companions": torch.arange(state.N, device=self.device),
+                        "cloning_scores": torch.zeros(state.N, device=self.device),
+                        "cloning_probs": torch.ones(state.N, device=self.device),
+                        "will_clone": torch.ones(state.N, dtype=torch.bool, device=self.device),
+                        "num_cloned": state.N,
                     }
                     return state_cloned, state_final, info
                 return state_cloned, state_final
@@ -774,14 +777,20 @@ class GeometricGas:
         # Step 2: Compute fitness using geometric fitness potential
         # Note: GeometricGas uses its own fitness evaluation via FitnessPotential
         # We still need to select companions and compute distances for cloning
-        # So we use compute_fitness but will override the fitness values with geometric ones
+        # Select companions using the configured companion selection strategy
+        companions = self.cloning_params.companion_selection(
+            x=state.x,
+            v=state.v,
+            alive_mask=alive_mask,
+        )
 
-        fitness_euclidean, distances, companions = compute_fitness(
+        # Use compute_fitness to get distance channel before overriding with geometric fitness
+        fitness_euclidean, distances, _ = compute_fitness(
             positions=state.x,
             velocities=state.v,
             rewards=rewards,
             alive=alive_mask,
-            companion_selection=self.cloning_params.companion_selection,
+            companions=companions,
             alpha=self.cloning_params.alpha,
             beta=self.cloning_params.beta,
             eta=self.cloning_params.eta,
@@ -801,7 +810,7 @@ class GeometricGas:
         else:
             fitness = fitness_euclidean
 
-        # Step 3: Execute cloning using operators.py
+        # Step 3: Execute cloning using cloning.py
         x_cloned, v_cloned, _, clone_info = clone_walkers(
             positions=state.x,
             velocities=state.v,
@@ -828,10 +837,10 @@ class GeometricGas:
         if return_info:
             # Combine all computed data into info dict
             info = {
-                'fitness': fitness,
-                'rewards': rewards,
-                'distances': distances,
-                'companions': companions,
+                "fitness": fitness,
+                "rewards": rewards,
+                "distances": distances,
+                "companions": companions,
                 **clone_info,  # Adds: cloning_scores, cloning_probs, will_clone, num_cloned
             }
             return state_cloned, state_final, info
@@ -900,12 +909,17 @@ class GeometricGas:
                     fitness = torch.zeros(N, device=self.device, dtype=self.dtype)
 
                 # Get companions and distances
-                _, distances, companions = compute_fitness(
+                companions = self.cloning_params.companion_selection(
+                    x=state.x,
+                    v=state.v,
+                    alive_mask=alive_mask,
+                )
+                _, distances, _ = compute_fitness(
                     positions=state.x,
                     velocities=state.v,
                     rewards=rewards,
                     alive=alive_mask,
-                    companion_selection=self.cloning_params.companion_selection,
+                    companions=companions,
                     alpha=self.cloning_params.alpha,
                     beta=self.cloning_params.beta,
                     eta=self.cloning_params.eta,
@@ -914,10 +928,10 @@ class GeometricGas:
                     A=self.cloning_params.A,
                 )
                 initial_info = {
-                    'fitness': fitness,
-                    'rewards': rewards,
-                    'distances': distances,
-                    'companions': companions,
+                    "fitness": fitness,
+                    "rewards": rewards,
+                    "distances": distances,
+                    "companions": companions,
                 }
             else:
                 initial_info = None
@@ -1023,14 +1037,14 @@ class GeometricGas:
         if record_fitness:
             if info is not None:
                 # Use pre-computed values from step()
-                fitness = info['fitness']
-                reward = info['rewards']
-                companions = info['companions']
-                distances = info['distances']
+                fitness = info["fitness"]
+                reward = info["rewards"]
+                companions = info["companions"]
+                distances = info["distances"]
                 potential = -reward  # Reverse the sign
 
                 # Compute cloning scores and probabilities from fitness
-                from fragile.operators import compute_cloning_probability, compute_cloning_score
+                from fragile.core.cloning import compute_cloning_probability, compute_cloning_score
 
                 companion_fitness = fitness[companions]
                 cloning_scores = compute_cloning_score(
@@ -1054,13 +1068,18 @@ class GeometricGas:
                 else:
                     fitness = torch.zeros(state.N, device=self.device, dtype=self.dtype)
 
-                # Use compute_fitness to get companions and distances
-                _, distances, companions = compute_fitness(
+                # Select companions and compute distances
+                companions = self.cloning_params.companion_selection(
+                    x=state.x,
+                    v=state.v,
+                    alive_mask=alive_mask,
+                )
+                _, distances, _ = compute_fitness(
                     positions=state.x,
                     velocities=state.v,
                     rewards=reward,
                     alive=alive_mask,
-                    companion_selection=self.cloning_params.companion_selection,
+                    companions=companions,
                     alpha=self.cloning_params.alpha,
                     beta=self.cloning_params.beta,
                     eta=self.cloning_params.eta,
@@ -1070,7 +1089,7 @@ class GeometricGas:
                 )
 
                 # Compute cloning scores and probabilities
-                from fragile.operators import compute_cloning_probability, compute_cloning_score
+                from fragile.core.cloning import compute_cloning_probability, compute_cloning_score
 
                 companion_fitness = fitness[companions]
                 cloning_scores = compute_cloning_score(
@@ -1081,7 +1100,7 @@ class GeometricGas:
                 )
 
             # Compute rescaled reward using patched standardization
-            from fragile.operators import patched_standardization
+            from fragile.core.fitness import patched_standardization
 
             rescaled_reward = patched_standardization(
                 reward, alive_mask, sigma_min=self.cloning_params.sigma_min

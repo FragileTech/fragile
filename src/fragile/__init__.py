@@ -1,6 +1,6 @@
 """Fragile: FractalAI implementation."""
 
-from fragile.core import compute
+from fragile.old_core import compute
 
 
 __all__ = ["compute"]

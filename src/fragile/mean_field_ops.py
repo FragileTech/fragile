@@ -9,7 +9,7 @@ Functions implement formulas from docs/source/01_fragile_gas_framework.md.
 
 import torch
 
-from fragile.companion_selection import select_companions_uniform
+from fragile.core.companion_selection import select_companions_uniform
 
 
 def patched_std_dev(variance: torch.Tensor, kappa_var_min: float, eps_std: float) -> torch.Tensor:

@@ -23,7 +23,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 import numpy as np
-import torch
 from torch import Tensor
 
 from fragile.benchmarks import MixtureOfGaussians
@@ -31,7 +30,6 @@ from fragile.euclidean_gas import EuclideanGas, PotentialParams, SwarmState
 from fragile.lyapunov import (
     compute_internal_variance_position,
     compute_internal_variance_velocity,
-    compute_total_lyapunov,
 )
 
 
@@ -164,7 +162,7 @@ class ConvergenceMetrics:
         Returns:
             (kappa, C): Decay rate and amplitude, or None if fit fails
         """
-        if metric_name not in ["V_total", "V_var_x", "V_var_v"]:
+        if metric_name not in {"V_total", "V_var_x", "V_var_v"}:
             msg = f"Unknown metric: {metric_name}"
             raise ValueError(msg)
 
@@ -292,7 +290,7 @@ class ConvergenceExperiment:
                 snapshots[step + 1] = state.x.clone()
 
         if verbose:
-            print(f"\n✓ Experiment complete!")
+            print("\n✓ Experiment complete!")
             print(f"  Total measurements: {len(metrics.time)}")
             print(f"  Snapshots saved: {len(snapshots)}")
             print(f"  Final V_total: {metrics.V_total[-1]:.6f}")

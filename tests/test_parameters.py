@@ -120,7 +120,6 @@ class TestCloningParams:
         assert cloning_params.sigma_x == 0.1
         assert cloning_params.lambda_alg == 1.0
         assert cloning_params.alpha_restitution == 0.5
-        assert cloning_params.use_inelastic_collision is True
 
     @pytest.mark.parametrize("sigma_x", [-0.1, 0.0])
     def test_invalid_sigma_x(self, sigma_x):
@@ -151,17 +150,6 @@ class TestCloningParams:
         params = CloningParams(sigma_x=0.1, lambda_alg=1.0, alpha_restitution=alpha_restitution)
         assert params.alpha_restitution == alpha_restitution
 
-    def test_inelastic_collision_flag(self):
-        """Test inelastic collision flag."""
-        params_true = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.5, use_inelastic_collision=True
-        )
-        params_false = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.5, use_inelastic_collision=False
-        )
-
-        assert params_true.use_inelastic_collision is True
-        assert params_false.use_inelastic_collision is False
 
 
 class TestEuclideanGasParams:

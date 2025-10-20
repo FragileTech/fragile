@@ -4,6 +4,7 @@ import pytest
 import torch
 
 from fragile.bounds import TorchBounds
+from fragile.core.companion_selection import CompanionSelection
 from fragile.euclidean_gas import (
     CloningParams,
     EuclideanGas,
@@ -41,9 +42,12 @@ class TestCompanionSelectionMethods:
     """Test different companion selection methods."""
 
     def test_hybrid_method_default(self, base_params):
-        """Test hybrid method (default behavior)."""
+        """Test cloning method (default behavior)."""
         cloning = CloningParams(
-            sigma_x=0.1, lambda_alg=0.5, alpha_restitution=0.5, companion_selection_method="hybrid"
+            sigma_x=0.1,
+            lambda_alg=0.5,
+            alpha_restitution=0.5,
+            companion_selection=CompanionSelection(method="cloning", epsilon=0.1),
         )
         params = EuclideanGasParams(**base_params, cloning=cloning)
         gas = EuclideanGas(params)
@@ -62,7 +66,7 @@ class TestCompanionSelectionMethods:
             sigma_x=0.1,
             lambda_alg=0.5,
             alpha_restitution=0.5,
-            companion_selection_method="softmax",
+            companion_selection=CompanionSelection(method="softmax", epsilon=0.1),
         )
         params = EuclideanGasParams(**base_params, cloning=cloning)
         gas = EuclideanGas(params)
@@ -81,7 +85,7 @@ class TestCompanionSelectionMethods:
             sigma_x=0.1,
             lambda_alg=0.5,
             alpha_restitution=0.5,
-            companion_selection_method="uniform",
+            companion_selection=CompanionSelection(method="uniform"),
         )
         params = EuclideanGasParams(**base_params, cloning=cloning)
         gas = EuclideanGas(params)
@@ -96,66 +100,48 @@ class TestCompanionSelectionMethods:
 
     def test_invalid_method_raises_error(self, base_params):
         """Test that invalid companion selection method raises error."""
-        cloning = CloningParams(
-            sigma_x=0.1,
-            lambda_alg=0.5,
-            alpha_restitution=0.5,
-            companion_selection_method="invalid_method",
-        )
-        params = EuclideanGasParams(**base_params, cloning=cloning)
-        gas = EuclideanGas(params)
+        # Should raise validation error when creating CompanionSelection with invalid method
+        from pydantic import ValidationError
 
-        # Should raise ValueError when trying to step
-        state = gas.initialize_state()
-        with pytest.raises(ValueError, match="Unknown companion_selection_method"):
-            gas.step(state)
+        with pytest.raises(ValidationError, match="Input should be"):
+            CompanionSelection(method="invalid_method")
 
 
 class TestEpsilonCParameter:
     """Test epsilon_c parameter functionality."""
 
     def test_epsilon_c_default_to_sigma_x(self, base_params):
-        """Test that epsilon_c defaults to sigma_x when not specified."""
-        cloning = CloningParams(
-            sigma_x=0.1,
-            lambda_alg=0.5,
-            alpha_restitution=0.5,
-            epsilon_c=None,  # Should default to sigma_x
-        )
+        """Test that epsilon defaults to 0.1 in CompanionSelection."""
+        companion_sel = CompanionSelection(method="softmax")
 
-        assert cloning.get_epsilon_c() == 0.1
+        # Default epsilon should be 0.1
+        assert companion_sel.epsilon == 0.1
 
     def test_epsilon_c_explicit_value(self, base_params):
-        """Test that epsilon_c can be set explicitly."""
-        cloning = CloningParams(
-            sigma_x=0.1,
-            lambda_alg=0.5,
-            alpha_restitution=0.5,
-            epsilon_c=0.2,  # Explicit value
-        )
+        """Test that epsilon can be set explicitly."""
+        companion_sel = CompanionSelection(method="softmax", epsilon=0.2)
 
-        assert cloning.get_epsilon_c() == 0.2
+        # Epsilon should be set to explicit value
+        assert companion_sel.epsilon == 0.2
 
     def test_epsilon_c_affects_companion_selection(self, base_params):
-        """Test that different epsilon_c values produce different results."""
-        # Small epsilon_c (tight companion selection)
+        """Test that different epsilon values produce different results."""
+        # Small epsilon (tight companion selection)
         cloning_small = CloningParams(
             sigma_x=0.1,
             lambda_alg=0.0,
             alpha_restitution=0.5,
-            epsilon_c=0.01,  # Very small
-            companion_selection_method="softmax",
+            companion_selection=CompanionSelection(method="softmax", epsilon=0.01),
         )
         params_small = EuclideanGasParams(**base_params, cloning=cloning_small)
         gas_small = EuclideanGas(params_small)
 
-        # Large epsilon_c (loose companion selection)
+        # Large epsilon (loose companion selection)
         cloning_large = CloningParams(
             sigma_x=0.1,
             lambda_alg=0.0,
             alpha_restitution=0.5,
-            epsilon_c=10.0,  # Very large
-            companion_selection_method="softmax",
+            companion_selection=CompanionSelection(method="softmax", epsilon=10.0),
         )
         params_large = EuclideanGasParams(**base_params, cloning=cloning_large)
         gas_large = EuclideanGas(params_large)
@@ -176,9 +162,12 @@ class TestBoundsIntegration:
     """Test integration with TorchBounds."""
 
     def test_hybrid_with_bounds(self, bounded_params):
-        """Test hybrid method with bounds creates correct alive_mask."""
+        """Test cloning method with bounds creates correct alive_mask."""
         cloning = CloningParams(
-            sigma_x=0.5, lambda_alg=0.5, alpha_restitution=0.5, companion_selection_method="hybrid"
+            sigma_x=0.5,
+            lambda_alg=0.5,
+            alpha_restitution=0.5,
+            companion_selection=CompanionSelection(method="cloning", epsilon=0.5),
         )
         params = EuclideanGasParams(**bounded_params, cloning=cloning)
         gas = EuclideanGas(params)
@@ -199,7 +188,10 @@ class TestBoundsIntegration:
     def test_bounds_enforce_alive_mask(self, bounded_params, test_device):
         """Test that bounds correctly create alive_mask for companion selection."""
         cloning = CloningParams(
-            sigma_x=0.5, lambda_alg=0.5, alpha_restitution=0.5, companion_selection_method="hybrid"
+            sigma_x=0.5,
+            lambda_alg=0.5,
+            alpha_restitution=0.5,
+            companion_selection=CompanionSelection(method="cloning", epsilon=0.5),
         )
         params = EuclideanGasParams(**bounded_params, cloning=cloning)
         gas = EuclideanGas(params)

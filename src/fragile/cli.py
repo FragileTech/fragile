@@ -16,7 +16,7 @@ Why does this file exist, and why not put this in __main__?
 
 import click
 
-from .core import compute
+from .old_core import compute
 
 
 @click.command()

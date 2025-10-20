@@ -106,9 +106,7 @@ def patched_standardization(
     z_scores = (values - mu) / sigma_reg
 
     # Set Z-scores of dead walkers to 0.0 (they don't participate in dynamics)
-    z_scores = torch.where(alive, z_scores, torch.zeros_like(z_scores))
-
-    return z_scores
+    return torch.where(alive, z_scores, torch.zeros_like(z_scores))
 
 
 def get_alive_indexes(oobs: Tensor):
@@ -174,6 +172,7 @@ def cross_distance(
     if return_distance:
         data = (*data, distance)
     return data[0] if len(data) == 1 else tuple(data)
+
 
 def calculate_fitness(
     observs: Tensor,

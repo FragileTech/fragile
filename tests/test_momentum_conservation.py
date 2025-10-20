@@ -3,7 +3,7 @@
 import pytest
 import torch
 
-from fragile.euclidean_gas import CloningOperator, CloningParams, SwarmState
+from fragile.core.cloning import inelastic_collision_velocity
 
 
 class TestMomentumConservation:
@@ -11,12 +11,6 @@ class TestMomentumConservation:
 
     def test_momentum_conservation_two_walkers(self):
         """Test momentum conservation with two walkers cloning to same target."""
-        params = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.5, use_inelastic_collision=True
-        )
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
-
-        x = torch.randn(3, 2, dtype=torch.float64)
         v = torch.tensor(
             [
                 [1.0, 0.0],  # Walker 0
@@ -25,19 +19,19 @@ class TestMomentumConservation:
             ],
             dtype=torch.float64,
         )
-        state = SwarmState(x, v)
 
         # Walkers 1 and 2 clone to walker 0
         # Walker 0 clones to itself (excluded from collision group to avoid double-counting)
         companions = torch.tensor([0, 0, 0])
+        will_clone = torch.ones(3, dtype=torch.bool)  # All walkers clone
+        alpha_restitution = 0.5
 
         # Collision group: companion=0 + cloners=[1,2] (0 excluded as it's the companion)
         # Initial momentum of collision group
         p_initial = v[0] + v[1] + v[2]
 
         # Apply collision
-        torch.manual_seed(42)
-        v_new = op._inelastic_collision_velocity(state, companions)
+        v_new = inelastic_collision_velocity(v, companions, will_clone, alpha_restitution)
 
         # Final momentum of collision group
         p_final = v_new[0] + v_new[1] + v_new[2]
@@ -47,10 +41,7 @@ class TestMomentumConservation:
 
     def test_momentum_conservation_multiple_groups(self):
         """Test momentum conservation with multiple collision groups."""
-        params = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.8, use_inelastic_collision=True
-        )
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
+        alpha_restitution = 0.8
 
         x = torch.randn(6, 3, dtype=torch.float64)
         v = torch.tensor(
@@ -64,12 +55,12 @@ class TestMomentumConservation:
             ],
             dtype=torch.float64,
         )
-        state = SwarmState(x, v)
 
         # Two collision groups:
         # Group 1: companion=0, cloners=[1, 2]
         # Group 2: companion=3, cloners=[4, 5]
         companions = torch.tensor([0, 0, 0, 3, 3, 3])
+        will_clone = torch.ones(6, dtype=torch.bool)  # All walkers clone
 
         # Calculate initial momentum for each group
         group1_indices = torch.tensor([0, 1, 2])
@@ -80,7 +71,7 @@ class TestMomentumConservation:
 
         # Apply collision
         torch.manual_seed(42)
-        v_new = op._inelastic_collision_velocity(state, companions)
+        v_new = inelastic_collision_velocity(v, companions, will_clone, alpha_restitution)
 
         # Calculate final momentum for each group
         p1_final = torch.sum(v_new[group1_indices], dim=0)
@@ -92,10 +83,7 @@ class TestMomentumConservation:
 
     def test_fully_inelastic_all_same_velocity(self):
         """Test that alpha=0 makes all collision group members have same velocity."""
-        params = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.0, use_inelastic_collision=True
-        )
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
+        alpha_restitution = 0.0
 
         x = torch.randn(4, 2, dtype=torch.float64)
         v = torch.tensor(
@@ -107,13 +95,13 @@ class TestMomentumConservation:
             ],
             dtype=torch.float64,
         )
-        state = SwarmState(x, v)
 
         # All clone to walker 1
         companions = torch.tensor([1, 1, 1, 1])
+        will_clone = torch.ones(4, dtype=torch.bool)  # All walkers clone
 
         torch.manual_seed(42)
-        v_new = op._inelastic_collision_velocity(state, companions)
+        v_new = inelastic_collision_velocity(v, companions, will_clone, alpha_restitution)
 
         # Calculate expected COM velocity
         # Collision group: companion=1 + cloners=[0,2,3] (1 excluded as it's the companion)
@@ -126,10 +114,7 @@ class TestMomentumConservation:
 
     def test_elastic_preserves_kinetic_energy(self):
         """Test that alpha=1 approximately preserves kinetic energy in COM frame."""
-        params = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=1.0, use_inelastic_collision=True
-        )
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
+        alpha_restitution = 1.0
 
         x = torch.randn(3, 2, dtype=torch.float64)
         v = torch.tensor(
@@ -140,10 +125,10 @@ class TestMomentumConservation:
             ],
             dtype=torch.float64,
         )
-        state = SwarmState(x, v)
 
         # All clone to walker 0
         companions = torch.tensor([0, 0, 0])
+        will_clone = torch.ones(3, dtype=torch.bool)  # All walkers clone
 
         # Calculate COM velocity
         v_com = torch.mean(v, dim=0)
@@ -153,7 +138,7 @@ class TestMomentumConservation:
         ke_initial = torch.sum(v_rel_initial**2)
 
         torch.manual_seed(42)
-        v_new = op._inelastic_collision_velocity(state, companions)
+        v_new = inelastic_collision_velocity(v, companions, will_clone, alpha_restitution)
 
         # Calculate final kinetic energy in COM frame
         v_rel_final = v_new - v_com.unsqueeze(0)
@@ -165,23 +150,20 @@ class TestMomentumConservation:
 
     def test_multi_dimensional_momentum_conservation(self):
         """Test momentum conservation in high-dimensional space."""
-        params = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.6, use_inelastic_collision=True
-        )
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
+        alpha_restitution = 0.6
 
         d = 10  # High dimension
         x = torch.randn(5, d, dtype=torch.float64)
         v = torch.randn(5, d, dtype=torch.float64)
-        state = SwarmState(x, v)
 
         companions = torch.tensor([2, 2, 2, 2, 2])
+        will_clone = torch.ones(5, dtype=torch.bool)  # All walkers clone
 
         # Initial momentum
         p_initial = torch.sum(v, dim=0)
 
         torch.manual_seed(42)
-        v_new = op._inelastic_collision_velocity(state, companions)
+        v_new = inelastic_collision_velocity(v, companions, will_clone, alpha_restitution)
 
         # Final momentum
         p_final = torch.sum(v_new, dim=0)
@@ -191,10 +173,7 @@ class TestMomentumConservation:
 
     def test_no_collision_preserves_velocity(self):
         """Test that walkers not in collision groups keep their velocities."""
-        params = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.5, use_inelastic_collision=True
-        )
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
+        alpha_restitution = 0.5
 
         x = torch.randn(5, 2, dtype=torch.float64)
         v = torch.tensor(
@@ -207,13 +186,13 @@ class TestMomentumConservation:
             ],
             dtype=torch.float64,
         )
-        state = SwarmState(x, v)
 
         # Each walker clones to itself (no interaction)
         companions = torch.tensor([0, 1, 2, 3, 4])
+        will_clone = torch.ones(5, dtype=torch.bool)  # All walkers clone
 
         torch.manual_seed(42)
-        v_new = op._inelastic_collision_velocity(state, companions)
+        v_new = inelastic_collision_velocity(v, companions, will_clone, alpha_restitution)
 
         # When each walker is its own companion, it forms a 1-member collision group
         # The implementation should handle this correctly
@@ -226,10 +205,7 @@ class TestEnergyConservation:
 
     def test_elastic_collision_energy_conservation_simple(self):
         """Test energy conservation for simple elastic collision."""
-        params = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=1.0, use_inelastic_collision=True
-        )
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
+        alpha_restitution = 1.0
 
         x = torch.randn(3, 2, dtype=torch.float64)
         v = torch.tensor(
@@ -240,10 +216,10 @@ class TestEnergyConservation:
             ],
             dtype=torch.float64,
         )
-        state = SwarmState(x, v)
 
         # Walkers 1 and 2 clone to walker 0
         companions = torch.tensor([0, 0, 0])
+        will_clone = torch.ones(3, dtype=torch.bool)  # All walkers clone
 
         # Calculate initial kinetic energy in COM frame
         # Collision group: [0, 1, 2]
@@ -255,7 +231,7 @@ class TestEnergyConservation:
         ke_initial = 0.5 * torch.sum(v_rel_initial**2)
 
         torch.manual_seed(42)
-        v_new = op._inelastic_collision_velocity(state, companions)
+        v_new = inelastic_collision_velocity(v, companions, will_clone, alpha_restitution)
 
         # Calculate final kinetic energy in COM frame
         v_group_final = v_new[collision_group]
@@ -268,12 +244,8 @@ class TestEnergyConservation:
     def test_energy_dissipation_inelastic(self):
         """Test that inelastic collisions dissipate energy."""
         # Fully inelastic: alpha = 0
-        params_inelastic = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.0, use_inelastic_collision=True
-        )
-        op_inelastic = CloningOperator(params_inelastic, torch.device("cpu"), torch.float64)
+        alpha_restitution = 0.0
 
-        x = torch.randn(4, 2, dtype=torch.float64)
         v = torch.tensor(
             [
                 [3.0, 0.0],
@@ -283,15 +255,14 @@ class TestEnergyConservation:
             ],
             dtype=torch.float64,
         )
-        state = SwarmState(x, v)
 
         companions = torch.tensor([0, 0, 0, 0])
+        will_clone = torch.ones(4, dtype=torch.bool)  # All walkers clone
 
         # Calculate initial kinetic energy
         ke_initial = 0.5 * torch.sum(v**2)
 
-        torch.manual_seed(42)
-        v_new = op_inelastic._inelastic_collision_velocity(state, companions)
+        v_new = inelastic_collision_velocity(v, companions, will_clone, alpha_restitution)
 
         # Calculate final kinetic energy
         ke_final = 0.5 * torch.sum(v_new**2)
@@ -309,9 +280,9 @@ class TestEnergyConservation:
         """Test that energy dissipation increases as restitution decreases."""
         x = torch.randn(5, 3, dtype=torch.float64)
         v = torch.randn(5, 3, dtype=torch.float64) * 2.0
-        state = SwarmState(x, v)
 
         companions = torch.tensor([2, 2, 2, 2, 2])
+        will_clone = torch.ones(5, dtype=torch.bool)  # All walkers clone
 
         # Calculate initial kinetic energy in COM frame
         v_com = torch.mean(v, dim=0)
@@ -320,13 +291,7 @@ class TestEnergyConservation:
 
         results = {}
         for alpha in [0.0, 0.5, 1.0]:
-            params = CloningParams(
-                sigma_x=0.1, lambda_alg=1.0, alpha_restitution=alpha, use_inelastic_collision=True
-            )
-            op = CloningOperator(params, torch.device("cpu"), torch.float64)
-
-            torch.manual_seed(42)
-            v_new = op._inelastic_collision_velocity(state, companions)
+            v_new = inelastic_collision_velocity(v, companions, will_clone, alpha)
 
             # Calculate final relative kinetic energy
             v_rel_final = v_new - v_com.unsqueeze(0)
@@ -344,10 +309,7 @@ class TestEnergyConservation:
 
     def test_elastic_collision_multiple_groups_energy(self):
         """Test energy conservation with multiple collision groups."""
-        params = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=1.0, use_inelastic_collision=True
-        )
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
+        alpha_restitution = 1.0
 
         x = torch.randn(6, 2, dtype=torch.float64)
         v = torch.tensor(
@@ -361,12 +323,12 @@ class TestEnergyConservation:
             ],
             dtype=torch.float64,
         )
-        state = SwarmState(x, v)
 
         # Two collision groups:
         # Group 1: companion=0, cloners=[1, 2]
         # Group 2: companion=3, cloners=[4, 5]
         companions = torch.tensor([0, 0, 0, 3, 3, 3])
+        will_clone = torch.ones(6, dtype=torch.bool)  # All walkers clone
 
         # Calculate initial kinetic energy for each group
         group1_indices = torch.tensor([0, 1, 2])
@@ -382,7 +344,7 @@ class TestEnergyConservation:
         ke2_initial = 0.5 * torch.sum(v_rel2_initial**2)
 
         torch.manual_seed(42)
-        v_new = op._inelastic_collision_velocity(state, companions)
+        v_new = inelastic_collision_velocity(v, companions, will_clone, alpha_restitution)
 
         # Calculate final kinetic energy for each group
         v_rel1_final = v_new[group1_indices] - v_com1.unsqueeze(0)
@@ -397,17 +359,14 @@ class TestEnergyConservation:
 
     def test_elastic_collision_high_dimensional(self):
         """Test energy conservation in high-dimensional space."""
-        params = CloningParams(
-            sigma_x=0.1, lambda_alg=1.0, alpha_restitution=1.0, use_inelastic_collision=True
-        )
-        op = CloningOperator(params, torch.device("cpu"), torch.float64)
+        alpha_restitution = 1.0
 
         d = 10
         x = torch.randn(5, d, dtype=torch.float64)
         v = torch.randn(5, d, dtype=torch.float64) * 2.0
-        state = SwarmState(x, v)
 
         companions = torch.tensor([2, 2, 2, 2, 2])
+        will_clone = torch.ones(5, dtype=torch.bool)  # All walkers clone
 
         # Calculate initial kinetic energy in COM frame
         v_com = torch.mean(v, dim=0)
@@ -415,7 +374,7 @@ class TestEnergyConservation:
         ke_initial = 0.5 * torch.sum(v_rel_initial**2)
 
         torch.manual_seed(42)
-        v_new = op._inelastic_collision_velocity(state, companions)
+        v_new = inelastic_collision_velocity(v, companions, will_clone, alpha_restitution)
 
         # Calculate final kinetic energy in COM frame
         v_rel_final = v_new - v_com.unsqueeze(0)
@@ -436,9 +395,9 @@ class TestEnergyConservation:
             ],
             dtype=torch.float64,
         )
-        state = SwarmState(x, v)
 
         companions = torch.tensor([0, 0, 0, 0])
+        will_clone = torch.ones(4, dtype=torch.bool)  # All walkers clone
 
         # Calculate initial relative kinetic energy
         v_com = torch.mean(v, dim=0)
@@ -447,13 +406,7 @@ class TestEnergyConservation:
 
         # For restitution coefficient alpha, the final relative KE should be alpha^2 * initial
         for alpha in [0.3, 0.5, 0.7]:
-            params = CloningParams(
-                sigma_x=0.1, lambda_alg=1.0, alpha_restitution=alpha, use_inelastic_collision=True
-            )
-            op = CloningOperator(params, torch.device("cpu"), torch.float64)
-
-            torch.manual_seed(42)
-            v_new = op._inelastic_collision_velocity(state, companions)
+            v_new = inelastic_collision_velocity(v, companions, will_clone, alpha)
 
             v_rel_final = v_new - v_com.unsqueeze(0)
             ke_rel_final = 0.5 * torch.sum(v_rel_final**2)

@@ -66,6 +66,8 @@ dependencies = [
     "plotly>=6.3.1",
     "sympy>=1.14.0",
     "sphinxcontrib-mermaid>=1.0.0",
+    "kaleido>=1.1.0",
+    "ipywidgets-bokeh>=1.6.0",
 ]
 
 [dependency-groups]

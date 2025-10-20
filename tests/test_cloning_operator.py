@@ -1,9 +1,14 @@
-"""Tests for CloningOperator using operators.py functions."""
+"""Tests for CloningOperator using cloning.py functions."""
 
 import pytest
 import torch
 
-from fragile.euclidean_gas import CloningOperator, CloningParams, SimpleQuadraticPotential, SwarmState
+from fragile.euclidean_gas import (
+    CloningOperator,
+    CloningParams,
+    SimpleQuadraticPotential,
+    SwarmState,
+)
 
 
 class TestCloningOperator:
@@ -71,25 +76,25 @@ class TestCloningOperator:
         v = torch.randn(10, 3, dtype=torch.float64)
         state = SwarmState(x, v)
 
-        new_state, companions, info = cloning_op.apply(state, return_info=True)
+        _new_state, _companions, info = cloning_op.apply(state, return_info=True)
 
         # Check info dictionary structure
-        assert 'cloning_scores' in info
-        assert 'cloning_probs' in info
-        assert 'will_clone' in info
-        assert 'num_cloned' in info
-        assert 'fitness' in info
-        assert 'distances' in info
-        assert 'rewards' in info
+        assert "cloning_scores" in info
+        assert "cloning_probs" in info
+        assert "will_clone" in info
+        assert "num_cloned" in info
+        assert "fitness" in info
+        assert "distances" in info
+        assert "rewards" in info
 
         # Check shapes
-        assert info['cloning_scores'].shape == (10,)
-        assert info['cloning_probs'].shape == (10,)
-        assert info['will_clone'].shape == (10,)
-        assert info['fitness'].shape == (10,)
-        assert info['distances'].shape == (10,)
-        assert info['rewards'].shape == (10,)
-        assert isinstance(info['num_cloned'], int)
+        assert info["cloning_scores"].shape == (10,)
+        assert info["cloning_probs"].shape == (10,)
+        assert info["will_clone"].shape == (10,)
+        assert info["fitness"].shape == (10,)
+        assert info["distances"].shape == (10,)
+        assert info["rewards"].shape == (10,)
+        assert isinstance(info["num_cloned"], int)
 
     def test_jitter_scale(self):
         """Test that position jitter scale affects results."""
@@ -172,7 +177,7 @@ class TestCloningOperator:
         # With alpha_restitution=0, velocities in collision groups should converge
         # We can't test exact convergence without knowing the groups, but we can
         # verify that velocity variance decreases
-        if info['num_cloned'] > 0:
+        if info["num_cloned"] > 0:
             v_var_before = v.var(dim=0).sum()
             v_var_after = new_state.v.var(dim=0).sum()
             # Variance should decrease or stay similar (not increase dramatically)
@@ -204,9 +209,9 @@ class TestCloningOperator:
             lambda_alg=1.0,
             alpha_restitution=0.5,
             alpha=1.0,  # Reward exponent
-            beta=1.0,   # Diversity exponent
-            eta=0.1,    # Floor
-            A=2.0,      # Logistic rescale bound
+            beta=1.0,  # Diversity exponent
+            eta=0.1,  # Floor
+            A=2.0,  # Logistic rescale bound
         )
         potential = SimpleQuadraticPotential()
         op = CloningOperator(params, potential, torch.device("cpu"), torch.float64, bounds=None)
@@ -218,7 +223,7 @@ class TestCloningOperator:
         _, _, info = op.apply(state, return_info=True)
 
         # Fitness should be positive and bounded
-        fitness = info['fitness']
+        fitness = info["fitness"]
         assert torch.all(fitness >= 0)
         assert torch.all(fitness <= (params.A + params.eta) ** (params.alpha + params.beta) + 1.0)
 
@@ -234,7 +239,7 @@ class TestCloningOperator:
 
         _, _, info = op.apply(state, return_info=True)
 
-        probs = info['cloning_probs']
+        probs = info["cloning_probs"]
         assert torch.all(probs >= 0.0)
         assert torch.all(probs <= 1.0)
 
@@ -250,7 +255,7 @@ class TestCloningOperator:
 
         _, _, info = op.apply(state, return_info=True)
 
-        assert info['num_cloned'] == info['will_clone'].sum().item()
+        assert info["num_cloned"] == info["will_clone"].sum().item()
 
     def test_p_max_affects_cloning_rate(self):
         """Test that p_max affects how many walkers clone."""
@@ -261,11 +266,15 @@ class TestCloningOperator:
 
         # Low p_max should result in fewer clones
         params_low = CloningParams(sigma_x=0.1, lambda_alg=1.0, p_max=0.3)
-        op_low = CloningOperator(params_low, potential, torch.device("cpu"), torch.float64, bounds=None)
+        op_low = CloningOperator(
+            params_low, potential, torch.device("cpu"), torch.float64, bounds=None
+        )
 
         # High p_max should result in more clones
         params_high = CloningParams(sigma_x=0.1, lambda_alg=1.0, p_max=1.0)
-        op_high = CloningOperator(params_high, potential, torch.device("cpu"), torch.float64, bounds=None)
+        op_high = CloningOperator(
+            params_high, potential, torch.device("cpu"), torch.float64, bounds=None
+        )
 
         torch.manual_seed(42)
         _, _, info_low = op_low.apply(state, return_info=True)
@@ -276,4 +285,4 @@ class TestCloningOperator:
         # Higher p_max means threshold is higher, so probabilities become larger
         # But this is about the conversion of scores to probabilities, not the scores themselves
         # The key is that with same seed, different p_max values produce different probability distributions
-        assert not torch.allclose(info_low['cloning_probs'], info_high['cloning_probs'])
+        assert not torch.allclose(info_low["cloning_probs"], info_high["cloning_probs"])

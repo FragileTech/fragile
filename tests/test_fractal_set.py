@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 import torch
 
+from fragile.core.companion_selection import CompanionSelection
 from fragile.euclidean_gas import (
     CloningParams,
     EuclideanGas,
@@ -40,7 +41,7 @@ def simple_gas():
             sigma_x=0.5,
             lambda_alg=0.1,
             alpha_restitution=0.5,
-            companion_selection_method="softmax",
+            companion_selection=CompanionSelection(method="softmax", epsilon=0.5),
         ),
         device="cpu",
         dtype="float32",
@@ -372,7 +373,7 @@ class TestFractalSetEdgeCases:
                 sigma_x=0.5,
                 lambda_alg=0.1,
                 alpha_restitution=0.5,
-                companion_selection_method="uniform",
+                companion_selection=CompanionSelection(method="uniform"),
             ),
             device="cpu",
             dtype="float32",

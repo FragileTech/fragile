@@ -7,7 +7,7 @@ to fragile.companion_selection module. These tests now import from there.
 import pytest
 import torch
 
-from fragile.companion_selection import (
+from fragile.core.companion_selection import (
     compute_algorithmic_distance_matrix,
     select_companions_softmax,
 )

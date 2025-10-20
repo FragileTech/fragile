@@ -126,18 +126,28 @@ class TestParentTracking:
         assert all(0 <= pid < simple_gas.params.N for pid in parent_ids.cpu().numpy())
 
     def test_step_returns_parents(self, simple_gas):
-        """Test that step() method can return parent IDs."""
+        """Test that step() method can return parent IDs via info dict."""
         state = simple_gas.initialize_state()
 
         # Step without parent tracking
-        state_cloned, state_final = simple_gas.step(state, return_parents=False)
+        state_cloned, state_final = simple_gas.step(state, return_info=False)
         assert isinstance(state_cloned, type(state))
         assert isinstance(state_final, type(state))
 
-        # Step with parent tracking
-        state_cloned, state_final, parent_ids = simple_gas.step(state, return_parents=True)
+        # Step with info (contains companions and will_clone for parent tracking)
+        state_cloned, state_final, info = simple_gas.step(state, return_info=True)
         assert isinstance(state_cloned, type(state))
         assert isinstance(state_final, type(state))
+
+        # Compute parent IDs from info
+        companions = info["companions"]
+        will_clone = info["will_clone"]
+        parent_ids = torch.where(
+            will_clone,
+            companions,  # Cloned walkers inherit from companion
+            torch.arange(simple_gas.params.N, device=companions.device),
+        )
+
         assert parent_ids.shape == (simple_gas.params.N,)
         assert all(0 <= pid < simple_gas.params.N for pid in parent_ids.cpu().numpy())
 

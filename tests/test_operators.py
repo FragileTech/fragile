@@ -1,4 +1,4 @@
-"""Tests for operators.py functions.
+"""Tests for cloning.py functions.
 
 This module tests all operator functions following the Euclidean Gas specifications
 from 03_cloning.md:
@@ -11,14 +11,16 @@ import pytest
 import torch
 from torch import Tensor
 
-from fragile.companion_selection import CompanionSelection
-from fragile.operators import (
+from fragile.core.cloning import (
     clone_position,
     clone_walkers,
     compute_cloning_probability,
     compute_cloning_score,
-    compute_fitness,
     inelastic_collision_velocity,
+)
+from fragile.core.companion_selection import CompanionSelection
+from fragile.core.fitness import (
+    compute_fitness,
     logistic_rescale,
     patched_standardization,
 )
@@ -96,7 +98,9 @@ class TestPatchedStandardization:
 
         # Check mean ≈ 0 and std ≈ 1 for alive walkers
         assert torch.allclose(z_scores.mean(), torch.tensor(0.0, device=device), atol=0.2)
-        assert torch.allclose(z_scores.std(unbiased=False), torch.tensor(1.0, device=device), atol=0.2)
+        assert torch.allclose(
+            z_scores.std(unbiased=False), torch.tensor(1.0, device=device), atol=0.2
+        )
 
     def test_dead_walkers_excluded(self, device):
         """Test that dead walkers don't contaminate statistics."""
@@ -105,8 +109,8 @@ class TestPatchedStandardization:
         alive = torch.ones(N, dtype=torch.bool, device=device)
 
         # Make half the walkers "dead" with extreme values
-        alive[N//2:] = False
-        values[N//2:] = 1000.0  # Extreme values for dead walkers
+        alive[N // 2 :] = False
+        values[N // 2 :] = 1000.0  # Extreme values for dead walkers
 
         z_scores = patched_standardization(values, alive)
 
@@ -164,15 +168,18 @@ class TestComputeFitness:
         alive = torch.ones(N, dtype=torch.bool, device=device)
         companion_selection = CompanionSelection(method="uniform")
 
-        return positions, velocities, rewards, alive, companion_selection
+        # Compute companions using the selection strategy
+        companions = companion_selection(positions, velocities, alive)
+
+        return positions, velocities, rewards, alive, companions
 
     def test_output_shapes(self, simple_swarm, device):
         """Test output tensor shapes."""
-        positions, velocities, rewards, alive, companion_selection = simple_swarm
+        positions, velocities, rewards, alive, companions = simple_swarm
         N = positions.shape[0]
 
-        fitness, distances, companions = compute_fitness(
-            positions, velocities, rewards, alive, companion_selection
+        fitness, distances, companions_out = compute_fitness(
+            positions, velocities, rewards, alive, companions
         )
 
         assert fitness.shape == (N,)
@@ -181,12 +188,19 @@ class TestComputeFitness:
 
     def test_fitness_bounds(self, simple_swarm, device):
         """Test fitness is bounded by (η, (A + η)^(α+β))."""
-        positions, velocities, rewards, alive, companion_selection = simple_swarm
+        positions, velocities, rewards, alive, companions = simple_swarm
         alpha, beta, eta, A = 1.0, 1.0, 0.1, 2.0
 
         fitness, _, _ = compute_fitness(
-            positions, velocities, rewards, alive, companion_selection,
-            alpha=alpha, beta=beta, eta=eta, A=A
+            positions,
+            velocities,
+            rewards,
+            alive,
+            companions,
+            alpha=alpha,
+            beta=beta,
+            eta=eta,
+            A=A,
         )
 
         V_min = eta ** (alpha + beta)
@@ -198,51 +212,45 @@ class TestComputeFitness:
 
     def test_dead_walkers_zero_fitness(self, simple_swarm, device):
         """Test dead walkers receive fitness = 0."""
-        positions, velocities, rewards, alive, companion_selection = simple_swarm
+        positions, velocities, rewards, alive, companions = simple_swarm
 
         # Mark some walkers as dead
         alive[::3] = False
 
-        fitness, _, _ = compute_fitness(
-            positions, velocities, rewards, alive, companion_selection
-        )
+        fitness, _, _ = compute_fitness(positions, velocities, rewards, alive, companions)
 
         assert torch.all(fitness[~alive] == 0.0)
         assert torch.all(fitness[alive] > 0.0)
 
     def test_lambda_alg_position_only(self, simple_swarm, device):
         """Test λ_alg=0 uses only position distance."""
-        positions, velocities, rewards, alive, companion_selection = simple_swarm
+        positions, velocities, rewards, alive, companions = simple_swarm
 
         # Create identical positions, different velocities
         positions_same = positions.clone()
         velocities_diff = torch.randn_like(velocities) * 100  # Very different
 
-        fitness1, distances1, companions = compute_fitness(
-            positions_same, velocities, rewards, alive, companion_selection,
-            lambda_alg=0.0
+        _fitness1, _distances1, companions_out = compute_fitness(
+            positions_same, velocities, rewards, alive, companions, lambda_alg=0.0
         )
 
         # Force same companion selection for comparison
-        pos_diff = positions_same - positions_same[companions]
-        vel_diff = velocities_diff - velocities_diff[companions]
+        pos_diff = positions_same - positions_same[companions_out]
+        vel_diff = velocities_diff - velocities_diff[companions_out]
 
-        distances_pos_only = torch.sqrt((pos_diff**2).sum(dim=-1))
-        distances_with_vel = torch.sqrt(
-            (pos_diff**2).sum(dim=-1) + 1.0 * (vel_diff**2).sum(dim=-1)
-        )
+        torch.sqrt((pos_diff**2).sum(dim=-1))
+        torch.sqrt((pos_diff**2).sum(dim=-1) + 1.0 * (vel_diff**2).sum(dim=-1))
 
         # For λ_alg=0, distances should not depend on velocity
         # (testing the principle, not exact values due to stochastic companion selection)
 
     def test_fitness_components(self, simple_swarm, device):
         """Test fitness = (d')^β * (r')^α structure."""
-        positions, velocities, rewards, alive, companion_selection = simple_swarm
+        positions, velocities, rewards, alive, companions = simple_swarm
         alpha, beta = 2.0, 3.0
 
         fitness, _, _ = compute_fitness(
-            positions, velocities, rewards, alive, companion_selection,
-            alpha=alpha, beta=beta
+            positions, velocities, rewards, alive, companions, alpha=alpha, beta=beta
         )
 
         # All alive walkers should have positive fitness
@@ -422,9 +430,9 @@ class TestInelasticCollisionVelocity:
         v_new = inelastic_collision_velocity(velocities, companions, will_clone)
 
         # Non-cloners should be unchanged (except companion of cloner)
-        companion_idx = companions[5]
+        companion_idx = companions[5].item()  # Convert tensor to int for set membership
         for i in range(N):
-            if i != 5 and i != companion_idx:
+            if i not in {5, companion_idx}:
                 assert torch.allclose(v_new[i], velocities[i], atol=1e-6)
 
 
@@ -531,9 +539,12 @@ class TestCloneWalkers:
         alive = torch.ones(N, dtype=torch.bool, device=device)
         companion_selection = CompanionSelection(method="uniform")
 
-        # Compute fitness
-        fitness, distances, companions = compute_fitness(
-            positions, velocities, rewards, alive, companion_selection
+        # Select companions using the selection strategy
+        companions = companion_selection(positions, velocities, alive)
+
+        # Compute fitness with the selected companions
+        fitness, _distances, _companions_out = compute_fitness(
+            positions, velocities, rewards, alive, companions
         )
 
         return positions, velocities, fitness, companions, alive
@@ -557,16 +568,16 @@ class TestCloneWalkers:
         assert alive_new.all()
 
         # Check info dictionary
-        assert 'cloning_scores' in info
-        assert 'cloning_probs' in info
-        assert 'will_clone' in info
-        assert 'num_cloned' in info
-        assert 'companions' in info
+        assert "cloning_scores" in info
+        assert "cloning_probs" in info
+        assert "will_clone" in info
+        assert "num_cloned" in info
+        assert "companions" in info
 
-        assert info['cloning_scores'].shape == (N,)
-        assert info['cloning_probs'].shape == (N,)
-        assert info['will_clone'].shape == (N,)
-        assert isinstance(info['num_cloned'], int)
+        assert info["cloning_scores"].shape == (N,)
+        assert info["cloning_probs"].shape == (N,)
+        assert info["will_clone"].shape == (N,)
+        assert isinstance(info["num_cloned"], int)
 
     def test_dead_walkers_revived(self, simple_swarm, device):
         """Test dead walkers are always revived."""
@@ -579,7 +590,7 @@ class TestCloneWalkers:
         # Dead walkers should have zero fitness (from compute_fitness)
         fitness = torch.where(alive, fitness, torch.zeros_like(fitness))
 
-        pos_new, vel_new, alive_new, info = clone_walkers(
+        _pos_new, _vel_new, alive_new, info = clone_walkers(
             positions, velocities, fitness, companions, alive
         )
 
@@ -588,18 +599,16 @@ class TestCloneWalkers:
 
         # Dead walkers should have cloned (high probability)
         # Due to stochasticity, we check that most dead walkers cloned
-        dead_cloned = info['will_clone'][~alive].sum()
+        dead_cloned = info["will_clone"][~alive].sum()
         assert dead_cloned >= num_dead * 0.8  # At least 80% cloned
 
     def test_cloning_probabilities_bounded(self, simple_swarm, device):
         """Test cloning probabilities are in [0, 1]."""
         positions, velocities, fitness, companions, alive = simple_swarm
 
-        _, _, _, info = clone_walkers(
-            positions, velocities, fitness, companions, alive
-        )
+        _, _, _, info = clone_walkers(positions, velocities, fitness, companions, alive)
 
-        probs = info['cloning_probs']
+        probs = info["cloning_probs"]
         assert torch.all(probs >= 0.0)
         assert torch.all(probs <= 1.0)
 
@@ -609,32 +618,26 @@ class TestCloneWalkers:
 
         # Run twice with same inputs
         torch.manual_seed(42)
-        _, _, _, info1 = clone_walkers(
-            positions, velocities, fitness, companions, alive
-        )
+        _, _, _, info1 = clone_walkers(positions, velocities, fitness, companions, alive)
 
         torch.manual_seed(43)  # Different seed
-        _, _, _, info2 = clone_walkers(
-            positions, velocities, fitness, companions, alive
-        )
+        _, _, _, info2 = clone_walkers(positions, velocities, fitness, companions, alive)
 
         # Same probabilities
-        assert torch.allclose(info1['cloning_probs'], info2['cloning_probs'])
+        assert torch.allclose(info1["cloning_probs"], info2["cloning_probs"])
 
         # Different decisions (with high probability for large N)
-        decisions_differ = (info1['will_clone'] != info2['will_clone']).any()
+        decisions_differ = (info1["will_clone"] != info2["will_clone"]).any()
         assert decisions_differ  # Very likely for N=20
 
     def test_positions_updated(self, simple_swarm, device):
         """Test positions change for cloners."""
         positions, velocities, fitness, companions, alive = simple_swarm
 
-        pos_new, _, _, info = clone_walkers(
-            positions, velocities, fitness, companions, alive
-        )
+        pos_new, _, _, info = clone_walkers(positions, velocities, fitness, companions, alive)
 
         # Cloners should have different positions
-        will_clone = info['will_clone']
+        will_clone = info["will_clone"]
         if will_clone.any():
             cloner_idx = torch.where(will_clone)[0][0]
             pos_changed = not torch.allclose(pos_new[cloner_idx], positions[cloner_idx])
@@ -644,12 +647,10 @@ class TestCloneWalkers:
         """Test velocities change for collision participants."""
         positions, velocities, fitness, companions, alive = simple_swarm
 
-        _, vel_new, _, info = clone_walkers(
-            positions, velocities, fitness, companions, alive
-        )
+        _, vel_new, _, info = clone_walkers(positions, velocities, fitness, companions, alive)
 
         # At least some velocities should change if cloning occurred
-        if info['num_cloned'] > 0:
+        if info["num_cloned"] > 0:
             vel_changed = not torch.allclose(vel_new, velocities)
             assert vel_changed
 
@@ -670,25 +671,23 @@ class TestCloneWalkers:
 
         # Higher p_max generally means less cloning (same score needs higher p_max)
         # But probabilities should differ
-        assert not torch.allclose(info_low['cloning_probs'], info_high['cloning_probs'])
+        assert not torch.allclose(info_low["cloning_probs"], info_high["cloning_probs"])
 
     def test_info_consistency(self, simple_swarm, device):
         """Test info dictionary values are consistent."""
         positions, velocities, fitness, companions, alive = simple_swarm
 
-        _, _, _, info = clone_walkers(
-            positions, velocities, fitness, companions, alive
-        )
+        _, _, _, info = clone_walkers(positions, velocities, fitness, companions, alive)
 
         # num_cloned should match will_clone count
-        assert info['num_cloned'] == info['will_clone'].sum().item()
+        assert info["num_cloned"] == info["will_clone"].sum().item()
 
         # Companions should match input
-        assert torch.all(info['companions'] == companions)
+        assert torch.all(info["companions"] == companions)
 
         # Cloning probabilities should be in valid range
-        assert torch.all(info['cloning_probs'] >= 0.0)
-        assert torch.all(info['cloning_probs'] <= 1.0)
+        assert torch.all(info["cloning_probs"] >= 0.0)
+        assert torch.all(info["cloning_probs"] <= 1.0)
 
 
 if __name__ == "__main__":

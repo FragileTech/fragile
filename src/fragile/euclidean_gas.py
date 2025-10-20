@@ -15,13 +15,11 @@ import torch
 from torch import Tensor
 
 from fragile.bounds import Bounds, TorchBounds
-from fragile.companion_selection import CompanionSelection
+from fragile.core.cloning import clone_walkers
+from fragile.core.companion_selection import CompanionSelection
+from fragile.core.fitness import compute_fitness, FitnessOperator, FitnessParams
+from fragile.core.kinetics import KineticOperator, LangevinParams
 from fragile.fractal_set import FractalSet
-from fragile.kinetics import KineticOperator, LangevinParams
-from fragile.operators import (
-    clone_walkers,
-    compute_fitness,
-)
 from fragile.scutoid import ScutoidTessellation
 
 
@@ -67,18 +65,27 @@ class CloningParams(BaseModel):
     sigma_x: float = Field(gt=0, description="Positional jitter scale (σ_x)")
     lambda_alg: float = Field(ge=0, description="Velocity weight in algorithmic distance (λ_alg)")
     alpha_restitution: float = Field(
-        default=0.5, ge=0, le=1, description="Coefficient of restitution [0,1]: 0=fully inelastic, 1=elastic"
+        default=0.5,
+        ge=0,
+        le=1,
+        description="Coefficient of restitution [0,1]: 0=fully inelastic, 1=elastic",
     )
-    p_max: float = Field(default=1.0, gt=0, le=1, description="Maximum cloning probability threshold")
-    epsilon_clone: float = Field(default=0.01, gt=0, description="Regularization for cloning score (ε_clone)")
-    alpha: float = Field(default=1.0, gt=0, description="Reward channel exponent in fitness")
-    beta: float = Field(default=1.0, gt=0, description="Diversity channel exponent in fitness")
-    eta: float = Field(default=0.1, gt=0, description="Positivity floor parameter in fitness")
+    p_max: float = Field(
+        default=1.0, gt=0, le=1, description="Maximum cloning probability threshold"
+    )
+    epsilon_clone: float = Field(
+        default=0.01, gt=0, description="Regularization for cloning score (ε_clone)"
+    )
+    alpha: float = Field(default=1.0, ge=0, description="Reward channel exponent in fitness")
+    beta: float = Field(default=1.0, ge=0, description="Diversity channel exponent in fitness")
+    eta: float = Field(default=0.1, ge=0, description="Positivity floor parameter in fitness")
     A: float = Field(default=2.0, gt=0, description="Upper bound for logistic rescale")
-    sigma_min: float = Field(default=1e-8, gt=0, description="Regularization for patched standardization")
+    sigma_min: float = Field(
+        default=1e-8, gt=0, description="Regularization for patched standardization"
+    )
     companion_selection: CompanionSelection = Field(
         default_factory=lambda: CompanionSelection(method="uniform"),
-        description="Companion selection strategy"
+        description="Companion selection strategy",
     )
 
 
@@ -92,6 +99,10 @@ class EuclideanGasParams(BaseModel):
     potential: PotentialParams = Field(description="Target potential parameters")
     langevin: LangevinParams = Field(description="Langevin dynamics parameters")
     cloning: CloningParams = Field(description="Cloning operator parameters")
+    fitness: FitnessParams | None = Field(
+        default=None,
+        description="Fitness operator parameters (required if using adaptive kinetics features)",
+    )
     bounds: TorchBounds | None = Field(
         None, description="Position bounds (optional, TorchBounds only)"
     )
@@ -102,6 +113,14 @@ class EuclideanGasParams(BaseModel):
         description=(
             "Keep the highest-fitness walker untouched during cloning and kinetic steps."
         ),
+    )
+    enable_cloning: bool = Field(
+        default=True,
+        description="Enable cloning operator (fitness still computed for adaptive forces)",
+    )
+    enable_kinetic: bool = Field(
+        default=True,
+        description="Enable kinetic (Langevin dynamics) operator",
     )
 
     @property
@@ -242,7 +261,7 @@ def random_isotropic_rotation(v: Tensor) -> Tensor:
 
 
 class CloningOperator:
-    """Cloning operator using functions from operators.py."""
+    """Cloning operator using functions from cloning.py."""
 
     def __init__(
         self,
@@ -272,13 +291,13 @@ class CloningOperator:
         self, state: SwarmState, return_parents: bool = False, return_info: bool = False
     ) -> SwarmState | tuple[SwarmState, Tensor] | tuple[SwarmState, Tensor, dict]:
         """
-        Apply complete cloning operator using operators.py functions.
+        Apply complete cloning operator using cloning.py functions.
 
         Pipeline:
         1. Compute rewards from potential: R(x) = -U(x)
         2. Determine alive/dead status from bounds
-        3. Compute fitness using compute_fitness from operators.py
-        4. Execute cloning using clone_walkers from operators.py
+        3. Compute fitness using compute_fitness from cloning.py
+        4. Execute cloning using clone_walkers from cloning.py
 
         Args:
             state: Current swarm state
@@ -314,25 +333,34 @@ class CloningOperator:
                 if return_info:
                     # Return empty companions and info for consistency
                     companions = torch.arange(N, device=self.device)
-                    info = {'cloning_scores': torch.zeros(N, device=self.device),
-                            'cloning_probs': torch.ones(N, device=self.device),
-                            'will_clone': torch.ones(N, dtype=torch.bool, device=self.device),
-                            'companions': companions}
+                    info = {
+                        "cloning_scores": torch.zeros(N, device=self.device),
+                        "cloning_probs": torch.ones(N, device=self.device),
+                        "will_clone": torch.ones(N, dtype=torch.bool, device=self.device),
+                        "companions": companions,
+                    }
                     return new_state, companions, info
-                elif return_parents:
+                if return_parents:
                     companions = torch.arange(N, device=self.device)
                     return new_state, companions
                 return new_state
             # No bounds - treat all as alive
             alive_mask = torch.ones(N, dtype=torch.bool, device=self.device)
 
-        # Step 3: Compute fitness using operators.py
-        fitness, distances, companions = compute_fitness(
+        # Step 3: Select companions using the companion selection strategy
+        companions = self.params.companion_selection(
+            x=state.x,
+            v=state.v,
+            alive_mask=alive_mask,
+        )
+
+        # Step 4: Compute fitness using core.fitness
+        fitness, distances, _ = compute_fitness(
             positions=state.x,
             velocities=state.v,
             rewards=rewards,
             alive=alive_mask,
-            companion_selection=self.params.companion_selection,
+            companions=companions,
             alpha=self.params.alpha,
             beta=self.params.beta,
             eta=self.params.eta,
@@ -341,8 +369,8 @@ class CloningOperator:
             A=self.params.A,
         )
 
-        # Step 4: Execute cloning using operators.py
-        x_new, v_new, alive_new, clone_info = clone_walkers(
+        # Step 4: Execute cloning using cloning.py
+        x_new, v_new, _alive_new, clone_info = clone_walkers(
             positions=state.x,
             velocities=state.v,
             fitness=fitness,
@@ -361,13 +389,13 @@ class CloningOperator:
             # Combine fitness info with cloning info
             # Put clone_info last so it includes num_cloned, will_clone, etc.
             full_info = {
-                'fitness': fitness,
-                'distances': distances,
-                'rewards': rewards,
+                "fitness": fitness,
+                "distances": distances,
+                "rewards": rewards,
                 **clone_info,  # Includes: cloning_scores, cloning_probs, will_clone, num_cloned, companions
             }
             return new_state, companions, full_info
-        elif return_parents:
+        if return_parents:
             return new_state, companions
         return new_state
 
@@ -391,9 +419,16 @@ class EuclideanGas:
         self.dtype = params.torch_dtype
         self.bounds = params.bounds
 
+        # Create fitness operator if parameters provided
+        # The fitness operator is owned by EuclideanGas since it's used for cloning
+        # and optionally provides derivatives to the kinetic operator
+        self.fitness_op = None
+        if params.fitness is not None:
+            self.fitness_op = FitnessOperator(params.fitness)
+
         # Initialize operators
         self.kinetic_op = KineticOperator(
-            params.langevin, params.potential, self.device, self.dtype
+            params.langevin, potential=params.potential, device=self.device, dtype=self.dtype
         )
         self.cloning_op = CloningOperator(
             params.cloning, params.potential, self.device, self.dtype, self.bounds
@@ -457,13 +492,13 @@ class EuclideanGas:
         self, state: SwarmState, return_info: bool = False
     ) -> tuple[SwarmState, SwarmState] | tuple[SwarmState, SwarmState, dict]:
         """
-        Perform one full step: compute fitness, clone, then kinetic.
+        Perform one full step: compute fitness, clone (optional), then kinetic (optional).
 
-        Uses operators.py functions directly to compute:
+        Uses cloning.py functions directly to compute:
         1. Rewards from potential
-        2. Fitness using compute_fitness
-        3. Cloning using clone_walkers
-        4. Kinetic update
+        2. Fitness using compute_fitness (always computed, even if cloning disabled)
+        3. Cloning using clone_walkers (if enable_cloning=True)
+        4. Kinetic update (if enable_kinetic=True)
 
         Args:
             state: Current swarm state
@@ -474,8 +509,11 @@ class EuclideanGas:
             (state_after_cloning, state_after_kinetic, info) if return_info=True
 
         Note:
-            The info dict contains: fitness, distances, companions, rewards,
-            cloning_scores, cloning_probs, will_clone, num_cloned
+            - The info dict contains: fitness, distances, companions, rewards,
+              cloning_scores, cloning_probs, will_clone, num_cloned
+            - Fitness is always computed (needed for adaptive forces)
+            - If enable_cloning=False, cloning is skipped and state_after_cloning = state
+            - If enable_kinetic=False, kinetic is skipped and state_after_kinetic = state_after_cloning
         """
         freeze_mask = self._freeze_mask(state)
         reference_state = state.clone() if freeze_mask is not None else None
@@ -499,31 +537,42 @@ class EuclideanGas:
                 )
                 v_new = torch.randn(state.N, state.d, device=self.device, dtype=self.dtype) * 0.1
                 state_cloned = SwarmState(x_new, v_new)
-                state_final = self.kinetic_op.apply(state_cloned)
+                # No fitness derivatives for resurrection (standard kinetic step)
+                state_final = self.kinetic_op.apply(
+                    state_cloned, grad_fitness=None, hess_fitness=None
+                )
 
                 if return_info:
                     # Return minimal info for resurrection case
                     info = {
-                        'fitness': torch.zeros(state.N, device=self.device),
-                        'rewards': rewards,
-                        'distances': torch.zeros(state.N, device=self.device),
-                        'companions': torch.arange(state.N, device=self.device),
-                        'cloning_scores': torch.zeros(state.N, device=self.device),
-                        'cloning_probs': torch.ones(state.N, device=self.device),
-                        'will_clone': torch.ones(state.N, dtype=torch.bool, device=self.device),
-                        'num_cloned': state.N,
+                        "fitness": torch.zeros(state.N, device=self.device),
+                        "rewards": rewards,
+                        "distances": torch.zeros(state.N, device=self.device),
+                        "companions": torch.arange(state.N, device=self.device),
+                        "cloning_scores": torch.zeros(state.N, device=self.device),
+                        "cloning_probs": torch.ones(state.N, device=self.device),
+                        "will_clone": torch.ones(state.N, dtype=torch.bool, device=self.device),
+                        "num_cloned": state.N,
                     }
                     return state_cloned, state_final, info
                 return state_cloned, state_final
             alive_mask = torch.ones(state.N, dtype=torch.bool, device=self.device)
 
-        # Step 3: Compute fitness using operators.py
-        fitness, distances, companions = compute_fitness(
+        # Step 3: Select companions using the companion selection strategy
+        companions = self.params.cloning.companion_selection(
+            x=state.x,
+            v=state.v,
+            alive_mask=alive_mask,
+        )
+
+        # Step 4: Compute fitness using core.fitness
+        # Always compute fitness even if cloning disabled (needed for adaptive forces)
+        fitness, distances, _ = compute_fitness(
             positions=state.x,
             velocities=state.v,
             rewards=rewards,
             alive=alive_mask,
-            companion_selection=self.params.cloning.companion_selection,
+            companions=companions,
             alpha=self.params.cloning.alpha,
             beta=self.params.cloning.beta,
             eta=self.params.cloning.eta,
@@ -532,37 +581,72 @@ class EuclideanGas:
             A=self.params.cloning.A,
         )
 
-        # Step 4: Execute cloning using operators.py
-        x_cloned, v_cloned, _, clone_info = clone_walkers(
-            positions=state.x,
-            velocities=state.v,
-            fitness=fitness,
-            companions=companions,
-            alive=alive_mask,
-            p_max=self.params.cloning.p_max,
-            epsilon_clone=self.params.cloning.epsilon_clone,
-            sigma_x=self.params.cloning.sigma_x,
-            alpha_restitution=self.params.cloning.alpha_restitution,
-        )
-
-        state_cloned = SwarmState(x_cloned, v_cloned)
+        # Step 5: Execute cloning using cloning.py (if enabled)
+        if self.params.enable_cloning:
+            x_cloned, v_cloned, _, clone_info = clone_walkers(
+                positions=state.x,
+                velocities=state.v,
+                fitness=fitness,
+                companions=companions,
+                alive=alive_mask,
+                p_max=self.params.cloning.p_max,
+                epsilon_clone=self.params.cloning.epsilon_clone,
+                sigma_x=self.params.cloning.sigma_x,
+                alpha_restitution=self.params.cloning.alpha_restitution,
+            )
+            state_cloned = SwarmState(x_cloned, v_cloned)
+        else:
+            # Skip cloning, use current state
+            state_cloned = state.clone()
+            clone_info = {
+                "cloning_scores": torch.zeros(state.N, device=self.device),
+                "cloning_probs": torch.ones(state.N, device=self.device),
+                "will_clone": torch.zeros(state.N, dtype=torch.bool, device=self.device),
+                "num_cloned": 0,
+            }
 
         # Apply freeze mask if needed
         if freeze_mask is not None and freeze_mask.any():
             state_cloned.copy_from(reference_state, freeze_mask)
 
-        # Step 5: Kinetic update
-        state_final = self.kinetic_op.apply(state_cloned)
-        if freeze_mask is not None and freeze_mask.any():
-            state_final.copy_from(reference_state, freeze_mask)
+        # Step 5: Compute fitness derivatives if needed for adaptive kinetics
+        grad_fitness = None
+        hess_fitness = None
+
+        if self.fitness_op is not None:
+            # Compute fitness gradient if needed for adaptive force
+            if self.params.langevin.use_fitness_force:
+                grad_fitness = self.fitness_op.compute_gradient(
+                    state_cloned.x, state_cloned.v, rewards, alive_mask, companions
+                )
+
+            # Compute fitness Hessian if needed for anisotropic diffusion
+            if self.params.langevin.use_anisotropic_diffusion:
+                hess_fitness = self.fitness_op.compute_hessian(
+                    state_cloned.x,
+                    state_cloned.v,
+                    rewards,
+                    alive_mask,
+                    companions,
+                    diagonal_only=self.params.langevin.diagonal_diffusion,
+                )
+
+        # Step 6: Kinetic update with optional fitness derivatives (if enabled)
+        if self.params.enable_kinetic:
+            state_final = self.kinetic_op.apply(state_cloned, grad_fitness, hess_fitness)
+            if freeze_mask is not None and freeze_mask.any():
+                state_final.copy_from(reference_state, freeze_mask)
+        else:
+            # Skip kinetic update, use cloned state as final
+            state_final = state_cloned.clone()
 
         if return_info:
             # Combine all computed data into info dict
             info = {
-                'fitness': fitness,
-                'rewards': rewards,
-                'distances': distances,
-                'companions': companions,
+                "fitness": fitness,
+                "rewards": rewards,
+                "distances": distances,
+                "companions": companions,
                 **clone_info,  # Adds: cloning_scores, cloning_probs, will_clone, num_cloned
             }
             return state_cloned, state_final, info
@@ -641,12 +725,19 @@ class EuclideanGas:
             if record_fitness:
                 # Compute rewards and fitness for initial state
                 rewards = -self.params.potential.evaluate(state.x)
-                fitness, distances, companions = compute_fitness(
+                # Select companions using the companion selection strategy
+                companions = self.params.cloning.companion_selection(
+                    x=state.x,
+                    v=state.v,
+                    alive_mask=alive_mask,
+                )
+                # Compute fitness
+                fitness, distances, _ = compute_fitness(
                     positions=state.x,
                     velocities=state.v,
                     rewards=rewards,
                     alive=alive_mask,
-                    companion_selection=self.params.cloning.companion_selection,
+                    companions=companions,
                     alpha=self.params.cloning.alpha,
                     beta=self.params.cloning.beta,
                     eta=self.params.cloning.eta,
@@ -655,10 +746,10 @@ class EuclideanGas:
                     A=self.params.cloning.A,
                 )
                 initial_info = {
-                    'fitness': fitness,
-                    'rewards': rewards,
-                    'distances': distances,
-                    'companions': companions,
+                    "fitness": fitness,
+                    "rewards": rewards,
+                    "distances": distances,
+                    "companions": companions,
                 }
             else:
                 initial_info = None
@@ -709,8 +800,8 @@ class EuclideanGas:
                     final_step = t
                     break
 
-            # Perform step with return_info if we need to record fitness or fractal set
-            need_info = fractal_set is not None and record_fitness
+            # Perform step with return_info if we need to record fitness, fractal set, or scutoid
+            need_info = (fractal_set is not None and record_fitness) or scutoid_tessellation is not None
             if need_info:
                 _, state, info = self.step(state, return_info=True)
             else:
@@ -750,9 +841,17 @@ class EuclideanGas:
                     # Use FractalSet as source of truth for parent tracking
                     parent_ids_np = fractal_set.get_parent_ids(t + 1)
                     parent_ids = torch.from_numpy(parent_ids_np).to(device=self.device)
-                elif parent_ids_tensor is not None:
-                    # Use parent IDs from cloning operator
-                    parent_ids = parent_ids_tensor
+                elif info is not None:
+                    # Compute parent IDs from cloning info
+                    # For walkers that cloned: parent = companion index
+                    # For walkers that didn't clone: parent = self index
+                    companions = info["companions"]
+                    will_clone = info["will_clone"]
+                    parent_ids = torch.where(
+                        will_clone,
+                        companions,  # Cloned walkers inherit from companion
+                        torch.arange(N, device=self.device),  # Non-cloners are their own parent
+                    )
                 else:
                     # Fallback: assume no cloning (each walker is its own parent)
                     parent_ids = torch.arange(N, device=self.device)
@@ -816,14 +915,14 @@ class EuclideanGas:
         if record_fitness:
             if info is not None:
                 # Use pre-computed values from step()
-                fitness = info['fitness']
-                reward = info['rewards']
-                companions = info['companions']
-                distances = info['distances']
+                fitness = info["fitness"]
+                reward = info["rewards"]
+                companions = info["companions"]
+                distances = info["distances"]
                 potential = -reward  # Reverse the sign
 
                 # Compute cloning scores and probabilities from fitness
-                from fragile.operators import compute_cloning_probability, compute_cloning_score
+                from fragile.core.cloning import compute_cloning_probability, compute_cloning_score
 
                 companion_fitness = fitness[companions]
                 cloning_scores = compute_cloning_score(
@@ -837,23 +936,30 @@ class EuclideanGas:
                 potential = self.params.potential.evaluate(state.x)
                 reward = -potential
 
-                # Use operators.py to compute fitness properly
-                fitness, distances, companions = compute_fitness(
+                # Select companions using the companion selection strategy
+                companions = self.params.cloning.companion_selection(
+                    x=state.x,
+                    v=state.v,
+                    alive_mask=alive_mask,
+                )
+
+                # Use core.fitness to compute fitness properly
+                fitness, distances, _ = compute_fitness(
                     positions=state.x,
                     velocities=state.v,
                     rewards=reward,
                     alive=alive_mask,
-                    companion_selection=self.params.cloning.companion_selection,
+                    companions=companions,
                     alpha=self.params.cloning.alpha,
                     beta=self.params.cloning.beta,
                     eta=self.params.cloning.eta,
                     lambda_alg=self.params.cloning.lambda_alg,
                     sigma_min=self.params.cloning.sigma_min,
-                    A=self.params.cloning.A,
+                    A=self.params.cloning.alpha,
                 )
 
                 # Compute cloning scores and probabilities
-                from fragile.operators import compute_cloning_probability, compute_cloning_score
+                from fragile.core.cloning import compute_cloning_probability, compute_cloning_score
 
                 companion_fitness = fitness[companions]
                 cloning_scores = compute_cloning_score(
@@ -864,7 +970,7 @@ class EuclideanGas:
                 )
 
             # Compute rescaled reward using patched standardization
-            from fragile.operators import patched_standardization
+            from fragile.core.fitness import patched_standardization
 
             rescaled_reward = patched_standardization(
                 reward, alive_mask, sigma_min=self.params.cloning.sigma_min

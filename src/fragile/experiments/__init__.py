@@ -14,6 +14,11 @@ from fragile.experiments.convergence_analysis import (
     ConvergenceMetrics,
     create_multimodal_potential,
 )
+from fragile.experiments.interactive_euclidean_gas import (
+    SwarmExplorer,
+    create_dashboard,
+    prepare_background,
+)
 
 
 __all__ = [
@@ -21,4 +26,7 @@ __all__ = [
     "ConvergenceExperiment",
     "ConvergenceMetrics",
     "create_multimodal_potential",
+    "SwarmExplorer",
+    "create_dashboard",
+    "prepare_background",
 ]

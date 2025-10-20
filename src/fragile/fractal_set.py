@@ -325,7 +325,7 @@ class FractalSet:
         Returns:
             FractalSet with complete run history
         """
-        from fragile.companion_selection import select_companions_softmax
+        from fragile.core.companion_selection import select_companions_softmax
 
         # Initialize fractal set
         fractal_set = cls(
@@ -352,8 +352,8 @@ class FractalSet:
                 state.x,
                 state.v,
                 alive_mask,
-                epsilon=gas.params.cloning.get_epsilon_c(),
-                lambda_alg=gas.params.cloning.lambda_alg,
+                epsilon=gas.params.cloning.companion_selection.epsilon,
+                lambda_alg=gas.params.cloning.companion_selection.lambda_alg,
                 exclude_self=True,
             )
 
@@ -361,7 +361,9 @@ class FractalSet:
             v_companion = state.v[companions]
             pos_diff_sq = torch.sum((state.x - x_companion) ** 2, dim=-1)
             vel_diff_sq = torch.sum((state.v - v_companion) ** 2, dim=-1)
-            distances = torch.sqrt(pos_diff_sq + gas.params.cloning.lambda_alg * vel_diff_sq)
+            distances = torch.sqrt(
+                pos_diff_sq + gas.params.cloning.companion_selection.lambda_alg * vel_diff_sq
+            )
 
             # Simplified fitness (just use distance as proxy)
             fitness = 1.0 / (distances + 1e-6)
@@ -417,8 +419,8 @@ class FractalSet:
                     state.x,
                     state.v,
                     alive_mask,
-                    epsilon=gas.params.cloning.get_epsilon_c(),
-                    lambda_alg=gas.params.cloning.lambda_alg,
+                    epsilon=gas.params.cloning.companion_selection.epsilon,
+                    lambda_alg=gas.params.cloning.companion_selection.lambda_alg,
                     exclude_self=True,
                 )
 
@@ -426,7 +428,9 @@ class FractalSet:
                 v_companion = state.v[companions]
                 pos_diff_sq = torch.sum((state.x - x_companion) ** 2, dim=-1)
                 vel_diff_sq = torch.sum((state.v - v_companion) ** 2, dim=-1)
-                distances = torch.sqrt(pos_diff_sq + gas.params.cloning.lambda_alg * vel_diff_sq)
+                distances = torch.sqrt(
+                    pos_diff_sq + gas.params.cloning.companion_selection.lambda_alg * vel_diff_sq
+                )
 
                 fitness = 1.0 / (distances + 1e-6)
 

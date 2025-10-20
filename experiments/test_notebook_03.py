@@ -89,15 +89,12 @@ print(f"✓ Potential evaluation works: {values}")
 N = 20  # Small number for testing
 
 # Define bounds
-bounds = TorchBounds(
-    low=torch.tensor([-6.0, -6.0]),
-    high=torch.tensor([6.0, 6.0])
-)
+bounds = TorchBounds(low=torch.tensor([-6.0, -6.0]), high=torch.tensor([6.0, 6.0]))
 
 # Create companion selection strategy
 companion_selection = CompanionSelection(
-    method="uniform",      # Uniform random selection (simplest)
-    lambda_alg=0.0,        # Position-only distance
+    method="uniform",  # Uniform random selection (simplest)
+    lambda_alg=0.0,  # Position-only distance
 )
 
 params = GeometricGasParams(
