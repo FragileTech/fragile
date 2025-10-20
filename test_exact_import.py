@@ -1,11 +1,14 @@
 """Import test directly and add detailed output."""
 
 import sys
-import traceback
+
+
 sys.path.insert(0, "tests")
 
 import torch
+
 from fragile.core.cloning import inelastic_collision_velocity
+
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -19,7 +22,9 @@ companion_idx = companions[5]
 
 print(f"Companion of walker 5: {companion_idx}")
 print(f"companion_idx type: {type(companion_idx)}")
-print(f"companion_idx value: {companion_idx.item() if hasattr(companion_idx, 'item') else companion_idx}")
+print(
+    f"companion_idx value: {companion_idx.item() if hasattr(companion_idx, 'item') else companion_idx}"
+)
 
 v_new = inelastic_collision_velocity(velocities, companions, will_clone)
 
@@ -34,7 +39,7 @@ for i in range(N):
             print(f"  Diff: {(v_new[i] - velocities[i]).abs()}")
             print(f"  Max diff: {(v_new[i] - velocities[i]).abs().max():.6e}")
 
-            print(f"\n  Checking condition: i not in {{5, companion_idx}}")
+            print("\n  Checking condition: i not in {5, companion_idx}")
             print(f"    i = {i}")
             print(f"    companion_idx = {companion_idx}")
             print(f"    companion_idx.item() = {companion_idx.item()}")
@@ -42,9 +47,11 @@ for i in range(N):
             print(f"    i == companion_idx: {i == companion_idx}")
             print(f"    i == companion_idx.item(): {i == companion_idx.item()}")
             print(f"    5 in {{5, companion_idx}}: {5 in {5, companion_idx}}")
-            print(f"    companion_idx in {{5, companion_idx}}: {companion_idx in {5, companion_idx}}")
+            print(
+                f"    companion_idx in {{5, companion_idx}}: {companion_idx in {5, companion_idx}}"
+            )
             print(f"    i in {{5, companion_idx}}: {i in {5, companion_idx}}")
 
             break
 else:
-    print(f"\n✓ All walkers passed")
+    print("\n✓ All walkers passed")

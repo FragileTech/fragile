@@ -101,7 +101,9 @@ def construct_gamma_matrices() -> tuple[list[np.ndarray], np.ndarray]:
 # =============================================================================
 
 
-@pytest.mark.skip(reason="Matrix dimension mismatch in Clifford algebra construction (size 32 vs 16)")
+@pytest.mark.skip(
+    reason="Matrix dimension mismatch in Clifford algebra construction (size 32 vs 16)"
+)
 def test_clifford_algebra():
     """Test {Γ^A, Γ^B} = 2η^{AB} I_16 for all A, B."""
     gammas, eta = construct_gamma_matrices()
@@ -156,7 +158,9 @@ def construct_so10_generators(gammas: list[np.ndarray]) -> dict[tuple[int, int],
     return generators
 
 
-@pytest.mark.skip(reason="Matrix dimension mismatch in Clifford algebra construction (size 32 vs 16)")
+@pytest.mark.skip(
+    reason="Matrix dimension mismatch in Clifford algebra construction (size 32 vs 16)"
+)
 def test_so10_generators_properties():
     """Test that SO(10) generators are antisymmetric and traceless."""
     gammas, _ = construct_gamma_matrices()
@@ -178,7 +182,9 @@ def test_so10_generators_properties():
     assert len(failures) == 0, f"Generator properties violated: {failures}"
 
 
-@pytest.mark.skip(reason="Matrix dimension mismatch in Clifford algebra construction (size 32 vs 16)")
+@pytest.mark.skip(
+    reason="Matrix dimension mismatch in Clifford algebra construction (size 32 vs 16)"
+)
 def test_so10_lie_algebra():
     """Test [T^{AB}, T^{CD}] = (1/2)(η^{AC}T^{BD} - η^{AD}T^{BC} - η^{BC}T^{AD} + η^{BD}T^{AC})."""
     gammas, eta = construct_gamma_matrices()
@@ -341,7 +347,9 @@ def test_su3_lie_algebra():
 # =============================================================================
 
 
-@pytest.mark.skip(reason="Matrix dimension mismatch in Clifford algebra construction (size 32 vs 16)")
+@pytest.mark.skip(
+    reason="Matrix dimension mismatch in Clifford algebra construction (size 32 vs 16)"
+)
 def test_generator_normalization():
     """Test Tr[T^{AB} T^{CD}] = (1/2)δ^{AB,CD}."""
     gammas, _ = construct_gamma_matrices()

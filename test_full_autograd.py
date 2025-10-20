@@ -1,7 +1,9 @@
 """Test if full autograd works through standardization."""
 
 import torch
+
 from fragile.core.fitness import compute_fitness
+
 
 # Simple test
 N, d = 10, 2
@@ -56,11 +58,11 @@ diff = (grad - grad_fd).abs()
 print(f"\nMax difference: {diff.max():.6e}")
 print(f"Mean difference: {diff.mean():.6e}")
 
-print("\n" + "="*60)
+print("\n" + "=" * 60)
 if diff.max() < 1e-4:
     print("✓ GRADIENTS MATCH - Full autograd works!")
 else:
     print("✗ GRADIENTS DIFFER - Mean-field coupling issue confirmed")
-    print(f"\nThis confirms that calling compute_fitness() directly")
-    print(f"with requires_grad=True captures the full mean-field gradient,")
-    print(f"but FitnessOperator.compute_gradient() does not.")
+    print("\nThis confirms that calling compute_fitness() directly")
+    print("with requires_grad=True captures the full mean-field gradient,")
+    print("but FitnessOperator.compute_gradient() does not.")

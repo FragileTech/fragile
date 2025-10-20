@@ -1,7 +1,9 @@
 """Debug inelastic collision velocity to understand test failure."""
 
 import torch
+
 from fragile.core.cloning import inelastic_collision_velocity
+
 
 # Replicate test setup
 N, d = 20, 3
@@ -53,7 +55,9 @@ if will_clone[companion_idx]:
     if companions[companion_idx].item() == 5:
         print("  → MUTUAL COLLISION: Walker 5 ↔ Companion form a collision group")
     else:
-        print(f"  → Companion {companion_idx} clones to different walker {companions[companion_idx].item()}")
+        print(
+            f"  → Companion {companion_idx} clones to different walker {companions[companion_idx].item()}"
+        )
         print("  → This creates a multi-body collision involving multiple walkers!")
 
 # Check for transitive collisions
@@ -66,7 +70,9 @@ for i in range(N):
 if will_clone[companion_idx]:
     # Build the full collision group for walker 5's companion
     group_5_companion = companions[5].item()
-    cloners_to_companion = [i for i in range(N) if (companions[i] == group_5_companion and will_clone[i])]
+    cloners_to_companion = [
+        i for i in range(N) if (companions[i] == group_5_companion and will_clone[i])
+    ]
 
     print(f"\nCollision group for companion {group_5_companion}:")
     print(f"  Companion: {group_5_companion}")
@@ -75,7 +81,9 @@ if will_clone[companion_idx]:
     # Now check the companion's OWN collision (if it's cloning)
     if will_clone[group_5_companion]:
         target_of_companion = companions[group_5_companion].item()
-        cloners_to_target = [i for i in range(N) if (companions[i] == target_of_companion and will_clone[i])]
+        cloners_to_target = [
+            i for i in range(N) if (companions[i] == target_of_companion and will_clone[i])
+        ]
 
         print(f"\nCompanion {group_5_companion} is also cloning to {target_of_companion}:")
         print(f"  Companion: {target_of_companion}")

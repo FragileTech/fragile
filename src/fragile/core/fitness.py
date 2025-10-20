@@ -42,7 +42,7 @@ class FitnessParams(BaseModel):
     epsilon_dist: float = Field(
         default=1e-8,
         gt=0,
-        description="Distance regularization for smoothness: d = sqrt(||Δx||² + ε²) ensures C^∞ differentiability"
+        description="Distance regularization for smoothness: d = sqrt(||Δx||² + ε²) ensures C^∞ differentiability",
     )
     A: float = Field(default=2.0, gt=0, description="Upper bound for logistic rescale")
 
@@ -151,7 +151,7 @@ def compute_fitness(
     sigma_min: float = 1e-8,
     A: float = 2.0,
     epsilon_dist: float = 1e-8,
-) -> tuple[Tensor, Tensor, Tensor]:
+) -> tuple[Tensor, dict[str, Tensor]]:
     """Compute fitness potential using the Euclidean Gas measurement pipeline.
 
     Implements the complete fitness pipeline from Definition def-fitness-potential-operator
@@ -183,8 +183,16 @@ def compute_fitness(
 
     Returns:
         fitness: Fitness potential vector [N], zero for dead walkers
-        distances: Regularized algorithmic distances to companions [N]
-        companions: Companion indices [N] (passthrough)
+        info: Dictionary with intermediate values for diagnostics and data tracking. Each \
+            entry is a tensor of shape [N]. Keys:
+            - "distances": Algorithmic distances to companions [N]
+            - "companions": Companion indices [N]
+            - "z_rewards": Z-scores of rewards [N]
+            - "z_distances": Z-scores of distances [N]
+            - "pos_squared_differences": Squared position differences ||x_i - x_j||² [N]
+            - "vel_squared_differences": Squared velocity differences ||v_i - v_j||² [N]
+            - "rescaled_rewards": Rescaled rewards r'_i [N]
+            - "rescaled_distances": Rescaled distances d'_i [N]
 
     Note:
         - Dead walkers receive fitness = 0.0 and are excluded from statistics
@@ -199,8 +207,9 @@ def compute_fitness(
     # The epsilon term ensures C^∞ differentiability at the origin (prevents NaN gradients)
     pos_diff = positions - positions[companions]
     vel_diff = velocities - velocities[companions]
-    dist_sq = (pos_diff**2).sum(dim=-1) + lambda_alg * (vel_diff**2).sum(dim=-1)
-    distances = torch.sqrt(dist_sq + epsilon_dist**2)
+    pos_sq = (pos_diff**2).sum(dim=-1)
+    vel_sq = (vel_diff**2).sum(dim=-1)
+    distances = torch.sqrt(pos_sq + lambda_alg * vel_sq + epsilon_dist**2)
 
     # Step 3-4: Patched standardization for both channels (only alive walkers)
     z_rewards = patched_standardization(rewards, alive, rho=None, sigma_min=sigma_min)
@@ -217,8 +226,17 @@ def compute_fitness(
 
     # Dead walkers receive fitness = 0.0 (they don't participate in cloning)
     fitness = torch.where(alive, fitness, torch.zeros_like(fitness))
+    info = {"distances": distances,
+            "companions": companions,
+            "z_rewards": z_rewards,
+            "z_distances": z_distances,
+            "pos_squared_differences": pos_sq,
+            "vel_squared_differences": vel_sq,
+            "rescaled_rewards": r_prime,
+            "rescaled_distances": d_prime,
+            }
 
-    return fitness, distances, companions
+    return fitness, info
 
 
 class FitnessOperator:
@@ -285,7 +303,7 @@ class FitnessOperator:
         rewards: Tensor,
         alive: Tensor,
         companions: Tensor | None = None,
-    ) -> tuple[Tensor, Tensor, Tensor]:
+    ) -> tuple[Tensor, dict[str, Tensor]]:
         """Compute fitness potential using the Euclidean Gas measurement pipeline.
 
         Wraps the `compute_fitness` function with the operator's parameters.
@@ -299,8 +317,16 @@ class FitnessOperator:
 
         Returns:
             fitness: Fitness potential vector [N], zero for dead walkers
-            distances: Algorithmic distances to companions [N]
-            companions: Companion indices [N]
+            info: Dictionary with intermediate values for diagnostics and data tracking. Each \
+                entry is a tensor of shape [N]. Keys:
+                - "distances": Algorithmic distances to companions [N]
+                - "companions": Companion indices [N]
+                - "z_rewards": Z-scores of rewards [N]
+                - "z_distances": Z-scores of distances [N]
+                - "pos_squared_differences": Squared position differences ||x_i - x_j||² [N]
+                - "vel_squared_differences": Squared velocity differences ||v_i - v_j||² [N]
+                - "rescaled_rewards": Rescaled rewards r'_i [N]
+                - "rescaled_distances": Rescaled distances d'_i [N]
         """
         # Select companions if not provided
         if companions is None:
@@ -363,7 +389,7 @@ class FitnessOperator:
             )
 
         # Compute fitness
-        fitness, _, _ = compute_fitness(
+        fitness, _ = compute_fitness(
             positions=positions_grad,
             velocities=velocities,
             rewards=rewards,
@@ -442,7 +468,7 @@ class FitnessOperator:
             hessian_diag = torch.zeros_like(positions_grad)
 
             # Compute fitness once
-            fitness, _, _ = compute_fitness(
+            fitness, _ = compute_fitness(
                 positions=positions_grad,
                 velocities=velocities,
                 rewards=rewards,
@@ -488,7 +514,7 @@ class FitnessOperator:
         hessian_full = torch.zeros(N, d, d, dtype=positions.dtype, device=positions.device)
 
         # Compute fitness
-        fitness, _, _ = compute_fitness(
+        fitness, _ = compute_fitness(
             positions=positions_grad,
             velocities=velocities,
             rewards=rewards,
@@ -584,17 +610,11 @@ class FitnessOperator:
             msg = "torch.func not available. Use compute_gradient() or upgrade PyTorch >= 2.0"
             raise RuntimeError(msg)
 
-        # Select companions if not provided
-        if companions is None:
-            companions = self.companion_selection.select_companions(
-                positions, velocities, alive, self.params.lambda_alg
-            )
-
         # Define fitness function: positions -> scalar (sum of fitness)
         # This matches the compute_gradient behavior which computes ∂(Σfitness)/∂positions
         def fitness_sum_fn(pos: Tensor) -> Tensor:
             """Compute sum of fitness for all walkers given all positions."""
-            fitness, _, _ = compute_fitness(
+            fitness, _ = compute_fitness(
                 positions=pos,
                 velocities=velocities,
                 rewards=rewards,
@@ -664,7 +684,7 @@ class FitnessOperator:
         # This matches the compute_hessian behavior which computes ∂²(Σfitness)/∂positions²
         def fitness_sum_fn(pos: Tensor) -> Tensor:
             """Compute sum of fitness for all walkers given all positions."""
-            fitness, _, _ = compute_fitness(
+            fitness, _ = compute_fitness(
                 positions=pos,
                 velocities=velocities,
                 rewards=rewards,
@@ -742,7 +762,7 @@ class FitnessOperator:
         # Define fitness sum function
         def fitness_sum(pos: Tensor) -> Tensor:
             """Compute sum of fitness for all walkers given all positions."""
-            fitness, _, _ = compute_fitness(
+            fitness, _ = compute_fitness(
                 positions=pos,
                 velocities=velocities,
                 rewards=rewards,

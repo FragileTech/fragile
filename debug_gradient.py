@@ -1,8 +1,10 @@
 """Debug gradient computation issue."""
 
 import torch
+
 from fragile.core.companion_selection import CompanionSelection
-from fragile.core.fitness import FitnessOperator, compute_fitness
+from fragile.core.fitness import FitnessOperator
+
 
 # Create simple test case
 torch.manual_seed(42)
@@ -66,9 +68,9 @@ print(f"Max absolute difference: {diff.max():.6e}")
 print(f"Mean absolute difference: {diff.mean():.6e}")
 
 # Check if companions change matters
-print("\n" + "="*60)
+print("\n" + "=" * 60)
 print("Checking if companions change when positions change...")
-print("="*60)
+print("=" * 60)
 
 # Test: does perturbing position change companion selection?
 for i in range(min(3, N)):

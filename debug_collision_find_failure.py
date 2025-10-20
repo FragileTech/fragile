@@ -1,7 +1,9 @@
 """Debug to find the actual test failure case."""
 
 import torch
+
 from fragile.core.cloning import inelastic_collision_velocity
+
 
 # Replicate test setup WITHOUT seed
 N, d = 20, 3
@@ -61,7 +63,9 @@ for run in range(num_runs):
             if companions[extra_walker] == 5:
                 print(f"  → Walker {extra_walker} has walker 5 as companion (doesn't clone)")
             if companions[extra_walker] == companion_idx:
-                print(f"  → Walker {extra_walker} has companion {companion_idx} as companion (doesn't clone)")
+                print(
+                    f"  → Walker {extra_walker} has companion {companion_idx} as companion (doesn't clone)"
+                )
 
         # Reconstruct what collision groups were formed
         print("\nCollision group reconstruction:")
@@ -70,7 +74,7 @@ for run in range(num_runs):
             cloners_mask = (companions == c_idx) & will_clone
             cloner_indices = torch.where(cloners_mask)[0].tolist()
             cloner_indices_no_companion = [idx for idx in cloner_indices if idx != c_idx]
-            group_indices = [c_idx] + cloner_indices_no_companion
+            group_indices = [c_idx, *cloner_indices_no_companion]
             print(f"  Companion {c_idx}: collision group = {group_indices}")
 
         break

@@ -2,31 +2,33 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
-import numpy as np
-import pandas as pd
-import param
-import panel as pn
-import panel.widgets as pnw
-import torch
 import holoviews as hv
 from holoviews import dim, opts
+import numpy as np
+import pandas as pd
+import panel as pn
+import panel.widgets as pnw
+import param
+import torch
 
 from fragile.bounds import TorchBounds
 from fragile.core.companion_selection import CompanionSelection
-from fragile.core.fitness import compute_fitness
-from fragile.euclidean_gas import (
+from fragile.core.euclidean_gas import (
     CloningParams,
     EuclideanGas,
-    EuclideanGasParams,
-    LangevinParams,
+    SimpleQuadraticPotential,
+    SwarmState,
 )
+from fragile.core.fitness import FitnessOperator, FitnessParams, compute_fitness
+from fragile.core.history import RunHistory
+from fragile.core.kinetic_operator import KineticOperator, LangevinParams
 from fragile.experiments.convergence_analysis import create_multimodal_potential
 
 
 __all__ = [
-    "prepare_background",
     "SwarmExplorer",
     "create_dashboard",
+    "prepare_background",
 ]
 
 
@@ -47,9 +49,7 @@ def prepare_background(
 
     grid_axis = np.linspace(bounds_range[0], bounds_range[1], resolution)
     X, Y = np.meshgrid(grid_axis, grid_axis)
-    grid_points = torch.tensor(
-        np.stack([X.ravel(), Y.ravel()], axis=1), dtype=torch.float32
-    )
+    grid_points = torch.tensor(np.stack([X.ravel(), Y.ravel()], axis=1), dtype=torch.float32)
 
     with torch.no_grad():
         U_grid = potential.evaluate(grid_points).cpu().numpy().reshape(X.shape)
@@ -70,13 +70,11 @@ def prepare_background(
         height=620,
     )
 
-    mode_df = pd.DataFrame(
-        {
-            "x₁": target_mixture.centers[:, 0].cpu().numpy(),
-            "x₂": target_mixture.centers[:, 1].cpu().numpy(),
-            "size": 50 * target_mixture.weights.cpu().numpy(),
-        }
-    )
+    mode_df = pd.DataFrame({
+        "x₁": target_mixture.centers[:, 0].cpu().numpy(),
+        "x₂": target_mixture.centers[:, 1].cpu().numpy(),
+        "size": 50 * target_mixture.weights.cpu().numpy(),
+    })
 
     mode_points = hv.Points(
         mode_df,
@@ -126,7 +124,9 @@ class SwarmExplorer(param.Parameterized):
 
     # Cloning parameters
     sigma_x = param.Number(default=0.15, bounds=(0.01, 1.0), doc="Cloning jitter σ_x")
-    lambda_alg = param.Number(default=0.5, bounds=(0.0, 3.0), doc="Algorithmic distance weight λ_alg")
+    lambda_alg = param.Number(
+        default=0.5, bounds=(0.0, 3.0), doc="Algorithmic distance weight λ_alg"
+    )
     alpha_restitution = param.Number(default=0.6, bounds=(0.0, 1.0), doc="Restitution α_rest")
     alpha_fit = param.Number(default=1.0, bounds=(0.1, 3.0), doc="Reward exponent α")
     beta_fit = param.Number(default=1.0, bounds=(0.1, 3.0), doc="Diversity exponent β")
@@ -150,7 +150,9 @@ class SwarmExplorer(param.Parameterized):
     # Initialisation controls
     init_offset = param.Number(default=4.5, bounds=(-6.0, 6.0), doc="Initial position offset")
     init_spread = param.Number(default=0.5, bounds=(0.1, 3.0), doc="Initial position spread")
-    init_velocity_scale = param.Number(default=0.1, bounds=(0.01, 0.8), doc="Initial velocity scale")
+    init_velocity_scale = param.Number(
+        default=0.1, bounds=(0.01, 0.8), doc="Initial velocity scale"
+    )
     bounds_extent = param.Number(default=6.0, bounds=(3.0, 6.0), doc="Spatial bounds half-width")
 
     auto_update = param.Boolean(default=False, doc="Auto recompute on parameter change")
@@ -230,8 +232,12 @@ class SwarmExplorer(param.Parameterized):
         ]
 
         self._widget_overrides: dict[str, pn.widgets.Widget] = {
-            "sigma_min": pnw.FloatSlider(name="sigma_min", start=1e-9, end=1e-3, value=self.sigma_min, step=1e-9),
-            "epsilon_clone": pnw.FloatSlider(name="epsilon_clone", start=1e-4, end=0.05, value=self.epsilon_clone, step=1e-4),
+            "sigma_min": pnw.FloatSlider(
+                name="sigma_min", start=1e-9, end=1e-3, value=self.sigma_min, step=1e-9
+            ),
+            "epsilon_clone": pnw.FloatSlider(
+                name="epsilon_clone", start=1e-4, end=0.05, value=self.epsilon_clone, step=1e-4
+            ),
             "gamma": pnw.FloatSlider(name="gamma", start=0.05, end=5.0, step=0.05),
             "beta": pnw.FloatSlider(name="beta", start=0.1, end=5.0, step=0.05),
             "delta_t": pnw.FloatSlider(name="delta_t", start=0.01, end=0.2, step=0.005),
@@ -337,48 +343,61 @@ class SwarmExplorer(param.Parameterized):
             companion_selection=companion_selection,
         )
 
-        # Create FitnessParams if using adaptive kinetics features
-        from fragile.core.fitness import FitnessParams
+        # Create KineticOperator
+        kinetic_op = KineticOperator(
+            gamma=langevin_params.gamma,
+            beta=langevin_params.beta,
+            delta_t=langevin_params.delta_t,
+            integrator=langevin_params.integrator,
+            potential=self.potential,
+            device=torch.device("cpu"),
+            dtype=torch.float32,
+        )
 
-        fitness_params = None
-        if self.use_fitness_force or self.use_anisotropic_diffusion:
-            fitness_params = FitnessParams(
-                alpha=float(self.alpha_fit),
-                beta=float(self.beta_fit),
-                eta=float(self.eta),
-                lambda_alg=float(self.lambda_alg),
-                sigma_min=float(self.sigma_min),
-                A=float(self.A),
-            )
+        # Create FitnessOperator (always required for EuclideanGas)
+        fitness_params = FitnessParams(
+            alpha=float(self.alpha_fit),
+            beta=float(self.beta_fit),
+            eta=float(self.eta),
+            lambda_alg=float(self.lambda_alg),
+            sigma_min=float(self.sigma_min),
+            A=float(self.A),
+        )
+        fitness_op = FitnessOperator(
+            params=fitness_params,
+            companion_selection=companion_selection,
+        )
 
-        gas_params = EuclideanGasParams(
+        # Create EuclideanGas with direct initialization
+        gas = EuclideanGas(
             N=int(self.N),
             d=dims,
+            companion_selection=companion_selection,
             potential=self.potential,
-            langevin=langevin_params,
+            kinetic_op=kinetic_op,
             cloning=cloning_params,
-            fitness=fitness_params,
+            fitness_op=fitness_op,
             bounds=bounds,
-            device="cpu",
+            device=torch.device("cpu"),
             dtype="float32",
             enable_cloning=bool(self.enable_cloning),
             enable_kinetic=bool(self.enable_kinetic),
         )
-
-        gas = EuclideanGas(gas_params)
 
         offset = torch.full((dims,), float(self.init_offset), dtype=torch.float32)
         x_init = torch.randn(self.N, dims) * float(self.init_spread) + offset
         x_init = torch.clamp(x_init, min=low, max=high)
         v_init = torch.randn(self.N, dims) * float(self.init_velocity_scale)
 
-        result = gas.run(self.n_steps, x_init=x_init, v_init=v_init)
+        history = gas.run(self.n_steps, x_init=x_init, v_init=v_init)
 
-        x_traj = result["x"].detach().cpu().numpy()
-        v_traj = result["v"].detach().cpu().numpy()
-        var_x = result["var_x"].detach().cpu().numpy()
-        var_v = result["var_v"].detach().cpu().numpy()
-        n_alive = result["n_alive"].detach().cpu().numpy()
+        x_traj = history.x_final.detach().cpu().numpy()
+        v_traj = history.v_final.detach().cpu().numpy()
+        n_alive = history.n_alive.detach().cpu().numpy()
+
+        # Compute variances (total variance across walkers and dimensions)
+        var_x = torch.var(history.x_final, dim=1).sum(dim=-1).detach().cpu().numpy()
+        var_v = torch.var(history.v_final, dim=1).sum(dim=-1).detach().cpu().numpy()
 
         indices = np.arange(0, x_traj.shape[0], stride)
         if indices[-1] != x_traj.shape[0] - 1:
@@ -414,7 +433,7 @@ class SwarmExplorer(param.Parameterized):
                 companions = companion_selection(x=x_t, v=v_t, alive_mask=alive_mask)
 
                 with torch.no_grad():
-                    fitness_vals, distances, _ = compute_fitness(
+                    fitness_vals, info = compute_fitness(
                         positions=x_t,
                         velocities=v_t,
                         rewards=rewards,
@@ -427,6 +446,7 @@ class SwarmExplorer(param.Parameterized):
                         sigma_min=cloning_params.sigma_min,
                         A=cloning_params.A,
                     )
+                    distances = info["distances"]
 
                 rewards_np = rewards.detach().cpu().numpy()
                 fitness_np = fitness_vals.detach().cpu().numpy()
@@ -446,8 +466,8 @@ class SwarmExplorer(param.Parameterized):
             "V_total": V_total,
             "n_alive": alive,
             "times": times,
-            "terminated": bool(result.get("terminated_early", False)),
-            "final_step": int(result.get("final_step", self.n_steps)),
+            "terminated": bool(history.terminated_early),
+            "final_step": int(history.final_step),
             "velocity_series": velocity_series,
             "fitness_series": fitness_series,
             "distance_series": distance_series,
@@ -489,7 +509,7 @@ class SwarmExplorer(param.Parameterized):
             )
 
         counts, edges = np.histogram(array, bins=30, density=True)
-        histogram = hv.Histogram((edges, np.nan_to_num(counts)), label=label).opts(
+        return hv.Histogram((edges, np.nan_to_num(counts)), label=label).opts(
             width=220,
             height=220,
             title=f"{label} Distribution",
@@ -500,7 +520,6 @@ class SwarmExplorer(param.Parameterized):
             line_color=color,
             alpha=0.6,
         )
-        return histogram
 
     def _get_frame_data(self, frame: int):
         """Get processed frame data for rendering."""
@@ -558,16 +577,14 @@ class SwarmExplorer(param.Parameterized):
         frame_idx = frame_data["frame"]
         max_frame = frame_data["max_frame"]
 
-        df = pd.DataFrame(
-            {
-                "x₁": positions[:, 0] if positions.size else np.asarray([], dtype=float),
-                "x₂": positions[:, 1] if positions.size else np.asarray([], dtype=float),
-                "velocity": velocity_vals,
-                "fitness": fitness_vals,
-                "distance": distance_vals,
-                "reward": reward_vals,
-            }
-        )
+        df = pd.DataFrame({
+            "x₁": positions[:, 0] if positions.size else np.asarray([], dtype=float),
+            "x₂": positions[:, 1] if positions.size else np.asarray([], dtype=float),
+            "velocity": velocity_vals,
+            "fitness": fitness_vals,
+            "distance": distance_vals,
+            "reward": reward_vals,
+        })
         df["__size__"] = 8.0
 
         if self.size_metric != "constant" and not df.empty:
@@ -641,12 +658,12 @@ class SwarmExplorer(param.Parameterized):
         distance_hist = self._make_histogram(distance_vals, "Distance", "#2ca02c")
         reward_hist = self._make_histogram(reward_vals, "Reward", "#d62728")
 
-        return (fitness_hist + distance_hist + reward_hist).opts(
-            opts.Layout(shared_axes=False)
-        )
+        return (fitness_hist + distance_hist + reward_hist).opts(opts.Layout(shared_axes=False))
 
     def _build_param_panel(self, names: Iterable[str]) -> pn.Param:
-        widgets = {name: self._widget_overrides[name] for name in names if name in self._widget_overrides}
+        widgets = {
+            name: self._widget_overrides[name] for name in names if name in self._widget_overrides
+        }
         return pn.Param(
             self.param,
             parameters=list(names),

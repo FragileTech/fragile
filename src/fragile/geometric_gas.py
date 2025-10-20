@@ -413,7 +413,21 @@ class AdaptiveKineticOperator(KineticOperator):
         device: torch.device,
         dtype: torch.dtype,
     ):
-        super().__init__(params, potential, device, dtype)
+        super().__init__(
+            gamma=params.gamma,
+            beta=params.beta,
+            delta_t=params.delta_t,
+            integrator=params.integrator,
+            epsilon_F=params.epsilon_F,
+            use_fitness_force=params.use_fitness_force,
+            use_potential_force=params.use_potential_force,
+            epsilon_Sigma=params.epsilon_Sigma,
+            use_anisotropic_diffusion=params.use_anisotropic_diffusion,
+            diagonal_diffusion=params.diagonal_diffusion,
+            potential=potential,
+            device=device,
+            dtype=dtype,
+        )
         self.fitness_potential = fitness_potential
         self.adaptive_params = adaptive_params
 
@@ -549,10 +563,10 @@ class AdaptiveKineticOperator(KineticOperator):
         x_temp = x_alive.detach().clone().requires_grad_(True)
         U = self.potential.evaluate(x_temp)  # [k]
         grad_U = torch.autograd.grad(U.sum(), x_temp, create_graph=False)[0]  # [k, d]
-        v_alive = v_alive - self.dt / 2 * (grad_U - F_adapt - F_viscous)
+        v_alive -= self.dt / 2 * (grad_U - F_adapt - F_viscous)
 
         # First A step: x -> x + (dt/2) * v
-        x_alive = x_alive + self.dt / 2 * v_alive
+        x_alive += self.dt / 2 * v_alive
 
         # O step with adaptive diffusion
         if self.adaptive_params.epsilon_Sigma > 0 and self.adaptive_params.epsilon_F > 0:
@@ -572,7 +586,7 @@ class AdaptiveKineticOperator(KineticOperator):
             v_alive = self.c1 * v_alive + self.c2 * xi
 
         # Second A step: x � x + (�t/2) * v
-        x_alive = x_alive + self.dt / 2 * v_alive
+        x_alive += self.dt / 2 * v_alive
 
         # Second B step: v � v - (�t/2) * [U(x) - F_adapt - F_viscous]
         # Recompute forces at new positions
@@ -588,7 +602,7 @@ class AdaptiveKineticOperator(KineticOperator):
         x_temp = x_alive.detach().clone().requires_grad_(True)
         U = self.potential.evaluate(x_temp)
         grad_U = torch.autograd.grad(U.sum(), x_temp, create_graph=False)[0]
-        v_alive = v_alive - self.dt / 2 * (grad_U - F_adapt - F_viscous)
+        v_alive -= self.dt / 2 * (grad_U - F_adapt - F_viscous)
 
         # Update state with new alive walker values
         new_x = state.x.clone()

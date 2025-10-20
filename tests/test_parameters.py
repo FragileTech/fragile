@@ -4,10 +4,10 @@ from pydantic import ValidationError
 import pytest
 import torch
 
+from fragile.core.kinetics import LangevinParams
 from fragile.euclidean_gas import (
     CloningParams,
     EuclideanGasParams,
-    LangevinParams,
     SimpleQuadraticPotential,
 )
 
@@ -149,7 +149,6 @@ class TestCloningParams:
         """Test valid restitution coefficients."""
         params = CloningParams(sigma_x=0.1, lambda_alg=1.0, alpha_restitution=alpha_restitution)
         assert params.alpha_restitution == alpha_restitution
-
 
 
 class TestEuclideanGasParams:

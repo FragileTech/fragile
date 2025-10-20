@@ -1,7 +1,9 @@
 """Test if patched_standardization gives correct gradients."""
 
 import torch
+
 from fragile.core.fitness import patched_standardization
+
 
 N = 5
 torch.manual_seed(42)

@@ -107,7 +107,21 @@ def test_backward_compatibility_standard_baoab(device, dtype, potential, simple_
     )
 
     # Create kinetic operator (no fitness operator needed)
-    kinetic = KineticOperator(params, potential=potential, device=device, dtype=dtype)
+    kinetic = KineticOperator(
+        gamma=params.gamma,
+        beta=params.beta,
+        delta_t=params.delta_t,
+        integrator=params.integrator,
+        epsilon_F=params.epsilon_F,
+        use_fitness_force=params.use_fitness_force,
+        use_potential_force=params.use_potential_force,
+        epsilon_Sigma=params.epsilon_Sigma,
+        use_anisotropic_diffusion=params.use_anisotropic_diffusion,
+        diagonal_diffusion=params.diagonal_diffusion,
+        potential=potential,
+        device=device,
+        dtype=dtype,
+    )
 
     # Apply one step (no fitness derivatives needed)
     state_new = kinetic.apply(simple_state)
@@ -132,7 +146,21 @@ def test_no_potential_no_fitness_pure_ou(device, dtype, simple_state):
     )
 
     # No potential or fitness operator
-    kinetic = KineticOperator(params, potential=None, device=device, dtype=dtype)
+    kinetic = KineticOperator(
+        gamma=params.gamma,
+        beta=params.beta,
+        delta_t=params.delta_t,
+        integrator=params.integrator,
+        epsilon_F=params.epsilon_F,
+        use_fitness_force=params.use_fitness_force,
+        use_potential_force=params.use_potential_force,
+        epsilon_Sigma=params.epsilon_Sigma,
+        use_anisotropic_diffusion=params.use_anisotropic_diffusion,
+        diagonal_diffusion=params.diagonal_diffusion,
+        potential=None,
+        device=device,
+        dtype=dtype,
+    )
 
     # Should work (pure OU dynamics)
     state_new = kinetic.apply(simple_state)
@@ -156,7 +184,21 @@ def test_validation_potential_force_requires_potential(device, dtype):
     )
 
     with pytest.raises(ValueError, match="potential required"):
-        KineticOperator(params, potential=None, device=device, dtype=dtype)
+        KineticOperator(
+            gamma=params.gamma,
+            beta=params.beta,
+            delta_t=params.delta_t,
+            integrator=params.integrator,
+            epsilon_F=params.epsilon_F,
+            use_fitness_force=params.use_fitness_force,
+            use_potential_force=params.use_potential_force,
+            epsilon_Sigma=params.epsilon_Sigma,
+            use_anisotropic_diffusion=params.use_anisotropic_diffusion,
+            diagonal_diffusion=params.diagonal_diffusion,
+            potential=None,
+            device=device,
+            dtype=dtype,
+        )
 
 
 def test_validation_fitness_force_requires_gradient(device, dtype, potential, simple_state):
@@ -168,7 +210,21 @@ def test_validation_fitness_force_requires_gradient(device, dtype, potential, si
         use_fitness_force=True,
     )
 
-    kinetic = KineticOperator(params, potential=potential, device=device, dtype=dtype)
+    kinetic = KineticOperator(
+        gamma=params.gamma,
+        beta=params.beta,
+        delta_t=params.delta_t,
+        integrator=params.integrator,
+        epsilon_F=params.epsilon_F,
+        use_fitness_force=params.use_fitness_force,
+        use_potential_force=params.use_potential_force,
+        epsilon_Sigma=params.epsilon_Sigma,
+        use_anisotropic_diffusion=params.use_anisotropic_diffusion,
+        diagonal_diffusion=params.diagonal_diffusion,
+        potential=potential,
+        device=device,
+        dtype=dtype,
+    )
 
     # Missing grad_fitness should raise error
     with pytest.raises(ValueError, match="grad_fitness required"):
@@ -184,7 +240,21 @@ def test_validation_anisotropic_diffusion_requires_hessian(device, dtype, potent
         use_anisotropic_diffusion=True,
     )
 
-    kinetic = KineticOperator(params, potential=potential, device=device, dtype=dtype)
+    kinetic = KineticOperator(
+        gamma=params.gamma,
+        beta=params.beta,
+        delta_t=params.delta_t,
+        integrator=params.integrator,
+        epsilon_F=params.epsilon_F,
+        use_fitness_force=params.use_fitness_force,
+        use_potential_force=params.use_potential_force,
+        epsilon_Sigma=params.epsilon_Sigma,
+        use_anisotropic_diffusion=params.use_anisotropic_diffusion,
+        diagonal_diffusion=params.diagonal_diffusion,
+        potential=potential,
+        device=device,
+        dtype=dtype,
+    )
 
     # Missing hess_fitness should raise error
     with pytest.raises(ValueError, match="hess_fitness required"):
@@ -196,9 +266,7 @@ def test_validation_anisotropic_diffusion_requires_hessian(device, dtype, potent
 # =============================================================================
 
 
-def test_fitness_force_only(
-    device, dtype, fitness_operator, simple_state, simple_rewards_alive
-):
+def test_fitness_force_only(device, dtype, fitness_operator, simple_state, simple_rewards_alive):
     """Test kinetics with fitness force only (no potential)."""
     rewards, alive, companions = simple_rewards_alive
 
@@ -211,7 +279,21 @@ def test_fitness_force_only(
         use_potential_force=False,  # Disable potential
     )
 
-    kinetic = KineticOperator(params, potential=None, device=device, dtype=dtype)
+    kinetic = KineticOperator(
+        gamma=params.gamma,
+        beta=params.beta,
+        delta_t=params.delta_t,
+        integrator=params.integrator,
+        epsilon_F=params.epsilon_F,
+        use_fitness_force=params.use_fitness_force,
+        use_potential_force=params.use_potential_force,
+        epsilon_Sigma=params.epsilon_Sigma,
+        use_anisotropic_diffusion=params.use_anisotropic_diffusion,
+        diagonal_diffusion=params.diagonal_diffusion,
+        potential=None,
+        device=device,
+        dtype=dtype,
+    )
 
     # Compute fitness gradient
     grad_fitness = fitness_operator.compute_gradient(
@@ -246,7 +328,21 @@ def test_combined_forces(
         use_potential_force=True,  # Both forces enabled
     )
 
-    kinetic = KineticOperator(params, potential=potential, device=device, dtype=dtype)
+    kinetic = KineticOperator(
+        gamma=params.gamma,
+        beta=params.beta,
+        delta_t=params.delta_t,
+        integrator=params.integrator,
+        epsilon_F=params.epsilon_F,
+        use_fitness_force=params.use_fitness_force,
+        use_potential_force=params.use_potential_force,
+        epsilon_Sigma=params.epsilon_Sigma,
+        use_anisotropic_diffusion=params.use_anisotropic_diffusion,
+        diagonal_diffusion=params.diagonal_diffusion,
+        potential=potential,
+        device=device,
+        dtype=dtype,
+    )
 
     # Compute fitness gradient
     grad_fitness = fitness_operator.compute_gradient(
@@ -280,7 +376,21 @@ def test_diagonal_anisotropic_diffusion(
         diagonal_diffusion=True,  # Diagonal only
     )
 
-    kinetic = KineticOperator(params, potential=potential, device=device, dtype=dtype)
+    kinetic = KineticOperator(
+        gamma=params.gamma,
+        beta=params.beta,
+        delta_t=params.delta_t,
+        integrator=params.integrator,
+        epsilon_F=params.epsilon_F,
+        use_fitness_force=params.use_fitness_force,
+        use_potential_force=params.use_potential_force,
+        epsilon_Sigma=params.epsilon_Sigma,
+        use_anisotropic_diffusion=params.use_anisotropic_diffusion,
+        diagonal_diffusion=params.diagonal_diffusion,
+        potential=potential,
+        device=device,
+        dtype=dtype,
+    )
 
     # Compute diagonal Hessian
     hess_fitness = fitness_operator.compute_hessian(
@@ -315,7 +425,21 @@ def test_full_anisotropic_diffusion(
         diagonal_diffusion=False,  # Full anisotropic
     )
 
-    kinetic = KineticOperator(params, potential=potential, device=device, dtype=dtype)
+    kinetic = KineticOperator(
+        gamma=params.gamma,
+        beta=params.beta,
+        delta_t=params.delta_t,
+        integrator=params.integrator,
+        epsilon_F=params.epsilon_F,
+        use_fitness_force=params.use_fitness_force,
+        use_potential_force=params.use_potential_force,
+        epsilon_Sigma=params.epsilon_Sigma,
+        use_anisotropic_diffusion=params.use_anisotropic_diffusion,
+        diagonal_diffusion=params.diagonal_diffusion,
+        potential=potential,
+        device=device,
+        dtype=dtype,
+    )
 
     # Compute full Hessian
     hess_fitness = fitness_operator.compute_hessian(
@@ -360,7 +484,21 @@ def test_full_integration(device, dtype, potential, fitness_operator):
         diagonal_diffusion=True,  # Use diagonal for speed
     )
 
-    kinetic = KineticOperator(params, potential=potential, device=device, dtype=dtype)
+    kinetic = KineticOperator(
+        gamma=params.gamma,
+        beta=params.beta,
+        delta_t=params.delta_t,
+        integrator=params.integrator,
+        epsilon_F=params.epsilon_F,
+        use_fitness_force=params.use_fitness_force,
+        use_potential_force=params.use_potential_force,
+        epsilon_Sigma=params.epsilon_Sigma,
+        use_anisotropic_diffusion=params.use_anisotropic_diffusion,
+        diagonal_diffusion=params.diagonal_diffusion,
+        potential=potential,
+        device=device,
+        dtype=dtype,
+    )
 
     # Run 10 steps
     for _ in range(10):
@@ -403,7 +541,21 @@ def test_diffusion_tensor_positive_definite(
         use_potential_force=False,  # No potential force (testing diffusion only)
     )
 
-    kinetic = KineticOperator(params, potential=None, device=device, dtype=dtype)
+    kinetic = KineticOperator(
+        gamma=params.gamma,
+        beta=params.beta,
+        delta_t=params.delta_t,
+        integrator=params.integrator,
+        epsilon_F=params.epsilon_F,
+        use_fitness_force=params.use_fitness_force,
+        use_potential_force=params.use_potential_force,
+        epsilon_Sigma=params.epsilon_Sigma,
+        use_anisotropic_diffusion=params.use_anisotropic_diffusion,
+        diagonal_diffusion=params.diagonal_diffusion,
+        potential=None,
+        device=device,
+        dtype=dtype,
+    )
 
     # Compute full Hessian
     hess_fitness = fitness_operator.compute_hessian(
@@ -439,7 +591,21 @@ def test_diffusion_tensor_symmetric(
         use_potential_force=False,  # No potential force (testing diffusion only)
     )
 
-    kinetic = KineticOperator(params, potential=None, device=device, dtype=dtype)
+    kinetic = KineticOperator(
+        gamma=params.gamma,
+        beta=params.beta,
+        delta_t=params.delta_t,
+        integrator=params.integrator,
+        epsilon_F=params.epsilon_F,
+        use_fitness_force=params.use_fitness_force,
+        use_potential_force=params.use_potential_force,
+        epsilon_Sigma=params.epsilon_Sigma,
+        use_anisotropic_diffusion=params.use_anisotropic_diffusion,
+        diagonal_diffusion=params.diagonal_diffusion,
+        potential=None,
+        device=device,
+        dtype=dtype,
+    )
 
     # Compute full Hessian
     hess_fitness = fitness_operator.compute_hessian(
@@ -451,8 +617,9 @@ def test_diffusion_tensor_symmetric(
 
     # Check symmetry for each walker
     for i in range(simple_state.N):
-        assert torch.allclose(sigma[i], sigma[i].T, rtol=1e-5, atol=1e-6), \
-            f"Walker {i} diffusion tensor not symmetric"
+        assert torch.allclose(
+            sigma[i], sigma[i].T, rtol=1e-5, atol=1e-6
+        ), f"Walker {i} diffusion tensor not symmetric"
 
 
 # =============================================================================
@@ -470,7 +637,21 @@ def test_force_computation_potential_only(device, dtype, potential, simple_state
         use_fitness_force=False,
     )
 
-    kinetic = KineticOperator(params, potential=potential, device=device, dtype=dtype)
+    kinetic = KineticOperator(
+        gamma=params.gamma,
+        beta=params.beta,
+        delta_t=params.delta_t,
+        integrator=params.integrator,
+        epsilon_F=params.epsilon_F,
+        use_fitness_force=params.use_fitness_force,
+        use_potential_force=params.use_potential_force,
+        epsilon_Sigma=params.epsilon_Sigma,
+        use_anisotropic_diffusion=params.use_anisotropic_diffusion,
+        diagonal_diffusion=params.diagonal_diffusion,
+        potential=potential,
+        device=device,
+        dtype=dtype,
+    )
 
     force = kinetic._compute_force(simple_state.x, simple_state.v, grad_fitness=None)
 
@@ -495,7 +676,21 @@ def test_force_computation_fitness_only(
         use_fitness_force=True,
     )
 
-    kinetic = KineticOperator(params, potential=None, device=device, dtype=dtype)
+    kinetic = KineticOperator(
+        gamma=params.gamma,
+        beta=params.beta,
+        delta_t=params.delta_t,
+        integrator=params.integrator,
+        epsilon_F=params.epsilon_F,
+        use_fitness_force=params.use_fitness_force,
+        use_potential_force=params.use_potential_force,
+        epsilon_Sigma=params.epsilon_Sigma,
+        use_anisotropic_diffusion=params.use_anisotropic_diffusion,
+        diagonal_diffusion=params.diagonal_diffusion,
+        potential=None,
+        device=device,
+        dtype=dtype,
+    )
 
     # Compute fitness gradient
     grad_fitness = fitness_operator.compute_gradient(
@@ -541,16 +736,30 @@ def test_force_computation_combined(
     )
 
     # Compute individual forces
-    params_pot = LangevinParams(gamma=1.0, beta=1.0, delta_t=0.01, use_fitness_force=False)
-    kinetic_pot = KineticOperator(params_pot, potential=potential, device=device, dtype=dtype)
+
+    kinetic_pot = KineticOperator(
+        gamma=1.0,
+        beta=1.0,
+        delta_t=0.01,
+        use_fitness_force=False,
+        potential=potential,
+        device=device,
+        dtype=dtype,
+    )
     force_pot = kinetic_pot._compute_force(simple_state.x, simple_state.v, grad_fitness=None)
 
     params_fit = LangevinParams(
-        gamma=1.0, beta=1.0, delta_t=0.01, epsilon_F=0.1,
-        use_potential_force=False, use_fitness_force=True
+        gamma=1.0,
+        beta=1.0,
+        delta_t=0.01,
+        epsilon_F=0.1,
+        use_potential_force=False,
+        use_fitness_force=True,
     )
     kinetic_fit = KineticOperator(params_fit, potential=None, device=device, dtype=dtype)
-    force_fit = kinetic_fit._compute_force(simple_state.x, simple_state.v, grad_fitness=grad_fitness)
+    force_fit = kinetic_fit._compute_force(
+        simple_state.x, simple_state.v, grad_fitness=grad_fitness
+    )
 
     # Combined force should be sum of individual forces
     expected_combined = force_pot + force_fit

@@ -1,7 +1,9 @@
 """Check if standardization statistics change with perturbation."""
 
 import torch
+
 from fragile.core.fitness import FitnessOperator
+
 
 # Replicate the test fixture
 N, d = 10, 2
@@ -44,9 +46,9 @@ print(f"  Mean distance change: {abs(dist_pert.mean() - dist_orig.mean()):.6e}")
 print(f"  Std distance change: {abs(dist_pert.std() - dist_orig.std()):.6e}")
 print(f"  Fitness change: {(fitness_pert - fitness_orig).abs()}")
 
-print("\n" + "="*60)
+print("\n" + "=" * 60)
 print("KEY INSIGHT:")
-print("="*60)
+print("=" * 60)
 print("""
 When we perturb walker 0's position, the distances for TWO walkers change:
 1. Walker 0's distance to its companion (walker 9)

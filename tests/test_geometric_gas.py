@@ -101,8 +101,8 @@ class TestLocalizationKernel:
 
         mu, sigma_sq = kernel.compute_localized_moments(x_query, x_alive, measurement)
 
-        assert mu.shape == (5,)
-        assert sigma_sq.shape == (5,)
+        assert mu.shape == (5)
+        assert sigma_sq.shape == (5)
 
     def test_localized_moments_limit_rho_large(self, device, dtype):
         """Test that large rho recovers global statistics."""
@@ -165,7 +165,7 @@ class TestFitnessPotential:
         # Should not raise division by zero
         z_score = fitness_potential.compute_z_score(x_query, x_alive)
 
-        assert z_score.shape == (1,)
+        assert z_score.shape == (1)
         assert torch.isfinite(z_score).all()
 
     def test_fitness_bounded(self, fitness_potential, device, dtype):

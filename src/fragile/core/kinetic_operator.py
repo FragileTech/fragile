@@ -18,7 +18,10 @@ from torch import Tensor
 
 
 class LangevinParams(BaseModel):
-    """Parameters for Langevin dynamics (kinetic operator).
+    """Data container for Langevin dynamics parameters.
+
+    This class exists purely for organizing parameters in higher-level configs
+    like EuclideanGasParams. When instantiating KineticOperator, unpack these fields.
 
     Mathematical notation:
     - gamma (γ): Friction coefficient
@@ -63,19 +66,73 @@ class LangevinParams(BaseModel):
         return (1.0 - torch.exp(torch.tensor(-2 * self.gamma * self.delta_t))).sqrt().item()
 
 
-class KineticOperator:
+class KineticOperator(BaseModel):
     """Kinetic operator using BAOAB integrator for Langevin dynamics.
 
     Supports adaptive extensions from the Geometric Viscous Fluid Model:
     - Fitness-based force: -ε_F · ∇V_fit (optional)
     - Anisotropic diffusion: Σ_reg = (∇²V_fit + ε_Σ I)^{-1/2} (optional)
 
+    Mathematical notation:
+    - gamma (γ): Friction coefficient
+    - beta (β): Inverse temperature 1/(k_B T)
+    - delta_t (Δt): Time step size
+    - epsilon_F (ε_F): Adaptation rate for fitness force
+    - epsilon_Sigma (ε_Σ): Hessian regularization parameter
+
     Reference: docs/source/2_geometric_gas/11_geometric_gas.md
     """
 
+    model_config = {"arbitrary_types_allowed": True}
+
+    # Standard Langevin parameters
+    gamma: float = Field(gt=0, description="Friction coefficient (γ)")
+    beta: float = Field(gt=0, description="Inverse temperature 1/(k_B T) (β)")
+    delta_t: float = Field(gt=0, description="Time step size (Δt)")
+    integrator: str = Field("baoab", description="Integration scheme (baoab)")
+
+    # Fitness-based adaptive force (Geometric Gas extension)
+    epsilon_F: float = Field(
+        default=0.0, ge=0, description="Adaptation rate for fitness force (ε_F)"
+    )
+    use_fitness_force: bool = Field(
+        default=False, description="Enable fitness-based force -ε_F · ∇V_fit"
+    )
+    use_potential_force: bool = Field(
+        default=True, description="Enable potential gradient force -∇U(x)"
+    )
+
+    # Anisotropic diffusion tensor (Hessian-based)
+    epsilon_Sigma: float = Field(
+        default=0.1, ge=0, description="Hessian regularization (ε_Σ) for positive definiteness"
+    )
+    use_anisotropic_diffusion: bool = Field(
+        default=False, description="Enable Hessian-based anisotropic diffusion Σ_reg"
+    )
+    diagonal_diffusion: bool = Field(
+        default=True, description="Use diagonal-only diffusion (faster, O(Nd) vs O(Nd²))"
+    )
+
+    # Non-Pydantic fields (set in __init__)
+    potential: object = Field(default=None, init=False, exclude=True)
+    device: torch.device = Field(default=None, init=False, exclude=True)
+    dtype: torch.dtype = Field(default=None, init=False, exclude=True)
+    dt: float = Field(default=0.0, init=False, exclude=True)
+    c1: torch.Tensor = Field(default=None, init=False, exclude=True)
+    c2: torch.Tensor = Field(default=None, init=False, exclude=True)
+
     def __init__(
         self,
-        params: LangevinParams,
+        gamma: float,
+        beta: float,
+        delta_t: float,
+        integrator: str = "baoab",
+        epsilon_F: float = 0.0,
+        use_fitness_force: bool = False,
+        use_potential_force: bool = True,
+        epsilon_Sigma: float = 0.1,
+        use_anisotropic_diffusion: bool = False,
+        diagonal_diffusion: bool = True,
         potential=None,
         device: torch.device = None,
         dtype: torch.dtype = None,
@@ -84,37 +141,60 @@ class KineticOperator:
         Initialize kinetic operator.
 
         Args:
-            params: Langevin parameters
+            gamma: Friction coefficient (γ)
+            beta: Inverse temperature 1/(k_B T) (β)
+            delta_t: Time step size (Δt)
+            integrator: Integration scheme (default: "baoab")
+            epsilon_F: Adaptation rate for fitness force (ε_F)
+            use_fitness_force: Enable fitness-based force
+            use_potential_force: Enable potential gradient force
+            epsilon_Sigma: Hessian regularization (ε_Σ)
+            use_anisotropic_diffusion: Enable Hessian-based anisotropic diffusion
+            diagonal_diffusion: Use diagonal-only diffusion
             potential: Target potential (must have evaluate(x) method).
                       Required if use_potential_force=True, can be None otherwise.
             device: PyTorch device (defaults to CPU)
             dtype: PyTorch dtype (defaults to float32)
 
         Raises:
-            ValueError: If required components are missing based on params settings
+            ValueError: If required components are missing based on settings
 
         Note:
             Fitness gradients and Hessians are passed to apply() method, not stored here.
             This keeps the kinetic operator stateless with respect to fitness computations.
         """
-        self.params = params
+        super().__init__(
+            gamma=gamma,
+            beta=beta,
+            delta_t=delta_t,
+            integrator=integrator,
+            epsilon_F=epsilon_F,
+            use_fitness_force=use_fitness_force,
+            use_potential_force=use_potential_force,
+            epsilon_Sigma=epsilon_Sigma,
+            use_anisotropic_diffusion=use_anisotropic_diffusion,
+            diagonal_diffusion=diagonal_diffusion,
+        )
+
         self.potential = potential
         self.device = device if device is not None else torch.device("cpu")
         self.dtype = dtype if dtype is not None else torch.float32
 
         # Validate configuration
-        if params.use_potential_force and potential is None:
+        if self.use_potential_force and potential is None:
             msg = "potential required when use_potential_force=True"
             raise ValueError(msg)
 
         # Precompute BAOAB constants
-        self.dt = params.delta_t
-        self.gamma = params.gamma
-        self.beta = params.beta
+        self.dt = self.delta_t
 
         # O-step coefficients (for isotropic case)
         self.c1 = torch.exp(torch.tensor(-self.gamma * self.dt, dtype=self.dtype))
         self.c2 = torch.sqrt((1.0 - self.c1**2) / self.beta)  # Noise amplitude
+
+    def noise_std(self) -> float:
+        """Standard deviation for BAOAB noise (isotropic case)."""
+        return (1.0 - torch.exp(torch.tensor(-2 * self.gamma * self.delta_t))).sqrt().item()
 
     def _compute_force(
         self,
@@ -146,7 +226,7 @@ class KineticOperator:
         force = torch.zeros_like(x)
 
         # Potential force: -∇U(x)
-        if self.params.use_potential_force:
+        if self.use_potential_force:
             x.requires_grad_(True)
             U = self.potential.evaluate(x)  # [N]
             grad_U = torch.autograd.grad(U.sum(), x, create_graph=False)[0]  # [N, d]
@@ -154,11 +234,11 @@ class KineticOperator:
             x.requires_grad_(False)
 
         # Fitness force: -ε_F · ∇V_fit(x)
-        if self.params.use_fitness_force:
+        if self.use_fitness_force:
             if grad_fitness is None:
                 msg = "grad_fitness required when use_fitness_force=True"
                 raise ValueError(msg)
-            force -= self.params.epsilon_F * grad_fitness
+            force -= self.epsilon_F * grad_fitness
 
         return force
 
@@ -191,9 +271,9 @@ class KineticOperator:
         """
         N, d = x.shape
 
-        if not self.params.use_anisotropic_diffusion:
+        if not self.use_anisotropic_diffusion:
             # Isotropic diffusion: σ I (standard BAOAB)
-            if self.params.diagonal_diffusion:
+            if self.diagonal_diffusion:
                 return self.c2 * torch.ones((N, d), device=x.device, dtype=x.dtype)
             eye = torch.eye(d, device=x.device, dtype=x.dtype)
             return self.c2 * eye.unsqueeze(0).expand(N, d, d)
@@ -207,9 +287,9 @@ class KineticOperator:
 
         # Regularize: H_reg = H + ε_Σ I
         # The regularization ensures positive definiteness even if Hessian has negative eigenvalues
-        eps_I = self.params.epsilon_Sigma
+        eps_I = self.epsilon_Sigma
 
-        if self.params.diagonal_diffusion:
+        if self.diagonal_diffusion:
             # Diagonal case: simple element-wise operations
             hess_reg = hess + eps_I  # [N, d]
 
@@ -294,11 +374,11 @@ class KineticOperator:
         # === O STEP: Ornstein-Uhlenbeck with optional anisotropic noise ===
         ξ = torch.randn(N, d, device=self.device, dtype=self.dtype)
 
-        if self.params.use_anisotropic_diffusion:
+        if self.use_anisotropic_diffusion:
             # Compute state-dependent diffusion tensor Σ_reg
             sigma = self._compute_diffusion_tensor(x, hess_fitness)
 
-            if self.params.diagonal_diffusion:
+            if self.diagonal_diffusion:
                 # Diagonal: σ[i, j] · ξ[i, j] (element-wise)
                 noise = sigma * ξ
             else:

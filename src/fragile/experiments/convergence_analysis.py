@@ -15,11 +15,11 @@ from scipy.stats import gaussian_kde
 import torch
 
 from fragile.benchmarks import MixtureOfGaussians
-from fragile.euclidean_gas import PotentialParams
+from fragile.core.euclidean_gas import PotentialParams
 
 
 if TYPE_CHECKING:
-    from fragile.euclidean_gas import SwarmState
+    from fragile.core.euclidean_gas import SwarmState
     from fragile.geometric_gas import GeometricGas
 
 

@@ -156,7 +156,7 @@ def test_fitness_operator_call_matches_function(simple_swarm_data):
     data = simple_swarm_data
 
     # Compute using operator
-    fitness_op, distances_op, companions_op = op(
+    fitness_op, info_op = op(
         positions=data["positions"],
         velocities=data["velocities"],
         rewards=data["rewards"],
@@ -165,7 +165,7 @@ def test_fitness_operator_call_matches_function(simple_swarm_data):
     )
 
     # Compute using function
-    fitness_fn, distances_fn, companions_fn = compute_fitness(
+    fitness_fn, info_fn = compute_fitness(
         positions=data["positions"],
         velocities=data["velocities"],
         rewards=data["rewards"],
@@ -181,8 +181,8 @@ def test_fitness_operator_call_matches_function(simple_swarm_data):
 
     # Should match exactly
     torch.testing.assert_close(fitness_op, fitness_fn)
-    torch.testing.assert_close(distances_op, distances_fn)
-    torch.testing.assert_close(companions_op, companions_fn)
+    torch.testing.assert_close(info_op["distances"], info_fn["distances"])
+    torch.testing.assert_close(info_op["companions"], info_fn["companions"])
 
 
 def test_fitness_operator_output_shapes(simple_swarm_data):
@@ -191,7 +191,7 @@ def test_fitness_operator_output_shapes(simple_swarm_data):
     data = simple_swarm_data
     N = data["positions"].shape[0]
 
-    fitness, distances, companions = op(
+    fitness, info = op(
         positions=data["positions"],
         velocities=data["velocities"],
         rewards=data["rewards"],
@@ -200,8 +200,8 @@ def test_fitness_operator_output_shapes(simple_swarm_data):
     )
 
     assert fitness.shape == (N,)
-    assert distances.shape == (N,)
-    assert companions.shape == (N,)
+    assert info["distances"].shape == (N,)
+    assert info["companions"].shape == (N,)
 
 
 def test_fitness_operator_dead_walkers(simple_swarm_data):
@@ -214,7 +214,7 @@ def test_fitness_operator_dead_walkers(simple_swarm_data):
     alive = torch.zeros(N, dtype=torch.bool)
     alive[: N // 2] = True
 
-    fitness, _, _ = op(
+    fitness, info = op(
         positions=data["positions"],
         velocities=data["velocities"],
         rewards=data["rewards"],
@@ -275,7 +275,7 @@ def test_gradient_simple_case(simple_swarm_data):
     )
 
     # Also verify we can compute gradient through the full forward pass
-    fitness, _, _ = op(
+    fitness, info = op(
         positions_grad, data["velocities"], data["rewards"], data["alive"], data["companions"]
     )
     loss = fitness.sum()
@@ -325,7 +325,7 @@ def test_gradient_custom_params(simple_swarm_data):
 
     # Verify we can compute gradient through the full forward pass
     positions_grad = data["positions"].clone().requires_grad_(True)
-    fitness, _, _ = op(
+    fitness, info = op(
         positions_grad, data["velocities"], data["rewards"], data["alive"], data["companions"]
     )
     loss = fitness.sum()
@@ -378,9 +378,9 @@ def finite_difference_hessian_diagonal(
             pos_minus[i, j] -= eps
 
             # Center
-            fitness_center, _, _ = op(positions, velocities, rewards, alive, companions)
-            fitness_plus, _, _ = op(pos_plus, velocities, rewards, alive, companions)
-            fitness_minus, _, _ = op(pos_minus, velocities, rewards, alive, companions)
+            fitness_center, _ = op(positions, velocities, rewards, alive, companions)
+            fitness_plus, _ = op(pos_plus, velocities, rewards, alive, companions)
+            fitness_minus, _ = op(pos_minus, velocities, rewards, alive, companions)
 
             # Second derivative: (f(x+h) - 2f(x) + f(x-h)) / h^2
             hess_diag_fd[i, j] = (
@@ -609,7 +609,7 @@ def test_no_alive_walkers():
     op = FitnessOperator()
 
     # Fitness should be all zeros
-    fitness, _, _ = op(
+    fitness, info = op(
         positions=positions,
         velocities=velocities,
         rewards=rewards,

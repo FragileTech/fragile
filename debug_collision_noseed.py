@@ -1,7 +1,9 @@
 """Debug inelastic collision velocity without seed to reproduce test failure."""
 
 import torch
+
 from fragile.core.cloning import inelastic_collision_velocity
+
 
 # Replicate test setup WITHOUT seed (like the test does)
 N, d = 20, 3
@@ -58,9 +60,9 @@ for run in range(num_runs):
 
             # Check if this walker is the companion of walker 5
             if unexpected == companion_idx:
-                print(f"    → This IS the companion of walker 5 (EXPECTED)")
+                print("    → This IS the companion of walker 5 (EXPECTED)")
             else:
-                print(f"    → This is NOT the companion of walker 5 (UNEXPECTED)")
+                print("    → This is NOT the companion of walker 5 (UNEXPECTED)")
 
             # Check if walker 5 is somehow in this walker's collision group
             if companions[unexpected] == 5:
@@ -73,7 +75,9 @@ for run in range(num_runs):
             print("\n  ⚠ SELF-COLLISION: Walker 5 clones to itself!")
 
         if not will_clone[companion_idx] and companions[companion_idx] == 5:
-            print(f"\n  ⚠ Companion {companion_idx} has walker 5 as its companion (but doesn't clone)")
+            print(
+                f"\n  ⚠ Companion {companion_idx} has walker 5 as its companion (but doesn't clone)"
+            )
 
         # Detailed collision group reconstruction
         print("\n  Reconstructing collision group for companion", companion_idx)
@@ -83,7 +87,7 @@ for run in range(num_runs):
 
         if cloner_indices:
             cloner_indices_no_companion = [idx for idx in cloner_indices if idx != companion_idx]
-            group_indices = [companion_idx] + cloner_indices_no_companion
+            group_indices = [companion_idx, *cloner_indices_no_companion]
             print(f"    Full collision group: {group_indices}")
             print(f"    Size: {len(group_indices)}")
 

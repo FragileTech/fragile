@@ -1,3 +1,7 @@
+from typing import Any
+
+import numpy as np
+from pydantic import BaseModel, Field
 import torch
 from torch import Tensor
 
@@ -220,7 +224,8 @@ def clone_walkers(
     epsilon_clone: float = 0.01,
     sigma_x: float = 0.1,
     alpha_restitution: float = 0.5,
-) -> tuple[Tensor, Tensor, Tensor, dict]:
+    **clone_tensor_kwargs,
+) -> tuple[Tensor, Tensor, dict[str, Any], dict]:
     """Execute complete cloning operator Ψ_clone.
 
     Implements the full cloning pipeline from Chapter 9 of 03_cloning.md:
@@ -242,11 +247,15 @@ def clone_walkers(
         epsilon_clone: Regularization for cloning score (default: 0.01)
         sigma_x: Position jitter scale (default: 0.1)
         alpha_restitution: Velocity restitution coefficient (default: 0.5)
+        **clone_tensor_kwargs: Additional tensors to be cloned alongside positions/velocities. \
+            Each tensor should have shape [N]. These tensors will be cloned in the same way \
+            as positions/velocities, using the same companion indices and cloning decisions. \
+            Those tensors will be returned inside a dictionary.
 
     Returns:
         positions_new: Updated positions [N, d]
         velocities_new: Updated velocities [N, d]
-        alive_new: All walkers alive after cloning [N] (all True)
+        cloned_tensors: Dictionary of updated additional tensors. Each tensor has shape [N, ...].
         info: Dictionary with intermediate results:
             - 'cloning_scores': Cloning scores [N]
             - 'cloning_probs': Cloning probabilities [N]
@@ -263,51 +272,181 @@ def clone_walkers(
     """
     N = positions.shape[0]
     device = positions.device
+    with torch.no_grad():
 
-    # Dead walkers should always clone (they need to be revived)
-    # They should have fitness=0 from compute_fitness, which gives maximum score
-    # But we enforce it explicitly here for robustness
+        # Dead walkers should always clone (they need to be revived)
+        # They should have fitness=0 from compute_fitness, which gives maximum score
+        # But we enforce it explicitly here for robustness
 
-    # Step 1: Compute cloning scores for all walkers
-    # S_i = (V_fit,c_i - V_fit,i) / (V_fit,i + ε_clone)
-    companion_fitness = fitness[companions]
-    cloning_scores = compute_cloning_score(fitness, companion_fitness, epsilon_clone=epsilon_clone)
+        # Step 1: Compute cloning scores for all walkers
+        # S_i = (V_fit,c_i - V_fit,i) / (V_fit,i + ε_clone)
+        companion_fitness = fitness[companions]
+        cloning_scores = compute_cloning_score(fitness, companion_fitness, epsilon_clone=epsilon_clone)
 
-    # Dead walkers get maximum positive score to guarantee cloning
-    if not alive.all():
-        cloning_scores = torch.where(
-            alive, cloning_scores, torch.tensor(float("inf"), device=device)
+        # Dead walkers get maximum positive score to guarantee cloning
+        if not alive.all():
+            cloning_scores = torch.where(
+                alive, cloning_scores, torch.tensor(float("inf"), device=device)
+            )
+
+        # Step 2: Convert scores to probabilities via clipping function
+        # π(S) = min(1, max(0, S / p_max))
+        cloning_probs = compute_cloning_probability(cloning_scores, p_max=p_max)
+
+        # Step 3: Make stochastic cloning decisions
+        # Sample uniform thresholds and compare to probabilities
+        thresholds = torch.rand(N, device=device)
+        will_clone = cloning_probs > thresholds
+        will_clone[~alive] = True  # Ensure dead walkers always clone
+
+        # Step 4: Update positions with Gaussian jitter
+        # x'_i = x_c + σ_x ζ_i^x for cloners
+        positions_new = clone_position(positions, companions, will_clone, sigma_x=sigma_x)
+
+        # Step 5: Update velocities via inelastic collision
+        # Conserves momentum within each collision group
+        velocities_new = inelastic_collision_velocity(
+            velocities, companions, will_clone, alpha_restitution=alpha_restitution
         )
 
-    # Step 2: Convert scores to probabilities via clipping function
-    # π(S) = min(1, max(0, S / p_max))
-    cloning_probs = compute_cloning_probability(cloning_scores, p_max=p_max)
+        # Step 6: All walkers are alive in intermediate state
+        alive_new = torch.ones_like(alive)
 
-    # Step 3: Make stochastic cloning decisions
-    # Sample uniform thresholds and compare to probabilities
-    thresholds = torch.rand(N, device=device)
-    will_clone = cloning_probs > thresholds
+        # Collect intermediate results for analysis
+        info = {
+            "cloning_scores": cloning_scores,
+            "cloning_probs": cloning_probs,
+            "will_clone": will_clone,
+            "alive_new": alive_new,
+            "num_cloned": will_clone.sum().item(),
+            "companions": companions,
+        }
+        other_cloned = {
+            k: clone_tensor(x, companions, will_clone) for k, x in clone_tensor_kwargs.items()
+        }
 
-    # Step 4: Update positions with Gaussian jitter
-    # x'_i = x_c + σ_x ζ_i^x for cloners
-    positions_new = clone_position(positions, companions, will_clone, sigma_x=sigma_x)
+        return positions_new, velocities_new, other_cloned, info
 
-    # Step 5: Update velocities via inelastic collision
-    # Conserves momentum within each collision group
-    velocities_new = inelastic_collision_velocity(
-        velocities, companions, will_clone, alpha_restitution=alpha_restitution
+
+def clone_tensor(
+    x: Tensor | np.ndarray, compas_ix: Tensor, will_clone: Tensor
+) -> Tensor | np.ndarray:
+    """Clone the data from the compas indexes."""
+    if not will_clone.any():
+        return x
+    if isinstance(x, torch.Tensor):
+        x[will_clone] = x[compas_ix][will_clone]
+    elif isinstance(x, np.ndarray):
+        compas_ix, will_clone = compas_ix.cpu().numpy(), will_clone.cpu().numpy()
+        x[will_clone] = x[compas_ix][will_clone]
+    else:
+        raise ValueError(f"Unsupported type {type(x)}")
+    return x
+
+
+class CloneOperator(BaseModel):
+    """Stateless cloning operator wrapping the functional clone_walkers interface.
+
+    This class provides a Pydantic-validated wrapper around the clone_walkers function,
+    storing default parameters while allowing per-call overrides.
+
+    Mathematical notation from 03_cloning.md:
+    - p_max: Maximum cloning probability threshold
+    - ε_clone (epsilon_clone): Regularization for cloning score
+    - σ_x (sigma_x): Position jitter scale
+    - α_rest (alpha_restitution): Restitution coefficient
+
+    Reference: Chapter 9, Sections 9.3-9.4 in 03_cloning.md
+
+    Example:
+        >>> operator = CloneOperator(p_max=0.75, sigma_x=0.1)
+        >>> pos_new, vel_new, alive_new, info = operator(
+        ...     positions, velocities, fitness, companions, alive
+        ... )
+    """
+
+    model_config = {"arbitrary_types_allowed": True}
+
+    p_max: float = Field(
+        default=1.0,
+        gt=0,
+        le=1,
+        description="Maximum cloning probability threshold",
+    )
+    epsilon_clone: float = Field(
+        default=0.01,
+        gt=0,
+        description="Regularization for cloning score (ε_clone)",
+    )
+    sigma_x: float = Field(
+        default=0.1,
+        gt=0,
+        description="Position jitter scale (σ_x)",
+    )
+    alpha_restitution: float = Field(
+        default=0.5,
+        ge=0,
+        le=1,
+        description="Velocity restitution coefficient (α_rest): 0=fully inelastic, 1=elastic",
     )
 
-    # Step 6: All walkers are alive in intermediate state
-    alive_new = torch.ones_like(alive)
+    def __call__(
+        self,
+        positions: Tensor,
+        velocities: Tensor,
+        fitness: Tensor,
+        companions: Tensor,
+        alive: Tensor,
+        p_max: float | None = None,
+        epsilon_clone: float | None = None,
+        sigma_x: float | None = None,
+        alpha_restitution: float | None = None,
+        **clone_tensor_kwargs,
+    ) -> tuple[Tensor, Tensor, dict[str, Any], dict]:
+        """Execute cloning operator using clone_walkers function.
 
-    # Collect intermediate results for analysis
-    info = {
-        "cloning_scores": cloning_scores,
-        "cloning_probs": cloning_probs,
-        "will_clone": will_clone,
-        "num_cloned": will_clone.sum().item(),
-        "companions": companions,
-    }
+        Parameters provided to this call override the instance defaults.
 
-    return positions_new, velocities_new, alive_new, info
+        Args:
+            positions: Walker positions [N, d]
+            velocities: Walker velocities [N, d]
+            fitness: Fitness potential values [N] from compute_fitness
+            companions: Companion indices [N] from compute_fitness
+            alive: Boolean mask [N], True for alive walkers
+            p_max: Override maximum cloning probability threshold
+            epsilon_clone: Override regularization for cloning score
+            sigma_x: Override position jitter scale
+            alpha_restitution: Override velocity restitution coefficient
+            **clone_tensor_kwargs: Additional tensors to be cloned alongside positions/velocities. \
+                Each tensor should have shape [N]. These tensors will be cloned in the same way \
+                as positions/velocities, using the same companion indices and cloning decisions. \
+                Those tensors will be returned inside a dictionary.
+
+        Returns:
+            positions_new: Updated positions [N, d]
+            velocities_new: Updated velocities [N, d]
+            cloned_tensors: Dictionary of cloned additional tensors with same keys as input.
+            info: Dictionary with intermediate results:
+                - 'cloning_scores': Cloning scores [N]
+                - 'cloning_probs': Cloning probabilities [N]
+                - 'will_clone': Boolean mask [N] of walkers that cloned
+                - 'num_cloned': Number of walkers that cloned
+                - 'companions': Companion indices [N] (same as input)
+
+        Note:
+            This is a stateless wrapper - no internal state is modified during calls.
+        """
+        return clone_walkers(
+            positions=positions,
+            velocities=velocities,
+            fitness=fitness,
+            companions=companions,
+            alive=alive,
+            p_max=p_max if p_max is not None else self.p_max,
+            epsilon_clone=epsilon_clone if epsilon_clone is not None else self.epsilon_clone,
+            sigma_x=sigma_x if sigma_x is not None else self.sigma_x,
+            alpha_restitution=alpha_restitution
+            if alpha_restitution is not None
+            else self.alpha_restitution,
+            **clone_tensor_kwargs,
+        )

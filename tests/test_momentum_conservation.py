@@ -43,7 +43,7 @@ class TestMomentumConservation:
         """Test momentum conservation with multiple collision groups."""
         alpha_restitution = 0.8
 
-        x = torch.randn(6, 3, dtype=torch.float64)
+        torch.randn(6, 3, dtype=torch.float64)
         v = torch.tensor(
             [
                 [1.0, 0.0, 0.0],
@@ -85,7 +85,7 @@ class TestMomentumConservation:
         """Test that alpha=0 makes all collision group members have same velocity."""
         alpha_restitution = 0.0
 
-        x = torch.randn(4, 2, dtype=torch.float64)
+        torch.randn(4, 2, dtype=torch.float64)
         v = torch.tensor(
             [
                 [1.0, 0.0],
@@ -116,7 +116,7 @@ class TestMomentumConservation:
         """Test that alpha=1 approximately preserves kinetic energy in COM frame."""
         alpha_restitution = 1.0
 
-        x = torch.randn(3, 2, dtype=torch.float64)
+        torch.randn(3, 2, dtype=torch.float64)
         v = torch.tensor(
             [
                 [1.0, 0.0],
@@ -153,7 +153,7 @@ class TestMomentumConservation:
         alpha_restitution = 0.6
 
         d = 10  # High dimension
-        x = torch.randn(5, d, dtype=torch.float64)
+        torch.randn(5, d, dtype=torch.float64)
         v = torch.randn(5, d, dtype=torch.float64)
 
         companions = torch.tensor([2, 2, 2, 2, 2])
@@ -175,7 +175,7 @@ class TestMomentumConservation:
         """Test that walkers not in collision groups keep their velocities."""
         alpha_restitution = 0.5
 
-        x = torch.randn(5, 2, dtype=torch.float64)
+        torch.randn(5, 2, dtype=torch.float64)
         v = torch.tensor(
             [
                 [1.0, 0.0],
@@ -207,7 +207,7 @@ class TestEnergyConservation:
         """Test energy conservation for simple elastic collision."""
         alpha_restitution = 1.0
 
-        x = torch.randn(3, 2, dtype=torch.float64)
+        torch.randn(3, 2, dtype=torch.float64)
         v = torch.tensor(
             [
                 [2.0, 0.0],  # Walker 0
@@ -278,7 +278,7 @@ class TestEnergyConservation:
 
     def test_energy_dissipation_scales_with_restitution(self):
         """Test that energy dissipation increases as restitution decreases."""
-        x = torch.randn(5, 3, dtype=torch.float64)
+        torch.randn(5, 3, dtype=torch.float64)
         v = torch.randn(5, 3, dtype=torch.float64) * 2.0
 
         companions = torch.tensor([2, 2, 2, 2, 2])
@@ -311,7 +311,7 @@ class TestEnergyConservation:
         """Test energy conservation with multiple collision groups."""
         alpha_restitution = 1.0
 
-        x = torch.randn(6, 2, dtype=torch.float64)
+        torch.randn(6, 2, dtype=torch.float64)
         v = torch.tensor(
             [
                 [1.0, 1.0],
@@ -362,7 +362,7 @@ class TestEnergyConservation:
         alpha_restitution = 1.0
 
         d = 10
-        x = torch.randn(5, d, dtype=torch.float64)
+        torch.randn(5, d, dtype=torch.float64)
         v = torch.randn(5, d, dtype=torch.float64) * 2.0
 
         companions = torch.tensor([2, 2, 2, 2, 2])
@@ -385,7 +385,7 @@ class TestEnergyConservation:
 
     def test_partial_restitution_energy_scaling(self):
         """Test that partial restitution gives correct energy scaling."""
-        x = torch.randn(4, 2, dtype=torch.float64)
+        torch.randn(4, 2, dtype=torch.float64)
         v = torch.tensor(
             [
                 [2.0, 0.0],

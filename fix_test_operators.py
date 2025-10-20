@@ -1,7 +1,7 @@
 """Script to fix test_operators.py for new compute_fitness API."""
 
 # Read the test file
-with open("tests/test_operators.py", "r") as f:
+with open("tests/test_operators.py", encoding="utf-8") as f:
     content = f.read()
 
 # Fix 1: Update TestComputeFitness fixture to compute companions
@@ -32,13 +32,13 @@ content = content.replace(
         # Compute companions using the selection strategy
         companions = companion_selection(positions, velocities, alive)
 
-        return positions, velocities, rewards, alive, companions"""
+        return positions, velocities, rewards, alive, companions""",
 )
 
 # Fix 2: Update test method signatures in TestComputeFitness
 content = content.replace(
     """        positions, velocities, rewards, alive, companion_selection = simple_swarm""",
-    """        positions, velocities, rewards, alive, companions = simple_swarm"""
+    """        positions, velocities, rewards, alive, companions = simple_swarm""",
 )
 
 # Fix 3: Update compute_fitness calls to use companions tensor
@@ -48,7 +48,7 @@ content = content.replace(
         )""",
     """        fitness, distances, companions_out = compute_fitness(
             positions, velocities, rewards, alive, companions
-        )"""
+        )""",
 )
 
 content = content.replace(
@@ -63,12 +63,12 @@ content = content.replace(
             velocities,
             rewards,
             alive,
-            companions,"""
+            companions,""",
 )
 
 content = content.replace(
     """        fitness, _, _ = compute_fitness(positions, velocities, rewards, alive, companion_selection)""",
-    """        fitness, _, _ = compute_fitness(positions, velocities, rewards, alive, companions)"""
+    """        fitness, _, _ = compute_fitness(positions, velocities, rewards, alive, companions)""",
 )
 
 content = content.replace(
@@ -85,7 +85,7 @@ content = content.replace(
 
         # Force same companion selection for comparison
         pos_diff = positions_same - positions_same[companions_out]
-        vel_diff = velocities_diff - velocities_diff[companions_out]"""
+        vel_diff = velocities_diff - velocities_diff[companions_out]""",
 )
 
 content = content.replace(
@@ -94,7 +94,7 @@ content = content.replace(
         )""",
     """        fitness, _, _ = compute_fitness(
             positions, velocities, rewards, alive, companions, alpha=alpha, beta=beta
-        )"""
+        )""",
 )
 
 # Fix 4: Update TestCloneWalkers fixture
@@ -135,13 +135,13 @@ content = content.replace(
             positions, velocities, rewards, alive, companions
         )
 
-        return positions, velocities, fitness, companions, alive"""
+        return positions, velocities, fitness, companions, alive""",
 )
 
 print("Transformations applied!")
 print("Writing to tests/test_operators.py...")
 
-with open("tests/test_operators.py", "w") as f:
+with open("tests/test_operators.py", "w", encoding="utf-8") as f:
     f.write(content)
 
 print("Done!")

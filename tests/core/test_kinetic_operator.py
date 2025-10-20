@@ -3,11 +3,8 @@
 import pytest
 import torch
 
-from fragile.core.kinetics import KineticOperator, LangevinParams
-from fragile.euclidean_gas import (
-    SimpleQuadraticPotential,
-    SwarmState,
-)
+from fragile.core.euclidean_gas import SimpleQuadraticPotential, SwarmState
+from fragile.core.kinetic_operator import KineticOperator, LangevinParams
 
 
 class TestKineticOperator:

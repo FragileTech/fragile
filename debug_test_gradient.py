@@ -1,7 +1,9 @@
 """Debug the exact test case that's failing."""
 
 import torch
+
 from fragile.core.fitness import FitnessOperator
+
 
 # Replicate the test fixture exactly
 N, d = 10, 2

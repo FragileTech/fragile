@@ -178,7 +178,7 @@ class TestComputeFitness:
         positions, velocities, rewards, alive, companions = simple_swarm
         N = positions.shape[0]
 
-        fitness, distances, companions_out = compute_fitness(
+        fitness, distances, _companions_out = compute_fitness(
             positions, velocities, rewards, alive, companions
         )
 

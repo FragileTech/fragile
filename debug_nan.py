@@ -1,8 +1,10 @@
 """Debug NaN in gradient computation."""
 
 import torch
+
 from fragile.core.companion_selection import CompanionSelection
-from fragile.core.fitness import FitnessOperator, compute_fitness
+from fragile.core.fitness import compute_fitness, FitnessOperator
+
 
 # Create simple test case
 torch.manual_seed(42)
@@ -17,7 +19,7 @@ companion_selection = CompanionSelection(method="uniform")
 companions = companion_selection(positions, velocities, alive)
 
 print(f"Companions: {companions}")
-print(f"\nChecking for self-pairing:")
+print("\nChecking for self-pairing:")
 for i in range(N):
     if companions[i] == i:
         print(f"  Walker {i} paired with itself!")

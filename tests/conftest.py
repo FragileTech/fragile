@@ -3,17 +3,15 @@
 import pytest
 import torch
 
-from fragile.bounds import Bounds
-from fragile.euclidean_gas import (
+from fragile.bounds import TorchBounds
+from fragile.core.companion_selection import CompanionSelection
+from fragile.core.euclidean_gas import (
     CloningParams,
-    EuclideanGasParams,
-    LangevinParams,
+    EuclideanGas,
     SimpleQuadraticPotential,
 )
-
-
-# Trigger Pydantic model rebuild to resolve forward references
-EuclideanGasParams.model_rebuild()
+from fragile.core.fitness import FitnessOperator, FitnessParams
+from fragile.core.kinetic_operator import KineticOperator, LangevinParams
 
 
 @pytest.fixture
@@ -47,51 +45,122 @@ def langevin_params():
 
 
 @pytest.fixture
+def companion_selection():
+    """Standard companion selection strategy."""
+    return CompanionSelection(method="uniform")
+
+
+@pytest.fixture
 def cloning_params():
     """Standard cloning parameters."""
     return CloningParams(
-        sigma_x=0.1, lambda_alg=1.0, alpha_restitution=0.5, use_inelastic_collision=True
+        sigma_x=0.1,
+        lambda_alg=1.0,
+        alpha_restitution=0.5,
     )
 
 
 @pytest.fixture
-def euclidean_gas_params(simple_potential, langevin_params, cloning_params, device, dtype):
-    """Complete Euclidean Gas parameters."""
-    return EuclideanGasParams(
+def fitness_params():
+    """Standard fitness parameters."""
+    return FitnessParams(
+        alpha=1.0,
+        beta=1.0,
+        eta=0.1,
+        lambda_alg=0.0,
+        sigma_min=1e-8,
+        A=2.0,
+    )
+
+
+@pytest.fixture
+def fitness_op(fitness_params, companion_selection):
+    """Standard fitness operator."""
+    return FitnessOperator(params=fitness_params, companion_selection=companion_selection)
+
+
+@pytest.fixture
+def kinetic_op(langevin_params, simple_potential, torch_dtype):
+    """Standard kinetic operator."""
+    return KineticOperator(
+        gamma=langevin_params.gamma,
+        beta=langevin_params.beta,
+        delta_t=langevin_params.delta_t,
+        integrator=langevin_params.integrator,
+        potential=simple_potential,
+        device=torch.device("cpu"),
+        dtype=torch_dtype,
+    )
+
+
+@pytest.fixture
+def euclidean_gas(
+    simple_potential,
+    kinetic_op,
+    cloning_params,
+    fitness_op,
+    companion_selection,
+    device,
+    dtype,
+):
+    """Complete Euclidean Gas instance."""
+    return EuclideanGas(
         N=10,
         d=2,
+        companion_selection=companion_selection,
         potential=simple_potential,
-        langevin=langevin_params,
+        kinetic_op=kinetic_op,
         cloning=cloning_params,
-        device=device,
+        fitness_op=fitness_op,
+        device=torch.device(device),
         dtype=dtype,
     )
 
 
 @pytest.fixture
-def small_swarm_params(simple_potential, langevin_params, cloning_params, device, dtype):
+def small_swarm_gas(
+    simple_potential,
+    kinetic_op,
+    cloning_params,
+    fitness_op,
+    companion_selection,
+    device,
+    dtype,
+):
     """Small swarm for quick tests."""
-    return EuclideanGasParams(
+    return EuclideanGas(
         N=5,
         d=2,
+        companion_selection=companion_selection,
         potential=simple_potential,
-        langevin=langevin_params,
+        kinetic_op=kinetic_op,
         cloning=cloning_params,
-        device=device,
+        fitness_op=fitness_op,
+        device=torch.device(device),
         dtype=dtype,
     )
 
 
 @pytest.fixture
-def large_swarm_params(simple_potential, langevin_params, cloning_params, device, dtype):
+def large_swarm_gas(
+    simple_potential,
+    kinetic_op,
+    cloning_params,
+    fitness_op,
+    companion_selection,
+    device,
+    dtype,
+):
     """Large swarm for convergence tests."""
-    return EuclideanGasParams(
+    return EuclideanGas(
         N=100,
         d=3,
+        companion_selection=companion_selection,
         potential=simple_potential,
-        langevin=langevin_params,
+        kinetic_op=kinetic_op,
         cloning=cloning_params,
-        device=device,
+        fitness_op=fitness_op,
+        device=torch.device(device),
         dtype=dtype,
     )
 
@@ -116,12 +185,12 @@ def test_dtype(request):
 
 
 @pytest.fixture
-def adaptive_params(euclidean_gas_params):
+def adaptive_params(euclidean_gas):
     """Standard adaptive gas parameters."""
     from fragile.adaptive_gas import AdaptiveGasParams, AdaptiveParams
 
     return AdaptiveGasParams(
-        euclidean=euclidean_gas_params,
+        euclidean=euclidean_gas,
         adaptive=AdaptiveParams(
             epsilon_F=0.1,
             nu=0.05,

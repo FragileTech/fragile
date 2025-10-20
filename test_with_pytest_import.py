@@ -1,10 +1,13 @@
 """Import test directly from pytest to match environment exactly."""
 
 import sys
+
+
 sys.path.insert(0, "tests")
 
-import torch
 from test_operators import TestInelasticCollisionVelocity
+import torch
+
 
 # Create instance and run test
 test_instance = TestInelasticCollisionVelocity()
