@@ -97,9 +97,9 @@ class SwarmExplorer(param.Parameterized):
     """Interactive Euclidean Gas explorer with Panel/HoloViews widgets."""
 
     # Simulation controls
-    N = param.Integer(default=160, bounds=(40, 400), doc="Number of walkers")
-    n_steps = param.Integer(default=240, bounds=(50, 600), doc="Simulation steps")
-    measure_stride = param.Integer(default=4, bounds=(1, 20), doc="Downsample stride")
+    N = param.Integer(default=160, bounds=(10, 1000), doc="Number of walkers")
+    n_steps = param.Integer(default=240, bounds=(50, 1000), doc="Simulation steps")
+    measure_stride = param.Integer(default=1, bounds=(1, 20), doc="Downsample stride")
     color_metric = param.ObjectSelector(
         default="constant",
         objects=("constant", "velocity", "fitness", "reward", "distance"),
@@ -113,11 +113,11 @@ class SwarmExplorer(param.Parameterized):
 
     # Langevin parameters
     gamma = param.Number(default=1.0, bounds=(0.05, 5.0), doc="Friction γ")
-    beta = param.Number(default=1.0, bounds=(0.1, 5.0), doc="Inverse temperature β")
+    beta = param.Number(default=1.0, bounds=(0.01, 10.0), doc="Inverse temperature β")
     delta_t = param.Number(default=0.05, bounds=(0.01, 0.2), doc="Time step Δt")
     epsilon_F = param.Number(default=0.0, bounds=(0.0, 0.5), doc="Fitness force rate ε_F")
     use_fitness_force = param.Boolean(default=False, doc="Enable fitness-driven force")
-    use_potential_force = param.Boolean(default=True, doc="Enable potential force")
+    use_potential_force = param.Boolean(default=False, doc="Enable potential force")
     epsilon_Sigma = param.Number(default=0.1, bounds=(0.0, 1.0), doc="Hessian regularisation ε_Σ")
     use_anisotropic_diffusion = param.Boolean(default=False, doc="Enable anisotropic diffusion")
     diagonal_diffusion = param.Boolean(default=True, doc="Use diagonal diffusion tensor")
@@ -133,7 +133,7 @@ class SwarmExplorer(param.Parameterized):
     eta = param.Number(default=0.1, bounds=(0.01, 0.5), doc="Positivity floor η")
     A = param.Number(default=2.0, bounds=(0.5, 5.0), doc="Logistic rescale amplitude A")
     sigma_min = param.Number(default=1e-8, bounds=(1e-9, 1e-3), doc="Standardisation σ_min")
-    p_max = param.Number(default=1.0, bounds=(0.2, 1.0), doc="Maximum cloning probability p_max")
+    p_max = param.Number(default=1.0, bounds=(0.2, 10.0), doc="Maximum cloning probability p_max")
     epsilon_clone = param.Number(default=0.005, bounds=(1e-4, 0.05), doc="Cloning score ε_clone")
     companion_method = param.ObjectSelector(
         default="uniform",
@@ -153,9 +153,21 @@ class SwarmExplorer(param.Parameterized):
     init_velocity_scale = param.Number(
         default=0.1, bounds=(0.01, 0.8), doc="Initial velocity scale"
     )
-    bounds_extent = param.Number(default=6.0, bounds=(3.0, 6.0), doc="Spatial bounds half-width")
+    bounds_extent = param.Number(default=6.0, bounds=(1, 12), doc="Spatial bounds half-width")
 
     auto_update = param.Boolean(default=False, doc="Auto recompute on parameter change")
+    show_velocity_vectors = param.Boolean(
+        default=False, doc="Display velocity vectors showing trajectory from previous to current position"
+    )
+    color_vectors_by_cloning = param.Boolean(
+        default=False, doc="Color velocity vectors yellow if walker was created by cloning (requires show_velocity_vectors)"
+    )
+    show_force_vectors = param.Boolean(
+        default=False, doc="Display force vectors F = -∇U - ε_F·∇V_fit at current positions"
+    )
+    force_arrow_length = param.Number(
+        default=0.5, bounds=(0.1, 2.0), doc="Length scale for normalized force arrows"
+    )
 
     def __init__(
         self,
@@ -227,6 +239,10 @@ class SwarmExplorer(param.Parameterized):
             "init_velocity_scale",
             "bounds_extent",
             "auto_update",
+            "show_velocity_vectors",
+            "color_vectors_by_cloning",
+            "show_force_vectors",
+            "force_arrow_length",
             "color_metric",
             "size_metric",
         ]
@@ -246,7 +262,7 @@ class SwarmExplorer(param.Parameterized):
 
         self.status_pane = pn.pane.Markdown("", sizing_mode="stretch_width")
 
-        self.param.watch(self._refresh_frame, ["color_metric", "size_metric"])
+        self.param.watch(self._refresh_frame, ["color_metric", "size_metric", "show_velocity_vectors", "color_vectors_by_cloning", "show_force_vectors", "force_arrow_length"])
 
         self._compute_simulation()
 
@@ -283,7 +299,7 @@ class SwarmExplorer(param.Parameterized):
         "init_velocity_scale",
         "bounds_extent",
         "auto_update",
-        watch=True,
+        #watch=True,
     )
     def _auto_recompute(self, *_):
         if self.auto_update:
@@ -349,6 +365,12 @@ class SwarmExplorer(param.Parameterized):
             beta=langevin_params.beta,
             delta_t=langevin_params.delta_t,
             integrator=langevin_params.integrator,
+            epsilon_F=langevin_params.epsilon_F,
+            use_fitness_force=langevin_params.use_fitness_force,
+            use_potential_force=langevin_params.use_potential_force,
+            epsilon_Sigma=langevin_params.epsilon_Sigma,
+            use_anisotropic_diffusion=langevin_params.use_anisotropic_diffusion,
+            diagonal_diffusion=langevin_params.diagonal_diffusion,
             potential=self.potential,
             device=torch.device("cpu"),
             dtype=torch.float32,
@@ -394,6 +416,7 @@ class SwarmExplorer(param.Parameterized):
         x_traj = history.x_final.detach().cpu().numpy()
         v_traj = history.v_final.detach().cpu().numpy()
         n_alive = history.n_alive.detach().cpu().numpy()
+        will_clone_traj = history.will_clone.detach().cpu().numpy()  # [n_recorded-1, N]
 
         # Compute variances (total variance across walkers and dimensions)
         var_x = torch.var(history.x_final, dim=1).sum(dim=-1).detach().cpu().numpy()
@@ -413,10 +436,36 @@ class SwarmExplorer(param.Parameterized):
         distance_series: list[np.ndarray] = []
         reward_series: list[np.ndarray] = []
         alive_masks: list[np.ndarray] = []
+        previous_positions: list[np.ndarray | None] = []
+        will_clone_series: list[np.ndarray] = []
+        force_vectors_series: list[np.ndarray] = []
+        force_magnitudes_series: list[np.ndarray] = []
 
-        for step_idx in indices:
+        for idx, step_idx in enumerate(indices):
             x_t = torch.from_numpy(x_traj[step_idx]).to(dtype=torch.float32)
             v_t = torch.from_numpy(v_traj[step_idx]).to(dtype=torch.float32)
+
+            # Store previous position for velocity vector visualization
+            if step_idx == 0:
+                previous_positions.append(None)
+            else:
+                prev_idx = max(0, step_idx - 1)
+                previous_positions.append(x_traj[prev_idx])
+
+            # Store cloning flags for current step
+            # will_clone_traj[i] corresponds to step i+1 (no data at step 0)
+            # At step_idx, we want will_clone from step_idx-1 (if it exists)
+            if step_idx == 0:
+                # No cloning data at initial step
+                will_clone_series.append(np.zeros(x_t.shape[0], dtype=bool))
+            else:
+                # Get cloning data from the step that produced current positions
+                # step_idx-1 in the full trajectory corresponds to step_idx-1 in will_clone_traj
+                will_clone_idx = step_idx - 1
+                if will_clone_idx < will_clone_traj.shape[0]:
+                    will_clone_series.append(will_clone_traj[will_clone_idx])
+                else:
+                    will_clone_series.append(np.zeros(x_t.shape[0], dtype=bool))
 
             with torch.no_grad():
                 alive_mask = bounds.contains(x_t)
@@ -461,6 +510,39 @@ class SwarmExplorer(param.Parameterized):
             distance_series.append(distances_np[alive_np])
             reward_series.append(rewards_np[alive_np])
 
+            # Compute force vectors F = -∇U(x) - ε_F·∇V_fit at current positions
+            force_vectors_np = np.zeros((x_t.shape[0], x_t.shape[1]), dtype=np.float32)
+            force_mag_np = np.zeros(x_t.shape[0], dtype=np.float32)
+
+            if alive_np.any():
+                force_total = torch.zeros_like(x_t)
+
+                # Potential force: -∇U(x)
+                if self.use_potential_force:
+                    x_t_grad = x_t.clone().requires_grad_(True)
+                    U = self.potential.evaluate(x_t_grad)
+                    grad_U = torch.autograd.grad(U.sum(), x_t_grad, create_graph=False)[0]
+                    force_total -= grad_U
+                    x_t_grad.requires_grad_(False)
+
+                # Fitness force: -ε_F·∇V_fit (if fitness force enabled)
+                if self.use_fitness_force and alive_np.any():
+                    # Compute fitness gradient
+                    grad_fitness = fitness_op.compute_gradient(
+                        positions=x_t,
+                        velocities=v_t,
+                        rewards=rewards,
+                        alive=alive_mask,
+                        companions=companions,
+                    )
+                    force_total -= float(self.epsilon_F) * grad_fitness
+
+                force_vectors_np = force_total.detach().cpu().numpy()
+                force_mag_np = np.linalg.norm(force_vectors_np, axis=1)
+
+            force_vectors_series.append(force_vectors_np[alive_np])
+            force_magnitudes_series.append(force_mag_np[alive_np])
+
         self.result = {
             "positions": positions,
             "V_total": V_total,
@@ -473,6 +555,10 @@ class SwarmExplorer(param.Parameterized):
             "distance_series": distance_series,
             "reward_series": reward_series,
             "alive_masks": alive_masks,
+            "previous_positions": previous_positions,
+            "will_clone_series": will_clone_series,
+            "force_vectors_series": force_vectors_series,
+            "force_magnitudes_series": force_magnitudes_series,
         }
 
         frame_count = len(times)
@@ -532,28 +618,48 @@ class SwarmExplorer(param.Parameterized):
 
         alive_mask = np.asarray(data["alive_masks"][frame], dtype=bool)
         positions_full = data["positions"][frame]
+        prev_positions_full = data["previous_positions"][frame]
+        was_cloned_full = data["will_clone_series"][frame]  # Cloning flags from previous step
 
         if alive_mask.any():
             positions = positions_full[alive_mask]
+            # Extract previous positions for alive walkers
+            if prev_positions_full is not None:
+                prev_positions = prev_positions_full[alive_mask]
+            else:
+                prev_positions = None
+            # Extract cloning flags for alive walkers
+            was_cloned = was_cloned_full[alive_mask]
             velocity_vals = np.asarray(data["velocity_series"][frame], dtype=float)
             fitness_vals = np.asarray(data["fitness_series"][frame], dtype=float)
             distance_vals = np.asarray(data["distance_series"][frame], dtype=float)
             reward_vals = np.asarray(data["reward_series"][frame], dtype=float)
+            # Extract force vectors and magnitudes
+            force_vectors = np.asarray(data["force_vectors_series"][frame], dtype=float)
+            force_magnitudes = np.asarray(data["force_magnitudes_series"][frame], dtype=float)
         else:
             positions = np.empty((0, positions_full.shape[1]))
+            prev_positions = None
+            was_cloned = np.asarray([], dtype=bool)
             velocity_vals = np.asarray([], dtype=float)
             fitness_vals = np.asarray([], dtype=float)
             distance_vals = np.asarray([], dtype=float)
             reward_vals = np.asarray([], dtype=float)
+            force_vectors = np.empty((0, positions_full.shape[1]), dtype=float)
+            force_magnitudes = np.asarray([], dtype=float)
 
         return {
             "frame": frame,
             "max_frame": max_frame,
             "positions": positions,
+            "prev_positions": prev_positions,
+            "was_cloned": was_cloned,
             "velocity_vals": velocity_vals,
             "fitness_vals": fitness_vals,
             "distance_vals": distance_vals,
             "reward_vals": reward_vals,
+            "force_vectors": force_vectors,
+            "force_magnitudes": force_magnitudes,
             "data": data,
         }
 
@@ -569,10 +675,14 @@ class SwarmExplorer(param.Parameterized):
             )
 
         positions = frame_data["positions"]
+        prev_positions = frame_data["prev_positions"]
+        was_cloned = frame_data["was_cloned"]
         velocity_vals = frame_data["velocity_vals"]
         fitness_vals = frame_data["fitness_vals"]
         distance_vals = frame_data["distance_vals"]
         reward_vals = frame_data["reward_vals"]
+        force_vectors = frame_data["force_vectors"]
+        force_magnitudes = frame_data["force_magnitudes"]
         data = frame_data["data"]
         frame_idx = frame_data["frame"]
         max_frame = frame_data["max_frame"]
@@ -613,6 +723,123 @@ class SwarmExplorer(param.Parameterized):
         else:
             points = points.opts(color="navy", colorbar=False)
 
+        # Build visualization overlay layer by layer
+        overlay = self.background
+
+        # Add velocity vectors if enabled
+        if self.show_velocity_vectors and prev_positions is not None and len(positions) > 0:
+            # Separate arrows by cloning status if feature is enabled
+            if self.color_vectors_by_cloning and len(was_cloned) > 0:
+                # Split into two groups: diffusion (cyan) and cloned (yellow)
+                diffusion_paths = []
+                cloned_paths = []
+
+                for i in range(len(positions)):
+                    x1, y1 = positions[i]  # Current position
+                    x0, y0 = prev_positions[i]  # Previous position
+                    path = [(x0, y0), (x1, y1)]
+
+                    if was_cloned[i]:
+                        cloned_paths.append(path)
+                    else:
+                        diffusion_paths.append(path)
+
+                # Add diffusion arrows (cyan)
+                if len(diffusion_paths) > 0:
+                    diffusion_arrows = hv.Path(diffusion_paths, kdims=["x₁", "x₂"]).opts(
+                        color="cyan",
+                        line_width=1.5,
+                        alpha=0.7,
+                    )
+                    overlay = overlay * diffusion_arrows
+
+                # Add cloned arrows (yellow)
+                if len(cloned_paths) > 0:
+                    cloned_arrows = hv.Path(cloned_paths, kdims=["x₁", "x₂"]).opts(
+                        color="#FFD700",  # Gold/yellow for cloned walkers
+                        line_width=1.5,
+                        alpha=0.7,
+                    )
+                    overlay = overlay * cloned_arrows
+            else:
+                # Original behavior: all arrows in cyan
+                arrow_paths = []
+                for i in range(len(positions)):
+                    x1, y1 = positions[i]  # Current position
+                    x0, y0 = prev_positions[i]  # Previous position
+                    arrow_paths.append([(x0, y0), (x1, y1)])
+
+                if len(arrow_paths) > 0:
+                    arrows = hv.Path(arrow_paths, kdims=["x₁", "x₂"]).opts(
+                        color="cyan",
+                        line_width=1.5,
+                        alpha=0.7,
+                    )
+                    overlay = overlay * arrows
+
+        # Add force vectors if enabled
+        if self.show_force_vectors and len(positions) > 0 and len(force_vectors) > 0:
+            force_paths = []
+            force_mags_for_color = []
+
+            for i in range(len(positions)):
+                # Normalize force vector
+                force_mag = force_magnitudes[i]
+                if force_mag > 1e-10:  # Avoid division by zero
+                    force_norm = force_vectors[i] / force_mag
+                else:
+                    force_norm = np.zeros_like(force_vectors[i])
+
+                # Scale by arrow length parameter
+                arrow_end = positions[i] + force_norm * float(self.force_arrow_length)
+
+                # Create path from position to arrow end
+                x0, y0 = positions[i]
+                x1, y1 = arrow_end
+                force_paths.append([(x0, y0), (x1, y1)])
+                force_mags_for_color.append(force_mag)
+
+            if len(force_paths) > 0:
+                # Normalize force magnitudes to [0, 1] for color mapping
+                force_mags_array = np.array(force_mags_for_color)
+                if force_mags_array.max() > 1e-10:
+                    # Use percentile normalization to avoid outliers dominating
+                    p5 = np.percentile(force_mags_array, 5)
+                    p95 = np.percentile(force_mags_array, 95)
+                    if p95 > p5:
+                        force_intensity = np.clip((force_mags_array - p5) / (p95 - p5), 0, 1)
+                    else:
+                        force_intensity = np.ones_like(force_mags_array)
+                else:
+                    force_intensity = np.zeros_like(force_mags_array)
+
+                # Create green gradient: light green (low force) to dark green (high force)
+                # Use HSL color space: Hue=120 (green), vary Lightness
+                colors = []
+                for intensity in force_intensity:
+                    # Map intensity to lightness: 0.8 (light) to 0.2 (dark)
+                    lightness = 0.8 - 0.6 * intensity
+                    # Convert HSL to RGB (approximation for green)
+                    if lightness > 0.5:
+                        green_val = int(255 * (1 - (1 - lightness) * 2))
+                    else:
+                        green_val = 255
+                    red_blue_val = int(255 * lightness * 2) if lightness < 0.5 else int(255 * (1 - (lightness - 0.5) * 2))
+                    color_hex = f"#{red_blue_val:02x}{green_val:02x}{red_blue_val:02x}"
+                    colors.append(color_hex)
+
+                # Create separate path for each force arrow with its color
+                for path, color in zip(force_paths, colors):
+                    force_arrow = hv.Path([path], kdims=["x₁", "x₂"]).opts(
+                        color=color,
+                        line_width=2.0,
+                        alpha=0.8,
+                    )
+                    overlay = overlay * force_arrow
+
+        # Add walker points and mode markers on top
+        overlay = overlay * points * self.mode_points
+
         text_lines = [
             f"t = {int(data['times'][frame_idx])}",
             f"V_total = {data['V_total'][frame_idx]:.4f}",
@@ -627,7 +854,7 @@ class SwarmExplorer(param.Parameterized):
             "\n".join(text_lines),
         ).opts(text_font_size="12pt", text_align="left")
 
-        return (self.background * points * self.mode_points * metrics_text).opts(
+        return (overlay * metrics_text).opts(
             framewise=True,
             xlim=(-self.bounds_extent, self.bounds_extent),
             ylim=(-self.bounds_extent, self.bounds_extent),
@@ -680,6 +907,10 @@ class SwarmExplorer(param.Parameterized):
             "enable_cloning",
             "enable_kinetic",
             "auto_update",
+            "show_velocity_vectors",
+            "color_vectors_by_cloning",
+            "show_force_vectors",
+            "force_arrow_length",
             "color_metric",
             "size_metric",
         )

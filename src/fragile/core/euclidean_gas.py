@@ -341,7 +341,7 @@ class EuclideanGas(BaseModel):
         grad_fitness = None
         hess_fitness = None
 
-        if self.fitness_op is not None:
+        if self.fitness_op is not None and self.enable_kinetic:
             # Compute fitness gradient if needed for adaptive force
             if self.kinetic_op.use_fitness_force:
                 grad_fitness = self.fitness_op.compute_gradient(
@@ -360,7 +360,6 @@ class EuclideanGas(BaseModel):
                 )
 
         # Step 6: Kinetic update with optional fitness derivatives (if enabled)
-        if self.enable_kinetic:
             state_final = self.kinetic_op.apply(state_cloned, grad_fitness, hess_fitness)
             if freeze_mask is not None and freeze_mask.any():
                 state_final.copy_from(reference_state, freeze_mask)
