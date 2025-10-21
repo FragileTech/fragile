@@ -68,6 +68,7 @@ dependencies = [
     "sphinxcontrib-mermaid>=1.0.0",
     "kaleido>=1.1.0",
     "ipywidgets-bokeh>=1.6.0",
+    "networkx>=3.4.2",
 ]
 
 [dependency-groups]

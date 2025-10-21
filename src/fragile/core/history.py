@@ -13,6 +13,9 @@ from pydantic import BaseModel, Field
 import torch
 from torch import Tensor
 
+# Import TorchBounds directly (not in TYPE_CHECKING) for Pydantic
+from fragile.bounds import TorchBounds
+
 
 class RunHistory(BaseModel):
     """Complete history of an EuclideanGas run with all intermediate states and info.
@@ -48,6 +51,9 @@ class RunHistory(BaseModel):
     record_every: int = Field(description="Recording interval (every k-th step)")
     terminated_early: bool = Field(description="Whether run stopped early due to all dead")
     final_step: int = Field(description="Last step completed (may be < n_steps)")
+    bounds: Optional[TorchBounds] = Field(
+        None, description="Position bounds used during simulation (optional)"
+    )
 
     # ========================================================================
     # States: Before Cloning [n_recorded, N, d]
@@ -104,6 +110,15 @@ class RunHistory(BaseModel):
     vel_squared_differences: Tensor = Field(description="Squared velocity differences ||Δv||²")
     rescaled_rewards: Tensor = Field(description="Rescaled rewards r'_i")
     rescaled_distances: Tensor = Field(description="Rescaled distances d'_i")
+
+    # ========================================================================
+    # Per-Step Localized Statistics [n_recorded-1]
+    # Note: Global statistics (rho → ∞) computed over alive walkers
+    # ========================================================================
+    mu_rewards: Tensor = Field(description="Mean of raw rewards μ_ρ[r|alive]")
+    sigma_rewards: Tensor = Field(description="Regularized std of rewards σ'_ρ[r|alive]")
+    mu_distances: Tensor = Field(description="Mean of algorithmic distances μ_ρ[d|alive]")
+    sigma_distances: Tensor = Field(description="Regularized std of distances σ'_ρ[d|alive]")
 
     # ========================================================================
     # Adaptive Kinetics Data (Optional) [n_recorded-1, N, d] or [n_recorded-1, N, d, d]
@@ -276,3 +291,7 @@ class RunHistory(BaseModel):
         if self.fitness_hessians_full is not None:
             lines.append("  Adaptive kinetics: Full Hessians recorded")
         return "\n".join(lines)
+
+
+# Rebuild model after TorchBounds is fully defined
+RunHistory.model_rebuild()

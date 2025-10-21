@@ -70,7 +70,8 @@ def patched_standardization(
     alive: Tensor,
     rho: float | None = None,
     sigma_min: float = 1e-8,
-) -> Tensor:
+    return_statistics: bool = False,
+) -> Tensor | tuple[Tensor, Tensor, Tensor]:
     """Compute Z-scores using only alive walkers for statistics (fully differentiable).
 
     Implements the patched standardization Z_ρ[f, d, x] where statistics (mean, std)
@@ -92,9 +93,12 @@ def patched_standardization(
         alive: Boolean tensor of shape [N], True for alive walkers
         rho: Localization scale parameter (not yet implemented for finite rho)
         sigma_min: Regularization constant ensuring σ' ≥ σ_min > 0
+        return_statistics: If True, return (z_scores, mu, sigma) tuple instead of just z_scores
 
     Returns:
-        Z-scores tensor of shape [N]. Dead walkers receive Z-score of 0.0.
+        If return_statistics=False: Z-scores tensor of shape [N]. Dead walkers receive Z-score of 0.0.
+        If return_statistics=True: Tuple of (z_scores [N], mu [scalar], sigma [scalar])
+            where mu is the mean over alive walkers and sigma is the regularized std.
 
     Note:
         Current implementation is for the global case (rho → ∞). For finite rho,
@@ -135,7 +139,11 @@ def patched_standardization(
 
     # Mask dead walkers (set to 0.0)
     # Using multiplication instead of torch.where to preserve gradients
-    return z_scores * alive_mask
+    z_scores_masked = z_scores * alive_mask
+
+    if return_statistics:
+        return z_scores_masked, mu, sigma_reg
+    return z_scores_masked
 
 
 def compute_fitness(
@@ -212,8 +220,13 @@ def compute_fitness(
     distances = torch.sqrt(pos_sq + lambda_alg * vel_sq + epsilon_dist**2)
 
     # Step 3-4: Patched standardization for both channels (only alive walkers)
-    z_rewards = patched_standardization(rewards, alive, rho=None, sigma_min=sigma_min)
-    z_distances = patched_standardization(distances, alive, rho=None, sigma_min=sigma_min)
+    # Get statistics for localized mean-field analysis
+    z_rewards, mu_rewards, sigma_rewards = patched_standardization(
+        rewards, alive, rho=None, sigma_min=sigma_min, return_statistics=True
+    )
+    z_distances, mu_distances, sigma_distances = patched_standardization(
+        distances, alive, rho=None, sigma_min=sigma_min, return_statistics=True
+    )
 
     # Step 5-6: Logistic rescale + positivity floor
     # r'_i = g_A(z_r,i) + η, d'_i = g_A(z_d,i) + η
@@ -226,15 +239,21 @@ def compute_fitness(
 
     # Dead walkers receive fitness = 0.0 (they don't participate in cloning)
     fitness = torch.where(alive, fitness, torch.zeros_like(fitness))
-    info = {"distances": distances,
-            "companions": companions,
-            "z_rewards": z_rewards,
-            "z_distances": z_distances,
-            "pos_squared_differences": pos_sq,
-            "vel_squared_differences": vel_sq,
-            "rescaled_rewards": r_prime,
-            "rescaled_distances": d_prime,
-            }
+    info = {
+        "distances": distances,
+        "companions": companions,
+        "z_rewards": z_rewards,
+        "z_distances": z_distances,
+        "pos_squared_differences": pos_sq,
+        "vel_squared_differences": vel_sq,
+        "rescaled_rewards": r_prime,
+        "rescaled_distances": d_prime,
+        # Localized statistics (global case: rho → ∞)
+        "mu_rewards": mu_rewards,      # μ_ρ[r|alive]
+        "sigma_rewards": sigma_rewards,  # σ'_ρ[r|alive]
+        "mu_distances": mu_distances,    # μ_ρ[d|alive]
+        "sigma_distances": sigma_distances,  # σ'_ρ[d|alive]
+    }
 
     return fitness, info
 

@@ -15,12 +15,11 @@ import torch
 from torch import Tensor
 
 from fragile.bounds import TorchBounds
-from fragile.core.cloning import clone_walkers, CloneOperator
+from fragile.core.cloning import  CloneOperator
 from fragile.core.companion_selection import CompanionSelection
-from fragile.core.fitness import compute_fitness, FitnessOperator, FitnessParams
-from fragile.core.kinetic_operator import KineticOperator, LangevinParams
+from fragile.core.fitness import FitnessOperator
+from fragile.core.kinetic_operator import KineticOperator
 from fragile.fractal_set import FractalSet
-from fragile.scutoid import ScutoidTessellation
 
 
 class PotentialParams(BaseModel):
@@ -465,6 +464,12 @@ class EuclideanGas(BaseModel):
         rescaled_rewards_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
         rescaled_distances_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
 
+        # Localized statistics [n_recorded-1] (global case: rho → ∞)
+        mu_rewards_traj = torch.zeros(n_recorded - 1, device=self.device, dtype=self.torch_dtype)
+        sigma_rewards_traj = torch.zeros(n_recorded - 1, device=self.device, dtype=self.torch_dtype)
+        mu_distances_traj = torch.zeros(n_recorded - 1, device=self.device, dtype=self.torch_dtype)
+        sigma_distances_traj = torch.zeros(n_recorded - 1, device=self.device, dtype=self.torch_dtype)
+
         # Adaptive kinetics data (optional)
         fitness_gradients_traj = None
         fitness_hessians_diag_traj = None
@@ -534,11 +539,16 @@ class EuclideanGas(BaseModel):
                 vel_squared_differences=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
                 rescaled_rewards=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
                 rescaled_distances=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
+                mu_rewards=torch.zeros(0, device=self.device, dtype=self.torch_dtype),
+                sigma_rewards=torch.zeros(0, device=self.device, dtype=self.torch_dtype),
+                mu_distances=torch.zeros(0, device=self.device, dtype=self.torch_dtype),
+                sigma_distances=torch.zeros(0, device=self.device, dtype=self.torch_dtype),
                 fitness_gradients=fitness_gradients_traj,
                 fitness_hessians_diag=fitness_hessians_diag_traj,
                 fitness_hessians_full=fitness_hessians_full_traj,
                 total_time=0.0,
                 init_time=init_time,
+                bounds=self.bounds,
             )
 
         # Run steps with timing
@@ -620,6 +630,12 @@ class EuclideanGas(BaseModel):
                 rescaled_rewards_traj[recorded_idx - 1] = info["rescaled_rewards"]
                 rescaled_distances_traj[recorded_idx - 1] = info["rescaled_distances"]
 
+                # Record localized statistics
+                mu_rewards_traj[recorded_idx - 1] = info["mu_rewards"]
+                sigma_rewards_traj[recorded_idx - 1] = info["sigma_rewards"]
+                mu_distances_traj[recorded_idx - 1] = info["mu_distances"]
+                sigma_distances_traj[recorded_idx - 1] = info["sigma_distances"]
+
                 # Record adaptive kinetics data if computed
                 if grad_fitness is not None:
                     fitness_gradients_traj[recorded_idx - 1] = grad_fitness
@@ -671,6 +687,10 @@ class EuclideanGas(BaseModel):
             vel_squared_differences=vel_sq_diff_traj[: actual_recorded - 1],
             rescaled_rewards=rescaled_rewards_traj[: actual_recorded - 1],
             rescaled_distances=rescaled_distances_traj[: actual_recorded - 1],
+            mu_rewards=mu_rewards_traj[: actual_recorded - 1],
+            sigma_rewards=sigma_rewards_traj[: actual_recorded - 1],
+            mu_distances=mu_distances_traj[: actual_recorded - 1],
+            sigma_distances=sigma_distances_traj[: actual_recorded - 1],
             fitness_gradients=fitness_gradients_traj[: actual_recorded - 1]
             if fitness_gradients_traj is not None
             else None,
@@ -682,5 +702,6 @@ class EuclideanGas(BaseModel):
             else None,
             total_time=total_time,
             init_time=init_time,
+            bounds=self.bounds,
         )
 
