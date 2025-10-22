@@ -152,9 +152,10 @@ class AdaptiveGasParamSelector(param.Parameterized):
                 self.param.epsilon_Sigma, name="Regularization (ε_Σ)", width=400
             ),
             pn.pane.Markdown(
-                "**Adaptive Diffusion**: Anisotropic noise based on fitness landscape curvature. "
-                "Explores flat directions (large noise) and exploits curved directions (small noise). "
-                "Regularization ε_Σ ensures uniform ellipticity."
+                "**Adaptive Diffusion**: Anisotropic noise based on fitness "
+                "landscape curvature. Explores flat directions (large noise) and "
+                "exploits curved directions (small noise). Regularization ε_Σ "
+                "ensures uniform ellipticity."
             ),
             title="🔀 Adaptive Diffusion (Hessian-Based)",
             collapsed=False,
@@ -240,13 +241,18 @@ class AdaptiveGasParamSelector(param.Parameterized):
 
 **Backbone (Euclidean Gas)**:
 - {euclidean_params.N} walkers in {euclidean_params.d}D space
-- γ={euclidean_params.langevin.gamma:.2f}, β={euclidean_params.langevin.beta:.2f}, Δt={euclidean_params.langevin.delta_t:.3f}
-- Cloning: σ_x={euclidean_params.cloning.sigma_x:.2f}, λ={euclidean_params.cloning.lambda_alg:.2f}
+- γ={euclidean_params.langevin.gamma:.2f}, β={euclidean_params.langevin.beta:.2f},
+  Δt={euclidean_params.langevin.delta_t:.3f}
+- Cloning: σ_x={euclidean_params.cloning.sigma_x:.2f},
+  λ={euclidean_params.cloning.lambda_alg:.2f}
 
 **Adaptive Mechanisms**:
-- Adaptive Force: ε_F={self.epsilon_F:.2f} {"(disabled)" if self.epsilon_F == 0 else "(active)"}
-- Viscous Force: ν={self.nu:.2f}, l={self.l_viscous:.2f} {"(disabled)" if self.nu == 0 else "(active)"}
-- Adaptive Diffusion: {"enabled" if self.use_adaptive_diffusion else "disabled"} (ε_Σ={self.epsilon_Sigma:.2f})
+- Adaptive Force: ε_F={self.epsilon_F:.2f}
+  {"(disabled)" if self.epsilon_F == 0 else "(active)"}
+- Viscous Force: ν={self.nu:.2f}, l={self.l_viscous:.2f}
+  {"(disabled)" if self.nu == 0 else "(active)"}
+- Adaptive Diffusion: {"enabled" if self.use_adaptive_diffusion else "disabled"}
+  (ε_Σ={self.epsilon_Sigma:.2f})
 
 **Fitness Potential**:
 - Amplitude: A={self.A:.2f}

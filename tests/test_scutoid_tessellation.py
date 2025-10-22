@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import torch
 
-from fragile.core import RunHistory, ScutoidHistory2D, ScutoidHistory3D, create_scutoid_history
+from fragile.core import create_scutoid_history, RunHistory, ScutoidHistory2D, ScutoidHistory3D
 
 
 @pytest.fixture
@@ -38,13 +38,17 @@ def simple_history_2d():
         alive_mask=torch.ones(n_recorded, N, dtype=torch.bool),
         companions_distance=torch.randint(0, N, (n_recorded - 1, N)),
         companions_clone=torch.randint(0, N, (n_recorded - 1, N)),
-        distances=torch.randn(n_recorded - 1, N),
+        distances=torch.randn(n_recorded - 1, N).abs(),
         z_rewards=torch.randn(n_recorded - 1, N),
         z_distances=torch.randn(n_recorded - 1, N),
-        pos_squared_differences=torch.randn(n_recorded - 1, N),
-        vel_squared_differences=torch.randn(n_recorded - 1, N),
+        pos_squared_differences=torch.randn(n_recorded - 1, N).abs(),
+        vel_squared_differences=torch.randn(n_recorded - 1, N).abs(),
         rescaled_rewards=torch.randn(n_recorded - 1, N),
         rescaled_distances=torch.randn(n_recorded - 1, N),
+        mu_rewards=torch.randn(n_recorded - 1),
+        sigma_rewards=torch.rand(n_recorded - 1) + 0.1,
+        mu_distances=torch.randn(n_recorded - 1),
+        sigma_distances=torch.rand(n_recorded - 1) + 0.1,
         total_time=0.1,
         init_time=0.01,
     )
@@ -81,13 +85,17 @@ def simple_history_3d():
         alive_mask=torch.ones(n_recorded, N, dtype=torch.bool),
         companions_distance=torch.randint(0, N, (n_recorded - 1, N)),
         companions_clone=torch.randint(0, N, (n_recorded - 1, N)),
-        distances=torch.randn(n_recorded - 1, N),
+        distances=torch.randn(n_recorded - 1, N).abs(),
         z_rewards=torch.randn(n_recorded - 1, N),
         z_distances=torch.randn(n_recorded - 1, N),
-        pos_squared_differences=torch.randn(n_recorded - 1, N),
-        vel_squared_differences=torch.randn(n_recorded - 1, N),
+        pos_squared_differences=torch.randn(n_recorded - 1, N).abs(),
+        vel_squared_differences=torch.randn(n_recorded - 1, N).abs(),
         rescaled_rewards=torch.randn(n_recorded - 1, N),
         rescaled_distances=torch.randn(n_recorded - 1, N),
+        mu_rewards=torch.randn(n_recorded - 1),
+        sigma_rewards=torch.rand(n_recorded - 1) + 0.1,
+        mu_distances=torch.randn(n_recorded - 1),
+        sigma_distances=torch.rand(n_recorded - 1) + 0.1,
         total_time=0.1,
         init_time=0.01,
     )
@@ -143,13 +151,17 @@ class TestScutoidHistoryFactory:
             alive_mask=torch.ones(n_recorded, N, dtype=torch.bool),
             companions_distance=torch.randint(0, N, (n_recorded - 1, N)),
             companions_clone=torch.randint(0, N, (n_recorded - 1, N)),
-            distances=torch.randn(n_recorded - 1, N),
+            distances=torch.randn(n_recorded - 1, N).abs(),
             z_rewards=torch.randn(n_recorded - 1, N),
             z_distances=torch.randn(n_recorded - 1, N),
-            pos_squared_differences=torch.randn(n_recorded - 1, N),
-            vel_squared_differences=torch.randn(n_recorded - 1, N),
+            pos_squared_differences=torch.randn(n_recorded - 1, N).abs(),
+            vel_squared_differences=torch.randn(n_recorded - 1, N).abs(),
             rescaled_rewards=torch.randn(n_recorded - 1, N),
             rescaled_distances=torch.randn(n_recorded - 1, N),
+            mu_rewards=torch.randn(n_recorded - 1),
+            sigma_rewards=torch.rand(n_recorded - 1) + 0.1,
+            mu_distances=torch.randn(n_recorded - 1),
+            sigma_distances=torch.rand(n_recorded - 1) + 0.1,
             total_time=0.1,
             init_time=0.01,
         )
@@ -239,7 +251,7 @@ class TestScutoidHistory2D:
         assert isinstance(scutoid.gained_neighbors(), list)
 
         # Test neighbor change consistency
-        n_shared = len(scutoid.shared_neighbors())
+        len(scutoid.shared_neighbors())
         n_lost = len(scutoid.lost_neighbors())
         n_gained = len(scutoid.gained_neighbors())
         n_change = scutoid.neighbor_change_count()
@@ -582,13 +594,17 @@ class TestIncrementalTessellation:
             alive_mask=torch.ones(n_recorded, N, dtype=torch.bool),
             companions_distance=torch.randint(0, N, (n_recorded - 1, N)),
             companions_clone=torch.randint(0, N, (n_recorded - 1, N)),
-            distances=torch.randn(n_recorded - 1, N),
+            distances=torch.randn(n_recorded - 1, N).abs(),
             z_rewards=torch.randn(n_recorded - 1, N),
             z_distances=torch.randn(n_recorded - 1, N),
-            pos_squared_differences=torch.randn(n_recorded - 1, N),
-            vel_squared_differences=torch.randn(n_recorded - 1, N),
+            pos_squared_differences=torch.randn(n_recorded - 1, N).abs(),
+            vel_squared_differences=torch.randn(n_recorded - 1, N).abs(),
             rescaled_rewards=torch.randn(n_recorded - 1, N),
             rescaled_distances=torch.randn(n_recorded - 1, N),
+            mu_rewards=torch.randn(n_recorded - 1),
+            sigma_rewards=torch.rand(n_recorded - 1) + 0.1,
+            mu_distances=torch.randn(n_recorded - 1),
+            sigma_distances=torch.rand(n_recorded - 1) + 0.1,
             total_time=0.1,
             init_time=0.01,
         )

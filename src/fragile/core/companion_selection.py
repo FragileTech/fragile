@@ -415,8 +415,10 @@ class CompanionSelection(BaseModel):
             - "softmax": Distance-dependent softmax (§ 9.3.3, {prf:ref}`def-decision-operator`)
             - "uniform": Uniform random selection (ε → ∞ limit)
             - "random_pairing": Random mutual pairing via Fisher-Yates
-            - "cloning": Hybrid cloning operator (§ 5.7.1, {prf:ref}`def-cloning-companion-operator`)
-            - "greedy_pairing": Sequential greedy pairing (§ 5.1.2, {prf:ref}`def-greedy-pairing-algorithm`)
+            - "cloning": Hybrid cloning operator
+              (§ 5.7.1, {prf:ref}`def-cloning-companion-operator`)
+            - "greedy_pairing": Sequential greedy pairing
+              (§ 5.1.2, {prf:ref}`def-greedy-pairing-algorithm`)
         epsilon: Interaction range parameter (ε_c for cloning, ε_d for diversity).
             Used for "softmax", "cloning", and "greedy_pairing" methods.
         lambda_alg: Weight for velocity contribution in distance metric (default 0.0).

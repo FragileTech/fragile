@@ -4,20 +4,21 @@ from fragile.core.fractal_set import FractalSet
 from fragile.core.history import RunHistory
 from fragile.core.scutoids import (
     BaseScutoidHistory,
+    create_scutoid_history,
+    Scutoid,
     ScutoidHistory2D,
     ScutoidHistory3D,
-    Scutoid,
     VoronoiCell,
-    create_scutoid_history,
 )
 
+
 __all__ = [
+    "BaseScutoidHistory",
     "FractalSet",
     "RunHistory",
-    "BaseScutoidHistory",
+    "Scutoid",
     "ScutoidHistory2D",
     "ScutoidHistory3D",
-    "Scutoid",
     "VoronoiCell",
     "create_scutoid_history",
 ]

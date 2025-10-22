@@ -49,7 +49,8 @@ def generate_concise_description(
     # Enhanced type-specific descriptions
     if entry_type == "Definition":
         if "axiom" in title_lower:
-            return f"Fundamental assumption ensuring {clean_title.replace('Axiom of', '').strip().lower()}"
+            msg = clean_title.replace("Axiom of", "").strip().lower()
+            return f"Fundamental assumption ensuring {msg}"
         if "walker" in title_lower:
             return "Position-velocity-status tuple representing single search agent"
         if "swarm" in title_lower:

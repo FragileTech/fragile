@@ -244,9 +244,7 @@ class IncrementalDelaunay2D:
         # Find ridge points (pairs sharing an edge)
         for ridge_points in vor.ridge_points:
             if local_idx in ridge_points:
-                other_local = (
-                    ridge_points[0] if ridge_points[1] == local_idx else ridge_points[1]
-                )
+                other_local = ridge_points[0] if ridge_points[1] == local_idx else ridge_points[1]
                 other_walker_id = int(self.walker_ids[other_local])
                 neighbors.add(other_walker_id)
 

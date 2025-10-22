@@ -544,8 +544,8 @@ class TestFractalSetWithDeadWalkers:
         # At t=4, walkers 3 and 4 are dead
         ig_t4 = fs.get_ig_subgraph(timestep=4)
         for u, v in ig_t4.edges():
-            assert u[0] not in [3, 4]
-            assert v[0] not in [3, 4]
+            assert u[0] not in {3, 4}
+            assert v[0] not in {3, 4}
 
     def test_get_alive_walkers_with_dead(self, history_with_dead):
         """Test get_alive_walkers correctly identifies alive walkers."""

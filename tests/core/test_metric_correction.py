@@ -31,7 +31,7 @@ import numpy as np
 import pytest
 import torch
 
-from fragile.core import RunHistory, ScutoidHistory2D, create_scutoid_history
+from fragile.core import create_scutoid_history, RunHistory, ScutoidHistory2D
 
 
 def create_simple_2d_history(N: int = 20, n_steps: int = 10, seed: int = 42) -> RunHistory:
@@ -61,7 +61,7 @@ def create_simple_2d_history(N: int = 20, n_steps: int = 10, seed: int = 42) -> 
     n_side = int(np.sqrt(N))
     x_vals = torch.linspace(-2, 2, n_side)
     y_vals = torch.linspace(-2, 2, n_side)
-    xv, yv = torch.meshgrid(x_vals, y_vals, indexing='ij')
+    xv, yv = torch.meshgrid(x_vals, y_vals, indexing="ij")
     initial_positions = torch.stack([xv.flatten()[:N], yv.flatten()[:N]], dim=1)
 
     x_final[0] = initial_positions
@@ -69,7 +69,7 @@ def create_simple_2d_history(N: int = 20, n_steps: int = 10, seed: int = 42) -> 
     # Add small random walks
     for t in range(1, n_recorded):
         displacement = torch.randn(N, d) * 0.1
-        x_final[t] = x_final[t-1] + displacement
+        x_final[t] = x_final[t - 1] + displacement
         v_final[t] = displacement
 
     # Create alive mask (all alive)
@@ -237,8 +237,9 @@ class TestMetricCorrectionDiagonalMode:
             differences = np.abs(corrected_valid - flat_valid)
             # Allow that some might be identical, but expect at least 10% to differ
             different_fraction = np.sum(differences > 1e-10) / len(differences)
-            assert different_fraction > 0.1, \
-                f"Only {different_fraction:.1%} of values changed with correction"
+            assert (
+                different_fraction > 0.1
+            ), f"Only {different_fraction:.1%} of values changed with correction"
 
     def test_get_ricci_scalars_returns_corrected(self):
         """Test that get_ricci_scalars returns corrected values in diagonal mode."""
@@ -305,8 +306,9 @@ class TestMetricCorrectionFullMode:
             # At least some values should differ
             differences = np.abs(corrected_valid - flat_valid)
             different_fraction = np.sum(differences > 1e-10) / len(differences)
-            assert different_fraction > 0.1, \
-                f"Only {different_fraction:.1%} of values changed with correction"
+            assert (
+                different_fraction > 0.1
+            ), f"Only {different_fraction:.1%} of values changed with correction"
 
 
 class TestMetricCorrectionComparison:
@@ -338,11 +340,12 @@ class TestMetricCorrectionComparison:
             # Should have some differences (different correction formulas)
             # But might be similar in magnitude
             differences = np.abs(full_valid - diag_valid)
-            mean_abs_diff = np.mean(differences)
+            np.mean(differences)
 
             # Just check they're not identical
-            assert not np.allclose(diag_valid, full_valid, rtol=1e-10), \
-                "Diagonal and full corrections are identical"
+            assert not np.allclose(
+                diag_valid, full_valid, rtol=1e-10
+            ), "Diagonal and full corrections are identical"
 
     def test_all_modes_run_without_crash(self):
         """Smoke test: all modes should run without crashing."""
@@ -385,11 +388,7 @@ class TestMetricCorrectionIntegration:
         history = create_simple_2d_history(N=16, n_steps=5)
 
         # Use incremental mode with diagonal correction
-        scutoid = ScutoidHistory2D(
-            history,
-            incremental=True,
-            metric_correction="diagonal"
-        )
+        scutoid = ScutoidHistory2D(history, incremental=True, metric_correction="diagonal")
 
         scutoid.build_tessellation()
         scutoid.compute_ricci_scalars()
@@ -405,11 +404,7 @@ class TestMetricCorrectionIntegration:
         history = create_simple_2d_history(N=16, n_steps=5)
 
         # Use batch mode with full correction
-        scutoid = ScutoidHistory2D(
-            history,
-            incremental=False,
-            metric_correction="full"
-        )
+        scutoid = ScutoidHistory2D(history, incremental=False, metric_correction="full")
 
         scutoid.build_tessellation()
         scutoid.compute_ricci_scalars()

@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import torch
 
-from fragile.benchmarks import (
+from fragile.core.benchmarks import (
     Easom,
     easom,
     EggHolder,

@@ -226,6 +226,7 @@ ignore = [
     "RUF003", # Comment contains ambiguous Unicode character
     #"UP046", # uses `Generic` subclass instead of type parameters
     "N802", # Function name should be lowercase.
+    "RUF001", # String contains ambiguous Unicode character
     "RUF002", # Docstring contains ambiguous Unicode character
     "PLR2004", # Magic value used in comparison.
     "EM102", # Exception must not use an f-string literal, assign to variable first
@@ -276,13 +277,14 @@ docstring-quotes = "double"
     "INP001", # File is part of an implicit namespace package
     "PTH100", # `os.path.abspath()` should be replaced by `Path.resolve()`
 ]
-"**/{tests,docs}/*" = [
+"**/{tests,docs,tools}/*" = [
     "E402", # Module level import not at top of file
     "F401", # Imported but unused
     "F811", # Redefined while unused
     "D", # All docstring rules
     "S101", # Use of `assert` detected
     "PLR2004", # Magic value used in comparison
+    "PLR0904", # Too many public methods
     "S105", # Possible hardcoded password
     "PLW1514", # `open` without explicit `encoding` argument
     "PTH123", # `open()` should be replaced by `Path.open()`
@@ -290,6 +292,12 @@ docstring-quotes = "double"
     "N811", # Constant imported as non-constant
     "PLC0415", # Import should be at module level
     "ARG002", # Unused method argument
+    "ARG001", # Unused function argument
+    "E501", # Line too long
+    "PLR0911", # Too many return statements
+    "PLR0912", # Too many branches in function
+    "PERF203", # `try`-`except` within a loop incurs performance overhead
+    "PLR1702", # Too many nested blocks
 ]
 "**/scripts/**" = [
     "INP001", # File is part of an implicit namespace package. Add an `__init__.py`

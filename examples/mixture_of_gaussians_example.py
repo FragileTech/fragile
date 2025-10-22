@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 
-from fragile.benchmarks import MixtureOfGaussians
+from fragile.core.benchmarks import MixtureOfGaussians
 
 
 def visualize_mixture_2d(mixture: MixtureOfGaussians, n_samples: int = 1000):
@@ -216,7 +216,7 @@ def example_optimization_trajectory():
     learning_rate = 0.1
     n_steps = 50
 
-    x = x_init.clone().requires_grad_(True)
+    x = x_init.clone().requires_grad_(True)  # noqa: FBT003
     for step in range(n_steps):
         # Compute negative log-likelihood
         value = mixture(x)

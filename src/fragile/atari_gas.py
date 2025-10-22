@@ -138,8 +138,9 @@ class AtariGasParams(BaseModel):
     dt_sampler: Callable[[int], Sequence[int]] | None = Field(
         default=None,
         description=(
-            "Optional custom dt sampler. Takes number of walkers as input and returns a sequence "
-            "of dt values (number of times each action is applied consecutively in the environment)."
+            "Optional custom dt sampler. Takes number of walkers as input and "
+            "returns a sequence of dt values (number of times each action is "
+            "applied consecutively in the environment)."
         ),
     )
     observation_transform: Callable[[Any], np.ndarray] | None = Field(
@@ -151,7 +152,8 @@ class AtariGasParams(BaseModel):
     freeze_best: bool = Field(
         True,
         description=(
-            "Keep the highest cumulative reward walker unperturbed across cloning and kinetic steps."
+            "Keep the highest cumulative reward walker unperturbed across "
+            "cloning and kinetic steps."
         ),
     )
 

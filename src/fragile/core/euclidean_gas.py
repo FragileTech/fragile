@@ -15,11 +15,10 @@ import torch
 from torch import Tensor
 
 from fragile.bounds import TorchBounds
-from fragile.core.cloning import  CloneOperator
+from fragile.core.cloning import CloneOperator
 from fragile.core.companion_selection import CompanionSelection
 from fragile.core.fitness import FitnessOperator
 from fragile.core.kinetic_operator import KineticOperator
-from fragile.fractal_set import FractalSet
 
 
 class PotentialParams(BaseModel):
@@ -86,8 +85,6 @@ class CloningParams(BaseModel):
         default_factory=lambda: CompanionSelection(method="uniform"),
         description="Companion selection strategy",
     )
-
-
 
 
 class SwarmState:
@@ -179,7 +176,7 @@ class EuclideanGas(BaseModel):
         None, description="Position bounds (optional, TorchBounds only)"
     )
     device: torch.device = Field(torch.device("cpu"), description="PyTorch device (cpu/cuda)")
-    dtype: "str" = Field("float32", description="PyTorch dtype (float32/float64)")
+    dtype: str = Field("float32", description="PyTorch dtype (float32/float64)")
     freeze_best: bool = Field(
         False,
         description=(
@@ -270,7 +267,8 @@ class EuclideanGas(BaseModel):
               cloning_scores, cloning_probs, will_clone, num_cloned
             - Fitness is always computed (needed for adaptive forces)
             - If enable_cloning=False, cloning is skipped and state_after_cloning = state
-            - If enable_kinetic=False, kinetic is skipped and state_after_kinetic = state_after_cloning
+            - If enable_kinetic=False, kinetic is skipped and
+              state_after_kinetic = state_after_cloning
         """
         freeze_mask = self._freeze_mask(state)
         reference_state = state.clone() if freeze_mask is not None else None
@@ -286,7 +284,8 @@ class EuclideanGas(BaseModel):
 
         # SAFETY: If all walkers are dead, revive all within bounds
         if alive_mask.sum().item() == 0:
-            raise ValueError("All walkers are dead (out of bounds); cannot proceed with step.")
+            msg = "All walkers are dead (out of bounds); cannot proceed with step."
+            raise ValueError(msg)
 
         # Step 3: Select companions using the companion selection strategy
         companions_distance = self.companion_selection(
@@ -358,7 +357,7 @@ class EuclideanGas(BaseModel):
                     diagonal_only=self.kinetic_op.diagonal_diffusion,
                 )
 
-        # Step 6: Kinetic update with optional fitness derivatives (if enabled)
+            # Step 6: Kinetic update with optional fitness derivatives (if enabled)
             state_final = self.kinetic_op.apply(state_cloned, grad_fitness, hess_fitness)
             if freeze_mask is not None and freeze_mask.any():
                 state_final.copy_from(reference_state, freeze_mask)
@@ -415,6 +414,7 @@ class EuclideanGas(BaseModel):
             >>> history.save("run_001.pt")
         """
         import time
+
         from fragile.core.history import RunHistory
 
         # Initialize state with timing
@@ -425,7 +425,8 @@ class EuclideanGas(BaseModel):
         N, d = state.N, state.d
 
         # Calculate number of recorded timesteps
-        # Step 0 is always recorded, then every record_every steps, plus final step if not at interval
+        # Step 0 is always recorded, then every record_every steps,
+        # plus final step if not at interval
         recorded_steps = list(range(0, n_steps + 1, record_every))
         if n_steps not in recorded_steps:
             recorded_steps.append(n_steps)
@@ -435,8 +436,12 @@ class EuclideanGas(BaseModel):
         # States [n_recorded, N, d]
         x_before_clone = torch.zeros(n_recorded, N, d, device=self.device, dtype=self.torch_dtype)
         v_before_clone = torch.zeros(n_recorded, N, d, device=self.device, dtype=self.torch_dtype)
-        x_after_clone = torch.zeros(n_recorded - 1, N, d, device=self.device, dtype=self.torch_dtype)
-        v_after_clone = torch.zeros(n_recorded - 1, N, d, device=self.device, dtype=self.torch_dtype)
+        x_after_clone = torch.zeros(
+            n_recorded - 1, N, d, device=self.device, dtype=self.torch_dtype
+        )
+        v_after_clone = torch.zeros(
+            n_recorded - 1, N, d, device=self.device, dtype=self.torch_dtype
+        )
         x_final = torch.zeros(n_recorded, N, d, device=self.device, dtype=self.torch_dtype)
         v_final = torch.zeros(n_recorded, N, d, device=self.device, dtype=self.torch_dtype)
 
@@ -448,27 +453,49 @@ class EuclideanGas(BaseModel):
         # Per-walker per-step data [n_recorded-1, N]
         fitness_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
         rewards_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
-        cloning_scores_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
-        cloning_probs_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
+        cloning_scores_traj = torch.zeros(
+            n_recorded - 1, N, device=self.device, dtype=self.torch_dtype
+        )
+        cloning_probs_traj = torch.zeros(
+            n_recorded - 1, N, device=self.device, dtype=self.torch_dtype
+        )
         will_clone_traj = torch.zeros(n_recorded - 1, N, dtype=torch.bool, device=self.device)
         alive_mask_traj = torch.zeros(n_recorded - 1, N, dtype=torch.bool, device=self.device)
-        companions_distance_traj = torch.zeros(n_recorded - 1, N, dtype=torch.long, device=self.device)
-        companions_clone_traj = torch.zeros(n_recorded - 1, N, dtype=torch.long, device=self.device)
+        companions_distance_traj = torch.zeros(
+            n_recorded - 1, N, dtype=torch.long, device=self.device
+        )
+        companions_clone_traj = torch.zeros(
+            n_recorded - 1, N, dtype=torch.long, device=self.device
+        )
 
         # Fitness intermediate values [n_recorded-1, N]
         distances_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
         z_rewards_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
-        z_distances_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
-        pos_sq_diff_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
-        vel_sq_diff_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
-        rescaled_rewards_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
-        rescaled_distances_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
+        z_distances_traj = torch.zeros(
+            n_recorded - 1, N, device=self.device, dtype=self.torch_dtype
+        )
+        pos_sq_diff_traj = torch.zeros(
+            n_recorded - 1, N, device=self.device, dtype=self.torch_dtype
+        )
+        vel_sq_diff_traj = torch.zeros(
+            n_recorded - 1, N, device=self.device, dtype=self.torch_dtype
+        )
+        rescaled_rewards_traj = torch.zeros(
+            n_recorded - 1, N, device=self.device, dtype=self.torch_dtype
+        )
+        rescaled_distances_traj = torch.zeros(
+            n_recorded - 1, N, device=self.device, dtype=self.torch_dtype
+        )
 
         # Localized statistics [n_recorded-1] (global case: rho → ∞)
         mu_rewards_traj = torch.zeros(n_recorded - 1, device=self.device, dtype=self.torch_dtype)
-        sigma_rewards_traj = torch.zeros(n_recorded - 1, device=self.device, dtype=self.torch_dtype)
+        sigma_rewards_traj = torch.zeros(
+            n_recorded - 1, device=self.device, dtype=self.torch_dtype
+        )
         mu_distances_traj = torch.zeros(n_recorded - 1, device=self.device, dtype=self.torch_dtype)
-        sigma_distances_traj = torch.zeros(n_recorded - 1, device=self.device, dtype=self.torch_dtype)
+        sigma_distances_traj = torch.zeros(
+            n_recorded - 1, device=self.device, dtype=self.torch_dtype
+        )
 
         # Adaptive kinetics data (optional)
         fitness_gradients_traj = None
@@ -535,8 +562,12 @@ class EuclideanGas(BaseModel):
                 distances=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
                 z_rewards=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
                 z_distances=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
-                pos_squared_differences=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
-                vel_squared_differences=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
+                pos_squared_differences=torch.zeros(
+                    0, N, device=self.device, dtype=self.torch_dtype
+                ),
+                vel_squared_differences=torch.zeros(
+                    0, N, device=self.device, dtype=self.torch_dtype
+                ),
                 rescaled_rewards=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
                 rescaled_distances=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
                 mu_rewards=torch.zeros(0, device=self.device, dtype=self.torch_dtype),
@@ -595,7 +626,7 @@ class EuclideanGas(BaseModel):
                     )
 
             # Determine if this step should be recorded
-            should_record = (t in recorded_steps)
+            should_record = t in recorded_steps
 
             if should_record:
                 # Record states
@@ -704,4 +735,3 @@ class EuclideanGas(BaseModel):
             init_time=init_time,
             bounds=self.bounds,
         )
-

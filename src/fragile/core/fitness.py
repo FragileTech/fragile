@@ -42,7 +42,10 @@ class FitnessParams(BaseModel):
     epsilon_dist: float = Field(
         default=1e-8,
         gt=0,
-        description="Distance regularization for smoothness: d = sqrt(||Δx||² + ε²) ensures C^∞ differentiability",
+        description=(
+            "Distance regularization for smoothness: "
+            "d = sqrt(||Δx||² + ε²) ensures C^∞ differentiability"
+        ),
     )
     A: float = Field(default=2.0, gt=0, description="Upper bound for logistic rescale")
 
@@ -93,10 +96,12 @@ def patched_standardization(
         alive: Boolean tensor of shape [N], True for alive walkers
         rho: Localization scale parameter (not yet implemented for finite rho)
         sigma_min: Regularization constant ensuring σ' ≥ σ_min > 0
-        return_statistics: If True, return (z_scores, mu, sigma) tuple instead of just z_scores
+        return_statistics: If True, return (z_scores, mu, sigma) tuple instead of
+            just z_scores
 
     Returns:
-        If return_statistics=False: Z-scores tensor of shape [N]. Dead walkers receive Z-score of 0.0.
+        If return_statistics=False: Z-scores tensor of shape [N]. Dead walkers
+            receive Z-score of 0.0.
         If return_statistics=True: Tuple of (z_scores [N], mu [scalar], sigma [scalar])
             where mu is the mean over alive walkers and sigma is the regularized std.
 
@@ -249,9 +254,9 @@ def compute_fitness(
         "rescaled_rewards": r_prime,
         "rescaled_distances": d_prime,
         # Localized statistics (global case: rho → ∞)
-        "mu_rewards": mu_rewards,      # μ_ρ[r|alive]
+        "mu_rewards": mu_rewards,  # μ_ρ[r|alive]
         "sigma_rewards": sigma_rewards,  # σ'_ρ[r|alive]
-        "mu_distances": mu_distances,    # μ_ρ[d|alive]
+        "mu_distances": mu_distances,  # μ_ρ[d|alive]
         "sigma_distances": sigma_distances,  # σ'_ρ[d|alive]
     }
 
@@ -399,7 +404,7 @@ class FitnessOperator:
             the instantaneous force for the current companion assignment.
         """
         # Enable gradient tracking on positions
-        positions_grad = positions.clone().detach().requires_grad_(True)
+        positions_grad = positions.clone().detach().requires_grad_(True)  # noqa: FBT003
 
         # Select companions if not provided
         if companions is None:
@@ -474,7 +479,7 @@ class FitnessOperator:
         N, d = positions.shape
 
         # Enable gradient tracking on positions
-        positions_grad = positions.clone().detach().requires_grad_(True)
+        positions_grad = positions.clone().detach().requires_grad_(True)  # noqa: FBT003
 
         # Select companions if not provided
         if companions is None:

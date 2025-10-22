@@ -7,15 +7,18 @@ a unified interface.
 
 from __future__ import annotations
 
-import holoviews as hv
-import numpy as np
-import pandas as pd
-import panel as pn
-import torch
+from typing import TYPE_CHECKING
+import warnings
 
-from fragile.experiments.convergence_analysis import create_multimodal_potential
+import holoviews as hv
+import panel as pn
+
+from fragile.core.benchmarks import prepare_benchmark_for_explorer
 from fragile.experiments.gas_config_dashboard import GasConfig
-from fragile.experiments.gas_visualization_dashboard import GasVisualizer
+
+
+if TYPE_CHECKING:
+    pass
 
 
 __all__ = [
@@ -34,6 +37,11 @@ def prepare_background(
 ) -> tuple[object, hv.Image, hv.Points]:
     """Pre-compute potential, density backdrop, and mode markers for the explorer.
 
+    .. deprecated:: 0.1.0
+        Use :func:`fragile.core.benchmarks.prepare_benchmark_for_explorer` instead.
+        This function only supports MixtureOfGaussians. The new function in
+        benchmarks.py supports all benchmark types (Sphere, Rastrigin, etc.).
+
     Args:
         dims: Spatial dimension (must be 2 for visualization)
         n_gaussians: Number of Gaussian modes in mixture
@@ -43,55 +51,43 @@ def prepare_background(
 
     Returns:
         Tuple of (potential, background_image, mode_points)
+
+    Example:
+        Old usage::
+
+            from fragile.experiments.interactive_euclidean_gas import prepare_background
+
+            potential, background, mode_points = prepare_background(dims=2)
+
+        New usage::
+
+            from fragile.core.benchmarks import prepare_benchmark_for_explorer
+
+            potential, benchmark, background, mode_points = prepare_benchmark_for_explorer(
+                benchmark_name="Mixture of Gaussians",
+                dims=2,
+                bounds_range=(-6.0, 6.0),
+                resolution=200,
+                n_gaussians=3,
+                seed=42,
+            )
     """
-    potential, target_mixture = create_multimodal_potential(
+    warnings.warn(
+        "prepare_background() is deprecated and will be removed in a future version. "
+        "Use fragile.core.benchmarks.prepare_benchmark_for_explorer() instead, "
+        "which supports all benchmark types (not just MixtureOfGaussians).",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
+    # Use the new unified function
+    potential, _benchmark, background, mode_points = prepare_benchmark_for_explorer(
+        benchmark_name="Mixture of Gaussians",
         dims=dims,
-        n_gaussians=n_gaussians,
         bounds_range=bounds_range,
+        resolution=resolution,
+        n_gaussians=n_gaussians,
         seed=seed,
-    )
-
-    grid_axis = np.linspace(bounds_range[0], bounds_range[1], resolution)
-    X, Y = np.meshgrid(grid_axis, grid_axis)
-    grid_points = torch.tensor(np.stack([X.ravel(), Y.ravel()], axis=1), dtype=torch.float32)
-
-    with torch.no_grad():
-        U_grid = potential.evaluate(grid_points).cpu().numpy().reshape(X.shape)
-
-    beta_bg = 1.0
-    density = np.exp(-beta_bg * U_grid)
-    density /= np.max(density)
-
-    background = hv.Image(
-        (grid_axis, grid_axis, density),
-        kdims=["x₁", "x₂"],
-        vdims="density",
-    ).opts(
-        cmap="Greys",
-        alpha=0.35,
-        colorbar=False,
-        width=720,
-        height=620,
-    )
-
-    mode_df = pd.DataFrame({
-        "x₁": target_mixture.centers[:, 0].cpu().numpy(),
-        "x₂": target_mixture.centers[:, 1].cpu().numpy(),
-        "size": 50 * target_mixture.weights.cpu().numpy(),
-    })
-
-    mode_points = hv.Points(
-        mode_df,
-        kdims=["x₁", "x₂"],
-        vdims="size",
-        label="Target Modes",
-    ).opts(
-        size="size",
-        color="red",
-        marker="star",
-        line_color="white",
-        line_width=2,
-        alpha=0.8,
     )
 
     return potential, background, mode_points
@@ -128,6 +124,9 @@ class SwarmExplorer:
             dims: Spatial dimension (default: 2)
             **params: Override default parameter values (passed to GasConfig)
         """
+        # Lazy import to avoid circular dependency
+        from fragile.experiments.gas_visualization_dashboard import GasVisualizer
+
         self.potential = potential
         self.background = background
         self.mode_points = mode_points
@@ -136,14 +135,36 @@ class SwarmExplorer:
         # Extract display parameters from params (if any)
         display_params = {}
         config_param_names = {
-            "N", "n_steps", "gamma", "beta", "delta_t", "epsilon_F",
-            "use_fitness_force", "use_potential_force", "epsilon_Sigma",
-            "use_anisotropic_diffusion", "diagonal_diffusion", "sigma_x",
-            "lambda_alg", "alpha_restitution", "alpha_fit", "beta_fit",
-            "eta", "A", "sigma_min", "p_max", "epsilon_clone",
-            "companion_method", "companion_epsilon", "integrator",
-            "enable_cloning", "enable_kinetic", "init_offset",
-            "init_spread", "init_velocity_scale", "bounds_extent",
+            "N",
+            "n_steps",
+            "gamma",
+            "beta",
+            "delta_t",
+            "epsilon_F",
+            "use_fitness_force",
+            "use_potential_force",
+            "epsilon_Sigma",
+            "use_anisotropic_diffusion",
+            "diagonal_diffusion",
+            "sigma_x",
+            "lambda_alg",
+            "alpha_restitution",
+            "alpha_fit",
+            "beta_fit",
+            "eta",
+            "A",
+            "sigma_min",
+            "p_max",
+            "epsilon_clone",
+            "companion_method",
+            "companion_epsilon",
+            "integrator",
+            "enable_cloning",
+            "enable_kinetic",
+            "init_offset",
+            "init_spread",
+            "init_velocity_scale",
+            "bounds_extent",
         }
 
         config_params = {k: v for k, v in params.items() if k in config_param_names}

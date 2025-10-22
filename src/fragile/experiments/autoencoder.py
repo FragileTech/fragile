@@ -181,7 +181,9 @@ def train_ae(model, use_geometric_loss=False):
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     recon_loss_fn = nn.MSELoss()
     print(
-        f"\n--- Training {'Geometric+Entropy' if use_geometric_loss else 'Standard'} Autoencoder ---"
+        f"\n--- Training "
+        f"{'Geometric+Entropy' if use_geometric_loss else 'Standard'} "
+        f"Autoencoder ---"
     )
 
     for epoch in range(EPOCHS):

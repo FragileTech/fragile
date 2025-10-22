@@ -11,9 +11,9 @@ sys.path.insert(0, "../src")
 import numpy as np
 import torch
 
-from fragile.benchmarks import MixtureOfGaussians
 from fragile.bounds import TorchBounds
 from fragile.companion_selection import CompanionSelection
+from fragile.core.benchmarks import MixtureOfGaussians
 from fragile.euclidean_gas import (
     CloningParams,
     LangevinParams,

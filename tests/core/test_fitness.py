@@ -214,7 +214,7 @@ def test_fitness_operator_dead_walkers(simple_swarm_data):
     alive = torch.zeros(N, dtype=torch.bool)
     alive[: N // 2] = True
 
-    fitness, info = op(
+    fitness, _info = op(
         positions=data["positions"],
         velocities=data["velocities"],
         rewards=data["rewards"],
@@ -265,7 +265,7 @@ def test_gradient_simple_case(simple_swarm_data):
     assert not torch.any(torch.isinf(grad))
 
     # Test 4: Verify gradient is actually used correctly (backward pass works)
-    positions_grad = data["positions"].clone().requires_grad_(True)
+    positions_grad = data["positions"].clone().requires_grad_(True)  # noqa: FBT003
     op.compute_gradient(
         positions=positions_grad.detach(),
         velocities=data["velocities"],
@@ -275,7 +275,7 @@ def test_gradient_simple_case(simple_swarm_data):
     )
 
     # Also verify we can compute gradient through the full forward pass
-    fitness, info = op(
+    fitness, _info = op(
         positions_grad, data["velocities"], data["rewards"], data["alive"], data["companions"]
     )
     loss = fitness.sum()
@@ -324,8 +324,8 @@ def test_gradient_custom_params(simple_swarm_data):
     assert not torch.any(torch.isinf(grad))
 
     # Verify we can compute gradient through the full forward pass
-    positions_grad = data["positions"].clone().requires_grad_(True)
-    fitness, info = op(
+    positions_grad = data["positions"].clone().requires_grad_(True)  # noqa: FBT003
+    fitness, _info = op(
         positions_grad, data["velocities"], data["rewards"], data["alive"], data["companions"]
     )
     loss = fitness.sum()
@@ -609,7 +609,7 @@ def test_no_alive_walkers():
     op = FitnessOperator()
 
     # Fitness should be all zeros
-    fitness, info = op(
+    fitness, _info = op(
         positions=positions,
         velocities=velocities,
         rewards=rewards,

@@ -365,7 +365,7 @@ class DifferentiableGas:
         """
         # Compute forces (gradient of potential)
         if self.potential is not None:
-            x_grad = state.x.clone().requires_grad_(True)
+            x_grad = state.x.clone().requires_grad_(True)  # noqa: FBT003
             V = self.potential(x_grad)
             force = -torch.autograd.grad(V.sum(), x_grad)[0]
         else:

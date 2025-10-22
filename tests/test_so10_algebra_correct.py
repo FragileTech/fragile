@@ -125,7 +125,7 @@ def test_clifford_algebra_dirac():
 
     Gamma, eta = construct_gamma_matrices_dirac()
     dim = Gamma[0].shape[0]
-    I = np.eye(dim, dtype=complex)
+    I = np.eye(dim, dtype=complex)  # noqa: E741
     tol = 1e-10
 
     print(f"Constructed {len(Gamma)} gamma matrices ({dim}×{dim})")

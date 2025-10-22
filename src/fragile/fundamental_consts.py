@@ -64,7 +64,8 @@ def run_grand_unification_test():
     c_intersect_particle = max(c_bounds, key=c_bounds.get)
 
     print(
-        f"\nMost Restrictive Constraint on c comes from the {c_intersect_particle}: c > {c_intersect_min:,.2f}"
+        f"\nMost Restrictive Constraint on c comes from the "
+        f"{c_intersect_particle}: c > {c_intersect_min:,.2f}"
     )
 
     c_max_plot = c_intersect_min * 2.5
@@ -74,7 +75,10 @@ def run_grand_unification_test():
     plt.plot(
         c_vals,
         c0_boundary_vals,
-        label=r"$c_0 > c \cdot \frac{\Delta_{YM}^2}{\sigma \alpha_{FS} \hbar_{eff}^2}$ (Universal Boundary from $m_{MF} < m_{clone}$)",
+        label=(
+            r"$c_0 > c \cdot \frac{\Delta_{YM}^2}{\sigma \alpha_{FS} \hbar_{eff}^2}$ "
+            r"(Universal Boundary from $m_{MF} < m_{clone}$)"
+        ),
         color="royalblue",
         linewidth=3,
         zorder=10,
@@ -126,13 +130,17 @@ def run_grand_unification_test():
         print(f"  m_MF    = {m_mf:,.2f} MeV (Universal)")
         print(f"  m_clone = {m_clone:,.2f} MeV (Universal)")
         print(
-            f"  Hierarchy Check: {m_gap:,.2f} < {m_mf:,.2f} < {m_clone:,.2f}  ->  {'PASSED' if is_valid else 'FAILED'}"
+            f"  Hierarchy Check: {m_gap:,.2f} < {m_mf:,.2f} < {m_clone:,.2f}  "
+            f"->  {'PASSED' if is_valid else 'FAILED'}"
         )
 
     print(f"\n{'=' * 50}")
-    print(
-        f"OVERALL TEST RESULT: {'SUCCESS! A consistent universal solution exists.' if all_valid else 'FAILURE! Inconsistency found.'}"
+    result = (
+        "SUCCESS! A consistent universal solution exists."
+        if all_valid
+        else "FAILURE! Inconsistency found."
     )
+    print(f"OVERALL TEST RESULT: {result}")
     print(f"{'=' * 50}")
 
     plt.xlabel("Universal Geometric Constant c (Dimensionless)", fontsize=14)

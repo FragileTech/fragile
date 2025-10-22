@@ -68,7 +68,9 @@ def analytical_ricci_flat() -> float:
     return 0.0
 
 
-def create_sphere_points(N: int, radius: float = 1.0, projection: str = "stereographic") -> np.ndarray:
+def create_sphere_points(
+    N: int, radius: float = 1.0, projection: str = "stereographic"
+) -> np.ndarray:
     """Create points on 2-sphere via projection to plane.
 
     Generates N points uniformly distributed on a 2-sphere S² ⊂ R³,
@@ -151,9 +153,7 @@ def analytical_ricci_sphere(radius: float) -> float:
     return 2.0 / (radius**2)
 
 
-def create_hyperbolic_disk(
-    N: int, radius: float = 0.95, model: str = "poincare"
-) -> np.ndarray:
+def create_hyperbolic_disk(N: int, radius: float = 0.95, model: str = "poincare") -> np.ndarray:
     """Create points in hyperbolic plane via Poincaré disk model.
 
     Generates N points uniformly distributed in the hyperbolic plane H²
@@ -236,9 +236,7 @@ def analytical_ricci_hyperbolic(curvature_scale: float = -1.0) -> float:
     return 2.0 * curvature_scale
 
 
-def get_analytical_ricci(
-    surface_type: str, **params
-) -> float | np.ndarray:
+def get_analytical_ricci(surface_type: str, **params) -> float | np.ndarray:
     """Get analytical Ricci scalar for a given surface type.
 
     Convenience function to retrieve the known curvature value.
@@ -259,12 +257,11 @@ def get_analytical_ricci(
     """
     if surface_type == "flat":
         return analytical_ricci_flat()
-    elif surface_type == "sphere":
+    if surface_type == "sphere":
         radius = params.get("radius", 1.0)
         return analytical_ricci_sphere(radius)
-    elif surface_type == "hyperbolic":
+    if surface_type == "hyperbolic":
         curvature_scale = params.get("curvature_scale", -1.0)
         return analytical_ricci_hyperbolic(curvature_scale)
-    else:
-        msg = f"Unknown surface type: {surface_type}"
-        raise ValueError(msg)
+    msg = f"Unknown surface type: {surface_type}"
+    raise ValueError(msg)

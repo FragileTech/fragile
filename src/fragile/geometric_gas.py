@@ -352,7 +352,7 @@ class FitnessPotential:
         Returns:
             Gradient [N_query, d]
         """
-        x_query.requires_grad_(True)
+        x_query.requires_grad_(True)  # noqa: FBT003
         V_fit = self.evaluate(x_query, x_alive, alive_mask)  # [N_query]
 
         # Compute gradient for each query point
@@ -376,7 +376,7 @@ class FitnessPotential:
             Hessian [N_query, d, d]
         """
         N_query, d = x_query.shape
-        x_query.requires_grad_(True)
+        x_query.requires_grad_(True)  # noqa: FBT003
 
         # Compute gradient
         grad = self.compute_gradient(x_query, x_alive, alive_mask)  # [N_query, d]
@@ -560,7 +560,7 @@ class AdaptiveKineticOperator(KineticOperator):
         )  # [k, d]
 
         # First B step: v � v - (�t/2) * [U(x) - F_adapt - F_viscous]
-        x_temp = x_alive.detach().clone().requires_grad_(True)
+        x_temp = x_alive.detach().clone().requires_grad_(True)  # noqa: FBT003
         U = self.potential.evaluate(x_temp)  # [k]
         grad_U = torch.autograd.grad(U.sum(), x_temp, create_graph=False)[0]  # [k, d]
         v_alive -= self.dt / 2 * (grad_U - F_adapt - F_viscous)
@@ -599,7 +599,7 @@ class AdaptiveKineticOperator(KineticOperator):
             SwarmState(x_alive, v_alive), torch.ones(k, dtype=torch.bool, device=self.device)
         )
 
-        x_temp = x_alive.detach().clone().requires_grad_(True)
+        x_temp = x_alive.detach().clone().requires_grad_(True)  # noqa: FBT003
         U = self.potential.evaluate(x_temp)
         grad_U = torch.autograd.grad(U.sum(), x_temp, create_graph=False)[0]
         v_alive -= self.dt / 2 * (grad_U - F_adapt - F_viscous)

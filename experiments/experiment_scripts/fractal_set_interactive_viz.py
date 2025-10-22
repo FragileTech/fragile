@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import holoviews as hv
 import networkx as nx
-import numpy as np
 import pandas as pd
 import panel as pn
 import param
@@ -30,6 +29,7 @@ from fragile.shaolin.graph import (
     create_graphviz_layout,
     InteractiveGraph,
 )
+
 
 # Initialize holoviews with bokeh backend
 hv.extension("bokeh")
@@ -54,7 +54,10 @@ class FractalSetExplorer(param.Parameterized):
         objects=["physical", "dot", "neato", "fdp", "sfdp", "circo", "twopi"],
         doc="Layout algorithm: 'physical' uses walker (x,y) positions, others use Graphviz",
     )
-    top_to_bottom = param.Boolean(default=False, doc="Layout direction (top-to-bottom vs left-to-right, for Graphviz layouts only)")
+    top_to_bottom = param.Boolean(
+        default=False,
+        doc="Layout direction (top-to-bottom vs left-to-right, for Graphviz layouts only)",
+    )
 
     def __init__(self, **params):
         """Initialize FractalSetExplorer."""
@@ -89,7 +92,10 @@ class FractalSetExplorer(param.Parameterized):
         self.graph_pane = pn.pane.HoloViews(sizing_mode="stretch_both", min_height=600)
 
         # Watch parameters for graph updates
-        self.param.watch(self._update_graph, ["max_timestep", "show_cst_edges", "show_ig_edges", "layout_prog", "top_to_bottom"])
+        self.param.watch(
+            self._update_graph,
+            ["max_timestep", "show_cst_edges", "show_ig_edges", "layout_prog", "top_to_bottom"],
+        )
 
         # Register callback from config
         self.config.add_completion_callback(self._on_simulation_complete)
@@ -109,12 +115,13 @@ class FractalSetExplorer(param.Parameterized):
         n_walkers = self.fractal_set.N
         n_recorded = self.fractal_set.n_recorded
         layouts_need_recompute = (
-            self.last_n_walkers != n_walkers or
-            self.last_n_recorded != n_recorded
+            self.last_n_walkers != n_walkers or self.last_n_recorded != n_recorded
         )
 
         if layouts_need_recompute:
-            self.status_pane.object = "**Computing graph layouts (will be cached for future runs)...**"
+            self.status_pane.object = (
+                "**Computing graph layouts (will be cached for future runs)...**"
+            )
             # Don't clear cache - keep layouts for all parameter combinations!
             self.last_n_walkers = n_walkers
             self.last_n_recorded = n_recorded
@@ -160,7 +167,7 @@ class FractalSetExplorer(param.Parameterized):
         """
         layout = {}
         for node_id, data in graph.nodes(data=True):
-            x_tensor = data['x']  # [d] tensor
+            x_tensor = data["x"]  # [d] tensor
             # Use first two dimensions as (x, y) position
             layout[node_id] = (x_tensor[0].item(), x_tensor[1].item())
         return layout
@@ -175,36 +182,37 @@ class FractalSetExplorer(param.Parameterized):
         """
         if self.layout_prog == "physical":
             return self.physical_layout
-        else:
-            # Check if we've computed this Graphviz layout already in this session
-            if self.layout_prog not in self.graphviz_layouts:
-                # Check persistent cache first
-                n_walkers = self.fractal_set.N
-                n_recorded = self.fractal_set.n_recorded
-                cache_key = (n_walkers, n_recorded, self.layout_prog)
+        # Check if we've computed this Graphviz layout already in this session
+        if self.layout_prog not in self.graphviz_layouts:
+            # Check persistent cache first
+            n_walkers = self.fractal_set.N
+            n_recorded = self.fractal_set.n_recorded
+            cache_key = (n_walkers, n_recorded, self.layout_prog)
 
-                if cache_key in self.layout_cache:
-                    self.status_pane.object = f"**Using cached {self.layout_prog} layout...**"
-                    self.graphviz_layouts[self.layout_prog] = self.layout_cache[cache_key]
-                else:
-                    self.status_pane.object = f"**Computing {self.layout_prog} layout (will be cached)...**"
-                    layout = create_graphviz_layout(
-                        self.fractal_set.graph,
-                        top_to_bottom=self.top_to_bottom,
-                        prog=self.layout_prog,
-                    )
-                    self.graphviz_layouts[self.layout_prog] = layout
-                    self.layout_cache[cache_key] = layout
-
+            if cache_key in self.layout_cache:
+                self.status_pane.object = f"**Using cached {self.layout_prog} layout...**"
+                self.graphviz_layouts[self.layout_prog] = self.layout_cache[cache_key]
+            else:
                 self.status_pane.object = (
-                    f"**Fractal Set Built!**\n\n"
-                    f"- Nodes: {self.fractal_set.total_nodes}\n"
-                    f"- CST edges: {self.fractal_set.num_cst_edges}\n"
-                    f"- IG edges: {self.fractal_set.num_ig_edges}\n"
-                    f"- Timesteps: {self.fractal_set.n_recorded}\n\n"
-                    f"Use the slider to watch the graph grow!"
+                    f"**Computing {self.layout_prog} layout (will be cached)...**"
                 )
-            return self.graphviz_layouts[self.layout_prog]
+                layout = create_graphviz_layout(
+                    self.fractal_set.graph,
+                    top_to_bottom=self.top_to_bottom,
+                    prog=self.layout_prog,
+                )
+                self.graphviz_layouts[self.layout_prog] = layout
+                self.layout_cache[cache_key] = layout
+
+            self.status_pane.object = (
+                f"**Fractal Set Built!**\n\n"
+                f"- Nodes: {self.fractal_set.total_nodes}\n"
+                f"- CST edges: {self.fractal_set.num_cst_edges}\n"
+                f"- IG edges: {self.fractal_set.num_ig_edges}\n"
+                f"- Timesteps: {self.fractal_set.n_recorded}\n\n"
+                f"Use the slider to watch the graph grow!"
+            )
+        return self.graphviz_layouts[self.layout_prog]
 
     def _update_graph(self, *_):
         """Update graph visualization based on current parameters."""
@@ -265,8 +273,8 @@ class FractalSetExplorer(param.Parameterized):
         # Add edges based on selection
         for u, v, data in self.fractal_set.graph.edges(data=True):
             edge_type = data.get("edge_type", "unknown")
-            walker_u, t_u = u
-            walker_v, t_v = v
+            _walker_u, t_u = u
+            _walker_v, t_v = v
 
             # Skip edges beyond max_timestep
             if t_u > max_timestep or t_v > max_timestep:
@@ -296,7 +304,7 @@ class FractalSetExplorer(param.Parameterized):
             for key, val in data.items():
                 if not torch.is_tensor(val):
                     # Convert numpy types to Python types
-                    if hasattr(val, 'item'):
+                    if hasattr(val, "item"):
                         node_dict[key] = val.item()
                     else:
                         node_dict[key] = val
@@ -314,11 +322,11 @@ class FractalSetExplorer(param.Parameterized):
             pos_clean = {}
             for node_id, (x_val, y_val) in pos.items():
                 # Convert to float if it's a tensor
-                if hasattr(x_val, 'item'):
+                if hasattr(x_val, "item"):
                     x_val = float(x_val.item())
                 else:
                     x_val = float(x_val)
-                if hasattr(y_val, 'item'):
+                if hasattr(y_val, "item"):
                     y_val = float(y_val.item())
                 else:
                     y_val = float(y_val)
@@ -360,13 +368,13 @@ class FractalSetExplorer(param.Parameterized):
             # Convert node IDs (tuples) to strings to avoid HoloViews type checking issues
             edge_dict = {
                 "from": f"({u[0]},{u[1]})",  # Convert (walker, timestep) to string
-                "to": f"({v[0]},{v[1]})"
+                "to": f"({v[0]},{v[1]})",
             }
             # Only include scalar attributes (not tensors)
             for key, val in data.items():
                 if not torch.is_tensor(val):
                     # Convert numpy types to Python types
-                    if hasattr(val, 'item'):
+                    if hasattr(val, "item"):
                         edge_dict[key] = val.item()
                     else:
                         edge_dict[key] = val
@@ -454,7 +462,7 @@ def main():
     print("=" * 80)
     print("\nInitializing dashboard...")
 
-    explorer, dashboard = create_fractal_set_explorer()
+    _explorer, dashboard = create_fractal_set_explorer()
 
     print("Dashboard ready!")
     print("\nInstructions:")

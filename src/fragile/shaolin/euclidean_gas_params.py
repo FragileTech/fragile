@@ -7,7 +7,7 @@ all parameters needed to configure an Euclidean Gas swarm in notebooks.
 import panel as pn
 import param
 
-from fragile.benchmarks import (
+from fragile.core.benchmarks import (
     Easom,
     EggHolder,
     HolderTable,
@@ -215,7 +215,8 @@ class EuclideanGasParamSelector(param.Parameterized):
             "Global minimum at origin.",
             "StyblinskiTang": "**Styblinski-Tang**: Multimodal function. "
             "Global minimum at (-2.903534, ..., -2.903534).",
-            "Rosenbrock": "**Rosenbrock**: Narrow valley benchmark. Global minimum at (1, ..., 1).",
+            "Rosenbrock": "**Rosenbrock**: Narrow valley benchmark. "
+            "Global minimum at (1, ..., 1).",
             "EggHolder": "**EggHolder**: Complex landscape with many local minima. **Fixed 2D**.",
             "Easom": "**Easom**: Flat surface with sharp global minimum. **Fixed 2D**.",
             "HolderTable": "**HolderTable**: Multiple global minima. **Fixed 2D**.",
@@ -234,11 +235,14 @@ class EuclideanGasParamSelector(param.Parameterized):
         return f"""
 ### 📋 Current Configuration
 
-**Swarm**: {self.n_walkers} walkers in {self.dimensions}D space ({self.device}/{self.dtype})
+**Swarm**: {self.n_walkers} walkers in {self.dimensions}D space
+({self.device}/{self.dtype})
 
-**Langevin**: γ={self.gamma:.2f}, β={self.beta:.2f}, Δt={self.delta_t:.3f}, integrator={self.integrator}
+**Langevin**: γ={self.gamma:.2f}, β={self.beta:.2f}, Δt={self.delta_t:.3f},
+integrator={self.integrator}
 
-**Cloning**: σ_x={self.sigma_x:.2f}, ε={self.epsilon:.2f}, λ={self.lambda_alg:.2f}, α={self.alpha_restitution:.2f}, inelastic={self.use_inelastic_collision}
+**Cloning**: σ_x={self.sigma_x:.2f}, ε={self.epsilon:.2f}, λ={self.lambda_alg:.2f},
+α={self.alpha_restitution:.2f}, inelastic={self.use_inelastic_collision}
 
 **Benchmark**: {self.benchmark_type}
 """

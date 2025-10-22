@@ -134,8 +134,10 @@ class TestRicciAnalytical:
         # Filter to only interior points (far from boundary)
         # Interior: distance from boundary > 1.5 units in this domain
         interior_mask = (
-            (positions[:, 0] > -3.5) & (positions[:, 0] < 3.5) &
-            (positions[:, 1] > -3.5) & (positions[:, 1] < 3.5)
+            (positions[:, 0] > -3.5)
+            & (positions[:, 0] < 3.5)
+            & (positions[:, 1] > -3.5)
+            & (positions[:, 1] < 3.5)
         )
 
         # Get Ricci values for interior points only
@@ -153,7 +155,7 @@ class TestRicciAnalytical:
         std_ricci = np.std(valid_ricci)
         max_abs_ricci = np.max(np.abs(valid_ricci))
 
-        print(f"\nFlat Space Validation:")
+        print("\nFlat Space Validation:")
         print(f"  N walkers: {N}")
         print(f"  N interior points: {np.sum(interior_mask)}")
         print(f"  N valid Ricci values (interior only): {len(valid_ricci)}")
@@ -259,7 +261,7 @@ class TestRicciAnalytical:
 
         # Analytical value
         R_analytical = analytical_ricci_hyperbolic(curvature_scale=-1.0)
-        print(f"\nHyperbolic Validation:")
+        print("\nHyperbolic Validation:")
         print(f"  Analytical R: {R_analytical:.6f}")
 
         # Get valid Ricci values
@@ -282,7 +284,9 @@ class TestRicciAnalytical:
         # The Euclidean deficit angle method doesn't account for the hyperbolic metric
 
         # Just check the method runs and produces finite values
-        print(f"  Fraction with |R| > 0.01: {np.sum(np.abs(valid_ricci) > 0.01) / len(valid_ricci):.1%}")
+        print(
+            f"  Fraction with |R| > 0.01: {np.sum(np.abs(valid_ricci) > 0.01) / len(valid_ricci):.1%}"
+        )
 
         # NOTE: Same fundamental limitation as sphere test
         # The deficit angle is computed in Euclidean metric, but the points
@@ -330,7 +334,7 @@ class TestRicciNumericalStability:
         max_delta = np.max(delta_ricci)
         mean_delta = np.mean(delta_ricci)
 
-        print(f"\nNumerical Stability Test:")
+        print("\nNumerical Stability Test:")
         print(f"  Perturbation scale: {perturbation_scale}")
         print(f"  Max Δ R: {max_delta:.6f}")
         print(f"  Mean Δ R: {mean_delta:.6f}")

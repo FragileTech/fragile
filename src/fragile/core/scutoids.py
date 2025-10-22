@@ -65,9 +65,9 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import numpy as np
-import torch
 from scipy.spatial import ConvexHull, Delaunay, Voronoi
 from scipy.special import gamma
+import torch
 
 
 if TYPE_CHECKING:
@@ -212,7 +212,7 @@ class BaseScutoidHistory:
     def __init__(
         self,
         history: RunHistory,
-        bounds: "TorchBounds | None" = None,
+        bounds: TorchBounds | None = None,
         metric_correction: str = "none",
     ):
         """Initialize from RunHistory.
@@ -235,8 +235,10 @@ class BaseScutoidHistory:
         self.bounds = bounds if bounds is not None else getattr(history, "bounds", None)
 
         # Metric correction mode
-        if metric_correction not in ["none", "diagonal", "full"]:
-            msg = f"metric_correction must be 'none', 'diagonal', or 'full', got {metric_correction}"
+        if metric_correction not in {"none", "diagonal", "full"}:
+            msg = (
+                f"metric_correction must be 'none', 'diagonal', or 'full', got {metric_correction}"
+            )
             raise ValueError(msg)
         self.metric_correction = metric_correction
 
@@ -813,7 +815,7 @@ class BaseScutoidHistory:
                 if dist < 1e-10:
                     continue
 
-                direction = delta_x / dist
+                delta_x / dist
 
                 # Estimate metric difference
                 # In full implementation, would evaluate fitness Hessian
@@ -980,7 +982,11 @@ class BaseScutoidHistory:
         """
         if self.metric_correction == "none":
             return self.ricci_scalars
-        return self.ricci_scalars_corrected if self.ricci_scalars_corrected is not None else self.ricci_scalars
+        return (
+            self.ricci_scalars_corrected
+            if self.ricci_scalars_corrected is not None
+            else self.ricci_scalars
+        )
 
 
 class ScutoidHistory2D(BaseScutoidHistory):
@@ -1005,7 +1011,7 @@ class ScutoidHistory2D(BaseScutoidHistory):
     def __init__(
         self,
         history: RunHistory,
-        bounds: "TorchBounds | None" = None,
+        bounds: TorchBounds | None = None,
         incremental: bool = True,
         metric_correction: str = "none",
     ):
@@ -1128,9 +1134,7 @@ class ScutoidHistory2D(BaseScutoidHistory):
         )
 
         # Create incremental triangulation
-        self._incremental_delaunay = IncrementalDelaunay2D(
-            bounded_positions, bounded_indices
-        )
+        self._incremental_delaunay = IncrementalDelaunay2D(bounded_positions, bounded_indices)
 
         # Extract initial Voronoi cells
         initial_cells = self._incremental_delaunay.get_voronoi_cells()
@@ -1317,7 +1321,7 @@ class ScutoidHistory3D(BaseScutoidHistory):
     def __init__(
         self,
         history: RunHistory,
-        bounds: "TorchBounds | None" = None,
+        bounds: TorchBounds | None = None,
         metric_correction: str = "none",
     ):
         """Initialize 3D scutoid history.
@@ -1358,7 +1362,7 @@ class ScutoidHistory3D(BaseScutoidHistory):
 
 def create_scutoid_history(
     history: RunHistory,
-    bounds: "TorchBounds | None" = None,
+    bounds: TorchBounds | None = None,
     metric_correction: str = "none",
 ) -> BaseScutoidHistory:
     """Factory function to create appropriate ScutoidHistory subclass.
@@ -1379,7 +1383,7 @@ def create_scutoid_history(
 
     Example:
         >>> history = RunHistory.load("experiment.pt")
-        >>> scutoid_hist = create_scutoid_history(history, metric_correction='diagonal')
+        >>> scutoid_hist = create_scutoid_history(history, metric_correction="diagonal")
         >>> scutoid_hist.build_tessellation()
         >>> scutoid_hist.compute_ricci_scalars()
     """

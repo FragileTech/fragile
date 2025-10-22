@@ -261,7 +261,7 @@ def test_torchbounds_chained_operations():
 
 def test_torchbounds_with_euclidean_gas_integration():
     """Test TorchBounds integration with EuclideanGas alive_mask logic."""
-    from fragile.euclidean_gas import SwarmState
+    from fragile.core.euclidean_gas import SwarmState
 
     N, d = 10, 2
     high = torch.tensor([5.0, 5.0])

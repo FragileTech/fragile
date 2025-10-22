@@ -15,8 +15,9 @@ import param
 import torch
 
 from fragile.bounds import TorchBounds
+from fragile.core.benchmarks import BENCHMARK_NAMES, prepare_benchmark_for_explorer
 from fragile.core.companion_selection import CompanionSelection
-from fragile.core.euclidean_gas import CloningParams, EuclideanGas
+from fragile.core.euclidean_gas import CloningParams, EuclideanGas, PotentialParams
 from fragile.core.fitness import FitnessOperator, FitnessParams
 from fragile.core.history import RunHistory
 from fragile.core.kinetic_operator import KineticOperator, LangevinParams
@@ -33,12 +34,21 @@ class GasConfig(param.Parameterized):
     can be visualized or analyzed.
 
     Example:
-        >>> potential, _, _ = prepare_background(dims=2)
-        >>> config = GasConfig(potential=potential, dims=2)
+        >>> config = GasConfig(dims=2)  # No potential required
         >>> dashboard = config.panel()
-        >>> dashboard.show()  # Interactive parameter selection
+        >>> dashboard.show()  # Interactive parameter selection with benchmark selector
         >>> history = config.history  # Access result after running
     """
+
+    # Benchmark selection
+    benchmark_name = param.ObjectSelector(
+        default="Mixture of Gaussians",
+        objects=list(BENCHMARK_NAMES.keys()),
+        doc="Select benchmark potential function",
+    )
+    n_gaussians = param.Integer(default=3, bounds=(1, 10), doc="Number of Gaussian modes (MoG)")
+    benchmark_seed = param.Integer(default=42, bounds=(0, 9999), doc="Random seed (MoG)")
+    n_atoms = param.Integer(default=10, bounds=(2, 30), doc="Number of atoms (Lennard-Jones)")
 
     # Simulation controls
     N = param.Integer(default=160, bounds=(10, 1000), doc="Number of walkers")
@@ -88,18 +98,45 @@ class GasConfig(param.Parameterized):
     )
     bounds_extent = param.Number(default=6.0, bounds=(1, 12), doc="Spatial bounds half-width")
 
-    def __init__(self, potential: object, dims: int = 2, **params):
-        """Initialize GasConfig with a potential function.
+    def __init__(self, potential: object | None = None, dims: int = 2, **params):
+        """Initialize GasConfig with optional potential function.
 
         Args:
-            potential: Potential function object with evaluate() method
+            potential: Optional potential function object with evaluate() method.
+                      If None, potential is created from benchmark_name parameter.
             dims: Spatial dimension (default: 2)
             **params: Override default parameter values
         """
         super().__init__(**params)
-        self.potential = potential
         self.dims = dims
         self.history: RunHistory | None = None
+
+        # Create or use provided potential
+        if potential is None:
+            self._update_benchmark()
+        # Wrap provided potential if it's not already a PotentialParams
+        elif isinstance(potential, PotentialParams):
+            self.potential = potential
+        else:
+            # Wrap benchmark in PotentialParams for compatibility
+            class BenchmarkPotential(PotentialParams):
+                """Wrapper to make benchmark compatible with EuclideanGas."""
+
+                benchmark_obj: object
+
+                model_config = {"arbitrary_types_allowed": True}
+
+                def evaluate(self, x: torch.Tensor) -> torch.Tensor:
+                    """Evaluate potential U(x)."""
+                    return self.benchmark_obj(x)
+
+            self.potential = BenchmarkPotential(benchmark_obj=potential)
+
+        # Watch for benchmark parameter changes
+        self.param.watch(
+            self._on_benchmark_change,
+            ["benchmark_name", "n_gaussians", "benchmark_seed", "n_atoms"],
+        )
 
         # Create UI components
         self.run_button = pn.widgets.Button(name="Run Simulation", button_type="primary")
@@ -133,6 +170,45 @@ class GasConfig(param.Parameterized):
         """
         self._on_simulation_complete.append(callback)
 
+    def _update_benchmark(self):
+        """Create benchmark from current benchmark parameters."""
+        bounds_range = (-float(self.bounds_extent), float(self.bounds_extent))
+
+        # Prepare benchmark-specific kwargs
+        benchmark_kwargs = {}
+        if self.benchmark_name == "Mixture of Gaussians":
+            benchmark_kwargs["n_gaussians"] = self.n_gaussians
+            benchmark_kwargs["seed"] = self.benchmark_seed
+        elif self.benchmark_name == "Lennard-Jones":
+            benchmark_kwargs["n_atoms"] = self.n_atoms
+
+        # Create benchmark (we only need the potential, not background/mode_points)
+        benchmark, _, _ = prepare_benchmark_for_explorer(
+            benchmark_name=self.benchmark_name,
+            dims=self.dims,
+            bounds_range=bounds_range,
+            **benchmark_kwargs,
+        )
+
+        # Wrap benchmark in PotentialParams for compatibility with EuclideanGas
+        class BenchmarkPotential(PotentialParams):
+            """Wrapper to make benchmark compatible with EuclideanGas."""
+
+            benchmark_obj: object
+
+            model_config = {"arbitrary_types_allowed": True}
+
+            def evaluate(self, x: torch.Tensor) -> torch.Tensor:
+                """Evaluate potential U(x)."""
+                return self.benchmark_obj(x)
+
+        self.potential = BenchmarkPotential(benchmark_obj=benchmark)
+
+    def _on_benchmark_change(self, *_):
+        """Handle benchmark parameter changes."""
+        self._update_benchmark()
+        self.status_pane.object = f"**Benchmark updated:** {self.benchmark_name}"
+
     def _on_run_clicked(self, *_):
         """Handle Run button click."""
         self.status_pane.object = "**Running simulation...**"
@@ -151,7 +227,7 @@ class GasConfig(param.Parameterized):
                 callback(self.history)
 
         except Exception as e:
-            self.status_pane.object = f"**Error:** {str(e)}"
+            self.status_pane.object = f"**Error:** {e!s}"
         finally:
             self.run_button.disabled = False
 
@@ -260,9 +336,7 @@ class GasConfig(param.Parameterized):
         v_init = torch.randn(self.N, self.dims) * float(self.init_velocity_scale)
 
         # Run simulation
-        history = gas.run(self.n_steps, x_init=x_init, v_init=v_init)
-
-        return history
+        return gas.run(self.n_steps, x_init=x_init, v_init=v_init)
 
     def _build_param_panel(self, names: Iterable[str]) -> pn.Param:
         """Build parameter panel with custom widgets."""
@@ -283,6 +357,37 @@ class GasConfig(param.Parameterized):
         Returns:
             Panel Column with parameter controls and Run button
         """
+        # Benchmark configuration
+        benchmark_params_base = ["benchmark_name"]
+
+        # Dynamic benchmark-specific parameters
+        def get_benchmark_specific_params(benchmark_name):
+            """Return parameter panel for benchmark-specific settings."""
+            if benchmark_name == "Mixture of Gaussians":
+                return pn.Param(
+                    self.param,
+                    parameters=["n_gaussians", "benchmark_seed"],
+                    show_name=False,
+                    sizing_mode="stretch_width",
+                )
+            if benchmark_name == "Lennard-Jones":
+                return pn.Param(
+                    self.param,
+                    parameters=["n_atoms"],
+                    show_name=False,
+                    sizing_mode="stretch_width",
+                )
+            return pn.pane.Markdown("*No additional parameters*", sizing_mode="stretch_width")
+
+        benchmark_specific = pn.bind(get_benchmark_specific_params, self.param.benchmark_name)
+
+        benchmark_panel = pn.Column(
+            pn.pane.Markdown("### Potential Function"),
+            self._build_param_panel(benchmark_params_base),
+            benchmark_specific,
+            sizing_mode="stretch_width",
+        )
+
         general_params = (
             "N",
             "n_steps",
@@ -317,13 +422,14 @@ class GasConfig(param.Parameterized):
         init_params = ("init_offset", "init_spread", "init_velocity_scale", "bounds_extent")
 
         accordion = pn.Accordion(
+            ("Potential Function", benchmark_panel),
             ("General", self._build_param_panel(general_params)),
             ("Langevin Dynamics", self._build_param_panel(langevin_params)),
             ("Cloning & Selection", self._build_param_panel(cloning_params)),
             ("Initialization", self._build_param_panel(init_params)),
             sizing_mode="stretch_width",
         )
-        accordion.active = [0]
+        accordion.active = [0, 1]  # Open first two sections by default
 
         return pn.Column(
             pn.pane.Markdown("## Simulation Parameters"),

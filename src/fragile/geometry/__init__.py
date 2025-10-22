@@ -37,17 +37,18 @@ from fragile.geometry.test_surfaces import (
     get_analytical_ricci,
 )
 
+
 __all__ = [
-    # Test surfaces
-    "create_flat_grid",
-    "create_sphere_points",
-    "create_hyperbolic_disk",
     "analytical_ricci_flat",
-    "analytical_ricci_sphere",
     "analytical_ricci_hyperbolic",
-    "get_analytical_ricci",
-    # Curvature methods
-    "compute_graph_laplacian_eigenvalues",
+    "analytical_ricci_sphere",
     "check_cheeger_consistency",
     "compare_ricci_methods",
+    # Curvature methods
+    "compute_graph_laplacian_eigenvalues",
+    # Test surfaces
+    "create_flat_grid",
+    "create_hyperbolic_disk",
+    "create_sphere_points",
+    "get_analytical_ricci",
 ]

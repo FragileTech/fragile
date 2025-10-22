@@ -273,7 +273,6 @@ def clone_walkers(
     N = positions.shape[0]
     device = positions.device
     with torch.no_grad():
-
         # Dead walkers should always clone (they need to be revived)
         # They should have fitness=0 from compute_fitness, which gives maximum score
         # But we enforce it explicitly here for robustness
@@ -281,7 +280,9 @@ def clone_walkers(
         # Step 1: Compute cloning scores for all walkers
         # S_i = (V_fit,c_i - V_fit,i) / (V_fit,i + ε_clone)
         companion_fitness = fitness[companions]
-        cloning_scores = compute_cloning_score(fitness, companion_fitness, epsilon_clone=epsilon_clone)
+        cloning_scores = compute_cloning_score(
+            fitness, companion_fitness, epsilon_clone=epsilon_clone
+        )
 
         # Dead walkers get maximum positive score to guarantee cloning
         if not alive.all():
@@ -417,9 +418,10 @@ class CloneOperator(BaseModel):
             epsilon_clone: Override regularization for cloning score
             sigma_x: Override position jitter scale
             alpha_restitution: Override velocity restitution coefficient
-            **clone_tensor_kwargs: Additional tensors to be cloned alongside positions/velocities. \
-                Each tensor should have shape [N]. These tensors will be cloned in the same way \
-                as positions/velocities, using the same companion indices and cloning decisions. \
+            **clone_tensor_kwargs: Additional tensors to be cloned alongside
+                positions/velocities. Each tensor should have shape [N]. These
+                tensors will be cloned in the same way as positions/velocities,
+                using the same companion indices and cloning decisions.
                 Those tensors will be returned inside a dictionary.
 
         Returns:

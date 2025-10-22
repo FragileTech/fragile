@@ -47,6 +47,12 @@ class TestRunHistory:
         rescaled_rewards = torch.rand(n_recorded - 1, N, dtype=torch.float64)
         rescaled_distances = torch.rand(n_recorded - 1, N, dtype=torch.float64)
 
+        # Localized statistics (per-step scalars)
+        mu_rewards = torch.randn(n_recorded - 1, dtype=torch.float64)
+        sigma_rewards = torch.rand(n_recorded - 1, dtype=torch.float64) + 0.1
+        mu_distances = torch.randn(n_recorded - 1, dtype=torch.float64)
+        sigma_distances = torch.rand(n_recorded - 1, dtype=torch.float64) + 0.1
+
         return RunHistory(
             N=N,
             d=d,
@@ -79,6 +85,10 @@ class TestRunHistory:
             vel_squared_differences=vel_squared_differences,
             rescaled_rewards=rescaled_rewards,
             rescaled_distances=rescaled_distances,
+            mu_rewards=mu_rewards,
+            sigma_rewards=sigma_rewards,
+            mu_distances=mu_distances,
+            sigma_distances=sigma_distances,
             total_time=1.234,
             init_time=0.1,
         )
@@ -278,6 +288,10 @@ class TestRunHistory:
             vel_squared_differences=torch.rand(n_recorded - 1, N, dtype=torch.float64),
             rescaled_rewards=torch.rand(n_recorded - 1, N, dtype=torch.float64),
             rescaled_distances=torch.rand(n_recorded - 1, N, dtype=torch.float64),
+            mu_rewards=torch.randn(n_recorded - 1, dtype=torch.float64),
+            sigma_rewards=torch.rand(n_recorded - 1, dtype=torch.float64) + 0.1,
+            mu_distances=torch.randn(n_recorded - 1, dtype=torch.float64),
+            sigma_distances=torch.rand(n_recorded - 1, dtype=torch.float64) + 0.1,
             total_time=1.0,
             init_time=0.1,
             fitness_gradients=fitness_gradients,

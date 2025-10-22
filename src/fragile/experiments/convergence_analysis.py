@@ -14,7 +14,7 @@ import numpy as np
 from scipy.stats import gaussian_kde
 import torch
 
-from fragile.benchmarks import MixtureOfGaussians
+from fragile.core.benchmarks import MixtureOfGaussians
 from fragile.core.euclidean_gas import PotentialParams
 
 

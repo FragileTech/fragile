@@ -131,7 +131,7 @@ class TestEuclideanGas:
         state = gas.initialize_state()
 
         torch.manual_seed(42)
-        state_cloned, state_final, info = gas.step(state, return_info=True)
+        _state_cloned, _state_final, info = gas.step(state, return_info=True)
 
         # Check info dict structure
         assert "fitness" in info

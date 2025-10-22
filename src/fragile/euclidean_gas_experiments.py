@@ -25,7 +25,7 @@ from dataclasses import dataclass, field
 import numpy as np
 from torch import Tensor
 
-from fragile.benchmarks import MixtureOfGaussians
+from fragile.core.benchmarks import MixtureOfGaussians
 from fragile.euclidean_gas import EuclideanGas, PotentialParams, SwarmState
 from fragile.lyapunov import (
     compute_internal_variance_position,

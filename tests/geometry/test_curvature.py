@@ -75,7 +75,7 @@ class TestGraphLaplacianEigenvalues:
         neighbors = {i: [j for j in range(N) if j != i] for i in range(N)}
 
         # Request k=4 (N-1) eigenvalues
-        eigenvals, eigenvecs = compute_graph_laplacian_eigenvalues(neighbors, k=4)
+        eigenvals, _eigenvecs = compute_graph_laplacian_eigenvalues(neighbors, k=4)
 
         # Check basic properties
         assert len(eigenvals) == 4
@@ -84,9 +84,9 @@ class TestGraphLaplacianEigenvalues:
         # For complete graph, remaining eigenvalues should all equal N
         expected_eig = float(N)
         for i in range(1, 4):
-            assert np.abs(eigenvals[i] - expected_eig) < 0.1, (
-                f"Complete graph eigenvalue {i} should be {N}"
-            )
+            assert (
+                np.abs(eigenvals[i] - expected_eig) < 0.1
+            ), f"Complete graph eigenvalue {i} should be {N}"
 
     def test_cycle_graph(self):
         """Test eigenvalues for cycle graph.
@@ -99,7 +99,7 @@ class TestGraphLaplacianEigenvalues:
         neighbors = {i: [(i - 1) % N, (i + 1) % N] for i in range(N)}
 
         # Request k=5 (N-1) eigenvalues
-        eigenvals, eigenvecs = compute_graph_laplacian_eigenvalues(neighbors, k=5)
+        eigenvals, _eigenvecs = compute_graph_laplacian_eigenvalues(neighbors, k=5)
 
         # Check basic properties
         assert len(eigenvals) == 5
@@ -108,9 +108,9 @@ class TestGraphLaplacianEigenvalues:
         # Second eigenvalue (spectral gap) for cycle
         # λ₁ = 2(1 - cos(2π/6)) = 2(1 - cos(π/3)) = 2(1 - 0.5) = 1
         expected_lambda1 = 2 * (1 - np.cos(2 * np.pi / N))
-        assert np.abs(eigenvals[1] - expected_lambda1) < 0.1, (
-            f"Cycle spectral gap should be {expected_lambda1:.4f}"
-        )
+        assert (
+            np.abs(eigenvals[1] - expected_lambda1) < 0.1
+        ), f"Cycle spectral gap should be {expected_lambda1:.4f}"
 
     def test_flat_grid_spectrum(self):
         """Test graph Laplacian on 2D flat grid.
@@ -133,7 +133,7 @@ class TestGraphLaplacianEigenvalues:
                     if dist < threshold:
                         neighbors[i].append(j)
 
-        eigenvals, eigenvecs = compute_graph_laplacian_eigenvalues(neighbors, k=5)
+        eigenvals, _eigenvecs = compute_graph_laplacian_eigenvalues(neighbors, k=5)
 
         # Check basic properties
         assert np.abs(eigenvals[0]) < 1e-6, "First eigenvalue should be 0"
@@ -155,17 +155,19 @@ class TestGraphLaplacianEigenvalues:
             3: [2],
         }
 
-        eigenvals, eigenvecs = compute_graph_laplacian_eigenvalues(neighbors, k=4)
+        eigenvals, _eigenvecs = compute_graph_laplacian_eigenvalues(neighbors, k=4)
 
         # Should have TWO zero eigenvalues (two connected components)
         zero_eigs = np.sum(np.abs(eigenvals) < 1e-6)
-        assert zero_eigs >= 2, f"Disconnected graph should have ≥2 zero eigenvalues, got {zero_eigs}"
+        assert (
+            zero_eigs >= 2
+        ), f"Disconnected graph should have ≥2 zero eigenvalues, got {zero_eigs}"
 
     def test_single_node(self):
         """Test degenerate case: single isolated node."""
         neighbors = {0: []}
 
-        eigenvals, eigenvecs = compute_graph_laplacian_eigenvalues(neighbors, k=1)
+        eigenvals, _eigenvecs = compute_graph_laplacian_eigenvalues(neighbors, k=1)
 
         # Single node has eigenvalue 0
         assert len(eigenvals) == 1
@@ -281,7 +283,9 @@ class TestCompareRicciMethods:
         stats = compare_ricci_methods(ricci_1, ricci_2, method_name="noisy")
 
         # Good correlation
-        assert stats["correlation"] > 0.9, f"Should have high correlation, got {stats['correlation']}"
+        assert (
+            stats["correlation"] > 0.9
+        ), f"Should have high correlation, got {stats['correlation']}"
         assert stats["rmse"] < 0.1, f"RMSE should be small, got {stats['rmse']}"
 
     def test_uncorrelated_methods(self):

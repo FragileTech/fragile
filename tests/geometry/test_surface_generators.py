@@ -80,8 +80,9 @@ class TestFlatGrid:
         positions_jitter = create_flat_grid(N, bounds=(-1, 1), jitter=0.1)
 
         # With jitter, positions should differ
-        assert not np.allclose(positions_no_jitter, positions_jitter), \
-            "Jittered grid should differ from perfect grid"
+        assert not np.allclose(
+            positions_no_jitter, positions_jitter
+        ), "Jittered grid should differ from perfect grid"
 
         # Jitter should be small compared to domain
         # (points still roughly in grid locations)
@@ -100,20 +101,21 @@ class TestFlatGrid:
         # Compute pairwise distances
         from scipy.spatial.distance import pdist
 
-        distances = pdist(positions)
+        pdist(positions)
 
         # Nearest neighbor distances should cluster around expected_spacing
         min_dists = []
         for i in range(N):
-            dists_i = np.linalg.norm(positions - positions[i:i+1], axis=1)
+            dists_i = np.linalg.norm(positions - positions[i : i + 1], axis=1)
             dists_i = dists_i[dists_i > 1e-10]  # Exclude self
             if len(dists_i) > 0:
                 min_dists.append(np.min(dists_i))
 
         # Mean nearest neighbor distance should match grid spacing
         mean_nn_dist = np.mean(min_dists)
-        assert np.abs(mean_nn_dist - expected_spacing) < 0.2, \
-            f"Grid spacing {mean_nn_dist:.4f} differs from expected {expected_spacing:.4f}"
+        assert (
+            np.abs(mean_nn_dist - expected_spacing) < 0.2
+        ), f"Grid spacing {mean_nn_dist:.4f} differs from expected {expected_spacing:.4f}"
 
 
 class TestSpherePoints:
@@ -161,8 +163,9 @@ class TestSpherePoints:
 
         # Orthographic projection: points should lie within disk of radius r
         distances = np.linalg.norm(positions, axis=1)
-        assert np.all(distances <= radius + 0.1), \
-            "Orthographic projection should stay within sphere radius"
+        assert np.all(
+            distances <= radius + 0.1
+        ), "Orthographic projection should stay within sphere radius"
 
     def test_sphere_invalid_projection(self):
         """Test that invalid projection raises error."""
@@ -204,8 +207,9 @@ class TestHyperbolicDisk:
 
         # Check all points within disk
         distances = np.linalg.norm(positions, axis=1)
-        assert np.all(distances < radius), \
-            f"Points should be within radius {radius}, max dist: {distances.max()}"
+        assert np.all(
+            distances < radius
+        ), f"Points should be within radius {radius}, max dist: {distances.max()}"
 
     def test_hyperbolic_radius_constraint(self):
         """Test that radius must be < 1.0."""
@@ -288,8 +292,7 @@ class TestAnalyticalRicci:
         for radius in [0.5, 1.0, 2.0, 5.0]:
             R = analytical_ricci_sphere(radius)
             expected = 2.0 / (radius**2)
-            assert np.abs(R - expected) < 1e-10, \
-                f"Sphere R should be {expected}, got {R}"
+            assert np.abs(R - expected) < 1e-10, f"Sphere R should be {expected}, got {R}"
 
     def test_sphere_ricci_positive(self):
         """Test that sphere always has positive curvature."""
@@ -302,8 +305,7 @@ class TestAnalyticalRicci:
         for K in [-2.0, -1.0, -0.5]:
             R = analytical_ricci_hyperbolic(curvature_scale=K)
             expected = 2.0 * K
-            assert np.abs(R - expected) < 1e-10, \
-                f"Hyperbolic R should be {expected}, got {R}"
+            assert np.abs(R - expected) < 1e-10, f"Hyperbolic R should be {expected}, got {R}"
 
     def test_hyperbolic_ricci_negative(self):
         """Test that hyperbolic plane has negative curvature."""
@@ -357,8 +359,9 @@ class TestGetAnalyticalRicci:
 
         for surface_type, expected in surfaces.items():
             R = get_analytical_ricci(surface_type)
-            assert np.abs(R - expected) < 1e-10, \
-                f"Surface {surface_type} should have R={expected}, got {R}"
+            assert (
+                np.abs(R - expected) < 1e-10
+            ), f"Surface {surface_type} should have R={expected}, got {R}"
 
 
 class TestSurfaceIntegration:
@@ -375,7 +378,7 @@ class TestSurfaceIntegration:
     def test_sphere_points_match_analytical(self):
         """Test that sphere generator corresponds to correct analytical R."""
         radius = 3.0
-        positions = create_sphere_points(100, radius=radius)
+        create_sphere_points(100, radius=radius)
         R_analytical = analytical_ricci_sphere(radius)
 
         expected = 2.0 / (radius**2)

@@ -276,7 +276,7 @@ class TestIncrementalDelaunay2DEdgeCases:
         # This is expected behavior - scipy requires non-degenerate input
         # We just verify it raises the expected error
         with pytest.raises(Exception):  # QhullError or similar
-            inc_del = IncrementalDelaunay2D(positions, walker_ids)
+            IncrementalDelaunay2D(positions, walker_ids)
 
     def test_duplicate_positions(self):
         """Test handling of duplicate walker positions."""
@@ -337,7 +337,9 @@ class TestIncrementalDelaunay2DIntegration:
         for t in range(10):
             # Some walkers move locally (SDE)
             for walker_id in range(0, N, 3):
-                new_pos = inc_del.positions[inc_del.walker_to_idx[walker_id]] + np.random.randn(2) * 0.01
+                new_pos = (
+                    inc_del.positions[inc_del.walker_to_idx[walker_id]] + np.random.randn(2) * 0.01
+                )
                 inc_del.update_position(walker_id, new_pos)
 
             # Some walkers clone (teleport)

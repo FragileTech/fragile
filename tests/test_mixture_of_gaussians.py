@@ -14,7 +14,7 @@ import numpy as np
 import pytest
 import torch
 
-from fragile.benchmarks import MixtureOfGaussians
+from fragile.core.benchmarks import MixtureOfGaussians
 
 
 class TestMixtureOfGaussians:

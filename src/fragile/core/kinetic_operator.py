@@ -211,7 +211,8 @@ class KineticOperator(BaseModel):
         Args:
             x: Positions [N, d]
             v: Velocities [N, d]
-            grad_fitness: Precomputed fitness gradient ∇V_fit [N, d] (required if use_fitness_force=True)
+            grad_fitness: Precomputed fitness gradient ∇V_fit [N, d]
+                (required if use_fitness_force=True)
 
         Returns:
             force: Combined force vector [N, d]
@@ -227,11 +228,11 @@ class KineticOperator(BaseModel):
 
         # Potential force: -∇U(x)
         if self.use_potential_force:
-            x.requires_grad_(True)
+            x.requires_grad_(True)  # noqa: FBT003
             U = self.potential.evaluate(x)  # [N]
             grad_U = torch.autograd.grad(U.sum(), x, create_graph=False)[0]  # [N, d]
             force -= grad_U
-            x.requires_grad_(False)
+            x.requires_grad_(False)  # noqa: FBT003
 
         # Fitness force: -ε_F · ∇V_fit(x)
         if self.use_fitness_force:

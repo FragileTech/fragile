@@ -8,7 +8,7 @@ without requiring visualization.
 import numpy as np
 import torch
 
-from fragile.benchmarks import MixtureOfGaussians
+from fragile.core.benchmarks import MixtureOfGaussians
 
 
 def example_random_mixture():

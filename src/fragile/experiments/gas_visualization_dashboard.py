@@ -3,6 +3,9 @@
 This module provides a Panel-based dashboard for visualizing and animating
 RunHistory objects from EuclideanGas runs. It can be used with any RunHistory
 source (live simulation, loaded from disk, etc.).
+
+Can also be run as a standalone script to spawn an interactive dashboard:
+    python -m fragile.experiments.gas_visualization_dashboard
 """
 
 from __future__ import annotations
@@ -22,6 +25,8 @@ from fragile.core.companion_selection import CompanionSelection
 from fragile.core.euclidean_gas import CloningParams
 from fragile.core.fitness import compute_fitness
 from fragile.core.history import RunHistory
+from fragile.experiments.gas_config_dashboard import GasConfig
+from fragile.experiments.interactive_euclidean_gas import prepare_background
 
 
 __all__ = ["GasVisualizer"]
@@ -56,10 +61,15 @@ class GasVisualizer(param.Parameterized):
 
     # Vector visualization
     show_velocity_vectors = param.Boolean(
-        default=False, doc="Display velocity vectors showing trajectory from previous to current position"
+        default=False,
+        doc="Display velocity vectors showing trajectory from previous to current position",
     )
     color_vectors_by_cloning = param.Boolean(
-        default=False, doc="Color velocity vectors yellow if walker was created by cloning (requires show_velocity_vectors)"
+        default=False,
+        doc=(
+            "Color velocity vectors yellow if walker was created by cloning "
+            "(requires show_velocity_vectors)"
+        ),
     )
     show_force_vectors = param.Boolean(
         default=False, doc="Display force vectors F = -∇U - ε_F·∇V_fit at current positions"
@@ -217,7 +227,7 @@ class GasVisualizer(param.Parameterized):
         high = torch.full((history.d,), self.bounds_extent, dtype=torch.float32)
         bounds = TorchBounds(low=low, high=high)
 
-        for idx, step_idx in enumerate(indices):
+        for step_idx in indices:
             x_t = torch.from_numpy(x_traj[step_idx]).to(dtype=torch.float32)
             v_t = torch.from_numpy(v_traj[step_idx]).to(dtype=torch.float32)
 
@@ -247,7 +257,11 @@ class GasVisualizer(param.Parameterized):
             vel_mag = torch.linalg.norm(v_t, dim=1).cpu().numpy()
 
             # Compute fitness and distances if we have companion selection
-            if alive_np.any() and self.companion_selection is not None and self.cloning_params is not None:
+            if (
+                alive_np.any()
+                and self.companion_selection is not None
+                and self.cloning_params is not None
+            ):
                 with torch.no_grad():
                     rewards = -self.potential.evaluate(x_t)
                     companions = self.companion_selection(x=x_t, v=v_t, alive_mask=alive_mask)
@@ -289,11 +303,11 @@ class GasVisualizer(param.Parameterized):
 
                 # Potential force
                 if self.use_potential_force:
-                    x_t_grad = x_t.clone().requires_grad_(True)
+                    x_t_grad = x_t.clone().requires_grad_(True)  # noqa: FBT003
                     U = self.potential.evaluate(x_t_grad)
                     grad_U = torch.autograd.grad(U.sum(), x_t_grad, create_graph=False)[0]
                     force_total -= grad_U
-                    x_t_grad.requires_grad_(False)
+                    x_t_grad.requires_grad_(False)  # noqa: FBT003
 
                 # Fitness force (if enabled and we have fitness operator)
                 if self.use_fitness_force and self.companion_selection is not None:
@@ -512,7 +526,7 @@ class GasVisualizer(param.Parameterized):
                         line_width=1.5,
                         alpha=0.7,
                     )
-                    overlay = overlay * diffusion_arrows
+                    overlay *= diffusion_arrows
 
                 if len(cloned_paths) > 0:
                     cloned_arrows = hv.Path(cloned_paths, kdims=["x₁", "x₂"]).opts(
@@ -520,7 +534,7 @@ class GasVisualizer(param.Parameterized):
                         line_width=1.5,
                         alpha=0.7,
                     )
-                    overlay = overlay * cloned_arrows
+                    overlay *= cloned_arrows
             else:
                 arrow_paths = []
                 for i in range(len(positions)):
@@ -534,7 +548,7 @@ class GasVisualizer(param.Parameterized):
                         line_width=1.5,
                         alpha=0.7,
                     )
-                    overlay = overlay * arrows
+                    overlay *= arrows
 
         # Add force vectors
         if self.show_force_vectors and len(positions) > 0 and len(force_vectors) > 0:
@@ -574,7 +588,11 @@ class GasVisualizer(param.Parameterized):
                         green_val = int(255 * (1 - (1 - lightness) * 2))
                     else:
                         green_val = 255
-                    red_blue_val = int(255 * lightness * 2) if lightness < 0.5 else int(255 * (1 - (lightness - 0.5) * 2))
+                    red_blue_val = (
+                        int(255 * lightness * 2)
+                        if lightness < 0.5
+                        else int(255 * (1 - (lightness - 0.5) * 2))
+                    )
                     color_hex = f"#{red_blue_val:02x}{green_val:02x}{red_blue_val:02x}"
                     colors.append(color_hex)
 
@@ -584,7 +602,7 @@ class GasVisualizer(param.Parameterized):
                         line_width=2.0,
                         alpha=0.8,
                     )
-                    overlay = overlay * force_arrow
+                    overlay *= force_arrow
 
         overlay = overlay * points * self.mode_points
 
@@ -674,3 +692,89 @@ class GasVisualizer(param.Parameterized):
             viz_column,
             sizing_mode="stretch_width",
         )
+
+
+def create_app(dims: int = 2, n_gaussians: int = 3, bounds_extent: float = 6.0):
+    """Create the Panel app for standalone usage.
+
+    Args:
+        dims: Spatial dimension
+        n_gaussians: Number of Gaussian modes in potential
+        bounds_extent: Spatial bounds half-width
+
+    Returns:
+        Panel template ready to serve
+    """
+    # Initialize extensions
+    hv.extension("bokeh")
+    pn.extension()
+
+    # Prepare potential and background
+    potential, background, mode_points = prepare_background(
+        dims=dims, n_gaussians=n_gaussians, resolution=100
+    )
+
+    # Create gas configuration dashboard
+    gas_config = GasConfig(potential=potential, dims=dims)
+
+    # Create visualizer (initially with no history)
+    visualizer = GasVisualizer(
+        history=None,
+        potential=potential,
+        background=background,
+        mode_points=mode_points,
+        bounds_extent=bounds_extent,
+    )
+
+    # Connect simulation completion to visualizer
+    def on_simulation_complete(history):
+        """Update visualizer when simulation completes."""
+        # Extract parameters from gas_config for force visualization
+        epsilon_F = 0.0
+        use_fitness_force = False
+        use_potential_force = False
+
+        if hasattr(gas_config, "gas") and gas_config.gas is not None:
+            if hasattr(gas_config.gas, "epsilon_F"):
+                epsilon_F = float(gas_config.gas.epsilon_F)
+            if hasattr(gas_config.gas, "use_fitness_force"):
+                use_fitness_force = bool(gas_config.gas.use_fitness_force)
+            if hasattr(gas_config.gas, "use_potential_force"):
+                use_potential_force = bool(gas_config.gas.use_potential_force)
+
+        # Update visualizer parameters
+        visualizer.epsilon_F = epsilon_F
+        visualizer.use_fitness_force = use_fitness_force
+        visualizer.use_potential_force = use_potential_force
+
+        # Set companion selection and cloning params if available
+        if hasattr(gas_config.gas, "companion_selection"):
+            visualizer.companion_selection = gas_config.gas.companion_selection
+        if hasattr(gas_config.gas, "cloning_params"):
+            visualizer.cloning_params = gas_config.gas.cloning_params
+
+        # Load the history
+        visualizer.set_history(history)
+
+    gas_config.add_completion_callback(on_simulation_complete)
+
+    # Create layout using FastListTemplate
+    return pn.template.FastListTemplate(
+        title="Gas Visualization Dashboard",
+        sidebar=[
+            pn.pane.Markdown("## Simulation Control"),
+            gas_config.panel(),
+        ],
+        main=[
+            pn.pane.Markdown("## Swarm Evolution Visualization"),
+            visualizer.panel(),
+        ],
+        sidebar_width=400,
+        main_max_width="100%",
+    )
+
+
+if __name__ == "__main__":
+    # Create and serve the app
+    app = create_app()
+    app.show(port=5007)

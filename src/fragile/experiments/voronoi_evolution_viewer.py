@@ -162,7 +162,7 @@ class VoronoiEvolutionViewer:
 
         # Add mode points
         if self.mode_points is not None:
-            plot = plot * self.mode_points
+            plot *= self.mode_points
 
         # Apply axis limits matching the bounds domain
         plot = plot.opts(xlim=(-6, 6), ylim=(-6, 6))
@@ -407,7 +407,7 @@ class VoronoiEvolutionViewer:
                     # Overlay all polygons
                     if polygon_paths:
                         voronoi_polygons = hv.Overlay(polygon_paths)
-                        plot = plot * voronoi_polygons
+                        plot *= voronoi_polygons
 
         # Layer 2: Voronoi edges
         if self.show_voronoi.value:
@@ -428,7 +428,7 @@ class VoronoiEvolutionViewer:
                     hv.Curve([v0, v1]).opts(color="black", line_width=1.5, alpha=0.7)
                     for v0, v1 in edge_points
                 ])
-                plot = plot * segments
+                plot *= segments
 
         # Layer 3: Delaunay dual (edges between walkers sharing Voronoi edge)
         if self.show_delaunay.value:
@@ -447,7 +447,7 @@ class VoronoiEvolutionViewer:
                     )
                     for e0, e1 in delaunay_edges
                 ])
-                plot = plot * dual_segments
+                plot *= dual_segments
 
         # Layer 4: Voronoi vertices
         if self.show_voronoi_vertices.value and len(vor.vertices) > 0:
@@ -471,7 +471,7 @@ class VoronoiEvolutionViewer:
                     size=6,
                     alpha=0.8,
                 )
-            plot = plot * vertices
+            plot *= vertices
 
         # Layer 5: Walker positions (Delaunay vertices / Voronoi cell centers)
         if self.show_walkers.value:
@@ -495,7 +495,7 @@ class VoronoiEvolutionViewer:
                     color="cyan", size=10, alpha=0.8
                 )
 
-            plot = plot * walkers
+            plot *= walkers
 
         # Apply axis limits matching the bounds domain
         plot = plot.opts(xlim=(-6, 6), ylim=(-6, 6))

@@ -7,8 +7,6 @@ events, and adaptive kinetics information.
 
 from __future__ import annotations
 
-from typing import Optional
-
 from pydantic import BaseModel, Field
 import torch
 from torch import Tensor
@@ -51,7 +49,7 @@ class RunHistory(BaseModel):
     record_every: int = Field(description="Recording interval (every k-th step)")
     terminated_early: bool = Field(description="Whether run stopped early due to all dead")
     final_step: int = Field(description="Last step completed (may be < n_steps)")
-    bounds: Optional[TorchBounds] = Field(
+    bounds: TorchBounds | None = Field(
         None, description="Position bounds used during simulation (optional)"
     )
 
@@ -123,15 +121,15 @@ class RunHistory(BaseModel):
     # ========================================================================
     # Adaptive Kinetics Data (Optional) [n_recorded-1, N, d] or [n_recorded-1, N, d, d]
     # ========================================================================
-    fitness_gradients: Optional[Tensor] = Field(
+    fitness_gradients: Tensor | None = Field(
         default=None,
         description="Fitness gradients ∂V/∂x [n_recorded-1, N, d] if use_fitness_force=True",
     )
-    fitness_hessians_diag: Optional[Tensor] = Field(
+    fitness_hessians_diag: Tensor | None = Field(
         default=None,
         description="Diagonal Hessian ∂²V/∂x² [n_recorded-1, N, d] if diagonal_diffusion=True",
     )
-    fitness_hessians_full: Optional[Tensor] = Field(
+    fitness_hessians_full: Tensor | None = Field(
         default=None,
         description="Full Hessian ∂²V/∂x² [n_recorded-1, N, d, d] if anisotropic but not diagonal",
     )
@@ -181,19 +179,18 @@ class RunHistory(BaseModel):
                 "x": self.x_before_clone[:, walker_idx, :],
                 "v": self.v_before_clone[:, walker_idx, :],
             }
-        elif stage == "after_clone":
+        if stage == "after_clone":
             return {
                 "x": self.x_after_clone[:, walker_idx, :],
                 "v": self.v_after_clone[:, walker_idx, :],
             }
-        elif stage == "final":
+        if stage == "final":
             return {
                 "x": self.x_final[:, walker_idx, :],
                 "v": self.v_final[:, walker_idx, :],
             }
-        else:
-            msg = f"Unknown stage: {stage}. Must be 'before_clone', 'after_clone', or 'final'"
-            raise ValueError(msg)
+        msg = f"Unknown stage: {stage}. Must be 'before_clone', 'after_clone', or 'final'"
+        raise ValueError(msg)
 
     def get_clone_events(self) -> list[tuple[int, int, int]]:
         """Get list of all cloning events.
@@ -248,7 +245,7 @@ class RunHistory(BaseModel):
         torch.save(self.to_dict(), path)
 
     @classmethod
-    def load(cls, path: str) -> "RunHistory":
+    def load(cls, path: str) -> RunHistory:
         """Load history from disk.
 
         Args:
@@ -282,7 +279,7 @@ class RunHistory(BaseModel):
             f"  Recorded: {self.n_recorded} timesteps (every {self.record_every} steps)",
             f"  Final step: {self.final_step} (terminated_early={self.terminated_early})",
             f"  Total cloning events: {self.will_clone.sum().item()}",
-            f"  Timing: {self.total_time:.3f}s total, {self.total_time/self.n_steps:.4f}s/step",
+            f"  Timing: {self.total_time:.3f}s total, {self.total_time / self.n_steps:.4f}s/step",
         ]
         if self.fitness_gradients is not None:
             lines.append("  Adaptive kinetics: gradients recorded")

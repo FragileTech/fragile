@@ -4,7 +4,8 @@ This module implements the Fractal Set as defined in the mathematical specificat
 providing a complete graph-based representation of algorithm dynamics with two edge types:
 
 - **CST (Causal Spacetime Tree)**: Temporal edges connecting walker states across timesteps
-- **IG (Information Graph)**: Directed spatial edges representing selection coupling at each timestep
+- **IG (Information Graph)**: Directed spatial edges representing selection
+  coupling at each timestep
 
 The Fractal Set is constructed from a RunHistory object and stores the complete execution
 trace as a networkx directed graph with rich node and edge attributes.
@@ -14,7 +15,7 @@ Reference: old_docs/source/13_fractal_set_new/01_fractal_set.md
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import networkx as nx
 import torch
@@ -146,48 +147,42 @@ class FractalSet:
                     attrs["alive"] = alive
 
                     # Per-walker per-step data (only for alive walkers with data)
-                    attrs.update(
-                        {
-                            "fitness": self.history.fitness[t_idx - 1, walker_id].item(),
-                            "reward": self.history.rewards[t_idx - 1, walker_id].item(),
-                            "cloning_score": self.history.cloning_scores[
-                                t_idx - 1, walker_id
-                            ].item(),
-                            "cloning_prob": self.history.cloning_probs[
-                                t_idx - 1, walker_id
-                            ].item(),
-                            "will_clone": self.history.will_clone[t_idx - 1, walker_id].item(),
-                            "companion_distance_id": self.history.companions_distance[
-                                t_idx - 1, walker_id
-                            ].item(),
-                            "companion_clone_id": self.history.companions_clone[
-                                t_idx - 1, walker_id
-                            ].item(),
-                            # Intermediate fitness computation scalars (from RunHistory)
-                            "z_rewards": self.history.z_rewards[t_idx - 1, walker_id].item(),
-                            "z_distances": self.history.z_distances[t_idx - 1, walker_id].item(),
-                            "rescaled_rewards": self.history.rescaled_rewards[
-                                t_idx - 1, walker_id
-                            ].item(),
-                            "rescaled_distances": self.history.rescaled_distances[
-                                t_idx - 1, walker_id
-                            ].item(),
-                            "pos_squared_diff": self.history.pos_squared_differences[
-                                t_idx - 1, walker_id
-                            ].item(),
-                            "vel_squared_diff": self.history.vel_squared_differences[
-                                t_idx - 1, walker_id
-                            ].item(),
-                            "algorithmic_distance": self.history.distances[
-                                t_idx - 1, walker_id
-                            ].item(),
-                            # Localized statistics (per-step, global case rho → ∞)
-                            "mu_rewards": self.history.mu_rewards[t_idx - 1].item(),
-                            "sigma_rewards": self.history.sigma_rewards[t_idx - 1].item(),
-                            "mu_distances": self.history.mu_distances[t_idx - 1].item(),
-                            "sigma_distances": self.history.sigma_distances[t_idx - 1].item(),
-                        }
-                    )
+                    attrs.update({
+                        "fitness": self.history.fitness[t_idx - 1, walker_id].item(),
+                        "reward": self.history.rewards[t_idx - 1, walker_id].item(),
+                        "cloning_score": self.history.cloning_scores[t_idx - 1, walker_id].item(),
+                        "cloning_prob": self.history.cloning_probs[t_idx - 1, walker_id].item(),
+                        "will_clone": self.history.will_clone[t_idx - 1, walker_id].item(),
+                        "companion_distance_id": self.history.companions_distance[
+                            t_idx - 1, walker_id
+                        ].item(),
+                        "companion_clone_id": self.history.companions_clone[
+                            t_idx - 1, walker_id
+                        ].item(),
+                        # Intermediate fitness computation scalars (from RunHistory)
+                        "z_rewards": self.history.z_rewards[t_idx - 1, walker_id].item(),
+                        "z_distances": self.history.z_distances[t_idx - 1, walker_id].item(),
+                        "rescaled_rewards": self.history.rescaled_rewards[
+                            t_idx - 1, walker_id
+                        ].item(),
+                        "rescaled_distances": self.history.rescaled_distances[
+                            t_idx - 1, walker_id
+                        ].item(),
+                        "pos_squared_diff": self.history.pos_squared_differences[
+                            t_idx - 1, walker_id
+                        ].item(),
+                        "vel_squared_diff": self.history.vel_squared_differences[
+                            t_idx - 1, walker_id
+                        ].item(),
+                        "algorithmic_distance": self.history.distances[
+                            t_idx - 1, walker_id
+                        ].item(),
+                        # Localized statistics (per-step, global case rho → ∞)
+                        "mu_rewards": self.history.mu_rewards[t_idx - 1].item(),
+                        "sigma_rewards": self.history.sigma_rewards[t_idx - 1].item(),
+                        "mu_distances": self.history.mu_distances[t_idx - 1].item(),
+                        "sigma_distances": self.history.sigma_distances[t_idx - 1].item(),
+                    })
                 else:
                     # At t=0, all walkers are alive by definition
                     attrs["alive"] = True
@@ -243,13 +238,21 @@ class FractalSet:
                 # Add before/after cloning states (t_idx+1 has cloning data from step t_idx)
                 # before_clone: state before cloning operator at next timestep
                 # after_clone: state after cloning, before kinetic operator
-                attrs["x_before_clone"] = self.history.x_before_clone[t_idx + 1, walker_id, :].clone()
-                attrs["v_before_clone"] = self.history.v_before_clone[t_idx + 1, walker_id, :].clone()
+                attrs["x_before_clone"] = self.history.x_before_clone[
+                    t_idx + 1, walker_id, :
+                ].clone()
+                attrs["v_before_clone"] = self.history.v_before_clone[
+                    t_idx + 1, walker_id, :
+                ].clone()
 
                 # After cloning states (available for t_idx > 0, since t_idx+1 > 0)
                 if t_idx < self.n_recorded - 1:  # Ensure we don't go out of bounds
-                    attrs["x_after_clone"] = self.history.x_after_clone[t_idx, walker_id, :].clone()
-                    attrs["v_after_clone"] = self.history.v_after_clone[t_idx, walker_id, :].clone()
+                    attrs["x_after_clone"] = self.history.x_after_clone[
+                        t_idx, walker_id, :
+                    ].clone()
+                    attrs["v_after_clone"] = self.history.v_after_clone[
+                        t_idx, walker_id, :
+                    ].clone()
 
                 # Add gradient/Hessian data if available (from adaptive kinetics)
                 if self.history.fitness_gradients is not None:
@@ -329,8 +332,8 @@ class FractalSet:
                     V_clone = fitness_j - fitness_i
 
                     # Determine companion type for this edge
-                    is_distance_companion = (j == companion_distance_id)
-                    is_clone_companion = (j == companion_clone_id)
+                    is_distance_companion = j == companion_distance_id
+                    is_clone_companion = j == companion_clone_id
 
                     # Extract algorithmic distances for both walkers (Phase 3)
                     d_alg_i = self.history.distances[t_idx - 1, i].item()
@@ -356,10 +359,11 @@ class FractalSet:
 
                     # Compute phase potential: theta_ij = -d_alg_i^2 / (2 * epsilon_c^2 * hbar_eff)
                     # Reference: old_docs/source/13_fractal_set_new/01_fractal_set.md (3.22)
-                    theta_ij = -d_alg_i**2 / (2.0 * epsilon_c**2 * self.hbar_eff)
+                    theta_ij = -(d_alg_i**2) / (2.0 * epsilon_c**2 * self.hbar_eff)
 
                     # Complex amplitude: psi_ij = exp(i*theta_ij)
                     import numpy as np
+
                     psi_ij = np.exp(1j * theta_ij)
 
                     attrs = {
@@ -432,8 +436,8 @@ class FractalSet:
 
     def get_ig_subgraph(
         self,
-        timestep: Optional[int] = None,
-        companion_type: Optional[str] = None,
+        timestep: int | None = None,
+        companion_type: str | None = None,
     ) -> nx.DiGraph:
         """Extract IG (selection coupling) subgraph.
 
@@ -449,6 +453,7 @@ class FractalSet:
         Returns:
             Directed graph containing only IG edges matching the criteria
         """
+
         def edge_filter(u, v, d):
             # Must be IG edge
             if d["edge_type"] != "ig":
@@ -461,11 +466,10 @@ class FractalSet:
             # Companion type filter
             if companion_type == "distance":
                 return d.get("is_distance_companion", False)
-            elif companion_type == "clone":
+            if companion_type == "clone":
                 return d.get("is_clone_companion", False)
-            elif companion_type == "both":
-                return (d.get("is_distance_companion", False) and
-                        d.get("is_clone_companion", False))
+            if companion_type == "both":
+                return d.get("is_distance_companion", False) and d.get("is_clone_companion", False)
 
             # No companion filter (all IG edges)
             return True
@@ -551,6 +555,7 @@ class FractalSet:
                 kinetics.append(KE)
 
         import numpy as np
+
         potentials = np.array(potentials)
         kinetics = np.array(kinetics) if kinetics else np.array([0.0])
         totals = potentials + kinetics
@@ -598,6 +603,7 @@ class FractalSet:
             will_clone.append(1.0 if node_data.get("will_clone", False) else 0.0)
 
         import numpy as np
+
         fitnesses = np.array(fitnesses)
         cloning_scores = np.array(cloning_scores)
         cloning_probs = np.array(cloning_probs)
@@ -647,6 +653,7 @@ class FractalSet:
             vel_sqs.append(node_data.get("vel_squared_diff", 0.0))
 
         import numpy as np
+
         d_algs = np.array(d_algs)
         z_dists = np.array(z_dists)
         rescaled_dists = np.array(rescaled_dists)
@@ -696,6 +703,7 @@ class FractalSet:
             psi_imags.append(psi_imag)
 
         import numpy as np
+
         if not thetas:
             # No IG edges at this timestep
             return {
@@ -721,9 +729,7 @@ class FractalSet:
             "coherence": float(np.mean(np.cos(thetas))),
         }
 
-    def get_intermediate_fitness_data(
-        self, walker_id: int, timestep: int
-    ) -> dict[str, float]:
+    def get_intermediate_fitness_data(self, walker_id: int, timestep: int) -> dict[str, float]:
         """Get all intermediate fitness computation data for a specific walker.
 
         Args:
@@ -786,7 +792,8 @@ class FractalSet:
             source = (walker_id, timestep)
             # Find target node (same walker, next timestep)
             targets = [
-                (u, v) for u, v, d in self.graph.edges(source, data=True)
+                (u, v)
+                for u, v, d in self.graph.edges(source, data=True)
                 if d["edge_type"] == "cst"
             ]
 
@@ -801,6 +808,7 @@ class FractalSet:
             return None
 
         import numpy as np
+
         grad_norms = np.array(grad_norms)
 
         return {

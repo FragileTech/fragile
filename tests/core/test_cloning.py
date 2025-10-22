@@ -4,8 +4,8 @@ import pytest
 import torch
 
 from fragile.core.cloning import (
-    CloneOperator,
     clone_walkers,
+    CloneOperator,
     compute_cloning_probability,
     compute_cloning_score,
     inelastic_collision_velocity,
@@ -111,7 +111,7 @@ class TestCloneOperator:
         companions = torch.randint(0, N, (N,))
         alive = torch.ones(N, dtype=torch.bool)
 
-        pos_new, vel_new, cloned_dict, info = clone_op(
+        pos_new, vel_new, _cloned_dict, _info = clone_op(
             positions, velocities, fitness, companions, alive
         )
 
@@ -129,7 +129,7 @@ class TestCloneOperator:
         companions = torch.randint(0, N, (N,))
         alive = torch.ones(N, dtype=torch.bool)
 
-        pos_new, vel_new, cloned_dict, info = clone_op(
+        pos_new, _vel_new, _cloned_dict, info = clone_op(
             positions, velocities, fitness, companions, alive
         )
 
@@ -221,9 +221,7 @@ class TestCloneOperator:
         fitness[~alive] = 0.0
 
         torch.manual_seed(42)
-        pos_new, vel_new, _, info = clone_op(
-            positions, velocities, fitness, companions, alive
-        )
+        _pos_new, _vel_new, _, info = clone_op(positions, velocities, fitness, companions, alive)
 
         # Dead walkers should have cloned (they get infinite cloning score)
         # At minimum, the dead walkers should be among those that cloned
@@ -248,7 +246,7 @@ class TestCloneOperator:
         alive = torch.ones(N, dtype=torch.bool)
 
         torch.manual_seed(42)
-        _, vel_new, _, info = op(positions, velocities, fitness, companions, alive)
+        _, vel_new, _, _info = op(positions, velocities, fitness, companions, alive)
 
         # Test basic properties
         assert not torch.any(torch.isnan(vel_new))
@@ -296,7 +294,7 @@ class TestCloneOperator:
         custom_field = torch.randn(N, dtype=torch.float64)
 
         torch.manual_seed(42)
-        pos_new, vel_new, cloned_dict, info = clone_op(
+        _pos_new, _vel_new, cloned_dict, info = clone_op(
             positions, velocities, fitness, companions, alive, custom_field=custom_field
         )
 
