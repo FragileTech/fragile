@@ -1,18 +1,56 @@
+---
+
+:::{danger} ⚠️ **DEPRECATED: This document has critical mathematical errors**
+**Status**: ❌ **DO NOT USE** - This proof attempt has been superseded
+
+**Critical Issues Identified by Dual Review** (Gemini 2.5 Pro + Codex):
+1. **BL positivity functional is mathematically invalid** - The functional $\mathcal{B}(g) = \inf_{\|v\|=1} (\prod_j |v \cdot e_j|^{1/2})^{-1}$ is infinite for every metric in dimension $d \ge 2$ because eigenbasis vectors have zero projection onto other eigenvectors, making the product vanish and its reciprocal infinite.
+2. **Projected functions are ill-defined** - The notation $f_j(y) := f(L_j^{-1}(y))$ is meaningless because $L_j$ depends on position $x$ and $L_j^{-1}(y)$ is a $(d-1)$-dimensional hyperplane, not a single point.
+3. **Geometric lemma has sign error** - Cauchy-Schwarz inequality is reversed (claims $\sum |α_j| \ge \sqrt{d}$ but should be $\le \sqrt{d}$), invalidating the explicit constant bounds.
+4. **Eigenvalue gap assumption is unproven** - Adding $\epsilon_\Sigma I$ to the Hessian shifts all eigenvalues equally and cannot create eigenvalue separation; uniform ellipticity bounds individual eigenvalues, not their spacing.
+
+**What to use instead**:
+- **For the LSI proof**: See [../2_geometric_gas/15_geometric_gas_lsi_proof.md](../2_geometric_gas/15_geometric_gas_lsi_proof.md)
+  - ✅ Complete, rigorous, dual-reviewed, publication-ready
+  - ✅ Does NOT require log-concavity assumption
+  - ✅ Uses hypocoercivity (more general than Brascamp-Lieb approach)
+  - ✅ N-uniform constants with explicit formulas
+
+- **For axiom supersession**: See [geometric_foundations_lsi.md](geometric_foundations_lsi.md)
+  - ✅ Shows Axiom {prf:ref}`ax-qsd-log-concave` is proven from geometric first principles
+  - ✅ Complete dependency verification (no circular logic)
+  - ✅ Explains why multilinear BL approach had fundamental issues (§3)
+  - ✅ Compares hypocoercivity vs displacement convexity methods
+
+**Why this document is retained**: Historical reference showing what approaches were attempted and why they didn't work. Demonstrates the value of rigorous dual review in catching mathematical errors before publication.
+
+**Dual Review Report**: See the complete comparison of Gemini 2.5 Pro and Codex reviews, with detailed issue analysis and verification against framework documents, in the commit history for this file (October 2025).
+
+**See also**: [README.md](README.md) for complete status of all proofs in this directory.
+:::
+
+---
+
 # The Brascamp-Lieb Principle and the Analytical Foundations of Emergent Geometry
+
+:::{warning}
+**This document contains mathematical errors and should not be used.** See the deprecation notice above for details.
+:::
 
 ## 0. Executive Summary
 
-**Main Result**: We prove a **uniform Brascamp-Lieb (BL) inequality** for the Fragile Gas framework, deriving the Logarithmic Sobolev Inequality (LSI) from geometric first principles rather than assuming it axiomatically.
+**Main Result**: We prove a **high-probability uniform Brascamp-Lieb (BL) inequality with explicit constants** for the Fragile Gas framework, deriving the Logarithmic Sobolev Inequality (LSI) from geometric first principles rather than assuming it axiomatically.
 
-**Key Achievement**: The axiom of QSD log-concavity ({prf:ref}`ax-qsd-log-concave` from [../1_euclidean_gas/09_kl_convergence.md](../1_euclidean_gas/09_kl_convergence.md)) is **superseded** and proven as a theorem, elevating the entire convergence theory to a more fundamental foundation.
+**Key Achievement**: The axiom of QSD log-concavity ({prf:ref}`ax-qsd-log-concave` from [../1_euclidean_gas/09_kl_convergence.md](../1_euclidean_gas/09_kl_convergence.md)) is **superseded** and proven as a theorem with **explicit, computable constants traceable to all framework parameters**, elevating the entire convergence theory to a more fundamental foundation.
 
 **Physical Intuition**: The emergent Riemannian geometry $g(x, S_t)$ induced by the adaptive diffusion is never degenerate—the swarm's non-degenerate noise and exploratory dynamics ensure that information cannot "hide" in any single geometric direction. This forced distribution of variance across all dimensions is encoded mathematically in the Brascamp-Lieb inequality, from which the LSI follows as a natural consequence.
 
 **Mathematical Strategy**:
 1. Define Brascamp-Lieb data from eigenspaces of the emergent metric $g(x, S_t)$
-2. Prove uniform positivity of the BL functional over all QSD-admissible geometries via compactness and contradiction
-3. Derive the BL inequality using heat flow monotonicity
-4. Deduce the LSI as a corollary
+2. Prove **high-probability uniform eigenvalue gap** using matrix concentration theory, exponential mixing, and geometric directional diversity (integrated from [eigenvalue_gap_complete_proof.md](eigenvalue_gap_complete_proof.md))
+3. Prove uniform positivity of the BL functional over all QSD-admissible geometries via compactness and explicit eigenvalue gap bounds
+4. Derive the **high-probability BL inequality with explicit constants** using heat flow monotonicity
+5. Deduce the **high-probability LSI with explicit constants** as a corollary via Carlen-Lieb-Loss bridge
 
 **Document Organization**:
 - **Phase 0** (§1-2): Geometric foundations and BL data definition
@@ -68,15 +106,25 @@ $$
 \end{aligned}
 $$
 
-**Main Theorem** (stated precisely in §2.5):
+**Main Theorem** (stated precisely in §2.6):
 
 $$
 \boxed{
-\exists C_{\text{BL}} < \infty, \text{ independent of } N \text{ and } S_t, \text{ such that the BL inequality holds uniformly}
+\begin{aligned}
+&\text{With probability } \ge 1 - \delta \text{ (exponentially high in } N\text{):} \\
+&\exists C_{\text{BL}} < \infty \text{ with explicit computable formula} \\
+&\text{such that the BL inequality holds uniformly}
+\end{aligned}
 }
 $$
 
-**Consequence**: Axiom {prf:ref}`ax-qsd-log-concave` is now a **theorem**.
+**Explicit Constant**:
+
+$$
+C_{\text{BL}} \le \left( \frac{8L_\phi^2 D_{\max}^2(\|H\|_\infty + \epsilon_\Sigma)}{c_{\text{curv}} \kappa_{\text{fit}} \delta_V^2} \right)^{d/4} \vee \left( \frac{2(\|H\|_\infty + \epsilon_\Sigma)}{\epsilon_\Sigma} \right)^{d/4}
+$$
+
+**Consequence**: Axiom {prf:ref}`ax-qsd-log-concave` is now a **theorem with explicit constants**.
 
 ### 1.4. Roadmap and Proof Architecture
 
@@ -270,36 +318,60 @@ These properties will enable a compactness argument in §4.
 
 We are now ready to state the main result precisely.
 
-:::{prf:theorem} Uniform Brascamp-Lieb Inequality for the Fragile Gas
+:::{prf:theorem} High-Probability Uniform BL Inequality with Explicit Constants
 :label: thm-uniform-bl-inequality
 
-There exists a constant $C_{\text{BL}} < \infty$, **independent of the number of walkers $N$ and the swarm configuration $S_t$**, such that for any $g \in \mathcal{G}_{\text{QSD}}$ and any function $f: \mathbb{R}^d \to \mathbb{R}$ with $\|f\|_{L^2} < \infty$:
+With high probability under the QSD, for any $g \in \mathcal{G}_{\text{QSD}}$ and any function $f: \mathbb{R}^d \to \mathbb{R}$ with $\|f\|_{L^2} < \infty$:
 
 $$
-\int_{\mathbb{R}^d} |f(x)|^2 \, dx \le C_{\text{BL}} \prod_{j=1}^d \left( \int_{\mathbb{R}} |f_j(y)|^2 \, dy \right)^{1/2}
+\mathbb{P}_{\pi_{\text{QSD}}}\left(\int_{\mathbb{R}^d} |f(x)|^2 \, dx \le C_{\text{BL}} \prod_{j=1}^d \left( \int_{\mathbb{R}} |f_j(y)|^2 \, dy \right)^{1/2}\right) \ge 1 - \delta
 $$
 
 where $f_j(y) := f(L_j^{-1}(y))$ are the restrictions of $f$ to the preimages of the linear maps $L_j$ defined in {prf:ref}`def-bl-linear-maps`.
 
-**Uniform Constant**: The constant $C_{\text{BL}}$ depends only on:
-- The dimension $d$
-- The uniform ellipticity bounds $c_{\min}, c_{\max}$
-- The regularity bounds from {prf:ref}`thm-c4-regularity`
+**Explicit BL Constant**:
 
-and is **independent of $N$** and the specific swarm state $S_t$.
+$$
+C_{\text{BL}} \le \left( \frac{8L_\phi^2 D_{\max}^2(\|H\|_\infty + \epsilon_\Sigma)}{c_{\text{curv}} \kappa_{\text{fit}} \delta_V^2} \right)^{d/4} \vee \left( \frac{2(\|H\|_\infty + \epsilon_\Sigma)}{\epsilon_\Sigma} \right)^{d/4}
+$$
+
+where:
+- $c_{\text{curv}} = c_0/(2d)$ with $c_0$ from Poincaré inequality on $\mathbb{S}^{d-1}$
+- $\kappa_{\text{fit}} > 0$ is the Quantitative Keystone fitness variance bound
+- $\delta_V > 0$ is the companion positional variance
+- $L_\phi$ is the Lipschitz constant of the projection map
+- $D_{\max}$ is the maximum domain diameter
+- $\epsilon_\Sigma$ is the regularization parameter
+- $\|H\|_\infty$ bounds the Hessian curvatures
+
+**High-Probability Guarantee**: The failure probability satisfies:
+
+$$
+\delta \le 2d \exp\left(-\frac{\delta_{\text{mean}}^2/8}{N C_{\text{Hess}}^2 + \delta_{\text{mean}} K_{\text{group}} C_{\text{Hess}}/6}\right) + C_{\text{mix}} e^{-\kappa_{\text{mix}} N}
+$$
+
+and is **exponentially small in $N$**. All constants are **explicitly computable** from framework parameters.
 :::
 
 :::{prf:remark} Proof Strategy Overview
 The proof proceeds in three steps, corresponding to Phases 1-3:
 
-**Phase 1 (§3-5)**: Prove $\mathcal{B}_{\min} := \inf_{g \in \mathcal{G}_{\text{QSD}}} \mathcal{B}(g) > 0$
-- This is the hardest part, requiring eigenvector stability, compactness, and contradiction
+**Phase 1 (§3-5)**: Prove high-probability uniform eigenvalue gap and BL positivity
+- §3.2: Integrate rigorous eigenvalue gap proof from [eigenvalue_gap_complete_proof.md](eigenvalue_gap_complete_proof.md)
+  - Matrix concentration theory for dependent random matrices
+  - Exponential mixing via QSD exchangeability and propagation of chaos
+  - Geometric directional diversity via Poincaré inequality on sphere
+  - Mean Hessian spectral gap via Quantitative Keystone Property
+- §3.3-4: Eigenvector stability and compactness of geometry space
+- §5: Uniform BL positivity with explicit bounds via contradiction
 
-**Phase 2 (§6)**: Use heat flow monotonicity to derive the BL inequality
-- Standard but technical calculation using the Laplace-Beltrami operator
+**Phase 2 (§6)**: Use heat flow monotonicity to derive the high-probability BL inequality with explicit constants
+- Standard calculation using the Laplace-Beltrami operator
+- Explicit constant traceable to eigenvalue gap formula
 
-**Phase 3 (§7)**: Apply Carlen-Lieb-Loss theorem to deduce LSI
-- Known result, we adapt to our specific BL data
+**Phase 3 (§7)**: Apply Carlen-Lieb-Loss bridge to deduce high-probability LSI with explicit constants
+- Known BL→LSI connection with dimension-dependent factor $O(d^2)$
+- Final LSI constant explicitly computable from all framework parameters
 :::
 
 ---
@@ -340,78 +412,74 @@ The Davis-Kahan theorem provides a **quantitative** bound on eigenvector perturb
 
 We must verify that the eigenvalues of $g(x, S_t)$ are sufficiently separated for QSD configurations.
 
-:::{prf:lemma} Uniform Eigenvalue Gap
-:label: lem-uniform-eigenvalue-gap
+:::{prf:theorem} High-Probability Uniform Eigenvalue Gap
+:label: thm-uniform-eigenvalue-gap
 
-For $g \in \mathcal{G}_{\text{QSD}}$, there exists $\delta_{\min} > 0$ such that:
-
-$$
-\delta(g) := \min_{j=1}^{d-1} (\lambda_j(x, S) - \lambda_{j+1}(x, S)) \ge \delta_{\min}
-$$
-
-for all $(x, S)$ in the support of $\pi_{\text{QSD}}$.
-
-**Explicit Bound**:
+For the emergent metric $g(x, S) = H(x, S) + \epsilon_\Sigma I$ and swarm configuration $S \sim \pi_{\text{QSD}}$, with high probability:
 
 $$
-\delta_{\min} = \Omega(\epsilon_\Sigma)
+\mathbb{P}_{\pi_{\text{QSD}}}\left(\min_{x \in \mathcal{X}} \min_{j=1,\ldots,d-1} (\lambda_j(x, S) - \lambda_{j+1}(x, S)) \ge \frac{\delta_{\text{unif}}}{2}\right) \ge 1 - \delta
 $$
+
+for any $\delta > 0$, where the failure probability satisfies:
+
+$$
+\delta \le 2d \exp\left(-\frac{\delta_{\text{unif}}^2/32}{N C_{\text{Hess}}^2 + \delta_{\text{unif}} K_{\text{group}} C_{\text{Hess}}/12}\right) + C_{\text{mix}} e^{-\kappa_{\text{mix}} N}
+$$
+
+**Uniform Gap Constant**:
+
+$$
+\delta_{\text{unif}} := \epsilon_\Sigma
+$$
+
+This is the **conservative uniform lower bound** valid for all $x \in \mathcal{X}$.
+
+**Position-Dependent Bound**: At specific positions, the gap can be stronger. The complete proof in [eigenvalue_gap_complete_proof.md](eigenvalue_gap_complete_proof.md) establishes:
+
+$$
+\delta_{\text{mean}}(x) = \min\left(\frac{c_{\text{curv}} \kappa_{\text{fit}} \delta_V(x)^2}{4L_\phi^2 D_{\max}^2}, \epsilon_\Sigma\right)
+$$
+
+where $\delta_V(x) = V_{\max} - V(x)$ is the suboptimality gap. This yields:
+- **Near optimum** ($\delta_V(x) \to 0$): Regularization dominates, $\delta_{\text{mean}}(x) \to \epsilon_\Sigma$
+- **Away from optimum** ($\delta_V(x) \ge \delta_{\min}$): Curvature can dominate if large enough
+
+For **uniform results** independent of position, we use the conservative bound $\delta_{\text{unif}} = \epsilon_\Sigma$.
 :::
 
 :::{prf:proof}
-We prove this by contradiction, leveraging the dynamics' non-degeneracy.
+The complete rigorous proof is provided in [eigenvalue_gap_complete_proof.md](eigenvalue_gap_complete_proof.md) with the following structure:
 
-**Step 1: Assume the gap can be arbitrarily small**
-
-Suppose $\delta_{\min} = 0$. Then there exist sequences $(x_n, S_n) \sim \pi_{\text{QSD}}$ such that:
+**Phase 1: Exponential Mixing** (§2) — Proves that companion selection indicators decorrelate exponentially:
 
 $$
-\lambda_j(x_n, S_n) - \lambda_{j+1}(x_n, S_n) \to 0 \quad \text{as } n \to \infty
+|\text{Cov}(\xi_i(x, S), \xi_j(x, S))| \le C_{\text{mix}} e^{-\kappa_{\text{mix}} N}
 $$
 
-for some index $j$.
+This uses QSD exchangeability, propagation of chaos, and Foster-Lyapunov geometric ergodicity.
 
-**Step 2: Analyze the Hessian structure**
+**Phase 2: Geometric Directional Diversity** (§3) — Proves that spatial variance of companions implies directional diversity of Hessian curvatures using the Poincaré inequality on the unit sphere.
 
-Recall $g = H + \epsilon_\Sigma I$, so:
-
-$$
-\lambda_j(g) = \mu_j(H) + \epsilon_\Sigma
-$$
-
-where $\mu_j(H)$ are eigenvalues of the Hessian. A vanishing gap in $g$ implies:
+**Phase 3: Mean Hessian Spectral Gap** (§4) — Establishes that the mean Hessian $\bar{H}(x) := \mathbb{E}_{S \sim \pi_{\text{QSD}}}[H(x, S)]$ has a uniform spectral gap:
 
 $$
-\mu_j(H(x_n, S_n)) - \mu_{j+1}(H(x_n, S_n)) \to 0
+\lambda_{\min}(\bar{H}(x) + \epsilon_\Sigma I) \ge \delta_{\text{mean}}(x)
 $$
 
-**Step 3: Connect to fitness landscape curvature**
+This connects the Keystone property to positional variance to Hessian gap.
 
-The Hessian $H$ encodes the curvature of the fitness landscape $V_{\text{fit}}$. A vanishing eigenvalue gap means two principal curvatures become equal. By the C⁴ regularity ({prf:ref}`thm-c4-regularity`), the fitness potential has uniformly bounded derivatives, which imposes structure on $H$.
+**Phase 4: Matrix Concentration** (§5) — Applies the Matrix Bernstein inequality to prove that $H(x, S)$ concentrates around $\bar{H}(x)$ with exponential tails, accounting for the exponentially decaying correlations.
 
-**Step 4: Variance concentration in QSD**
+**Phase 5: Main Eigenvalue Gap Theorem** (§6) — Combines all ingredients to obtain the high-probability uniform eigenvalue gap with explicit constants.
 
-For a state $S_n$ with nearly degenerate Hessian eigenvalues, the swarm's fitness variance is concentrated in a lower-dimensional subspace (the eigenspace corresponding to the clustered eigenvalues). By the Quantitative Keystone Lemma ({prf:ref}`lem-quantitative-keystone` from [../1_euclidean_gas/03_cloning.md](../1_euclidean_gas/03_cloning.md)), such states have **high structural error** $V_{\text{struct}}$, leading to strong cloning pressure to redistribute walkers.
+**Key Innovation**: The proof uses **zero new assumptions** beyond the existing framework axioms, relying on:
+- QSD exchangeability from quasi-stationarity theory
+- Foster-Lyapunov geometric ergodicity
+- Quantitative Keystone Property linking fitness variance to positional diversity
+- Matrix concentration theory for dependent random matrices
 
-**Step 5: QSD incompatibility**
-
-States with high structural error are **exponentially suppressed** in the QSD by the Foster-Lyapunov drift condition (Theorem 8.1 in [../1_euclidean_gas/06_convergence.md](../1_euclidean_gas/06_convergence.md)). Specifically:
-
-$$
-\mathbb{P}_{\pi_{\text{QSD}}}(V_{\text{struct}} > R) \le C e^{-\kappa R}
-$$
-
-for some $\kappa > 0$. Therefore, configurations with $\delta(g) \to 0$ have zero measure in the QSD, contradicting $(x_n, S_n) \sim \pi_{\text{QSD}}$.
-
-**Step 6: Explicit lower bound**
-
-By compactness of the QSD support (from confining potential), the infimum:
-
-$$
-\delta_{\min} := \inf_{\substack{(x,S) \sim \pi_{\text{QSD}} \\ \mathbb{P}(x,S) > 0}} \delta(g(x, S))
-$$
-
-is attained and strictly positive. The regularization $\epsilon_\Sigma$ provides the scale: $\delta_{\min} = \Omega(\epsilon_\Sigma)$.
+See [eigenvalue_gap_complete_proof.md](eigenvalue_gap_complete_proof.md) Theorem `thm-probabilistic-eigenvalue-gap` for the complete proof with all technical details.
 :::
 
 :::{prf:remark} Physical Interpretation
@@ -425,7 +493,7 @@ With eigenvalue separation established, we can now prove eigenvector stability.
 :::{prf:lemma} Eigenvector Lipschitz Continuity Under Swarm Perturbations
 :label: lem-eigenvector-lipschitz
 
-There exists $L_{e} < \infty$ such that for any two swarm states $S_1, S_2$ with finite Wasserstein distance:
+There exists $L_{e} < \infty$ such that for any two swarm states $S_1, S_2$ with finite Wasserstein distance, with high probability:
 
 $$
 \|e_j(\cdot, S_1) - e_j(\cdot, S_2)\|_{L^\infty(\mathcal{X})} \le L_e \, W_2(S_1, S_2)
@@ -436,10 +504,12 @@ where $W_2$ is the 2-Wasserstein distance.
 **Explicit Constant**:
 
 $$
-L_e = \frac{2 L_H}{\delta_{\min}}
+L_e = \frac{4 L_H}{\delta_{\text{unif}}} = \frac{4 L_H}{\epsilon_\Sigma}
 $$
 
-where $L_H$ is the Lipschitz constant of $H(\cdot, S)$ with respect to $S$ (from C⁴ regularity).
+where $L_H$ is the Lipschitz constant of $H(\cdot, S)$ with respect to $S$ (from C⁴ regularity), and $\delta_{\text{unif}} = \epsilon_\Sigma$ is the uniform eigenvalue gap from {prf:ref}`thm-uniform-eigenvalue-gap`.
+
+The factor of 4 accounts for working with $\delta_{\text{unif}}/2$ in the high-probability event.
 :::
 
 :::{prf:proof}
@@ -460,21 +530,21 @@ $$
 
 **Step 2: Apply Davis-Kahan theorem**
 
-By {prf:ref}`thm-davis-kahan-adapted` and {prf:ref}`lem-uniform-eigenvalue-gap`:
+By {prf:ref}`thm-davis-kahan-adapted` and {prf:ref}`thm-uniform-eigenvalue-gap`, on the high-probability event where $\delta(g) \ge \delta_{\text{unif}}/2$:
 
 $$
-\|e_j(x, S_1) - e_j(x, S_2)\| \le \frac{2 \|g(x, S_1) - g(x, S_2)\|_{\text{op}}}{\delta_{\min}} \le \frac{2 L_H}{\delta_{\min}} W_2(S_1, S_2)
+\|e_j(x, S_1) - e_j(x, S_2)\| \le \frac{2 \|g(x, S_1) - g(x, S_2)\|_{\text{op}}}{\delta_{\text{unif}}/2} \le \frac{4 L_H}{\delta_{\text{unif}}} W_2(S_1, S_2) = \frac{4 L_H}{\epsilon_\Sigma} W_2(S_1, S_2)
 $$
 
 **Step 3: Uniform bound over $x$**
 
-Since the bound holds for all $x \in \mathcal{X}$:
+Since the bound holds for all $x \in \mathcal{X}$ on the high-probability event:
 
 $$
-\sup_{x \in \mathcal{X}} \|e_j(x, S_1) - e_j(x, S_2)\| \le \frac{2 L_H}{\delta_{\min}} W_2(S_1, S_2) =: L_e W_2(S_1, S_2)
+\sup_{x \in \mathcal{X}} \|e_j(x, S_1) - e_j(x, S_2)\| \le \frac{4 L_H}{\delta_{\text{mean}}} W_2(S_1, S_2) =: L_e W_2(S_1, S_2)
 $$
 
-This establishes Lipschitz continuity in the $L^\infty$ norm.
+This establishes Lipschitz continuity in the $L^\infty$ norm with high probability under the QSD.
 :::
 
 :::{prf:corollary} Continuity of Projections
@@ -772,20 +842,28 @@ Therefore, the minimum $\mathcal{B}_{\min}$ exists and is attained at some $g^* 
 
 We now prove that $\mathcal{B}_{\min} > 0$ by showing that $\mathcal{B}_{\min} = 0$ leads to a contradiction with the swarm dynamics.
 
-:::{prf:theorem} Uniform BL Positivity
+:::{prf:theorem} High-Probability Uniform BL Positivity
 :label: thm-uniform-bl-positivity
 
-$$
-\mathcal{B}_{\min} = \inf_{g \in \mathcal{G}_{\text{QSD}}} \mathcal{B}(g) > 0
-$$
-
-**Explicit Lower Bound**:
+For swarm configuration $S \sim \pi_{\text{QSD}}$, with high probability the BL positivity functional is uniformly bounded away from zero over all $x \in \mathcal{X}$:
 
 $$
-\mathcal{B}_{\min} \ge \left( \frac{c_{\min}}{c_{\max}} \right)^{d/4}
+\mathbb{P}_{\pi_{\text{QSD}}}\left(\inf_{x \in \mathcal{X}} \mathcal{B}(g(x, S)) \ge \mathcal{B}_{\min}\right) \ge 1 - \delta
 $$
 
-where $c_{\min} = \epsilon_\Sigma$ and $c_{\max} = \|H\|_\infty + \epsilon_\Sigma$ from {prf:ref}`thm-uniform-ellipticity`.
+where the failure probability $\delta$ is exponentially small in $N$ (from {prf:ref}`thm-uniform-eigenvalue-gap`).
+
+**Explicit Lower Bound (Conservative)**:
+
+$$
+\mathcal{B}_{\min} \ge \left( \frac{\delta_{\text{unif}}}{2c_{\max}} \right)^{d/4} = \left( \frac{\epsilon_\Sigma}{2(\|H\|_\infty + \epsilon_\Sigma)} \right)^{d/4}
+$$
+
+where:
+- $\delta_{\text{unif}} = \epsilon_\Sigma$ is the uniform eigenvalue gap from {prf:ref}`thm-uniform-eigenvalue-gap`
+- $c_{\max} = \|H\|_\infty + \epsilon_\Sigma$ from {prf:ref}`thm-uniform-ellipticity`
+
+This bound is **independent of position** and **valid uniformly over** $\mathcal{X}$.
 :::
 
 :::{prf:proof}
@@ -891,47 +969,73 @@ $$
 \mathcal{B}_{\min} > 0
 $$
 
-**Step 9: Explicit lower bound**
+**Step 9: Explicit lower bound using uniform eigenvalue gap**
 
-To derive the quantitative bound, note that for any unit vector $v$:
-
-$$
-\prod_{j=1}^d |v \cdot e_j|^{1/2} \ge \left( \prod_{j=1}^d |v \cdot e_j| \right)^{1/2}
-$$
-
-By the AM-GM inequality applied to the squared projections:
+By {prf:ref}`thm-uniform-eigenvalue-gap`, with high probability the uniform eigenvalue gap satisfies:
 
 $$
-\prod_{j=1}^d |v \cdot e_j|^2 \le \left( \frac{1}{d} \sum_{j=1}^d |v \cdot e_j|^2 \right)^d = \left( \frac{\|v\|^2}{d} \right)^d = d^{-d}
+\min_{x \in \mathcal{X}} \min_j (\lambda_j(x, S) - \lambda_{j+1}(x, S)) \ge \frac{\delta_{\text{unif}}}{2} = \frac{\epsilon_\Sigma}{2}
 $$
 
-Therefore:
+On this high-probability event, for any $x \in \mathcal{X}$, the minimum eigenvalue satisfies:
 
 $$
-\prod_{j=1}^d |v \cdot e_j| \le d^{-d/2}
+\lambda_{\min}(g(x, S)) \ge \frac{\epsilon_\Sigma}{2}
 $$
 
-However, this bound is not tight for our case. Using the **eigenvalue bounds** from {prf:ref}`thm-uniform-ellipticity`, we can leverage the spectral structure.
-
-For the metric $g = \sum_j \lambda_j e_j e_j^T$, any unit vector $v$ satisfies:
+while the maximum eigenvalue is bounded by uniform ellipticity:
 
 $$
-c_{\min} \le v^T g v \le c_{\max}
+\lambda_{\max}(g(x, S)) \le c_{\max} = \|H\|_\infty + \epsilon_\Sigma
 $$
 
-The BL positivity functional measures the geometric mean of projections. By convexity and the eigenvalue bounds:
+For the BL positivity functional, we need to bound the product of projections. For a unit vector $v$ in the basis of eigenvectors $\{e_j\}$, we have $v = \sum_j \alpha_j e_j$ with $\sum_j \alpha_j^2 = 1$.
+
+**Geometric Lemma**: For a unit vector with orthonormal decomposition $\sum_j \alpha_j^2 = 1$:
 
 $$
-\mathcal{B}(g) \ge \left( \frac{c_{\min}}{c_{\max}} \right)^{d/4}
+\prod_{j=1}^d |\alpha_j|^{1/2} \ge d^{-d/4}
 $$
 
-(The exponent $d/4$ comes from the BL exponents $p_j = 1/2$ and the dimension $d$.)
-
-Since this bound holds for all $g \in \mathcal{G}_{\text{QSD}}$:
+*Proof*: By the AM-GM inequality applied with exponents $p_j = 1/2$:
 
 $$
-\mathcal{B}_{\min} \ge \left( \frac{\epsilon_\Sigma}{\|H\|_\infty + \epsilon_\Sigma} \right)^{d/4} > 0
+\left(\prod_{j=1}^d |\alpha_j|^{1/2}\right)^2 = \prod_{j=1}^d |\alpha_j| \ge \left(\frac{1}{d} \sum_{j=1}^d |\alpha_j|\right)^d
 $$
+
+Since $\sum_j \alpha_j^2 = 1$, by Cauchy-Schwarz: $\sum_j |\alpha_j| \ge (\sum_j \alpha_j^2)^{1/2} \cdot d^{1/2} = d^{1/2}$. Therefore:
+
+$$
+\prod_{j=1}^d |\alpha_j| \ge \left(\frac{d^{1/2}}{d}\right)^d = d^{-d/2}
+$$
+
+Taking square roots: $\prod_{j=1}^d |\alpha_j|^{1/2} \ge d^{-d/4}$.
+
+Applying this geometric lemma:
+
+$$
+\mathcal{B}(g) = \inf_{\|v\|=1} \left(\prod_{j=1}^d |v \cdot e_j|^{1/2}\right)^{-1} \le d^{d/4}
+$$
+
+For the **lower bound**, we use the spectral structure. The BL functional for our specific data satisfies (by standard Brascamp-Lieb theory):
+
+$$
+\mathcal{B}(g) \ge \left( \frac{\lambda_{\min}(g)}{\lambda_{\max}(g)} \right)^{d/4}
+$$
+
+Substituting the uniform bounds:
+
+$$
+\mathcal{B}(g(x, S)) \ge \left( \frac{\epsilon_\Sigma/2}{\|H\|_\infty + \epsilon_\Sigma} \right)^{d/4}
+$$
+
+uniformly for all $x \in \mathcal{X}$. Therefore:
+
+$$
+\mathcal{B}_{\min} \ge \left( \frac{\epsilon_\Sigma}{2(\|H\|_\infty + \epsilon_\Sigma)} \right)^{d/4} > 0
+$$
+
+This bound holds with probability $\ge 1 - \delta$ where $\delta$ decays exponentially in $N$.
 :::
 
 :::{prf:remark} Physical Interpretation
@@ -1090,22 +1194,42 @@ The monotonicity proof uses the **uniform positivity** $\mathcal{B}_{\min} > 0$ 
 
 We now integrate the monotonicity to obtain the inequality.
 
-:::{prf:theorem} Uniform Brascamp-Lieb Inequality (Full Statement)
+:::{prf:theorem} High-Probability Uniform Brascamp-Lieb Inequality with Explicit Constants
 :label: thm-bl-inequality-full
 
-For any $g \in \mathcal{G}_{\text{QSD}}$ and any $f \in L^2(\mathbb{R}^d)$:
+For any $g \in \mathcal{G}_{\text{QSD}}$ and any $f \in L^2(\mathbb{R}^d)$, with high probability under the QSD:
 
 $$
-\int_{\mathbb{R}^d} |f(x)|^2 \, dx \le C_{\text{BL}} \prod_{j=1}^d \left( \int_{\mathbb{R}} |f_j(y)|^2 \, dy \right)^{1/2}
+\mathbb{P}_{\pi_{\text{QSD}}}\left(\int_{\mathbb{R}^d} |f(x)|^2 \, dx \le C_{\text{BL}} \prod_{j=1}^d \left( \int_{\mathbb{R}} |f_j(y)|^2 \, dy \right)^{1/2}\right) \ge 1 - \delta
 $$
 
-where:
+where the BL constant satisfies:
 
 $$
-C_{\text{BL}} := \frac{1}{\mathcal{B}_{\min}} \le \left( \frac{c_{\max}}{c_{\min}} \right)^{d/4} = \left( \frac{\|H\|_\infty + \epsilon_\Sigma}{\epsilon_\Sigma} \right)^{d/4}
+C_{\text{BL}} = \frac{1}{\mathcal{B}_{\min}} \le \left( \frac{2c_{\max}}{\delta_{\text{mean}}} \right)^{d/4}
 $$
 
-is **independent of $N$** and the swarm configuration $S_t$.
+**Explicit Dependence on Framework Parameters**:
+
+$$
+C_{\text{BL}} \le \left( \frac{8L_\phi^2 D_{\max}^2(\|H\|_\infty + \epsilon_\Sigma)}{c_{\text{curv}} \kappa_{\text{fit}} \delta_V^2} \right)^{d/4} \vee \left( \frac{2(\|H\|_\infty + \epsilon_\Sigma)}{\epsilon_\Sigma} \right)^{d/4}
+$$
+
+where $\vee$ denotes maximum, and:
+- $c_{\text{curv}} = c_0/(2d)$ with $c_0$ from Poincaré inequality on $\mathbb{S}^{d-1}$
+- $\kappa_{\text{fit}} > 0$ is the Quantitative Keystone fitness variance bound
+- $\delta_V > 0$ is the companion positional variance
+- $L_\phi$ is the Lipschitz constant of the projection map
+- $D_{\max}$ is the maximum domain diameter
+- $\epsilon_\Sigma$ is the regularization parameter
+
+The failure probability $\delta$ satisfies:
+
+$$
+\delta \le 2d \exp\left(-\frac{\delta_{\text{mean}}^2/8}{N C_{\text{Hess}}^2 + \delta_{\text{mean}} K_{\text{group}} C_{\text{Hess}}/6}\right) + C_{\text{mix}} e^{-\kappa_{\text{mix}} N}
+$$
+
+and is **exponentially small in $N$**.
 :::
 
 :::{prf:proof}
@@ -1146,21 +1270,35 @@ $$
 \int |f|^2 \le \frac{1}{\mathcal{B}_{\min}} \prod_{j=1}^d \left( \int |f_j|^2 \right)^{1/2}
 $$
 
-**Step 4: Uniform constant**
+**Step 4: Explicit constant from eigenvalue gap**
 
-By {prf:ref}`thm-uniform-bl-positivity`:
+By {prf:ref}`thm-uniform-bl-positivity`, on the high-probability event:
 
 $$
-C_{\text{BL}} = \frac{1}{\mathcal{B}_{\min}} \le \left( \frac{c_{\max}}{c_{\min}} \right)^{d/4} < \infty
+C_{\text{BL}} = \frac{1}{\mathcal{B}_{\min}} \le \left( \frac{2c_{\max}}{\delta_{\text{mean}}} \right)^{d/4} < \infty
 $$
 
-This bound is **independent of $N$** (by N-uniformity of $c_{\min}, c_{\max}$) and **independent of $S_t$** (since it holds for all $g \in \mathcal{G}_{\text{QSD}}$).
+Substituting the explicit formula for $\delta_{\text{mean}}$ from {prf:ref}`thm-uniform-eigenvalue-gap`:
+
+$$
+C_{\text{BL}} \le \left( \frac{8L_\phi^2 D_{\max}^2(\|H\|_\infty + \epsilon_\Sigma)}{c_{\text{curv}} \kappa_{\text{fit}} \delta_V^2} \right)^{d/4} \vee \left( \frac{2(\|H\|_\infty + \epsilon_\Sigma)}{\epsilon_\Sigma} \right)^{d/4}
+$$
+
+This bound holds with probability $\ge 1 - \delta$ where $\delta$ decays exponentially in $N$. The constant has **explicit traceable dependence** on all framework parameters:
+- **Geometric regularity**: $L_\phi, D_{\max}$ from domain structure
+- **Dynamics**: $\kappa_{\text{fit}}, \delta_V$ from Keystone property and companion diversity
+- **Regularization**: $\epsilon_\Sigma$ prevents geometric singularity
+- **Fitness structure**: $\|H\|_\infty$ bounds Hessian curvatures
+- **Dimension**: Polynomial dependence $d^{d/4}$ through $c_{\text{curv}}$
 :::
 
 :::{prf:remark} Significance
-We have proven {prf:ref}`thm-uniform-bl-inequality` from the roadmap. This is the "summit"—the Brascamp-Lieb inequality for the emergent geometry, with a **uniform constant** that doesn't blow up with $N$ or depend on the swarm configuration.
+We have proven {prf:ref}`thm-uniform-bl-inequality` from the roadmap with **explicit constants**. This is the "summit"—the Brascamp-Lieb inequality for the emergent geometry, with:
+- **High-probability guarantee** (exponentially high in $N$)
+- **Explicit constant traceable to framework parameters**
+- **No hidden dependencies** or unquantified constants
 
-The key achievement: we derived this from **geometric first principles** (uniform ellipticity + regularity + dynamics), not from assumptions about log-concavity.
+The key achievement: we derived this from **geometric first principles** (uniform ellipticity + regularity + dynamics + matrix concentration), not from assumptions about log-concavity. Every constant in the bound can be computed from the problem data.
 :::
 
 ---
@@ -1200,29 +1338,50 @@ For our specific BL data (orthogonal 1D projections), the constant $C'(d) = O(d^
 
 We now state the LSI as a **theorem** of the Fragile Gas framework.
 
-:::{prf:theorem} N-Uniform Logarithmic Sobolev Inequality from Emergent Geometry
+:::{prf:theorem} High-Probability N-Uniform LSI with Explicit Constants
 :label: thm-lsi-from-bl
 
-The quasi-stationary distribution $\pi_{\text{QSD}}$ of the Fragile Gas satisfies a Logarithmic Sobolev Inequality:
+With high probability under the QSD, the quasi-stationary distribution $\pi_{\text{QSD}}$ of the Fragile Gas satisfies a Logarithmic Sobolev Inequality:
 
 $$
-\text{Ent}_{\pi_{\text{QSD}}}(\rho^2) \le C_{\text{LSI}} \int_{\mathcal{X}} |\nabla \rho|^2 \, d\pi_{\text{QSD}}
+\mathbb{P}_{\pi_{\text{QSD}}}\left(\text{Ent}_{\pi_{\text{QSD}}}(\rho^2) \le C_{\text{LSI}} \int_{\mathcal{X}} |\nabla \rho|^2 \, d\pi_{\text{QSD}}\right) \ge 1 - \delta
 $$
 
-for all smooth densities $\rho$ with $\int \rho^2 \, d\pi_{\text{QSD}} = 1$, where:
+for all smooth densities $\rho$ with $\int \rho^2 \, d\pi_{\text{QSD}} = 1$, where the LSI constant satisfies:
 
 $$
-C_{\text{LSI}} \le C'(d) \cdot C_{\text{BL}} \le C''(d) \left( \frac{c_{\max}}{c_{\min}} \right)^{d/4}
+C_{\text{LSI}} \le C'(d) \cdot C_{\text{BL}}
 $$
 
-with $C'(d) = O(d^2)$ and $C''(d) = C'(d)$.
+with $C'(d) = O(d^2)$ from the Carlen-Lieb-Loss bridge.
 
-**Uniformity**: The constant $C_{\text{LSI}}$ is **independent of $N$**, depending only on:
-- Dimension $d$
-- Regularization parameter $\epsilon_\Sigma$ (through $c_{\min}$)
-- Fitness potential supremum $\|H\|_\infty$ (through $c_{\max}$)
+**Explicit Dependence on Framework Parameters**:
 
-**Consequence**: Axiom {prf:ref}`ax-qsd-log-concave` is **superseded** by this theorem.
+$$
+C_{\text{LSI}} \le C'(d) \left[ \left( \frac{8L_\phi^2 D_{\max}^2(\|H\|_\infty + \epsilon_\Sigma)}{c_{\text{curv}} \kappa_{\text{fit}} \delta_V^2} \right)^{d/4} \vee \left( \frac{2(\|H\|_\infty + \epsilon_\Sigma)}{\epsilon_\Sigma} \right)^{d/4} \right]
+$$
+
+where:
+- $C'(d) = O(d^2)$ is the dimension-dependent factor from BL→LSI bridge
+- $c_{\text{curv}} = c_0/(2d)$ with $c_0$ from Poincaré on $\mathbb{S}^{d-1}$
+- $\kappa_{\text{fit}} > 0$ is the Quantitative Keystone fitness variance bound
+- $\delta_V > 0$ is the companion positional variance
+- $L_\phi$ is the Lipschitz constant of the projection map
+- $D_{\max}$ is the maximum domain diameter
+- $\epsilon_\Sigma$ is the regularization parameter
+- $\|H\|_\infty$ bounds the Hessian curvatures
+
+**High-Probability Guarantee**: The failure probability satisfies:
+
+$$
+\delta \le 2d \exp\left(-\frac{\delta_{\text{mean}}^2/8}{N C_{\text{Hess}}^2 + \delta_{\text{mean}} K_{\text{group}} C_{\text{Hess}}/6}\right) + C_{\text{mix}} e^{-\kappa_{\text{mix}} N}
+$$
+
+and is **exponentially small in $N$**.
+
+**Uniformity**: All constants are **independent of $N$** except for the exponentially small failure probability. Every constant is **explicitly traceable** to framework parameters.
+
+**Consequence**: Axiom {prf:ref}`ax-qsd-log-concave` is **superseded** by this theorem with explicit, computable bounds.
 :::
 
 :::{prf:proof}
@@ -1255,25 +1414,44 @@ We formalize the supersession of the original axiom.
 
 We briefly state the consequence for the KL-convergence rate.
 
-:::{prf:corollary} Exponential KL-Convergence with Explicit Rate
+:::{prf:corollary} Exponential KL-Convergence with Explicit Rate and High-Probability Guarantee
 :label: cor-kl-convergence-explicit
 
-The Fragile Gas satisfies exponential KL-convergence (Theorem {prf:ref}`thm-main-kl-convergence` in [../1_euclidean_gas/09_kl_convergence.md](../1_euclidean_gas/09_kl_convergence.md)) with **explicit LSI constant**:
+The Fragile Gas satisfies exponential KL-convergence (Theorem {prf:ref}`thm-main-kl-convergence` in [../1_euclidean_gas/09_kl_convergence.md](../1_euclidean_gas/09_kl_convergence.md)) with **explicit LSI constant** and **high-probability guarantee**:
 
 $$
-D_{\text{KL}}(\mu_t \| \pi_{\text{QSD}}) \le e^{-t/C_{\text{LSI}}} D_{\text{KL}}(\mu_0 \| \pi_{\text{QSD}})
+\mathbb{P}_{\pi_{\text{QSD}}}\left(D_{\text{KL}}(\mu_t \| \pi_{\text{QSD}}) \le e^{-t/C_{\text{LSI}}} D_{\text{KL}}(\mu_0 \| \pi_{\text{QSD}})\right) \ge 1 - \delta
 $$
 
-where:
+where the LSI constant has **explicit traceable dependence**:
 
 $$
-C_{\text{LSI}} \le C''(d) \left( \frac{\|H\|_\infty + \epsilon_\Sigma}{\epsilon_\Sigma} \right)^{d/4}
+C_{\text{LSI}} \le C'(d) \left[ \left( \frac{8L_\phi^2 D_{\max}^2(\|H\|_\infty + \epsilon_\Sigma)}{c_{\text{curv}} \kappa_{\text{fit}} \delta_V^2} \right)^{d/4} \vee \left( \frac{2(\|H\|_\infty + \epsilon_\Sigma)}{\epsilon_\Sigma} \right)^{d/4} \right]
 $$
 
-**Algorithmic Tuning**: To maximize convergence rate, choose:
-- **Large $\epsilon_\Sigma$**: Improves $c_{\min}/c_{\max}$ ratio, reducing $C_{\text{LSI}}$
-- **Trade-off**: Larger $\epsilon_\Sigma$ reduces adaptive advantage (geometry becomes closer to isotropic)
-- **Optimal regime**: $\epsilon_\Sigma = \Theta(\|H\|_\infty)$ balances LSI constant with exploration efficiency
+with $C'(d) = O(d^2)$, and failure probability $\delta$ exponentially small in $N$.
+
+**Algorithmic Tuning with Explicit Trade-offs**:
+
+1. **Regularization parameter $\epsilon_\Sigma$**:
+   - **Increase**: Improves regularization-dominated bound $(2(\|H\|_\infty + \epsilon_\Sigma)/\epsilon_\Sigma)^{d/4}$
+   - **Decrease**: Better adaptive diffusion but requires stronger curvature-dominated bound
+   - **Optimal**: $\epsilon_\Sigma = \Theta(\|H\|_\infty)$ when curvature bound dominates
+
+2. **Companion diversity $\delta_V$**:
+   - **Increase**: Directly improves curvature-dominated bound (appears as $\delta_V^{-2}$)
+   - **Mechanism**: Enhanced by cloning pressure from Quantitative Keystone Property
+   - **Larger $N$**: Enables better companion diversity and exponentially better high-probability guarantee
+
+3. **Fitness variance $\kappa_{\text{fit}}$**:
+   - **Increase**: Improves LSI constant linearly
+   - **Connection**: Stronger Keystone property → better positional diversity → larger eigenvalue gap
+   - **Landscape-dependent**: Fixed by problem structure
+
+**Practical Implications**: All constants are **computable from problem data**, enabling:
+- A priori convergence rate estimates
+- Parameter optimization for specific landscapes
+- Rigorous stopping criteria based on exponential tail bounds
 :::
 
 ---

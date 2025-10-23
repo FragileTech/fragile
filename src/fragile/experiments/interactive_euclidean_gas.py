@@ -101,6 +101,7 @@ class SwarmExplorer:
             "integrator",
             "enable_cloning",
             "enable_kinetic",
+            "pbc",
             "init_offset",
             "init_spread",
             "init_velocity_scale",
@@ -125,6 +126,7 @@ class SwarmExplorer:
             epsilon_F=self.config.epsilon_F,
             use_fitness_force=self.config.use_fitness_force,
             use_potential_force=self.config.use_potential_force,
+            pbc=self.config.pbc,
             **display_params,
         )
 

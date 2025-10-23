@@ -68,12 +68,12 @@ parts:
     title: Geometric Foundations of LSI
   - file: source/3_brascamp_lieb/README
     title: Directory README
+  - file: source/3_brascamp_lieb/eigenvalue_gap_research_note
+    title: Eigenvalue Gap Research Note
   - file: source/3_brascamp_lieb/roadmap
     title: Roadmap (Historical)
   - file: source/3_brascamp_lieb/brascamp_lieb_proof
-    title: BL Proof (Deprecated)
-  - file: source/3_brascamp_lieb/eigenvalue_gap_research_note
-    title: Eigenvalue Gap Research Note
+    title: BL Proof (DEPRECATED - DO NOT USE)
 
 - caption: Reference
   numbered: false

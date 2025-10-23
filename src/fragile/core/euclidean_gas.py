@@ -134,12 +134,25 @@ class EuclideanGas(BaseModel):
         default=True,
         description="Enable kinetic (Langevin dynamics) operator",
     )
+    pbc: bool = Field(
+        default=False,
+        description=(
+            "Use periodic boundary conditions. When enabled, walkers that move outside "
+            "bounds are wrapped back instead of being marked as dead. Requires bounds to be set. "
+            "PBC is applied before computing fitness and after kinetic updates."
+        ),
+    )
 
     def model_post_init(self, __context) -> None:
         """Post-initialization: auto-extract bounds from potential if available."""
         # Auto-extract bounds from potential if not provided
         if self.bounds is None and hasattr(self.potential, "bounds"):
             self.bounds = self.potential.bounds
+
+        # Validate PBC requirements
+        if self.pbc and self.bounds is None:
+            msg = "PBC mode requires bounds to be set"
+            raise ValueError(msg)
 
         # Validate that potential is callable
         if not callable(self.potential):
@@ -214,6 +227,10 @@ class EuclideanGas(BaseModel):
             - If enable_kinetic=False, kinetic is skipped and
               state_after_kinetic = state_after_cloning
         """
+        # Apply PBC at start if enabled (ensures positions valid before computing fitness)
+        if self.pbc and self.bounds is not None:
+            state.x = self.bounds.apply_pbc_to_out_of_bounds(state.x)
+
         freeze_mask = self._freeze_mask(state)
         reference_state = state.clone() if freeze_mask is not None else None
 
@@ -221,13 +238,16 @@ class EuclideanGas(BaseModel):
         rewards = -self.potential(state.x)  # [N]
 
         # Step 2: Determine alive status from bounds
-        if self.bounds is not None:
+        if self.pbc:
+            # PBC mode: all walkers always alive (wrapped back into bounds)
+            alive_mask = torch.ones(state.N, dtype=torch.bool, device=self.device)
+        elif self.bounds is not None:
             alive_mask = self.bounds.contains(state.x)
         else:
             alive_mask = torch.ones(state.N, dtype=torch.bool, device=self.device)
 
-        # SAFETY: If all walkers are dead, revive all within bounds
-        if alive_mask.sum().item() == 0:
+        # SAFETY: If all walkers are dead, revive all within bounds (only in non-PBC mode)
+        if not self.pbc and alive_mask.sum().item() == 0:
             msg = "All walkers are dead (out of bounds); cannot proceed with step."
             raise ValueError(msg)
 
@@ -236,6 +256,8 @@ class EuclideanGas(BaseModel):
             x=state.x,
             v=state.v,
             alive_mask=alive_mask,
+            bounds=self.bounds,
+            pbc=self.pbc,
         )
 
         # Step 4: Compute fitness using core.fitness
@@ -246,6 +268,8 @@ class EuclideanGas(BaseModel):
             rewards=rewards,
             alive=alive_mask,
             companions=companions_distance,
+            bounds=self.bounds,
+            pbc=self.pbc,
         )
 
         # Step 5: Execute cloning using cloning.py (if enabled)
@@ -255,6 +279,8 @@ class EuclideanGas(BaseModel):
                 x=state.x,
                 v=state.v,
                 alive_mask=alive_mask,
+                bounds=self.bounds,
+                pbc=self.pbc,
             )
             x_cloned, v_cloned, _other_cloned, clone_info = self.cloning(
                 positions=state.x,
@@ -308,6 +334,10 @@ class EuclideanGas(BaseModel):
         else:
             # Skip kinetic update, use cloned state as final
             state_final = state_cloned.clone()
+
+        # Apply PBC after kinetic update (wraps final positions back into bounds)
+        if self.pbc and self.bounds is not None:
+            state_final.x = self.bounds.apply_pbc_to_out_of_bounds(state_final.x)
 
         if return_info:
             # Combine all computed data into info dict
@@ -364,6 +394,11 @@ class EuclideanGas(BaseModel):
         # Initialize state with timing
         init_start = time.time()
         state = self.initialize_state(x_init, v_init)
+
+        # Apply PBC to initial state if enabled
+        if self.pbc and self.bounds is not None:
+            state.x = self.bounds.apply_pbc_to_out_of_bounds(state.x)
+
         init_time = time.time() - init_start
 
         N, d = state.N, state.d
@@ -462,7 +497,11 @@ class EuclideanGas(BaseModel):
                     )
 
         # Check initial alive status
-        if self.bounds is not None:
+        if self.pbc:
+            # PBC mode: all walkers always alive
+            alive_mask = torch.ones(N, dtype=torch.bool, device=self.device)
+            n_alive = N
+        elif self.bounds is not None:
             alive_mask = self.bounds.contains(state.x)
             n_alive = alive_mask.sum().item()
         else:
@@ -535,8 +574,8 @@ class EuclideanGas(BaseModel):
         for t in range(1, n_steps + 1):
             step_start = time.time()
 
-            # Check if all walkers are currently dead BEFORE stepping
-            if self.bounds is not None:
+            # Check if all walkers are currently dead BEFORE stepping (skip in PBC mode)
+            if not self.pbc and self.bounds is not None:
                 alive_mask = self.bounds.contains(state.x)
                 n_alive = alive_mask.sum().item()
                 if n_alive == 0:

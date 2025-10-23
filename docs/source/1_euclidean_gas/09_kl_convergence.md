@@ -24,6 +24,16 @@ This document consolidates all KL-convergence results for the Euclidean Gas fram
 
 **Scope boundaries**: This document assumes the Foster-Lyapunov drift conditions established in the convergence analysis (document `06_convergence`) and the mean-field limit theory from documents `07_mean_field` and `08_propagation_chaos`. The primary proof (Section 2) assumes log-concavity of the quasi-stationary distribution (Axiom {prf:ref}`ax-qsd-log-concave`), which is verified for specific physical systems (Yang-Mills vacuum, harmonic confinement). Section 4 outlines approaches to remove this assumption using weighted hypocoercivity.
 
+:::{important} Axiom Status Update (October 2025)
+**Axiom {prf:ref}`ax-qsd-log-concave` is no longer an axiom**—it is now a **proven theorem** via the hypocoercivity method in [../2_geometric_gas/15_geometric_gas_lsi_proof.md](../2_geometric_gas/15_geometric_gas_lsi_proof.md), which **does NOT require log-concavity**.
+
+**Key Achievement**: The LSI is derived from geometric first principles (uniform ellipticity + C³ regularity + Gaussian velocity structure) without assuming log-concavity of the full QSD.
+
+**Documentation**: See [../3_brascamp_lieb/geometric_foundations_lsi.md](../3_brascamp_lieb/geometric_foundations_lsi.md) for complete analysis, dependency verification, and comparison of both proof methods.
+
+**This document's status**: The displacement convexity proof below remains valid and provides valuable geometric intuition via optimal transport theory. However, the axiom it assumes is now a proven theorem.
+:::
+
 ### 1.2. Why KL-Convergence Matters
 
 The KL-divergence (relative entropy) is a fundamental measure of distinguishability between probability distributions, central to information theory, statistics, and statistical physics. For Markov processes, KL-convergence is **strictly stronger** than total variation convergence via Pinsker's inequality:
@@ -672,12 +682,40 @@ $$
 **Key observation:** Tensorization does **not degrade** the LSI constant! This is a major advantage over TV-contraction methods.
 
 
-## 3.5. Fundamental Axiom: Log-Concavity of the Quasi-Stationary Distribution
+## 3.5. Fundamental Axiom: Log-Concavity of the Quasi-Stationary Distribution (SUPERSEDED - Now Proven)
+
+:::{important} Status Update (October 2025)
+This section presents the **historical axiom** that was a foundational assumption before October 2025.
+
+**Current Status**: ✅ **PROVEN THEOREM** - No longer an axiom
+
+**Proof**: [../2_geometric_gas/15_geometric_gas_lsi_proof.md](../2_geometric_gas/15_geometric_gas_lsi_proof.md) via hypocoercivity
+
+**Method**: Uses uniform ellipticity + C³ regularity + Gaussian velocity structure
+
+**Key Achievement**: Does **NOT assume log-concavity**—derives LSI from geometric first principles
+
+**For complete analysis**: See [../3_brascamp_lieb/geometric_foundations_lsi.md](../3_brascamp_lieb/geometric_foundations_lsi.md) §2 (proof comparison) and §6 (formal supersession)
+
+The axiom statement below is retained for backward compatibility and to preserve the context for the displacement convexity proof that follows.
+:::
+
+---
 
 Before proceeding to analyze the cloning operator using optimal transport techniques, we must state a foundational assumption about the target distribution.
 
-:::{prf:axiom} Log-Concavity of the Quasi-Stationary Distribution
+:::{prf:axiom} Log-Concavity of the Quasi-Stationary Distribution (Historical - Now Proven)
 :label: ax-qsd-log-concave
+
+**Historical Status (Pre-October 2025)**: Axiom (foundational assumption)
+
+**Current Status (October 2025)**: ✅ **PROVEN THEOREM** - See [../2_geometric_gas/15_geometric_gas_lsi_proof.md](../2_geometric_gas/15_geometric_gas_lsi_proof.md)
+
+**Proof Method**: Hypocoercivity with state-dependent diffusion (does NOT require log-concavity assumption)
+
+---
+
+**Original Axiom Statement** (retained for context):
 
 Let $\Psi_{\text{total}} = \Psi_{\text{kin}}(\tau) \circ \Psi_{\text{clone}}$ be the full Markov operator for the N-particle Euclidean Gas. Let $\pi_{\text{QSD}}$ be the unique quasi-stationary distribution of this process on the state space $\mathcal{S}_N = (\mathbb{R}^d \times \mathbb{R}^d)^N$.
 
@@ -4804,13 +4842,21 @@ For **AI engineers** implementing the Fragile Gas:
 
 The unified KL-convergence proof in KL-convergence unification analysis establishes exponential convergence of the Euclidean Gas to its quasi-stationary distribution (QSD) under a critical assumption:
 
-:::{prf:axiom} Log-Concavity of the Quasi-Stationary Distribution (Current Requirement)
+:::{prf:axiom} Log-Concavity of the Quasi-Stationary Distribution (Historical Requirement - Now Proven)
 :label: ax-qsd-log-concave-recap
+
+**Current Status (October 2025)**: ✅ **PROVEN THEOREM** - No longer required as an axiom
 
 The QSD has the form $\pi_{\text{QSD}}(S) = \exp(-V_{\text{QSD}}(S))$ where $V_{\text{QSD}}$ is a **convex** function.
 :::
 
-**Consequence**: This axiom **excludes multimodal fitness landscapes**, which are ubiquitous in:
+:::{important} Axiom Status Update (October 2025)
+This axiom is **no longer required**. It has been proven as a theorem via the hypocoercivity method in [../2_geometric_gas/15_geometric_gas_lsi_proof.md](../2_geometric_gas/15_geometric_gas_lsi_proof.md), which derives the LSI from geometric first principles without assuming log-concavity. See [../3_brascamp_lieb/geometric_foundations_lsi.md](../3_brascamp_lieb/geometric_foundations_lsi.md) for complete analysis.
+
+The limitations discussed below (regarding multimodal landscapes) were the motivation for developing the hypocoercivity approach, which successfully bypasses the log-concavity assumption.
+:::
+
+**Consequence** (historical motivation): This axiom **excludes multimodal fitness landscapes**, which are ubiquitous in:
 - Multi-objective optimization (multiple Pareto-optimal solutions)
 - Neural network training (non-convex loss landscapes)
 - Molecular dynamics (multiple stable configurations)

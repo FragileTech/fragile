@@ -303,51 +303,167 @@ class TorchBounds:
         return torch.clamp(x, self.low.to(x), self.high.to(x))
 
     def pbc(self, x: Tensor) -> Tensor:
-        """Calculate periodic boundary conditions of the target array to fall inside \
-        the bounds (closed interval).
+        """Apply periodic boundary conditions to wrap coordinates into bounds.
+
+        Uses the mathematical modulo operation to map any position to its
+        equivalent position within [low, high] in each dimension. The formula is:
+
+            x_wrapped = low + ((x - low) mod period)
+
+        where period = high - low and mod is the mathematical modulo operation
+        (always returns value in [0, period)).
+
+        This correctly handles:
+        - Negative coordinates (x < low)
+        - Large excursions (x >> high or x << low)
+        - Arbitrary bounds (not just [0, period])
+        - Batch operations
 
         Args:
-            x: Tensor to apply the periodic boundary conditions.
+            x: Positions tensor of shape [N, d] or [d]
 
         Returns:
-            Periodic boundary condition so all the values are inside the defined bounds.
+            Tensor of same shape as x with all coordinates wrapped into [low, high].
+
+        Examples:
+            >>> import torch
+            >>> bounds = TorchBounds(low=torch.tensor([0., 0.]),
+            ...                      high=torch.tensor([1., 1.]))
+            >>> x = torch.tensor([[1.5, -0.3], [0.5, 0.5], [2.7, -1.2]])
+            >>> bounds.pbc(x)
+            tensor([[0.5000, 0.7000],
+                    [0.5000, 0.5000],
+                    [0.7000, 0.8000]])
+
+            >>> # Works with arbitrary bounds
+            >>> bounds2 = TorchBounds(low=torch.tensor([1., 1.]),
+            ...                       high=torch.tensor([5., 5.]))
+            >>> x2 = torch.tensor([[6.0, 0.0], [1.0, 5.0]])
+            >>> bounds2.pbc(x2)
+            tensor([[2.0000, 4.0000],
+                    [1.0000, 1.0000]])
 
         """
         x = x.to(self.low)
-        x = where(x < self.high, x, torch.fmod(x, self.high) + self.low)
-        return where(x > self.low, x, self.high - torch.fmod(x, self.low))
+        period = self._bounds_dist  # high - low
+        x_centered = x - self.low
+        # Use % operator (not torch.fmod) for mathematical modulo
+        x_wrapped = x_centered % period
+        return self.low + x_wrapped
 
     def pbc_distance(self, x: Tensor, y: Tensor) -> Tensor:
-        """Calculate periodic boundary conditions of the target array to fall inside \
-        the bounds (closed interval).
+        """Calculate distance between points accounting for periodic boundaries.
+
+        For each dimension, computes the minimum distance considering wrapping.
+        If the direct distance is greater than half the period, uses the wrapped
+        distance (going around the other way) instead.
+
+        Formula: distance = min(|x - y|, period - |x - y|)
 
         Args:
-            x: Tensor to apply the periodic boundary conditions.
-            y: Tensor containing the frontier of the periodic boundary condition.
+            x: First positions tensor of shape [N, d]
+            y: Second positions tensor of shape [N, d]
 
         Returns:
-            Periodic boundary condition so all the values are inside the defined bounds.
+            Per-coordinate distances of shape [N, d]. Each element is the minimum
+            distance in that dimension considering periodic wrapping.
+
+        Examples:
+            >>> import torch
+            >>> bounds = TorchBounds(low=torch.tensor([0., 0.]),
+            ...                      high=torch.tensor([1., 1.]))
+            >>> x = torch.tensor([[0.1, 0.5]])
+            >>> y = torch.tensor([[0.9, 0.5]])
+            >>> bounds.pbc_distance(x, y)
+            tensor([[0.2000, 0.0000]])  # Wraps around: min(0.8, 0.2) = 0.2
+
+            >>> x2 = torch.tensor([[0.0, 0.0]])
+            >>> y2 = torch.tensor([[0.6, 0.4]])
+            >>> bounds.pbc_distance(x2, y2)
+            tensor([[0.4000, 0.4000]])  # Direct: min(0.6, 0.4) and min(0.4, 0.6)
 
         """
         x, y = x.to(self.low), y.to(self.low)
         delta = torch.abs(x - y)
-        return where(x > 0.5 * self._bounds_dist, delta - self._bounds_dist, delta)
+        # If delta > period/2, use wrapped distance (period - delta)
+        return where(delta > 0.5 * self._bounds_dist, self._bounds_dist - delta, delta)
 
-    def contains(self, x: Tensor) -> Tensor | bool:
-        """Check if the rows of the target array have all their coordinates inside \
-        specified bounds.
+    def apply_pbc_to_out_of_bounds(self, x: Tensor) -> Tensor:
+        """Apply PBC only to particles that are currently out of bounds.
 
-        If the array is one dimensional it will return a boolean, otherwise a vector of booleans.
+        This is more efficient than always applying PBC if most particles
+        are already within bounds. Also useful for debugging and testing,
+        as it clearly identifies which particles needed correction.
 
         Args:
-            x: Array to be checked against the bounds.
+            x: Positions tensor of shape [N, d] or [d]
 
         Returns:
-            Numpy array of booleans indicating if a row lies inside the bounds.
+            Tensor of same shape with PBC applied only to out-of-bounds particles.
+            Particles already in bounds are unchanged.
+
+        Examples:
+            >>> import torch
+            >>> bounds = TorchBounds(low=torch.tensor([0., 0.]),
+            ...                      high=torch.tensor([1., 1.]))
+            >>> x = torch.tensor([[0.5, 0.5], [1.5, 0.5], [0.5, -0.1]])
+            >>> x_corrected = bounds.apply_pbc_to_out_of_bounds(x)
+            >>> print(x_corrected)
+            tensor([[0.5000, 0.5000],
+                    [0.5000, 0.5000],
+                    [0.5000, 0.9000]])
 
         """
-        match = self.clip(x) == x
-        return match.all(1).flatten() if len(match.shape) > 1 else match.all()
+        if x.ndim == 1:
+            # Single particle case
+            if self.is_out_of_bounds(x):
+                return self.pbc(x)
+            return x
+
+        # Batch case
+        out_mask = self.is_out_of_bounds(x)
+        # Handle edge case where is_out_of_bounds returns bool (shouldn't happen for ndim > 1)
+        if isinstance(out_mask, bool):
+            return self.pbc(x) if out_mask else x
+        # Standard case: out_mask is a tensor
+        if not out_mask.any():
+            return x  # All particles in bounds, no work needed
+
+        x_corrected = x.clone()
+        x_corrected[out_mask] = self.pbc(x[out_mask])
+        return x_corrected
+
+    def contains(self, x: Tensor) -> Tensor | bool:
+        """Check if particles have all their coordinates inside the bounds [low, high].
+
+        A particle is considered in bounds if ALL of its coordinates satisfy
+        low <= x <= high. This is the logical opposite of `is_out_of_bounds`.
+
+        More efficient than the previous implementation (uses direct comparison
+        instead of clipping).
+
+        Args:
+            x: Positions tensor of shape [N, d] or [d]
+
+        Returns:
+            Boolean tensor of shape [N] for batch inputs, or scalar bool for single particle.
+            True indicates all coordinates of the particle are within [low, high].
+
+        Examples:
+            >>> import torch
+            >>> bounds = TorchBounds(low=torch.tensor([0., 0.]),
+            ...                      high=torch.tensor([1., 1.]))
+            >>> x = torch.tensor([[0.5, 0.5], [1.5, 0.5], [0.5, 0.5]])
+            >>> bounds.contains(x)
+            tensor([ True, False,  True])
+
+            >>> x_single = torch.tensor([0.5, 0.5])
+            >>> bounds.contains(x_single)
+            tensor(True)
+
+        """
+        in_bounds = (x >= self.low) & (x <= self.high)
+        return in_bounds.all(dim=-1) if x.ndim > 1 else in_bounds.all()
 
     def safe_margin(
         self,
@@ -421,6 +537,35 @@ class TorchBounds:
         """
         match = self.clip(x) == x.to(self.low)
         return match.all(1).flatten() if len(match.shape) > 1 else match.all()
+
+    def is_out_of_bounds(self, x: Tensor) -> Tensor | bool:
+        """Check which particles have any coordinate outside the bounds [low, high].
+
+        A particle is considered out of bounds if ANY of its coordinates violates
+        the bounds in either direction (below low or above high).
+
+        Args:
+            x: Positions tensor of shape [N, d] or [d]
+
+        Returns:
+            Boolean tensor of shape [N] for batch inputs, or scalar bool for single particle.
+            True indicates the particle has at least one coordinate outside [low, high].
+
+        Examples:
+            >>> import torch
+            >>> bounds = TorchBounds(low=torch.tensor([0., 0.]),
+            ...                      high=torch.tensor([1., 1.]))
+            >>> x = torch.tensor([[0.5, 0.5], [1.5, 0.5], [0.5, -0.1]])
+            >>> bounds.is_out_of_bounds(x)
+            tensor([False,  True,  True])
+
+            >>> x_single = torch.tensor([0.5, 1.5])
+            >>> bounds.is_out_of_bounds(x_single)
+            tensor(True)
+
+        """
+        violations = (x < self.low) | (x > self.high)
+        return violations.any(dim=-1) if x.ndim > 1 else violations.any()
 
     def sample(self, num_samples: int = 1) -> Tensor:
         """Sample a batch of random values within the bounds.
@@ -668,20 +813,27 @@ class NumpyBounds:
         return numpy.where(x > self.low, x, self.high - numpy.mod(x, self.low))
 
     def pbc_distance(self, x: numpy.ndarray, y: numpy.ndarray) -> numpy.ndarray:
-        """Calculate periodic boundary conditions of the target array to fall inside \
-        the bounds (closed interval).
+        """Calculate distance between points accounting for periodic boundaries.
+
+        For each dimension, computes the minimum distance considering wrapping.
+        If the direct distance is greater than half the period, uses the wrapped
+        distance (going around the other way) instead.
+
+        Formula: distance = min(|x - y|, period - |x - y|)
 
         Args:
-            x: Tensor to apply the periodic boundary conditions.
-            y: Tensor containing the frontier of the periodic boundary condition.
+            x: First positions array of shape [N, d]
+            y: Second positions array of shape [N, d]
 
         Returns:
-            Periodic boundary condition so all the values are inside the defined bounds.
+            Per-coordinate distances of shape [N, d]. Each element is the minimum
+            distance in that dimension considering periodic wrapping.
 
         """
-        x, y = einops.asnumpy(x).astype(self.low), einops.asnumpy(x).astype(self.low)
+        x, y = einops.asnumpy(x).astype(self.low.dtype), einops.asnumpy(y).astype(self.low.dtype)
         delta = numpy.abs(x - y)
-        return numpy.where(x > 0.5 * self._bounds_dist, delta - self._bounds_dist, delta)
+        # If delta > period/2, use wrapped distance (period - delta)
+        return numpy.where(delta > 0.5 * self._bounds_dist, self._bounds_dist - delta, delta)
 
     def contains(self, x: numpy.ndarray) -> numpy.ndarray | bool:
         """Check if the rows of the target array have all their coordinates inside \

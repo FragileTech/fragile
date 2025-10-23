@@ -334,27 +334,33 @@ The original roadmap proposed proving a **general multilinear Brascamp-Lieb ineq
 
 ### 3.1. Technical Issues Identified
 
-:::{admonition} Critical Issues from Dual Review
+:::{admonition} Critical Issues from Dual Review (Gemini 2.5 Pro + Codex)
 :class: warning
 
-**Issue #1: Invalid Exponent Choice** (Codex, Severity: CRITICAL)
+**Issue #1: BL Positivity Functional is Mathematically Invalid** (Codex, Severity: CRITICAL)
+- The functional $\mathcal{B}(g) = \inf_{\|v\|=1} (\prod_j |v \cdot e_j|^{1/2})^{-1}$ is **infinite** for every metric in dimension $d \ge 2$
+- For any eigenbasis vector $v = e_k$, the product $\prod_j |v \cdot e_j|^{1/2}$ contains zero factors, making the reciprocal infinite
+- This makes the "positivity condition" $\mathcal{B}(g) > 0$ ill-posed
+- The correct BL formulation uses the determinant of the Gram matrix $T = \sum_j p_j L_j^T L_j$, not products of projections
+
+**Issue #2: Invalid Exponent Choice** (Codex, Severity: CRITICAL)
 - The exponents $p_j = 1/2$ violate the Brascamp-Lieb dimensional balance condition
 - Correct choice for 1D projections: $p_j = 1$ such that $\sum_j p_j \cdot \dim(\text{Im } L_j) = d$
 
-**Issue #2: Ill-Defined Fiber Functions** (Codex, Severity: CRITICAL)
+**Issue #3: Ill-Defined Fiber Functions** (Codex, Severity: CRITICAL)
 - The notation $f_j(y) := f(L_j^{-1}(y))$ is undefined because $L_j^{-1}(y)$ is a hyperplane
 - Requires proper disintegration of measure or coordinate charts
 
-**Issue #3: Unproven Eigenvalue Gap** (Both reviewers, Severity: CRITICAL)
+**Issue #4: Unproven Eigenvalue Gap** (Both reviewers, Severity: CRITICAL)
 - Uniform ellipticity bounds **eigenvalues**, not their **spacing**
 - No framework result establishes $\lambda_j - \lambda_{j+1} \ge \delta > 0$
 - Davis-Kahan perturbation theory requires this gap
 
-**Issue #4: Missing Heat Flow Derivation** (Both reviewers, Severity: MAJOR)
+**Issue #5: Missing Heat Flow Derivation** (Both reviewers, Severity: MAJOR)
 - Key monotonicity inequality asserted without proof
 - Requires careful handling of Riemannian volume element
 
-**Issue #5: Incomplete Contradiction Argument** (Gemini, Severity: MAJOR)
+**Issue #6: Incomplete Contradiction Argument** (Gemini, Severity: MAJOR)
 - Foster-Lyapunov bounds **expectation**, not individual states
 - Argument from "degenerate direction" to "unbounded variance" lacks rigor
 :::

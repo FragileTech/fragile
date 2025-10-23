@@ -35,6 +35,8 @@ def compute_localization_weights(
     alive: Tensor,
     rho: float,
     lambda_alg: float = 0.0,
+    bounds=None,
+    pbc: bool = False,
 ) -> Tensor:
     """Compute ρ-localized weights K_ρ(i,j) for statistical neighborhoods.
 
@@ -56,6 +58,8 @@ def compute_localization_weights(
         alive: Boolean mask [N], True for alive walkers
         rho: Localization scale parameter (controls neighborhood size)
         lambda_alg: Velocity weight in algorithmic distance (default: 0.0)
+        bounds: Domain bounds (required if pbc=True)
+        pbc: If True, use periodic boundary conditions for position distances
 
     Returns:
         weights: Tensor [N, N] where weights[i,j] = K_ρ(i,j) * alive[j]
@@ -66,13 +70,13 @@ def compute_localization_weights(
         - For large ρ: mean-field regime (many neighbors contribute)
         - ρ → ∞ recovers uniform weights (global statistics)
         - Fully differentiable for gradient-based methods
+        - With pbc=True, position distances use minimum image convention
     """
-    # Compute pairwise algorithmic distances [N, N]
-    # d_alg²(i,j) = ||x_i - x_j||² + λ_alg ||v_i - v_j||²
-    dx = positions.unsqueeze(1) - positions.unsqueeze(0)  # [N, N, d]
-    dv = velocities.unsqueeze(1) - velocities.unsqueeze(0)  # [N, N, d]
-
-    d_alg_sq = (dx**2).sum(dim=-1) + lambda_alg * (dv**2).sum(dim=-1)  # [N, N]
+    # Compute pairwise algorithmic distances [N, N] using periodic distance if enabled
+    from fragile.core.companion_selection import compute_algorithmic_distance_matrix
+    d_alg_sq = compute_algorithmic_distance_matrix(
+        positions, velocities, lambda_alg, bounds, pbc
+    )
 
     # Localization kernel: K_ρ(i,j) = exp(-d_alg²/(2ρ²))
     K_rho = torch.exp(-d_alg_sq / (2 * rho**2))  # [N, N]
@@ -150,6 +154,8 @@ def patched_standardization(
     lambda_alg: float = 0.0,
     sigma_min: float = 1e-8,
     return_statistics: bool = False,
+    bounds=None,
+    pbc: bool = False,
 ) -> Tensor | tuple[Tensor, Tensor, Tensor]:
     """Compute Z-scores using only alive walkers for statistics (fully differentiable).
 
@@ -189,6 +195,8 @@ def patched_standardization(
         return_statistics: If True, return (z_scores, mu, sigma) tuple.
             For mean-field: mu is scalar, sigma is scalar
             For local: mu is [N], sigma is [N]
+        bounds: Domain bounds (required if pbc=True)
+        pbc: If True, use periodic boundary conditions for distance calculations
 
     Returns:
         If return_statistics=False:
@@ -259,6 +267,8 @@ def patched_standardization(
         alive=alive,
         rho=rho,
         lambda_alg=lambda_alg,
+        bounds=bounds,
+        pbc=pbc,
     )  # [N, N]
 
     # Compute ρ-localized statistics for each walker
@@ -293,6 +303,8 @@ def compute_fitness(
     A: float = 2.0,
     epsilon_dist: float = 1e-8,
     rho: float | None = None,
+    bounds=None,
+    pbc: bool = False,
 ) -> tuple[Tensor, dict[str, Tensor]]:
     """Compute fitness potential using the Euclidean Gas measurement pipeline.
 
@@ -359,7 +371,14 @@ def compute_fitness(
     # Regularized distance: d_alg(i,j) = sqrt(||x_i - x_j||² + λ_alg ||v_i - v_j||² + ε²)
     # The epsilon term ensures C^∞ differentiability at the origin (prevents NaN gradients)
     pos_diff = positions - positions[companions]
-    vel_diff = velocities - velocities[companions]
+
+    # Apply minimum image convention for periodic boundary conditions
+    # This ensures shortest distance through wrapping: dx_wrapped = dx - L * round(dx / L)
+    if pbc and bounds is not None:
+        L = bounds.high - bounds.low  # Domain size [d]
+        pos_diff = pos_diff - L * torch.round(pos_diff / L)  # Wrap to [-L/2, L/2]
+
+    vel_diff = velocities - velocities[companions]  # Velocities never use PBC
     pos_sq = (pos_diff**2).sum(dim=-1)
     vel_sq = (vel_diff**2).sum(dim=-1)
     distances = torch.sqrt(pos_sq + lambda_alg * vel_sq + epsilon_dist**2)
@@ -376,6 +395,8 @@ def compute_fitness(
         lambda_alg=lambda_alg,
         sigma_min=sigma_min,
         return_statistics=True,
+        bounds=bounds,
+        pbc=pbc,
     )
     z_distances, mu_distances, sigma_distances = patched_standardization(
         values=distances,
@@ -386,6 +407,8 @@ def compute_fitness(
         lambda_alg=lambda_alg,
         sigma_min=sigma_min,
         return_statistics=True,
+        bounds=bounds,
+        pbc=pbc,
     )
 
     # Step 5-6: Logistic rescale + positivity floor
@@ -506,6 +529,8 @@ class FitnessOperator(BaseModel):
         rewards: Tensor,
         alive: Tensor,
         companions: Tensor,
+        bounds=None,
+        pbc: bool = False,
     ) -> tuple[Tensor, dict[str, Tensor]]:
         """Compute fitness potential using the Euclidean Gas measurement pipeline.
 
@@ -517,6 +542,8 @@ class FitnessOperator(BaseModel):
             rewards: Raw reward values [N]
             alive: Boolean mask [N], True for alive walkers
             companions: Companion indices [N] (required, selected by EuclideanGas)
+            bounds: Domain bounds (required if pbc=True)
+            pbc: If True, use periodic boundary conditions for distance calculations
 
         Returns:
             fitness: Fitness potential vector [N], zero for dead walkers
@@ -544,6 +571,8 @@ class FitnessOperator(BaseModel):
             sigma_min=self.sigma_min,
             A=self.A,
             epsilon_dist=self.epsilon_dist,
+            bounds=bounds,
+            pbc=pbc,
             rho=self.rho,
         )
 

@@ -16,6 +16,9 @@ from pydantic import BaseModel, Field
 import torch
 from torch import Tensor
 
+from fragile.bounds import TorchBounds
+from fragile.core.distance import compute_periodic_distance_matrix
+
 
 def psi_v(v: Tensor, V_alg: float) -> Tensor:
     """Apply smooth velocity squashing map to ensure bounded magnitude.
@@ -143,6 +146,8 @@ class KineticOperator(BaseModel):
     dt: float = Field(default=0.0, init=False, exclude=True)
     c1: torch.Tensor = Field(default=None, init=False, exclude=True)
     c2: torch.Tensor = Field(default=None, init=False, exclude=True)
+    bounds: TorchBounds | None = Field(default=None, init=False, exclude=True)
+    pbc: bool = Field(default=False, init=False, exclude=True)
 
     def __init__(
         self,
@@ -164,6 +169,8 @@ class KineticOperator(BaseModel):
         potential=None,
         device: torch.device = None,
         dtype: torch.dtype = None,
+        bounds: TorchBounds | None = None,
+        pbc: bool = False,
     ):
         """
         Initialize kinetic operator.
@@ -188,6 +195,8 @@ class KineticOperator(BaseModel):
                       Required if use_potential_force=True, can be None otherwise.
             device: PyTorch device (defaults to CPU)
             dtype: PyTorch dtype (defaults to float32)
+            bounds: Domain bounds (required for periodic boundary conditions)
+            pbc: Enable periodic boundary conditions for distance calculations
 
         Raises:
             ValueError: If required components are missing based on settings
@@ -195,6 +204,9 @@ class KineticOperator(BaseModel):
         Note:
             Fitness gradients and Hessians are passed to apply() method, not stored here.
             This keeps the kinetic operator stateless with respect to fitness computations.
+
+            When pbc=True, viscous coupling uses minimum image convention for distances,
+            ensuring correct fluid behavior across periodic boundaries (torus topology).
         """
         super().__init__(
             gamma=gamma,
@@ -217,6 +229,8 @@ class KineticOperator(BaseModel):
         self.potential = potential
         self.device = device if device is not None else torch.device("cpu")
         self.dtype = dtype if dtype is not None else torch.float32
+        self.bounds = bounds
+        self.pbc = pbc
 
         # Validate configuration
         if self.use_potential_force:
@@ -327,9 +341,13 @@ class KineticOperator(BaseModel):
 
         N, d = x.shape
 
-        # Compute pairwise distances using torch.cdist
-        # distances[i, j] = ||x_i - x_j||
-        distances = torch.cdist(x, x, p=2)  # [N, N]
+        # Compute pairwise distances
+        # With PBC: use minimum image convention (wrapping)
+        # Without PBC: standard Euclidean distance
+        # distances[i, j] = ||x_i - x_j|| (accounting for wrapping if pbc=True)
+        distances = compute_periodic_distance_matrix(
+            x, y=None, bounds=self.bounds, pbc=self.pbc
+        )  # [N, N]
 
         # Compute Gaussian kernel K(r) = exp(-r²/(2l²))
         l_sq = self.viscous_length_scale ** 2
@@ -512,6 +530,8 @@ class KineticOperator(BaseModel):
 
         # === SECOND B STEP: Apply forces ===
         force = self._compute_force(x, v, grad_fitness)
+        if self.use_viscous_coupling:
+            force += self._compute_viscous_force(x, v)
         v += (self.dt / 2) * force
 
         # === VELOCITY SQUASHING: Apply smooth radial squashing map ===

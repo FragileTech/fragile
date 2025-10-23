@@ -670,4 +670,5 @@ def create_app():
 if __name__ == "__main__":
     # Create and serve the app
     app = create_app()
-    app.show(port=5006)
+    app.show(port=5006, open=False)
+    print("Voronoi Evolution Viewer running at http://localhost:5006")

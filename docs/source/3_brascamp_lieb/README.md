@@ -44,15 +44,18 @@ This directory contains work on the geometric foundations of the Logarithmic Sob
 ### ⚠️ **Deprecated Documents (Do Not Use)**
 
 **[brascamp_lieb_proof.md](brascamp_lieb_proof.md)**
-- **Status**: ❌ Has critical mathematical errors, superseded
-- **Purpose**: Original attempt at full multilinear BL proof
-- **Issues Identified by Dual Review**:
-  - Invalid BL exponents (violates dimensional balance condition)
-  - Ill-defined fiber functions
-  - Unproven eigenvalue gap assumption
-  - Missing heat flow derivation
-- **Keep for**: Historical reference only
-- **Do NOT cite or use**: Contains fundamental errors
+- **Status**: ❌ **DEPRECATED - DO NOT USE**
+- **Purpose**: Original attempt at multilinear BL inequality → LSI derivation
+- **Critical Mathematical Errors** (identified by dual review - Gemini 2.5 Pro + Codex):
+  1. **BL positivity functional is invalid** - Functional is infinite for d≥2 (product of projections contains zeros)
+  2. **Projected functions are ill-defined** - L_j^{-1}(y) is a hyperplane, not a point (measure-theoretic error)
+  3. **Geometric lemma has sign error** - Cauchy-Schwarz inequality reversed, invalidating constant bounds
+  4. **Eigenvalue gap assumption is unproven** - Adding ε_Σ I doesn't create eigenvalue separation
+  5. **Invalid BL exponents** - p_j = 1/2 violates dimensional balance condition
+  6. **Missing heat flow derivation** - Key monotonicity asserted without proof
+- **Superseded by**: [../2_geometric_gas/15_geometric_gas_lsi_proof.md](../2_geometric_gas/15_geometric_gas_lsi_proof.md) (hypocoercivity proof, complete and rigorous)
+- **Retained for**: Historical reference and dual review case study demonstrating value of rigorous review
+- **DO NOT CITE**: Use [geometric_foundations_lsi.md](geometric_foundations_lsi.md) or [15_geometric_gas_lsi_proof.md](../2_geometric_gas/15_geometric_gas_lsi_proof.md) instead
 
 ---
 

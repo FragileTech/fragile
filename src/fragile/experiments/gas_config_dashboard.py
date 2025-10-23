@@ -65,6 +65,9 @@ class GasConfig(param.Parameterized):
     epsilon_Sigma = param.Number(default=0.1, bounds=(0.0, 1.0), doc="Hessian regularisation ε_Σ")
     use_anisotropic_diffusion = param.Boolean(default=False, doc="Enable anisotropic diffusion")
     diagonal_diffusion = param.Boolean(default=True, doc="Use diagonal diffusion tensor")
+    nu = param.Number(default=0.0, bounds=(0.0, 10.0), doc="Viscous coupling strength ν")
+    use_viscous_coupling = param.Boolean(default=False, doc="Enable viscous coupling")
+    viscous_length_scale = param.Number(default=1.0, bounds=(0.1, 5.0), doc="Viscous kernel length scale l")
     V_alg = param.Number(default=10.0, bounds=(0.1, 100.0), doc="Algorithmic velocity bound V_alg")
     use_velocity_squashing = param.Boolean(default=False, doc="Enable velocity squashing map ψ_v")
 
@@ -82,7 +85,7 @@ class GasConfig(param.Parameterized):
     p_max = param.Number(default=1.0, bounds=(0.2, 10.0), doc="Maximum cloning probability p_max")
     epsilon_clone = param.Number(default=0.005, bounds=(1e-4, 0.05), doc="Cloning score ε_clone")
     companion_method = param.ObjectSelector(
-        default="random_pairing",
+        default="uniform",
         objects=("uniform", "softmax", "cloning", "random_pairing"),
         doc="Companion selection method",
     )
@@ -92,6 +95,7 @@ class GasConfig(param.Parameterized):
     # Algorithm control
     enable_cloning = param.Boolean(default=True, doc="Enable cloning operator")
     enable_kinetic = param.Boolean(default=True, doc="Enable kinetic (Langevin) operator")
+    pbc = param.Boolean(default=False, doc="Use periodic boundary conditions (wrap walkers)")
 
     # Initialisation controls
     init_offset = param.Number(default=4.5, bounds=(-6.0, 6.0), doc="Initial position offset")
@@ -146,6 +150,8 @@ class GasConfig(param.Parameterized):
             "beta": pnw.FloatSlider(name="beta", start=0.1, end=5.0, step=0.05),
             "delta_t": pnw.FloatSlider(name="delta_t", start=0.01, end=0.2, step=0.005),
             "lambda_alg": pnw.FloatSlider(name="lambda_alg", start=0.0, end=3.0, step=0.1),
+            "nu": pnw.FloatSlider(name="nu", start=0.0, end=10.0, step=0.1),
+            "viscous_length_scale": pnw.FloatSlider(name="viscous_length_scale", start=0.1, end=5.0, step=0.1),
         }
 
         # Callbacks for external listeners
@@ -264,11 +270,16 @@ class GasConfig(param.Parameterized):
             epsilon_Sigma=float(self.epsilon_Sigma),
             use_anisotropic_diffusion=bool(self.use_anisotropic_diffusion),
             diagonal_diffusion=bool(self.diagonal_diffusion),
+            nu=float(self.nu),
+            use_viscous_coupling=bool(self.use_viscous_coupling),
+            viscous_length_scale=float(self.viscous_length_scale),
             V_alg=float(self.V_alg),
             use_velocity_squashing=bool(self.use_velocity_squashing),
             potential=self.potential,
             device=torch.device("cpu"),
             dtype=torch.float32,
+            bounds=bounds,  # Pass bounds for periodic distance calculations
+            pbc=bool(self.pbc),  # Enable periodic boundary conditions
         )
 
         # Create FitnessOperator with parameters directly
@@ -300,6 +311,7 @@ class GasConfig(param.Parameterized):
             dtype="float32",
             enable_cloning=bool(self.enable_cloning),
             enable_kinetic=bool(self.enable_kinetic),
+            pbc=bool(self.pbc),
         )
 
         # Initialize state
@@ -373,6 +385,7 @@ class GasConfig(param.Parameterized):
             "n_steps",
             "enable_cloning",
             "enable_kinetic",
+            "pbc",
         )
         langevin_params = (
             "gamma",
@@ -384,6 +397,9 @@ class GasConfig(param.Parameterized):
             "epsilon_Sigma",
             "use_anisotropic_diffusion",
             "diagonal_diffusion",
+            "nu",
+            "use_viscous_coupling",
+            "viscous_length_scale",
             "V_alg",
             "use_velocity_squashing",
         )

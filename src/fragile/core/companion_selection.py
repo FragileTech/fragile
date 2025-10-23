@@ -15,6 +15,8 @@ def compute_algorithmic_distance_matrix(
     x: torch.Tensor,
     v: torch.Tensor,
     lambda_alg: float = 0.0,
+    bounds=None,
+    pbc: bool = False,
 ) -> torch.Tensor:
     """Compute pairwise squared algorithmic distance matrix.
 
@@ -28,6 +30,8 @@ def compute_algorithmic_distance_matrix(
         x: Positions of all walkers, shape [N, d]
         v: Velocities of all walkers, shape [N, d]
         lambda_alg: Weight for velocity contribution (default 0.0 for position-only)
+        bounds: Domain bounds (required if pbc=True)
+        pbc: If True, use periodic boundary conditions for position distances
 
     Returns:
         Squared distance matrix, shape [N, N]
@@ -37,15 +41,25 @@ def compute_algorithmic_distance_matrix(
         - λ_alg = 0: Position-only model (pure Euclidean distance)
         - λ_alg > 0: Fluid dynamics model (phase-space aware)
         - λ_alg = 1: Balanced phase-space model (position and velocity equal weight)
+        - With pbc=True, position distances use minimum image convention (wrapping)
+        - Velocity distances never use PBC (velocities don't wrap)
     """
-    # Compute position distance matrix: ||x_i - x_j||^2
-    # Using (x_i - x_j)^2 = ||x_i||^2 + ||x_j||^2 - 2<x_i, x_j>
-    x_norm_sq = torch.sum(x * x, dim=1, keepdim=True)  # [N, 1]
-    x_dot = x @ x.T  # [N, N]
-    pos_dist_sq = x_norm_sq + x_norm_sq.T - 2 * x_dot  # [N, N]
+    # Compute position distance matrix
+    if pbc:
+        # Use periodic boundary conditions (minimum image convention)
+        from fragile.core.distance import compute_periodic_distance_matrix
+        pos_dist = compute_periodic_distance_matrix(x, y=None, bounds=bounds, pbc=True)
+        pos_dist_sq = pos_dist ** 2
+    else:
+        # Standard Euclidean distance
+        # Using (x_i - x_j)^2 = ||x_i||^2 + ||x_j||^2 - 2<x_i, x_j>
+        x_norm_sq = torch.sum(x * x, dim=1, keepdim=True)  # [N, 1]
+        x_dot = x @ x.T  # [N, N]
+        pos_dist_sq = x_norm_sq + x_norm_sq.T - 2 * x_dot  # [N, N]
 
     if lambda_alg > 0:
         # Add velocity distance: λ_alg * ||v_i - v_j||^2
+        # Velocities never use PBC (they don't wrap)
         v_norm_sq = torch.sum(v * v, dim=1, keepdim=True)  # [N, 1]
         v_dot = v @ v.T  # [N, N]
         vel_dist_sq = v_norm_sq + v_norm_sq.T - 2 * v_dot  # [N, N]
@@ -60,6 +74,8 @@ def select_companions_softmax(
     epsilon: float,
     lambda_alg: float = 0.0,
     exclude_self: bool = True,
+    bounds=None,
+    pbc: bool = False,
 ) -> torch.Tensor:
     """Select companions using distance-dependent softmax distribution.
 
@@ -82,6 +98,8 @@ def select_companions_softmax(
         epsilon: Interaction range parameter (ε_c for cloning, ε_d for diversity)
         lambda_alg: Weight for velocity contribution in distance metric
         exclude_self: Whether to exclude self-pairing (default True for alive walkers)
+        bounds: Domain bounds (required if pbc=True)
+        pbc: If True, use periodic boundary conditions for distances
 
     Returns:
         Companion indices for all alive walkers, shape [N]
@@ -93,8 +111,8 @@ def select_companions_softmax(
     """
     N = x.shape[0]
 
-    # Compute full distance matrix [N, N]
-    dist_sq = compute_algorithmic_distance_matrix(x, v, lambda_alg)
+    # Compute full distance matrix [N, N] (accounting for PBC if enabled)
+    dist_sq = compute_algorithmic_distance_matrix(x, v, lambda_alg, bounds, pbc)
 
     # Compute softmax weights: exp(-d^2 / (2*epsilon^2))
     weights = torch.exp(-dist_sq / (2 * epsilon**2))  # [N, N]
@@ -141,8 +159,21 @@ def select_companions_softmax(
     # multinomial samples one index per row
     companions = torch.multinomial(probs, num_samples=1).squeeze(1)  # [N]
 
-    # Mark dead walkers as -1 (invalid)
-    companions[~alive_mask] = -1
+    # Assign dead walkers to random alive companions (for revival)
+    dead_mask = ~alive_mask
+    if dead_mask.any():
+        alive_indices = torch.where(alive_mask)[0]
+        n_alive = len(alive_indices)
+        if n_alive > 0:
+            dead_indices = torch.where(dead_mask)[0]
+            n_dead = len(dead_indices)
+            # Each dead walker gets a uniformly random alive companion
+            random_positions = torch.randint(0, n_alive, (n_dead,), device=x.device)
+            companions[dead_indices] = alive_indices[random_positions]
+        else:
+            # No alive walkers, map dead to themselves (will fail in cloning anyway)
+            dead_indices = torch.where(dead_mask)[0]
+            companions[dead_indices] = dead_indices
 
     return companions
 
@@ -232,6 +263,15 @@ def random_pairing_fisher_yates(
 
     # If n_alive is odd, the last element already maps to itself
 
+    # Assign dead walkers to random alive companions (for revival)
+    dead_mask = ~alive_mask
+    if dead_mask.any() and n_alive > 0:
+        dead_indices = torch.where(dead_mask)[0]
+        n_dead = len(dead_indices)
+        # Each dead walker gets a uniformly random alive companion
+        random_positions = torch.randint(0, n_alive, (n_dead,), device=device)
+        companion_map[dead_indices] = alive_indices[random_positions]
+
     return companion_map
 
 
@@ -241,6 +281,8 @@ def select_companions_for_cloning(
     alive_mask: torch.Tensor,
     epsilon_c: float,
     lambda_alg: float = 0.0,
+    bounds=None,
+    pbc: bool = False,
 ) -> torch.Tensor:
     """Select companions for all walkers using the cloning companion selection operator.
 
@@ -256,6 +298,8 @@ def select_companions_for_cloning(
         alive_mask: Boolean mask indicating alive walkers, shape [N]
         epsilon_c: Interaction range for cloning
         lambda_alg: Weight for velocity contribution in distance metric
+        bounds: Domain bounds (required if pbc=True)
+        pbc: If True, use periodic boundary conditions for distances
 
     Returns:
         Companion indices for each walker, shape [N]
@@ -281,6 +325,8 @@ def select_companions_for_cloning(
         epsilon=epsilon_c,
         lambda_alg=lambda_alg,
         exclude_self=True,
+        bounds=bounds,
+        pbc=pbc,
     )
 
     # For dead walkers, use uniform selection
@@ -301,6 +347,8 @@ def sequential_greedy_pairing(
     alive_mask: torch.Tensor,
     epsilon_d: float,
     lambda_alg: float = 0.0,
+    bounds=None,
+    pbc: bool = False,
 ) -> torch.Tensor:
     """Create mutual companion pairs using sequential stochastic greedy algorithm.
 
@@ -322,6 +370,8 @@ def sequential_greedy_pairing(
         alive_mask: Boolean mask indicating alive walkers, shape [N]
         epsilon_d: Interaction range for diversity measurement
         lambda_alg: Weight for velocity contribution in distance metric
+        bounds: Domain bounds (required if pbc=True)
+        pbc: If True, use periodic boundary conditions for distances
 
     Returns:
         Companion map for all walkers, shape [N]
@@ -350,8 +400,8 @@ def sequential_greedy_pairing(
     # Compute full distance matrix once (only for alive walkers)
     x_alive = x[alive_mask]  # [n_alive, d]
     v_alive = v[alive_mask]  # [n_alive, d]
-    # Compute distance matrix for alive walkers: [n_alive, n_alive]
-    dist_sq = compute_algorithmic_distance_matrix(x_alive, v_alive, lambda_alg)
+    # Compute distance matrix for alive walkers: [n_alive, n_alive] (accounting for PBC if enabled)
+    dist_sq = compute_algorithmic_distance_matrix(x_alive, v_alive, lambda_alg, bounds, pbc)
 
     # Precompute softmax weights for all pairs: [n_alive, n_alive]
     weights = torch.exp(-dist_sq / (2 * epsilon_d**2))
@@ -392,6 +442,15 @@ def sequential_greedy_pairing(
             unpaired_mask[j_pos] = False
 
     # If one walker remains unpaired (odd number), it already maps to itself
+
+    # Assign dead walkers to random alive companions (for revival)
+    dead_mask = ~alive_mask
+    if dead_mask.any() and n_alive > 0:
+        dead_indices = torch.where(dead_mask)[0]
+        n_dead = len(dead_indices)
+        # Each dead walker gets a uniformly random alive companion
+        random_positions = torch.randint(0, n_alive, (n_dead,), device=device)
+        companion_map[dead_indices] = alive_indices[random_positions]
 
     return companion_map
 
@@ -486,6 +545,8 @@ class CompanionSelection(BaseModel):
         v: torch.Tensor,
         alive_mask: torch.Tensor,
         lambda_alg: float | None = None,
+        bounds=None,
+        pbc: bool = False,
     ) -> torch.Tensor:
         """Select companions using the configured strategy.
 
@@ -495,6 +556,8 @@ class CompanionSelection(BaseModel):
             alive_mask: Boolean mask indicating alive walkers, shape [N]
             lambda_alg: Optional override for velocity weight in distance metric.
                 If None, uses self.lambda_alg.
+            bounds: Domain bounds (required if pbc=True)
+            pbc: If True, use periodic boundary conditions for distance calculations
 
         Returns:
             Companion indices for each walker, shape [N]
@@ -514,6 +577,9 @@ class CompanionSelection(BaseModel):
               selects a companion. Multiple walkers can select the same companion.
             - Pairing methods (random_pairing, greedy_pairing): Create mutual pairs
               where c(i) = j implies c(j) = i. Each walker appears in at most one pair.
+
+            With pbc=True, distance-based methods use minimum image convention for
+            position distances, ensuring correct neighbor selection across periodic boundaries.
         """
         lambda_alg = lambda_alg if lambda_alg is not None else self.lambda_alg
         if self.method == "softmax":
@@ -524,6 +590,8 @@ class CompanionSelection(BaseModel):
                 epsilon=self.epsilon,
                 lambda_alg=lambda_alg,
                 exclude_self=self.exclude_self,
+                bounds=bounds,
+                pbc=pbc,
             )
         if self.method == "uniform":
             return select_companions_uniform(alive_mask=alive_mask)
@@ -536,6 +604,8 @@ class CompanionSelection(BaseModel):
                 alive_mask=alive_mask,
                 epsilon_c=self.epsilon,
                 lambda_alg=lambda_alg,
+                bounds=bounds,
+                pbc=pbc,
             )
         if self.method == "greedy_pairing":
             return sequential_greedy_pairing(
@@ -544,6 +614,8 @@ class CompanionSelection(BaseModel):
                 alive_mask=alive_mask,
                 epsilon_d=self.epsilon,
                 lambda_alg=lambda_alg,
+                bounds=bounds,
+                pbc=pbc,
             )
         # This should never happen due to validator, but needed for type checking
         msg = f"Unknown companion selection method: {self.method}"

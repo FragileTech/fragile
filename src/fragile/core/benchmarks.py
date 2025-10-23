@@ -139,8 +139,6 @@ class OptimBenchmark(BaseModel):
         raise NotImplementedError
 
 
-
-
 class Sphere(OptimBenchmark):
     def __init__(self, dims: int, **kwargs):
         super().__init__(dims=dims, function=sphere, **kwargs)
@@ -345,6 +343,109 @@ class Constant(OptimBenchmark):
         return torch.zeros(self.shape)
 
 
+class StochasticGaussian(OptimBenchmark):
+    """Stochastic Gaussian noise benchmark.
+
+    This benchmark returns U(x) = N(0, 1) sampled independently each time it
+    is evaluated, providing a purely stochastic background reward signal with
+    no spatial structure.
+
+    The potential is sampled fresh on each call, making this useful for testing
+    algorithm behavior under purely random reward signals where no optimization
+    strategy should emerge.
+
+    Mathematical definition:
+        U(x) ~ N(0, σ²)  (sampled independently for each evaluation)
+
+    Args:
+        dims: Dimensionality of the space
+        std: Standard deviation of the Gaussian noise (default: 1.0)
+
+    Important:
+        Since the potential has no spatial structure (pure noise), it has no
+        meaningful gradient. When using this benchmark with EuclideanGas,
+        set use_potential_force=False in the KineticOperator to avoid
+        attempting gradient computation.
+    """
+
+    std: float = Field(default=1.0, description="Standard deviation of Gaussian noise")
+
+    def __init__(self, dims: int, std: float = 1.0, **kwargs):
+        """Initialize stochastic Gaussian benchmark.
+
+        Args:
+            dims: Dimensionality of the space
+            std: Standard deviation of Gaussian noise
+            **kwargs: Additional parameters passed to OptimBenchmark
+        """
+        # Capture std in closure for stochastic function
+        _std = std
+
+        def stochastic_gaussian(x: torch.Tensor) -> torch.Tensor:
+            """Sample N(0, σ²) independently for each walker on each call."""
+            return torch.randn(x.shape[0], dtype=x.dtype, device=x.device) * _std
+
+        super().__init__(dims=dims, function=stochastic_gaussian, std=std, **kwargs)
+
+    @property
+    def benchmark(self) -> torch.Tensor:
+        # Expected value of stochastic potential
+        return torch.tensor(0.0)
+
+    @staticmethod
+    def get_bounds(dims):
+        bounds = [(-10.0, 10.0) for _ in range(dims)]
+        return Bounds.from_tuples(bounds)
+
+    @property
+    def best_state(self):
+        # No optimal state for stochastic potential
+        return torch.zeros(self.shape)
+
+
+class FluidBenchmark(OptimBenchmark):
+    """Base class for fluid dynamics benchmarks.
+
+    Extends OptimBenchmark with fluid-specific functionality:
+    - Initial velocity field generation via get_initial_conditions()
+    - Validation metrics computation via compute_validation_metrics()
+
+    Fluid benchmarks are used to validate that the viscous-coupled Euclidean Gas
+    can simulate incompressible fluid behavior consistent with Navier-Stokes equations.
+    """
+
+    bounds_extent: float = Field(default=np.pi, description="Half-width of spatial domain")
+
+    def get_initial_conditions(
+        self, N: int, device: torch.device, dtype: torch.dtype
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Generate initial positions and velocities for fluid simulation.
+
+        Args:
+            N: Number of walkers
+            device: PyTorch device
+            dtype: PyTorch dtype
+
+        Returns:
+            x_init: Initial positions [N, d]
+            v_init: Initial velocities [N, d]
+        """
+        raise NotImplementedError
+
+    def compute_validation_metrics(self, history, t_idx: int, params: dict) -> list:
+        """Compute validation metrics at given time index.
+
+        Args:
+            history: RunHistory object from simulation
+            t_idx: Time index to evaluate
+            params: Dictionary of simulation parameters
+
+        Returns:
+            List of ValidationMetrics objects
+        """
+        raise NotImplementedError
+
+
 class MixtureOfGaussians(OptimBenchmark):
     """Mixture of Gaussians benchmark function.
 
@@ -427,8 +528,7 @@ class MixtureOfGaussians(OptimBenchmark):
             weights_tensor = torch.as_tensor(weights, dtype=torch.float32)
             if weights_tensor.shape != (n_gaussians,):
                 msg = (
-                    f"Weights shape {weights_tensor.shape} doesn't match "
-                    f"n_gaussians={n_gaussians}"
+                    f"Weights shape {weights_tensor.shape} doesn't match n_gaussians={n_gaussians}"
                 )
                 raise ValueError(msg)
             if (weights_tensor < 0).any():
@@ -539,6 +639,327 @@ class MixtureOfGaussians(OptimBenchmark):
         }
 
 
+class TaylorGreenVortex(FluidBenchmark):
+    """Taylor-Green vortex: 2D decaying vortex with analytical solution.
+
+    The Taylor-Green vortex is a classical test case for incompressible
+    Navier-Stokes solvers with known analytical solution:
+
+    Stream function: ψ(x,y,t) = A·exp(-2νt)·sin(x)·sin(y)
+    Velocity: u = -∂ψ/∂y, v = ∂ψ/∂x
+    Vorticity: ω = ∇²ψ = -2A·exp(-2νt)·sin(x)·sin(y)
+
+    The kinetic energy decays exponentially: E(t) = E₀·exp(-2νt)
+
+    Reference: Taylor & Green (1937), "Mechanism of the production of small
+    eddies from large ones", Proc. R. Soc. Lond. A 158, 499–521.
+    """
+
+    amplitude: float = 1.0
+
+    def __init__(self, dims: int | None = None, amplitude: float = 1.0, **kwargs):
+        """Initialize Taylor-Green benchmark.
+
+        Args:
+            dims: Spatial dimension (must be 2, ignored if provided)
+            amplitude: Amplitude A of initial vortex (default: 1.0)
+            **kwargs: Additional parameters
+        """
+
+        def zero_potential(x: torch.Tensor) -> torch.Tensor:
+            # Return zero potential while maintaining autograd graph connection
+            # Using x * 0.0 instead of torch.zeros() ensures gradients can be computed
+            return x[:, 0] * 0.0
+
+        bounds = TorchBounds(low=torch.full((2,), -np.pi), high=torch.full((2,), np.pi))
+
+        super().__init__(
+            dims=2,
+            function=zero_potential,
+            bounds=bounds,
+            bounds_extent=np.pi,
+            amplitude=amplitude,
+            **kwargs,
+        )
+
+    @staticmethod
+    def get_bounds(dims: int | None = None):
+        bounds = [(-np.pi, np.pi), (-np.pi, np.pi)]
+        return Bounds.from_tuples(bounds)
+
+    def get_initial_conditions(
+        self, N: int, device: torch.device, dtype: torch.dtype
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Generate initial conditions from Taylor-Green velocity field.
+
+        Positions: Uniformly distributed in [-π, π]²
+        Velocities: Sampled from analytical velocity field at t=0
+        """
+        # Uniform positions in [-π, π]²
+        x_init = torch.rand(N, 2, device=device, dtype=dtype) * 2 * np.pi - np.pi
+
+        # Compute velocities from stream function ψ = A·sin(x)·sin(y)
+        # u = -∂ψ/∂y = -A·sin(x)·cos(y)
+        # v = ∂ψ/∂x = A·cos(x)·sin(y)
+        u = -self.amplitude * torch.sin(x_init[:, 0]) * torch.cos(x_init[:, 1])
+        v = self.amplitude * torch.cos(x_init[:, 0]) * torch.sin(x_init[:, 1])
+
+        v_init = torch.stack([u, v], dim=1)
+
+        return x_init, v_init
+
+    def compute_validation_metrics(self, history, t_idx: int, params: dict) -> list:
+        """Compute energy decay validation for Taylor-Green.
+
+        The kinetic energy should decay as E(t) = E₀·exp(-2νt) where
+        ν is the effective kinematic viscosity.
+        """
+        from fragile.experiments.fluid_utils import ValidationMetrics
+
+        # Extract velocities at t_idx
+        v = history.v_final[t_idx]  # [N, 2]
+
+        # Compute kinetic energy E = (1/N) Σ ||vi||²
+        E_measured = torch.mean(torch.sum(v**2, dim=1)).item()
+
+        # Initial energy (t=0)
+        v0 = history.v_final[0]
+        E0 = torch.mean(torch.sum(v0**2, dim=1)).item()
+
+        # Theoretical energy decay E(t) = E₀·exp(-2νt)
+        dt = params.get("delta_t", 0.02)
+        t = t_idx * dt
+
+        # Effective viscosity: ν_eff ≈ nu * viscous_length_scale²
+        nu = params.get("nu", 1.0)
+        length_scale = params.get("viscous_length_scale", 0.8)
+        nu_eff = nu * length_scale**2
+
+        E_theory = E0 * np.exp(-2 * nu_eff * t)
+
+        # Compute relative error
+        rel_error = abs(E_measured - E_theory) / E_theory if E_theory > 1e-10 else 0.0
+
+        passed = rel_error < 0.1  # 10% tolerance
+
+        return [
+            ValidationMetrics(
+                metric_name="Energy Decay",
+                measured_value=E_measured,
+                theoretical_value=E_theory,
+                tolerance=0.1,
+                passed=passed,
+                description=f"E(t)/{E0:.3f} = {E_measured / E0:.4f} vs theory {E_theory / E0:.4f}",
+            )
+        ]
+
+
+class LidDrivenCavity(FluidBenchmark):
+    """Lid-driven cavity: Flow in square cavity with moving top wall.
+
+    The lid-driven cavity is a classic CFD benchmark where flow is driven
+    by a lid moving with constant velocity along the top boundary. The
+    problem exhibits:
+    - Primary recirculation vortex in center
+    - Secondary corner vortices (at high Re)
+    - Well-documented reference solutions
+
+    Reference: Ghia, Ghia & Shin (1982), "High-Re solutions for incompressible
+    flow using the Navier-Stokes equations and a multigrid method",
+    J. Comput. Phys. 48, 387-411.
+    """
+
+    reynolds_number: float = 100.0
+    lid_velocity: float = 1.0
+
+    def __init__(
+        self,
+        dims: int | None = None,
+        reynolds_number: float = 100.0,
+        lid_velocity: float = 1.0,
+        **kwargs,
+    ):
+        """Initialize lid-driven cavity benchmark.
+
+        Args:
+            dims: Spatial dimension (must be 2, ignored if provided)
+            reynolds_number: Reynolds number Re = U·L/ν
+            lid_velocity: Velocity of top lid (U)
+            **kwargs: Additional parameters
+        """
+
+        def wall_potential(x: torch.Tensor) -> torch.Tensor:
+            """Soft wall potential using exponential repulsion."""
+            strength = 10.0
+            width = 0.05
+
+            # Distance to walls
+            d_left = x[:, 0]
+            d_right = 1.0 - x[:, 0]
+            d_bottom = x[:, 1]
+            d_top = 1.0 - x[:, 1]
+
+            # Exponential repulsion (maintain autograd graph connection)
+            U = strength * torch.exp(-d_left / width)
+            U = U + strength * torch.exp(-d_right / width)
+            U = U + strength * torch.exp(-d_bottom / width)
+            U = U + strength * torch.exp(-d_top / width)
+
+            return U
+
+        bounds = TorchBounds(low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0]))
+
+        super().__init__(
+            dims=2,
+            function=wall_potential,
+            bounds=bounds,
+            bounds_extent=0.5,
+            reynolds_number=reynolds_number,
+            lid_velocity=lid_velocity,
+            **kwargs,
+        )
+
+    @staticmethod
+    def get_bounds(dims: int | None = None):
+        bounds = [(0.0, 1.0), (0.0, 1.0)]
+        return Bounds.from_tuples(bounds)
+
+    def get_initial_conditions(
+        self, N: int, device: torch.device, dtype: torch.dtype
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Generate initial conditions: uniform positions, zero velocities."""
+        # Uniform positions in [0, 1]²
+        x_init = torch.rand(N, 2, device=device, dtype=dtype)
+
+        # Zero initial velocities (fluid at rest)
+        v_init = torch.zeros(N, 2, device=device, dtype=dtype)
+
+        return x_init, v_init
+
+    def compute_validation_metrics(self, history, t_idx: int, params: dict) -> list:
+        """Compute cavity flow validation metrics."""
+        from fragile.experiments.fluid_utils import ValidationMetrics
+
+        # For now, just check that flow has developed
+        v = history.v_final[t_idx]
+        v_mag = torch.mean(torch.linalg.vector_norm(v, dim=1)).item()
+
+        return [
+            ValidationMetrics(
+                metric_name="Flow Development",
+                measured_value=v_mag,
+                theoretical_value=self.lid_velocity / 2,  # Rough estimate
+                tolerance=0.5,
+                passed=v_mag > 0.01,  # Just check flow exists
+                description=f"Mean velocity magnitude: {v_mag:.4f}",
+            )
+        ]
+
+
+class KelvinHelmholtzInstability(FluidBenchmark):
+    """Kelvin-Helmholtz instability: Shear layer with vortex roll-up.
+
+    The Kelvin-Helmholtz instability occurs at the interface between two
+    fluid layers moving at different velocities. The shear creates an
+    instability that grows exponentially and eventually rolls up into
+    coherent vortices.
+
+    This benchmark demonstrates:
+    - Instability growth from small perturbations
+    - Vortex formation and roll-up
+    - Mixing layer evolution
+    - Beautiful visual demonstration of fluid instability
+    """
+
+    shear_velocity: float = 1.0
+    layer_thickness: float = 0.2
+
+    def __init__(
+        self,
+        dims: int | None = None,
+        shear_velocity: float = 1.0,
+        layer_thickness: float = 0.2,
+        **kwargs,
+    ):
+        """Initialize Kelvin-Helmholtz benchmark.
+
+        Args:
+            dims: Spatial dimension (must be 2, ignored if provided)
+            shear_velocity: Velocity difference between layers (ΔU)
+            layer_thickness: Thickness of shear layer (δ)
+            **kwargs: Additional parameters
+        """
+
+        def zero_potential(x: torch.Tensor) -> torch.Tensor:
+            # Return zero potential while maintaining autograd graph connection
+            # Using x * 0.0 instead of torch.zeros() ensures gradients can be computed
+            return x[:, 0] * 0.0
+
+        bounds = TorchBounds(low=torch.full((2,), -np.pi), high=torch.full((2,), np.pi))
+
+        super().__init__(
+            dims=2,
+            function=zero_potential,
+            bounds=bounds,
+            bounds_extent=np.pi,
+            shear_velocity=shear_velocity,
+            layer_thickness=layer_thickness,
+            **kwargs,
+        )
+
+    @staticmethod
+    def get_bounds(dims: int | None = None):
+        bounds = [(-np.pi, np.pi), (-np.pi, np.pi)]
+        return Bounds.from_tuples(bounds)
+
+    def get_initial_conditions(
+        self, N: int, device: torch.device, dtype: torch.dtype
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Generate initial conditions: two layers with velocity shear.
+
+        Initial velocity profile: u(y) = U·tanh(y/δ)
+        Small sinusoidal perturbation added to trigger instability
+        """
+        # Uniform positions in [-π, π]²
+        x_init = torch.rand(N, 2, device=device, dtype=dtype) * 2 * np.pi - np.pi
+
+        # Base velocity profile: u(y) = U·tanh(y/δ)
+        y = x_init[:, 1]
+        u_base = self.shear_velocity * torch.tanh(y / self.layer_thickness)
+
+        # Add sinusoidal perturbation to trigger instability
+        k_unstable = 1.0  # Most unstable mode
+        amplitude = 0.1 * self.shear_velocity
+        perturbation_v = amplitude * torch.cos(k_unstable * x_init[:, 0])
+
+        # Construct velocity field
+        u = u_base
+        v = perturbation_v
+
+        v_init = torch.stack([u, v], dim=1)
+
+        return x_init, v_init
+
+    def compute_validation_metrics(self, history, t_idx: int, params: dict) -> list:
+        """Compute K-H validation metrics (primarily qualitative)."""
+        from fragile.experiments.fluid_utils import ValidationMetrics
+
+        # Measure vorticity magnitude as proxy for vortex development
+        v = history.v_final[t_idx]
+        v_rms = torch.sqrt(torch.mean(v**2)).item()
+
+        return [
+            ValidationMetrics(
+                metric_name="Vortex Development",
+                measured_value=v_rms,
+                theoretical_value=None,  # Qualitative
+                tolerance=float("inf"),
+                passed=v_rms > 0.1,  # Just check instability developed
+                description=f"RMS velocity: {v_rms:.4f} (qualitative check)",
+            )
+        ]
+
+
 ALL_BENCHMARKS = [
     Sphere,
     Rastrigin,
@@ -548,6 +969,10 @@ ALL_BENCHMARKS = [
     Easom,
     MixtureOfGaussians,
     Constant,
+    StochasticGaussian,
+    TaylorGreenVortex,
+    LidDrivenCavity,
+    KelvinHelmholtzInstability,
 ]
 
 
@@ -562,6 +987,10 @@ BENCHMARK_NAMES = {
     "Mixture of Gaussians": MixtureOfGaussians,
     "Lennard-Jones": LennardJones,
     "Constant (Zero)": Constant,
+    "Stochastic Gaussian": StochasticGaussian,
+    "Taylor-Green Vortex": TaylorGreenVortex,
+    "Lid-Driven Cavity": LidDrivenCavity,
+    "Kelvin-Helmholtz Instability": KelvinHelmholtzInstability,
 }
 
 
@@ -1012,14 +1441,19 @@ __all__ = [
     "Constant",
     "Easom",
     "EggHolder",
+    "FluidBenchmark",
     "HolderTable",
+    "KelvinHelmholtzInstability",
     "LennardJones",
+    "LidDrivenCavity",
     "MixtureOfGaussians",
     "OptimBenchmark",
     "Rastrigin",
     "Rosenbrock",
     "Sphere",
+    "StochasticGaussian",
     "StyblinskiTang",
+    "TaylorGreenVortex",
     # Collections
     "ALL_BENCHMARKS",
     "BENCHMARK_NAMES",
