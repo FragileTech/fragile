@@ -31,8 +31,8 @@ from scipy.spatial import Voronoi
 
 from fragile.bounds import TorchBounds
 from fragile.core import create_scutoid_history, ScutoidHistory2D
+from fragile.core.benchmarks import prepare_benchmark_for_explorer
 from fragile.experiments.gas_config_dashboard import GasConfig
-from fragile.experiments.interactive_euclidean_gas import prepare_background
 
 
 hv.extension("bokeh")
@@ -134,8 +134,12 @@ class VoronoiEvolutionViewer:
     def _initialize_potential(self):
         """Initialize potential and background (call after hv.extension)."""
         if self.potential is None:
-            self.potential, self.background, self.mode_points = prepare_background(
-                dims=self.dims, n_gaussians=3, resolution=100
+            self.potential, self.background, self.mode_points = prepare_benchmark_for_explorer(
+                benchmark_name="Mixture of Gaussians",
+                dims=self.dims,
+                bounds_range=(-6.0, 6.0),
+                resolution=100,
+                n_gaussians=3,
             )
             # Create bounds matching the visualization domain
             self.bounds = TorchBounds(low=-6.0, high=6.0, shape=(self.dims,))

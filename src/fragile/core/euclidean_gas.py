@@ -21,72 +21,6 @@ from fragile.core.fitness import FitnessOperator
 from fragile.core.kinetic_operator import KineticOperator
 
 
-class PotentialParams(BaseModel):
-    """Parameters for the target potential U(x)."""
-
-    model_config = {"arbitrary_types_allowed": True}
-
-    def evaluate(self, x: Tensor) -> Tensor:
-        """
-        Evaluate potential at positions x.
-
-        Args:
-            x: Positions [N, d]
-
-        Returns:
-            Potential values [N]
-        """
-        msg = "Subclasses must implement evaluate"
-        raise NotImplementedError(msg)
-
-
-class SimpleQuadraticPotential(PotentialParams):
-    """Simple quadratic potential U(x) = 0.5 * ||x||^2."""
-
-    def evaluate(self, x: Tensor) -> Tensor:
-        """Evaluate U(x) = 0.5 * ||x||^2."""
-        return 0.5 * torch.sum(x**2, dim=-1)
-
-
-class CloningParams(BaseModel):
-    """Parameters for the cloning operator.
-
-    Mathematical notation:
-    - sigma_x (σ_x): Positional jitter scale
-    - lambda_alg (λ_alg): Velocity weight in algorithmic distance
-    - p_max: Maximum cloning probability threshold
-    - epsilon_clone (ε_clone): Regularization for cloning score
-    """
-
-    model_config = {"arbitrary_types_allowed": True}
-
-    sigma_x: float = Field(gt=0, description="Positional jitter scale (σ_x)")
-    lambda_alg: float = Field(ge=0, description="Velocity weight in algorithmic distance (λ_alg)")
-    alpha_restitution: float = Field(
-        default=0.5,
-        ge=0,
-        le=1,
-        description="Coefficient of restitution [0,1]: 0=fully inelastic, 1=elastic",
-    )
-    p_max: float = Field(
-        default=1.0, gt=0, le=1, description="Maximum cloning probability threshold"
-    )
-    epsilon_clone: float = Field(
-        default=0.01, gt=0, description="Regularization for cloning score (ε_clone)"
-    )
-    alpha: float = Field(default=1.0, ge=0, description="Reward channel exponent in fitness")
-    beta: float = Field(default=1.0, ge=0, description="Diversity channel exponent in fitness")
-    eta: float = Field(default=0.1, ge=0, description="Positivity floor parameter in fitness")
-    A: float = Field(default=2.0, gt=0, description="Upper bound for logistic rescale")
-    sigma_min: float = Field(
-        default=1e-8, gt=0, description="Regularization for patched standardization"
-    )
-    companion_selection: CompanionSelection = Field(
-        default_factory=lambda: CompanionSelection(method="uniform"),
-        description="Companion selection strategy",
-    )
-
-
 class SwarmState:
     """
     Vectorized swarm state with positions and velocities.
@@ -165,15 +99,24 @@ class EuclideanGas(BaseModel):
     companion_selection: CompanionSelection = Field(
         description="Companion selection strategy for cloning"
     )
-    potential: PotentialParams = Field(description="Target potential parameters")
+    potential: object = Field(
+        description=(
+            "Target potential function. Must be callable: U(x: [N, d]) -> [N]. "
+            "Can be an OptimBenchmark instance (which provides bounds) or any callable."
+        )
+    )
     kinetic_op: KineticOperator = Field(description="Langevin dynamics parameters")
-    cloning: CloningParams = Field(description="Cloning operator parameters")
+    cloning: CloneOperator = Field(description="Cloning operator")
     fitness_op: FitnessOperator | None = Field(
         default=None,
-        description="Fitness operator parameters (required if using adaptive kinetics features)",
+        description="Fitness operator (required if using adaptive kinetics features)",
     )
     bounds: TorchBounds | None = Field(
-        None, description="Position bounds (optional, TorchBounds only)"
+        None,
+        description=(
+            "Position bounds (optional, TorchBounds only). "
+            "If None and potential has a 'bounds' attribute, bounds will be auto-extracted."
+        ),
     )
     device: torch.device = Field(torch.device("cpu"), description="PyTorch device (cpu/cuda)")
     dtype: str = Field("float32", description="PyTorch dtype (float32/float64)")
@@ -192,20 +135,21 @@ class EuclideanGas(BaseModel):
         description="Enable kinetic (Langevin dynamics) operator",
     )
 
+    def model_post_init(self, __context) -> None:
+        """Post-initialization: auto-extract bounds from potential if available."""
+        # Auto-extract bounds from potential if not provided
+        if self.bounds is None and hasattr(self.potential, "bounds"):
+            self.bounds = self.potential.bounds
+
+        # Validate that potential is callable
+        if not callable(self.potential):
+            msg = f"potential must be callable, got {type(self.potential)}"
+            raise TypeError(msg)
+
     @property
     def torch_dtype(self) -> torch.dtype:
         """Convert dtype string to torch dtype."""
         return torch.float64 if self.dtype == "float64" else torch.float32
-
-    @property
-    def clone_op(self) -> CloneOperator:
-        """Create clone operator from cloning params."""
-        return CloneOperator(
-            p_max=self.cloning.p_max,
-            epsilon_clone=self.cloning.epsilon_clone,
-            sigma_x=self.cloning.sigma_x,
-            alpha_restitution=self.cloning.alpha_restitution,
-        )
 
     def initialize_state(
         self, x_init: Tensor | None = None, v_init: Tensor | None = None
@@ -274,7 +218,7 @@ class EuclideanGas(BaseModel):
         reference_state = state.clone() if freeze_mask is not None else None
 
         # Step 1: Compute rewards from potential
-        rewards = -self.potential.evaluate(state.x)  # [N]
+        rewards = -self.potential(state.x)  # [N]
 
         # Step 2: Determine alive status from bounds
         if self.bounds is not None:
@@ -312,7 +256,7 @@ class EuclideanGas(BaseModel):
                 v=state.v,
                 alive_mask=alive_mask,
             )
-            x_cloned, v_cloned, _other_cloned, clone_info = self.clone_op(
+            x_cloned, v_cloned, _other_cloned, clone_info = self.cloning(
                 positions=state.x,
                 velocities=state.v,
                 fitness=fitness,

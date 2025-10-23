@@ -16,11 +16,12 @@ import torch
 
 from fragile.bounds import TorchBounds
 from fragile.core.benchmarks import BENCHMARK_NAMES, prepare_benchmark_for_explorer
+from fragile.core.cloning import CloneOperator
 from fragile.core.companion_selection import CompanionSelection
-from fragile.core.euclidean_gas import CloningParams, EuclideanGas, PotentialParams
-from fragile.core.fitness import FitnessOperator, FitnessParams
+from fragile.core.euclidean_gas import EuclideanGas
+from fragile.core.fitness import FitnessOperator
 from fragile.core.history import RunHistory
-from fragile.core.kinetic_operator import KineticOperator, LangevinParams
+from fragile.core.kinetic_operator import KineticOperator
 
 
 __all__ = ["GasConfig"]
@@ -64,6 +65,8 @@ class GasConfig(param.Parameterized):
     epsilon_Sigma = param.Number(default=0.1, bounds=(0.0, 1.0), doc="Hessian regularisation ε_Σ")
     use_anisotropic_diffusion = param.Boolean(default=False, doc="Enable anisotropic diffusion")
     diagonal_diffusion = param.Boolean(default=True, doc="Use diagonal diffusion tensor")
+    V_alg = param.Number(default=10.0, bounds=(0.1, 100.0), doc="Algorithmic velocity bound V_alg")
+    use_velocity_squashing = param.Boolean(default=False, doc="Enable velocity squashing map ψ_v")
 
     # Cloning parameters
     sigma_x = param.Number(default=0.15, bounds=(0.01, 1.0), doc="Cloning jitter σ_x")
@@ -114,23 +117,9 @@ class GasConfig(param.Parameterized):
         # Create or use provided potential
         if potential is None:
             self._update_benchmark()
-        # Wrap provided potential if it's not already a PotentialParams
-        elif isinstance(potential, PotentialParams):
-            self.potential = potential
         else:
-            # Wrap benchmark in PotentialParams for compatibility
-            class BenchmarkPotential(PotentialParams):
-                """Wrapper to make benchmark compatible with EuclideanGas."""
-
-                benchmark_obj: object
-
-                model_config = {"arbitrary_types_allowed": True}
-
-                def evaluate(self, x: torch.Tensor) -> torch.Tensor:
-                    """Evaluate potential U(x)."""
-                    return self.benchmark_obj(x)
-
-            self.potential = BenchmarkPotential(benchmark_obj=potential)
+            # Store provided potential directly (should be callable)
+            self.potential = potential
 
         # Watch for benchmark parameter changes
         self.param.watch(
@@ -161,6 +150,7 @@ class GasConfig(param.Parameterized):
 
         # Callbacks for external listeners
         self._on_simulation_complete: list[Callable[[RunHistory], None]] = []
+        self._on_benchmark_updated: list[Callable[[object, object, object], None]] = []
 
     def add_completion_callback(self, callback: Callable[[RunHistory], None]):
         """Register a callback to be called when simulation completes.
@@ -169,6 +159,14 @@ class GasConfig(param.Parameterized):
             callback: Function that takes RunHistory as argument
         """
         self._on_simulation_complete.append(callback)
+
+    def add_benchmark_callback(self, callback: Callable[[object, object, object], None]):
+        """Register a callback to be called when benchmark updates.
+
+        Args:
+            callback: Function that takes (potential, background, mode_points) as arguments
+        """
+        self._on_benchmark_updated.append(callback)
 
     def _update_benchmark(self):
         """Create benchmark from current benchmark parameters."""
@@ -182,32 +180,28 @@ class GasConfig(param.Parameterized):
         elif self.benchmark_name == "Lennard-Jones":
             benchmark_kwargs["n_atoms"] = self.n_atoms
 
-        # Create benchmark (we only need the potential, not background/mode_points)
-        benchmark, _, _ = prepare_benchmark_for_explorer(
+        # Create benchmark with background and mode_points
+        benchmark, background, mode_points = prepare_benchmark_for_explorer(
             benchmark_name=self.benchmark_name,
             dims=self.dims,
             bounds_range=bounds_range,
+            resolution=100,  # Default resolution for background
             **benchmark_kwargs,
         )
 
-        # Wrap benchmark in PotentialParams for compatibility with EuclideanGas
-        class BenchmarkPotential(PotentialParams):
-            """Wrapper to make benchmark compatible with EuclideanGas."""
-
-            benchmark_obj: object
-
-            model_config = {"arbitrary_types_allowed": True}
-
-            def evaluate(self, x: torch.Tensor) -> torch.Tensor:
-                """Evaluate potential U(x)."""
-                return self.benchmark_obj(x)
-
-        self.potential = BenchmarkPotential(benchmark_obj=benchmark)
+        # Store all benchmark components
+        self.potential = benchmark
+        self.background = background
+        self.mode_points = mode_points
 
     def _on_benchmark_change(self, *_):
         """Handle benchmark parameter changes."""
         self._update_benchmark()
         self.status_pane.object = f"**Benchmark updated:** {self.benchmark_name}"
+
+        # Notify listeners with updated benchmark components
+        for callback in self._on_benchmark_updated:
+            callback(self.potential, self.background, self.mode_points)
 
     def _on_run_clicked(self, *_):
         """Handle Run button click."""
@@ -215,16 +209,13 @@ class GasConfig(param.Parameterized):
         self.run_button.disabled = True
 
         try:
-            self.history = self.run_simulation()
+            # run_simulation() now handles history storage and callbacks
+            self.run_simulation()
             self.status_pane.object = (
                 f"**Simulation complete!** "
                 f"{self.history.n_steps} steps, "
                 f"{self.history.n_recorded} recorded timesteps"
             )
-
-            # Notify listeners
-            for callback in self._on_simulation_complete:
-                callback(self.history)
 
         except Exception as e:
             self.status_pane.object = f"**Error:** {e!s}"
@@ -253,8 +244,16 @@ class GasConfig(param.Parameterized):
             lambda_alg=float(self.lambda_alg),
         )
 
-        # Create Langevin parameters
-        langevin_params = LangevinParams(
+        # Create CloneOperator
+        clone_op = CloneOperator(
+            sigma_x=float(self.sigma_x),
+            alpha_restitution=float(self.alpha_restitution),
+            p_max=float(self.p_max),
+            epsilon_clone=float(self.epsilon_clone),
+        )
+
+        # Create KineticOperator
+        kinetic_op = KineticOperator(
             gamma=float(self.gamma),
             beta=float(self.beta),
             delta_t=float(self.delta_t),
@@ -265,42 +264,15 @@ class GasConfig(param.Parameterized):
             epsilon_Sigma=float(self.epsilon_Sigma),
             use_anisotropic_diffusion=bool(self.use_anisotropic_diffusion),
             diagonal_diffusion=bool(self.diagonal_diffusion),
-        )
-
-        # Create cloning parameters
-        cloning_params = CloningParams(
-            sigma_x=float(self.sigma_x),
-            lambda_alg=float(self.lambda_alg),
-            alpha_restitution=float(self.alpha_restitution),
-            alpha=float(self.alpha_fit),
-            beta=float(self.beta_fit),
-            eta=float(self.eta),
-            A=float(self.A),
-            sigma_min=float(self.sigma_min),
-            p_max=float(self.p_max),
-            epsilon_clone=float(self.epsilon_clone),
-            companion_selection=companion_selection,
-        )
-
-        # Create KineticOperator
-        kinetic_op = KineticOperator(
-            gamma=langevin_params.gamma,
-            beta=langevin_params.beta,
-            delta_t=langevin_params.delta_t,
-            integrator=langevin_params.integrator,
-            epsilon_F=langevin_params.epsilon_F,
-            use_fitness_force=langevin_params.use_fitness_force,
-            use_potential_force=langevin_params.use_potential_force,
-            epsilon_Sigma=langevin_params.epsilon_Sigma,
-            use_anisotropic_diffusion=langevin_params.use_anisotropic_diffusion,
-            diagonal_diffusion=langevin_params.diagonal_diffusion,
+            V_alg=float(self.V_alg),
+            use_velocity_squashing=bool(self.use_velocity_squashing),
             potential=self.potential,
             device=torch.device("cpu"),
             dtype=torch.float32,
         )
 
-        # Create FitnessOperator
-        fitness_params = FitnessParams(
+        # Create FitnessOperator with parameters directly
+        fitness_op = FitnessOperator(
             alpha=float(self.alpha_fit),
             beta=float(self.beta_fit),
             eta=float(self.eta),
@@ -308,19 +280,20 @@ class GasConfig(param.Parameterized):
             sigma_min=float(self.sigma_min),
             A=float(self.A),
         )
-        fitness_op = FitnessOperator(
-            params=fitness_params,
-            companion_selection=companion_selection,
-        )
+
+        # Store operators for visualizer
+        self.companion_selection = companion_selection
+        self.clone_op = clone_op
+        self.fitness_op = fitness_op
 
         # Create EuclideanGas
-        gas = EuclideanGas(
+        self.gas = EuclideanGas(
             N=int(self.N),
             d=self.dims,
             companion_selection=companion_selection,
             potential=self.potential,
             kinetic_op=kinetic_op,
-            cloning=cloning_params,
+            cloning=clone_op,
             fitness_op=fitness_op,
             bounds=bounds,
             device=torch.device("cpu"),
@@ -336,7 +309,14 @@ class GasConfig(param.Parameterized):
         v_init = torch.randn(self.N, self.dims) * float(self.init_velocity_scale)
 
         # Run simulation
-        return gas.run(self.n_steps, x_init=x_init, v_init=v_init)
+        history = self.gas.run(self.n_steps, x_init=x_init, v_init=v_init)
+
+        # Store history and notify listeners
+        self.history = history
+        for callback in self._on_simulation_complete:
+            callback(self.history)
+
+        return history
 
     def _build_param_panel(self, names: Iterable[str]) -> pn.Param:
         """Build parameter panel with custom widgets."""
@@ -404,6 +384,8 @@ class GasConfig(param.Parameterized):
             "epsilon_Sigma",
             "use_anisotropic_diffusion",
             "diagonal_diffusion",
+            "V_alg",
+            "use_velocity_squashing",
         )
         cloning_params = (
             "sigma_x",

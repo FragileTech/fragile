@@ -4,50 +4,11 @@ from torch import Tensor
 
 
 try:
-    from torch.func import hessian, jacfwd, jacrev, vmap
+    from torch.func import hessian, jacrev, vmap
 
     TORCH_FUNC_AVAILABLE = True
 except ImportError:
     TORCH_FUNC_AVAILABLE = False
-
-from fragile.core.companion_selection import CompanionSelection
-
-
-class FitnessParams(BaseModel):
-    """Parameters for fitness potential computation.
-
-    Mathematical notation from Definition def-fitness-potential-operator in 03_cloning.md:
-    - α (alpha): Reward channel exponent (default: 1.0)
-    - β (beta): Diversity channel exponent (default: 1.0)
-    - η (eta): Positivity floor parameter (default: 0.1)
-    - λ_alg (lambda_alg): Velocity weight in algorithmic distance (default: 0.0)
-    - σ_min (sigma_min): Regularization for patched standardization (default: 1e-8)
-    - ε_dist (epsilon_dist): Regularization for distance smoothness (default: 1e-8)
-    - A: Upper bound for logistic rescale (default: 2.0)
-
-    Reference: Chapter 5, Section 5.6 in 03_cloning.md
-    """
-
-    model_config = {"arbitrary_types_allowed": True}
-
-    alpha: float = Field(default=1.0, gt=0, description="Reward channel exponent (α)")
-    beta: float = Field(default=1.0, gt=0, description="Diversity channel exponent (β)")
-    eta: float = Field(default=0.1, gt=0, description="Positivity floor parameter (η)")
-    lambda_alg: float = Field(
-        default=0.0, ge=0, description="Velocity weight in algorithmic distance (λ_alg)"
-    )
-    sigma_min: float = Field(
-        default=1e-8, gt=0, description="Regularization for patched standardization (σ_min)"
-    )
-    epsilon_dist: float = Field(
-        default=1e-8,
-        gt=0,
-        description=(
-            "Distance regularization for smoothness: "
-            "d = sqrt(||Δx||² + ε²) ensures C^∞ differentiability"
-        ),
-    )
-    A: float = Field(default=2.0, gt=0, description="Upper bound for logistic rescale")
 
 
 def logistic_rescale(z: Tensor, A: float = 1.0) -> Tensor:
@@ -68,10 +29,125 @@ def logistic_rescale(z: Tensor, A: float = 1.0) -> Tensor:
     return A / (1.0 + torch.exp(-z))
 
 
+def compute_localization_weights(
+    positions: Tensor,
+    velocities: Tensor,
+    alive: Tensor,
+    rho: float,
+    lambda_alg: float = 0.0,
+) -> Tensor:
+    """Compute ρ-localized weights K_ρ(i,j) for statistical neighborhoods.
+
+    Implements the localization kernel from Definition def-localized-mean-field-moments
+    in 13_fractal_set_new/01_fractal_set.md:
+
+        K_ρ(i,j) = exp(-d_alg²(i,j) / (2ρ²))
+
+    where d_alg²(i,j) = ||x_i - x_j||² + λ_alg ||v_i - v_j||² is the algorithmic
+    distance in phase space.
+
+    The weights define a ρ-neighborhood around each walker i, with contributions
+    from walker j decaying exponentially with algorithmic distance. Dead walkers
+    are excluded (weight = 0).
+
+    Args:
+        positions: Walker positions [N, d]
+        velocities: Walker velocities [N, d]
+        alive: Boolean mask [N], True for alive walkers
+        rho: Localization scale parameter (controls neighborhood size)
+        lambda_alg: Velocity weight in algorithmic distance (default: 0.0)
+
+    Returns:
+        weights: Tensor [N, N] where weights[i,j] = K_ρ(i,j) * alive[j]
+                 Dead walkers have weights[i, j] = 0 for all i
+
+    Note:
+        - For small ρ: local regime (few neighbors contribute)
+        - For large ρ: mean-field regime (many neighbors contribute)
+        - ρ → ∞ recovers uniform weights (global statistics)
+        - Fully differentiable for gradient-based methods
+    """
+    # Compute pairwise algorithmic distances [N, N]
+    # d_alg²(i,j) = ||x_i - x_j||² + λ_alg ||v_i - v_j||²
+    dx = positions.unsqueeze(1) - positions.unsqueeze(0)  # [N, N, d]
+    dv = velocities.unsqueeze(1) - velocities.unsqueeze(0)  # [N, N, d]
+
+    d_alg_sq = (dx**2).sum(dim=-1) + lambda_alg * (dv**2).sum(dim=-1)  # [N, N]
+
+    # Localization kernel: K_ρ(i,j) = exp(-d_alg²/(2ρ²))
+    K_rho = torch.exp(-d_alg_sq / (2 * rho**2))  # [N, N]
+
+    # Mask dead walkers: only alive walkers contribute to statistics
+    # Both source and target must be alive for nonzero weight
+    alive_mask_2d = alive.unsqueeze(1).float() * alive.unsqueeze(0).float()  # [N, N]
+    # Use multiplication instead of *= to avoid in-place operation (preserves gradients)
+    return K_rho * alive_mask_2d
+
+
+def localized_statistics(
+    values: Tensor,
+    weights: Tensor,
+    sigma_min: float = 1e-8,
+) -> tuple[Tensor, Tensor]:
+    """Compute ρ-localized mean and standard deviation for each walker.
+
+    Implements ρ-localized statistics from Definition def-localized-mean-field-moments
+    in 13_fractal_set_new/01_fractal_set.md:
+
+        μ_ρ(i) = Σ_j K_ρ(i,j) v_j / Σ_j K_ρ(i,j)
+        σ²_ρ(i) = Σ_j K_ρ(i,j) (v_j - μ_ρ(i))² / Σ_j K_ρ(i,j)
+
+    where K_ρ(i,j) are the localization weights computed by compute_localization_weights().
+
+    Each walker i has its own local mean μ_ρ(i) and local std σ_ρ(i) computed from
+    its ρ-neighborhood, making the statistics local fields rather than global constants.
+
+    Args:
+        values: Tensor [N] containing measurement values for all walkers
+        weights: Localization weights [N, N] from compute_localization_weights()
+        sigma_min: Regularization constant ensuring σ'_ρ(i) ≥ σ_min > 0
+
+    Returns:
+        mu_rho: Local means [N], where mu_rho[i] = μ_ρ(i)
+        sigma_rho: Regularized local stds [N], where sigma_rho[i] = √(σ²_ρ(i) + σ²_min)
+
+    Note:
+        - Uses regularized std: σ'_ρ(i) = √(σ²_ρ(i) + σ²_min) for stability
+        - Fully differentiable for gradient-based methods
+        - If all weights for walker i are zero (isolated dead walker), returns
+          mu_rho[i] = 0, sigma_rho[i] = sigma_min
+    """
+    # Normalize weights for each walker
+    # weight_sum[i] = Σ_j K_ρ(i,j) (total weight from all neighbors)
+    weight_sum = weights.sum(dim=1, keepdim=True)  # [N, 1]
+
+    # Handle edge case: walker with no alive neighbors (avoid division by zero)
+    weight_sum_safe = torch.clamp(weight_sum, min=1e-10)
+
+    # Normalized weights: w_ij = K_ρ(i,j) / Σ_k K_ρ(i,k)
+    weights_norm = weights / weight_sum_safe  # [N, N]
+
+    # Local mean: μ_ρ(i) = Σ_j w_ij v_j
+    mu_rho = torch.matmul(weights_norm, values)  # [N]
+
+    # Local variance: σ²_ρ(i) = Σ_j w_ij (v_j - μ_ρ(i))²
+    # Broadcasting: values[j] - mu_rho[i] for all pairs (i,j)
+    centered = values.unsqueeze(0) - mu_rho.unsqueeze(1)  # [N, N]
+    sigma_sq_rho = torch.sum(weights_norm * centered**2, dim=1)  # [N]
+
+    # Regularized std: σ'_ρ(i) = √(σ²_ρ(i) + σ²_min)
+    sigma_rho = torch.sqrt(sigma_sq_rho + sigma_min**2)  # [N]
+
+    return mu_rho, sigma_rho
+
+
 def patched_standardization(
     values: Tensor,
     alive: Tensor,
+    positions: Tensor | None = None,
+    velocities: Tensor | None = None,
     rho: float | None = None,
+    lambda_alg: float = 0.0,
     sigma_min: float = 1e-8,
     return_statistics: bool = False,
 ) -> Tensor | tuple[Tensor, Tensor, Tensor]:
@@ -80,74 +156,126 @@ def patched_standardization(
     Implements the patched standardization Z_ρ[f, d, x] where statistics (mean, std)
     are computed only over alive walkers to prevent contamination from dead walkers.
 
-    For the global case (rho=None), computes:
-        Z[f, d, x_i] = (d(x_i) - μ[d|alive]) / σ'[d|alive]
+    **Two regimes:**
 
-    where μ and σ are computed using only alive walkers, and σ' includes regularization:
-        σ'[d|alive] = sqrt(σ²[d|alive] + σ²_min)
+    1. **Mean-field regime** (rho=None, default):
+       Computes global statistics over all alive walkers:
+           Z[f, d, x_i] = (v_i - μ[v|alive]) / σ'[v|alive]
+       where μ and σ are global constants computed from all alive walkers.
+       Computational cost: O(N) - efficient for large swarms.
 
-    Reference: Definition def-unified-z-score in 11_geometric_gas.md
+    2. **Local regime** (rho is finite):
+       Computes ρ-localized statistics for each walker:
+           Z_ρ[f, d, x_i] = (v_i - μ_ρ(i)) / σ'_ρ(i)
+       where μ_ρ(i), σ_ρ(i) are computed from the ρ-neighborhood of walker i
+       using localization kernel K_ρ(i,j) = exp(-d_alg²(i,j)/(2ρ²)).
+       Computational cost: O(N²) - accurate for local gauge theory.
 
-    **Differentiability**: This implementation uses masked element-wise operations instead
-    of boolean indexing to preserve second-order gradients for Hessian computation.
+    Reference: Definition def-unified-z-score and def-localized-mean-field-moments
+    in 13_fractal_set_new/01_fractal_set.md
+
+    **Differentiability**: Uses masked element-wise operations instead of boolean
+    indexing to preserve second-order gradients for Hessian computation.
 
     Args:
-        values: Tensor of shape [N] containing measurement values for all walkers
-        alive: Boolean tensor of shape [N], True for alive walkers
-        rho: Localization scale parameter (not yet implemented for finite rho)
+        values: Tensor [N] containing measurement values for all walkers
+        alive: Boolean tensor [N], True for alive walkers
+        positions: Walker positions [N, d], required if rho is not None
+        velocities: Walker velocities [N, d], required if rho is not None
+        rho: Localization scale parameter. If None, uses global statistics (mean-field).
+             If finite, uses ρ-localized statistics (local regime).
+        lambda_alg: Velocity weight in algorithmic distance (default: 0.0, position-only)
         sigma_min: Regularization constant ensuring σ' ≥ σ_min > 0
-        return_statistics: If True, return (z_scores, mu, sigma) tuple instead of
-            just z_scores
+        return_statistics: If True, return (z_scores, mu, sigma) tuple.
+            For mean-field: mu is scalar, sigma is scalar
+            For local: mu is [N], sigma is [N]
 
     Returns:
-        If return_statistics=False: Z-scores tensor of shape [N]. Dead walkers
-            receive Z-score of 0.0.
-        If return_statistics=True: Tuple of (z_scores [N], mu [scalar], sigma [scalar])
-            where mu is the mean over alive walkers and sigma is the regularized std.
+        If return_statistics=False:
+            Z-scores tensor [N]. Dead walkers receive Z-score of 0.0.
+        If return_statistics=True:
+            - Mean-field regime: (z_scores [N], mu [scalar], sigma [scalar])
+            - Local regime: (z_scores [N], mu [N], sigma [N])
+
+    Raises:
+        ValueError: If rho is not None but positions or velocities are None
 
     Note:
-        Current implementation is for the global case (rho → ∞). For finite rho,
-        localization kernel K_ρ(x_i, x_j) would weight contributions from nearby
-        alive walkers. See def-localized-mean-field-moments in 11_geometric_gas.md.
+        For small ρ (local regime): statistics become local fields, enabling local
+        gauge theory interpretation.
+        For large ρ or rho=None (mean-field): statistics are global, giving mean-field
+        interpretation.
     """
-    if rho is not None:
-        msg = "Localized standardization (finite rho) not yet implemented"
-        raise NotImplementedError(msg)
+    # Branch 1: MEAN-FIELD REGIME (rho=None) - Global statistics, O(N) cost
+    if rho is None:
+        # Convert boolean mask to float for differentiable operations
+        # This preserves gradients where boolean indexing would break them
+        alive_mask = alive.float()  # [N], 1.0 for alive, 0.0 for dead
 
-    # Convert boolean mask to float for differentiable operations
-    # This preserves gradients where boolean indexing would break them
-    alive_mask = alive.float()  # [N], 1.0 for alive, 0.0 for dead
+        # Count alive walkers
+        n_alive = alive_mask.sum()
 
-    # Count alive walkers
-    n_alive = alive_mask.sum()
+        # Handle edge case: no alive walkers (avoiding if statement for vmap compatibility)
+        # Clamp to avoid division by zero (if all dead, we'll get NaN which will be masked later)
+        n_alive_safe = torch.clamp(n_alive, min=1.0)
 
-    # Handle edge case: no alive walkers (avoiding if statement for vmap compatibility)
-    # Clamp to avoid division by zero (if all dead, we'll get NaN which will be masked later)
-    n_alive_safe = torch.clamp(n_alive, min=1.0)
+        # Compute masked mean over alive walkers
+        # μ[alive] = Σ(values_i * mask_i) / Σ(mask_i)
+        # Mathematically equivalent to values[alive].mean() but preserves gradients
+        mu = (values * alive_mask).sum() / n_alive_safe
 
-    # Compute masked mean over alive walkers
-    # μ[alive] = Σ(values_i * mask_i) / Σ(mask_i)
-    # Mathematically equivalent to values[alive].mean() but preserves gradients
-    mu = (values * alive_mask).sum() / n_alive_safe
+        # Compute masked variance over alive walkers
+        # σ²[alive] = Σ((values_i - μ)² * mask_i) / Σ(mask_i)
+        # Mathematically equivalent to values[alive].var() but preserves gradients
+        centered = values - mu
+        sigma_sq = ((centered**2) * alive_mask).sum() / n_alive_safe
 
-    # Compute masked variance over alive walkers
-    # σ²[alive] = Σ((values_i - μ)² * mask_i) / Σ(mask_i)
-    # Mathematically equivalent to values[alive].var() but preserves gradients
-    centered = values - mu
-    sigma_sq = ((centered**2) * alive_mask).sum() / n_alive_safe
+        # Regularized standard deviation: σ'[d|alive] = sqrt(σ²[d|alive] + σ²_min)
+        sigma_reg = torch.sqrt(sigma_sq + sigma_min**2)
 
-    # Regularized standard deviation: σ'[d|alive] = sqrt(σ²[d|alive] + σ²_min)
-    sigma_reg = torch.sqrt(sigma_sq + sigma_min**2)
+        # Compute Z-scores for all walkers
+        z_scores = centered / sigma_reg
 
-    # Compute Z-scores for all walkers
-    z_scores = centered / sigma_reg
+        # Mask dead walkers (set to 0.0)
+        # Using multiplication instead of torch.where to preserve gradients
+        z_scores_masked = z_scores * alive_mask
+
+        if return_statistics:
+            return z_scores_masked, mu, sigma_reg
+        return z_scores_masked
+
+    # Branch 2: LOCAL REGIME (finite rho) - ρ-localized statistics, O(N²) cost
+    # Validate required arguments
+    if positions is None or velocities is None:
+        msg = (
+            "positions and velocities are required for localized standardization (rho is not None)"
+        )
+        raise ValueError(msg)
+
+    # Compute localization weights K_ρ(i,j) for all pairs
+    weights = compute_localization_weights(
+        positions=positions,
+        velocities=velocities,
+        alive=alive,
+        rho=rho,
+        lambda_alg=lambda_alg,
+    )  # [N, N]
+
+    # Compute ρ-localized statistics for each walker
+    mu_rho, sigma_rho = localized_statistics(
+        values=values, weights=weights, sigma_min=sigma_min
+    )  # [N], [N]
+
+    # Compute Z-scores using LOCAL statistics
+    # Z_ρ[f, d, x_i] = (v_i - μ_ρ(i)) / σ'_ρ(i)
+    z_scores = (values - mu_rho) / sigma_rho  # [N]
 
     # Mask dead walkers (set to 0.0)
-    # Using multiplication instead of torch.where to preserve gradients
+    alive_mask = alive.float()
     z_scores_masked = z_scores * alive_mask
 
     if return_statistics:
-        return z_scores_masked, mu, sigma_reg
+        return z_scores_masked, mu_rho, sigma_rho
     return z_scores_masked
 
 
@@ -164,6 +292,7 @@ def compute_fitness(
     sigma_min: float = 1e-8,
     A: float = 2.0,
     epsilon_dist: float = 1e-8,
+    rho: float | None = None,
 ) -> tuple[Tensor, dict[str, Tensor]]:
     """Compute fitness potential using the Euclidean Gas measurement pipeline.
 
@@ -177,6 +306,15 @@ def compute_fitness(
     5. Apply logistic rescale: g_A(z) = A / (1 + exp(-z))
     6. Add positivity floor η
     7. Combine channels: V_i = (d'_i)^β · (r'_i)^α
+
+    **Two regimes based on rho parameter:**
+
+    - **Mean-field** (rho=None): Uses global statistics μ, σ computed over all alive walkers.
+      Computational cost: O(N). Suitable for large swarms and mean-field physics.
+
+    - **Local** (finite rho): Uses ρ-localized statistics μ_ρ(i), σ_ρ(i) computed from
+      each walker's ρ-neighborhood. Computational cost: O(N²). Enables local gauge
+      theory interpretation.
 
     Reference: Chapter 5, Section 5.6 in 03_cloning.md
 
@@ -193,6 +331,8 @@ def compute_fitness(
         sigma_min: Regularization for patched standardization (default: 1e-8)
         A: Upper bound for logistic rescale (default: 2.0)
         epsilon_dist: Distance regularization for C^∞ smoothness (default: 1e-8)
+        rho: Localization scale parameter (default: None for mean-field).
+             If finite, enables ρ-localized statistics for local regime.
 
     Returns:
         fitness: Fitness potential vector [N], zero for dead walkers
@@ -226,11 +366,26 @@ def compute_fitness(
 
     # Step 3-4: Patched standardization for both channels (only alive walkers)
     # Get statistics for localized mean-field analysis
+    # Pass positions/velocities for localized regime (rho not None)
     z_rewards, mu_rewards, sigma_rewards = patched_standardization(
-        rewards, alive, rho=None, sigma_min=sigma_min, return_statistics=True
+        values=rewards,
+        alive=alive,
+        positions=positions,
+        velocities=velocities,
+        rho=rho,
+        lambda_alg=lambda_alg,
+        sigma_min=sigma_min,
+        return_statistics=True,
     )
     z_distances, mu_distances, sigma_distances = patched_standardization(
-        distances, alive, rho=None, sigma_min=sigma_min, return_statistics=True
+        values=distances,
+        alive=alive,
+        positions=positions,
+        velocities=velocities,
+        rho=rho,
+        lambda_alg=lambda_alg,
+        sigma_min=sigma_min,
+        return_statistics=True,
     )
 
     # Step 5-6: Logistic rescale + positivity floor
@@ -263,7 +418,7 @@ def compute_fitness(
     return fitness, info
 
 
-class FitnessOperator:
+class FitnessOperator(BaseModel):
     """Fitness operator with automatic differentiation for Langevin dynamics.
 
     This class provides:
@@ -273,6 +428,15 @@ class FitnessOperator:
 
     The fitness potential is computed using the Euclidean Gas measurement pipeline
     from Definition def-fitness-potential-operator in 03_cloning.md.
+
+    Mathematical notation from Definition def-fitness-potential-operator in 03_cloning.md:
+    - α (alpha): Reward channel exponent (default: 1.0)
+    - β (beta): Diversity channel exponent (default: 1.0)
+    - η (eta): Positivity floor parameter (default: 0.1)
+    - λ_alg (lambda_alg): Velocity weight in algorithmic distance (default: 0.0)
+    - σ_min (sigma_min): Regularization for patched standardization (default: 1e-8)
+    - ε_dist (epsilon_dist): Regularization for distance smoothness (default: 1e-8)
+    - A: Upper bound for logistic rescale (default: 2.0)
 
     Reference: Chapter 5, Section 5.6 in 03_cloning.md
 
@@ -300,25 +464,40 @@ class FitnessOperator:
         Derivatives are computed w.r.t. positions x, treating companions as fixed.
         This gives the "instantaneous force" for the current companion assignment.
         For mean-field forces, expectation over companions would be needed (future work).
+        Companion selection is handled externally (by EuclideanGas) - this operator
+        only computes fitness given pre-selected companions.
     """
 
-    def __init__(
-        self,
-        params: FitnessParams | None = None,
-        companion_selection: CompanionSelection | None = None,
-    ):
-        """Initialize fitness operator.
+    model_config = {"arbitrary_types_allowed": True}
 
-        Args:
-            params: Fitness parameters (uses defaults if None)
-            companion_selection: Companion selection strategy (uses uniform if None)
-        """
-        self.params = params if params is not None else FitnessParams()
-        self.companion_selection = (
-            companion_selection
-            if companion_selection is not None
-            else CompanionSelection(method="uniform")
-        )
+    # Fitness parameters
+    alpha: float = Field(default=1.0, gt=0, description="Reward channel exponent (α)")
+    beta: float = Field(default=1.0, gt=0, description="Diversity channel exponent (β)")
+    eta: float = Field(default=0.1, gt=0, description="Positivity floor parameter (η)")
+    lambda_alg: float = Field(
+        default=0.0, ge=0, description="Velocity weight in algorithmic distance (λ_alg)"
+    )
+    sigma_min: float = Field(
+        default=1e-8, gt=0, description="Regularization for patched standardization (σ_min)"
+    )
+    epsilon_dist: float = Field(
+        default=1e-8,
+        gt=0,
+        description=(
+            "Distance regularization for smoothness: "
+            "d = sqrt(||Δx||² + ε²) ensures C^∞ differentiability"
+        ),
+    )
+    A: float = Field(default=2.0, gt=0, description="Upper bound for logistic rescale")
+    rho: float | None = Field(
+        default=None,
+        description=(
+            "Localization scale parameter (ρ). "
+            "If None (default), uses global statistics (mean-field regime, O(N) cost). "
+            "If finite, uses ρ-localized statistics (local regime, O(N²) cost). "
+            "Small ρ enables local gauge theory interpretation."
+        ),
+    )
 
     def __call__(
         self,
@@ -326,7 +505,7 @@ class FitnessOperator:
         velocities: Tensor,
         rewards: Tensor,
         alive: Tensor,
-        companions: Tensor | None = None,
+        companions: Tensor,
     ) -> tuple[Tensor, dict[str, Tensor]]:
         """Compute fitness potential using the Euclidean Gas measurement pipeline.
 
@@ -337,7 +516,7 @@ class FitnessOperator:
             velocities: Walker velocities [N, d]
             rewards: Raw reward values [N]
             alive: Boolean mask [N], True for alive walkers
-            companions: Companion indices [N] (optional, will select if None)
+            companions: Companion indices [N] (required, selected by EuclideanGas)
 
         Returns:
             fitness: Fitness potential vector [N], zero for dead walkers
@@ -352,25 +531,20 @@ class FitnessOperator:
                 - "rescaled_rewards": Rescaled rewards r'_i [N]
                 - "rescaled_distances": Rescaled distances d'_i [N]
         """
-        # Select companions if not provided
-        if companions is None:
-            companions = self.companion_selection.select_companions(
-                positions, velocities, alive, self.params.lambda_alg
-            )
-
         return compute_fitness(
             positions=positions,
             velocities=velocities,
             rewards=rewards,
             alive=alive,
             companions=companions,
-            alpha=self.params.alpha,
-            beta=self.params.beta,
-            eta=self.params.eta,
-            lambda_alg=self.params.lambda_alg,
-            sigma_min=self.params.sigma_min,
-            A=self.params.A,
-            epsilon_dist=self.params.epsilon_dist,
+            alpha=self.alpha,
+            beta=self.beta,
+            eta=self.eta,
+            lambda_alg=self.lambda_alg,
+            sigma_min=self.sigma_min,
+            A=self.A,
+            epsilon_dist=self.epsilon_dist,
+            rho=self.rho,
         )
 
     def compute_gradient(
@@ -379,7 +553,7 @@ class FitnessOperator:
         velocities: Tensor,
         rewards: Tensor,
         alive: Tensor,
-        companions: Tensor | None = None,
+        companions: Tensor,
     ) -> Tensor:
         """Compute gradient ∂V/∂x for fitness-based force in Langevin dynamics.
 
@@ -394,7 +568,7 @@ class FitnessOperator:
             velocities: Walker velocities [N, d]
             rewards: Raw reward values [N]
             alive: Boolean mask [N], True for alive walkers
-            companions: Companion indices [N] (optional, will select if None)
+            companions: Companion indices [N] (required, selected by EuclideanGas)
 
         Returns:
             Gradient tensor [N, d] where grad[i] = ∂V/∂x_i
@@ -406,12 +580,6 @@ class FitnessOperator:
         # Enable gradient tracking on positions
         positions_grad = positions.clone().detach().requires_grad_(True)  # noqa: FBT003
 
-        # Select companions if not provided
-        if companions is None:
-            companions = self.companion_selection.select_companions(
-                positions_grad, velocities, alive, self.params.lambda_alg
-            )
-
         # Compute fitness
         fitness, _ = compute_fitness(
             positions=positions_grad,
@@ -419,13 +587,14 @@ class FitnessOperator:
             rewards=rewards,
             alive=alive,
             companions=companions,
-            alpha=self.params.alpha,
-            beta=self.params.beta,
-            eta=self.params.eta,
-            lambda_alg=self.params.lambda_alg,
-            sigma_min=self.params.sigma_min,
-            A=self.params.A,
-            epsilon_dist=self.params.epsilon_dist,
+            alpha=self.alpha,
+            beta=self.beta,
+            eta=self.eta,
+            lambda_alg=self.lambda_alg,
+            sigma_min=self.sigma_min,
+            A=self.A,
+            epsilon_dist=self.epsilon_dist,
+            rho=self.rho,
         )
 
         # Compute gradient: sum fitness to get scalar, then differentiate
@@ -445,7 +614,7 @@ class FitnessOperator:
         velocities: Tensor,
         rewards: Tensor,
         alive: Tensor,
-        companions: Tensor | None = None,
+        companions: Tensor,
         diagonal_only: bool = True,
     ) -> Tensor:
         """Compute Hessian ∂²V/∂x² for state-dependent diffusion tensor.
@@ -463,7 +632,7 @@ class FitnessOperator:
             velocities: Walker velocities [N, d]
             rewards: Raw reward values [N]
             alive: Boolean mask [N], True for alive walkers
-            companions: Companion indices [N] (optional, will select if None)
+            companions: Companion indices [N] (required, selected by EuclideanGas)
             diagonal_only: If True, return only diagonal elements [N, d].
                           If False, return full Hessian [N, d, d] (expensive!)
 
@@ -481,12 +650,6 @@ class FitnessOperator:
         # Enable gradient tracking on positions
         positions_grad = positions.clone().detach().requires_grad_(True)  # noqa: FBT003
 
-        # Select companions if not provided
-        if companions is None:
-            companions = self.companion_selection.select_companions(
-                positions_grad, velocities, alive, self.params.lambda_alg
-            )
-
         if diagonal_only:
             # Compute diagonal elements efficiently
             hessian_diag = torch.zeros_like(positions_grad)
@@ -498,12 +661,13 @@ class FitnessOperator:
                 rewards=rewards,
                 alive=alive,
                 companions=companions,
-                alpha=self.params.alpha,
-                beta=self.params.beta,
-                eta=self.params.eta,
-                lambda_alg=self.params.lambda_alg,
-                sigma_min=self.params.sigma_min,
-                A=self.params.A,
+                alpha=self.alpha,
+                beta=self.beta,
+                eta=self.eta,
+                lambda_alg=self.lambda_alg,
+                sigma_min=self.sigma_min,
+                A=self.A,
+                epsilon_dist=self.epsilon_dist,
             )
 
             # Compute gradient once (with create_graph=True for Hessian)
@@ -544,13 +708,14 @@ class FitnessOperator:
             rewards=rewards,
             alive=alive,
             companions=companions,
-            alpha=self.params.alpha,
-            beta=self.params.beta,
-            eta=self.params.eta,
-            lambda_alg=self.params.lambda_alg,
-            sigma_min=self.params.sigma_min,
-            A=self.params.A,
-            epsilon_dist=self.params.epsilon_dist,
+            alpha=self.alpha,
+            beta=self.beta,
+            eta=self.eta,
+            lambda_alg=self.lambda_alg,
+            sigma_min=self.sigma_min,
+            A=self.A,
+            epsilon_dist=self.epsilon_dist,
+            rho=self.rho,
         )
 
         # Compute gradient
@@ -600,7 +765,7 @@ class FitnessOperator:
         velocities: Tensor,
         rewards: Tensor,
         alive: Tensor,
-        companions: Tensor | None = None,
+        companions: Tensor,
     ) -> Tensor:
         """Compute gradient ∂V/∂x using torch.func.jacrev (fully vectorized, no loops).
 
@@ -616,7 +781,7 @@ class FitnessOperator:
             velocities: Walker velocities [N, d]
             rewards: Raw reward values [N]
             alive: Boolean mask [N], True for alive walkers
-            companions: Companion indices [N] (optional, will select if None)
+            companions: Companion indices [N] (required, selected by EuclideanGas)
 
         Returns:
             Gradient tensor [N, d] where grad[i] = ∂fitness_i/∂position_i
@@ -644,12 +809,14 @@ class FitnessOperator:
                 rewards=rewards,
                 alive=alive,
                 companions=companions,
-                alpha=self.params.alpha,
-                beta=self.params.beta,
-                eta=self.params.eta,
-                lambda_alg=self.params.lambda_alg,
-                sigma_min=self.params.sigma_min,
-                A=self.params.A,
+                alpha=self.alpha,
+                beta=self.beta,
+                eta=self.eta,
+                lambda_alg=self.lambda_alg,
+                sigma_min=self.sigma_min,
+                A=self.A,
+                epsilon_dist=self.epsilon_dist,
+                rho=self.rho,
             )
             return fitness.sum()
 
@@ -663,7 +830,7 @@ class FitnessOperator:
         velocities: Tensor,
         rewards: Tensor,
         alive: Tensor,
-        companions: Tensor | None = None,
+        companions: Tensor,
         diagonal_only: bool = True,
     ) -> Tensor:
         """Compute Hessian ∂²V/∂x² using torch.func.hessian (fully vectorized, no loops).
@@ -676,7 +843,7 @@ class FitnessOperator:
             velocities: Walker velocities [N, d]
             rewards: Raw reward values [N]
             alive: Boolean mask [N], True for alive walkers
-            companions: Companion indices [N] (optional, will select if None)
+            companions: Companion indices [N] (required, selected by EuclideanGas)
             diagonal_only: If True, return only diagonal elements [N, d].
                           If False, return full per-walker Hessian [N, d, d]
 
@@ -696,12 +863,6 @@ class FitnessOperator:
             msg = "torch.func not available. Use compute_hessian() or upgrade PyTorch >= 2.0"
             raise RuntimeError(msg)
 
-        # Select companions if not provided
-        if companions is None:
-            companions = self.companion_selection.select_companions(
-                positions, velocities, alive, self.params.lambda_alg
-            )
-
         N, _d = positions.shape
 
         # Define fitness function: positions -> scalar (sum of fitness)
@@ -714,12 +875,14 @@ class FitnessOperator:
                 rewards=rewards,
                 alive=alive,
                 companions=companions,
-                alpha=self.params.alpha,
-                beta=self.params.beta,
-                eta=self.params.eta,
-                lambda_alg=self.params.lambda_alg,
-                sigma_min=self.params.sigma_min,
-                A=self.params.A,
+                alpha=self.alpha,
+                beta=self.beta,
+                eta=self.eta,
+                lambda_alg=self.lambda_alg,
+                sigma_min=self.sigma_min,
+                A=self.A,
+                epsilon_dist=self.epsilon_dist,
+                rho=self.rho,
             )
             return fitness.sum()
 
@@ -748,7 +911,7 @@ class FitnessOperator:
         velocities: Tensor,
         rewards: Tensor,
         alive: Tensor,
-        companions: Tensor | None = None,
+        companions: Tensor,
         diagonal_only: bool = True,
     ) -> Tensor:
         """Compute Hessian ∂²V/∂x² using HVP (Hessian-Vector Products).
@@ -762,7 +925,7 @@ class FitnessOperator:
             velocities: Walker velocities [N, d]
             rewards: Raw reward values [N]
             alive: Boolean mask [N], True for alive walkers
-            companions: Companion indices [N] (optional, will select if None)
+            companions: Companion indices [N] (required, selected by EuclideanGas)
             diagonal_only: If True, return only diagonal elements [N, d].
                           If False, return full per-walker Hessian [N, d, d]
 
@@ -775,12 +938,6 @@ class FitnessOperator:
             - More efficient than compute_hessian_func for large N
             - Uses loops over walkers and dimensions (not fully vectorized)
         """
-        # Select companions if not provided
-        if companions is None:
-            companions = self.companion_selection.select_companions(
-                positions, velocities, alive, self.params.lambda_alg
-            )
-
         N, d = positions.shape
 
         # Define fitness sum function
@@ -792,12 +949,14 @@ class FitnessOperator:
                 rewards=rewards,
                 alive=alive,
                 companions=companions,
-                alpha=self.params.alpha,
-                beta=self.params.beta,
-                eta=self.params.eta,
-                lambda_alg=self.params.lambda_alg,
-                sigma_min=self.params.sigma_min,
-                A=self.params.A,
+                alpha=self.alpha,
+                beta=self.beta,
+                eta=self.eta,
+                lambda_alg=self.lambda_alg,
+                sigma_min=self.sigma_min,
+                A=self.A,
+                epsilon_dist=self.epsilon_dist,
+                rho=self.rho,
             )
             return fitness.sum()
 

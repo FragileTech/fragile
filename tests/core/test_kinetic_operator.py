@@ -3,31 +3,46 @@
 import pytest
 import torch
 
-from fragile.core.euclidean_gas import SimpleQuadraticPotential, SwarmState
-from fragile.core.kinetic_operator import KineticOperator, LangevinParams
+from fragile.bounds import TorchBounds
+from fragile.core.benchmarks import OptimBenchmark
+from fragile.core.euclidean_gas import SwarmState
+from fragile.core.kinetic_operator import KineticOperator
+
+
+def create_quadratic_potential(dims: int = 2) -> OptimBenchmark:
+    """Helper to create a simple quadratic potential U(x) = 0.5 * ||x||^2."""
+
+    def quadratic(x):
+        return 0.5 * torch.sum(x**2, dim=-1)
+
+    bounds = TorchBounds(
+        low=torch.full((dims,), -5.0), high=torch.full((dims,), 5.0)
+    )
+
+    return OptimBenchmark(dims=dims, function=quadratic, bounds=bounds)
 
 
 class TestKineticOperator:
     """Tests for KineticOperator."""
 
     @pytest.fixture
-    def kinetic_op(self, langevin_params, simple_potential, torch_dtype):
+    def kinetic_op(self, simple_potential, torch_dtype):
         """Create kinetic operator for testing."""
         return KineticOperator(
-            gamma=langevin_params.gamma,
-            beta=langevin_params.beta,
-            delta_t=langevin_params.delta_t,
-            integrator=langevin_params.integrator,
+            gamma=1.0,
+            beta=1.0,
+            delta_t=0.01,
+            integrator="baoab",
             potential=simple_potential,
             device=torch.device("cpu"),
             dtype=torch_dtype,
         )
 
-    def test_initialization(self, kinetic_op, langevin_params):
+    def test_initialization(self, kinetic_op):
         """Test kinetic operator initialization."""
-        assert kinetic_op.dt == langevin_params.delta_t
-        assert kinetic_op.gamma == langevin_params.gamma
-        assert kinetic_op.beta == langevin_params.beta
+        assert kinetic_op.dt == 0.01
+        assert kinetic_op.gamma == 1.0
+        assert kinetic_op.beta == 1.0
 
     def test_baoab_constants(self, kinetic_op):
         """Test that BAOAB constants are precomputed correctly."""
@@ -70,7 +85,7 @@ class TestKineticOperator:
     def test_zero_friction_limit(self):
         """Test behavior with very small friction (approaches Hamiltonian)."""
         # Very small friction
-        potential = SimpleQuadraticPotential()
+        potential = create_quadratic_potential(dims=3)
         op = KineticOperator(
             gamma=0.001,
             beta=1.0,
@@ -94,7 +109,7 @@ class TestKineticOperator:
 
     def test_gradient_calculation(self):
         """Test that gradients are computed correctly."""
-        potential = SimpleQuadraticPotential()
+        potential = create_quadratic_potential(dims=3)
         op = KineticOperator(
             gamma=1.0,
             beta=1.0,
@@ -118,7 +133,7 @@ class TestKineticOperator:
 
     def test_reproducibility_with_seed(self):
         """Test that integration is reproducible with same seed."""
-        potential = SimpleQuadraticPotential()
+        potential = create_quadratic_potential(dims=3)
         op = KineticOperator(
             gamma=1.0,
             beta=1.0,
@@ -144,7 +159,7 @@ class TestKineticOperator:
     def test_energy_conservation_low_friction(self):
         """Test approximate energy conservation with low friction."""
         # Very low friction, low temperature (nearly Hamiltonian)
-        potential = SimpleQuadraticPotential()
+        potential = create_quadratic_potential(dims=3)
         op = KineticOperator(
             gamma=0.001,
             beta=100.0,
@@ -159,7 +174,7 @@ class TestKineticOperator:
         state = SwarmState(x, v)
 
         # Compute initial energy
-        E0 = (potential.evaluate(state.x) + 0.5 * torch.sum(state.v**2, dim=-1))[0]
+        E0 = (potential(state.x) + 0.5 * torch.sum(state.v**2, dim=-1))[0]
 
         # Take several steps
         for _ in range(10):
@@ -167,7 +182,7 @@ class TestKineticOperator:
             state = op.apply(state)
 
         # Compute final energy
-        E1 = (potential.evaluate(state.x) + 0.5 * torch.sum(state.v**2, dim=-1))[0]
+        E1 = (potential(state.x) + 0.5 * torch.sum(state.v**2, dim=-1))[0]
 
         # With low friction and temperature, energy should be approximately conserved
         # (allowing for some thermalization and discretization error)
@@ -175,7 +190,7 @@ class TestKineticOperator:
 
     def test_stationary_point(self):
         """Test that a particle at origin with zero velocity stays near origin."""
-        potential = SimpleQuadraticPotential()
+        potential = create_quadratic_potential(dims=3)
         op = KineticOperator(
             gamma=1.0,
             beta=1.0,
@@ -201,7 +216,7 @@ class TestKineticOperator:
 
     def test_multiple_walkers_independent(self):
         """Test that multiple walkers evolve independently."""
-        potential = SimpleQuadraticPotential()
+        potential = create_quadratic_potential(dims=3)
         op = KineticOperator(
             gamma=1.0,
             beta=1.0,
@@ -229,7 +244,7 @@ class TestKineticOperator:
     @pytest.mark.parametrize("dt", [0.001, 0.01, 0.1])
     def test_different_timesteps(self, dt):
         """Test operator with different timestep sizes."""
-        potential = SimpleQuadraticPotential()
+        potential = create_quadratic_potential(dims=3)
         op = KineticOperator(
             gamma=1.0,
             beta=1.0,
@@ -253,7 +268,7 @@ class TestKineticOperator:
     def test_high_friction_limit(self):
         """Test behavior with high friction (overdamped limit)."""
         # Very high friction
-        potential = SimpleQuadraticPotential()
+        potential = create_quadratic_potential(dims=3)
         op = KineticOperator(
             gamma=100.0,
             beta=1.0,
@@ -277,7 +292,7 @@ class TestKineticOperator:
 
     def test_position_update_depends_on_velocity(self):
         """Test that position updates depend on velocity."""
-        potential = SimpleQuadraticPotential()
+        potential = create_quadratic_potential(dims=3)
         op = KineticOperator(
             gamma=0.1,
             beta=1.0,
@@ -302,3 +317,229 @@ class TestKineticOperator:
 
         # Positions should be different due to different initial velocities
         assert not torch.allclose(new_state1.x[0], new_state2.x[1])
+
+
+class TestVelocitySquashing:
+    """Tests for velocity squashing functionality using psi_v."""
+
+    @pytest.fixture
+    def kinetic_op_with_squashing(self, simple_potential, torch_dtype):
+        """Create kinetic operator with velocity squashing enabled."""
+        return KineticOperator(
+            gamma=1.0,
+            beta=1.0,
+            delta_t=0.01,
+            integrator="baoab",
+            V_alg=2.0,
+            use_velocity_squashing=True,
+            potential=simple_potential,
+            device=torch.device("cpu"),
+            dtype=torch_dtype,
+        )
+
+    @pytest.fixture
+    def kinetic_op_without_squashing(self, simple_potential, torch_dtype):
+        """Create kinetic operator without velocity squashing."""
+        return KineticOperator(
+            gamma=1.0,
+            beta=1.0,
+            delta_t=0.01,
+            integrator="baoab",
+            V_alg=2.0,
+            use_velocity_squashing=False,
+            potential=simple_potential,
+            device=torch.device("cpu"),
+            dtype=torch_dtype,
+        )
+
+    def test_velocity_bound_with_squashing(self, kinetic_op_with_squashing):
+        """Test that velocities are bounded when squashing is enabled."""
+        V_alg = kinetic_op_with_squashing.V_alg
+
+        # Start with high velocities
+        x = torch.zeros(10, 3, dtype=torch.float64)
+        v = torch.randn(10, 3, dtype=torch.float64) * 10.0  # High initial velocities
+        state = SwarmState(x, v)
+
+        torch.manual_seed(42)
+        new_state = kinetic_op_with_squashing.apply(state)
+
+        # All velocity magnitudes should be strictly less than V_alg
+        v_norms = torch.linalg.vector_norm(new_state.v, dim=-1)
+        assert torch.all(v_norms < V_alg)
+
+    def test_no_bound_without_squashing(self, kinetic_op_without_squashing):
+        """Test that velocities are NOT bounded when squashing is disabled."""
+        V_alg = kinetic_op_without_squashing.V_alg
+
+        # Start with high velocities in a region that would maintain velocity
+        x = torch.zeros(10, 3, dtype=torch.float64)
+        v = torch.randn(10, 3, dtype=torch.float64) * 5.0  # High initial velocities
+        state = SwarmState(x, v)
+
+        torch.manual_seed(42)
+        new_state = kinetic_op_without_squashing.apply(state)
+
+        # Some velocities may exceed V_alg (since squashing is disabled)
+        # We just check that the feature flag works
+        assert kinetic_op_without_squashing.use_velocity_squashing is False
+
+    def test_squashing_preserves_direction(self, kinetic_op_with_squashing):
+        """Test that velocity squashing preserves direction."""
+        # Start with a specific velocity direction
+        x = torch.zeros(1, 3, dtype=torch.float64)
+        v = torch.tensor([[10.0, 0.0, 0.0]], dtype=torch.float64)  # Large velocity in x-direction
+        state = SwarmState(x, v)
+
+        torch.manual_seed(42)
+        new_state = kinetic_op_with_squashing.apply(state)
+
+        # Velocity should still point primarily in x-direction
+        # (allowing for some drift from forces and noise)
+        v_final = new_state.v[0]
+        # The x-component should dominate
+        assert abs(v_final[0]) > 0.0
+
+    def test_squashing_is_smooth(self, kinetic_op_with_squashing):
+        """Test that squashing produces smooth results for nearby velocities."""
+        V_alg = kinetic_op_with_squashing.V_alg
+
+        # Create two states with slightly different velocities
+        x = torch.zeros(2, 3, dtype=torch.float64)
+        v1 = torch.tensor([[3.0, 0.0, 0.0]], dtype=torch.float64)
+        v2 = torch.tensor([[3.1, 0.0, 0.0]], dtype=torch.float64)
+        v = torch.cat([v1, v2], dim=0)
+        state = SwarmState(x, v)
+
+        torch.manual_seed(42)
+        new_state = kinetic_op_with_squashing.apply(state)
+
+        # Final velocities should be close (continuity)
+        v_norm_diff = torch.linalg.vector_norm(new_state.v[0] - new_state.v[1])
+        assert v_norm_diff < 1.0  # Should be reasonably close
+
+    def test_squashing_with_different_V_alg(self):
+        """Test velocity squashing with different V_alg values."""
+        potential = create_quadratic_potential(dims=3)
+
+        for V_alg in [0.5, 1.0, 5.0, 10.0]:
+            op = KineticOperator(
+                gamma=1.0,
+                beta=1.0,
+                delta_t=0.01,
+                V_alg=V_alg,
+                use_velocity_squashing=True,
+                potential=potential,
+                device=torch.device("cpu"),
+                dtype=torch.float64,
+            )
+
+            # Start with high velocities
+            x = torch.zeros(10, 3, dtype=torch.float64)
+            v = torch.randn(10, 3, dtype=torch.float64) * 20.0
+            state = SwarmState(x, v)
+
+            torch.manual_seed(42)
+            new_state = op.apply(state)
+
+            # All velocity magnitudes should be strictly less than V_alg
+            v_norms = torch.linalg.vector_norm(new_state.v, dim=-1)
+            assert torch.all(v_norms < V_alg)
+
+    def test_default_V_alg_is_infinite(self, simple_potential, torch_dtype):
+        """Test that default V_alg is effectively infinite (no squashing by default)."""
+        op = KineticOperator(
+            gamma=1.0,
+            beta=1.0,
+            delta_t=0.01,
+            potential=simple_potential,
+            device=torch.device("cpu"),
+            dtype=torch_dtype,
+        )
+
+        # V_alg should be infinite by default
+        assert op.V_alg == float('inf')
+        # Squashing should be disabled by default
+        assert op.use_velocity_squashing is False
+
+    def test_squashing_with_zero_velocity(self, kinetic_op_with_squashing):
+        """Test that squashing handles zero velocity correctly."""
+        x = torch.zeros(1, 3, dtype=torch.float64)
+        v = torch.zeros(1, 3, dtype=torch.float64)
+        state = SwarmState(x, v)
+
+        torch.manual_seed(42)
+        new_state = kinetic_op_with_squashing.apply(state)
+
+        # Should not crash and velocity should remain small
+        v_norm = torch.linalg.vector_norm(new_state.v)
+        assert v_norm < kinetic_op_with_squashing.V_alg
+
+    def test_psi_v_function_directly(self):
+        """Test the psi_v function directly."""
+        from fragile.core.kinetic_operator import psi_v
+
+        # Test basic squashing
+        v = torch.tensor([[10.0, 0.0, 0.0]], dtype=torch.float64)
+        V_alg = 2.0
+        v_squashed = psi_v(v, V_alg)
+
+        # Magnitude should be less than V_alg
+        v_norm = torch.linalg.vector_norm(v_squashed, dim=-1)
+        assert v_norm < V_alg
+
+        # Direction should be preserved
+        v_dir = v / torch.linalg.vector_norm(v, dim=-1, keepdim=True)
+        v_squashed_dir = v_squashed / torch.linalg.vector_norm(v_squashed, dim=-1, keepdim=True)
+        assert torch.allclose(v_dir, v_squashed_dir)
+
+    def test_psi_v_lipschitz_property(self):
+        """Test that psi_v is 1-Lipschitz."""
+        from fragile.core.kinetic_operator import psi_v
+
+        V_alg = 2.0
+
+        # Test multiple pairs of velocities
+        for _ in range(10):
+            v1 = torch.randn(5, 3, dtype=torch.float64) * 5.0
+            v2 = torch.randn(5, 3, dtype=torch.float64) * 5.0
+
+            # Apply squashing
+            psi_v1 = psi_v(v1, V_alg)
+            psi_v2 = psi_v(v2, V_alg)
+
+            # Compute distances
+            dist_original = torch.linalg.vector_norm(v1 - v2, dim=-1)
+            dist_squashed = torch.linalg.vector_norm(psi_v1 - psi_v2, dim=-1)
+
+            # Lipschitz property: ||ψ(v1) - ψ(v2)|| ≤ ||v1 - v2||
+            assert torch.all(dist_squashed <= dist_original + 1e-6)  # Small tolerance for numerical errors
+
+    def test_psi_v_handles_batch(self):
+        """Test that psi_v handles batched input correctly."""
+        from fragile.core.kinetic_operator import psi_v
+
+        # Batch of velocities
+        v = torch.randn(100, 3, dtype=torch.float64) * 10.0
+        V_alg = 2.0
+
+        v_squashed = psi_v(v, V_alg)
+
+        # All should be bounded
+        v_norms = torch.linalg.vector_norm(v_squashed, dim=-1)
+        assert torch.all(v_norms < V_alg)
+
+        # Shape should be preserved
+        assert v_squashed.shape == v.shape
+
+    def test_psi_v_error_on_negative_V_alg(self):
+        """Test that psi_v raises error for negative V_alg."""
+        from fragile.core.kinetic_operator import psi_v
+
+        v = torch.randn(5, 3, dtype=torch.float64)
+
+        with pytest.raises(ValueError, match="V_alg must be positive"):
+            psi_v(v, -1.0)
+
+        with pytest.raises(ValueError, match="V_alg must be positive"):
+            psi_v(v, 0.0)

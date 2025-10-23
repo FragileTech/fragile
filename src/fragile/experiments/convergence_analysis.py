@@ -15,28 +15,11 @@ from scipy.stats import gaussian_kde
 import torch
 
 from fragile.core.benchmarks import MixtureOfGaussians
-from fragile.core.euclidean_gas import PotentialParams
 
 
 if TYPE_CHECKING:
     from fragile.core.euclidean_gas import SwarmState
     from fragile.geometric_gas import GeometricGas
-
-
-class MixtureBasedPotential(PotentialParams):
-    """Potential derived from Mixture of Gaussians.
-
-    This wraps a MixtureOfGaussians benchmark as a potential function
-    for use with the Geometric Gas algorithm.
-    """
-
-    mixture: object  # MixtureOfGaussians instance
-
-    model_config = {"arbitrary_types_allowed": True}
-
-    def evaluate(self, x: torch.Tensor) -> torch.Tensor:
-        """Evaluate U(x) = negative log-likelihood of mixture."""
-        return self.mixture(x)
 
 
 def create_multimodal_potential(
@@ -47,7 +30,7 @@ def create_multimodal_potential(
     weights: torch.Tensor | None = None,
     bounds_range: tuple[float, float] = (-8.0, 8.0),
     seed: int | None = None,
-) -> tuple[MixtureBasedPotential, MixtureOfGaussians]:
+) -> MixtureOfGaussians:
     """Create a multimodal potential for convergence testing.
 
     Args:
@@ -60,7 +43,7 @@ def create_multimodal_potential(
         seed: Random seed for reproducibility
 
     Returns:
-        Tuple of (potential, target_mixture)
+        MixtureOfGaussians instance (callable, with bounds attribute)
     """
     if centers is None:
         # Default: well-separated modes
@@ -94,8 +77,8 @@ def create_multimodal_potential(
         else:
             weights = torch.ones(n_gaussians) / n_gaussians
 
-    # Create mixture
-    target_mixture = MixtureOfGaussians(
+    # Create mixture (returns OptimBenchmark instance that is callable)
+    return MixtureOfGaussians(
         dims=dims,
         n_gaussians=n_gaussians,
         centers=centers,
@@ -104,11 +87,6 @@ def create_multimodal_potential(
         bounds_range=bounds_range,
         seed=seed,
     )
-
-    # Wrap as potential
-    potential = MixtureBasedPotential(mixture=target_mixture)
-
-    return potential, target_mixture
 
 
 @dataclass

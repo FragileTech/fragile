@@ -4,12 +4,8 @@ import pytest
 import torch
 
 from fragile.bounds import TorchBounds
-from fragile.core.euclidean_gas import (
-    CloningParams,
-    EuclideanGas,
-    SimpleQuadraticPotential,
-    SwarmState,
-)
+from fragile.core.cloning import CloneOperator
+from fragile.core.euclidean_gas import EuclideanGas, SwarmState
 from fragile.core.history import RunHistory
 
 

@@ -22,11 +22,9 @@ import torch
 
 from fragile.bounds import TorchBounds
 from fragile.core.companion_selection import CompanionSelection
-from fragile.core.euclidean_gas import CloningParams
-from fragile.core.fitness import compute_fitness
+from fragile.core.benchmarks import prepare_benchmark_for_explorer
 from fragile.core.history import RunHistory
 from fragile.experiments.gas_config_dashboard import GasConfig
-from fragile.experiments.interactive_euclidean_gas import prepare_background
 
 
 __all__ = ["GasVisualizer"]
@@ -85,7 +83,7 @@ class GasVisualizer(param.Parameterized):
         background: hv.Image,
         mode_points: hv.Points,
         companion_selection: CompanionSelection | None = None,
-        cloning_params: CloningParams | None = None,
+        fitness_op: object | None = None,
         bounds_extent: float = 6.0,
         epsilon_F: float = 0.0,
         use_fitness_force: bool = False,
@@ -100,7 +98,7 @@ class GasVisualizer(param.Parameterized):
             background: HoloViews Image for background visualization
             mode_points: HoloViews Points for target modes
             companion_selection: CompanionSelection for recomputing fitness (optional)
-            cloning_params: CloningParams for fitness computation (optional)
+            fitness_op: FitnessOperator for fitness computation (optional)
             bounds_extent: Spatial bounds half-width
             epsilon_F: Fitness force strength (for force vector display)
             use_fitness_force: Whether fitness force is enabled
@@ -112,7 +110,7 @@ class GasVisualizer(param.Parameterized):
         self.background = background
         self.mode_points = mode_points
         self.companion_selection = companion_selection
-        self.cloning_params = cloning_params
+        self.fitness_op = fitness_op
         self.bounds_extent = bounds_extent
         self.epsilon_F = epsilon_F
         self.use_fitness_force = use_fitness_force
@@ -170,6 +168,19 @@ class GasVisualizer(param.Parameterized):
         self._process_history()
         self._refresh_frame()
 
+    def update_benchmark(self, potential: object, background: hv.Image, mode_points: hv.Points):
+        """Update the benchmark function, background, and mode points.
+
+        Args:
+            potential: New potential function object
+            background: New HoloViews Image for background
+            mode_points: New HoloViews Points for target modes
+        """
+        self.potential = potential
+        self.background = background
+        self.mode_points = mode_points
+        self._refresh_frame()
+
     def _sync_stream(self, event):
         """Sync time player value to frame stream."""
         if not self.result:
@@ -198,6 +209,10 @@ class GasVisualizer(param.Parameterized):
         n_alive = history.n_alive.detach().cpu().numpy()
         will_clone_traj = history.will_clone.detach().cpu().numpy()
 
+        # Check if Hessians and gradients are already computed in history (from kinetic operator)
+        use_precomputed_hessians = history.fitness_hessians_diag is not None
+        use_precomputed_gradients = history.fitness_gradients is not None
+
         # Compute variances
         var_x = torch.var(history.x_final, dim=1).sum(dim=-1).detach().cpu().numpy()
         var_v = torch.var(history.v_final, dim=1).sum(dim=-1).detach().cpu().numpy()
@@ -216,6 +231,7 @@ class GasVisualizer(param.Parameterized):
         fitness_series: list[np.ndarray] = []
         distance_series: list[np.ndarray] = []
         reward_series: list[np.ndarray] = []
+        hessian_series: list[np.ndarray] = []
         alive_masks: list[np.ndarray] = []
         previous_positions: list[np.ndarray | None] = []
         will_clone_series: list[np.ndarray] = []
@@ -260,39 +276,64 @@ class GasVisualizer(param.Parameterized):
             if (
                 alive_np.any()
                 and self.companion_selection is not None
-                and self.cloning_params is not None
+                and self.fitness_op is not None
             ):
                 with torch.no_grad():
-                    rewards = -self.potential.evaluate(x_t)
+                    rewards = -self.potential(x_t)
                     companions = self.companion_selection(x=x_t, v=v_t, alive_mask=alive_mask)
 
-                    fitness_vals, info = compute_fitness(
+                    # Use FitnessOperator to compute fitness
+                    fitness_vals, info = self.fitness_op(
                         positions=x_t,
                         velocities=v_t,
                         rewards=rewards,
                         alive=alive_mask,
                         companions=companions,
-                        alpha=self.cloning_params.alpha,
-                        beta=self.cloning_params.beta,
-                        eta=self.cloning_params.eta,
-                        lambda_alg=self.cloning_params.lambda_alg,
-                        sigma_min=self.cloning_params.sigma_min,
-                        A=self.cloning_params.A,
                     )
                     distances = info["distances"]
 
-                rewards_np = rewards.detach().cpu().numpy()
-                fitness_np = fitness_vals.detach().cpu().numpy()
-                distances_np = distances.detach().cpu().numpy()
+                    rewards_np = rewards.detach().cpu().numpy()
+                    fitness_np = fitness_vals.detach().cpu().numpy()
+                    distances_np = distances.detach().cpu().numpy()
+
+                # Get Hessian diagonal: reuse from history if available, otherwise compute
+                if use_precomputed_hessians:
+                    # Reuse Hessians computed during simulation (no gradient computation needed)
+                    # Note: history stores [n_recorded, N, d], we need to map step_idx to history index
+                    # The step_idx is an index into the downsampled indices array
+                    hist_idx = np.where(indices == step_idx)[0][0]
+                    if hist_idx < history.fitness_hessians_diag.shape[0]:
+                        hessian_diag_t = history.fitness_hessians_diag[hist_idx]
+                        hessian_mag = torch.linalg.norm(hessian_diag_t, dim=1)
+                        hessian_np = hessian_mag.detach().cpu().numpy()
+                    else:
+                        hessian_np = np.zeros(x_t.shape[0], dtype=np.float32)
+                elif self.fitness_op is not None:
+                    # Compute Hessian diagonal on-the-fly (requires gradients)
+                    hessian_diag = self.fitness_op.compute_hessian(
+                        positions=x_t,
+                        velocities=v_t,
+                        rewards=rewards,
+                        alive=alive_mask,
+                        companions=companions,
+                        diagonal_only=True,
+                    )
+                    # Compute magnitude of Hessian diagonal per walker
+                    hessian_mag = torch.linalg.norm(hessian_diag, dim=1)
+                    hessian_np = hessian_mag.detach().cpu().numpy()
+                else:
+                    hessian_np = np.zeros(x_t.shape[0], dtype=np.float32)
             else:
                 rewards_np = np.zeros(x_t.shape[0], dtype=np.float32)
                 fitness_np = np.zeros(x_t.shape[0], dtype=np.float32)
                 distances_np = np.zeros(x_t.shape[0], dtype=np.float32)
+                hessian_np = np.zeros(x_t.shape[0], dtype=np.float32)
 
             velocity_series.append(vel_mag[alive_np])
             fitness_series.append(fitness_np[alive_np])
             distance_series.append(distances_np[alive_np])
             reward_series.append(rewards_np[alive_np])
+            hessian_series.append(hessian_np[alive_np])
 
             # Compute force vectors
             force_vectors_np = np.zeros((x_t.shape[0], x_t.shape[1]), dtype=np.float32)
@@ -304,16 +345,23 @@ class GasVisualizer(param.Parameterized):
                 # Potential force
                 if self.use_potential_force:
                     x_t_grad = x_t.clone().requires_grad_(True)  # noqa: FBT003
-                    U = self.potential.evaluate(x_t_grad)
+                    U = self.potential(x_t_grad)
                     grad_U = torch.autograd.grad(U.sum(), x_t_grad, create_graph=False)[0]
                     force_total -= grad_U
                     x_t_grad.requires_grad_(False)  # noqa: FBT003
 
-                # Fitness force (if enabled and we have fitness operator)
-                if self.use_fitness_force and self.companion_selection is not None:
-                    # TODO: Need fitness_op for gradient computation
-                    # For now, skip fitness force visualization without fitness_op
-                    pass
+                # Fitness force (if enabled)
+                if self.use_fitness_force:
+                    if use_precomputed_gradients:
+                        # Reuse fitness gradients from history (no gradient computation needed)
+                        hist_idx = np.where(indices == step_idx)[0][0]
+                        if hist_idx < history.fitness_gradients.shape[0]:
+                            fitness_grad = history.fitness_gradients[hist_idx]
+                            force_total -= self.epsilon_F * fitness_grad
+                    elif self.fitness_op is not None and self.companion_selection is not None:
+                        # Compute fitness gradient on-the-fly (requires gradients)
+                        # This path is used when fitness force is enabled but not computed during simulation
+                        pass  # Skip for now - would require full gradient computation
 
                 force_vectors_np = force_total.detach().cpu().numpy()
                 force_mag_np = np.linalg.norm(force_vectors_np, axis=1)
@@ -332,6 +380,7 @@ class GasVisualizer(param.Parameterized):
             "fitness_series": fitness_series,
             "distance_series": distance_series,
             "reward_series": reward_series,
+            "hessian_series": hessian_series,
             "alive_masks": alive_masks,
             "previous_positions": previous_positions,
             "will_clone_series": will_clone_series,
@@ -373,6 +422,8 @@ class GasVisualizer(param.Parameterized):
                 xlabel=label,
                 ylabel="density",
                 show_grid=True,
+                shared_axes=False,
+                framewise=True,
             )
 
         counts, edges = np.histogram(array, bins=30, density=True)
@@ -386,6 +437,8 @@ class GasVisualizer(param.Parameterized):
             color=color,
             line_color=color,
             alpha=0.6,
+            shared_axes=False,
+            framewise=True,
         )
 
     def _get_frame_data(self, frame: int):
@@ -413,6 +466,7 @@ class GasVisualizer(param.Parameterized):
             fitness_vals = np.asarray(data["fitness_series"][frame], dtype=float)
             distance_vals = np.asarray(data["distance_series"][frame], dtype=float)
             reward_vals = np.asarray(data["reward_series"][frame], dtype=float)
+            hessian_vals = np.asarray(data["hessian_series"][frame], dtype=float)
             force_vectors = np.asarray(data["force_vectors_series"][frame], dtype=float)
             force_magnitudes = np.asarray(data["force_magnitudes_series"][frame], dtype=float)
         else:
@@ -423,6 +477,7 @@ class GasVisualizer(param.Parameterized):
             fitness_vals = np.asarray([], dtype=float)
             distance_vals = np.asarray([], dtype=float)
             reward_vals = np.asarray([], dtype=float)
+            hessian_vals = np.asarray([], dtype=float)
             force_vectors = np.empty((0, positions_full.shape[1]), dtype=float)
             force_magnitudes = np.asarray([], dtype=float)
 
@@ -436,6 +491,7 @@ class GasVisualizer(param.Parameterized):
             "fitness_vals": fitness_vals,
             "distance_vals": distance_vals,
             "reward_vals": reward_vals,
+            "hessian_vals": hessian_vals,
             "force_vectors": force_vectors,
             "force_magnitudes": force_magnitudes,
             "data": data,
@@ -632,25 +688,41 @@ class GasVisualizer(param.Parameterized):
         )
 
     def _render_histograms(self, frame: int):
-        """Render the histogram row."""
+        """Render 6 histograms in 2×3 grid layout.
+
+        Row 1: Fitness, Distance, Reward
+        Row 2: Hessian, Forces, Velocities
+        """
         frame_data = self._get_frame_data(frame)
 
         if frame_data is None:
-            return (
-                self._make_histogram([], "Fitness", "#1f77b4")
-                + self._make_histogram([], "Distance", "#2ca02c")
-                + self._make_histogram([], "Reward", "#d62728")
-            )
+            # Create empty histograms for all 6 metrics
+            fitness_hist = self._make_histogram([], "Fitness", "#1f77b4")
+            distance_hist = self._make_histogram([], "Distance", "#2ca02c")
+            reward_hist = self._make_histogram([], "Reward", "#d62728")
+            hessian_hist = self._make_histogram([], "Hessian", "#8c564b")
+            force_hist = self._make_histogram([], "Forces", "#ff7f0e")
+            velocity_hist = self._make_histogram([], "Velocity", "#9467bd")
+        else:
+            fitness_vals = frame_data["fitness_vals"]
+            distance_vals = frame_data["distance_vals"]
+            reward_vals = frame_data["reward_vals"]
+            hessian_vals = frame_data["hessian_vals"]
+            force_vals = frame_data["force_magnitudes"]
+            velocity_vals = frame_data["velocity_vals"]
 
-        fitness_vals = frame_data["fitness_vals"]
-        distance_vals = frame_data["distance_vals"]
-        reward_vals = frame_data["reward_vals"]
+            fitness_hist = self._make_histogram(fitness_vals, "Fitness", "#1f77b4")
+            distance_hist = self._make_histogram(distance_vals, "Distance", "#2ca02c")
+            reward_hist = self._make_histogram(reward_vals, "Reward", "#d62728")
+            hessian_hist = self._make_histogram(hessian_vals, "Hessian", "#8c564b")
+            force_hist = self._make_histogram(force_vals, "Forces", "#ff7f0e")
+            velocity_hist = self._make_histogram(velocity_vals, "Velocity", "#9467bd")
 
-        fitness_hist = self._make_histogram(fitness_vals, "Fitness", "#1f77b4")
-        distance_hist = self._make_histogram(distance_vals, "Distance", "#2ca02c")
-        reward_hist = self._make_histogram(reward_vals, "Reward", "#d62728")
+        # Create 2×3 grid layout
+        row1 = fitness_hist + distance_hist + reward_hist
+        row2 = hessian_hist + force_hist + velocity_hist
 
-        return (fitness_hist + distance_hist + reward_hist).opts(opts.Layout(shared_axes=False))
+        return (row1 + row2).opts(opts.Layout(shared_axes=False)).cols(3)
 
     def panel(self) -> pn.Column:
         """Create Panel dashboard for visualization.
@@ -710,8 +782,12 @@ def create_app(dims: int = 2, n_gaussians: int = 3, bounds_extent: float = 6.0):
     pn.extension()
 
     # Prepare potential and background
-    potential, background, mode_points = prepare_background(
-        dims=dims, n_gaussians=n_gaussians, resolution=100
+    potential, background, mode_points = prepare_benchmark_for_explorer(
+        benchmark_name="Mixture of Gaussians",
+        dims=dims,
+        bounds_range=(-bounds_extent, bounds_extent),
+        resolution=100,
+        n_gaussians=n_gaussians,
     )
 
     # Create gas configuration dashboard
@@ -730,31 +806,24 @@ def create_app(dims: int = 2, n_gaussians: int = 3, bounds_extent: float = 6.0):
     def on_simulation_complete(history):
         """Update visualizer when simulation completes."""
         # Extract parameters from gas_config for force visualization
-        epsilon_F = 0.0
-        use_fitness_force = False
-        use_potential_force = False
+        visualizer.epsilon_F = float(gas_config.epsilon_F)
+        visualizer.use_fitness_force = bool(gas_config.use_fitness_force)
+        visualizer.use_potential_force = bool(gas_config.use_potential_force)
 
-        if hasattr(gas_config, "gas") and gas_config.gas is not None:
-            if hasattr(gas_config.gas, "epsilon_F"):
-                epsilon_F = float(gas_config.gas.epsilon_F)
-            if hasattr(gas_config.gas, "use_fitness_force"):
-                use_fitness_force = bool(gas_config.gas.use_fitness_force)
-            if hasattr(gas_config.gas, "use_potential_force"):
-                use_potential_force = bool(gas_config.gas.use_potential_force)
+        # Set companion selection and fitness params from gas_config
+        visualizer.companion_selection = gas_config.companion_selection
+        visualizer.fitness_op = gas_config.fitness_op
 
-        # Update visualizer parameters
-        visualizer.epsilon_F = epsilon_F
-        visualizer.use_fitness_force = use_fitness_force
-        visualizer.use_potential_force = use_potential_force
+        # Load the history in a separate thread to avoid blocking UI
+        # This is critical: _process_history() contains expensive computations
+        # that would freeze the UI if run synchronously
+        def _update_history():
+            visualizer.set_history(history)
 
-        # Set companion selection and cloning params if available
-        if hasattr(gas_config.gas, "companion_selection"):
-            visualizer.companion_selection = gas_config.gas.companion_selection
-        if hasattr(gas_config.gas, "cloning_params"):
-            visualizer.cloning_params = gas_config.gas.cloning_params
+        import threading
 
-        # Load the history
-        visualizer.set_history(history)
+        thread = threading.Thread(target=_update_history, daemon=True)
+        thread.start()
 
     gas_config.add_completion_callback(on_simulation_complete)
 
@@ -775,6 +844,6 @@ def create_app(dims: int = 2, n_gaussians: int = 3, bounds_extent: float = 6.0):
 
 
 if __name__ == "__main__":
-    # Create and serve the app
+    # Create and serve the app without opening browser
     app = create_app()
-    app.show(port=5007)
+    app.show(port=5007, open=False)

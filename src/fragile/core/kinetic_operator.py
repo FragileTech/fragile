@@ -17,53 +17,55 @@ import torch
 from torch import Tensor
 
 
-class LangevinParams(BaseModel):
-    """Data container for Langevin dynamics parameters.
+def psi_v(v: Tensor, V_alg: float) -> Tensor:
+    """Apply smooth velocity squashing map to ensure bounded magnitude.
 
-    This class exists purely for organizing parameters in higher-level configs
-    like EuclideanGasParams. When instantiating KineticOperator, unpack these fields.
+    This implements the smooth radial squashing map from Lemma lem-squashing-properties-generic
+    in Section 3.3 of docs/source/1_euclidean_gas/02_euclidean_gas.md:
 
-    Mathematical notation:
-    - gamma (γ): Friction coefficient
-    - beta (β): Inverse temperature 1/(k_B T)
-    - delta_t (Δt): Time step size
-    - epsilon_F (ε_F): Adaptation rate for fitness force
-    - epsilon_Sigma (ε_Σ): Hessian regularization parameter
+    ψ_v(v) = V_alg * (v / (V_alg + ||v||))
+
+    The map ensures all output velocities have magnitude strictly less than V_alg while
+    preserving direction and providing smooth (C^∞) behavior away from the origin.
+
+    Mathematical Properties (proven in framework):
+    - 1-Lipschitz: ||ψ_v(v) - ψ_v(v')|| ≤ ||v - v'|| for all v, v'
+    - Smooth: ψ_v ∈ C^∞(ℝ^d \\ {0})
+    - Bounded: ||ψ_v(v)|| < V_alg for all v ∈ ℝ^d
+
+    Design Rationale:
+    Smooth squashing maps are chosen over hard radial projections to provide
+    differentiability for both position and velocity coordinates, a prerequisite
+    for one-step minorization proofs and deriving continuum limits.
+
+    Args:
+        v: Velocity vectors to squash. Shape: [N, d] or [d]
+        V_alg: Algorithmic velocity bound (must be positive)
+
+    Returns:
+        Squashed velocity vectors with same shape as input.
+        Guarantee: ||ψ_v(v)|| < V_alg
+
+    Example:
+        >>> import torch
+        >>> v = torch.randn(100, 3)  # 100 walkers in 3D
+        >>> v_squashed = psi_v(v, V_alg=1.0)
+        >>> assert (v_squashed.norm(dim=-1) < 1.0).all()
+
+    Note:
+        For numerical stability at the origin, the formula naturally handles ||v|| = 0
+        without special cases: ψ_v(0) = 0.
+
+    Reference:
+        - Euclidean Gas specification: docs/source/1_euclidean_gas/02_euclidean_gas.md § 3.3
+        - Generic squashing lemma: lem-squashing-properties-generic
     """
+    if V_alg <= 0:
+        msg = f"V_alg must be positive, got {V_alg}"
+        raise ValueError(msg)
 
-    model_config = {"arbitrary_types_allowed": True}
-
-    # Standard Langevin parameters
-    gamma: float = Field(gt=0, description="Friction coefficient (γ)")
-    beta: float = Field(gt=0, description="Inverse temperature 1/(k_B T) (β)")
-    delta_t: float = Field(gt=0, description="Time step size (Δt)")
-    integrator: str = Field("baoab", description="Integration scheme (baoab)")
-
-    # Fitness-based adaptive force (Geometric Gas extension)
-    epsilon_F: float = Field(
-        default=0.0, ge=0, description="Adaptation rate for fitness force (ε_F)"
-    )
-    use_fitness_force: bool = Field(
-        default=False, description="Enable fitness-based force -ε_F · ∇V_fit"
-    )
-    use_potential_force: bool = Field(
-        default=True, description="Enable potential gradient force -∇U(x)"
-    )
-
-    # Anisotropic diffusion tensor (Hessian-based)
-    epsilon_Sigma: float = Field(
-        default=0.1, ge=0, description="Hessian regularization (ε_Σ) for positive definiteness"
-    )
-    use_anisotropic_diffusion: bool = Field(
-        default=False, description="Enable Hessian-based anisotropic diffusion Σ_reg"
-    )
-    diagonal_diffusion: bool = Field(
-        default=True, description="Use diagonal-only diffusion (faster, O(Nd) vs O(Nd²))"
-    )
-
-    def noise_std(self) -> float:
-        """Standard deviation for BAOAB noise (isotropic case)."""
-        return (1.0 - torch.exp(torch.tensor(-2 * self.gamma * self.delta_t))).sqrt().item()
+    v_norm = torch.linalg.vector_norm(v, dim=-1, keepdim=True)
+    return V_alg * v / (V_alg + v_norm)
 
 
 class KineticOperator(BaseModel):
@@ -72,6 +74,7 @@ class KineticOperator(BaseModel):
     Supports adaptive extensions from the Geometric Viscous Fluid Model:
     - Fitness-based force: -ε_F · ∇V_fit (optional)
     - Anisotropic diffusion: Σ_reg = (∇²V_fit + ε_Σ I)^{-1/2} (optional)
+    - Viscous coupling: ν · F_viscous for fluid-like collective behavior (optional)
 
     Mathematical notation:
     - gamma (γ): Friction coefficient
@@ -79,6 +82,7 @@ class KineticOperator(BaseModel):
     - delta_t (Δt): Time step size
     - epsilon_F (ε_F): Adaptation rate for fitness force
     - epsilon_Sigma (ε_Σ): Hessian regularization parameter
+    - nu (ν): Viscous coupling strength
 
     Reference: docs/source/2_geometric_gas/11_geometric_gas.md
     """
@@ -113,6 +117,25 @@ class KineticOperator(BaseModel):
         default=True, description="Use diagonal-only diffusion (faster, O(Nd) vs O(Nd²))"
     )
 
+    # Viscous coupling (velocity-dependent damping)
+    nu: float = Field(
+        default=0.0, ge=0, description="Viscous coupling strength (ν)"
+    )
+    use_viscous_coupling: bool = Field(
+        default=False, description="Enable viscous coupling for fluid-like behavior"
+    )
+    viscous_length_scale: float = Field(
+        default=1.0, gt=0, description="Length scale (l) for Gaussian kernel K(r) = exp(-r²/(2l²))"
+    )
+
+    # Velocity squashing map
+    V_alg: float = Field(
+        default=float('inf'), gt=0, description="Algorithmic velocity bound for smooth squashing map"
+    )
+    use_velocity_squashing: bool = Field(
+        default=False, description="Enable smooth velocity squashing map ψ_v"
+    )
+
     # Non-Pydantic fields (set in __init__)
     potential: object = Field(default=None, init=False, exclude=True)
     device: torch.device = Field(default=None, init=False, exclude=True)
@@ -133,6 +156,11 @@ class KineticOperator(BaseModel):
         epsilon_Sigma: float = 0.1,
         use_anisotropic_diffusion: bool = False,
         diagonal_diffusion: bool = True,
+        nu: float = 0.0,
+        use_viscous_coupling: bool = False,
+        viscous_length_scale: float = 1.0,
+        V_alg: float = float('inf'),
+        use_velocity_squashing: bool = False,
         potential=None,
         device: torch.device = None,
         dtype: torch.dtype = None,
@@ -151,7 +179,12 @@ class KineticOperator(BaseModel):
             epsilon_Sigma: Hessian regularization (ε_Σ)
             use_anisotropic_diffusion: Enable Hessian-based anisotropic diffusion
             diagonal_diffusion: Use diagonal-only diffusion
-            potential: Target potential (must have evaluate(x) method).
+            nu: Viscous coupling strength (ν)
+            use_viscous_coupling: Enable viscous coupling
+            viscous_length_scale: Length scale for Gaussian kernel
+            V_alg: Algorithmic velocity bound for smooth squashing map (default: inf)
+            use_velocity_squashing: Enable smooth velocity squashing map ψ_v
+            potential: Target potential (must be callable: U(x) -> [N]).
                       Required if use_potential_force=True, can be None otherwise.
             device: PyTorch device (defaults to CPU)
             dtype: PyTorch dtype (defaults to float32)
@@ -174,6 +207,11 @@ class KineticOperator(BaseModel):
             epsilon_Sigma=epsilon_Sigma,
             use_anisotropic_diffusion=use_anisotropic_diffusion,
             diagonal_diffusion=diagonal_diffusion,
+            nu=nu,
+            use_viscous_coupling=use_viscous_coupling,
+            viscous_length_scale=viscous_length_scale,
+            V_alg=V_alg,
+            use_velocity_squashing=use_velocity_squashing,
         )
 
         self.potential = potential
@@ -181,9 +219,13 @@ class KineticOperator(BaseModel):
         self.dtype = dtype if dtype is not None else torch.float32
 
         # Validate configuration
-        if self.use_potential_force and potential is None:
-            msg = "potential required when use_potential_force=True"
-            raise ValueError(msg)
+        if self.use_potential_force:
+            if potential is None:
+                msg = "potential required when use_potential_force=True"
+                raise ValueError(msg)
+            if not callable(potential):
+                msg = f"potential must be callable, got {type(potential)}"
+                raise TypeError(msg)
 
         # Precompute BAOAB constants
         self.dt = self.delta_t
@@ -229,7 +271,7 @@ class KineticOperator(BaseModel):
         # Potential force: -∇U(x)
         if self.use_potential_force:
             x.requires_grad_(True)  # noqa: FBT003
-            U = self.potential.evaluate(x)  # [N]
+            U = self.potential(x)  # [N]
             grad_U = torch.autograd.grad(U.sum(), x, create_graph=False)[0]  # [N, d]
             force -= grad_U
             x.requires_grad_(False)  # noqa: FBT003
@@ -242,6 +284,77 @@ class KineticOperator(BaseModel):
             force -= self.epsilon_F * grad_fitness
 
         return force
+
+    def _compute_viscous_force(
+        self,
+        x: Tensor,
+        v: Tensor,
+    ) -> Tensor:
+        """Compute viscous coupling force using normalized graph Laplacian.
+
+        The viscous force implements fluid-like collective behavior by coupling
+        nearby walkers' velocities through a Gaussian kernel:
+
+        F_viscous(x_i) = ν ∑_{j≠i} [K(||x_i - x_j||) / deg(i)] (v_j - v_i)
+
+        where:
+        - K(r) = exp(-r²/(2l²)) is a Gaussian kernel with length scale l
+        - deg(i) = ∑_{k≠i} K(||x_i - x_k||) is the local degree (normalization)
+        - ν is the viscous coupling strength
+
+        This creates a row-normalized graph Laplacian structure that ensures
+        N-uniform bounds and dissipative behavior (reduces velocity variance).
+
+        Args:
+            x: Positions [N, d]
+            v: Velocities [N, d]
+
+        Returns:
+            viscous_force: Velocity-dependent damping force [N, d]
+
+        Note:
+            - When nu = 0 or use_viscous_coupling = False, returns zero
+            - Dissipative property proven in docs/source/2_geometric_gas/11_geometric_gas.md § 6.3
+            - N-uniform bounds from row normalization
+
+        Reference:
+            - Geometric Gas specification: docs/source/2_geometric_gas/11_geometric_gas.md § 2.1.3
+            - Graph Laplacian structure: docs/source/2_geometric_gas/17_qsd_exchangeability_geometric.md
+        """
+        # Early return if viscous coupling is disabled or nu = 0
+        if not self.use_viscous_coupling or self.nu == 0.0:
+            return torch.zeros_like(v)
+
+        N, d = x.shape
+
+        # Compute pairwise distances using torch.cdist
+        # distances[i, j] = ||x_i - x_j||
+        distances = torch.cdist(x, x, p=2)  # [N, N]
+
+        # Compute Gaussian kernel K(r) = exp(-r²/(2l²))
+        l_sq = self.viscous_length_scale ** 2
+        kernel = torch.exp(-distances ** 2 / (2 * l_sq))  # [N, N]
+
+        # Zero out diagonal (no self-interaction)
+        kernel.fill_diagonal_(0.0)
+
+        # Compute local degree deg(i) = ∑_{j≠i} K(||x_i - x_j||)
+        # Add small epsilon for numerical stability
+        deg = kernel.sum(dim=1, keepdim=True)  # [N, 1]
+        deg = torch.clamp(deg, min=1e-10)  # Avoid division by zero
+
+        # Compute normalized weights w_ij = K_ij / deg_i
+        weights = kernel / deg  # [N, N], broadcasting deg over columns
+
+        # Compute velocity differences for all pairs
+        # v_diff[i, j] = v_j - v_i
+        v_diff = v.unsqueeze(0) - v.unsqueeze(1)  # [N, N, d]
+
+        # Compute weighted sum: F_visc_i = ν * ∑_j w_ij * (v_j - v_i)
+        # This is a batched matrix-vector product
+        viscous_force = self.nu * torch.einsum('ij,ijd->id', weights, v_diff)  # [N, d]
+
+        return viscous_force
 
     def _compute_diffusion_tensor(
         self,
@@ -338,7 +451,7 @@ class KineticOperator(BaseModel):
             A: x → x + (Δt/2) · v                 [Position update]
             B: v → v + (Δt/2) · F(x, v)          [Force step]
 
-        where F(x, v) = -∇U(x) - ε_F · ∇V_fit and noise can be:
+        where F(x, v) = -∇U(x) - ε_F · ∇V_fit + ν · F_viscous(x, v) and noise can be:
             - Isotropic: c2 · ξ where ξ ~ N(0, I)
             - Anisotropic: Σ_reg · ξ where Σ_reg = (∇²V_fit + ε_Σ I)^{-1/2}
 
@@ -367,6 +480,8 @@ class KineticOperator(BaseModel):
 
         # === FIRST B STEP: Apply forces ===
         force = self._compute_force(x, v, grad_fitness)
+        if self.use_viscous_coupling:
+            force += self._compute_viscous_force(x, v)
         v += (self.dt / 2) * force
 
         # === FIRST A STEP: Update positions ===
@@ -398,6 +513,10 @@ class KineticOperator(BaseModel):
         # === SECOND B STEP: Apply forces ===
         force = self._compute_force(x, v, grad_fitness)
         v += (self.dt / 2) * force
+
+        # === VELOCITY SQUASHING: Apply smooth radial squashing map ===
+        if self.use_velocity_squashing:
+            v = psi_v(v, self.V_alg)
 
         # Return state with same type as input
         # Create new state object using the same class as input

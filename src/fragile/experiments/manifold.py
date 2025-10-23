@@ -1221,19 +1221,14 @@ def create_interactive_manifold_explorer(
                 lambda_alg=config.lambda_alg,
             )
 
-            from fragile.core.fitness import FitnessParams  # noqa: PLC0415
-
-            fitness_params = FitnessParams(
+            # Create FitnessOperator with parameters directly
+            fitness_op = FitnessOperator(
                 alpha=config.alpha_fit,
                 beta=config.beta_fit,
                 eta=config.eta,
                 lambda_alg=config.lambda_alg,
                 sigma_min=config.sigma_min,
                 A=config.A,
-            )
-            fitness_op = FitnessOperator(
-                params=fitness_params,
-                companion_selection=companion_selection,
             )
 
             # Create manifold explorer

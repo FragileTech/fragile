@@ -273,12 +273,10 @@ integrator={self.integrator}
             EuclideanGasParams: Configured parameter object ready for EuclideanGas initialization.
 
         Note:
-            This method requires the euclidean_gas module. Import it when needed:
-            >>> from fragile.euclidean_gas import (
-            ...     EuclideanGasParams,
-            ...     LangevinParams,
-            ...     CloningParams,
-            ... )
+            This method requires importing from fragile.core modules:
+            >>> from fragile.core.euclidean_gas import EuclideanGas
+            >>> from fragile.core.kinetic_operator import KineticOperator
+            >>> from fragile.core.cloning import CloneOperator
 
         Example:
             >>> selector = EuclideanGasParamSelector()
@@ -286,58 +284,45 @@ integrator={self.integrator}
             >>> gas = EuclideanGas(params)
 
         """
-        # Import here to avoid circular dependencies
-        from fragile.euclidean_gas import (  # noqa: PLC0415
-            CloningParams,
-            EuclideanGasParams,
-            LangevinParams,
-            PotentialParams,
-        )
-
         # Get benchmark
         benchmark = self._get_benchmark()
 
-        # Create potential wrapper
-        class BenchmarkPotential(PotentialParams):
-            """Wrapper to use benchmark as potential."""
+        # NOTE: This method returns parameters but cannot construct
+        # KineticOperator or CloneOperator directly because those require
+        # additional objects (potential, device, dtype) that aren't part
+        # of this selector's state.
+        #
+        # Users should construct EuclideanGas directly using the parameter
+        # values from this selector. See the example in the class docstring.
 
-            benchmark: OptimBenchmark
-
-            def evaluate(self, x):
-                return self.benchmark(x)
-
-        potential = BenchmarkPotential(benchmark=benchmark)
-
-        # Create parameter objects
-        langevin_params = LangevinParams(
-            gamma=self.gamma, beta=self.beta, delta_t=self.delta_t, integrator=self.integrator
+        msg = (
+            "The get_params() method has been removed because LangevinParams "
+            "and other intermediate parameter classes no longer exist. "
+            "Instead, directly construct EuclideanGas components:\n\n"
+            "Example:\n"
+            "  from fragile.core.euclidean_gas import EuclideanGas\n"
+            "  from fragile.core.kinetic_operator import KineticOperator\n"
+            "  from fragile.core.cloning import CloneOperator\n"
+            "  from fragile.core.companion_selection import CompanionSelection\n"
+            "  from fragile.core.fitness import FitnessOperator\n\n"
+            "  benchmark = selector.get_benchmark()\n"
+            "  kinetic_op = KineticOperator(\n"
+            "      gamma=selector.gamma,\n"
+            "      beta=selector.beta,\n"
+            "      delta_t=selector.delta_t,\n"
+            "      integrator=selector.integrator,\n"
+            "      potential=benchmark,\n"
+            "      device=torch.device(selector.device),\n"
+            "      dtype=getattr(torch, selector.dtype),\n"
+            "  )\n"
+            "  clone_op = CloneOperator(\n"
+            "      sigma_x=selector.sigma_x,\n"
+            "      alpha_restitution=selector.alpha_restitution,\n"
+            "      ...\n"
+            "  )\n"
+            "  gas = EuclideanGas(...)\n"
         )
-
-        cloning_params = CloningParams(
-            sigma_x=self.sigma_x,
-            lambda_alg=self.lambda_alg,
-            alpha_restitution=self.alpha_restitution,
-            use_inelastic_collision=self.use_inelastic_collision,
-        )
-
-        # Get actual dimensions from benchmark
-        actual_dims = len(benchmark.bounds)
-
-        params = EuclideanGasParams(
-            N=self.n_walkers,
-            d=actual_dims,
-            potential=potential,
-            langevin=langevin_params,
-            cloning=cloning_params,
-            device=self.device,
-            dtype=self.dtype,
-        )
-
-        # Cache for potential reuse
-        self._cached_params = params
-        self._cached_potential = potential
-
-        return params
+        raise NotImplementedError(msg)
 
     def get_benchmark(self) -> OptimBenchmark:
         """Get the configured benchmark function.

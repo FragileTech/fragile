@@ -10,7 +10,6 @@ from fragile.core.cloning import (
     compute_cloning_score,
     inelastic_collision_velocity,
 )
-from fragile.core.euclidean_gas import CloningParams
 
 
 class TestCloningFunctions:

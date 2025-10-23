@@ -13,7 +13,6 @@ from pydantic import BaseModel, Field
 import torch
 
 from fragile.bounds import Bounds, NumpyBounds, TorchBounds
-from fragile.core.euclidean_gas import PotentialParams
 
 
 """
@@ -140,36 +139,6 @@ class OptimBenchmark(BaseModel):
         raise NotImplementedError
 
 
-class BenchmarkPotential(PotentialParams):
-    """Wrapper that adapts a benchmark function to PotentialParams interface.
-
-    This class allows any OptimBenchmark to be used as a potential function
-    in the Euclidean Gas framework.
-
-    Args:
-        benchmark: OptimBenchmark instance to wrap
-
-    Example:
-        >>> benchmark = Sphere(dims=2)
-        >>> potential = BenchmarkPotential(benchmark=benchmark)
-        >>> x = torch.randn(10, 2)
-        >>> U = potential.evaluate(x)  # [10]
-    """
-
-    benchmark: OptimBenchmark = Field(description="Benchmark function to wrap")
-
-    model_config = {"arbitrary_types_allowed": True}
-
-    def evaluate(self, x: torch.Tensor) -> torch.Tensor:
-        """Evaluate potential U(x) = benchmark(x).
-
-        Args:
-            x: Positions [N, d]
-
-        Returns:
-            Potential values [N]
-        """
-        return self.benchmark(x)
 
 
 class Sphere(OptimBenchmark):
@@ -655,7 +624,7 @@ def prepare_benchmark_for_explorer(
     resolution: int = 200,
     beta_bg: float = 1.0,
     **benchmark_kwargs,
-) -> tuple[BenchmarkPotential, OptimBenchmark, hv.Image, hv.Points]:
+) -> tuple[OptimBenchmark, hv.Image, hv.Points]:
     """Prepare benchmark function for use with SwarmExplorer.
 
     Args:
@@ -667,9 +636,8 @@ def prepare_benchmark_for_explorer(
         **benchmark_kwargs: Additional parameters for benchmark initialization
 
     Returns:
-        Tuple of (potential, benchmark, background_image, mode_points)
-        - potential: BenchmarkPotential wrapper with evaluate() method
-        - benchmark: Original OptimBenchmark instance
+        Tuple of (benchmark, background_image, mode_points)
+        - benchmark: OptimBenchmark instance (callable, with bounds attribute)
         - background_image: HoloViews Image for visualization
         - mode_points: HoloViews Points showing target modes
     """
@@ -774,10 +742,7 @@ def prepare_benchmark_for_explorer(
         beta_bg=beta_bg,
     )
 
-    # Wrap benchmark as potential
-    potential = BenchmarkPotential(benchmark=benchmark)
-
-    return potential, benchmark, background, mode_points
+    return benchmark, background, mode_points
 
 
 class BenchmarkSelector(param.Parameterized):
@@ -822,7 +787,6 @@ class BenchmarkSelector(param.Parameterized):
         super().__init__(**params)
 
         # Current benchmark instance
-        self.current_potential: BenchmarkPotential | None = None
         self.current_benchmark: OptimBenchmark | None = None
         self.current_background: hv.Image | None = None
         self.current_mode_points: hv.Points | None = None
@@ -866,7 +830,6 @@ class BenchmarkSelector(param.Parameterized):
 
             # Create benchmark
             (
-                self.current_potential,
                 self.current_benchmark,
                 self.current_background,
                 self.current_mode_points,
@@ -921,15 +884,15 @@ class BenchmarkSelector(param.Parameterized):
             self.status_pane.object = f"**Error:** {e!s}"
             self.viz_pane.object = hv.Text(0, 0, f"Error: {e!s}").opts(width=720, height=620)
 
-    def get_potential(self) -> BenchmarkPotential:
-        """Get the current potential wrapper.
+    def get_potential(self) -> OptimBenchmark:
+        """Get the current potential (OptimBenchmark instance).
 
         Returns:
-            BenchmarkPotential with evaluate() method
+            OptimBenchmark with callable interface U(x) -> [N]
         """
-        if self.current_potential is None:
+        if self.current_benchmark is None:
             self._update_benchmark()
-        return self.current_potential
+        return self.current_benchmark
 
     def get_benchmark(self) -> OptimBenchmark:
         """Get the current benchmark instance.
@@ -1046,7 +1009,6 @@ __all__ = [
     "sphere",
     "styblinski_tang",
     # Benchmark classes
-    "BenchmarkPotential",
     "Constant",
     "Easom",
     "EggHolder",

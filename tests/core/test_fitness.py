@@ -1,7 +1,7 @@
 """Tests for fitness operator with automatic differentiation.
 
 Tests verify:
-1. FitnessParams Pydantic validation
+1. FitnessOperator Pydantic validation
 2. FitnessOperator basic functionality
 3. Gradient computation via finite differences
 4. Hessian computation via finite differences
@@ -15,29 +15,28 @@ from fragile.core.companion_selection import CompanionSelection
 from fragile.core.fitness import (
     compute_fitness,
     FitnessOperator,
-    FitnessParams,
 )
 
 
 # ============================================================================
-# Test FitnessParams Validation
+# Test FitnessOperator Parameter Validation
 # ============================================================================
 
 
-def test_fitness_params_defaults():
-    """Test FitnessParams with default values."""
-    params = FitnessParams()
-    assert params.alpha == 1.0
-    assert params.beta == 1.0
-    assert params.eta == 0.1
-    assert params.lambda_alg == 0.0
-    assert params.sigma_min == 1e-8
-    assert params.A == 2.0
+def test_fitness_operator_defaults():
+    """Test FitnessOperator with default values."""
+    op = FitnessOperator()
+    assert op.alpha == 1.0
+    assert op.beta == 1.0
+    assert op.eta == 0.1
+    assert op.lambda_alg == 0.0
+    assert op.sigma_min == 1e-8
+    assert op.A == 2.0
 
 
-def test_fitness_params_custom_values():
-    """Test FitnessParams with custom values."""
-    params = FitnessParams(
+def test_fitness_operator_custom_values():
+    """Test FitnessOperator with custom values."""
+    op = FitnessOperator(
         alpha=2.0,
         beta=0.5,
         eta=0.2,
@@ -45,63 +44,63 @@ def test_fitness_params_custom_values():
         sigma_min=1e-6,
         A=3.0,
     )
-    assert params.alpha == 2.0
-    assert params.beta == 0.5
-    assert params.eta == 0.2
-    assert params.lambda_alg == 1.0
-    assert params.sigma_min == 1e-6
-    assert params.A == 3.0
+    assert op.alpha == 2.0
+    assert op.beta == 0.5
+    assert op.eta == 0.2
+    assert op.lambda_alg == 1.0
+    assert op.sigma_min == 1e-6
+    assert op.A == 3.0
 
 
-def test_fitness_params_validation_alpha():
+def test_fitness_operator_validation_alpha():
     """Test that alpha must be positive."""
     with pytest.raises(ValidationError):
-        FitnessParams(alpha=0.0)
+        FitnessOperator(alpha=0.0)
     with pytest.raises(ValidationError):
-        FitnessParams(alpha=-1.0)
+        FitnessOperator(alpha=-1.0)
 
 
-def test_fitness_params_validation_beta():
+def test_fitness_operator_validation_beta():
     """Test that beta must be positive."""
     with pytest.raises(ValidationError):
-        FitnessParams(beta=0.0)
+        FitnessOperator(beta=0.0)
     with pytest.raises(ValidationError):
-        FitnessParams(beta=-1.0)
+        FitnessOperator(beta=-1.0)
 
 
-def test_fitness_params_validation_eta():
+def test_fitness_operator_validation_eta():
     """Test that eta must be positive."""
     with pytest.raises(ValidationError):
-        FitnessParams(eta=0.0)
+        FitnessOperator(eta=0.0)
     with pytest.raises(ValidationError):
-        FitnessParams(eta=-0.1)
+        FitnessOperator(eta=-0.1)
 
 
-def test_fitness_params_validation_lambda_alg():
+def test_fitness_operator_validation_lambda_alg():
     """Test that lambda_alg must be non-negative."""
     # Should accept 0.0
-    params = FitnessParams(lambda_alg=0.0)
-    assert params.lambda_alg == 0.0
+    op = FitnessOperator(lambda_alg=0.0)
+    assert op.lambda_alg == 0.0
 
     # Should reject negative
     with pytest.raises(ValidationError):
-        FitnessParams(lambda_alg=-0.1)
+        FitnessOperator(lambda_alg=-0.1)
 
 
-def test_fitness_params_validation_sigma_min():
+def test_fitness_operator_validation_sigma_min():
     """Test that sigma_min must be positive."""
     with pytest.raises(ValidationError):
-        FitnessParams(sigma_min=0.0)
+        FitnessOperator(sigma_min=0.0)
     with pytest.raises(ValidationError):
-        FitnessParams(sigma_min=-1e-8)
+        FitnessOperator(sigma_min=-1e-8)
 
 
-def test_fitness_params_validation_A():
+def test_fitness_operator_validation_A():
     """Test that A must be positive."""
     with pytest.raises(ValidationError):
-        FitnessParams(A=0.0)
+        FitnessOperator(A=0.0)
     with pytest.raises(ValidationError):
-        FitnessParams(A=-1.0)
+        FitnessOperator(A=-1.0)
 
 
 # ============================================================================
@@ -135,19 +134,15 @@ def simple_swarm_data():
 def test_fitness_operator_initialization_defaults():
     """Test FitnessOperator initialization with defaults."""
     op = FitnessOperator()
-    assert op.params.alpha == 1.0
-    assert op.params.beta == 1.0
-    assert op.companion_selection.method == "uniform"
+    assert op.alpha == 1.0
+    assert op.beta == 1.0
 
 
 def test_fitness_operator_initialization_custom():
     """Test FitnessOperator initialization with custom parameters."""
-    params = FitnessParams(alpha=2.0, beta=0.5)
-    companion_sel = CompanionSelection(method="softmax", epsilon=0.1)
-    op = FitnessOperator(params=params, companion_selection=companion_sel)
-    assert op.params.alpha == 2.0
-    assert op.params.beta == 0.5
-    assert op.companion_selection.method == "softmax"
+    op = FitnessOperator(alpha=2.0, beta=0.5)
+    assert op.alpha == 2.0
+    assert op.beta == 0.5
 
 
 def test_fitness_operator_call_matches_function(simple_swarm_data):
@@ -171,12 +166,12 @@ def test_fitness_operator_call_matches_function(simple_swarm_data):
         rewards=data["rewards"],
         alive=data["alive"],
         companions=data["companions"],
-        alpha=op.params.alpha,
-        beta=op.params.beta,
-        eta=op.params.eta,
-        lambda_alg=op.params.lambda_alg,
-        sigma_min=op.params.sigma_min,
-        A=op.params.A,
+        alpha=op.alpha,
+        beta=op.beta,
+        eta=op.eta,
+        lambda_alg=op.lambda_alg,
+        sigma_min=op.sigma_min,
+        A=op.A,
     )
 
     # Should match exactly
@@ -305,8 +300,7 @@ def test_gradient_shape(simple_swarm_data):
 
 def test_gradient_custom_params(simple_swarm_data):
     """Test gradient with custom fitness parameters."""
-    params = FitnessParams(alpha=2.0, beta=0.5, eta=0.2)
-    op = FitnessOperator(params=params)
+    op = FitnessOperator(alpha=2.0, beta=0.5, eta=0.2)
     data = simple_swarm_data
 
     grad = op.compute_gradient(

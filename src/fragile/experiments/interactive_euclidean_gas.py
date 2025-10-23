@@ -8,7 +8,6 @@ a unified interface.
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-import warnings
 
 import holoviews as hv
 import panel as pn
@@ -24,73 +23,7 @@ if TYPE_CHECKING:
 __all__ = [
     "SwarmExplorer",
     "create_dashboard",
-    "prepare_background",
 ]
-
-
-def prepare_background(
-    dims: int = 2,
-    n_gaussians: int = 3,
-    bounds_range: tuple[float, float] = (-6.0, 6.0),
-    seed: int = 42,
-    resolution: int = 200,
-) -> tuple[object, hv.Image, hv.Points]:
-    """Pre-compute potential, density backdrop, and mode markers for the explorer.
-
-    .. deprecated:: 0.1.0
-        Use :func:`fragile.core.benchmarks.prepare_benchmark_for_explorer` instead.
-        This function only supports MixtureOfGaussians. The new function in
-        benchmarks.py supports all benchmark types (Sphere, Rastrigin, etc.).
-
-    Args:
-        dims: Spatial dimension (must be 2 for visualization)
-        n_gaussians: Number of Gaussian modes in mixture
-        bounds_range: (min, max) bounds for spatial domain
-        seed: Random seed for reproducible potential
-        resolution: Grid resolution for background density
-
-    Returns:
-        Tuple of (potential, background_image, mode_points)
-
-    Example:
-        Old usage::
-
-            from fragile.experiments.interactive_euclidean_gas import prepare_background
-
-            potential, background, mode_points = prepare_background(dims=2)
-
-        New usage::
-
-            from fragile.core.benchmarks import prepare_benchmark_for_explorer
-
-            potential, benchmark, background, mode_points = prepare_benchmark_for_explorer(
-                benchmark_name="Mixture of Gaussians",
-                dims=2,
-                bounds_range=(-6.0, 6.0),
-                resolution=200,
-                n_gaussians=3,
-                seed=42,
-            )
-    """
-    warnings.warn(
-        "prepare_background() is deprecated and will be removed in a future version. "
-        "Use fragile.core.benchmarks.prepare_benchmark_for_explorer() instead, "
-        "which supports all benchmark types (not just MixtureOfGaussians).",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-
-    # Use the new unified function
-    potential, _benchmark, background, mode_points = prepare_benchmark_for_explorer(
-        benchmark_name="Mixture of Gaussians",
-        dims=dims,
-        bounds_range=bounds_range,
-        resolution=resolution,
-        n_gaussians=n_gaussians,
-        seed=seed,
-    )
-
-    return potential, background, mode_points
 
 
 class SwarmExplorer:
@@ -101,7 +34,12 @@ class SwarmExplorer:
     (display) into a unified interface.
 
     Example:
-        >>> potential, background, mode_points = prepare_background(dims=2)
+        >>> from fragile.core.benchmarks import prepare_benchmark_for_explorer
+        >>> potential, background, mode_points = prepare_benchmark_for_explorer(
+        ...     benchmark_name="Mixture of Gaussians",
+        ...     dims=2,
+        ...     bounds_range=(-6.0, 6.0),
+        ... )
         >>> explorer = SwarmExplorer(potential, background, mode_points, dims=2)
         >>> dashboard = explorer.panel()
         >>> dashboard.show()  # Launch interactive dashboard
@@ -146,6 +84,8 @@ class SwarmExplorer:
             "epsilon_Sigma",
             "use_anisotropic_diffusion",
             "diagonal_diffusion",
+            "V_alg",
+            "use_velocity_squashing",
             "sigma_x",
             "lambda_alg",
             "alpha_restitution",
@@ -180,7 +120,7 @@ class SwarmExplorer:
             background=background,
             mode_points=mode_points,
             companion_selection=None,  # Will be set after run
-            cloning_params=None,  # Will be set after run
+            fitness_op=None,  # Will be set after run
             bounds_extent=self.config.bounds_extent,
             epsilon_F=self.config.epsilon_F,
             use_fitness_force=self.config.use_fitness_force,
@@ -188,8 +128,11 @@ class SwarmExplorer:
             **display_params,
         )
 
-        # Wire up callback: when simulation completes -> update visualizer
+        # Wire up callbacks
+        # When simulation completes -> update visualizer with history
         self.config.add_completion_callback(self._on_simulation_complete)
+        # When benchmark changes -> update visualizer with new background/mode_points
+        self.config.add_benchmark_callback(self._on_benchmark_update)
 
     def _on_simulation_complete(self, history):
         """Handle simulation completion - update visualizer with new history.
@@ -199,7 +142,7 @@ class SwarmExplorer:
         """
         # Get parameters for visualization
         from fragile.core.companion_selection import CompanionSelection
-        from fragile.core.euclidean_gas import CloningParams
+        from fragile.core.fitness import FitnessOperator
 
         companion_selection = CompanionSelection(
             method=self.config.companion_method,
@@ -207,23 +150,19 @@ class SwarmExplorer:
             lambda_alg=float(self.config.lambda_alg),
         )
 
-        cloning_params = CloningParams(
-            sigma_x=float(self.config.sigma_x),
-            lambda_alg=float(self.config.lambda_alg),
-            alpha_restitution=float(self.config.alpha_restitution),
+        # Create FitnessOperator with parameters directly
+        fitness_op = FitnessOperator(
             alpha=float(self.config.alpha_fit),
             beta=float(self.config.beta_fit),
             eta=float(self.config.eta),
-            A=float(self.config.A),
+            lambda_alg=float(self.config.lambda_alg),
             sigma_min=float(self.config.sigma_min),
-            p_max=float(self.config.p_max),
-            epsilon_clone=float(self.config.epsilon_clone),
-            companion_selection=companion_selection,
+            A=float(self.config.A),
         )
 
         # Update visualizer settings
         self.visualizer.companion_selection = companion_selection
-        self.visualizer.cloning_params = cloning_params
+        self.visualizer.fitness_op = fitness_op
         self.visualizer.bounds_extent = self.config.bounds_extent
         self.visualizer.epsilon_F = self.config.epsilon_F
         self.visualizer.use_fitness_force = self.config.use_fitness_force
@@ -231,6 +170,24 @@ class SwarmExplorer:
 
         # Load new history into visualizer
         self.visualizer.set_history(history)
+
+    def _on_benchmark_update(
+        self, potential: object, background: hv.Image, mode_points: hv.Points
+    ):
+        """Handle benchmark update - update visualizer with new background/mode_points.
+
+        Args:
+            potential: New potential function
+            background: New HoloViews Image for background
+            mode_points: New HoloViews Points for target modes
+        """
+        # Update stored references
+        self.potential = potential
+        self.background = background
+        self.mode_points = mode_points
+
+        # Update visualizer
+        self.visualizer.update_benchmark(potential, background, mode_points)
 
     def panel(self) -> pn.Row:
         """Create the complete dashboard panel.
@@ -270,7 +227,12 @@ def create_dashboard(
         >>> dashboard.show()
     """
     if potential is None or background is None or mode_points is None:
-        potential, background, mode_points = prepare_background(dims=dims)
+        potential, background, mode_points = prepare_benchmark_for_explorer(
+            benchmark_name="Mixture of Gaussians",
+            dims=dims,
+            bounds_range=(-6.0, 6.0),
+            resolution=200,
+        )
 
     explorer_params = explorer_params or {}
     explorer = SwarmExplorer(
