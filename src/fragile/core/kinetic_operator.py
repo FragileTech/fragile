@@ -12,12 +12,14 @@ Mathematical notation:
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+import panel as pn
+import param
 import torch
 from torch import Tensor
 
 from fragile.bounds import TorchBounds
 from fragile.core.distance import compute_periodic_distance_matrix
+from fragile.core.panel_model import INPUT_WIDTH, PanelModel
 
 
 def psi_v(v: Tensor, V_alg: float) -> Tensor:
@@ -71,7 +73,7 @@ def psi_v(v: Tensor, V_alg: float) -> Tensor:
     return V_alg * v / (V_alg + v_norm)
 
 
-class KineticOperator(BaseModel):
+class KineticOperator(PanelModel):
     """Kinetic operator using BAOAB integrator for Langevin dynamics.
 
     Supports adaptive extensions from the Geometric Viscous Fluid Model:
@@ -90,64 +92,206 @@ class KineticOperator(BaseModel):
     Reference: docs/source/2_geometric_gas/11_geometric_gas.md
     """
 
-    model_config = {"arbitrary_types_allowed": True}
+    _n_widget_columns = param.Integer(default=2, bounds=(1, None), doc="Number of widget columns")
+    _max_widget_width = param.Integer(default=800, bounds=(0, None), doc="Maximum widget width")
 
     # Standard Langevin parameters
-    gamma: float = Field(gt=0, description="Friction coefficient (γ)")
-    beta: float = Field(gt=0, description="Inverse temperature 1/(k_B T) (β)")
-    delta_t: float = Field(gt=0, description="Time step size (Δt)")
-    integrator: str = Field("baoab", description="Integration scheme (baoab)")
+    gamma = param.Number(
+        default=1.0,
+        bounds=(0, None),
+        softbounds=(0.05, 5.0),
+        inclusive_bounds=(False, True),
+        doc="Friction coefficient (γ)",
+    )
+    beta = param.Number(
+        default=1.0,
+        bounds=(0, None),
+        softbounds=(0.01, 10.0),
+        inclusive_bounds=(False, True),
+        doc="Inverse temperature 1/(k_B T) (β)",
+    )
+    delta_t = param.Number(
+        default=0.01,
+        bounds=(0, None),
+        softbounds=(0.01, 0.1),
+        inclusive_bounds=(False, True),
+        doc="Time step size (Δt)",
+    )
+    integrator = param.Selector(
+        default="baoab", objects=["baoab"], doc="Integration scheme (baoab)"
+    )
 
     # Fitness-based adaptive force (Geometric Gas extension)
-    epsilon_F: float = Field(
-        default=0.0, ge=0, description="Adaptation rate for fitness force (ε_F)"
+    epsilon_F = param.Number(
+        default=0.0,
+        bounds=(0, None),
+        softbounds=(0.0, 0.5),
+        doc="Adaptation rate for fitness force (ε_F)",
     )
-    use_fitness_force: bool = Field(
-        default=False, description="Enable fitness-based force -ε_F · ∇V_fit"
+    use_fitness_force = param.Boolean(
+        default=False, doc="Enable fitness-based force -ε_F · ∇V_fit"
     )
-    use_potential_force: bool = Field(
-        default=True, description="Enable potential gradient force -∇U(x)"
-    )
+    use_potential_force = param.Boolean(default=True, doc="Enable potential gradient force -∇U(x)")
 
     # Anisotropic diffusion tensor (Hessian-based)
-    epsilon_Sigma: float = Field(
-        default=0.1, ge=0, description="Hessian regularization (ε_Σ) for positive definiteness"
+    epsilon_Sigma = param.Number(
+        default=0.1, bounds=(0, None), doc="Hessian regularization (ε_Σ) for positive definiteness"
     )
-    use_anisotropic_diffusion: bool = Field(
-        default=False, description="Enable Hessian-based anisotropic diffusion Σ_reg"
+    use_anisotropic_diffusion = param.Boolean(
+        default=False, doc="Enable Hessian-based anisotropic diffusion Σ_reg"
     )
-    diagonal_diffusion: bool = Field(
-        default=True, description="Use diagonal-only diffusion (faster, O(Nd) vs O(Nd²))"
+    diagonal_diffusion = param.Boolean(
+        default=True, doc="Use diagonal-only diffusion (faster, O(Nd) vs O(Nd²))"
     )
 
     # Viscous coupling (velocity-dependent damping)
-    nu: float = Field(
-        default=0.0, ge=0, description="Viscous coupling strength (ν)"
+    nu = param.Number(default=0.0, bounds=(0, None), doc="Viscous coupling strength (ν)")
+    use_viscous_coupling = param.Boolean(
+        default=False, doc="Enable viscous coupling for fluid-like behavior"
     )
-    use_viscous_coupling: bool = Field(
-        default=False, description="Enable viscous coupling for fluid-like behavior"
-    )
-    viscous_length_scale: float = Field(
-        default=1.0, gt=0, description="Length scale (l) for Gaussian kernel K(r) = exp(-r²/(2l²))"
+    viscous_length_scale = param.Number(
+        default=1.0,
+        bounds=(0, None),
+        inclusive_bounds=(False, True),
+        doc="Length scale (l) for Gaussian kernel K(r) = exp(-r²/(2l²))",
     )
 
     # Velocity squashing map
-    V_alg: float = Field(
-        default=float('inf'), gt=0, description="Algorithmic velocity bound for smooth squashing map"
+    V_alg = param.Number(
+        default=float("inf"),
+        bounds=(0, None),
+        inclusive_bounds=(False, True),
+        doc="Algorithmic velocity bound for smooth squashing map",
     )
-    use_velocity_squashing: bool = Field(
-        default=False, description="Enable smooth velocity squashing map ψ_v"
+    use_velocity_squashing = param.Boolean(
+        default=False, doc="Enable smooth velocity squashing map ψ_v"
     )
 
-    # Non-Pydantic fields (set in __init__)
-    potential: object = Field(default=None, init=False, exclude=True)
-    device: torch.device = Field(default=None, init=False, exclude=True)
-    dtype: torch.dtype = Field(default=None, init=False, exclude=True)
-    dt: float = Field(default=0.0, init=False, exclude=True)
-    c1: torch.Tensor = Field(default=None, init=False, exclude=True)
-    c2: torch.Tensor = Field(default=None, init=False, exclude=True)
-    bounds: TorchBounds | None = Field(default=None, init=False, exclude=True)
-    pbc: bool = Field(default=False, init=False, exclude=True)
+    @property
+    def widgets(self) -> dict[str, dict]:
+        """Widget configurations for kinetic operator parameters."""
+        return {
+            "gamma": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "γ (friction)",
+                "start": 0.05,
+                "end": 5.0,
+                "step": 0.05,
+            },
+            "beta": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "β (inverse temp)",
+                "start": 0.1,
+                "end": 5.0,
+                "step": 0.05,
+            },
+            "delta_t": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "Δt (time step)",
+                "start": 0.01,
+                "end": 0.2,
+                "step": 0.005,
+            },
+            "integrator": {
+                "type": pn.widgets.Select,
+                "width": INPUT_WIDTH,
+                "name": "Integrator",
+            },
+            "epsilon_F": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "ε_F (fitness adapt)",
+                "start": 0.0,
+                "end": 0.5,
+                "step": 0.01,
+            },
+            "use_fitness_force": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Use fitness force",
+            },
+            "use_potential_force": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Use potential force",
+            },
+            "epsilon_Sigma": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "ε_Σ (Hessian reg)",
+                "start": 0.0,
+                "end": 1.0,
+                "step": 0.01,
+            },
+            "use_anisotropic_diffusion": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Anisotropic diffusion",
+            },
+            "diagonal_diffusion": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Diagonal diffusion",
+            },
+            "nu": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "ν (viscous coupling)",
+                "start": 0.0,
+                "end": 10.0,
+                "step": 0.1,
+            },
+            "use_viscous_coupling": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Use viscous coupling",
+            },
+            "viscous_length_scale": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "l (viscous length)",
+                "start": 0.1,
+                "end": 5.0,
+                "step": 0.1,
+            },
+            "V_alg": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "V_alg (velocity bound)",
+                "start": 0.1,
+                "end": 100.0,
+                "step": 1.0,
+            },
+            "use_velocity_squashing": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Velocity squashing",
+            },
+        }
+
+    @property
+    def widget_parameters(self) -> list[str]:
+        """Parameters to display in UI."""
+        return [
+            "gamma",
+            "beta",
+            "delta_t",
+            "integrator",
+            "epsilon_F",
+            "use_fitness_force",
+            "use_potential_force",
+            "epsilon_Sigma",
+            "use_anisotropic_diffusion",
+            "diagonal_diffusion",
+            "nu",
+            "use_viscous_coupling",
+            "viscous_length_scale",
+            "V_alg",
+            "use_velocity_squashing",
+        ]
 
     def __init__(
         self,
@@ -164,7 +308,7 @@ class KineticOperator(BaseModel):
         nu: float = 0.0,
         use_viscous_coupling: bool = False,
         viscous_length_scale: float = 1.0,
-        V_alg: float = float('inf'),
+        V_alg: float = float("inf"),
         use_velocity_squashing: bool = False,
         potential=None,
         device: torch.device = None,
@@ -350,8 +494,8 @@ class KineticOperator(BaseModel):
         )  # [N, N]
 
         # Compute Gaussian kernel K(r) = exp(-r²/(2l²))
-        l_sq = self.viscous_length_scale ** 2
-        kernel = torch.exp(-distances ** 2 / (2 * l_sq))  # [N, N]
+        l_sq = self.viscous_length_scale**2
+        kernel = torch.exp(-(distances**2) / (2 * l_sq))  # [N, N]
 
         # Zero out diagonal (no self-interaction)
         kernel.fill_diagonal_(0.0)
@@ -370,7 +514,7 @@ class KineticOperator(BaseModel):
 
         # Compute weighted sum: F_visc_i = ν * ∑_j w_ij * (v_j - v_i)
         # This is a batched matrix-vector product
-        viscous_force = self.nu * torch.einsum('ij,ijd->id', weights, v_diff)  # [N, d]
+        viscous_force = self.nu * torch.einsum("ij,ijd->id", weights, v_diff)  # [N, d]
 
         return viscous_force
 

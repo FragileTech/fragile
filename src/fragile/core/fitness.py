@@ -1,6 +1,9 @@
-from pydantic import BaseModel, Field
+import panel as pn
+import param
 import torch
 from torch import Tensor
+
+from fragile.core.panel_model import INPUT_WIDTH, PanelModel
 
 
 try:
@@ -74,9 +77,8 @@ def compute_localization_weights(
     """
     # Compute pairwise algorithmic distances [N, N] using periodic distance if enabled
     from fragile.core.companion_selection import compute_algorithmic_distance_matrix
-    d_alg_sq = compute_algorithmic_distance_matrix(
-        positions, velocities, lambda_alg, bounds, pbc
-    )
+
+    d_alg_sq = compute_algorithmic_distance_matrix(positions, velocities, lambda_alg, bounds, pbc)
 
     # Localization kernel: K_ρ(i,j) = exp(-d_alg²/(2ρ²))
     K_rho = torch.exp(-d_alg_sq / (2 * rho**2))  # [N, N]
@@ -441,7 +443,7 @@ def compute_fitness(
     return fitness, info
 
 
-class FitnessOperator(BaseModel):
+class FitnessOperator(PanelModel):
     """Fitness operator with automatic differentiation for Langevin dynamics.
 
     This class provides:
@@ -491,36 +493,145 @@ class FitnessOperator(BaseModel):
         only computes fitness given pre-selected companions.
     """
 
-    model_config = {"arbitrary_types_allowed": True}
+    _n_widget_columns = param.Integer(default=2, bounds=(1, None), doc="Number of widget columns")
+    _max_widget_width = param.Integer(default=800, bounds=(0, None), doc="Maximum widget width")
 
     # Fitness parameters
-    alpha: float = Field(default=1.0, gt=0, description="Reward channel exponent (α)")
-    beta: float = Field(default=1.0, gt=0, description="Diversity channel exponent (β)")
-    eta: float = Field(default=0.1, gt=0, description="Positivity floor parameter (η)")
-    lambda_alg: float = Field(
-        default=0.0, ge=0, description="Velocity weight in algorithmic distance (λ_alg)"
+    alpha = param.Number(
+        default=1.0,
+        bounds=(0, None),
+        softbounds=(0.01, 5.0),
+        inclusive_bounds=(False, True),
+        doc="Reward channel exponent (α)",
     )
-    sigma_min: float = Field(
-        default=1e-8, gt=0, description="Regularization for patched standardization (σ_min)"
+    beta = param.Number(
+        default=1.0,
+        bounds=(0, None),
+        softbounds=(0.01, 5.0),
+        inclusive_bounds=(False, True),
+        doc="Diversity channel exponent (β)",
     )
-    epsilon_dist: float = Field(
+    eta = param.Number(
+        default=0.1,
+        bounds=(0, None),
+        softbounds=(0.001, 0.5),
+        inclusive_bounds=(False, True),
+        doc="Positivity floor parameter (η)",
+    )
+    lambda_alg = param.Number(
+        default=0.0,
+        bounds=(0, None),
+        softbounds=(0.0, 1.0),
+        doc="Velocity weight in algorithmic distance (λ_alg)",
+    )
+    sigma_min = param.Number(
         default=1e-8,
-        gt=0,
-        description=(
+        bounds=(0, None),
+        softbounds=(1e-9, 1e-3),
+        inclusive_bounds=(False, True),
+        doc="Regularization for patched standardization (σ_min)",
+    )
+    epsilon_dist = param.Number(
+        default=1e-8,
+        bounds=(0, None),
+        softbounds=(1e-10, 1e-6),
+        inclusive_bounds=(False, True),
+        doc=(
             "Distance regularization for smoothness: "
             "d = sqrt(||Δx||² + ε²) ensures C^∞ differentiability"
         ),
     )
-    A: float = Field(default=2.0, gt=0, description="Upper bound for logistic rescale")
-    rho: float | None = Field(
+    A = param.Number(
+        default=2.0,
+        bounds=(0, None),
+        softbounds=(1.0, 5.0),
+        inclusive_bounds=(False, True),
+        doc="Upper bound for logistic rescale",
+    )
+    rho = param.Number(
         default=None,
-        description=(
+        allow_None=True,
+        doc=(
             "Localization scale parameter (ρ). "
             "If None (default), uses global statistics (mean-field regime, O(N) cost). "
             "If finite, uses ρ-localized statistics (local regime, O(N²) cost). "
             "Small ρ enables local gauge theory interpretation."
         ),
     )
+
+    @property
+    def widgets(self) -> dict[str, dict]:
+        """Widget configurations for fitness parameters."""
+        return {
+            "alpha": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "α (reward exponent)",
+                "start": 0.1,
+                "end": 5.0,
+                "step": 0.05,
+            },
+            "beta": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "β (diversity exponent)",
+                "start": 0.5,
+                "end": 5.0,
+                "step": 0.1,
+            },
+            "eta": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "η (positivity floor)",
+                "start": 0.001,
+                "end": 0.1,
+                "step": 0.001,
+            },
+            "lambda_alg": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "λ_alg (velocity weight)",
+                "start": 0.0,
+                "end": 3.0,
+                "step": 0.05,
+            },
+            "sigma_min": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "σ_min (standardization reg)",
+                "start": 1e-9,
+                "end": 1e-3,
+                "step": 1e-9,
+                "format": "%.1e",
+            },
+            "epsilon_dist": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "ε_dist (distance reg)",
+                "start": 1e-10,
+                "end": 1e-6,
+                "step": 1e-10,
+                "format": "%.1e",
+            },
+            "A": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "A (rescale bound)",
+                "start": 1.0,
+                "end": 5.0,
+                "step": 0.1,
+            },
+            "rho": {
+                "type": pn.widgets.FloatInput,
+                "width": INPUT_WIDTH,
+                "name": "ρ (localization scale)",
+            },
+        }
+
+    @property
+    def widget_parameters(self) -> list[str]:
+        """Parameters to display in UI."""
+        return ["alpha", "beta", "eta", "lambda_alg", "sigma_min", "epsilon_dist", "A", "rho"]
 
     def __call__(
         self,

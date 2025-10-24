@@ -1,8 +1,8 @@
 # Mathematical Reference for the Fragile Gas Framework
 
-**Version:** 2.1 (Enhanced with critical theorems and proofs)
-**Last Updated:** 2025-10-18
-**Total Entries:** 101 (curated from 723 total in glossary)
+**Version:** 2.2 (Enhanced with quantitative error bounds)
+**Last Updated:** 2025-10-24
+**Total Entries:** 106 (curated from 741 total in glossary)
 **Coverage:** Chapter 1: ~60 entries, Chapter 2: ~41 entries
 
 ---
@@ -1163,6 +1163,82 @@ in probability under $\nu_{\text{QSD}}^{(N)}$.
 **Why it matters:** Stronger than weak convergence. Guarantees convergence of all moments.
 
 **Related:** `thm-thermodynamic-limit`, `thm-uniqueness-of-qsd`
+
+---
+
+### Quantitative Propagation of Chaos
+**Label:** `thm-quantitative-propagation-chaos`
+**Source:** [12_quantitative_error_bounds.md § 4](source/1_euclidean_gas/12_quantitative_error_bounds)
+**Tags:** `theorem`, `quantitative`, `propagation-chaos`, `rate`, `observable`
+
+**What it says:** Observable error between N-particle QSD and mean-field limit scales as $O(1/\sqrt{N})$ with explicit constants.
+
+**Math:**
+$$\left| \mathbb{E}_{\nu_N^{QSD}} \left[ \frac{1}{N} \sum_{i=1}^N \phi(z_i) \right] - \int_\Omega \phi(z) \rho_0(z) dz \right| \leq \frac{C_{\text{obs}} \cdot L_\phi}{\sqrt{N}}$$
+
+where $C_{\text{obs}} = \sqrt{C_{\text{var}} + C' \cdot C_{\text{int}}}$ depends on variance, concentration, and interaction complexity constants.
+
+**Why it matters:** **First quantitative rate for propagation of chaos in Fragile Gas.** Provides explicit finite-N error bounds for all Lipschitz observables. Justifies $1/\sqrt{N}$ scaling assumption used throughout convergence proofs.
+
+**Plain English:** If you have N particles, your observable measurement error is proportional to $1/\sqrt{N}$. Doubling particles cuts error by factor of $\sqrt{2}$. Constants are explicit and computable from system parameters.
+
+**Related:** `thm-thermodynamic-limit`, `lem-quantitative-kl-bound`, `lem-wasserstein-entropy`
+
+---
+
+### Wasserstein-Entropy Inequality
+**Label:** `lem-wasserstein-entropy`
+**Source:** [12_quantitative_error_bounds.md § 1](source/1_euclidean_gas/12_quantitative_error_bounds)
+**Tags:** `lemma`, `wasserstein`, `lsi`, `talagrand`
+
+**What it says:** Wasserstein-2 distance bounded by KL-divergence via LSI.
+
+**Math:**
+$$W_2^2(\nu_N^{QSD}, \rho_0^{\otimes N}) \leq \frac{2}{\lambda_{\text{LSI}}} \cdot D_{KL}(\nu_N^{QSD} \| \rho_0^{\otimes N})$$
+
+where $\lambda_{\text{LSI}} = \gamma \kappa_{\text{conf}} \kappa_W \delta^2 / C_0$ from N-uniform LSI.
+
+**Why it matters:** Connects geometric (Wasserstein) and entropic (KL) convergence. Otto-Villani generalization of Talagrand inequality for QSD measures.
+
+**Related:** `thm-quantitative-propagation-chaos`, `lem-quantitative-kl-bound`
+
+---
+
+### Quantitative KL Bound
+**Label:** `lem-quantitative-kl-bound`
+**Source:** [12_quantitative_error_bounds.md § 2](source/1_euclidean_gas/12_quantitative_error_bounds)
+**Tags:** `lemma`, `kl-divergence`, `mean-field`, `quantitative`
+
+**What it says:** KL-divergence between N-particle QSD and mean-field product measure scales as $O(1/N)$.
+
+**Math:**
+$$D_{KL}(\nu_N^{QSD} \| \rho_0^{\otimes N}) \leq \frac{C_{\text{int}}}{N}$$
+
+where $C_{\text{int}} = \lambda \cdot L_{\log \rho_0} \cdot \text{diam}(\Omega)$ is interaction complexity (finite, N-independent).
+
+**Why it matters:** **Faster than typical $O(\log N / N)$ rates.** Quantifies deviation from product structure. Key ingredient for $1/\sqrt{N}$ observable convergence.
+
+**Plain English:** The "distance" between the true N-particle distribution and the independent-particle approximation shrinks linearly with N. Interaction effects become negligible in large swarms.
+
+**Related:** `thm-quantitative-propagation-chaos`, `prop-interaction-complexity-bound`
+
+---
+
+### Empirical Measure Concentration
+**Label:** `prop-empirical-wasserstein-concentration`
+**Source:** [12_quantitative_error_bounds.md § 3.1](source/1_euclidean_gas/12_quantitative_error_bounds)
+**Tags:** `proposition`, `empirical`, `wasserstein`, `fournier-guillin`
+
+**What it says:** Expected Wasserstein-2 distance between empirical measure and mean-field limit bounded by $O(1/N)$ term plus KL correction.
+
+**Math:**
+$$\mathbb{E}_{\nu_N^{QSD}} \left[ W_2^2(\bar{\mu}_N, \rho_0) \right] \leq \frac{C_{\text{var}}}{N} + C' \cdot D_{KL}(\nu_N^{QSD} \| \rho_0^{\otimes N})$$
+
+where $\bar{\mu}_N = \frac{1}{N}\sum_{i=1}^N \delta_{z_i}$ is empirical measure.
+
+**Why it matters:** **Fournier-Guillin concentration for exchangeable particles.** Bridges KL-divergence (full N-particle) to Wasserstein distance (empirical measure). More direct than full N-particle Wasserstein bounds.
+
+**Related:** `thm-quantitative-propagation-chaos`, `lem-quantitative-kl-bound`
 
 ---
 

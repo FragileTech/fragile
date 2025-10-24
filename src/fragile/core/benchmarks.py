@@ -9,10 +9,10 @@ import numpy as np
 import pandas as pd
 import panel as pn
 import param
-from pydantic import BaseModel, Field
 import torch
 
 from fragile.bounds import Bounds, NumpyBounds, TorchBounds
+from fragile.core.panel_model import INPUT_WIDTH, PanelModel
 
 
 """
@@ -88,7 +88,7 @@ def lennard_jones(x: torch.Tensor) -> torch.Tensor:
     return torch.from_numpy(result).to(x)
 
 
-class OptimBenchmark(BaseModel):
+class OptimBenchmark(PanelModel):
     """Base class for optimization benchmark functions.
 
     Attributes:
@@ -97,11 +97,13 @@ class OptimBenchmark(BaseModel):
         bounds: State space bounds for the benchmark.
     """
 
-    model_config = {"arbitrary_types_allowed": True}
+    dims = param.Integer(doc="OptimBenchmark: Spatial dimensionality")
+    function = param.Callable(doc="OptimBenchmark: Benchmark evaluation function")
+    bounds = param.Parameter(doc="OptimBenchmark: State space bounds")
 
-    dims: int = Field(description="Spatial dimensionality")
-    function: Callable = Field(description="Benchmark evaluation function")
-    bounds: Bounds | TorchBounds | NumpyBounds = Field(description="State space bounds")
+    # UI configuration
+    _n_widget_columns = param.Integer(default=2, doc="Number of widget columns")
+    _max_widget_width = param.Integer(default=600, doc="Max widget width")
 
     def __init__(
         self,
@@ -113,6 +115,22 @@ class OptimBenchmark(BaseModel):
         if bounds is None:
             bounds = self.get_bounds(dims=dims)
         super().__init__(dims=dims, function=function, bounds=bounds, **kwargs)
+
+    @property
+    def widgets(self) -> dict[str, dict]:
+        """Widget configurations for benchmark parameters."""
+        return {
+            "dims": {
+                "type": pn.widgets.IntInput,
+                "width": INPUT_WIDTH,
+                "name": "Dimensions",
+            },
+        }
+
+    @property
+    def widget_parameters(self) -> list[str]:
+        """Parameters to display in UI (only dims is editable)."""
+        return ["dims"]
 
     def __call__(self, x):
         return self.function(x)
@@ -137,6 +155,180 @@ class OptimBenchmark(BaseModel):
     @staticmethod
     def get_bounds(dims: int) -> Bounds | TorchBounds | NumpyBounds:
         raise NotImplementedError
+
+    def show(
+        self,
+        show_optimum: bool = True,
+        show_density: bool = True,
+        show_contours: bool = True,
+        n_cells: int = 100,
+        dims_to_show: tuple[int, int] = (0, 1),
+    ) -> hv.Overlay:
+        """Create an interactive HoloViews visualization of the benchmark function.
+
+        For 2D benchmarks, creates a complete visualization of the function landscape.
+        For higher-dimensional benchmarks, shows a 2D slice with other dimensions
+        fixed at their optimal values (if known) or at the center of bounds.
+
+        Args:
+            show_optimum: Whether to show the global optimum as a red star
+            show_density: Whether to show the density heatmap with viridis colormap
+            show_contours: Whether to show contour lines in black
+            n_cells: Grid resolution (n_cells × n_cells)
+            dims_to_show: Which dimensions to visualize (default: first two)
+
+        Returns:
+            HoloViews overlay with the requested visualization components
+
+        Example:
+            >>> benchmark = Rastrigin(dims=2)
+            >>> plot = benchmark.show(show_contours=True, n_cells=200)
+            >>> plot  # Display in Jupyter notebook
+        """
+        # Validate dims_to_show
+        dim_i, dim_j = dims_to_show
+        if dim_i >= self.dims or dim_j >= self.dims:
+            msg = f"dims_to_show {dims_to_show} out of range for dims={self.dims}"
+            raise ValueError(msg)
+
+        # Extract bounds for the dimensions to visualize
+        # Handle different Bounds types (Bounds, TorchBounds, NumpyBounds)
+        if hasattr(self.bounds, "low") and hasattr(self.bounds, "high"):
+            # TorchBounds or NumpyBounds
+            bounds_low = self.bounds.low
+            bounds_high = self.bounds.high
+            if isinstance(bounds_low, torch.Tensor):
+                bounds_low = bounds_low.cpu().numpy()
+                bounds_high = bounds_high.cpu().numpy()
+        else:
+            # Bounds class - extract from shape
+            # Sample to get the bounds structure
+            sample = self.bounds.sample(1)
+            if isinstance(sample, torch.Tensor):
+                sample = sample.cpu().numpy()
+            # Use a heuristic: sample many points and find min/max
+            # This is a fallback for generic Bounds class
+            samples = self.bounds.sample(1000)
+            if isinstance(samples, torch.Tensor):
+                samples = samples.cpu().numpy()
+            bounds_low = np.min(samples, axis=0)
+            bounds_high = np.max(samples, axis=0)
+
+        x_range = (bounds_low[dim_i], bounds_high[dim_i])
+        y_range = (bounds_low[dim_j], bounds_high[dim_j])
+
+        # Create grid
+        x_grid = np.linspace(x_range[0], x_range[1], n_cells)
+        y_grid = np.linspace(y_range[0], y_range[1], n_cells)
+        X, Y = np.meshgrid(x_grid, y_grid)
+
+        # Prepare evaluation points
+        if self.dims > 2:
+            # For higher dimensions, fix non-visualized dimensions
+            if self.best_state is not None:
+                base_point = self.best_state.cpu().numpy()
+            else:
+                # Use midpoint of bounds
+                base_point = (bounds_low + bounds_high) / 2
+
+            # Create grid points by varying only the two dimensions
+            grid_points = np.tile(base_point, (n_cells * n_cells, 1))
+            grid_points[:, dim_i] = X.ravel()
+            grid_points[:, dim_j] = Y.ravel()
+
+            # Build title with fixed dimension info
+            fixed_dims_info = ", ".join(
+                f"x_{k}={base_point[k]:.1f}" for k in range(self.dims) if k not in dims_to_show
+            )
+            title = f"{self.__class__.__name__} (dims {dim_i},{dim_j} | {fixed_dims_info})"
+        else:
+            # For 2D, use the grid directly
+            grid_points = np.stack([X.ravel(), Y.ravel()], axis=1)
+            title = self.__class__.__name__
+
+        # Evaluate function on grid
+        grid_tensor = torch.from_numpy(grid_points).float()
+        with torch.no_grad():
+            values = self.function(grid_tensor).cpu().numpy().reshape(X.shape)
+
+        # Handle non-finite values
+        values = np.where(np.isfinite(values), values, np.nan)
+
+        # Create base image (always needed for contours even if not displayed)
+        base_image = hv.Image(
+            (x_grid, y_grid, values),
+            kdims=[f"x_{dim_i}", f"x_{dim_j}"],
+            vdims="value",
+        )
+
+        # Create visualization layers
+        layers = []
+
+        # Density plot
+        if show_density:
+            density = base_image.clone(label="Density").opts(
+                cmap="viridis",
+                colorbar=True,
+                colorbar_position="right",
+                width=720,
+                height=620,
+                title=title,
+            )
+            layers.append(density)
+
+        # Contour lines
+        if show_contours:
+            from holoviews.operation import contours as hv_contours
+
+            contours = hv_contours(base_image, levels=10).relabel("Contours").opts(
+                color="black",
+                line_width=1,
+            )
+            layers.append(contours)
+
+        # Optimum point
+        if show_optimum and self.best_state is not None:
+            best = self.best_state.cpu().numpy()
+            opt_x, opt_y = best[dim_i], best[dim_j]
+
+            optimum = hv.Points(
+                [(opt_x, opt_y)],
+                kdims=[f"x_{dim_i}", f"x_{dim_j}"],
+                label="Optimum",
+            ).opts(
+                marker="star",
+                color="red",
+                size=20,
+                line_color="white",
+                line_width=2,
+            )
+            layers.append(optimum)
+
+        # Return overlay
+        if not layers:
+            # If no layers requested, return placeholder
+            return hv.Text(0, 0, "No visualization layers enabled").opts(
+                xlim=x_range,
+                ylim=y_range,
+                width=720,
+                height=620,
+            )
+
+        # Build overlay
+        overlay = layers[0]
+        for layer in layers[1:]:
+            overlay = overlay * layer
+
+        # Apply legend positioning only if we have multiple layers (actual overlay)
+        if len(layers) > 1:
+            # Apply overlay options including legend positioning
+            return overlay.opts(
+                legend_position="right",  # Places legend outside to the right
+                legend_offset=(10, 0),    # Additional offset for spacing from plot
+            )
+        else:
+            # Single layer - just return it (no legend positioning needed)
+            return overlay
 
 
 class Sphere(OptimBenchmark):
@@ -292,7 +484,7 @@ class LennardJones(OptimBenchmark):
         "104": -582.038429,
     }
 
-    n_atoms: int = 10
+    n_atoms = param.Integer(default=10, doc="Number of atoms")
 
     def __init__(self, n_atoms: int = 10, dims=None, **kwargs):  # noqa: ARG002
         calculated_dims = 3 * n_atoms
@@ -368,7 +560,7 @@ class StochasticGaussian(OptimBenchmark):
         attempting gradient computation.
     """
 
-    std: float = Field(default=1.0, description="Standard deviation of Gaussian noise")
+    std = param.Number(default=1.0, doc="Standard deviation of Gaussian noise")
 
     def __init__(self, dims: int, std: float = 1.0, **kwargs):
         """Initialize stochastic Gaussian benchmark.
@@ -414,7 +606,7 @@ class FluidBenchmark(OptimBenchmark):
     can simulate incompressible fluid behavior consistent with Navier-Stokes equations.
     """
 
-    bounds_extent: float = Field(default=np.pi, description="Half-width of spatial domain")
+    bounds_extent = param.Number(default=np.pi, doc="Half-width of spatial domain")
 
     def get_initial_conditions(
         self, N: int, device: torch.device, dtype: torch.dtype
@@ -468,11 +660,11 @@ class MixtureOfGaussians(OptimBenchmark):
         seed: Random seed for reproducibility when generating random parameters
     """
 
-    n_gaussians: int = 3
-    centers: torch.Tensor | None = None
-    stds: torch.Tensor | None = None
-    weights: torch.Tensor | None = None
-    bounds_range: tuple[float, float] = (-10.0, 10.0)
+    n_gaussians = param.Integer(default=3, doc="Number of Gaussian components")
+    centers = param.Parameter(default=None, doc="Gaussian centers [n_gaussians, dims]")
+    stds = param.Parameter(default=None, doc="Standard deviations [n_gaussians, dims]")
+    weights = param.Parameter(default=None, doc="Mixture weights [n_gaussians]")
+    bounds_range = param.Tuple(default=(-10.0, 10.0), doc="Bounds for each dimension")
 
     def __init__(
         self,
@@ -655,7 +847,7 @@ class TaylorGreenVortex(FluidBenchmark):
     eddies from large ones", Proc. R. Soc. Lond. A 158, 499–521.
     """
 
-    amplitude: float = 1.0
+    amplitude = param.Number(default=1.0, doc="Amplitude of initial vortex")
 
     def __init__(self, dims: int | None = None, amplitude: float = 1.0, **kwargs):
         """Initialize Taylor-Green benchmark.
@@ -769,8 +961,8 @@ class LidDrivenCavity(FluidBenchmark):
     J. Comput. Phys. 48, 387-411.
     """
 
-    reynolds_number: float = 100.0
-    lid_velocity: float = 1.0
+    reynolds_number = param.Number(default=100.0, doc="Reynolds number Re = U·L/ν")
+    lid_velocity = param.Number(default=1.0, doc="Velocity of top lid (U)")
 
     def __init__(
         self,
@@ -871,8 +1063,8 @@ class KelvinHelmholtzInstability(FluidBenchmark):
     - Beautiful visual demonstration of fluid instability
     """
 
-    shear_velocity: float = 1.0
-    layer_thickness: float = 0.2
+    shear_velocity = param.Number(default=1.0, doc="Velocity difference between layers (ΔU)")
+    layer_thickness = param.Number(default=0.2, doc="Thickness of shear layer (δ)")
 
     def __init__(
         self,

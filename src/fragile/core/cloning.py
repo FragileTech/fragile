@@ -1,9 +1,12 @@
 from typing import Any
 
 import numpy as np
-from pydantic import BaseModel, Field
+import panel as pn
+import param
 import torch
 from torch import Tensor
+
+from fragile.core.panel_model import INPUT_WIDTH, PanelModel
 
 
 def compute_cloning_score(
@@ -345,10 +348,10 @@ def clone_tensor(
     return x
 
 
-class CloneOperator(BaseModel):
+class CloneOperator(PanelModel):
     """Stateless cloning operator wrapping the functional clone_walkers interface.
 
-    This class provides a Pydantic-validated wrapper around the clone_walkers function,
+    This class provides a parameter-validated wrapper around the clone_walkers function,
     storing default parameters while allowing per-call overrides.
 
     Mathematical notation from 03_cloning.md:
@@ -366,30 +369,76 @@ class CloneOperator(BaseModel):
         ... )
     """
 
-    model_config = {"arbitrary_types_allowed": True}
+    _n_widget_columns = param.Integer(default=2, bounds=(1, None), doc="Number of widget columns")
+    _max_widget_width = param.Integer(default=800, bounds=(0, None), doc="Maximum widget width")
 
-    p_max: float = Field(
+    p_max = param.Number(
         default=1.0,
-        gt=0,
-        le=1,
-        description="Maximum cloning probability threshold",
+        bounds=(0, 1),
+        softbounds=(0.2, 1.0),
+        doc="Maximum cloning probability threshold",
     )
-    epsilon_clone: float = Field(
+    epsilon_clone = param.Number(
         default=0.01,
-        gt=0,
-        description="Regularization for cloning score (ε_clone)",
+        bounds=(0, None),
+        softbounds=(1e-4, 0.05),
+        doc="Regularization for cloning score (ε_clone)",
     )
-    sigma_x: float = Field(
+    sigma_x = param.Number(
         default=0.1,
-        gt=0,
-        description="Position jitter scale (σ_x)",
+        bounds=(0, None),
+        softbounds=(0.01, 1.0),
+        doc="Position jitter scale (σ_x)",
     )
-    alpha_restitution: float = Field(
+    alpha_restitution = param.Number(
         default=0.5,
-        ge=0,
-        le=1,
-        description="Velocity restitution coefficient (α_rest): 0=fully inelastic, 1=elastic",
+        bounds=(0, 1),
+        softbounds=(0.0, 1.0),
+        doc="Velocity restitution coefficient (α_rest): 0=fully inelastic, 1=elastic",
     )
+
+    @property
+    def widgets(self) -> dict[str, dict]:
+        """Widget configurations for cloning parameters."""
+        return {
+            "p_max": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "p_max (max cloning prob)",
+                "start": 0.2,
+                "end": 10.0,
+                "step": 0.1,
+            },
+            "epsilon_clone": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "ε_clone (regularization)",
+                "start": 1e-4,
+                "end": 0.05,
+                "step": 1e-4,
+            },
+            "sigma_x": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "σ_x (position jitter)",
+                "start": 0.05,
+                "end": 2.0,
+                "step": 0.05,
+            },
+            "alpha_restitution": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "α_rest (restitution)",
+                "start": 0.0,
+                "end": 1.0,
+                "step": 0.05,
+            },
+        }
+
+    @property
+    def widget_parameters(self) -> list[str]:
+        """Parameters to display in UI."""
+        return ["p_max", "epsilon_clone", "sigma_x", "alpha_restitution"]
 
     def __call__(
         self,

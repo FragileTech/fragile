@@ -8,15 +8,18 @@ separated from visualization code. This allows for:
 - Faster iteration during development
 """
 
+from fragile.experiments.convergence import ConvergencePanel
 from fragile.experiments.gas_config_dashboard import GasConfig
-from fragile.experiments.gas_visualization_dashboard import ConvergencePanel, GasVisualizer
 from fragile.experiments.interactive_euclidean_gas import (
     create_dashboard,
     SwarmExplorer,
 )
+from fragile.experiments.n_particle_swarm import GasVisualizer
+from fragile.experiments.parameter_optimization import ConvergenceBoundsPanel
 
 
 __all__ = [
+    "ConvergenceBoundsPanel",
     "ConvergencePanel",
     "GasConfig",
     "GasVisualizer",

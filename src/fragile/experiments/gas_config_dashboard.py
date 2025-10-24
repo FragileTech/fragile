@@ -1,5 +1,11 @@
 """Reusable parameter configuration dashboard for EuclideanGas simulations.
 
+DEPRECATED: This module is deprecated in favor of gas_config_panel.GasConfigPanel,
+which uses the operator PanelModel interfaces instead of manually duplicating parameters.
+
+New code should use:
+    from fragile.experiments.gas_config_panel import GasConfigPanel
+
 This module provides a Panel-based dashboard for configuring simulation parameters
 and running EuclideanGas simulations. It returns RunHistory objects that can be
 visualized or analyzed separately.
@@ -7,6 +13,7 @@ visualized or analyzed separately.
 
 from __future__ import annotations
 
+import warnings
 from typing import Callable, Iterable
 
 import panel as pn
@@ -28,18 +35,22 @@ __all__ = ["GasConfig"]
 
 
 class GasConfig(param.Parameterized):
-    """Reusable configuration dashboard for EuclideanGas simulations.
+    """DEPRECATED: Use gas_config_panel.GasConfigPanel instead.
 
-    This class provides a Panel-based UI for configuring all simulation parameters
-    and running EuclideanGas. After running, it provides a RunHistory object that
-    can be visualized or analyzed.
-
-    Example:
-        >>> config = GasConfig(dims=2)  # No potential required
-        >>> dashboard = config.panel()
-        >>> dashboard.show()  # Interactive parameter selection with benchmark selector
-        >>> history = config.history  # Access result after running
+    This class manually duplicates operator parameters. The new GasConfigPanel
+    uses operator.__panel__() methods for better maintainability and consistency.
     """
+
+    def __init__(self, *args, **kwargs):
+        """Initialize GasConfig with deprecation warning."""
+        warnings.warn(
+            "GasConfig is deprecated and will be removed in a future version. "
+            "Use gas_config_panel.GasConfigPanel instead, which uses operator "
+            "PanelModel interfaces for better maintainability.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(*args, **kwargs)
 
     # Benchmark selection
     benchmark_name = param.ObjectSelector(
@@ -52,14 +63,27 @@ class GasConfig(param.Parameterized):
     n_atoms = param.Integer(default=10, bounds=(2, 30), doc="Number of atoms (Lennard-Jones)")
 
     # Simulation controls
-    N = param.Integer(default=160, bounds=(10, 1000), doc="Number of walkers")
-    n_steps = param.Integer(default=240, bounds=(50, 1000), doc="Simulation steps")
+    N = param.Integer(default=160, bounds=(2, 10000), doc="Number of walkers")
+    n_steps = param.Integer(
+        default=240, bounds=(10, 10000), softbounds=(50, 1000), doc="Simulation steps"
+    )
 
     # Langevin parameters
-    gamma = param.Number(default=1.0, bounds=(0.05, 5.0), doc="Friction γ")
-    beta = param.Number(default=1.0, bounds=(0.01, 10.0), doc="Inverse temperature β")
-    delta_t = param.Number(default=0.05, bounds=(0.01, 0.2), doc="Time step Δt")
-    epsilon_F = param.Number(default=0.0, bounds=(0.0, 0.5), doc="Fitness force rate ε_F")
+    gamma = param.Number(
+        default=1.0, bounds=(0.0001, 10.0), softbounds=(0.05, 5.0), doc="Friction γ"
+    )
+    beta = param.Number(
+        default=1.0, bounds=(0.0001, 10000.0), softbounds=(0.01, 10.0), doc="Inverse temperature β"
+    )
+    delta_t = param.Number(
+        default=0.05, bounds=(0.000001, 1.0), softbounds=(0.01, 0.1), doc="Time step Δt"
+    )
+    epsilon_F = param.Number(
+        default=0.15,
+        bounds=(0.0, 2.0),
+        softbounds=(0.0, 0.5),
+        doc="Fitness force rate ε_F (for active exploration)",
+    )
     use_fitness_force = param.Boolean(default=False, doc="Enable fitness-driven force")
     use_potential_force = param.Boolean(default=False, doc="Enable potential force")
     epsilon_Sigma = param.Number(default=0.1, bounds=(0.0, 1.0), doc="Hessian regularisation ε_Σ")
@@ -67,20 +91,35 @@ class GasConfig(param.Parameterized):
     diagonal_diffusion = param.Boolean(default=True, doc="Use diagonal diffusion tensor")
     nu = param.Number(default=0.0, bounds=(0.0, 10.0), doc="Viscous coupling strength ν")
     use_viscous_coupling = param.Boolean(default=False, doc="Enable viscous coupling")
-    viscous_length_scale = param.Number(default=1.0, bounds=(0.1, 5.0), doc="Viscous kernel length scale l")
+    viscous_length_scale = param.Number(
+        default=1.0, bounds=(0.1, 5.0), doc="Viscous kernel length scale l"
+    )
     V_alg = param.Number(default=10.0, bounds=(0.1, 100.0), doc="Algorithmic velocity bound V_alg")
     use_velocity_squashing = param.Boolean(default=False, doc="Enable velocity squashing map ψ_v")
 
-    # Cloning parameters
-    sigma_x = param.Number(default=0.15, bounds=(0.01, 1.0), doc="Cloning jitter σ_x")
-    lambda_alg = param.Number(
-        default=0.5, bounds=(0.0, 3.0), doc="Algorithmic distance weight λ_alg"
+    # Cloning parameters (defaults tuned for multimodal exploration: β >> α for diversity)
+    sigma_x = param.Number(
+        default=0.5, bounds=(0.00000001, 10.0), softbounds=(0.01, 1.0), doc="Cloning jitter σ_x"
     )
-    alpha_restitution = param.Number(default=0.6, bounds=(0.0, 1.0), doc="Restitution α_rest")
-    alpha_fit = param.Number(default=0.7, bounds=(0.01, 5.0), doc="Reward exponent α")
-    beta_fit = param.Number(default=1.3, bounds=(0.01, 5.0), doc="Diversity exponent β")
-    eta = param.Number(default=0.01, bounds=(0.001, 0.5), doc="Positivity floor η")
-    A = param.Number(default=2.0, bounds=(0.5, 5.0), doc="Logistic rescale amplitude A")
+    lambda_alg = param.Number(
+        default=0.2,
+        bounds=(0.0, 10.0),
+        softbounds=(0.0, 1.0),
+        doc="Algorithmic distance weight λ_alg",
+    )
+    alpha_restitution = param.Number(
+        default=0.6, bounds=(0.0, 1.0), softbounds=(0.0, 1.0), doc="Restitution α_rest"
+    )
+    alpha_fit = param.Number(
+        default=0.4, bounds=(0.000001, 5.0), softbounds=(0.01, 5.0), doc="Reward exponent α"
+    )
+    beta_fit = param.Number(
+        default=2.5, bounds=(0.000001, 5.0), softbounds=(0.01, 5.0), doc="Diversity exponent β"
+    )
+    eta = param.Number(
+        default=0.003, bounds=(0.001, 10), softbounds=(0.001, 0.5), doc="Positivity floor η"
+    )
+    A = param.Number(default=3.5, bounds=(0.5, 5.0), doc="Logistic rescale amplitude A")
     sigma_min = param.Number(default=1e-8, bounds=(1e-9, 1e-3), doc="Standardisation σ_min")
     p_max = param.Number(default=1.0, bounds=(0.2, 10.0), doc="Maximum cloning probability p_max")
     epsilon_clone = param.Number(default=0.005, bounds=(1e-4, 0.05), doc="Cloning score ε_clone")
@@ -89,7 +128,9 @@ class GasConfig(param.Parameterized):
         objects=("uniform", "softmax", "cloning", "random_pairing"),
         doc="Companion selection method",
     )
-    companion_epsilon = param.Number(default=0.5, bounds=(0.01, 5.0), doc="Companion ε")
+    companion_epsilon = param.Number(
+        default=0.5, bounds=(0.0001, 1000), softbounds=(0.01, 5.0), doc="Companion ε"
+    )
     integrator = param.ObjectSelector(default="baoab", objects=("baoab",), doc="Integrator")
 
     # Algorithm control
@@ -140,18 +181,53 @@ class GasConfig(param.Parameterized):
 
         # Widget overrides for better UX
         self._widget_overrides: dict[str, pn.widgets.Widget] = {
-            "sigma_min": pnw.FloatSlider(
+            "sigma_min": pnw.EditableFloatSlider(
                 name="sigma_min", start=1e-9, end=1e-3, value=self.sigma_min, step=1e-9
             ),
-            "epsilon_clone": pnw.FloatSlider(
+            "epsilon_clone": pnw.EditableFloatSlider(
                 name="epsilon_clone", start=1e-4, end=0.05, value=self.epsilon_clone, step=1e-4
             ),
-            "gamma": pnw.FloatSlider(name="gamma", start=0.05, end=5.0, step=0.05),
-            "beta": pnw.FloatSlider(name="beta", start=0.1, end=5.0, step=0.05),
-            "delta_t": pnw.FloatSlider(name="delta_t", start=0.01, end=0.2, step=0.005),
-            "lambda_alg": pnw.FloatSlider(name="lambda_alg", start=0.0, end=3.0, step=0.1),
-            "nu": pnw.FloatSlider(name="nu", start=0.0, end=10.0, step=0.1),
-            "viscous_length_scale": pnw.FloatSlider(name="viscous_length_scale", start=0.1, end=5.0, step=0.1),
+            "gamma": pnw.EditableFloatSlider(name="gamma", start=0.05, end=5.0, step=0.05),
+            "beta": pnw.EditableFloatSlider(name="beta", start=0.1, end=5.0, step=0.05),
+            "delta_t": pnw.EditableFloatSlider(name="delta_t", start=0.01, end=0.2, step=0.005),
+            "lambda_alg": pnw.EditableFloatSlider(
+                name="lambda_alg", start=0.0, end=3.0, step=0.05
+            ),
+            "nu": pnw.EditableFloatSlider(name="nu", start=0.0, end=10.0, step=0.1),
+            "viscous_length_scale": pnw.EditableFloatSlider(
+                name="viscous_length_scale", start=0.1, end=5.0, step=0.1
+            ),
+            # Fitness parameters (key for multimodal exploration tuning)
+            "alpha_fit": pnw.EditableFloatSlider(
+                name="alpha_fit (reward)", start=0.1, end=5.0, step=0.05, value=self.alpha_fit
+            ),
+            "beta_fit": pnw.EditableFloatSlider(
+                name="beta_fit (diversity)", start=0.5, end=5.0, step=0.1, value=self.beta_fit
+            ),
+            "eta": pnw.EditableFloatSlider(
+                name="eta", start=0.001, end=0.1, step=0.001, value=self.eta
+            ),
+            "A": pnw.EditableFloatSlider(name="A", start=1.0, end=5.0, step=0.1, value=self.A),
+            "sigma_x": pnw.EditableFloatSlider(
+                name="sigma_x", start=0.05, end=2.0, step=0.05, value=self.sigma_x
+            ),
+            "epsilon_F": pnw.EditableFloatSlider(
+                name="epsilon_F", start=0.0, end=0.5, step=0.01, value=self.epsilon_F
+            ),
+            # Integer sliders
+            "n_gaussians": pnw.EditableIntSlider(
+                name="n_gaussians", start=1, end=10, value=self.n_gaussians, step=1
+            ),
+            "benchmark_seed": pnw.EditableIntSlider(
+                name="benchmark_seed", start=0, end=9999, value=self.benchmark_seed, step=1
+            ),
+            "n_atoms": pnw.EditableIntSlider(
+                name="n_atoms", start=2, end=30, value=self.n_atoms, step=1
+            ),
+            "N": pnw.EditableIntSlider(name="N", start=2, end=10000, value=self.N, step=1),
+            "n_steps": pnw.EditableIntSlider(
+                name="n_steps", start=10, end=10000, value=self.n_steps, step=1
+            ),
         }
 
         # Callbacks for external listeners

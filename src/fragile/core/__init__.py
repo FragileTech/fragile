@@ -15,6 +15,7 @@ from fragile.core.scutoids import (
     ScutoidHistory3D,
     VoronoiCell,
 )
+from fragile.core.vec_history import VectorizedHistoryRecorder
 
 
 __all__ = [
@@ -30,6 +31,7 @@ __all__ = [
     "ScutoidHistory2D",
     "ScutoidHistory3D",
     "SwarmState",
+    "VectorizedHistoryRecorder",
     "VoronoiCell",
     "create_scutoid_history",
 ]

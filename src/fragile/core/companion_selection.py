@@ -5,10 +5,12 @@ of docs/source/03_cloning.md. The mechanisms use distance-dependent random match
 on the algorithmic distance metric d_alg(i,j)^2 = ||x_i - x_j||^2 + λ_alg ||v_i - v_j||^2.
 """
 
-from typing import Literal
 
-from pydantic import BaseModel, Field, field_validator
+import panel as pn
+import param
 import torch
+
+from fragile.core.panel_model import INPUT_WIDTH, PanelModel
 
 
 def compute_algorithmic_distance_matrix(
@@ -48,8 +50,9 @@ def compute_algorithmic_distance_matrix(
     if pbc:
         # Use periodic boundary conditions (minimum image convention)
         from fragile.core.distance import compute_periodic_distance_matrix
+
         pos_dist = compute_periodic_distance_matrix(x, y=None, bounds=bounds, pbc=True)
-        pos_dist_sq = pos_dist ** 2
+        pos_dist_sq = pos_dist**2
     else:
         # Standard Euclidean distance
         # Using (x_i - x_j)^2 = ||x_i||^2 + ||x_j||^2 - 2<x_i, x_j>
@@ -455,8 +458,8 @@ def sequential_greedy_pairing(
     return companion_map
 
 
-class CompanionSelection(BaseModel):
-    """Pydantic configuration for companion selection mechanisms.
+class CompanionSelection(PanelModel):
+    """Configuration for companion selection mechanisms.
 
     This class parameterizes all companion selection operators defined in Chapter 5
     of docs/source/03_cloning.md. It provides a unified interface for selecting
@@ -507,37 +510,71 @@ class CompanionSelection(BaseModel):
         (softmax, cloning, greedy_pairing) but ignored for uniform and random_pairing.
     """
 
-    method: Literal["softmax", "uniform", "random_pairing", "cloning", "greedy_pairing"] = Field(
+    _n_widget_columns = param.Integer(default=2, bounds=(1, None), doc="Number of widget columns")
+    _max_widget_width = param.Integer(default=800, bounds=(0, None), doc="Maximum widget width")
+
+    method = param.Selector(
         default="cloning",
-        description="Companion selection strategy",
+        objects=["softmax", "uniform", "random_pairing", "cloning", "greedy_pairing"],
+        doc="Companion selection strategy",
     )
 
-    epsilon: float = Field(
+    epsilon = param.Number(
         default=0.1,
-        gt=0.0,
-        description="Interaction range parameter (ε_c or ε_d)",
+        bounds=(0, None),
+        softbounds=(0.01, 5.0),
+        inclusive_bounds=(False, True),
+        doc="Interaction range parameter (ε_c or ε_d)",
     )
 
-    lambda_alg: float = Field(
+    lambda_alg = param.Number(
         default=0.0,
-        ge=0.0,
-        description="Weight for velocity contribution in algorithmic distance",
+        bounds=(0, None),
+        softbounds=(0.0, 1.0),
+        doc="Weight for velocity contribution in algorithmic distance",
     )
 
-    exclude_self: bool = Field(
+    exclude_self = param.Boolean(
         default=True,
-        description="Exclude self-pairing in softmax selection (alive walkers)",
+        doc="Exclude self-pairing in softmax selection (alive walkers)",
     )
 
-    @field_validator("method")
-    @classmethod
-    def validate_method(cls, v: str) -> str:
-        """Validate method is a supported selection strategy."""
-        valid_methods = {"softmax", "uniform", "random_pairing", "cloning", "greedy_pairing"}
-        if v not in valid_methods:
-            msg = f"Invalid method '{v}'. Must be one of {valid_methods}"
-            raise ValueError(msg)
-        return v
+    @property
+    def widgets(self) -> dict[str, dict]:
+        """Widget configurations for companion selection parameters."""
+        return {
+            "method": {
+                "type": pn.widgets.Select,
+                "width": INPUT_WIDTH,
+                "name": "Selection method",
+            },
+            "epsilon": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "ε (interaction range)",
+                "start": 0.01,
+                "end": 5.0,
+                "step": 0.05,
+            },
+            "lambda_alg": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "λ_alg (velocity weight)",
+                "start": 0.0,
+                "end": 3.0,
+                "step": 0.05,
+            },
+            "exclude_self": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Exclude self-pairing",
+            },
+        }
+
+    @property
+    def widget_parameters(self) -> list[str]:
+        """Parameters to display in UI."""
+        return ["method", "epsilon", "lambda_alg", "exclude_self"]
 
     def __call__(
         self,

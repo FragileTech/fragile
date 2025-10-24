@@ -1,13 +1,12 @@
 """Tests for fitness operator with automatic differentiation.
 
 Tests verify:
-1. FitnessOperator Pydantic validation
+1. FitnessOperator parameter validation
 2. FitnessOperator basic functionality
 3. Gradient computation via finite differences
 4. Hessian computation via finite differences
 """
 
-from pydantic import ValidationError
 import pytest
 import torch
 
@@ -54,25 +53,25 @@ def test_fitness_operator_custom_values():
 
 def test_fitness_operator_validation_alpha():
     """Test that alpha must be positive."""
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         FitnessOperator(alpha=0.0)
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         FitnessOperator(alpha=-1.0)
 
 
 def test_fitness_operator_validation_beta():
     """Test that beta must be positive."""
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         FitnessOperator(beta=0.0)
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         FitnessOperator(beta=-1.0)
 
 
 def test_fitness_operator_validation_eta():
     """Test that eta must be positive."""
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         FitnessOperator(eta=0.0)
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         FitnessOperator(eta=-0.1)
 
 
@@ -83,23 +82,23 @@ def test_fitness_operator_validation_lambda_alg():
     assert op.lambda_alg == 0.0
 
     # Should reject negative
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         FitnessOperator(lambda_alg=-0.1)
 
 
 def test_fitness_operator_validation_sigma_min():
     """Test that sigma_min must be positive."""
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         FitnessOperator(sigma_min=0.0)
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         FitnessOperator(sigma_min=-1e-8)
 
 
 def test_fitness_operator_validation_A():
     """Test that A must be positive."""
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         FitnessOperator(A=0.0)
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         FitnessOperator(A=-1.0)
 
 

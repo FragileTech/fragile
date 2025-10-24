@@ -1,9 +1,9 @@
 # Mathematical Glossary
 Comprehensive index of all mathematical entries from the Fragile Gas framework.
 
-**Version:** 2.1
-**Last Updated:** 2025-10-18
-**Total Entries:** 723 (Chapter 1: 523, Chapter 2: 200)
+**Version:** 2.2
+**Last Updated:** 2025-10-24
+**Total Entries:** 741 (Chapter 1: 541, Chapter 2: 200)
 **Format:** Each entry includes Type, Label, Tags, Source, and concise Description (<15 words)
 **Description Style:** TLDR context WITHOUT repeating title (avoids token waste)
 
@@ -22,6 +22,7 @@ Comprehensive index of all mathematical entries from the Fragile Gas framework.
 - [08_propagation_chaos.md](#08_propagation_chaos) (34 entries)
 - [09_kl_convergence.md](#09_kl_convergence) (77 entries)
 - [10_qsd_exchangeability_theory.md](#10_qsd_exchangeability_theory) (9 entries)
+- [12_quantitative_error_bounds.md](#12_quantitative_error_bounds) (18 entries)
 
 ### Chapter 2: Geometric Gas
 - [11_geometric_gas.md](#11_geometric_gas) (60 entries)
@@ -2319,6 +2320,129 @@ Comprehensive index of all mathematical entries from the Fragile Gas framework.
 ### Mean-Field LSI from N-Uniform Bounds
 - **Source:** [10_qsd_exchangeability_theory.md § A1.3.2 Implications for Mean-Field LSI](source/1_euclidean_gas/10_qsd_exchangeability_theory)
 - **Description:** Mean-Field LSI from N-Uniform Bounds
+
+---
+
+### Source: 12_quantitative_error_bounds.md {#12_quantitative_error_bounds}
+
+### Wasserstein-Entropy Inequality
+- **Type:** Lemma
+- **Label:** `lem-wasserstein-entropy`
+- **Tags:** wasserstein, lsi, talagrand, quantitative
+- **Source:** [12_quantitative_error_bounds.md § 1](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** W_2² ≤ (2/λ_LSI)·D_KL from Otto-Villani Talagrand inequality
+
+### Quantitative KL Bound
+- **Type:** Lemma
+- **Label:** `lem-quantitative-kl-bound`
+- **Tags:** kl-divergence, mean-field, quantitative, interaction
+- **Source:** [12_quantitative_error_bounds.md § 2](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** D_KL(ν_N^QSD ‖ ρ_0^⊗N) ≤ C_int/N via modulated free energy
+
+### Boundedness of Interaction Complexity Constant
+- **Type:** Proposition
+- **Label:** `prop-interaction-complexity-bound`
+- **Tags:** interaction, complexity, mean-field, lipschitz
+- **Source:** [12_quantitative_error_bounds.md § 2.1](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** C_int ≤ λ·L_log·diam(Ω), finite and N-independent via Jabin-Wang
+
+### Empirical Measure Observable Error
+- **Type:** Lemma
+- **Label:** `lem-lipschitz-observable-error`
+- **Tags:** observable, lipschitz, wasserstein, kantorovich
+- **Source:** [12_quantitative_error_bounds.md § 3](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** Observable error ≤ L_φ·W_1 via Kantorovich-Rubinstein duality
+
+### Empirical Measure Concentration
+- **Type:** Proposition
+- **Label:** `prop-empirical-wasserstein-concentration`
+- **Tags:** empirical, wasserstein, concentration, fournier-guillin
+- **Source:** [12_quantitative_error_bounds.md § 3.1](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** E[W_2²(μ̄_N,ρ_0)] ≤ C_var/N + C'·D_KL for exchangeable particles
+
+### Finite Second Moment of Mean-Field QSD
+- **Type:** Proposition
+- **Label:** `prop-finite-second-moment-meanfield`
+- **Tags:** mean-field, qsd, moment-bounds, lyapunov
+- **Source:** [12_quantitative_error_bounds.md § 3.2](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** C_var < ∞ from energy dissipation and confinement
+
+### Quantitative Propagation of Chaos
+- **Type:** Theorem
+- **Label:** `thm-quantitative-propagation-chaos`
+- **Tags:** propagation-chaos, quantitative, observable, rate, wasserstein
+- **Source:** [12_quantitative_error_bounds.md § 4](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** Observable error O(1/√N) for Lipschitz functions, explicit constants
+
+### Fourth-Moment Uniform Bounds for BAOAB
+- **Type:** Proposition
+- **Label:** `prop-fourth-moment-baoab`
+- **Tags:** baoab, discretization, moment-bounds
+- **Source:** [12_quantitative_error_bounds.md § Part II.1](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** E[|Z_k|⁴] ≤ M_4 uniform in Δt for BAOAB chain
+
+### BAOAB Second-Order Weak Convergence
+- **Type:** Lemma
+- **Label:** `lem-baoab-weak-error`
+- **Tags:** baoab, weak-convergence, discretization, second-order
+- **Source:** [12_quantitative_error_bounds.md § Part II.2](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** Weak order 2 for observables: |E[φ(Z_t)]-E[φ(Z̃_t)]| ≤ C·Δt²
+
+### BAOAB Invariant Measure Error
+- **Type:** Lemma
+- **Label:** `lem-baoab-invariant-measure-error`
+- **Tags:** baoab, invariant-measure, discretization-error
+- **Source:** [12_quantitative_error_bounds.md § Part II.3](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** Invariant measure error O(Δt) from weak order 2 via Talay
+
+### Langevin-BAOAB Time Discretization Error
+- **Type:** Theorem
+- **Label:** `thm-langevin-baoab-discretization-error`
+- **Tags:** discretization, baoab, langevin, observable-error
+- **Source:** [12_quantitative_error_bounds.md § Part II.4](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** Observable error O(Δt) for kinetic operator discretization
+
+### Full System Time Discretization Error
+- **Type:** Theorem
+- **Label:** `thm-full-system-discretization-error`
+- **Tags:** discretization, lie-splitting, total-error
+- **Source:** [12_quantitative_error_bounds.md § Part II.5](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** Combined BAOAB + Lie splitting error O(Δt) for full system
+
+### One-Step Weak Error for Lie Splitting
+- **Type:** Lemma
+- **Label:** `lem-lie-splitting-weak-error`
+- **Tags:** lie-splitting, weak-error, operator-splitting
+- **Source:** [12_quantitative_error_bounds.md § Part II.5.1](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** One-step weak error O(Δt²) for Ψ_kin ∘ Ψ_clone splitting
+
+### Uniform Geometric Ergodicity
+- **Type:** Lemma
+- **Label:** `lem-uniform-geometric-ergodicity`
+- **Tags:** ergodicity, geometric, discrete-time, drift
+- **Source:** [12_quantitative_error_bounds.md § Part III.1](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** Discrete Fragile Gas satisfies drift-minorization with explicit constants
+
+### Relationship Between Continuous and Discrete Mixing Rates
+- **Type:** Proposition
+- **Label:** `prop-mixing-rate-relationship`
+- **Tags:** mixing-time, continuous, discrete, ergodicity
+- **Source:** [12_quantitative_error_bounds.md § Part III.2](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** τ_mix^discrete ≤ τ_mix^continuous/Δt + O(1/κΔt)
+
+### Error Propagation for Ergodic Chains
+- **Type:** Theorem
+- **Label:** `thm-quantitative-error-propagation`
+- **Tags:** error-propagation, ergodic, total-variation
+- **Source:** [12_quantitative_error_bounds.md § Part III.3](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** Total error bounds via perturbation theory for ergodic chains
+
+### Total Error Bound for Discrete Fragile Gas
+- **Type:** Theorem
+- **Label:** `thm-total-error-bound`
+- **Tags:** total-error, mean-field, discretization, observable
+- **Source:** [12_quantitative_error_bounds.md § Part IV](source/1_euclidean_gas/12_quantitative_error_bounds)
+- **Description:** |E[φ_N,Δt]-∫φdρ_0| ≤ C_obs/√N + C_disc·Δt combined bound
 
 ## Chapter 2: Geometric Gas
 

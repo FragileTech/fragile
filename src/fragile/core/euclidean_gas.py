@@ -10,15 +10,12 @@ All tensors are vectorized with the first dimension being the number of walkers 
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+import panel as pn
+import param
 import torch
 from torch import Tensor
 
-from fragile.bounds import TorchBounds
-from fragile.core.cloning import CloneOperator
-from fragile.core.companion_selection import CompanionSelection
-from fragile.core.fitness import FitnessOperator
-from fragile.core.kinetic_operator import KineticOperator
+from fragile.core.panel_model import INPUT_WIDTH, PanelModel
 
 
 class SwarmState:
@@ -89,64 +86,125 @@ class SwarmState:
         self.v[indices] = other.v[indices]
 
 
-class EuclideanGas(BaseModel):
+class EuclideanGas(PanelModel):
     """Complete parameter set for Euclidean Gas algorithm."""
 
-    model_config = {"arbitrary_types_allowed": True}
+    _n_widget_columns = param.Integer(default=2, bounds=(1, None), doc="Number of widget columns")
+    _max_widget_width = param.Integer(default=800, bounds=(0, None), doc="Maximum widget width")
 
-    N: int = Field(gt=0, description="Number of walkers")
-    d: int = Field(gt=0, description="Spatial dimension")
-    companion_selection: CompanionSelection = Field(
-        description="Companion selection strategy for cloning"
+    N = param.Integer(
+        default=50, bounds=(1, None), softbounds=(50, 500), doc="Number of walkers"
     )
-    potential: object = Field(
-        description=(
+    d = param.Integer(default=2, bounds=(1, None), doc="Spatial dimension")
+    companion_selection = param.Parameter(
+        default=None, doc="Companion selection strategy for cloning"
+    )
+    potential = param.Parameter(
+        default=None,
+        doc=(
             "Target potential function. Must be callable: U(x: [N, d]) -> [N]. "
             "Can be an OptimBenchmark instance (which provides bounds) or any callable."
-        )
+        ),
     )
-    kinetic_op: KineticOperator = Field(description="Langevin dynamics parameters")
-    cloning: CloneOperator = Field(description="Cloning operator")
-    fitness_op: FitnessOperator | None = Field(
+    kinetic_op = param.Parameter(default=None, doc="Langevin dynamics parameters")
+    cloning = param.Parameter(default=None, doc="Cloning operator")
+    fitness_op = param.Parameter(
         default=None,
-        description="Fitness operator (required if using adaptive kinetics features)",
+        allow_None=True,
+        doc="Fitness operator (required if using adaptive kinetics features)",
     )
-    bounds: TorchBounds | None = Field(
-        None,
-        description=(
+    bounds = param.Parameter(
+        default=None,
+        allow_None=True,
+        doc=(
             "Position bounds (optional, TorchBounds only). "
             "If None and potential has a 'bounds' attribute, bounds will be auto-extracted."
         ),
     )
-    device: torch.device = Field(torch.device("cpu"), description="PyTorch device (cpu/cuda)")
-    dtype: str = Field("float32", description="PyTorch dtype (float32/float64)")
-    freeze_best: bool = Field(
-        False,
-        description=(
-            "Keep the highest-fitness walker untouched during cloning and kinetic steps."
-        ),
+    device = param.Parameter(default=torch.device("cpu"), doc="PyTorch device (cpu/cuda)")
+    dtype = param.Selector(
+        default="float32", objects=["float32", "float64"], doc="PyTorch dtype (float32/float64)"
     )
-    enable_cloning: bool = Field(
-        default=True,
-        description="Enable cloning operator (fitness still computed for adaptive forces)",
-    )
-    enable_kinetic: bool = Field(
-        default=True,
-        description="Enable kinetic (Langevin dynamics) operator",
-    )
-    pbc: bool = Field(
+    freeze_best = param.Boolean(
         default=False,
-        description=(
+        doc="Keep the highest-fitness walker untouched during cloning and kinetic steps.",
+    )
+    enable_cloning = param.Boolean(
+        default=True,
+        doc="Enable cloning operator (fitness still computed for adaptive forces)",
+    )
+    enable_kinetic = param.Boolean(
+        default=True,
+        doc="Enable kinetic (Langevin dynamics) operator",
+    )
+    pbc = param.Boolean(
+        default=False,
+        doc=(
             "Use periodic boundary conditions. When enabled, walkers that move outside "
             "bounds are wrapped back instead of being marked as dead. Requires bounds to be set. "
             "PBC is applied before computing fitness and after kinetic updates."
         ),
     )
 
-    def model_post_init(self, __context) -> None:
-        """Post-initialization: auto-extract bounds from potential if available."""
-        # Auto-extract bounds from potential if not provided
-        if self.bounds is None and hasattr(self.potential, "bounds"):
+    @property
+    def widgets(self) -> dict[str, dict]:
+        """Widget configurations for Euclidean Gas parameters."""
+        return {
+            "N": {
+                "type": pn.widgets.EditableIntSlider,
+                "width": INPUT_WIDTH,
+                "name": "N (num walkers)",
+                "start": 2,
+                "end": 10000,
+                "step": 1,
+            },
+            "d": {
+                "type": pn.widgets.IntInput,
+                "width": INPUT_WIDTH,
+                "name": "d (dimension)",
+            },
+            "dtype": {
+                "type": pn.widgets.Select,
+                "width": INPUT_WIDTH,
+                "name": "Data type",
+            },
+            "freeze_best": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Freeze best walker",
+            },
+            "enable_cloning": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Enable cloning",
+            },
+            "enable_kinetic": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Enable kinetic",
+            },
+            "pbc": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Periodic BC",
+            },
+        }
+
+    @property
+    def widget_parameters(self) -> list[str]:
+        """Parameters to display in UI (excluding nested operators and internal objects)."""
+        return ["N", "d", "dtype", "freeze_best", "enable_cloning", "enable_kinetic", "pbc"]
+
+    def __init__(self, **params):
+        """Initialize Euclidean Gas with post-initialization validation."""
+        super().__init__(**params)
+
+        # Post-initialization: auto-extract bounds from potential if available
+        if (
+            self.bounds is None
+            and self.potential is not None
+            and hasattr(self.potential, "bounds")
+        ):
             self.bounds = self.potential.bounds
 
         # Validate PBC requirements
@@ -155,7 +213,7 @@ class EuclideanGas(BaseModel):
             raise ValueError(msg)
 
         # Validate that potential is callable
-        if not callable(self.potential):
+        if self.potential is not None and not callable(self.potential):
             msg = f"potential must be callable, got {type(self.potential)}"
             raise TypeError(msg)
 
@@ -389,8 +447,6 @@ class EuclideanGas(BaseModel):
         """
         import time
 
-        from fragile.core.history import RunHistory
-
         # Initialize state with timing
         init_start = time.time()
         state = self.initialize_state(x_init, v_init)
@@ -411,90 +467,29 @@ class EuclideanGas(BaseModel):
             recorded_steps.append(n_steps)
         n_recorded = len(recorded_steps)
 
-        # Preallocate storage for all recorded data
-        # States [n_recorded, N, d]
-        x_before_clone = torch.zeros(n_recorded, N, d, device=self.device, dtype=self.torch_dtype)
-        v_before_clone = torch.zeros(n_recorded, N, d, device=self.device, dtype=self.torch_dtype)
-        x_after_clone = torch.zeros(
-            n_recorded - 1, N, d, device=self.device, dtype=self.torch_dtype
-        )
-        v_after_clone = torch.zeros(
-            n_recorded - 1, N, d, device=self.device, dtype=self.torch_dtype
-        )
-        x_final = torch.zeros(n_recorded, N, d, device=self.device, dtype=self.torch_dtype)
-        v_final = torch.zeros(n_recorded, N, d, device=self.device, dtype=self.torch_dtype)
+        # Initialize vectorized history recorder with pre-allocated arrays
+        from fragile.core.vec_history import VectorizedHistoryRecorder
 
-        # Per-step scalars [n_recorded] or [n_recorded-1]
-        n_alive_traj = torch.zeros(n_recorded, dtype=torch.long, device=self.device)
-        num_cloned_traj = torch.zeros(n_recorded - 1, dtype=torch.long, device=self.device)
-        step_times = torch.zeros(n_recorded - 1, dtype=torch.float32, device=self.device)
-
-        # Per-walker per-step data [n_recorded-1, N]
-        fitness_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
-        rewards_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
-        cloning_scores_traj = torch.zeros(
-            n_recorded - 1, N, device=self.device, dtype=self.torch_dtype
-        )
-        cloning_probs_traj = torch.zeros(
-            n_recorded - 1, N, device=self.device, dtype=self.torch_dtype
-        )
-        will_clone_traj = torch.zeros(n_recorded - 1, N, dtype=torch.bool, device=self.device)
-        alive_mask_traj = torch.zeros(n_recorded - 1, N, dtype=torch.bool, device=self.device)
-        companions_distance_traj = torch.zeros(
-            n_recorded - 1, N, dtype=torch.long, device=self.device
-        )
-        companions_clone_traj = torch.zeros(
-            n_recorded - 1, N, dtype=torch.long, device=self.device
-        )
-
-        # Fitness intermediate values [n_recorded-1, N]
-        distances_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
-        z_rewards_traj = torch.zeros(n_recorded - 1, N, device=self.device, dtype=self.torch_dtype)
-        z_distances_traj = torch.zeros(
-            n_recorded - 1, N, device=self.device, dtype=self.torch_dtype
-        )
-        pos_sq_diff_traj = torch.zeros(
-            n_recorded - 1, N, device=self.device, dtype=self.torch_dtype
-        )
-        vel_sq_diff_traj = torch.zeros(
-            n_recorded - 1, N, device=self.device, dtype=self.torch_dtype
-        )
-        rescaled_rewards_traj = torch.zeros(
-            n_recorded - 1, N, device=self.device, dtype=self.torch_dtype
-        )
-        rescaled_distances_traj = torch.zeros(
-            n_recorded - 1, N, device=self.device, dtype=self.torch_dtype
-        )
-
-        # Localized statistics [n_recorded-1] (global case: rho → ∞)
-        mu_rewards_traj = torch.zeros(n_recorded - 1, device=self.device, dtype=self.torch_dtype)
-        sigma_rewards_traj = torch.zeros(
-            n_recorded - 1, device=self.device, dtype=self.torch_dtype
-        )
-        mu_distances_traj = torch.zeros(n_recorded - 1, device=self.device, dtype=self.torch_dtype)
-        sigma_distances_traj = torch.zeros(
-            n_recorded - 1, device=self.device, dtype=self.torch_dtype
-        )
-
-        # Adaptive kinetics data (optional)
-        fitness_gradients_traj = None
-        fitness_hessians_diag_traj = None
-        fitness_hessians_full_traj = None
+        record_gradients = False
+        record_hessians_diag = False
+        record_hessians_full = False
 
         if self.fitness_op is not None:
-            if self.kinetic_op.use_fitness_force:
-                fitness_gradients_traj = torch.zeros(
-                    n_recorded - 1, N, d, device=self.device, dtype=self.torch_dtype
-                )
+            record_gradients = self.kinetic_op.use_fitness_force
             if self.kinetic_op.use_anisotropic_diffusion:
-                if self.kinetic_op.diagonal_diffusion:
-                    fitness_hessians_diag_traj = torch.zeros(
-                        n_recorded - 1, N, d, device=self.device, dtype=self.torch_dtype
-                    )
-                else:
-                    fitness_hessians_full_traj = torch.zeros(
-                        n_recorded - 1, N, d, d, device=self.device, dtype=self.torch_dtype
-                    )
+                record_hessians_diag = self.kinetic_op.diagonal_diffusion
+                record_hessians_full = not self.kinetic_op.diagonal_diffusion
+
+        recorder = VectorizedHistoryRecorder(
+            N=N,
+            d=d,
+            n_recorded=n_recorded,
+            device=self.device,
+            dtype=self.torch_dtype,
+            record_gradients=record_gradients,
+            record_hessians_diag=record_hessians_diag,
+            record_hessians_full=record_hessians_full,
+        )
 
         # Check initial alive status
         if self.pbc:
@@ -509,57 +504,15 @@ class EuclideanGas(BaseModel):
             n_alive = N
 
         # Record initial state (t=0)
-        x_before_clone[0] = state.x
-        v_before_clone[0] = state.v
-        x_final[0] = state.x
-        v_final[0] = state.v
-        n_alive_traj[0] = n_alive
+        recorder.record_initial_state(state, n_alive)
 
         # Check if initially all dead
         if n_alive == 0:
-            return RunHistory(
-                N=N,
-                d=d,
+            return recorder.build(
                 n_steps=0,
-                n_recorded=1,
                 record_every=record_every,
                 terminated_early=True,
                 final_step=0,
-                x_before_clone=x_before_clone[:1],
-                v_before_clone=v_before_clone[:1],
-                x_after_clone=torch.zeros(0, N, d, device=self.device, dtype=self.torch_dtype),
-                v_after_clone=torch.zeros(0, N, d, device=self.device, dtype=self.torch_dtype),
-                x_final=x_final[:1],
-                v_final=v_final[:1],
-                n_alive=n_alive_traj[:1],
-                num_cloned=torch.zeros(0, dtype=torch.long, device=self.device),
-                step_times=torch.zeros(0, dtype=torch.float32, device=self.device),
-                fitness=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
-                rewards=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
-                cloning_scores=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
-                cloning_probs=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
-                will_clone=torch.zeros(0, N, dtype=torch.bool, device=self.device),
-                alive_mask=torch.zeros(0, N, dtype=torch.bool, device=self.device),
-                companions_distance=torch.zeros(0, N, dtype=torch.long, device=self.device),
-                companions_clone=torch.zeros(0, N, dtype=torch.long, device=self.device),
-                distances=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
-                z_rewards=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
-                z_distances=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
-                pos_squared_differences=torch.zeros(
-                    0, N, device=self.device, dtype=self.torch_dtype
-                ),
-                vel_squared_differences=torch.zeros(
-                    0, N, device=self.device, dtype=self.torch_dtype
-                ),
-                rescaled_rewards=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
-                rescaled_distances=torch.zeros(0, N, device=self.device, dtype=self.torch_dtype),
-                mu_rewards=torch.zeros(0, device=self.device, dtype=self.torch_dtype),
-                sigma_rewards=torch.zeros(0, device=self.device, dtype=self.torch_dtype),
-                mu_distances=torch.zeros(0, device=self.device, dtype=self.torch_dtype),
-                sigma_distances=torch.zeros(0, device=self.device, dtype=self.torch_dtype),
-                fitness_gradients=fitness_gradients_traj,
-                fitness_hessians_diag=fitness_hessians_diag_traj,
-                fitness_hessians_full=fitness_hessians_full_traj,
                 total_time=0.0,
                 init_time=init_time,
                 bounds=self.bounds,
@@ -568,7 +521,6 @@ class EuclideanGas(BaseModel):
         # Run steps with timing
         terminated_early = False
         final_step = n_steps
-        recorded_idx = 1  # Index in recorded arrays (0 is initial state)
         total_start = time.time()
 
         for t in range(1, n_steps + 1):
@@ -589,6 +541,7 @@ class EuclideanGas(BaseModel):
             # Compute adaptive kinetics derivatives if enabled
             grad_fitness = None
             hess_fitness = None
+            is_diagonal_hessian = False
             if self.fitness_op is not None:
                 if self.kinetic_op.use_fitness_force:
                     grad_fitness = self.fitness_op.compute_gradient(
@@ -599,121 +552,43 @@ class EuclideanGas(BaseModel):
                         companions=info["companions_distance"],
                     )
                 if self.kinetic_op.use_anisotropic_diffusion:
+                    is_diagonal_hessian = self.kinetic_op.diagonal_diffusion
                     hess_fitness = self.fitness_op.compute_hessian(
                         positions=state_cloned.x,
                         velocities=state_cloned.v,
                         rewards=info["rewards"],
                         alive=info["alive_mask"],
                         companions=info["companions_distance"],
-                        diagonal_only=self.kinetic_op.diagonal_diffusion,
+                        diagonal_only=is_diagonal_hessian,
                     )
 
             # Determine if this step should be recorded
             should_record = t in recorded_steps
 
             if should_record:
-                # Record states
-                x_before_clone[recorded_idx] = state.x
-                v_before_clone[recorded_idx] = state.v
-                x_after_clone[recorded_idx - 1] = state_cloned.x
-                v_after_clone[recorded_idx - 1] = state_cloned.v
-                x_final[recorded_idx] = state_final.x
-                v_final[recorded_idx] = state_final.v
-
-                # Record scalars
-                n_alive_traj[recorded_idx] = info["alive_mask"].sum().item()
-                num_cloned_traj[recorded_idx - 1] = info["num_cloned"]
-                step_times[recorded_idx - 1] = time.time() - step_start
-
-                # Record per-walker data
-                fitness_traj[recorded_idx - 1] = info["fitness"]
-                rewards_traj[recorded_idx - 1] = info["rewards"]
-                cloning_scores_traj[recorded_idx - 1] = info["cloning_scores"]
-                cloning_probs_traj[recorded_idx - 1] = info["cloning_probs"]
-                will_clone_traj[recorded_idx - 1] = info["will_clone"]
-                alive_mask_traj[recorded_idx - 1] = info["alive_mask"]
-                companions_distance_traj[recorded_idx - 1] = info["companions_distance"]
-                companions_clone_traj[recorded_idx - 1] = info["companions_clone"]
-
-                # Record fitness intermediate values
-                distances_traj[recorded_idx - 1] = info["distances"]
-                z_rewards_traj[recorded_idx - 1] = info["z_rewards"]
-                z_distances_traj[recorded_idx - 1] = info["z_distances"]
-                pos_sq_diff_traj[recorded_idx - 1] = info["pos_squared_differences"]
-                vel_sq_diff_traj[recorded_idx - 1] = info["vel_squared_differences"]
-                rescaled_rewards_traj[recorded_idx - 1] = info["rescaled_rewards"]
-                rescaled_distances_traj[recorded_idx - 1] = info["rescaled_distances"]
-
-                # Record localized statistics
-                mu_rewards_traj[recorded_idx - 1] = info["mu_rewards"]
-                sigma_rewards_traj[recorded_idx - 1] = info["sigma_rewards"]
-                mu_distances_traj[recorded_idx - 1] = info["mu_distances"]
-                sigma_distances_traj[recorded_idx - 1] = info["sigma_distances"]
-
-                # Record adaptive kinetics data if computed
-                if grad_fitness is not None:
-                    fitness_gradients_traj[recorded_idx - 1] = grad_fitness
-                if hess_fitness is not None:
-                    if self.kinetic_op.diagonal_diffusion:
-                        fitness_hessians_diag_traj[recorded_idx - 1] = hess_fitness
-                    else:
-                        fitness_hessians_full_traj[recorded_idx - 1] = hess_fitness
-
-                recorded_idx += 1
+                # Record all data for this step using recorder
+                recorder.record_step(
+                    state_before=state,
+                    state_cloned=state_cloned,
+                    state_final=state_final,
+                    info=info,
+                    step_time=time.time() - step_start,
+                    grad_fitness=grad_fitness,
+                    hess_fitness=hess_fitness,
+                    is_diagonal_hessian=is_diagonal_hessian,
+                )
 
             # Update state for next iteration
             state = state_final
 
         total_time = time.time() - total_start
 
-        # Trim arrays to actual recorded size
-        actual_recorded = recorded_idx
-
-        return RunHistory(
-            N=N,
-            d=d,
+        # Build final RunHistory with automatic trimming to actual recorded size
+        return recorder.build(
             n_steps=final_step,
-            n_recorded=actual_recorded,
             record_every=record_every,
             terminated_early=terminated_early,
             final_step=final_step,
-            x_before_clone=x_before_clone[:actual_recorded],
-            v_before_clone=v_before_clone[:actual_recorded],
-            x_after_clone=x_after_clone[: actual_recorded - 1],
-            v_after_clone=v_after_clone[: actual_recorded - 1],
-            x_final=x_final[:actual_recorded],
-            v_final=v_final[:actual_recorded],
-            n_alive=n_alive_traj[:actual_recorded],
-            num_cloned=num_cloned_traj[: actual_recorded - 1],
-            step_times=step_times[: actual_recorded - 1],
-            fitness=fitness_traj[: actual_recorded - 1],
-            rewards=rewards_traj[: actual_recorded - 1],
-            cloning_scores=cloning_scores_traj[: actual_recorded - 1],
-            cloning_probs=cloning_probs_traj[: actual_recorded - 1],
-            will_clone=will_clone_traj[: actual_recorded - 1],
-            alive_mask=alive_mask_traj[: actual_recorded - 1],
-            companions_distance=companions_distance_traj[: actual_recorded - 1],
-            companions_clone=companions_clone_traj[: actual_recorded - 1],
-            distances=distances_traj[: actual_recorded - 1],
-            z_rewards=z_rewards_traj[: actual_recorded - 1],
-            z_distances=z_distances_traj[: actual_recorded - 1],
-            pos_squared_differences=pos_sq_diff_traj[: actual_recorded - 1],
-            vel_squared_differences=vel_sq_diff_traj[: actual_recorded - 1],
-            rescaled_rewards=rescaled_rewards_traj[: actual_recorded - 1],
-            rescaled_distances=rescaled_distances_traj[: actual_recorded - 1],
-            mu_rewards=mu_rewards_traj[: actual_recorded - 1],
-            sigma_rewards=sigma_rewards_traj[: actual_recorded - 1],
-            mu_distances=mu_distances_traj[: actual_recorded - 1],
-            sigma_distances=sigma_distances_traj[: actual_recorded - 1],
-            fitness_gradients=fitness_gradients_traj[: actual_recorded - 1]
-            if fitness_gradients_traj is not None
-            else None,
-            fitness_hessians_diag=fitness_hessians_diag_traj[: actual_recorded - 1]
-            if fitness_hessians_diag_traj is not None
-            else None,
-            fitness_hessians_full=fitness_hessians_full_traj[: actual_recorded - 1]
-            if fitness_hessians_full_traj is not None
-            else None,
             total_time=total_time,
             init_time=init_time,
             bounds=self.bounds,
