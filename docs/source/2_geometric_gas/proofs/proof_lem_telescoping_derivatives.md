@@ -18,7 +18,6 @@ For any derivative order $m \in \{1, 2, 3\}$, assuming $k \geq 1$ (non-empty ali
 
 $$
 \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho) = 0
-
 $$
 
 where $w_{ij}(\rho) := K_\rho(x_i, x_j) / Z_i(\rho)$ are the localization weights with normalizer $Z_i(\rho) := \sum_{\ell \in A_k} K_\rho(x_i, x_\ell)$.
@@ -65,7 +64,6 @@ For all $x_i \in \mathcal{X}$ and all $\rho > 0$:
 
 $$
 \sum_{j \in A_k} w_{ij}(\rho) = 1
-
 $$
 
 where the identity holds as a functional equality (not just pointwise).
@@ -79,14 +77,12 @@ By definition (lines 332, 352 of the source document), the localization weights 
 
 $$
 w_{ij}(\rho) := \frac{K_\rho(x_i, x_j)}{Z_i(\rho)}
-
 $$
 
 where the normalizer is:
 
 $$
 Z_i(\rho) := \sum_{\ell \in A_k} K_\rho(x_i, x_\ell)
-
 $$
 
 and $K_\rho: \mathcal{X} \times \mathcal{X} \to [0,1]$ is the localization kernel (assumed $C^3$ in the first argument by {prf:ref}`assump-c3-kernel`).
@@ -99,7 +95,6 @@ For this proof, we assume the kernel $K_\rho: \mathcal{X} \times \mathcal{X} \to
 
 $$
 K_\rho(x, x') = \exp\left(-\frac{\|x-x'\|^2}{2\rho^2}\right) > 0
-
 $$
 
 for all $x, x'$ (note: we use the amplitude-1 normalization where $K_\rho \in [0,1]$, consistent with {prf:ref}`assump-c3-kernel`).
@@ -108,7 +103,6 @@ Since $k \geq 1$ (non-empty alive set), there exists at least one walker $j \in 
 
 $$
 Z_i(\rho) = \sum_{\ell \in A_k} K_\rho(x_i, x_\ell) \geq K_\rho(x_i, x_j) > 0
-
 $$
 
 This ensures that the weights $w_{ij}(\rho) = K_\rho(x_i, x_j) / Z_i(\rho)$ are well-defined for all $j \in A_k$.
@@ -123,28 +117,24 @@ We now compute:
 
 $$
 \sum_{j \in A_k} w_{ij}(\rho) = \sum_{j \in A_k} \frac{K_\rho(x_i, x_j)}{Z_i(\rho)}
-
 $$
 
 By linearity of summation, we can factor out the constant $1/Z_i(\rho)$:
 
 $$
 \sum_{j \in A_k} w_{ij}(\rho) = \frac{1}{Z_i(\rho)} \sum_{j \in A_k} K_\rho(x_i, x_j)
-
 $$
 
 By the definition of $Z_i(\rho)$, the sum in the numerator is precisely $Z_i(\rho)$:
 
 $$
 \sum_{j \in A_k} K_\rho(x_i, x_j) = Z_i(\rho)
-
 $$
 
 Therefore:
 
 $$
 \sum_{j \in A_k} w_{ij}(\rho) = \frac{Z_i(\rho)}{Z_i(\rho)} = 1
-
 $$
 
 **Step 4: Functional identity.**
@@ -153,7 +143,6 @@ The calculation in Step 3 shows that $\sum_j w_{ij}(\rho) = 1$ for **all** $x_i 
 
 $$
 f(x_i) := \sum_{j \in A_k} w_{ij}(\rho)
-
 $$
 
 equals the constant function $g(x_i) := 1$ for all $x_i$ in the domain $\mathcal{X}$.
@@ -180,7 +169,6 @@ For each fixed $j \in A_k$ and $\rho > 0$, the localization weight $w_{ij}(\rho)
 
 $$
 w_{ij}(\rho) \in C^3(\mathcal{X})
-
 $$
 
 and the derivatives $\nabla_{x_i} w_{ij}(\rho)$, $\nabla^2_{x_i} w_{ij}(\rho)$, $\nabla^3_{x_i} w_{ij}(\rho)$ exist and are continuous.
@@ -196,21 +184,18 @@ Fix $j \in A_k$ and consider the numerator:
 
 $$
 u(x_i) := K_\rho(x_i, x_j)
-
 $$
 
 By {prf:ref}`assump-c3-kernel` (Localization Kernel $C^3$ Regularity, lines 249-257), the kernel $K_\rho: \mathcal{X} \times \mathcal{X} \to [0,1]$ is three times continuously differentiable in its first argument. Therefore:
 
 $$
 u \in C^3(\mathcal{X})
-
 $$
 
 and we have the derivative bounds:
 
 $$
 \|\nabla_{x_i} u\| \leq \frac{C_{\nabla K}(\rho)}{\rho}, \quad \|\nabla^2_{x_i} u\| \leq \frac{C_{\nabla^2 K}(\rho)}{\rho^2}, \quad \|\nabla^3_{x_i} u\| \leq \frac{C_{\nabla^3 K}(\rho)}{\rho^3}
-
 $$
 
 where $C_{\nabla K}(\rho), C_{\nabla^2 K}(\rho), C_{\nabla^3 K}(\rho)$ are $O(1)$ functions (typically constants for Gaussian kernels).
@@ -221,21 +206,18 @@ Consider the denominator:
 
 $$
 v(x_i) := Z_i(\rho) = \sum_{\ell \in A_k} K_\rho(x_i, x_\ell)
-
 $$
 
 This is a finite sum (the alive set $A_k$ has cardinality $k < \infty$, see lines 123, 135) of $C^3$ functions. Since differentiation is linear and the sum is finite, we can interchange differentiation and summation without any convergence issues:
 
 $$
 \nabla^m_{x_i} v(x_i) = \nabla^m_{x_i} \left( \sum_{\ell \in A_k} K_\rho(x_i, x_\ell) \right) = \sum_{\ell \in A_k} \nabla^m_{x_i} K_\rho(x_i, x_\ell)
-
 $$
 
 for $m = 1, 2, 3$. Since each term $K_\rho(x_i, x_\ell)$ is $C^3$ in $x_i$, the finite sum $v(x_i)$ is also $C^3$ in $x_i$:
 
 $$
 v \in C^3(\mathcal{X})
-
 $$
 
 **Step 3: Positivity of the denominator.**
@@ -244,7 +226,6 @@ From Step 2 of Lemma {prf:ref}`lem-normalization-identity`, we have:
 
 $$
 v(x_i) = Z_i(\rho) > 0
-
 $$
 
 for all $x_i \in \mathcal{X}$ (under the assumption of a strictly positive kernel and $k \geq 1$). The denominator is strictly positive.
@@ -266,7 +247,6 @@ Therefore:
 
 $$
 w_{ij}(\rho) = \frac{u(x_i)}{v(x_i)} \in C^3(\mathcal{X})
-
 $$
 
 **Conclusion.**
@@ -296,7 +276,6 @@ Let $m \in \{1, 2, 3\}$ be fixed. We will show that:
 
 $$
 \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho) = 0
-
 $$
 
 **Step 1: Apply the differential operator to the normalization identity.**
@@ -305,14 +284,12 @@ By Lemma {prf:ref}`lem-normalization-identity`, we have the functional identity:
 
 $$
 \sum_{j \in A_k} w_{ij}(\rho) = 1
-
 $$
 
 for all $x_i \in \mathcal{X}$. We apply the differential operator $\nabla^m_{x_i}$ to both sides:
 
 $$
 \nabla^m_{x_i} \left( \sum_{j \in A_k} w_{ij}(\rho) \right) = \nabla^m_{x_i}(1)
-
 $$
 
 **Step 2: Interchange differentiation and summation (left-hand side).**
@@ -325,7 +302,6 @@ we can interchange the differential operator $\nabla^m_{x_i}$ with the finite su
 
 $$
 \nabla^m_{x_i} \left( \sum_{j \in A_k} w_{ij}(\rho) \right) = \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho)
-
 $$
 
 :::{important} Justification for Interchange
@@ -333,7 +309,6 @@ For **finite sums**, the interchange of differentiation and summation is always 
 
 $$
 \nabla^m(f_1 + f_2 + \cdots + f_k) = \nabla^m f_1 + \nabla^m f_2 + \cdots + \nabla^m f_k
-
 $$
 
 provided each $f_j$ is $m$ times differentiable.
@@ -347,7 +322,6 @@ The right-hand side is the $m$-th derivative of the constant function:
 
 $$
 \nabla^m_{x_i}(1) = 0
-
 $$
 
 This holds for all $m \geq 1$ by the fundamental property of differentiation: **the derivative of a constant is zero**.
@@ -363,7 +337,6 @@ Substituting the results from Steps 2 and 3 into the equation from Step 1:
 
 $$
 \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho) = 0
-
 $$
 
 This holds for each $m \in \{1, 2, 3\}$ and for all $x_i \in \mathcal{X}$.
@@ -374,7 +347,6 @@ The telescoping identity is established:
 
 $$
 \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho) = 0 \quad \text{for } m \in \{1, 2, 3\}
-
 $$
 
 This completes the proof. $\Box$
@@ -395,42 +367,36 @@ For each derivative order $m$, the identity $\sum_j \nabla^m_{x_i} w_{ij} = 0$ s
 
 $$
 \sum_{j \in A_k} \nabla_{x_i} w_{ij}(\rho) = 0 \in \mathbb{R}^d
-
 $$
 
 Componentwise, for each $\alpha = 1, \ldots, d$:
 
 $$
 \sum_{j \in A_k} \frac{\partial w_{ij}(\rho)}{\partial (x_i)_\alpha} = 0
-
 $$
 
 **Second derivative ($m = 2$):**
 
 $$
 \sum_{j \in A_k} \nabla^2_{x_i} w_{ij}(\rho) = 0 \in \mathbb{R}^{d \times d}
-
 $$
 
 Componentwise, for each pair of indices $\alpha, \beta = 1, \ldots, d$:
 
 $$
 \sum_{j \in A_k} \frac{\partial^2 w_{ij}(\rho)}{\partial (x_i)_\alpha \, \partial (x_i)_\beta} = 0
-
 $$
 
 **Third derivative ($m = 3$):**
 
 $$
 \sum_{j \in A_k} \nabla^3_{x_i} w_{ij}(\rho) = 0 \in \mathbb{R}^{d \times d \times d}
-
 $$
 
 Componentwise, for each triple of indices $\alpha, \beta, \gamma = 1, \ldots, d$:
 
 $$
 \sum_{j \in A_k} \frac{\partial^3 w_{ij}(\rho)}{\partial (x_i)_\alpha \, \partial (x_i)_\beta \, \partial (x_i)_\gamma} = 0
-
 $$
 
 Each componentwise identity follows from differentiating the scalar normalization constraint $\sum_j w_{ij} = 1$ with respect to the corresponding coordinate(s).
@@ -441,7 +407,6 @@ In the regularity analysis (Chapters 5-7 of the source document), the tensor for
 
 $$
 \|\nabla^3 V_{\text{fit}}\| := \sup_{\|h_1\| = \|h_2\| = \|h_3\| = 1} \left| \nabla^3 V_{\text{fit}}(h_1, h_2, h_3) \right|
-
 $$
 
 The telescoping identity ensures that when we decompose derivatives of composite functions (using the chain rule or Faà di Bruno formula), sums involving $\nabla^m w_{ij}$ cancel exactly, preventing bounds from growing with $k$.
@@ -479,21 +444,18 @@ Consider bounding the gradient of the localized mean:
 
 $$
 \mu_\rho^{(i)} = \sum_{j \in A_k} w_{ij}(\rho) \cdot d(x_j)
-
 $$
 
 Naively, differentiating with the product rule:
 
 $$
 \nabla_{x_i} \mu_\rho^{(i)} = \sum_{j \in A_k} (\nabla_{x_i} w_{ij}) \cdot d(x_j)
-
 $$
 
 One might attempt to bound this sum term-by-term:
 
 $$
 \|\nabla_{x_i} \mu_\rho^{(i)}\| \leq \sum_{j \in A_k} \|\nabla_{x_i} w_{ij}\| \cdot |d(x_j)| \leq k \cdot \|\nabla w\| \cdot d_{\max}
-
 $$
 
 This bound **grows with $k$** and is not k-uniform.
@@ -502,21 +464,18 @@ However, using the telescoping identity, we can rewrite:
 
 $$
 \nabla_{x_i} \mu_\rho^{(i)} = \sum_{j \in A_k} (\nabla_{x_i} w_{ij}) \cdot d(x_j) = \sum_{j \in A_k} (\nabla_{x_i} w_{ij}) \cdot (d(x_j) - d(x_i))
-
 $$
 
 The last equality uses $\sum_j \nabla w_{ij} = 0$, which allows us to add any multiple of the zero sum:
 
 $$
 \sum_{j \in A_k} (\nabla_{x_i} w_{ij}) \cdot d(x_i) = d(x_i) \sum_{j \in A_k} \nabla_{x_i} w_{ij} = d(x_i) \cdot 0 = 0
-
 $$
 
 Now, bounding the centered form:
 
 $$
 \|\nabla_{x_i} \mu_\rho^{(i)}\| \leq \sum_{j \in A_k} \|\nabla_{x_i} w_{ij}\| \cdot |d(x_j) - d(x_i)|
-
 $$
 
 The centered term $|d(x_j) - d(x_i)|$ can be controlled using the Lipschitz constant of $d$ and the localization property of the kernel (weights $w_{ij}$ are small when $\|x_j - x_i\|$ is large). This yields a k-uniform bound (see Lemma A.2 in the source document, lines 222-223).
@@ -537,7 +496,6 @@ If the kernel $K_\rho$ is $C^m$ in its first argument for some $m \geq 1$, then 
 
 $$
 \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho) = 0
-
 $$
 
 for all derivative orders $m \leq \deg(K_\rho)$.
@@ -562,21 +520,18 @@ If the localization kernel depends on both positions and velocities:
 
 $$
 K_\rho((x_i, v_i), (x_j, v_j))
-
 $$
 
 and the normalization constraint holds identically for all $(x_i, v_i)$:
 
 $$
 \sum_{j \in A_k} w_{ij}(\rho) = 1
-
 $$
 
 then the telescoping identity extends to velocity derivatives:
 
 $$
 \sum_{j \in A_k} \nabla^m_{v_i} w_{ij}(\rho) = 0
-
 $$
 
 for all $m \geq 1$ where the kernel is $C^m$ in $v_i$.
@@ -647,7 +602,6 @@ Consider a one-dimensional state space $\mathcal{X} = \mathbb{R}$ with $d = 1$ a
 
 $$
 K_\rho(x, x') = \exp\left( -\frac{(x-x')^2}{2\rho^2} \right)
-
 $$
 
 (Note: We use the amplitude-1 normalization consistent with {prf:ref}`assump-c3-kernel`, where $K_\rho \in [0,1]$. This differs from probability density normalization.)
@@ -658,53 +612,44 @@ Suppose there are $k = 3$ alive walkers at positions $x_1, x_2, x_3 \in \mathbb{
 
 $$
 K_\rho(x_1, x_1) = \exp(0) = 1
-
 $$
 
 $$
 K_\rho(x_1, x_2) = \exp\left( -\frac{(x_1-x_2)^2}{2\rho^2} \right)
-
 $$
 
 $$
 K_\rho(x_1, x_3) = \exp\left( -\frac{(x_1-x_3)^2}{2\rho^2} \right)
-
 $$
 
 **Step 2: Compute the normalizer.**
 
 $$
 Z_1(\rho) = K_\rho(x_1, x_1) + K_\rho(x_1, x_2) + K_\rho(x_1, x_3)
-
 $$
 
 $$
 = 1 + \exp\left( -\frac{(x_1-x_2)^2}{2\rho^2} \right) + \exp\left( -\frac{(x_1-x_3)^2}{2\rho^2} \right)
-
 $$
 
 **Step 3: Compute the weights.**
 
 $$
 w_{11}(\rho) = \frac{K_\rho(x_1, x_1)}{Z_1(\rho)} = \frac{1}{1 + \exp\left( -\frac{(x_1-x_2)^2}{2\rho^2} \right) + \exp\left( -\frac{(x_1-x_3)^2}{2\rho^2} \right)}
-
 $$
 
 $$
 w_{12}(\rho) = \frac{K_\rho(x_1, x_2)}{Z_1(\rho)} = \frac{\exp\left( -\frac{(x_1-x_2)^2}{2\rho^2} \right)}{1 + \exp\left( -\frac{(x_1-x_2)^2}{2\rho^2} \right) + \exp\left( -\frac{(x_1-x_3)^2}{2\rho^2} \right)}
-
 $$
 
 $$
 w_{13}(\rho) = \frac{K_\rho(x_1, x_3)}{Z_1(\rho)} = \frac{\exp\left( -\frac{(x_1-x_3)^2}{2\rho^2} \right)}{1 + \exp\left( -\frac{(x_1-x_2)^2}{2\rho^2} \right) + \exp\left( -\frac{(x_1-x_3)^2}{2\rho^2} \right)}
-
 $$
 
 **Step 4: Verify normalization.**
 
 $$
 w_{11}(\rho) + w_{12}(\rho) + w_{13}(\rho) = \frac{1 + \exp(-\Delta_2^2) + \exp(-\Delta_3^2)}{1 + \exp(-\Delta_2^2) + \exp(-\Delta_3^2)} = 1
-
 $$
 
 where $\Delta_2 := (x_1-x_2)/(\sqrt{2}\rho)$ and $\Delta_3 := (x_1-x_3)/(\sqrt{2}\rho)$.
@@ -715,14 +660,12 @@ The normalization constraint $w_{11} + w_{12} + w_{13} = 1$ holds identically fo
 
 $$
 \frac{\partial}{\partial x_1}(w_{11} + w_{12} + w_{13}) = \frac{\partial}{\partial x_1}(1) = 0
-
 $$
 
 Therefore:
 
 $$
 \frac{\partial w_{11}}{\partial x_1} + \frac{\partial w_{12}}{\partial x_1} + \frac{\partial w_{13}}{\partial x_1} = 0
-
 $$
 
 This is the telescoping identity for $m = 1$ in the one-dimensional case.
@@ -733,31 +676,26 @@ Suppose $x_1 = 0$, $x_2 = 1$, $x_3 = -1$, and $\rho = 1$. Then:
 
 $$
 K_\rho(0, 0) = 1, \quad K_\rho(0, 1) = e^{-1/2} \approx 0.6065, \quad K_\rho(0, -1) = e^{-1/2} \approx 0.6065
-
 $$
 
 $$
 Z_1(\rho) = 1 + 2e^{-1/2} \approx 1 + 2(0.6065) = 2.213
-
 $$
 
 $$
 w_{11} \approx \frac{1}{2.213} \approx 0.452, \quad w_{12} \approx w_{13} \approx \frac{0.6065}{2.213} \approx 0.274
-
 $$
 
 Computing the derivatives (omitting the algebra):
 
 $$
 \frac{\partial w_{11}}{\partial x_1} \Big|_{x_1=0} \approx 0, \quad \frac{\partial w_{12}}{\partial x_1} \Big|_{x_1=0} \approx -0.169, \quad \frac{\partial w_{13}}{\partial x_1} \Big|_{x_1=0} \approx 0.169
-
 $$
 
 Indeed:
 
 $$
 0 + (-0.169) + 0.169 = 0
-
 $$
 
 The telescoping identity holds exactly (up to numerical rounding).
@@ -790,7 +728,6 @@ For any derivative order $m \in \{1, 2, 3\}$:
 
 $$
 \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho) = 0
-
 $$
 
 **Proof Strategy:**

@@ -1,0 +1,1166 @@
+{
+  "total_theorems": 68,
+  "total_documents": 10,
+  "documents": [
+    {
+      "name": "09_kl_convergence.md",
+      "path": "docs/source/1_euclidean_gas/09_kl_convergence.md",
+      "theorems_needed": 22,
+      "theorems": [
+        {
+          "label": "thm-main-kl-convergence",
+          "type": "theorem",
+          "title": "Exponential KL-Convergence for the Euclidean Gas",
+          "line": 168,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "cor-n-particle-kinetic-lsi",
+          "type": "corollary",
+          "title": "LSI for N-Particle Kinetic Operator",
+          "line": 671,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "lem-log-concave-yang-mills",
+          "type": "lemma",
+          "title": "Log-Concavity for Pure Yang-Mills Vacuum",
+          "line": 862,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "cor-adaptive-lsi",
+          "type": "corollary",
+          "title": "LSI for the \u03c1-Localized Geometric Gas",
+          "line": 1766,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "lem-mean-field-cloning-sketch",
+          "type": "lemma",
+          "title": "Entropy Dissipation Under Cloning (Mean-Field Sketch)",
+          "line": 2083,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-meanfield-kl-convergence-hybrid",
+          "type": "theorem",
+          "title": "Exponential KL-Convergence via Mean-Field Analysis",
+          "line": 3585,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-kinetic-lsi-reference",
+          "type": "theorem",
+          "title": "Hypocoercive LSI for Kinetic Operator (Reference)",
+          "line": 3628,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "lem-meanfield-cloning-dissipation-hybrid",
+          "type": "lemma",
+          "title": "Mean-Field Cloning Entropy Dissipation",
+          "line": 3656,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-composition-reference",
+          "type": "theorem",
+          "title": "Composition of LSI Operators (Reference)",
+          "line": 3838,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-discrete-lsi-hybrid",
+          "type": "theorem",
+          "title": "Discrete-Time LSI",
+          "line": 3889,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-exp-convergence-hybrid",
+          "type": "theorem",
+          "title": "Exponential Convergence from LSI",
+          "line": 3920,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-meanfield-lsi-standalone",
+          "type": "theorem",
+          "title": "Exponential KL-Convergence via Mean-Field Generator Analysis",
+          "line": 4041,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-nonconvex-informal",
+          "type": "theorem",
+          "title": "Exponential KL Convergence for Non-Convex Fitness (Informal)",
+          "line": 4895,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-villani-hypocoercivity",
+          "type": "theorem",
+          "title": "Villani's Hypocoercivity (Simplified)",
+          "line": 5088,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-fl-recap",
+          "type": "theorem",
+          "title": "Foster-Lyapunov Drift (Unconditional)",
+          "line": 6844,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-lsi-target",
+          "type": "theorem",
+          "title": "Logarithmic Sobolev Inequality (Target)",
+          "line": 6865,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-bakry-emery-classical",
+          "type": "theorem",
+          "title": "Classical Bakry-\u00c9mery Criterion",
+          "line": 6908,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-villani-hypocoercivity-recap",
+          "type": "theorem",
+          "title": "Villani's Hypocoercivity (Informal)",
+          "line": 6953,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-fl-established",
+          "type": "theorem",
+          "title": "Synergistic Foster-Lyapunov (Established)",
+          "line": 7011,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "lem-kinetic-lsi-established",
+          "type": "lemma",
+          "title": "Hypocoercive LSI for \u03a8_kin (Established)",
+          "line": 7043,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-dobrushin-established",
+          "type": "theorem",
+          "title": "Dobrushin Contraction (Established)",
+          "line": 7078,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-unconditional-lsi",
+          "type": "theorem",
+          "title": "Unconditional LSI for Euclidean Gas (TARGET)",
+          "line": 7161,
+          "document": "09_kl_convergence.md",
+          "has_proof": false
+        }
+      ]
+    },
+    {
+      "name": "06_convergence.md",
+      "path": "docs/source/1_euclidean_gas/06_convergence.md",
+      "theorems_needed": 18,
+      "theorems": [
+        {
+          "label": "prop-velocity-rate-explicit",
+          "type": "proposition",
+          "title": "Velocity Dissipation Rate (Parameter-Explicit)",
+          "line": 1233,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "prop-position-rate-explicit",
+          "type": "proposition",
+          "title": "Positional Contraction Rate (Parameter-Explicit)",
+          "line": 1321,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "prop-wasserstein-rate-explicit",
+          "type": "proposition",
+          "title": "Wasserstein Contraction Rate (Parameter-Explicit)",
+          "line": 1419,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "prop-boundary-rate-explicit",
+          "type": "proposition",
+          "title": "Boundary Contraction Rate (Parameter-Explicit)",
+          "line": 1518,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-synergistic-rate-derivation",
+          "type": "theorem",
+          "title": "Synergistic Rate Derivation from Component Drifts",
+          "line": 1621,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-total-rate-explicit",
+          "type": "theorem",
+          "title": "Total Convergence Rate (Parameter-Explicit)",
+          "line": 1715,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "prop-mixing-time-explicit",
+          "type": "proposition",
+          "title": "Mixing Time (Parameter-Explicit)",
+          "line": 1821,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "prop-parameter-classification",
+          "type": "proposition",
+          "title": "Parameter Classification",
+          "line": 2200,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-explicit-rate-sensitivity",
+          "type": "theorem",
+          "title": "Explicit Rate Sensitivity Matrix",
+          "line": 2384,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-svd-rate-matrix",
+          "type": "theorem",
+          "title": "SVD of Rate Sensitivity Matrix",
+          "line": 2483,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "prop-condition-number-rate",
+          "type": "proposition",
+          "title": "Condition Number of Rate Sensitivity",
+          "line": 2580,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-subgradient-min",
+          "type": "theorem",
+          "title": "Subgradient of min() Function",
+          "line": 2634,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-balanced-optimality",
+          "type": "theorem",
+          "title": "Necessity of Balanced Rates at Optimum",
+          "line": 2667,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "prop-restitution-friction-coupling",
+          "type": "proposition",
+          "title": "Restitution-Friction Coupling",
+          "line": 2774,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "prop-jitter-cloning-coupling",
+          "type": "proposition",
+          "title": "Position Jitter - Cloning Rate Coupling",
+          "line": 2829,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "prop-phase-space-pairing",
+          "type": "proposition",
+          "title": "Phase-Space Pairing Quality",
+          "line": 2878,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-error-propagation",
+          "type": "theorem",
+          "title": "Parameter Error Propagation Bound",
+          "line": 2928,
+          "document": "06_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-closed-form-optimum",
+          "type": "theorem",
+          "title": "Closed-Form Balanced Optimum",
+          "line": 3092,
+          "document": "06_convergence.md",
+          "has_proof": false
+        }
+      ]
+    },
+    {
+      "name": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "path": "docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+      "theorems_needed": 9,
+      "theorems": [
+        {
+          "label": "lem-hormander-bracket",
+          "type": "lemma",
+          "title": "H\u00f6rmander's Bracket Condition",
+          "line": 106,
+          "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-parabolic-harnack",
+          "type": "theorem",
+          "title": "Parabolic Harnack Inequality for Kinetic Operators",
+          "line": 140,
+          "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+          "has_proof": false
+        },
+        {
+          "label": "lem-linfty-full-operator",
+          "type": "lemma",
+          "title": "$L^\\infty$ Bound for the Full Operator",
+          "line": 181,
+          "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+          "has_proof": false
+        },
+        {
+          "label": "lem-gaussian-kernel-lower-bound",
+          "type": "lemma",
+          "title": "Gaussian Kernel Lower Bound",
+          "line": 384,
+          "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+          "has_proof": false
+        },
+        {
+          "label": "lem-strict-positivity-cloning",
+          "type": "lemma",
+          "title": "Strict Positivity After Cloning",
+          "line": 432,
+          "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+          "has_proof": false
+        },
+        {
+          "label": "lem-qsd-strict-positivity",
+          "type": "lemma",
+          "title": "QSD Strict Positivity",
+          "line": 472,
+          "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-exponential-survival",
+          "type": "theorem",
+          "title": "Exponential Survival Time (QSD Theory)",
+          "line": 582,
+          "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+          "has_proof": false
+        },
+        {
+          "label": "lem-mass-lower-bound-high-prob",
+          "type": "lemma",
+          "title": "High-Probability Alive Mass Lower Bound",
+          "line": 628,
+          "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-hk-convergence-unconditional",
+          "type": "theorem",
+          "title": "Exponential HK-Convergence of the Fragile Gas (UNCONDITIONAL)",
+          "line": 935,
+          "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+          "has_proof": false
+        }
+      ]
+    },
+    {
+      "name": "03_cloning.md",
+      "path": "docs/source/1_euclidean_gas/03_cloning.md",
+      "theorems_needed": 3,
+      "theorems": [
+        {
+          "label": "thm-complete-boundary-drift",
+          "type": "theorem",
+          "title": "Complete Boundary Potential Drift Characterization",
+          "line": 7640,
+          "document": "03_cloning.md",
+          "has_proof": false
+        },
+        {
+          "label": "prop-coupling-constant-existence",
+          "type": "proposition",
+          "title": "Existence of Valid Coupling Constants",
+          "line": 8230,
+          "document": "03_cloning.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-main-results-summary",
+          "type": "theorem",
+          "title": "Main Results of the Cloning Analysis (Summary)",
+          "line": 8276,
+          "document": "03_cloning.md",
+          "has_proof": false
+        }
+      ]
+    },
+    {
+      "name": "04_wasserstein_contraction.md",
+      "path": "docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+      "theorems_needed": 6,
+      "theorems": [
+        {
+          "label": "lem-variance-decomposition",
+          "type": "lemma",
+          "title": "Variance Decomposition by Clusters",
+          "line": 278,
+          "document": "04_wasserstein_contraction.md",
+          "has_proof": false
+        },
+        {
+          "label": "cor-between-group-dominance",
+          "type": "corollary",
+          "title": "Between-Group Variance Dominance",
+          "line": 354,
+          "document": "04_wasserstein_contraction.md",
+          "has_proof": false
+        },
+        {
+          "label": "lem-cross-swarm-distance",
+          "type": "lemma",
+          "title": "Cross-Swarm Distance Decomposition",
+          "line": 401,
+          "document": "04_wasserstein_contraction.md",
+          "has_proof": false
+        },
+        {
+          "label": "lem-variance-wasserstein-link",
+          "type": "lemma",
+          "title": "Structural Variance and Wasserstein Distance Relationship",
+          "line": 447,
+          "document": "04_wasserstein_contraction.md",
+          "has_proof": false
+        },
+        {
+          "label": "lem-expected-distance-change",
+          "type": "lemma",
+          "title": "Expected Cross-Distance Change",
+          "line": 712,
+          "document": "04_wasserstein_contraction.md",
+          "has_proof": false
+        },
+        {
+          "label": "lem-target-cloning-pressure",
+          "type": "lemma",
+          "title": "Cloning Pressure on Target Set",
+          "line": 804,
+          "document": "04_wasserstein_contraction.md",
+          "has_proof": false
+        }
+      ]
+    },
+    {
+      "name": "10_qsd_exchangeability_theory.md",
+      "path": "docs/source/1_euclidean_gas/10_qsd_exchangeability_theory.md",
+      "theorems_needed": 1,
+      "theorems": [
+        {
+          "label": "cor-mean-field-lsi",
+          "type": "corollary",
+          "title": "Mean-Field LSI from N-Uniform Bounds",
+          "line": 456,
+          "document": "10_qsd_exchangeability_theory.md",
+          "has_proof": false
+        }
+      ]
+    },
+    {
+      "name": "05_kinetic_contraction.md",
+      "path": "docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+      "theorems_needed": 3,
+      "theorems": [
+        {
+          "label": "prop-explicit-constants",
+          "type": "proposition",
+          "title": "Explicit Discretization Constants",
+          "line": 1043,
+          "document": "05_kinetic_contraction.md",
+          "has_proof": false
+        },
+        {
+          "label": "cor-net-velocity-contraction",
+          "type": "corollary",
+          "title": "Net Velocity Variance Contraction for Composed Operator",
+          "line": 1989,
+          "document": "05_kinetic_contraction.md",
+          "has_proof": false
+        },
+        {
+          "label": "cor-total-boundary-safety",
+          "type": "corollary",
+          "title": "Total Boundary Safety from Dual Mechanisms",
+          "line": 2533,
+          "document": "05_kinetic_contraction.md",
+          "has_proof": false
+        }
+      ]
+    },
+    {
+      "name": "11_hk_convergence.md",
+      "path": "docs/source/1_euclidean_gas/11_hk_convergence.md",
+      "theorems_needed": 4,
+      "theorems": [
+        {
+          "label": "prop-killing-rate-continuous",
+          "type": "proposition",
+          "title": "Continuous-Time Killing Rate from BAOAB",
+          "line": 1310,
+          "document": "11_hk_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "lem-hypoelliptic-density-bound",
+          "type": "lemma",
+          "title": "Hypoelliptic Regularity Provides Density Bounds",
+          "line": 1940,
+          "document": "11_hk_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "lem-gaussian-lower-bound",
+          "type": "lemma",
+          "title": "Gaussian Mollification Provides Uniform Lower Bound",
+          "line": 2043,
+          "document": "11_hk_convergence.md",
+          "has_proof": false
+        },
+        {
+          "label": "thm-hk-summary",
+          "type": "theorem",
+          "title": "Exponential HK-Convergence (Summary)",
+          "line": 3123,
+          "document": "11_hk_convergence.md",
+          "has_proof": false
+        }
+      ]
+    },
+    {
+      "name": "12_quantitative_error_bounds.md",
+      "path": "docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+      "theorems_needed": 1,
+      "theorems": [
+        {
+          "label": "thm-meyn-tweedie-drift-minor",
+          "type": "theorem",
+          "title": "Drift-Minorization Implies Geometric Ergodicity (Meyn & Tweedie)",
+          "line": 2194,
+          "document": "12_quantitative_error_bounds.md",
+          "has_proof": false
+        }
+      ]
+    },
+    {
+      "name": "07_mean_field.md",
+      "path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "theorems_needed": 1,
+      "theorems": [
+        {
+          "label": "thm-mean-field-limit-informal",
+          "type": "theorem",
+          "title": "Mean-Field Limit (Informal Statement)",
+          "line": 1309,
+          "document": "07_mean_field.md",
+          "has_proof": false
+        }
+      ]
+    }
+  ],
+  "all_theorems": [
+    {
+      "label": "thm-main-kl-convergence",
+      "type": "theorem",
+      "title": "Exponential KL-Convergence for the Euclidean Gas",
+      "line": 168,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "cor-n-particle-kinetic-lsi",
+      "type": "corollary",
+      "title": "LSI for N-Particle Kinetic Operator",
+      "line": 671,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-log-concave-yang-mills",
+      "type": "lemma",
+      "title": "Log-Concavity for Pure Yang-Mills Vacuum",
+      "line": 862,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "cor-adaptive-lsi",
+      "type": "corollary",
+      "title": "LSI for the \u03c1-Localized Geometric Gas",
+      "line": 1766,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-mean-field-cloning-sketch",
+      "type": "lemma",
+      "title": "Entropy Dissipation Under Cloning (Mean-Field Sketch)",
+      "line": 2083,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-meanfield-kl-convergence-hybrid",
+      "type": "theorem",
+      "title": "Exponential KL-Convergence via Mean-Field Analysis",
+      "line": 3585,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-kinetic-lsi-reference",
+      "type": "theorem",
+      "title": "Hypocoercive LSI for Kinetic Operator (Reference)",
+      "line": 3628,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-meanfield-cloning-dissipation-hybrid",
+      "type": "lemma",
+      "title": "Mean-Field Cloning Entropy Dissipation",
+      "line": 3656,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-composition-reference",
+      "type": "theorem",
+      "title": "Composition of LSI Operators (Reference)",
+      "line": 3838,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-discrete-lsi-hybrid",
+      "type": "theorem",
+      "title": "Discrete-Time LSI",
+      "line": 3889,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-exp-convergence-hybrid",
+      "type": "theorem",
+      "title": "Exponential Convergence from LSI",
+      "line": 3920,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-meanfield-lsi-standalone",
+      "type": "theorem",
+      "title": "Exponential KL-Convergence via Mean-Field Generator Analysis",
+      "line": 4041,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-nonconvex-informal",
+      "type": "theorem",
+      "title": "Exponential KL Convergence for Non-Convex Fitness (Informal)",
+      "line": 4895,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-villani-hypocoercivity",
+      "type": "theorem",
+      "title": "Villani's Hypocoercivity (Simplified)",
+      "line": 5088,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-fl-recap",
+      "type": "theorem",
+      "title": "Foster-Lyapunov Drift (Unconditional)",
+      "line": 6844,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-lsi-target",
+      "type": "theorem",
+      "title": "Logarithmic Sobolev Inequality (Target)",
+      "line": 6865,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-bakry-emery-classical",
+      "type": "theorem",
+      "title": "Classical Bakry-\u00c9mery Criterion",
+      "line": 6908,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-villani-hypocoercivity-recap",
+      "type": "theorem",
+      "title": "Villani's Hypocoercivity (Informal)",
+      "line": 6953,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-fl-established",
+      "type": "theorem",
+      "title": "Synergistic Foster-Lyapunov (Established)",
+      "line": 7011,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-kinetic-lsi-established",
+      "type": "lemma",
+      "title": "Hypocoercive LSI for \u03a8_kin (Established)",
+      "line": 7043,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-dobrushin-established",
+      "type": "theorem",
+      "title": "Dobrushin Contraction (Established)",
+      "line": 7078,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-unconditional-lsi",
+      "type": "theorem",
+      "title": "Unconditional LSI for Euclidean Gas (TARGET)",
+      "line": 7161,
+      "document": "09_kl_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "prop-velocity-rate-explicit",
+      "type": "proposition",
+      "title": "Velocity Dissipation Rate (Parameter-Explicit)",
+      "line": 1233,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "prop-position-rate-explicit",
+      "type": "proposition",
+      "title": "Positional Contraction Rate (Parameter-Explicit)",
+      "line": 1321,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "prop-wasserstein-rate-explicit",
+      "type": "proposition",
+      "title": "Wasserstein Contraction Rate (Parameter-Explicit)",
+      "line": 1419,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "prop-boundary-rate-explicit",
+      "type": "proposition",
+      "title": "Boundary Contraction Rate (Parameter-Explicit)",
+      "line": 1518,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-synergistic-rate-derivation",
+      "type": "theorem",
+      "title": "Synergistic Rate Derivation from Component Drifts",
+      "line": 1621,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-total-rate-explicit",
+      "type": "theorem",
+      "title": "Total Convergence Rate (Parameter-Explicit)",
+      "line": 1715,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "prop-mixing-time-explicit",
+      "type": "proposition",
+      "title": "Mixing Time (Parameter-Explicit)",
+      "line": 1821,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "prop-parameter-classification",
+      "type": "proposition",
+      "title": "Parameter Classification",
+      "line": 2200,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-explicit-rate-sensitivity",
+      "type": "theorem",
+      "title": "Explicit Rate Sensitivity Matrix",
+      "line": 2384,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-svd-rate-matrix",
+      "type": "theorem",
+      "title": "SVD of Rate Sensitivity Matrix",
+      "line": 2483,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "prop-condition-number-rate",
+      "type": "proposition",
+      "title": "Condition Number of Rate Sensitivity",
+      "line": 2580,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-subgradient-min",
+      "type": "theorem",
+      "title": "Subgradient of min() Function",
+      "line": 2634,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-balanced-optimality",
+      "type": "theorem",
+      "title": "Necessity of Balanced Rates at Optimum",
+      "line": 2667,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "prop-restitution-friction-coupling",
+      "type": "proposition",
+      "title": "Restitution-Friction Coupling",
+      "line": 2774,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "prop-jitter-cloning-coupling",
+      "type": "proposition",
+      "title": "Position Jitter - Cloning Rate Coupling",
+      "line": 2829,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "prop-phase-space-pairing",
+      "type": "proposition",
+      "title": "Phase-Space Pairing Quality",
+      "line": 2878,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-error-propagation",
+      "type": "theorem",
+      "title": "Parameter Error Propagation Bound",
+      "line": 2928,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-closed-form-optimum",
+      "type": "theorem",
+      "title": "Closed-Form Balanced Optimum",
+      "line": 3092,
+      "document": "06_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-hormander-bracket",
+      "type": "lemma",
+      "title": "H\u00f6rmander's Bracket Condition",
+      "line": 106,
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-parabolic-harnack",
+      "type": "theorem",
+      "title": "Parabolic Harnack Inequality for Kinetic Operators",
+      "line": 140,
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-linfty-full-operator",
+      "type": "lemma",
+      "title": "$L^\\infty$ Bound for the Full Operator",
+      "line": 181,
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-gaussian-kernel-lower-bound",
+      "type": "lemma",
+      "title": "Gaussian Kernel Lower Bound",
+      "line": 384,
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-strict-positivity-cloning",
+      "type": "lemma",
+      "title": "Strict Positivity After Cloning",
+      "line": 432,
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-qsd-strict-positivity",
+      "type": "lemma",
+      "title": "QSD Strict Positivity",
+      "line": 472,
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-exponential-survival",
+      "type": "theorem",
+      "title": "Exponential Survival Time (QSD Theory)",
+      "line": 582,
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-mass-lower-bound-high-prob",
+      "type": "lemma",
+      "title": "High-Probability Alive Mass Lower Bound",
+      "line": 628,
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-hk-convergence-unconditional",
+      "type": "theorem",
+      "title": "Exponential HK-Convergence of the Fragile Gas (UNCONDITIONAL)",
+      "line": 935,
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-complete-boundary-drift",
+      "type": "theorem",
+      "title": "Complete Boundary Potential Drift Characterization",
+      "line": 7640,
+      "document": "03_cloning.md",
+      "has_proof": false
+    },
+    {
+      "label": "prop-coupling-constant-existence",
+      "type": "proposition",
+      "title": "Existence of Valid Coupling Constants",
+      "line": 8230,
+      "document": "03_cloning.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-main-results-summary",
+      "type": "theorem",
+      "title": "Main Results of the Cloning Analysis (Summary)",
+      "line": 8276,
+      "document": "03_cloning.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-variance-decomposition",
+      "type": "lemma",
+      "title": "Variance Decomposition by Clusters",
+      "line": 278,
+      "document": "04_wasserstein_contraction.md",
+      "has_proof": false
+    },
+    {
+      "label": "cor-between-group-dominance",
+      "type": "corollary",
+      "title": "Between-Group Variance Dominance",
+      "line": 354,
+      "document": "04_wasserstein_contraction.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-cross-swarm-distance",
+      "type": "lemma",
+      "title": "Cross-Swarm Distance Decomposition",
+      "line": 401,
+      "document": "04_wasserstein_contraction.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-variance-wasserstein-link",
+      "type": "lemma",
+      "title": "Structural Variance and Wasserstein Distance Relationship",
+      "line": 447,
+      "document": "04_wasserstein_contraction.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-expected-distance-change",
+      "type": "lemma",
+      "title": "Expected Cross-Distance Change",
+      "line": 712,
+      "document": "04_wasserstein_contraction.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-target-cloning-pressure",
+      "type": "lemma",
+      "title": "Cloning Pressure on Target Set",
+      "line": 804,
+      "document": "04_wasserstein_contraction.md",
+      "has_proof": false
+    },
+    {
+      "label": "cor-mean-field-lsi",
+      "type": "corollary",
+      "title": "Mean-Field LSI from N-Uniform Bounds",
+      "line": 456,
+      "document": "10_qsd_exchangeability_theory.md",
+      "has_proof": false
+    },
+    {
+      "label": "prop-explicit-constants",
+      "type": "proposition",
+      "title": "Explicit Discretization Constants",
+      "line": 1043,
+      "document": "05_kinetic_contraction.md",
+      "has_proof": false
+    },
+    {
+      "label": "cor-net-velocity-contraction",
+      "type": "corollary",
+      "title": "Net Velocity Variance Contraction for Composed Operator",
+      "line": 1989,
+      "document": "05_kinetic_contraction.md",
+      "has_proof": false
+    },
+    {
+      "label": "cor-total-boundary-safety",
+      "type": "corollary",
+      "title": "Total Boundary Safety from Dual Mechanisms",
+      "line": 2533,
+      "document": "05_kinetic_contraction.md",
+      "has_proof": false
+    },
+    {
+      "label": "prop-killing-rate-continuous",
+      "type": "proposition",
+      "title": "Continuous-Time Killing Rate from BAOAB",
+      "line": 1310,
+      "document": "11_hk_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-hypoelliptic-density-bound",
+      "type": "lemma",
+      "title": "Hypoelliptic Regularity Provides Density Bounds",
+      "line": 1940,
+      "document": "11_hk_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "lem-gaussian-lower-bound",
+      "type": "lemma",
+      "title": "Gaussian Mollification Provides Uniform Lower Bound",
+      "line": 2043,
+      "document": "11_hk_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-hk-summary",
+      "type": "theorem",
+      "title": "Exponential HK-Convergence (Summary)",
+      "line": 3123,
+      "document": "11_hk_convergence.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-meyn-tweedie-drift-minor",
+      "type": "theorem",
+      "title": "Drift-Minorization Implies Geometric Ergodicity (Meyn & Tweedie)",
+      "line": 2194,
+      "document": "12_quantitative_error_bounds.md",
+      "has_proof": false
+    },
+    {
+      "label": "thm-mean-field-limit-informal",
+      "type": "theorem",
+      "title": "Mean-Field Limit (Informal Statement)",
+      "line": 1309,
+      "document": "07_mean_field.md",
+      "has_proof": false
+    }
+  ]
+}

@@ -1,0 +1,206 @@
+Document,Label,Type,Title,Line,Status
+11_geometric_gas.md,prop-limiting-regimes,Proposition,Limiting Behavior of the Unified Pipeline,310,needs_proof
+11_geometric_gas.md,prop:bounded-adaptive-force,Proposition,k-Uniform Boundedness of the Adaptive Force (ρ-Dependent),562,needs_proof
+11_geometric_gas.md,prop:ueph-by-construction,Proposition,k-Uniform Ellipticity by Construction (Proven in Chapter 4),598,has_complete_proof
+11_geometric_gas.md,thm-ueph,Theorem,k-Uniform Ellipticity of the Regularized Metric,622,has_complete_proof
+11_geometric_gas.md,lem-hessian-bounded,Lemma,N-Uniform Boundedness of the Pure Hessian,667,has_complete_proof
+11_geometric_gas.md,lem-hessian-bounded-rigorous,Lemma,Rigorous Boundedness of the Hessian,726,has_complete_proof
+11_geometric_gas.md,lem-hessian-explosion,Lemma,Failure of Uniformity Without Regularization,824,has_complete_proof
+11_geometric_gas.md,cor-wellposed,Corollary,Existence and Uniqueness of Solutions,932,has_complete_proof
+11_geometric_gas.md,thm-backbone-convergence,Theorem,Geometric Ergodicity of the Backbone,1035,has_sketch
+11_geometric_gas.md,thm-strat-chain,Theorem,Stratonovich Chain Rule for Lyapunov Functions,1110,has_complete_proof
+11_geometric_gas.md,lem-adaptive-force-bounded,Lemma,N-Uniform Bounded Perturbation from Adaptive Force,1232,has_complete_proof
+11_geometric_gas.md,lem-viscous-dissipative,Lemma,Dissipative Contribution from Viscous Force,1317,has_complete_proof
+11_geometric_gas.md,lem-diffusion-bounded,Lemma,Bounded Change from Adaptive Diffusion,1395,has_complete_proof
+11_geometric_gas.md,cor-total-perturbation,Corollary,Total Perturbation Bound (ρ-Dependent),1473,has_complete_proof
+11_geometric_gas.md,thm-fl-drift-adaptive,Theorem,Foster-Lyapunov Drift for the ρ-Localized Geometric Viscous Fluid Model,1508,has_complete_proof
+11_geometric_gas.md,cor-exp-convergence,Corollary,Exponential Convergence,1684,needs_proof
+11_geometric_gas.md,thm-lsi-adaptive-gas,Theorem,N-Uniform Log-Sobolev Inequality for the Geometric Viscous Fluid Model,1834,needs_proof
+11_geometric_gas.md,cor-entropy-convergence-lsi,Corollary,Exponential Convergence in Relative Entropy,2003,has_complete_proof
+11_geometric_gas.md,cor-geometric-ergodicity-lsi,Corollary,Geometric Ergodicity via LSI,2033,has_sketch
+11_geometric_gas.md,thm-qsd-existence,Theorem,Existence and Uniqueness of the QSD,2106,has_sketch
+11_geometric_gas.md,thm-lsi-mean-field,Theorem,Logarithmic Sobolev Inequality for the Mean-Field Generator,2217,needs_proof
+11_geometric_gas.md,lem-dissipation-decomp,Lemma,Decomposition of Entropy Dissipation,2271,needs_proof
+11_geometric_gas.md,lem-micro-coercivity,Lemma,Microscopic Coercivity (Step A),2304,needs_proof
+11_geometric_gas.md,lem-macro-transport,Lemma,Macroscopic Transport (Step B),2316,needs_proof
+11_geometric_gas.md,lem-micro-reg,Lemma,Microscopic Regularization (Step C),2328,needs_proof
+11_geometric_gas.md,lem-weight-derivatives,Lemma,Derivatives of Localization Weights,2550,needs_proof
+11_geometric_gas.md,lem-mean-first-derivative,Lemma,First Derivative of Localized Mean,2586,needs_proof
+11_geometric_gas.md,lem-mean-second-derivative,Lemma,Second Derivative of Localized Mean,2664,needs_proof
+11_geometric_gas.md,lem-variance-gradient,Lemma,k-Uniform Gradient of Localized Variance,2742,needs_proof
+11_geometric_gas.md,lem-variance-hessian,Lemma,k-Uniform Hessian of Localized Variance,2788,needs_proof
+11_geometric_gas.md,thm-c1-regularity,Theorem,C¹ Regularity and k-Uniform Gradient Bound,2819,needs_proof
+11_geometric_gas.md,thm-c2-regularity,Theorem,C² Regularity and k-Uniform Hessian Bound,2932,needs_proof
+11_geometric_gas.md,cor-axioms-verified,Corollary,Verification of Axioms 3.2.1 and 3.2.3,3053,needs_proof
+11_geometric_gas.md,thm-signal-generation-adaptive,Theorem,Signal Generation for the Adaptive Model,3124,needs_proof
+11_geometric_gas.md,lem-variance-to-gap-adaptive,Lemma,"Variance-to-Gap (from 03_cloning.md, Lemma 7.3.1)",3159,needs_proof
+11_geometric_gas.md,lem-rho-pipeline-bounds,Lemma,Uniform Bounds on the ρ-Localized Pipeline,3175,needs_proof
+11_geometric_gas.md,lem-raw-to-rescaled-gap-rho,Lemma,Raw-Gap to Rescaled-Gap for ρ-Localized Pipeline,3211,needs_proof
+11_geometric_gas.md,lem-log-gap-bounds-adaptive,Lemma,"Logarithmic Gap Bounds (from 03_cloning.md, Lemma 7.5.1)",3267,needs_proof
+11_geometric_gas.md,prop-diversity-signal-rho,Proposition,Lower Bound on Corrective Diversity Signal (ρ-Dependent),3291,needs_proof
+11_geometric_gas.md,prop-reward-bias-rho,Proposition,Axiom-Based Bound on Logarithmic Reward Gap (ρ-Dependent),3351,needs_proof
+11_geometric_gas.md,thm-stability-condition-rho,Theorem,ρ-Dependent Stability Condition for Intelligent Targeting,3401,needs_proof
+11_geometric_gas.md,thm-keystone-adaptive,Theorem,Keystone Lemma for the ρ-Localized Adaptive Model,3429,needs_proof
+12_symmetries_geometric_gas.md,thm-permutation-symmetry,Theorem,Permutation Invariance,249,has_complete_proof
+12_symmetries_geometric_gas.md,cor-qsd-exchangeable,Corollary,Exchangeability of the QSD,323,has_complete_proof
+12_symmetries_geometric_gas.md,thm-translation-equivariance,Theorem,Conditional Translation Equivariance,342,has_complete_proof
+12_symmetries_geometric_gas.md,thm-rotation-equivariance,Theorem,Rotational Equivariance,408,has_complete_proof
+12_symmetries_geometric_gas.md,thm-fitness-scaling,Theorem,Fitness Potential Scaling Symmetry,473,has_complete_proof
+12_symmetries_geometric_gas.md,cor-dimensionless-ratio,Corollary,Dimensionless Parameter,504,has_complete_proof
+12_symmetries_geometric_gas.md,thm-irreversibility,Theorem,Time-Reversal Asymmetry,514,has_complete_proof
+12_symmetries_geometric_gas.md,prop-h-theorem,Proposition,H-Theorem for Geometric Gas,553,has_complete_proof
+13_geometric_gas_c3_regularity.md,lem-telescoping-derivatives,Lemma,Telescoping Identity for Derivatives,199,needs_proof
+13_geometric_gas_c3_regularity.md,lem-weight-third-derivative,Lemma,Third Derivative of Localization Weights,329,has_complete_proof
+13_geometric_gas_c3_regularity.md,lem-mean-third-derivative,Lemma,k-Uniform Third Derivative of Localized Mean,444,has_complete_proof
+13_geometric_gas_c3_regularity.md,lem-variance-third-derivative,Lemma,k-Uniform Third Derivative of Localized Variance,553,has_complete_proof
+13_geometric_gas_c3_regularity.md,lem-patch-chain-rule,Lemma,Chain Rule for Regularized Standard Deviation,670,has_complete_proof
+13_geometric_gas_c3_regularity.md,lem-patch-third-derivative,Lemma,Third Derivative Bound for Regularized Standard Deviation,732,has_complete_proof
+13_geometric_gas_c3_regularity.md,lem-zscore-third-derivative,Lemma,k-Uniform Third Derivative of Z-Score,762,has_complete_proof
+13_geometric_gas_c3_regularity.md,thm-c3-regularity,Theorem,$C^3$ Regularity of the �-Localized Fitness Potential,933,has_complete_proof
+13_geometric_gas_c3_regularity.md,prop-scaling-kv3,Proposition,ρ-Scaling of Third Derivative Bound,1066,has_complete_proof
+13_geometric_gas_c3_regularity.md,cor-baoab-validity,Corollary,BAOAB Discretization Validity,1114,has_complete_proof
+13_geometric_gas_c3_regularity.md,cor-lyapunov-c3,Corollary,$C^3$ Regularity of Total Lyapunov Function,1152,has_complete_proof
+13_geometric_gas_c3_regularity.md,cor-smooth-perturbation,Corollary,$C^3$ Perturbation Structure,1206,has_complete_proof
+13_geometric_gas_c3_regularity.md,cor-regularity-hierarchy,Corollary,Regularity Hierarchy Complete,1242,has_complete_proof
+13_geometric_gas_c3_regularity.md,prop-scaling-k-v-3,Proposition,Scaling of Third-Derivative Bound,1269,has_complete_proof
+13_geometric_gas_c3_regularity.md,prop-timestep-constraint,Proposition,Time Step Constraint from $C^3$ Regularity,1382,has_complete_proof
+13_geometric_gas_c3_regularity.md,prop-explicit-k-v-3,Proposition,"Explicit Formula for $K_{V,3}(\rho)$",1453,has_complete_proof
+13_geometric_gas_c3_regularity.md,thm-continuity-third-derivatives,Theorem,Continuity of Third Derivatives,1483,has_complete_proof
+14_geometric_gas_c4_regularity.md,lem-weight-fourth-derivative,Lemma,Fourth Derivative of Localization Weights,397,has_complete_proof
+14_geometric_gas_c4_regularity.md,lem-weight-telescoping-fourth,Lemma,Telescoping Property for Fourth Derivative,427,has_complete_proof
+14_geometric_gas_c4_regularity.md,lem-mean-fourth-derivative,Lemma,Fourth Derivative of Localized Mean,453,has_complete_proof
+14_geometric_gas_c4_regularity.md,lem-variance-fourth-derivative,Lemma,Fourth Derivative of Localized Variance,548,has_complete_proof
+14_geometric_gas_c4_regularity.md,lem-reg-fourth-chain,Lemma,Chain Rule for $\sigma'_{\text{reg}}$,681,has_complete_proof
+14_geometric_gas_c4_regularity.md,lem-zscore-fourth-derivative,Lemma,Fourth Derivative of Z-Score,725,has_complete_proof
+14_geometric_gas_c4_regularity.md,thm-c4-regularity,Theorem,C⁴ Regularity of Fitness Potential (Simplified Position-Dependent Model),849,has_complete_proof
+14_geometric_gas_c4_regularity.md,cor-hessian-lipschitz,Corollary,Hessian Lipschitz Continuity,891,has_complete_proof
+14_geometric_gas_c4_regularity.md,cor-fourth-order-integrators,Corollary,Fourth-Order Integrator Compatibility,924,has_complete_proof
+14_geometric_gas_c4_regularity.md,cor-brascamp-lieb,Corollary,Brascamp-Lieb Inequality (Conditional),930,has_complete_proof
+14_geometric_gas_c4_regularity.md,prop-bakry-emery-gamma2,Proposition,Bakry-Émery Γ₂ Criterion (Conditional),968,has_complete_proof
+14_geometric_gas_c4_regularity.md,prop-scaling-k-v-4,Proposition,Fourth-Derivative Scaling,999,has_complete_proof
+14_geometric_gas_c4_regularity.md,prop-timestep-c4,Proposition,Time Step Constraint (Corrected),1037,has_complete_proof
+15_geometric_gas_lsi_proof.md,thm-fitness-third-deriv-proven,Theorem,N-Uniform Third Derivative Bound for Fitness (PROVEN),802,needs_proof
+15_geometric_gas_lsi_proof.md,thm-qsd-poincare-rigorous,Theorem,N-Uniform Poincaré Inequality for QSD Velocities (CORRECTED PROOF),882,has_complete_proof
+15_geometric_gas_lsi_proof.md,thm-drift-perturbation-bounds,Theorem,N-Uniform Drift Perturbation Bounds,1066,has_complete_proof
+15_geometric_gas_lsi_proof.md,thm-cattiaux-guillin-verification,Theorem,Verification of Cattiaux-Guillin Hypotheses,1122,has_complete_proof
+15_geometric_gas_lsi_proof.md,thm-adaptive-lsi-main,Theorem,N-Uniform Log-Sobolev Inequality for Geometric Viscous Fluid Model,1279,needs_proof
+16_convergence_mean_field.md,thm-finite-n-lsi-preservation,Theorem,Finite-N LSI Preservation (Proven),517,needs_proof
+16_convergence_mean_field.md,thm-data-processing,Theorem,Data Processing Inequality (Standard Result),577,needs_proof
+16_convergence_mean_field.md,lem-wasserstein-revival,Lemma,Wasserstein Contraction for Proportional Resampling (Conjecture),728,needs_proof
+16_convergence_mean_field.md,thm-revival-kl-expansive,Theorem,Revival Operator is KL-Expansive (VERIFIED),962,needs_proof
+16_convergence_mean_field.md,thm-joint-not-contractive,Theorem,Joint Jump Operator NOT Unconditionally Contractive (VERIFIED),986,needs_proof
+16_convergence_mean_field.md,thm-stage0-complete,Theorem,Stage 0 COMPLETE (VERIFIED),1015,needs_proof
+16_convergence_mean_field.md,thm-qsd-existence-corrected,Theorem,QSD Existence via Nonlinear Fixed-Point,1214,needs_proof
+16_convergence_mean_field.md,thm-qsd-stability,Theorem,QSD Stability (Champagnat-Villemonais),1342,needs_proof
+16_convergence_mean_field.md,lem-hormander,Lemma,Hörmander's Condition,1383,needs_proof
+16_convergence_mean_field.md,cor-hypoelliptic-regularity,Corollary,Hypoelliptic Regularity,1403,needs_proof
+16_convergence_mean_field.md,thm-qsd-smoothness,Theorem,QSD Smoothness,1427,needs_proof
+16_convergence_mean_field.md,thm-qsd-positivity,Theorem,QSD Strict Positivity,1437,needs_proof
+16_convergence_mean_field.md,lem-irreducibility,Lemma,Irreducibility,1449,needs_proof
+16_convergence_mean_field.md,lem-strong-max-principle,Lemma,Strong Maximum Principle,1493,needs_proof
+16_convergence_mean_field.md,prop-velocity-gradient-uniform,Proposition,Uniform Velocity Gradient Bound,1539,needs_proof
+16_convergence_mean_field.md,prop-complete-gradient-bounds,Proposition,Complete Gradient and Laplacian Bounds,1881,needs_proof
+16_convergence_mean_field.md,lem-drift-condition-corrected,Lemma,Drift Condition with Quadratic Lyapunov,2087,needs_proof
+16_convergence_mean_field.md,thm-exponential-tails,Theorem,Exponential Tails for QSD,2249,needs_proof
+16_convergence_mean_field.md,thm-corrected-kl-convergence,Theorem,KL-Convergence for Mean-Field Euclidean Gas (CORRECTED),3084,needs_proof
+16_convergence_mean_field.md,thm-lsi-qsd,Theorem,Log-Sobolev Inequality (LSI) for QSD,3385,has_complete_proof
+16_convergence_mean_field.md,thm-lsi-constant-explicit,Theorem,Explicit LSI Constant,3445,has_complete_proof
+16_convergence_mean_field.md,lem-fisher-bound,Lemma,Fisher Information Bound,3529,needs_proof
+16_convergence_mean_field.md,lem-kinetic-energy-bound,Lemma,Kinetic Energy Control,3610,needs_proof
+16_convergence_mean_field.md,lem-entropy-l1-bound,Lemma,Entropy $L^1$ Bound,3791,needs_proof
+16_convergence_mean_field.md,thm-exponential-convergence-local,Theorem,Exponential Convergence (Local),3958,needs_proof
+16_convergence_mean_field.md,thm-main-explicit-rate,Theorem,Main Result: Explicit Convergence Rate,4150,needs_proof
+16_convergence_mean_field.md,thm-alpha-net-explicit,Theorem,Mean-Field Convergence Rate (Explicit),4449,needs_proof
+16_convergence_mean_field.md,thm-optimal-parameter-scaling,Theorem,Optimal Parameter Scaling,4533,needs_proof
+16_convergence_mean_field.md,thm-mean-field-lsi-main,Theorem,Exponential KL-Convergence in the Mean-Field Limit,5295,has_complete_proof
+17_qsd_exchangeability_geometric.md,lem-conditional-multivariate-gaussian-geometric,Lemma,Conditional Velocity Distribution - Multivariate Gaussian (Geometric Gas),41,has_complete_proof
+17_qsd_exchangeability_geometric.md,lem-eigenvalue-bound-geometric,Lemma,N-Uniform Eigenvalue Bound for Conditional Covariance (Geometric Gas),112,has_complete_proof
+17_qsd_exchangeability_geometric.md,thm-poincare-geometric,Theorem,"N-Uniform Poincaré Inequality (Velocity Marginal, Geometric Gas)",191,has_complete_proof
+17_qsd_exchangeability_geometric.md,thm-lsi-geometric,Theorem,N-Uniform LSI for Geometric Gas QSD,276,needs_proof
+18_emergent_geometry.md,thm-main-informal,Theorem,Main Theorem (Informal),261,needs_proof
+18_emergent_geometry.md,thm-uniform-ellipticity,Theorem,Uniform Ellipticity by Construction (from `11_geometric_gas.md`),355,has_complete_proof
+18_emergent_geometry.md,prop-lipschitz-diffusion,Proposition,Lipschitz Continuity of Adaptive Diffusion,413,has_complete_proof
+18_emergent_geometry.md,thm-coordinate-invariance,Theorem,Invariance Under Coordinate Changes (Refined),642,has_complete_proof
+18_emergent_geometry.md,thm-main-convergence,Theorem,Geometric Ergodicity of the Geometric Gas,827,needs_proof
+18_emergent_geometry.md,lem-ito-correction-bound,Lemma,Itô Correction Term Bound,945,has_complete_proof
+18_emergent_geometry.md,thm-velocity-variance-anisotropic,Theorem,Velocity Variance Contraction (Anisotropic),1030,has_complete_proof
+18_emergent_geometry.md,thm-location-error-anisotropic,Theorem,Location Error Contraction (Anisotropic),1282,has_complete_proof
+18_emergent_geometry.md,thm-structural-error-anisotropic,Theorem,Structural Error Contraction (Anisotropic),1570,has_complete_proof
+18_emergent_geometry.md,thm-hypocoercive-main,Theorem,Hypocoercive Contraction for Geometric Gas,1791,has_complete_proof
+18_emergent_geometry.md,thm-position-variance-expansion,Theorem,Position Variance Expansion,1827,has_complete_proof
+18_emergent_geometry.md,thm-boundary-contraction,Theorem,Boundary Potential Contraction,1867,has_complete_proof
+18_emergent_geometry.md,thm-foster-lyapunov-adaptive,Theorem,Foster-Lyapunov Condition for Geometric Gas,1937,has_complete_proof
+18_emergent_geometry.md,thm-explicit-total-rate,Theorem,Total Convergence Rate with Full Parameter Dependence,2226,has_complete_proof
+18_emergent_geometry.md,thm-explicit-total-constant,Theorem,Total Expansion Constant with Full Parameter Dependence,2294,has_complete_proof
+18_emergent_geometry.md,cor-explicit-convergence-time,Corollary,Explicit Convergence Time,2439,has_complete_proof
+18_emergent_geometry.md,prop-rate-metric-ellipticity,Proposition,Convergence Rate Depends on Metric Ellipticity,2631,needs_proof
+18_emergent_geometry.md,thm-explicit-hessian,Theorem,Explicit Hessian Formula,2830,has_complete_proof
+18_emergent_geometry.md,thm-uniform-ellipticity-explicit,Theorem,Uniform Ellipticity from Regularization,3031,has_complete_proof
+18_emergent_geometry.md,prop-geodesics-fitness,Proposition,Geodesics Favor High-Fitness Regions,3275,has_complete_proof
+18_emergent_geometry.md,thm-algorithmic-tunability,Theorem,Algorithmic Tunability of the Emergent Geometry,3419,needs_proof
+18_emergent_geometry.md,lem-companion-flux-balance,Lemma,Companion Flux Balance at QSD,3831,has_complete_proof
+18_emergent_geometry.md,thm-qsd-spatial-riemannian-volume,Theorem,QSD Spatial Marginal is Riemannian Volume Measure,3992,has_complete_proof
+18_emergent_geometry.md,lem-velocity-marginalization,Lemma,Fast Velocity Thermalization Justifies Annealed Approximation,4090,has_complete_proof
+18_emergent_geometry.md,lem-companion-bias-riemannian,Lemma,Continuum Limit via Saddle-Point Approximation,4144,has_complete_proof
+19_geometric_gas_cinf_regularity_simplified.md,thm-faa-di-bruno-cinf,Theorem,Faà di Bruno Formula (Multivariate),306,has_complete_proof
+19_geometric_gas_cinf_regularity_simplified.md,thm-c1-established-cinf,Theorem,C¹ Regularity (Previously Proven),369,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,thm-c2-established-cinf,Theorem,C² Regularity (Previously Proven),377,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,thm-c3-established-cinf,Theorem,C³ Regularity (Previously Proven),385,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,thm-c4-established-cinf,Theorem,C⁴ Regularity (Previously Proven),395,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,lem-telescoping-all-orders-cinf,Lemma,Telescoping Identity at All Orders,431,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,lem-mean-cinf-inductive,Lemma,C^{m+1} Regularity of Localized Mean,451,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,lem-variance-cinf-inductive,Lemma,C^{m+1} Regularity of Localized Variance,491,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,lem-z-score-cinf-inductive,Lemma,C^{m+1} Regularity of Z-Score,511,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,thm-inductive-step-cinf,Theorem,Inductive Step: C^{m+1} Regularity from C^m,531,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,thm-cinf-regularity,Theorem,C∞ Regularity of the Fitness Potential,697,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,cor-derivatives-continuous-cinf,Corollary,Continuity of All Derivatives,725,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,cor-compact-bounds-cinf,Corollary,Uniform Bounds on Compact Sets,733,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,thm-gevrey-1-cinf,Theorem,Gevrey-1 Regularity of the Fitness Potential,767,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,prop-gevrey-regularization-cinf,Proposition,Gevrey Regularization Property,807,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,thm-essential-self-adjoint-cinf,Theorem,Essential Self-Adjointness (Conditional),842,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,thm-hypoellipticity-cinf,Theorem,Hypoellipticity via Hörmander's Criterion,869,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,cor-instantaneous-smoothing-cinf,Corollary,Instantaneous Smoothing,885,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,prop-gaussian-tail-bounds-cinf,Proposition,Gaussian Tail Bounds (Conditional),893,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,prop-talagrand-cinf,Proposition,Talagrand Inequality (Conditional),915,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,cor-wasserstein-convergence-cinf,Corollary,Exponential Convergence in Wasserstein Distance,932,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,prop-brascamp-lieb-cinf,Proposition,Brascamp-Lieb Inequality (Conditional),946,needs_proof
+19_geometric_gas_cinf_regularity_simplified.md,prop-bakry-emery-gamma2-cinf,Proposition,Bakry-Émery Curvature Condition (Conditional),964,needs_proof
+20_geometric_gas_cinf_regularity_full.md,lem-velocity-squashing-compact-domain-full,Lemma,Velocity Squashing Ensures Compact Phase Space,568,has_sketch
+20_geometric_gas_cinf_regularity_full.md,lem-fokker-planck-density-bound-conservative-full,Lemma,Fokker-Planck Density Bound from Lipschitz Drift (Conservative Case),589,has_sketch
+20_geometric_gas_cinf_regularity_full.md,lem-qsd-density-bound-with-cloning-full,Lemma,QSD Density Bound with Cloning (Conditional Statement),635,needs_proof
+20_geometric_gas_cinf_regularity_full.md,lem-companion-availability-enforcement,Lemma,Partition Function Lower Bound from Compactness,723,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-high-prob-min-separation-full,Lemma,High-Probability Minimum Separation,824,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-sum-to-integral-bound-full,Lemma,Sum-to-Integral Bound with Exponential Weights,914,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-partition-derivative-bounds-full,Lemma,Derivative Bounds for Partition Functions,1124,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-effective-cluster-size-bounds-full,Lemma,Bounds on Effective Cluster Size,1216,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-softmax-tail-corrected-full,Lemma,Softmax Tail Bound,1282,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,cor-effective-interaction-radius-full,Corollary,Effective Interaction Radius,1324,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-effective-companion-count-corrected-full,Lemma,Effective Companion Count,1357,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-softmax-derivative-locality-full,Lemma,Exponential Locality of Softmax Derivatives,1391,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-dalg-derivative-bounds-full,Lemma,Higher Derivatives of Regularized Algorithmic Distance,1492,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-companion-measurement-derivatives-full,Lemma,Derivatives of Companion-Dependent Measurements,1688,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-self-measurement-derivatives-full,Lemma,Derivatives of Self-Measurement (j=i case),1957,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,thm-diversity-pairing-measurement-regularity,Theorem,C^∞ Regularity with K-Uniform Bounds (Diversity Pairing),2163,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-greedy-ideal-equivalence,Lemma,Statistical Equivalence Preserves C^∞ Regularity,2388,has_sketch
+20_geometric_gas_cinf_regularity_full.md,thm-statistical-equivalence-companion-mechanisms,Theorem,Statistical Equivalence of Companion Selection Mechanisms (Revised),2487,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,thm-unified-cinf-regularity-both-mechanisms,Theorem,C^∞ Regularity of Companion-Dependent Fitness Potential (Both Mechanisms),2710,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-gaussian-kernel-derivatives-full,Lemma,Gaussian Kernel Derivatives,2784,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-localization-weight-derivatives-full,Lemma,Localization Weight Derivatives,2819,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-telescoping-localization-weights-full,Lemma,Telescoping for Localization Weights,2921,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,thm-k-uniformity-telescoping-full,Theorem,k-Uniformity via Telescoping Cancellation,2954,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-derivatives-companion-distance-full,Lemma,Derivatives of Companion-Dependent Distance,3068,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,thm-cluster-localized-derivative-bounds-full,Theorem,Cluster-Localized Derivative Bounds,3097,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-first-derivative-localized-mean-full,Lemma,First Derivative of Localized Mean,3227,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-mth-derivative-localized-mean-full,Lemma,m-th Derivative of Localized Mean,3404,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-first-derivative-localized-variance-full,Lemma,First Derivative of Localized Variance,3591,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,thm-mth-derivative-localized-variance-full,Theorem,m-th Derivative of Localized Variance,3713,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,lem-properties-regularized-std-dev-full,Lemma,Properties of Regularized Standard Deviation,4053,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,thm-cinf-regularity-zscore-full,Theorem,C^∞ Regularity of Z-Score,4169,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,thm-main-cinf-regularity-fitness-potential-full,Theorem,C^∞ Regularity of Fitness Potential (Main Result),4312,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,cor-gevrey-1-fitness-potential-full,Corollary,Gevrey-1 Classification,4436,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,thm-main-complete-cinf-geometric-gas-full,Theorem,C^∞ Regularity of Geometric Gas with Companion-Dependent Fitness (Complete),4539,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,thm-hypoellipticity-companion-dependent-full,Theorem,Hypoellipticity with Companion-Dependent Fitness,4649,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,cor-exponential-qsd-companion-dependent-full,Corollary,Exponential Convergence to QSD (Conditional),4779,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,thm-faa-di-bruno-appendix,Theorem,Faà di Bruno Formula for Higher-Order Chain Rule,4980,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,prop-factorial-sqrt-composition,Proposition,Factorial Growth for Composition with Square Root,5006,has_complete_proof
+20_geometric_gas_cinf_regularity_full.md,cor-gevrey-closure,Corollary,Gevrey-1 Closure Under Smooth Composition,5132,has_complete_proof

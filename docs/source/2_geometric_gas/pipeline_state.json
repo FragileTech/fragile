@@ -1,143 +1,43 @@
 {
   "version": "1.0",
-  "mode": "single_document",
-  "target_path": "docs/source/2_geometric_gas/20_geometric_gas_cinf_regularity_full.md",
-  "start_time": "2025-10-24T00:00:00",
-  "last_update": "2025-10-24T00:00:00",
+  "mode": "folder",
+  "target_path": "docs/source/2_geometric_gas",
+  "start_time": "2025-10-25T00:00:00",
+  "last_update": "2025-10-25T00:00:00",
   "status": "in_progress",
   "execution_plan": {
-    "total_theorems": 36,
-    "has_proof": 29,
-    "needs_proof": 7,
-    "missing_lemmas": 0,
-    "execution_order": [
-      "thm-faa-di-bruno-appendix",
-      "prop-factorial-sqrt-composition",
-      "cor-gevrey-closure",
-      "lem-effective-cluster-size-bounds-full",
-      "cor-effective-interaction-radius-full",
-      "lem-effective-companion-count-corrected-full",
-      "cor-gevrey-1-fitness-potential-full",
-      "cor-exponential-qsd-companion-dependent-full"
-    ],
-    "estimated_time_hours": 21
+    "total_theorems": 205,
+    "has_proof": 116,
+    "needs_proof": 83,
+    "has_sketch": 6,
+    "pipeline_target": 89,
+    "estimated_time_hours": 245,
+    "dependency_layers": 7,
+    "root_theorems": 52,
+    "critical_path_depth": 7
   },
-  "theorems": [
-    {
-      "label": "thm-faa-di-bruno-appendix",
-      "type": "theorem",
-      "document": "20_geometric_gas_cinf_regularity_full.md",
-      "document_path": "docs/source/2_geometric_gas/20_geometric_gas_cinf_regularity_full.md",
-      "line_number": 4676,
-      "title": "Faà di Bruno Formula for Higher-Order Chain Rule",
-      "has_proof": false,
-      "needs_proof": true,
-      "status": "pending",
-      "dependencies": [],
-      "attempts": 0
-    },
-    {
-      "label": "prop-factorial-sqrt-composition",
-      "type": "proposition",
-      "document": "20_geometric_gas_cinf_regularity_full.md",
-      "document_path": "docs/source/2_geometric_gas/20_geometric_gas_cinf_regularity_full.md",
-      "line_number": 4698,
-      "title": "Factorial Growth for Composition with Square Root",
-      "has_proof": true,
-      "needs_proof": false,
-      "status": "has_proof",
-      "dependencies": ["thm-faa-di-bruno-appendix"],
-      "attempts": 0
-    },
-    {
-      "label": "cor-gevrey-closure",
-      "type": "corollary",
-      "document": "20_geometric_gas_cinf_regularity_full.md",
-      "document_path": "docs/source/2_geometric_gas/20_geometric_gas_cinf_regularity_full.md",
-      "line_number": 4824,
-      "title": "Gevrey-1 Closure Under Smooth Composition",
-      "has_proof": false,
-      "needs_proof": true,
-      "status": "pending",
-      "dependencies": ["thm-faa-di-bruno-appendix"],
-      "attempts": 0
-    },
-    {
-      "label": "lem-effective-cluster-size-bounds-full",
-      "type": "lemma",
-      "document": "20_geometric_gas_cinf_regularity_full.md",
-      "document_path": "docs/source/2_geometric_gas/20_geometric_gas_cinf_regularity_full.md",
-      "line_number": 1190,
-      "title": "Bounds on Effective Cluster Size",
-      "has_proof": false,
-      "needs_proof": true,
-      "status": "pending",
-      "dependencies": ["assump-uniform-density-full"],
-      "attempts": 0
-    },
-    {
-      "label": "cor-effective-interaction-radius-full",
-      "type": "corollary",
-      "document": "20_geometric_gas_cinf_regularity_full.md",
-      "document_path": "docs/source/2_geometric_gas/20_geometric_gas_cinf_regularity_full.md",
-      "line_number": 1258,
-      "title": "Effective Interaction Radius",
-      "has_proof": false,
-      "needs_proof": true,
-      "status": "pending",
-      "dependencies": ["lem-softmax-tail-corrected-full"],
-      "attempts": 0
-    },
-    {
-      "label": "lem-effective-companion-count-corrected-full",
-      "type": "lemma",
-      "document": "20_geometric_gas_cinf_regularity_full.md",
-      "document_path": "docs/source/2_geometric_gas/20_geometric_gas_cinf_regularity_full.md",
-      "line_number": 1280,
-      "title": "Effective Companion Count",
-      "has_proof": false,
-      "needs_proof": true,
-      "status": "pending",
-      "dependencies": ["assump-uniform-density-full", "cor-effective-interaction-radius-full"],
-      "attempts": 0
-    },
-    {
-      "label": "cor-gevrey-1-fitness-potential-full",
-      "type": "corollary",
-      "document": "20_geometric_gas_cinf_regularity_full.md",
-      "document_path": "docs/source/2_geometric_gas/20_geometric_gas_cinf_regularity_full.md",
-      "line_number": 4140,
-      "title": "Gevrey-1 Classification",
-      "has_proof": false,
-      "needs_proof": true,
-      "status": "pending",
-      "dependencies": ["thm-cinf-fitness-potential-main-full"],
-      "attempts": 0
-    },
-    {
-      "label": "cor-exponential-qsd-companion-dependent-full",
-      "type": "corollary",
-      "document": "20_geometric_gas_cinf_regularity_full.md",
-      "document_path": "docs/source/2_geometric_gas/20_geometric_gas_cinf_regularity_full.md",
-      "line_number": 4479,
-      "title": "Exponential Convergence to QSD (Conditional)",
-      "has_proof": false,
-      "needs_proof": true,
-      "status": "pending",
-      "dependencies": ["conj-lsi-companion-dependent-full", "thm-hypoellipticity-companion-dependent-full"],
-      "attempts": 0
-    }
-  ],
+  "execution_order_file": "theorem_dependencies.json",
+  "current_batch": {
+    "batch_number": 1,
+    "theorems": [
+      "lem-greedy-ideal-equivalence",
+      "prop-complete-gradient-bounds",
+      "lem-macro-transport",
+      "thm-data-processing"
+    ],
+    "stage": "sketching"
+  },
   "statistics": {
-    "total_theorems": 7,
+    "total_theorems": 89,
     "completed": 0,
-    "in_progress": 0,
-    "pending": 7,
+    "in_progress": 4,
+    "pending": 85,
     "failed": 0,
     "auto_integrated": 0,
-    "manual_review": 0
+    "manual_review": 0,
+    "needs_refinement": 0
   },
   "current_theorem": null,
   "errors": [],
-  "resume_instructions": "Run '/math_pipeline docs/source/2_geometric_gas/20_geometric_gas_cinf_regularity_full.md' to resume"
+  "resume_instructions": "Pipeline running autonomously"
 }

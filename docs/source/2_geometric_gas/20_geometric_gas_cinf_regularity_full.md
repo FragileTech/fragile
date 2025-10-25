@@ -19,7 +19,7 @@ where measurements $d_j = d_{\text{alg}}(j, c(j))$ depend on **companion selecti
 - **C^∞ regularity**: $V_{\text{fit}} \in C^\infty(\mathcal{X} \times \mathbb{R}^d)$
 - **Gevrey-1 bounds**: $\|\nabla^m V_{\text{fit}}\| \leq C_m$ where $C_m = \mathcal{O}(m!)$
 - **k-uniformity**: Constants independent of swarm size $k$ or $N$
-- **Statistical equivalence**: Both mechanisms produce analytically equivalent fitness potentials up to negligible corrections
+- **Statistical equivalence**: Both mechanisms have **identical analytical structure** (regularity class, Gevrey-1 bounds, k-uniformity). Quantitative fitness difference vanishes as $k \to \infty$ with rate $O(k^{-1} \log^{d+1/2} k)$ (practical significance depends on dimension $d$)
 
 The proof uses a **smooth clustering framework** with partition-of-unity localization to handle the N-body coupling introduced by companion selection, establishing **N-uniform** and **k-uniform** derivative bounds at all orders.
 
@@ -31,7 +31,7 @@ The proof uses a **smooth clustering framework** with partition-of-unity localiz
 
 **N-Body Coupling Resolution**: Companion selection via softmax creates N-body coupling—each walker's measurement depends on ALL other walkers' positions through the companion probability distribution. We overcome this coupling using a **two-scale analytical framework**: (1) **Derivative locality** (scale ε_c): For j≠i, only companion ℓ=i contributes to ∇_i d_j, eliminating the ℓ-sum and preventing k_eff^(ε_c) = O((log k)^d) from appearing; (2) **Smooth clustering with telescoping** (scale ρ): Partition-of-unity normalization ∑_j w_ij = 1 gives telescoping identity ∑_j ∇^n w_ij = 0, which cancels naive O(k) dependence from j-sums to O(k_eff^(ρ)) = O(ρ^{2d}) (k-uniform). Result: **k-uniform** Gevrey-1 bounds at all orders.
 
-**Dual Mechanism Equivalence**: Both companion selection mechanisms (Independent Softmax and Diversity Pairing) achieve identical C^∞ regularity with k-uniform Gevrey-1 bounds. The mechanisms produce fitness potentials that are statistically equivalent in the supremum norm: $\|V_{\text{fit}}^{(\text{softmax})} - V_{\text{fit}}^{(\text{pairing})}\|_\infty = \mathcal{O}(k^{-\beta})$ for $\beta > 0$, ensuring the fitness potential's analytical properties are **implementation-independent**.
+**Dual Mechanism Equivalence**: Both companion selection mechanisms (Independent Softmax and Diversity Pairing) achieve **identical** C^∞ regularity with k-uniform Gevrey-1 bounds. The mechanisms produce fitness potentials with quantitative difference: $\|V_{\text{fit}}^{(\text{softmax})} - V_{\text{fit}}^{(\text{pairing})}\|_\infty = O(k^{-1} \log^{d+1/2} k)$ (worst-case). **Analytical properties** are **implementation-independent**. **Quantitative similarity** at finite $k$ depends on dimension: for low $d$ ($\leq 5$), mechanisms converge reasonably fast; for high $d$ (>10), convergence is extremely slow (see §5.7.2 for dimension-dependent assessment).
 
 **Regularization Cascade**: Three regularization parameters ensure smoothness: (1) $\varepsilon_d > 0$ eliminates singularities in $d_{\text{alg}}$ at walker collisions, (2) $\rho > 0$ controls localization scale, (3) $\eta_{\min} > 0$ prevents division by zero in the Z-score. The derivative bounds have explicit dependence: $\mathcal{O}(\max(\rho^{-m}, \varepsilon_d^{1-m}))$, with distance regularization $\varepsilon_d$ as the bottleneck for $m \geq 2$.
 
@@ -67,7 +67,7 @@ $$
 where $C_{V,m} = \mathcal{O}(m!)$ (Gevrey-1) and the constant is **independent of $k$ and $N$**.
 
 **Framework Assumptions**: The analysis relies on three standing assumptions established in §2:
-1. {prf:ref}`lem-companion-availability-enforcement`: Minimum companion availability within $R_{\max} = C_{\text{comp}} \varepsilon_c$, ensuring softmax partition function $Z_i \geq Z_{\min} > 0$ (derived from Keystone + volume)
+1. {prf:ref}`lem-companion-availability-enforcement`: Partition function lower bound $Z_i \geq Z_{\min} = \exp(-D_{\max}^2/(2\varepsilon_c^2)) > 0$ from compactness (where $D_{\max} = \text{diam}(\mathcal{X} \times V)$)
 2. {prf:ref}`assump-uniform-density-full`: Uniform bound on phase-space density $\rho_{\text{phase}}^{\text{QSD}}(x,v) \leq \rho_{\max}$ (explicit assumption, validated for self-consistency via a posteriori fixed-point check)
 3. {prf:ref}`assump-rescale-function-cinf-full`: Rescale function $g_A \in C^\infty(\mathbb{R})$ with Gevrey-1 derivative bounds
 
@@ -134,7 +134,90 @@ The j=i term with (log k)^d is absorbed into Gevrey-1 constants (sub-leading, do
 These act independently at different scales to produce k-uniform bounds.
 :::
 
-### 1.3. Overview of the Proof Strategy and Document Structure
+### 1.3. Notation Conventions: Effective Interaction Counts
+
+The Geometric Gas fitness potential involves **two distinct spatial scales** with separate effective interaction counts. It is crucial to distinguish these to understand which bounds are k-uniform.
+
+:::{prf:definition} Effective Interaction Counts (Two Scales)
+:label: def-effective-counts-two-scales
+
+**1. Softmax Effective Companions** (scale $\varepsilon_c$):
+
+$$
+k_{\text{eff}}^{(\varepsilon_c)}(i) := \left|\left\{\ell \in \mathcal{A} : d_{\text{alg}}(i,\ell) \leq R_{\text{eff}}^{(\varepsilon_c)}\right\}\right|
+$$
+
+where:
+
+$$
+R_{\text{eff}}^{(\varepsilon_c)} = \varepsilon_c \sqrt{C_{\text{comp}}^2 + 2\log(k^2)}
+$$
+
+**Scaling**:
+
+$$
+k_{\text{eff}}^{(\varepsilon_c)}(i) = O(\rho_{\max} \cdot \varepsilon_c^{2d} \cdot (\log k)^d)
+$$
+
+**Properties**:
+- Grows logarithmically with $k$
+- NOT k-uniform
+- Controls softmax companion sums over $\ell$
+
+**2. Localization Effective Neighbors** (scale $\rho$):
+
+$$
+k_{\text{eff}}^{(\rho)}(i) := \left|\left\{j \in \mathcal{A} : d_{\text{alg}}(i,j) \leq R_{\text{eff}}^{(\rho)}\right\}\right|
+$$
+
+where:
+
+$$
+R_{\text{eff}}^{(\rho)} = C_\rho \cdot \rho
+$$
+
+for some constant $C_\rho$ independent of $k$.
+
+**Scaling**:
+
+$$
+k_{\text{eff}}^{(\rho)}(i) = O(\rho_{\max} \cdot \rho^{2d})
+$$
+
+**Properties**:
+- Independent of $k$
+- **k-uniform** ✓
+- Controls localization weight sums over $j$
+:::
+
+:::{prf:notation} k_eff Superscript Convention
+:label: notation-keff-superscripts
+
+When we write "$k_{\text{eff}}$" without superscript, the scale should be clear from context:
+- If discussing softmax, companion selection, or measurements $d_j$: assume $k_{\text{eff}}^{(\varepsilon_c)}$
+- If discussing localization weights $w_{ij}$, localized moments $\mu_\rho, \sigma_\rho$: assume $k_{\text{eff}}^{(\rho)}$
+
+For clarity in proofs, **always use superscript notation** $k_{\text{eff}}^{(\varepsilon_c)}$ or $k_{\text{eff}}^{(\rho)}$.
+
+**Critical for k-uniformity claims**: Only $k_{\text{eff}}^{(\rho)}$ is k-uniform; $k_{\text{eff}}^{(\varepsilon_c)}$ is NOT.
+:::
+
+**Summary Table: When to Use Which**
+
+| Context | Scale | Notation | k-Uniform? | Typical Value |
+|---------|-------|----------|------------|---------------|
+| Softmax companion selection $P(c(j)=\ell)$ | $\varepsilon_c$ | $k_{\text{eff}}^{(\varepsilon_c)} = O((\log k)^d)$ | ✗ No | 10-100 |
+| Localization weights $w_{ij}(\rho)$ | $\rho$ | $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ | ✅ Yes | 5-50 |
+| Expected measurement $d_j$ ($\ell$-sum) | $\varepsilon_c$ | $k_{\text{eff}}^{(\varepsilon_c)}$ | ✗ No | 10-100 |
+| Localized mean $\mu_\rho$ ($j$-sum) | $\rho$ | $k_{\text{eff}}^{(\rho)}$ | ✅ Yes | 5-50 |
+
+**Memory aid**:
+- **$\varepsilon_c$** (smaller) → softmax companions → $(\log k)^d$ growth
+- **$\rho$** (larger, typically) → localization → k-uniform
+
+---
+
+### 1.4. Overview of the Proof Strategy and Document Structure
 
 The proof is organized in six parts, progressing from foundational tools through the main regularity theorem to spectral applications. The diagram below illustrates the logical dependencies:
 
@@ -202,7 +285,7 @@ The document structure follows this logical flow:
 
 **Part I: Foundations (Chapters 3-7)**
 - **Chapter 3**: Smooth phase-space clustering via partition-of-unity functions $\{\psi_m\}$
-- **Chapter 4**: Exponential locality bounds for softmax—effective interaction count $k_{\text{eff}} = \mathcal{O}((\log k)^d)$
+- **Chapter 4**: Exponential locality bounds for softmax—effective interaction count $k_{\text{eff}}^{(\varepsilon_c)} = \mathcal{O}((\log k)^d)$ (NOT k-uniform)
 - **Chapter 5**: Regularized algorithmic distance $d_{\text{alg}}$ with $\varepsilon_d > 0$ eliminating singularities
 - **Chapters 5.5-5.6**: Dual analysis of Softmax and Diversity Pairing companion selection
 - **Chapter 5.7**: Statistical equivalence theorem—both mechanisms yield sup-norm $\mathcal{O}(k^{-\beta})$ identical fitness
@@ -637,157 +720,77 @@ provides a self-consistent density bound.
 
 With the approach to the density bound clarified (explicit assumption with a posteriori validation, §2.3.5 above), we now state the three framework assumptions:
 
-:::{prf:lemma} Algorithmic Prevention of Walker Isolation
+:::{prf:lemma} Partition Function Lower Bound from Compactness
 :label: lem-companion-availability-enforcement
 
-For any walker $i \in \mathcal{A}$ in the alive set, there exists at least one companion $\ell \in \mathcal{A} \setminus \{i\}$ within effective distance:
+For any walker $i \in \mathcal{A}$ in the alive set with $k \geq 2$, the softmax partition function satisfies:
 
 $$
-\min_{\ell \in \mathcal{A} \setminus \{i\}} d_{\text{alg}}(i, \ell) \leq R_{\max} = C_{\text{comp}} \cdot \varepsilon_c
+Z_i = \sum_{\ell \in \mathcal{A} \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}}^2(i,\ell)}{2\varepsilon_c^2}\right) \geq \exp\left(-\frac{D_{\max}^2}{2\varepsilon_c^2}\right) =: Z_{\min} > 0
 
 $$
 
-where $C_{\text{comp}} \geq 1$ is a universal constant (typically C_comp = 3-5 in practice).
+where $D_{\max} = \text{diam}(\mathcal{X} \times V)$ is the phase-space diameter (finite by compactness).
 
-This ensures the softmax partition function has a uniform lower bound:
-
-$$
-Z_i = \sum_{\ell \in \mathcal{A} \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}}^2(i,\ell)}{2\varepsilon_c^2}\right) \geq \exp\left(-\frac{C_{\text{comp}}^2}{2}\right) =: Z_{\min} > 0
-
-$$
+**Key properties**:
+1. **Non-vanishing**: $Z_{\min} > 0$ is strictly positive for all $i \in \mathcal{A}$
+2. **k-uniform**: The bound depends only on domain diameter $D_{\max}$ and parameter $\varepsilon_c$, **not on the number of walkers** $k$ or $N$
+3. **Primitive derivation**: Uses only compactness of $\mathcal{X} \times V$ and the requirement $k_{\min} \geq 2$ (at least one other walker exists)
 :::
 
 :::{prf:proof}
-**Non-circular derivation from primitive axioms only.**
+**Direct proof from compactness and minimum walker requirement.**
 
-We establish companion availability using ONLY the following primitive assumptions (which require NO regularity or density bounds):
-1. **Bounded domain**: $\mathcal{X}$ is compact with $\text{Vol}(\mathcal{X}) = V_{\mathcal{X}} < \infty$
-2. **Kinetic temperature**: $T > 0$ (non-degenerate diffusion)
-3. **Cloning mechanism**: Rate $\lambda_{\text{clone}} > 0$ with $k \geq k_{\min} \geq 2$
-4. **Minimum alive walkers**: $k_{\min} \geq 2$ (at least 2 walkers always alive)
-**Step 1: Ergodicity from Keystone Principle (NO regularity assumptions)**
+The proof uses ONLY primitive assumptions:
+1. **Bounded domain**: $\mathcal{X} \times V$ is compact, so $D_{\max} := \text{diam}(\mathcal{X} \times V) < \infty$
+2. **Minimum walkers**: Cloning enforces $k \geq k_{\min} \geq 2$ (at least 2 alive walkers)
+3. **Self-exclusion**: By definition, walker $i$ cannot choose itself as companion
 
-From the Keystone Principle ({prf:ref}`lem-quantitative-keystone` in `docs/source/1_euclidean_gas/03_cloning.md`, Chapter 8), the cloning operator provides N-uniform contractive force on positional variance under axioms that include ONLY:
-- Bounded domain $\mathcal{X}$ (compact)
-- Non-degenerate kinetic diffusion ($T > 0$)
-- Active cloning ($\lambda_{\text{clone}} > 0$, $\alpha > 0$, $\beta > 0$)
+**Step 1: Partition function structure.**
 
-**CRITICALLY**, the Keystone Principle does NOT assume:
-- ✗ Fitness potential regularity beyond computability
-- ✗ Uniform density bounds
-- ✗ Any consequences of this C^∞ regularity analysis
-
-The Keystone Principle (Chapters 6-8 of `03_cloning.md`) establishes ergodicity based on:
-- Geometric structure detection (variance → partition into high-error and low-error sets)
-- Signal generation from geometry (guaranteed measurement variance)
-- Physical contraction (intelligent targeting of high-error walkers)
-
-This provides an **ergodic measure** on the compact phase space $\mathcal{X} \times V$ without requiring any regularity assumptions on $V_{\text{fit}}$ beyond its computability.
-
-**Step 2: Kinetic mixing prevents walker collapse**
-
-The kinetic operator (Langevin dynamics with temperature $T > 0$) provides:
-- Non-degenerate diffusion: $dv_i = -\gamma v_i \, dt + \sqrt{2\gamma T} \, dW_i$
-- Velocity spread maintained: $\mathbb{E}[\|v\|^2] = d \cdot T$ (equilibrium)
-- Position spreading: Velocity diffusion → spatial exploration
-
-Combined with the Keystone contraction (which prevents excessive spreading), the system maintains a **balanced spread** on the compact domain $\mathcal{X}$.
-
-**Step 3: Volume argument for companion availability**
-
-**Pigeonhole principle**: If all $k \geq 2$ walkers were isolated (i.e., $d_{\text{alg}}(i,\ell) > R_{\max}$ for all pairs $i \neq \ell$), then each walker would occupy a phase-space ball of volume:
+The softmax partition function is:
 
 $$
-V_{\text{exclusion}} = C_{\text{vol}} \cdot R_{\max}^{2d} = C_{\text{vol}} \cdot (C_{\text{comp}} \varepsilon_c)^{2d}
+Z_i = \sum_{\ell \in \mathcal{A} \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}}^2(i,\ell)}{2\varepsilon_c^2}\right)
 
 $$
 
-where $C_{\text{vol}}$ is the phase-space ball volume constant.
+Since $k \geq 2$, the set $\mathcal{A} \setminus \{i\}$ contains **at least one walker** $\ell \neq i$. Therefore, the sum has at least $k-1 \geq 1$ term.
 
-Total excluded volume if all walkers isolated: $k \cdot V_{\text{exclusion}}$
+**Step 2: Lower bound for each term.**
 
-For isolation to occur: $k \cdot V_{\text{exclusion}} \leq \text{Vol}(\mathcal{X} \times V)$
-
-This gives: $k \leq \frac{\text{Vol}(\mathcal{X} \times V)}{C_{\text{vol}} (C_{\text{comp}} \varepsilon_c)^{2d}} =: k_{\text{exclusion}}$
-
-**For any fixed $R_{\max} = C_{\text{comp}} \varepsilon_c$**, this bound $k_{\text{exclusion}}$ is FINITE and depends only on:
-- Domain volume $\text{Vol}(\mathcal{X} \times V)$ (compact assumption)
-- Interaction scale $\varepsilon_c$ (algorithmic parameter)
-- Dimension $d$
-
-**Step 4: Quantitative lower bound on minimum walker count**
-
-The volume argument from Step 3 provides a **quantitative constraint**: isolation is **impossible** when k > k_exclusion.
-
-Define the **exclusion threshold**:
+For any walker $\ell \in \mathcal{A} \setminus \{i\}$:
 
 $$
-k_{\text{exclusion}}(\varepsilon_c, C_{\text{comp}}) := \left\lfloor \frac{\text{Vol}(\mathcal{X} \times V)}{C_{\text{vol}} (C_{\text{comp}} \varepsilon_c)^{2d}} \right\rfloor
+\exp\left(-\frac{d_{\text{alg}}^2(i,\ell)}{2\varepsilon_c^2}\right) \geq \exp\left(-\frac{D_{\max}^2}{2\varepsilon_c^2}\right)
 
 $$
 
-**Key observation**: If k > k_exclusion, then by pigeonhole principle, **at least two walkers must be within distance R_max = C_comp ε_c** (otherwise they would require more volume than available).
+since $d_{\text{alg}}(i,\ell) \leq D_{\max}$ by compactness (worst case: $\ell$ is at maximum distance from $i$).
 
-**Practical values**: For typical problem dimensions and parameters:
-- 𝒳 = [0,1]^d → Vol(𝒳) = 1
-- V = B(0, V_max) → Vol(V) = C_vol V_max^d
-- ε_c ∼ 0.1 (interaction scale)
-- C_comp = 3 (safety factor)
+**Step 3: Combine to obtain lower bound.**
 
-This gives: k_exclusion ≈ (1/(0.3)^{2d}) = 3^{2d} ≈ 9^d
-
-For d=2: k_exclusion ≈ 81 walkers
-
-**Step 5: Enforcement via minimum walker requirement**
-
-We **require** as a **primitive algorithmic constraint**:
+Since $Z_i$ is a sum of at least one term, each at least $\exp(-D_{\max}^2/(2\varepsilon_c^2))$:
 
 $$
-k_{\min} \geq k_{\text{exclusion}}(\varepsilon_c, C_{\text{comp}}) + 1
+Z_i \geq \exp\left(-\frac{D_{\max}^2}{2\varepsilon_c^2}\right) =: Z_{\min} > 0
 
 $$
 
-where k_min is the minimum number of alive walkers maintained by the cloning operator.
+**Step 4: k-uniformity verification.**
 
-**Justification**: The cloning operator already enforces k ≥ k_min to prevent swarm extinction (see {prf:ref}`doc-03-cloning` §7.2). By choosing k_min large enough to exceed k_exclusion, we **guarantee** that isolation is geometrically impossible:
+The bound $Z_{\min}$ depends only on:
+- **Domain diameter** $D_{\max}$ (geometric property of $\mathcal{X} \times V$)
+- **Companion scale** $\varepsilon_c$ (algorithmic parameter)
 
-- The cloning mechanism maintains k ≥ k_min
-- Volume constraint ensures k > k_exclusion → at least one pair within R_max
-- No "probability zero" argument needed - it's a **deterministic geometric bound**
+It does **not** depend on:
+- ✗ Number of alive walkers $k$
+- ✗ Total walker count $N$
+- ✗ Walker positions $\{(x_j, v_j)\}_{j \in \mathcal{A}}$
+- ✗ Fitness potential regularity
+- ✗ Density bounds
 
-**Consequence**: For **all** swarm configurations with k ≥ k_min:
-
-$$
-\forall i \in \mathcal{A}: \quad \min_{\ell \in \mathcal{A} \setminus \{i\}} d_{\text{alg}}(i,\ell) \leq R_{\max}
-
-$$
-
-This is a **guaranteed property** of the algorithm, not a probabilistic statement.
-
-**Step 6: Optional runtime verification (defensive programming)**
-
-Although the geometric bound guarantees companion availability when k ≥ k_min > k_exclusion, implementations may optionally include runtime verification:
-
-```python
-# Optional assertion (should never trigger if k_min configured correctly)
-for i in alive_walkers:
-    min_dist = min(d_alg(i, j) for j in alive_walkers if j != i)
-    assert min_dist <= R_max, f"Isolation detected: k={len(alive_walkers)}, k_min={k_min}, k_excl={k_exclusion}"
-```
-
-If this assertion ever triggers, it indicates k_min was configured too low for the domain parameters.
-
-**Conclusion**: Companion availability is **guaranteed** by:
-1. **Geometric constraint**: Volume bound ensures k > k_exclusion → isolation impossible
-2. **Algorithmic enforcement**: Cloning maintains k ≥ k_min ≥ k_exclusion + 1
-3. **No probability argument needed**: This is a deterministic bound
-
-The proof uses ONLY:
-- Primitive assumptions (compact domain, k_min threshold, kinetic diffusion)
-- Elementary geometry (pigeonhole principle)
-- **NO regularity assumptions, NO density bounds, NO circularity**
-
-This establishes Z_i ≥ Z_min > 0 as a **guaranteed property** of all swarm configurations.
+**Conclusion**: The partition function lower bound $Z_i \geq Z_{\min} > 0$ holds **for all walkers** $i \in \mathcal{A}$ and **all swarm configurations** with $k \geq 2$. This is a **primitive geometric bound** requiring no regularity or density assumptions.
 
 □
 :::
@@ -1443,11 +1446,11 @@ $$
 **Key observation**: If $i = j$ or $i = \ell$, the derivative acts directly on the exponential. If $i \neq j, \ell$, the derivative couples through the N-body softmax structure. However, by exponential concentration:
 
 $$
-\|\nabla_{x_i} Z_j\| \leq \frac{k_{\text{eff}}}{\varepsilon_c^2} \cdot Z_j \leq \frac{C_{\text{eff}}}{\varepsilon_c^2} \cdot Z_j
+\|\nabla_{x_i} Z_j\| \leq \frac{k_{\text{eff}}^{(\varepsilon_c)}}{\varepsilon_c^2} \cdot Z_j \leq \frac{C_{\text{eff}}}{\varepsilon_c^2} \cdot Z_j
 
 $$
 
-where $k_{\text{eff}} = O(\rho_{\max} \varepsilon_c^{2d})$ is k-uniform.
+where $k_{\text{eff}}^{(\varepsilon_c)} = O(\rho_{\max} \varepsilon_c^{2d} (\log k)^d)$ grows logarithmically with $k$.
 
 **Step 4: Assemble first derivative bound.**
 
@@ -1456,7 +1459,7 @@ $$
 
 $$
 
-where $C_1 = O(1 + k_{\text{eff}})$ is k-uniform.
+where $C_1 = O(1 + k_{\text{eff}}^{(\varepsilon_c)})$ contains the $(\log k)^d$ factor, which is **absorbed into higher-order Gevrey-1 constants** (see §7.1 for how derivative locality prevents this from affecting k-uniformity).
 
 **Step 5: Higher derivatives by induction.**
 
@@ -1629,6 +1632,30 @@ Combined with the chain rule contributions from $\nabla^m r^2$, we obtain $C_{d,
 3. **Higher Derivatives**: The analysis accounts for ALL non-zero higher derivatives using Faà di Bruno formula
 
 The regularization is the key technical innovation that enables C^∞ regularity with uniform bounds throughout the entire state space.
+:::
+
+---
+
+:::{prf:property} Locality of Algorithmic Distance
+:label: prop-dalg-locality
+
+The regularized algorithmic distance $d_{\text{alg}}(j,\ell)$ depends only on the states of walkers $j$ and $\ell$:
+
+$$
+d_{\text{alg}}(j,\ell) = \sqrt{\|x_j - x_\ell\|^2 + \lambda_{\text{alg}} \|v_j - v_\ell\|^2 + \varepsilon_d^2}
+
+$$
+
+**Consequence (Derivative Locality)**: For any walker $i$ with $i \neq j$ and $i \neq \ell$:
+
+$$
+\nabla_{x_i, v_i} d_{\text{alg}}(j,\ell) = 0
+
+$$
+
+since the expression for $d_{\text{alg}}(j,\ell)$ contains no dependence on $(x_i, v_i)$.
+
+**Importance**: This **derivative locality** is fundamental to k-uniform bounds (§5.5.2). When taking $\nabla_{x_i}$ of a sum $\sum_{\ell \in \mathcal{A} \setminus \{j\}} f(d_{\text{alg}}(j,\ell))$ for $j \neq i$, only the single term with $\ell = i$ contributes. This eliminates the naive $\mathcal{O}(k_{\text{eff}}^{(\varepsilon_c)}) = \mathcal{O}((\log k)^d)$ factor from $\ell$-sums, preventing logarithmic growth with $k$.
 :::
 
 ---
@@ -1925,6 +1952,125 @@ It is **independent of $k$** (number of alive walkers) because:
 - The partition function lower bound is k-independent (framework assumption)
 
 Therefore, the constant $C_{d_j,n}$ is **k-uniform**.
+:::
+
+:::{prf:lemma} Derivatives of Self-Measurement (j=i case)
+:label: lem-self-measurement-derivatives-full
+
+For walker $i \in \mathcal{A}$, the **self-measurement** $d_i = d_{\text{alg}}(i, c(i))$ where $c(i)$ is selected via softmax satisfies:
+
+$$
+\|\nabla^n_{x_i} d_i\| \leq C_{d_i,n} \cdot \max(\varepsilon_d^{1-n}, \varepsilon_d \varepsilon_c^{-n})
+
+$$
+
+where $C_{d_i,n} = \mathcal{O}(n!)$ (Gevrey-1) is **k-uniform** (independent of the number of alive walkers).
+
+**For typical parameters** where $\varepsilon_d \ll \varepsilon_c$ and $n \geq 2$:
+
+$$
+\|\nabla^n_{x_i} d_i\| \leq C_{d_i,n} \cdot \varepsilon_d^{1-n}
+
+$$
+
+**Key difference from j≠i case**: The self-measurement involves a sum over **all** companions $\ell \in \mathcal{A} \setminus \{i\}$ (not just the single term $\ell=i$). However, the sum-to-integral technique provides k-uniformity.
+:::
+
+:::{prf:proof}
+The self-measurement is:
+
+$$
+d_i = \frac{N_i}{Z_i}, \quad N_i := \sum_{\ell \in \mathcal{A} \setminus \{i\}} d_{\text{alg}}(i,\ell) \exp\left(-\frac{d_{\text{alg}}^2(i,\ell)}{2\varepsilon_c^2}\right), \quad Z_i := \sum_{\ell \in \mathcal{A} \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}}^2(i,\ell)}{2\varepsilon_c^2}\right)
+
+$$
+
+**Step 1: Derivatives of numerator $N_i$.**
+
+For $\ell \neq i$, the $\ell$-th term in $N_i$ is:
+
+$$
+f_\ell := d_{\text{alg}}(i,\ell) \exp\left(-\frac{d_{\text{alg}}^2(i,\ell)}{2\varepsilon_c^2}\right)
+
+$$
+
+By the Leibniz rule (as in §5.5.2 for j≠i case), the $n$-th derivative satisfies:
+
+$$
+\|\nabla^n_{x_i} f_\ell\| \leq C_{f,n} \cdot \max(\varepsilon_d^{1-n}, \varepsilon_d \varepsilon_c^{-n}) \cdot \exp\left(-\frac{d_{\text{alg}}^2(i,\ell)}{2\varepsilon_c^2}\right)
+
+$$
+
+where $C_{f,n} = \mathcal{O}(n!)$ (Gevrey-1).
+
+**Summing over $\ell$**:
+
+$$
+\|\nabla^n_{x_i} N_i\| \leq \sum_{\ell \in \mathcal{A} \setminus \{i\}} \|\nabla^n_{x_i} f_\ell\| \leq C_{f,n} \cdot \max(\varepsilon_d^{1-n}, \varepsilon_d \varepsilon_c^{-n}) \cdot \sum_{\ell \in \mathcal{A} \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}}^2(i,\ell)}{2\varepsilon_c^2}\right)
+
+$$
+
+**Step 2: Apply sum-to-integral bound.**
+
+By Lemma {prf:ref}`lem-sum-to-integral-bound-full` with $f \equiv 1$:
+
+$$
+\sum_{\ell \in \mathcal{A} \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}}^2(i,\ell)}{2\varepsilon_c^2}\right) \leq \rho_{\max} \cdot (2\pi\varepsilon_c^2)^d \cdot C_{\lambda}
+
+$$
+
+This bound is **k-uniform**: it depends only on $(\rho_{\max}, \varepsilon_c, d)$, **not on $k$**.
+
+Therefore:
+
+$$
+\|\nabla^n_{x_i} N_i\| \leq C_{f,n} \cdot \max(\varepsilon_d^{1-n}, \varepsilon_d \varepsilon_c^{-n}) \cdot \rho_{\max} (2\pi\varepsilon_c^2)^d C_{\lambda}
+
+$$
+
+**Step 3: Derivatives of partition function $Z_i$.**
+
+Similarly, for the exponential terms in $Z_i$:
+
+$$
+\|\nabla^n_{x_i} \exp\left(-\frac{d_{\text{alg}}^2(i,\ell)}{2\varepsilon_c^2}\right)\| \leq C_{K,n} \varepsilon_c^{-n} \exp\left(-\frac{d_{\text{alg}}^2(i,\ell)}{2\varepsilon_c^2}\right)
+
+$$
+
+Summing and applying the sum-to-integral bound:
+
+$$
+\|\nabla^n_{x_i} Z_i\| \leq C_{K,n} \varepsilon_c^{-n} \cdot \rho_{\max} (2\pi\varepsilon_c^2)^d C_{\lambda}
+
+$$
+
+which is **k-uniform**.
+
+**Step 4: Quotient rule for $d_i = N_i / Z_i$.**
+
+By the generalized quotient rule (Faà di Bruno formula), the derivatives of $d_i$ involve products of $\nabla^k N_i$ and $\nabla^\ell Z_i$ with $k + \ell \leq n$, divided by powers of $Z_i$.
+
+**Lower bound for $Z_i$**: By Lemma {prf:ref}`lem-companion-availability-enforcement`:
+
+$$
+Z_i \geq \exp\left(-\frac{D_{\max}^2}{2\varepsilon_c^2}\right) =: Z_{\min} > 0
+
+$$
+
+Combining the bounds from Steps 2-3 and applying the quotient rule:
+
+$$
+\|\nabla^n_{x_i} d_i\| \leq C_{d_i,n} \cdot \max(\varepsilon_d^{1-n}, \varepsilon_d \varepsilon_c^{-n})
+
+$$
+
+where $C_{d_i,n} = \mathcal{O}(n!)$ arises from:
+- Faà di Bruno combinatorics: $\mathcal{O}(n!)$
+- Factorial growth from $C_{f,n}, C_{K,n}$: each $\mathcal{O}(n!)$
+- **k-uniform factors**: $\rho_{\max} (2\pi\varepsilon_c^2)^d C_{\lambda} / Z_{\min}$ (no $k$-dependence)
+
+**Conclusion**: The constant $C_{d_i,n}$ is **k-uniform** because the sum over companions is controlled by the sum-to-integral bound (Lemma {prf:ref}`lem-sum-to-integral-bound-full`), which replaces the naive $\mathcal{O}(k)$ factor with $\mathcal{O}(\rho_{\max} \varepsilon_c^{2d})$ (independent of $k$).
+
+□
 :::
 
 ---
@@ -2581,11 +2727,15 @@ $$
 $$
 
 where $C_{V,m} = \mathcal{O}(m!)$ (Gevrey-1) is **k-uniform** (independent of swarm size $k$ or $N$) and depends only on:
-- Algorithmic parameters: $\rho, \varepsilon_c, \varepsilon_d, \eta_{\min}$
+- Algorithmic parameters: $\rho$ (localization scale), $\varepsilon_c$ (companion selection temperature), $\varepsilon_d$ (distance regularization), $\eta_{\min}$ (variance regularization—see §12.3 for derivation from quotient rule in $\sigma'_\rho = \sqrt{\sigma_\rho^2 + \eta^2}$)
 - Dimension: $d$
 - Density bound: $\rho_{\max}$ (derived from kinetic dynamics)
 
-**Mechanism Equivalence**: The derivative bounds are identical for both mechanisms up to mechanism-independent constants. The fitness potentials differ by $O(k^{-1/2})$, which is negligible.
+**Mechanism Equivalence**:
+- **Regularity class**: IDENTICAL - Both mechanisms achieve C^∞ with k-uniform Gevrey-1 bounds
+- **Quantitative difference**: $\|V_{\text{fit}}^{\text{soft}} - V_{\text{fit}}^{\text{pair}}\| = O(k^{-1} \log^{d+1/2} k)$
+  - **Practical significance**: Depends on dimension $d$ (see §5.7.2 for dimension-dependent assessment)
+  - **Asymptotic**: Vanishes as $k \to \infty$
 :::
 
 :::{prf:proof}
@@ -2593,8 +2743,8 @@ where $C_{V,m} = \mathcal{O}(m!)$ (Gevrey-1) is **k-uniform** (independent of sw
 
 1. **Softmax mechanism** (§5.5): Proven in Lemma {prf:ref}`lem-companion-measurement-derivatives-full` + propagation through stages 2-6
 2. **Diversity pairing** (§5.6): Proven in Theorem {prf:ref}`thm-diversity-pairing-measurement-regularity` + same propagation
-3. **Statistical equivalence** (§5.7.2): Theorem {prf:ref}`thm-statistical-equivalence-companion-mechanisms` establishes mechanisms differ by $O(k^{-1/2})$
-4. **Unified conclusion**: Both achieve C^∞ with k-uniform Gevrey-1 bounds. Difference is negligible. $\square$
+3. **Statistical equivalence** (§5.7.2): Theorem {prf:ref}`thm-statistical-equivalence-companion-mechanisms` establishes mechanisms differ by $O(k^{-1} \log^{d+1/2} k)$ (worst-case)
+4. **Unified conclusion**: Both achieve C^∞ with k-uniform Gevrey-1 bounds. Analytical structure is IDENTICAL. Quantitative fitness values converge as $k \to \infty$ (rate depends on $d$). $\square$
 :::
 
 :::{important} Main Takeaway
@@ -2604,7 +2754,11 @@ This enables:
 - **Mean-field analysis**: Smooth potential allows rigorous mean-field limit (doc-07)
 - **Hypoelliptic regularity**: C^∞ fitness enables hypoelliptic propagation (§14)
 - **Stability analysis**: k-uniform bounds prevent blowup as swarm size varies
-- **Implementation flexibility**: Choose mechanism based on algorithmic needs, not analytical concerns
+
+**Implementation considerations**:
+- **Analytical properties**: Mechanism choice does NOT affect regularity, mean-field limit, or spectral theory
+- **Quantitative fitness**: For low-dimensional problems ($d \leq 5$), mechanisms produce similar fitness for $k \geq 50$. For high-dimensional problems ($d > 10$), quantitative similarity requires empirical evaluation.
+- **Recommendation**: Choose based on algorithmic needs (simplicity vs diversity) for low-d; empirically evaluate for high-d.
 :::
 
 ---
@@ -2886,7 +3040,11 @@ $$
 
 Terms with $\alpha \geq 1$ use telescoping: $\sum_j \nabla^\alpha w_{ij} = 0$, so we can subtract any constant (e.g., the mean of $\nabla^\beta d_j$).
 
-Terms with $\alpha = 0$ have only one term (no sum over $j$): $w_{ij} \cdot \nabla^m d_j$, which is manifestly k-uniform.
+Terms with $\alpha = 0$ give: $\sum_j w_{ij} \cdot \nabla^m d_j$. Each term $\nabla^m d_j$ is k-uniform by:
+- **For $j \neq i$**: Lemma {prf:ref}`lem-companion-measurement-derivatives-full` (derivative locality)
+- **For $j = i$**: Lemma {prf:ref}`lem-self-measurement-derivatives-full` (sum-to-integral bound)
+
+Since localization weights $w_{ij}$ have k-uniform bounds (Lemma {prf:ref}`lem-localization-weight-derivatives-full`) and the sum has $k$ terms with exponential decay (only $k_{\text{eff}}^{(\rho)}$ contribute significantly), the product $\sum_j w_{ij} \cdot \nabla^m d_j$ is k-uniform.
 
 By induction and combinatorial counting (Faà di Bruno), the total bound grows as $C_m m!$ (Gevrey-1) with $C_m$ independent of $k$.
 

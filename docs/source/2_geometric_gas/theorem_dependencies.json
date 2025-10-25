@@ -1,0 +1,1850 @@
+{
+  "metadata": {
+    "total_theorems_needing_proof": 89,
+    "topological_sort_successful": true,
+    "cycles_detected": []
+  },
+  "execution_order": [
+    "lem-greedy-ideal-equivalence",
+    "prop-complete-gradient-bounds",
+    "lem-macro-transport",
+    "thm-data-processing",
+    "thm-c2-established-cinf",
+    "thm-stage0-complete",
+    "thm-c4-established-cinf",
+    "prop-rate-metric-ellipticity",
+    "thm-fitness-third-deriv-proven",
+    "thm-exponential-tails",
+    "lem-wasserstein-revival",
+    "lem-velocity-squashing-compact-domain-full",
+    "thm-backbone-convergence",
+    "thm-main-informal",
+    "thm-qsd-stability",
+    "lem-telescoping-derivatives",
+    "thm-main-explicit-rate",
+    "lem-hormander",
+    "thm-signal-generation-adaptive",
+    "thm-qsd-existence",
+    "thm-algorithmic-tunability",
+    "cor-exp-convergence",
+    "cor-instantaneous-smoothing-cinf",
+    "thm-optimal-parameter-scaling",
+    "prop-limiting-regimes",
+    "thm-c3-established-cinf",
+    "thm-c1-established-cinf",
+    "lem-variance-to-gap-adaptive",
+    "thm-lsi-mean-field",
+    "thm-qsd-existence-corrected",
+    "cor-hypoelliptic-regularity",
+    "thm-finite-n-lsi-preservation",
+    "thm-alpha-net-explicit",
+    "thm-lsi-geometric",
+    "lem-rho-pipeline-bounds",
+    "lem-dissipation-decomp",
+    "lem-telescoping-all-orders-cinf",
+    "lem-raw-to-rescaled-gap-rho",
+    "lem-variance-cinf-inductive",
+    "prop-gevrey-regularization-cinf",
+    "lem-weight-derivatives",
+    "thm-main-convergence",
+    "lem-kinetic-energy-bound",
+    "thm-exponential-convergence-local",
+    "lem-micro-reg",
+    "prop-bakry-emery-gamma2-cinf",
+    "lem-fisher-bound",
+    "thm-joint-not-contractive",
+    "lem-drift-condition-corrected",
+    "lem-micro-coercivity",
+    "thm-corrected-kl-convergence",
+    "thm-revival-kl-expansive",
+    "thm-adaptive-lsi-main",
+    "lem-fokker-planck-density-bound-conservative-full",
+    "thm-qsd-smoothness",
+    "thm-qsd-positivity",
+    "lem-irreducibility",
+    "prop-velocity-gradient-uniform",
+    "lem-mean-cinf-inductive",
+    "lem-log-gap-bounds-adaptive",
+    "lem-mean-first-derivative",
+    "lem-entropy-l1-bound",
+    "lem-qsd-density-bound-with-cloning-full",
+    "lem-strong-max-principle",
+    "lem-z-score-cinf-inductive",
+    "prop-diversity-signal-rho",
+    "lem-mean-second-derivative",
+    "thm-c1-regularity",
+    "thm-inductive-step-cinf",
+    "prop-reward-bias-rho",
+    "lem-variance-gradient",
+    "thm-lsi-adaptive-gas",
+    "thm-c2-regularity",
+    "thm-cinf-regularity",
+    "thm-stability-condition-rho",
+    "lem-variance-hessian",
+    "cor-geometric-ergodicity-lsi",
+    "prop:bounded-adaptive-force",
+    "cor-axioms-verified",
+    "cor-derivatives-continuous-cinf",
+    "cor-compact-bounds-cinf",
+    "thm-gevrey-1-cinf",
+    "thm-essential-self-adjoint-cinf",
+    "thm-hypoellipticity-cinf",
+    "prop-gaussian-tail-bounds-cinf",
+    "prop-talagrand-cinf",
+    "thm-keystone-adaptive",
+    "cor-wasserstein-convergence-cinf",
+    "prop-brascamp-lieb-cinf"
+  ],
+  "dependency_graph": [
+    {
+      "label": "prop-limiting-regimes",
+      "document": "11_geometric_gas.md",
+      "line": 310,
+      "type": "Proposition",
+      "title": "Limiting Behavior of the Unified Pipeline",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "def-unified-z-score",
+          "status": "truly_missing",
+          "source": null
+        },
+        {
+          "label": "def-localized-mean-field-fitness",
+          "status": "truly_missing",
+          "source": null
+        },
+        {
+          "label": "def-localized-mean-field-moments",
+          "status": "truly_missing",
+          "source": null
+        }
+      ],
+      "truly_missing_deps": [
+        "def-unified-z-score",
+        "def-localized-mean-field-fitness",
+        "def-localized-mean-field-moments"
+      ]
+    },
+    {
+      "label": "prop:bounded-adaptive-force",
+      "document": "11_geometric_gas.md",
+      "line": 562,
+      "type": "Proposition",
+      "title": "k-Uniform Boundedness of the Adaptive Force (\u03c1-Dependent)",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-c1-regularity",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2819",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "thm-c2-regularity",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2932",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "thm-ueph",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "622",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        },
+        {
+          "label": "def-localized-mean-field-moments",
+          "status": "truly_missing",
+          "source": null
+        }
+      ],
+      "truly_missing_deps": [
+        "def-localized-mean-field-moments"
+      ]
+    },
+    {
+      "label": "thm-backbone-convergence",
+      "document": "11_geometric_gas.md",
+      "line": 1035,
+      "type": "Theorem",
+      "title": "Geometric Ergodicity of the Backbone",
+      "status": "has_sketch",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "cor-exp-convergence",
+      "document": "11_geometric_gas.md",
+      "line": 1684,
+      "type": "Corollary",
+      "title": "Exponential Convergence",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-lsi-adaptive-gas",
+      "document": "11_geometric_gas.md",
+      "line": 1834,
+      "type": "Theorem",
+      "title": "N-Uniform Log-Sobolev Inequality for the Geometric Viscous Fluid Model",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-lsi-mean-field",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2217",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "thm-c1-regularity",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2819",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "thm-fitness-third-deriv-proven",
+          "status": "in_current_pipeline",
+          "source": "15_geometric_gas_lsi_proof.md",
+          "line": "802",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "thm-ueph",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "622",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "cor-geometric-ergodicity-lsi",
+      "document": "11_geometric_gas.md",
+      "line": 2033,
+      "type": "Corollary",
+      "title": "Geometric Ergodicity via LSI",
+      "status": "has_sketch",
+      "dependencies": [
+        {
+          "label": "thm-lsi-mean-field",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2217",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "rem-concentration-lsi",
+          "status": "truly_missing",
+          "source": null
+        },
+        {
+          "label": "cor-entropy-convergence-lsi",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2003",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        },
+        {
+          "label": "thm-lsi-adaptive-gas",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "1834",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": [
+        "rem-concentration-lsi"
+      ]
+    },
+    {
+      "label": "thm-qsd-existence",
+      "document": "11_geometric_gas.md",
+      "line": 2106,
+      "type": "Theorem",
+      "title": "Existence and Uniqueness of the QSD",
+      "status": "has_sketch",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-lsi-mean-field",
+      "document": "11_geometric_gas.md",
+      "line": 2217,
+      "type": "Theorem",
+      "title": "Logarithmic Sobolev Inequality for the Mean-Field Generator",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-dissipation-decomp",
+      "document": "11_geometric_gas.md",
+      "line": 2271,
+      "type": "Lemma",
+      "title": "Decomposition of Entropy Dissipation",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-micro-coercivity",
+      "document": "11_geometric_gas.md",
+      "line": 2304,
+      "type": "Lemma",
+      "title": "Microscopic Coercivity (Step A)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-macro-transport",
+      "document": "11_geometric_gas.md",
+      "line": 2316,
+      "type": "Lemma",
+      "title": "Macroscopic Transport (Step B)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-micro-reg",
+      "document": "11_geometric_gas.md",
+      "line": 2328,
+      "type": "Lemma",
+      "title": "Microscopic Regularization (Step C)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-weight-derivatives",
+      "document": "11_geometric_gas.md",
+      "line": 2550,
+      "type": "Lemma",
+      "title": "Derivatives of Localization Weights",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-mean-first-derivative",
+      "document": "11_geometric_gas.md",
+      "line": 2586,
+      "type": "Lemma",
+      "title": "First Derivative of Localized Mean",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-weight-derivatives",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2550",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-mean-second-derivative",
+      "document": "11_geometric_gas.md",
+      "line": 2664,
+      "type": "Lemma",
+      "title": "Second Derivative of Localized Mean",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-mean-first-derivative",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2586",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "lem-weight-derivatives",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2550",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-variance-gradient",
+      "document": "11_geometric_gas.md",
+      "line": 2742,
+      "type": "Lemma",
+      "title": "k-Uniform Gradient of Localized Variance",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-mean-first-derivative",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2586",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "lem-mean-second-derivative",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2664",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-variance-hessian",
+      "document": "11_geometric_gas.md",
+      "line": 2788,
+      "type": "Lemma",
+      "title": "k-Uniform Hessian of Localized Variance",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-mean-first-derivative",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2586",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "lem-mean-second-derivative",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2664",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "lem-variance-gradient",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2742",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-c1-regularity",
+      "document": "11_geometric_gas.md",
+      "line": 2819,
+      "type": "Theorem",
+      "title": "C\u00b9 Regularity and k-Uniform Gradient Bound",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-mean-first-derivative",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2586",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-c2-regularity",
+      "document": "11_geometric_gas.md",
+      "line": 2932,
+      "type": "Theorem",
+      "title": "C\u00b2 Regularity and k-Uniform Hessian Bound",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-mean-first-derivative",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2586",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "thm-c1-regularity",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2819",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "lem-mean-second-derivative",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2664",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "cor-axioms-verified",
+      "document": "11_geometric_gas.md",
+      "line": 3053,
+      "type": "Corollary",
+      "title": "Verification of Axioms 3.2.1 and 3.2.3",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-c1-regularity",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2819",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "thm-c2-regularity",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "2932",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-signal-generation-adaptive",
+      "document": "11_geometric_gas.md",
+      "line": 3124,
+      "type": "Theorem",
+      "title": "Signal Generation for the Adaptive Model",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-variance-to-gap-adaptive",
+      "document": "11_geometric_gas.md",
+      "line": 3159,
+      "type": "Lemma",
+      "title": "Variance-to-Gap (from 03_cloning.md, Lemma 7.3.1)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-rho-pipeline-bounds",
+      "document": "11_geometric_gas.md",
+      "line": 3175,
+      "type": "Lemma",
+      "title": "Uniform Bounds on the \u03c1-Localized Pipeline",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-raw-to-rescaled-gap-rho",
+      "document": "11_geometric_gas.md",
+      "line": 3211,
+      "type": "Lemma",
+      "title": "Raw-Gap to Rescaled-Gap for \u03c1-Localized Pipeline",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-log-gap-bounds-adaptive",
+      "document": "11_geometric_gas.md",
+      "line": 3267,
+      "type": "Lemma",
+      "title": "Logarithmic Gap Bounds (from 03_cloning.md, Lemma 7.5.1)",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-signal-generation-adaptive",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "3124",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "lem-variance-to-gap-adaptive",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "3159",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "lem-raw-to-rescaled-gap-rho",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "3211",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "prop-diversity-signal-rho",
+      "document": "11_geometric_gas.md",
+      "line": 3291,
+      "type": "Proposition",
+      "title": "Lower Bound on Corrective Diversity Signal (\u03c1-Dependent)",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-signal-generation-adaptive",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "3124",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "lem-variance-to-gap-adaptive",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "3159",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "lem-log-gap-bounds-adaptive",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "3267",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "lem-raw-to-rescaled-gap-rho",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "3211",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "prop-reward-bias-rho",
+      "document": "11_geometric_gas.md",
+      "line": 3351,
+      "type": "Proposition",
+      "title": "Axiom-Based Bound on Logarithmic Reward Gap (\u03c1-Dependent)",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "prop-diversity-signal-rho",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "3291",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-stability-condition-rho",
+      "document": "11_geometric_gas.md",
+      "line": 3401,
+      "type": "Theorem",
+      "title": "\u03c1-Dependent Stability Condition for Intelligent Targeting",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-signal-generation-adaptive",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "3124",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "prop-reward-bias-rho",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "3351",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "prop-diversity-signal-rho",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "3291",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "lem-raw-to-rescaled-gap-rho",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "3211",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-keystone-adaptive",
+      "document": "11_geometric_gas.md",
+      "line": 3429,
+      "type": "Theorem",
+      "title": "Keystone Lemma for the \u03c1-Localized Adaptive Model",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-signal-generation-adaptive",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "3124",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "thm-stability-condition-rho",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "3401",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "lem-raw-to-rescaled-gap-rho",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "3211",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-telescoping-derivatives",
+      "document": "13_geometric_gas_c3_regularity.md",
+      "line": 199,
+      "type": "Lemma",
+      "title": "Telescoping Identity for Derivatives",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-patch-chain-rule",
+          "status": "in_current_pipeline",
+          "source": "13_geometric_gas_c3_regularity.md",
+          "line": "670",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-fitness-third-deriv-proven",
+      "document": "15_geometric_gas_lsi_proof.md",
+      "line": 802,
+      "type": "Theorem",
+      "title": "N-Uniform Third Derivative Bound for Fitness (PROVEN)",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-qsd-poincare-rigorous",
+          "status": "in_current_pipeline",
+          "source": "15_geometric_gas_lsi_proof.md",
+          "line": "882",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        },
+        {
+          "label": "lem-conditional-gaussian-qsd",
+          "status": "truly_missing",
+          "source": null
+        }
+      ],
+      "truly_missing_deps": [
+        "lem-conditional-gaussian-qsd"
+      ]
+    },
+    {
+      "label": "thm-adaptive-lsi-main",
+      "document": "15_geometric_gas_lsi_proof.md",
+      "line": 1279,
+      "type": "Theorem",
+      "title": "N-Uniform Log-Sobolev Inequality for Geometric Viscous Fluid Model",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-qsd-poincare-rigorous",
+          "status": "in_current_pipeline",
+          "source": "15_geometric_gas_lsi_proof.md",
+          "line": "882",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        },
+        {
+          "label": " \\infty$ independent of N\n\n6. \u2705 **Hypocoercivity framework** (Sections 4-6) - Modified Lyapunov functional with commutator control via {prf:ref}",
+          "status": "truly_missing",
+          "source": null
+        },
+        {
+          "label": "thm-drift-perturbation-bounds",
+          "status": "in_current_pipeline",
+          "source": "15_geometric_gas_lsi_proof.md",
+          "line": "1066",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        },
+        {
+          "label": "thm-cattiaux-guillin-verification",
+          "status": "in_current_pipeline",
+          "source": "15_geometric_gas_lsi_proof.md",
+          "line": "1122",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        },
+        {
+          "label": "thm-ueph-proven",
+          "status": "truly_missing",
+          "source": null
+        },
+        {
+          "label": "thm-fitness-third-deriv-proven",
+          "status": "in_current_pipeline",
+          "source": "15_geometric_gas_lsi_proof.md",
+          "line": "802",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": [
+        " \\infty$ independent of N\n\n6. \u2705 **Hypocoercivity framework** (Sections 4-6) - Modified Lyapunov functional with commutator control via {prf:ref}",
+        "thm-ueph-proven"
+      ]
+    },
+    {
+      "label": "thm-finite-n-lsi-preservation",
+      "document": "16_convergence_mean_field.md",
+      "line": 517,
+      "type": "Theorem",
+      "title": "Finite-N LSI Preservation (Proven)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-data-processing",
+      "document": "16_convergence_mean_field.md",
+      "line": 577,
+      "type": "Theorem",
+      "title": "Data Processing Inequality (Standard Result)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-wasserstein-revival",
+      "document": "16_convergence_mean_field.md",
+      "line": 728,
+      "type": "Lemma",
+      "title": "Wasserstein Contraction for Proportional Resampling (Conjecture)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-revival-kl-expansive",
+      "document": "16_convergence_mean_field.md",
+      "line": 962,
+      "type": "Theorem",
+      "title": "Revival Operator is KL-Expansive (VERIFIED)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-joint-not-contractive",
+      "document": "16_convergence_mean_field.md",
+      "line": 986,
+      "type": "Theorem",
+      "title": "Joint Jump Operator NOT Unconditionally Contractive (VERIFIED)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-stage0-complete",
+      "document": "16_convergence_mean_field.md",
+      "line": 1015,
+      "type": "Theorem",
+      "title": "Stage 0 COMPLETE (VERIFIED)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-qsd-existence-corrected",
+      "document": "16_convergence_mean_field.md",
+      "line": 1214,
+      "type": "Theorem",
+      "title": "QSD Existence via Nonlinear Fixed-Point",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-qsd-stability",
+      "document": "16_convergence_mean_field.md",
+      "line": 1342,
+      "type": "Theorem",
+      "title": "QSD Stability (Champagnat-Villemonais)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-hormander",
+      "document": "16_convergence_mean_field.md",
+      "line": 1383,
+      "type": "Lemma",
+      "title": "H\u00f6rmander's Condition",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "cor-hypoelliptic-regularity",
+      "document": "16_convergence_mean_field.md",
+      "line": 1403,
+      "type": "Corollary",
+      "title": "Hypoelliptic Regularity",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-qsd-smoothness",
+      "document": "16_convergence_mean_field.md",
+      "line": 1427,
+      "type": "Theorem",
+      "title": "QSD Smoothness",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-hormander",
+          "status": "in_current_pipeline",
+          "source": "16_convergence_mean_field.md",
+          "line": "1383",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-qsd-positivity",
+      "document": "16_convergence_mean_field.md",
+      "line": 1437,
+      "type": "Theorem",
+      "title": "QSD Strict Positivity",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-hormander",
+          "status": "in_current_pipeline",
+          "source": "16_convergence_mean_field.md",
+          "line": "1383",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-irreducibility",
+      "document": "16_convergence_mean_field.md",
+      "line": 1449,
+      "type": "Lemma",
+      "title": "Irreducibility",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-hormander",
+          "status": "in_current_pipeline",
+          "source": "16_convergence_mean_field.md",
+          "line": "1383",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-strong-max-principle",
+      "document": "16_convergence_mean_field.md",
+      "line": 1493,
+      "type": "Lemma",
+      "title": "Strong Maximum Principle",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-irreducibility",
+          "status": "in_current_pipeline",
+          "source": "16_convergence_mean_field.md",
+          "line": "1449",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "prop-velocity-gradient-uniform",
+      "document": "16_convergence_mean_field.md",
+      "line": 1539,
+      "type": "Proposition",
+      "title": "Uniform Velocity Gradient Bound",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-hormander",
+          "status": "in_current_pipeline",
+          "source": "16_convergence_mean_field.md",
+          "line": "1383",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "prop-complete-gradient-bounds",
+      "document": "16_convergence_mean_field.md",
+      "line": 1881,
+      "type": "Proposition",
+      "title": "Complete Gradient and Laplacian Bounds",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-drift-condition-corrected",
+      "document": "16_convergence_mean_field.md",
+      "line": 2087,
+      "type": "Lemma",
+      "title": "Drift Condition with Quadratic Lyapunov",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-exponential-tails",
+      "document": "16_convergence_mean_field.md",
+      "line": 2249,
+      "type": "Theorem",
+      "title": "Exponential Tails for QSD",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-corrected-kl-convergence",
+      "document": "16_convergence_mean_field.md",
+      "line": 3084,
+      "type": "Theorem",
+      "title": "KL-Convergence for Mean-Field Euclidean Gas (CORRECTED)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-fisher-bound",
+      "document": "16_convergence_mean_field.md",
+      "line": 3529,
+      "type": "Lemma",
+      "title": "Fisher Information Bound",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-kinetic-energy-bound",
+      "document": "16_convergence_mean_field.md",
+      "line": 3610,
+      "type": "Lemma",
+      "title": "Kinetic Energy Control",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-entropy-l1-bound",
+      "document": "16_convergence_mean_field.md",
+      "line": 3791,
+      "type": "Lemma",
+      "title": "Entropy $L^1$ Bound",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-fisher-bound",
+          "status": "in_current_pipeline",
+          "source": "16_convergence_mean_field.md",
+          "line": "3529",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-exponential-convergence-local",
+      "document": "16_convergence_mean_field.md",
+      "line": 3958,
+      "type": "Theorem",
+      "title": "Exponential Convergence (Local)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-main-explicit-rate",
+      "document": "16_convergence_mean_field.md",
+      "line": 4150,
+      "type": "Theorem",
+      "title": "Main Result: Explicit Convergence Rate",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-lsi-constant-explicit",
+          "status": "in_current_pipeline",
+          "source": "16_convergence_mean_field.md",
+          "line": "3445",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-alpha-net-explicit",
+      "document": "16_convergence_mean_field.md",
+      "line": 4449,
+      "type": "Theorem",
+      "title": "Mean-Field Convergence Rate (Explicit)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-optimal-parameter-scaling",
+      "document": "16_convergence_mean_field.md",
+      "line": 4533,
+      "type": "Theorem",
+      "title": "Optimal Parameter Scaling",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-lsi-geometric",
+      "document": "17_qsd_exchangeability_geometric.md",
+      "line": 276,
+      "type": "Theorem",
+      "title": "N-Uniform LSI for Geometric Gas QSD",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-viscous-dissipative",
+          "status": "in_current_pipeline",
+          "source": "11_geometric_gas.md",
+          "line": "1317",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        },
+        {
+          "label": "lem-conditional-multivariate-gaussian-geometric",
+          "status": "in_current_pipeline",
+          "source": "17_qsd_exchangeability_geometric.md",
+          "line": "41",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        },
+        {
+          "label": "lem-eigenvalue-bound-geometric",
+          "status": "in_current_pipeline",
+          "source": "17_qsd_exchangeability_geometric.md",
+          "line": "112",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-main-informal",
+      "document": "18_emergent_geometry.md",
+      "line": 261,
+      "type": "Theorem",
+      "title": "Main Theorem (Informal)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-main-convergence",
+      "document": "18_emergent_geometry.md",
+      "line": 827,
+      "type": "Theorem",
+      "title": "Geometric Ergodicity of the Geometric Gas",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "prop-rate-metric-ellipticity",
+      "document": "18_emergent_geometry.md",
+      "line": 2631,
+      "type": "Proposition",
+      "title": "Convergence Rate Depends on Metric Ellipticity",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "def-unified-z-score",
+          "status": "truly_missing",
+          "source": null
+        }
+      ],
+      "truly_missing_deps": [
+        "def-unified-z-score"
+      ]
+    },
+    {
+      "label": "thm-algorithmic-tunability",
+      "document": "18_emergent_geometry.md",
+      "line": 3419,
+      "type": "Theorem",
+      "title": "Algorithmic Tunability of the Emergent Geometry",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-c1-established-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 369,
+      "type": "Theorem",
+      "title": "C\u00b9 Regularity (Previously Proven)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-c2-established-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 377,
+      "type": "Theorem",
+      "title": "C\u00b2 Regularity (Previously Proven)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-c3-established-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 385,
+      "type": "Theorem",
+      "title": "C\u00b3 Regularity (Previously Proven)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-c4-established-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 395,
+      "type": "Theorem",
+      "title": "C\u2074 Regularity (Previously Proven)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-telescoping-all-orders-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 431,
+      "type": "Lemma",
+      "title": "Telescoping Identity at All Orders",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "assump-cinf-primitives",
+          "status": "truly_missing",
+          "source": null
+        }
+      ],
+      "truly_missing_deps": [
+        "assump-cinf-primitives"
+      ]
+    },
+    {
+      "label": "lem-mean-cinf-inductive",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 451,
+      "type": "Lemma",
+      "title": "C^{m+1} Regularity of Localized Mean",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-telescoping-all-orders-cinf",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "431",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-variance-cinf-inductive",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 491,
+      "type": "Lemma",
+      "title": "C^{m+1} Regularity of Localized Variance",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-z-score-cinf-inductive",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 511,
+      "type": "Lemma",
+      "title": "C^{m+1} Regularity of Z-Score",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-mean-cinf-inductive",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "451",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "lem-variance-cinf-inductive",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "491",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "assump-cinf-primitives",
+          "status": "truly_missing",
+          "source": null
+        }
+      ],
+      "truly_missing_deps": [
+        "assump-cinf-primitives"
+      ]
+    },
+    {
+      "label": "thm-inductive-step-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 531,
+      "type": "Theorem",
+      "title": "Inductive Step: C^{m+1} Regularity from C^m",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-mean-cinf-inductive",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "451",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "lem-variance-cinf-inductive",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "491",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "lem-z-score-cinf-inductive",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "511",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "assump-cinf-primitives",
+          "status": "truly_missing",
+          "source": null
+        }
+      ],
+      "truly_missing_deps": [
+        "assump-cinf-primitives"
+      ]
+    },
+    {
+      "label": "thm-cinf-regularity",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 697,
+      "type": "Theorem",
+      "title": "C\u221e Regularity of the Fitness Potential",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-inductive-step-cinf",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "531",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "assump-cinf-primitives",
+          "status": "truly_missing",
+          "source": null
+        },
+        {
+          "label": "lem-telescoping-all-orders-cinf",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "431",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "thm-c1-established-cinf",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "369",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "thm-c4-established-cinf",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "395",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": [
+        "assump-cinf-primitives"
+      ]
+    },
+    {
+      "label": "cor-derivatives-continuous-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 725,
+      "type": "Corollary",
+      "title": "Continuity of All Derivatives",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-cinf-regularity",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "697",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "cor-compact-bounds-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 733,
+      "type": "Corollary",
+      "title": "Uniform Bounds on Compact Sets",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-cinf-regularity",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "697",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-gevrey-1-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 767,
+      "type": "Theorem",
+      "title": "Gevrey-1 Regularity of the Fitness Potential",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-cinf-regularity",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "697",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "prop-gevrey-regularization-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 807,
+      "type": "Proposition",
+      "title": "Gevrey Regularization Property",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "thm-essential-self-adjoint-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 842,
+      "type": "Theorem",
+      "title": "Essential Self-Adjointness (Conditional)",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-cinf-regularity",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "697",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "def-adaptive-generator-cinf",
+          "status": "truly_missing",
+          "source": null
+        }
+      ],
+      "truly_missing_deps": [
+        "def-adaptive-generator-cinf"
+      ]
+    },
+    {
+      "label": "thm-hypoellipticity-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 869,
+      "type": "Theorem",
+      "title": "Hypoellipticity via H\u00f6rmander's Criterion",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-cinf-regularity",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "697",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "def-adaptive-generator-cinf",
+          "status": "truly_missing",
+          "source": null
+        }
+      ],
+      "truly_missing_deps": [
+        "def-adaptive-generator-cinf"
+      ]
+    },
+    {
+      "label": "cor-instantaneous-smoothing-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 885,
+      "type": "Corollary",
+      "title": "Instantaneous Smoothing",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "prop-gaussian-tail-bounds-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 893,
+      "type": "Proposition",
+      "title": "Gaussian Tail Bounds (Conditional)",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-cinf-regularity",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "697",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "prop-talagrand-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 915,
+      "type": "Proposition",
+      "title": "Talagrand Inequality (Conditional)",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-cinf-regularity",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "697",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "cor-wasserstein-convergence-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 932,
+      "type": "Corollary",
+      "title": "Exponential Convergence in Wasserstein Distance",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-cinf-regularity",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "697",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "prop-talagrand-cinf",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "915",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "prop-brascamp-lieb-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 946,
+      "type": "Proposition",
+      "title": "Brascamp-Lieb Inequality (Conditional)",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "thm-cinf-regularity",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "697",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        },
+        {
+          "label": "prop-talagrand-cinf",
+          "status": "in_current_pipeline",
+          "source": "19_geometric_gas_cinf_regularity_simplified.md",
+          "line": "915",
+          "will_be_proven": true,
+          "current_status": "needs_proof"
+        }
+      ],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "prop-bakry-emery-gamma2-cinf",
+      "document": "19_geometric_gas_cinf_regularity_simplified.md",
+      "line": 964,
+      "type": "Proposition",
+      "title": "Bakry-\u00c9mery Curvature Condition (Conditional)",
+      "status": "needs_proof",
+      "dependencies": [],
+      "truly_missing_deps": []
+    },
+    {
+      "label": "lem-velocity-squashing-compact-domain-full",
+      "document": "20_geometric_gas_cinf_regularity_full.md",
+      "line": 568,
+      "type": "Lemma",
+      "title": "Velocity Squashing Ensures Compact Phase Space",
+      "status": "has_sketch",
+      "dependencies": [
+        {
+          "label": "doc-02-euclidean-gas",
+          "status": "truly_missing",
+          "source": null
+        }
+      ],
+      "truly_missing_deps": [
+        "doc-02-euclidean-gas"
+      ]
+    },
+    {
+      "label": "lem-fokker-planck-density-bound-conservative-full",
+      "document": "20_geometric_gas_cinf_regularity_full.md",
+      "line": 589,
+      "type": "Lemma",
+      "title": "Fokker-Planck Density Bound from Lipschitz Drift (Conservative Case)",
+      "status": "has_sketch",
+      "dependencies": [
+        {
+          "label": "lem-companion-availability-enforcement",
+          "status": "in_current_pipeline",
+          "source": "20_geometric_gas_cinf_regularity_full.md",
+          "line": "723",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        },
+        {
+          "label": "doc-13-geometric-gas-c3-regularity",
+          "status": "truly_missing",
+          "source": null
+        },
+        {
+          "label": "assump-uniform-density-full",
+          "status": "truly_missing",
+          "source": null
+        },
+        {
+          "label": "lem-velocity-squashing-compact-domain-full",
+          "status": "in_current_pipeline",
+          "source": "20_geometric_gas_cinf_regularity_full.md",
+          "line": "568",
+          "will_be_proven": true,
+          "current_status": "has_sketch"
+        }
+      ],
+      "truly_missing_deps": [
+        "doc-13-geometric-gas-c3-regularity",
+        "assump-uniform-density-full"
+      ]
+    },
+    {
+      "label": "lem-qsd-density-bound-with-cloning-full",
+      "document": "20_geometric_gas_cinf_regularity_full.md",
+      "line": 635,
+      "type": "Lemma",
+      "title": "QSD Density Bound with Cloning (Conditional Statement)",
+      "status": "needs_proof",
+      "dependencies": [
+        {
+          "label": "lem-companion-availability-enforcement",
+          "status": "in_current_pipeline",
+          "source": "20_geometric_gas_cinf_regularity_full.md",
+          "line": "723",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        },
+        {
+          "label": "doc-13-geometric-gas-c3-regularity",
+          "status": "truly_missing",
+          "source": null
+        },
+        {
+          "label": "lem-fokker-planck-density-bound-conservative-full",
+          "status": "in_current_pipeline",
+          "source": "20_geometric_gas_cinf_regularity_full.md",
+          "line": "589",
+          "will_be_proven": true,
+          "current_status": "has_sketch"
+        },
+        {
+          "label": "assump-uniform-density-full",
+          "status": "truly_missing",
+          "source": null
+        }
+      ],
+      "truly_missing_deps": [
+        "doc-13-geometric-gas-c3-regularity",
+        "assump-uniform-density-full"
+      ]
+    },
+    {
+      "label": "lem-greedy-ideal-equivalence",
+      "document": "20_geometric_gas_cinf_regularity_full.md",
+      "line": 2388,
+      "type": "Lemma",
+      "title": "Statistical Equivalence Preserves C^\u221e Regularity",
+      "status": "has_sketch",
+      "dependencies": [
+        {
+          "label": "doc-03-cloning",
+          "status": "truly_missing",
+          "source": null
+        },
+        {
+          "label": "thm-diversity-pairing-measurement-regularity",
+          "status": "in_current_pipeline",
+          "source": "20_geometric_gas_cinf_regularity_full.md",
+          "line": "2163",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        },
+        {
+          "label": "lem-sum-to-integral-bound-full",
+          "status": "in_current_pipeline",
+          "source": "20_geometric_gas_cinf_regularity_full.md",
+          "line": "914",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        },
+        {
+          "label": "lem-dalg-derivative-bounds-full",
+          "status": "in_current_pipeline",
+          "source": "20_geometric_gas_cinf_regularity_full.md",
+          "line": "1492",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        },
+        {
+          "label": "lem-gaussian-kernel-derivatives-full",
+          "status": "in_current_pipeline",
+          "source": "20_geometric_gas_cinf_regularity_full.md",
+          "line": "2784",
+          "will_be_proven": false,
+          "current_status": "has_complete_proof"
+        }
+      ],
+      "truly_missing_deps": [
+        "doc-03-cloning"
+      ]
+    }
+  ]
+}

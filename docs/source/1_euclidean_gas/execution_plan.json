@@ -1,0 +1,617 @@
+{
+  "total_theorems": 68,
+  "execution_order": [
+    "thm-complete-boundary-drift",
+    "prop-coupling-constant-existence",
+    "thm-main-results-summary",
+    "prop-explicit-constants",
+    "cor-net-velocity-contraction",
+    "cor-total-boundary-safety",
+    "thm-synergistic-rate-derivation",
+    "thm-total-rate-explicit",
+    "prop-mixing-time-explicit",
+    "prop-parameter-classification",
+    "thm-explicit-rate-sensitivity",
+    "thm-svd-rate-matrix",
+    "prop-condition-number-rate",
+    "thm-subgradient-min",
+    "thm-balanced-optimality",
+    "prop-restitution-friction-coupling",
+    "prop-jitter-cloning-coupling",
+    "prop-phase-space-pairing",
+    "thm-error-propagation",
+    "thm-closed-form-optimum",
+    "thm-mean-field-limit-informal",
+    "lem-log-concave-yang-mills",
+    "cor-adaptive-lsi",
+    "lem-mean-field-cloning-sketch",
+    "thm-meanfield-kl-convergence-hybrid",
+    "thm-kinetic-lsi-reference",
+    "thm-discrete-lsi-hybrid",
+    "thm-exp-convergence-hybrid",
+    "thm-meanfield-lsi-standalone",
+    "thm-nonconvex-informal",
+    "thm-villani-hypocoercivity",
+    "thm-fl-recap",
+    "thm-lsi-target",
+    "thm-bakry-emery-classical",
+    "thm-villani-hypocoercivity-recap",
+    "thm-unconditional-lsi",
+    "cor-mean-field-lsi",
+    "prop-killing-rate-continuous",
+    "lem-gaussian-lower-bound",
+    "thm-hk-summary",
+    "lem-hormander-bracket",
+    "lem-strict-positivity-cloning",
+    "thm-hk-convergence-unconditional",
+    "thm-meyn-tweedie-drift-minor",
+    "lem-variance-decomposition",
+    "cor-between-group-dominance",
+    "lem-cross-swarm-distance",
+    "lem-variance-wasserstein-link",
+    "lem-expected-distance-change",
+    "lem-target-cloning-pressure",
+    "prop-velocity-rate-explicit",
+    "prop-position-rate-explicit",
+    "prop-wasserstein-rate-explicit",
+    "prop-boundary-rate-explicit",
+    "thm-main-kl-convergence",
+    "cor-n-particle-kinetic-lsi",
+    "lem-meanfield-cloning-dissipation-hybrid",
+    "thm-composition-reference",
+    "thm-fl-established",
+    "lem-kinetic-lsi-established",
+    "thm-dobrushin-established",
+    "lem-hypoelliptic-density-bound",
+    "thm-parabolic-harnack",
+    "lem-linfty-full-operator",
+    "lem-gaussian-kernel-lower-bound",
+    "lem-qsd-strict-positivity",
+    "thm-exponential-survival",
+    "lem-mass-lower-bound-high-prob"
+  ],
+  "dependency_graph": {
+    "thm-main-kl-convergence": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 168,
+      "type": "theorem"
+    },
+    "cor-n-particle-kinetic-lsi": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 671,
+      "type": "corollary"
+    },
+    "lem-log-concave-yang-mills": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 862,
+      "type": "lemma"
+    },
+    "cor-adaptive-lsi": {
+      "dependencies": [
+        "thm-main-kl-convergence",
+        "cor-n-particle-kinetic-lsi"
+      ],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 1766,
+      "type": "corollary"
+    },
+    "lem-mean-field-cloning-sketch": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 2083,
+      "type": "lemma"
+    },
+    "thm-meanfield-kl-convergence-hybrid": {
+      "dependencies": [
+        "thm-main-kl-convergence",
+        "lem-meanfield-cloning-dissipation-hybrid"
+      ],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 3585,
+      "type": "theorem"
+    },
+    "thm-kinetic-lsi-reference": {
+      "dependencies": [
+        "thm-main-kl-convergence",
+        "lem-meanfield-cloning-dissipation-hybrid"
+      ],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 3628,
+      "type": "theorem"
+    },
+    "lem-meanfield-cloning-dissipation-hybrid": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 3656,
+      "type": "lemma"
+    },
+    "thm-composition-reference": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 3838,
+      "type": "theorem"
+    },
+    "thm-discrete-lsi-hybrid": {
+      "dependencies": [
+        "thm-composition-reference"
+      ],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 3889,
+      "type": "theorem"
+    },
+    "thm-exp-convergence-hybrid": {
+      "dependencies": [
+        "thm-composition-reference"
+      ],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 3920,
+      "type": "theorem"
+    },
+    "thm-meanfield-lsi-standalone": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 4041,
+      "type": "theorem"
+    },
+    "thm-nonconvex-informal": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 4895,
+      "type": "theorem"
+    },
+    "thm-villani-hypocoercivity": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 5088,
+      "type": "theorem"
+    },
+    "thm-fl-recap": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 6844,
+      "type": "theorem"
+    },
+    "thm-lsi-target": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 6865,
+      "type": "theorem"
+    },
+    "thm-bakry-emery-classical": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 6908,
+      "type": "theorem"
+    },
+    "thm-villani-hypocoercivity-recap": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 6953,
+      "type": "theorem"
+    },
+    "thm-fl-established": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 7011,
+      "type": "theorem"
+    },
+    "lem-kinetic-lsi-established": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 7043,
+      "type": "lemma"
+    },
+    "thm-dobrushin-established": {
+      "dependencies": [
+        "lem-kinetic-lsi-established",
+        "thm-fl-established"
+      ],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 7078,
+      "type": "theorem"
+    },
+    "thm-unconditional-lsi": {
+      "dependencies": [
+        "lem-kinetic-lsi-established",
+        "thm-fl-established",
+        "thm-dobrushin-established"
+      ],
+      "status": "pending",
+      "document": "09_kl_convergence.md",
+      "line": 7161,
+      "type": "theorem"
+    },
+    "prop-velocity-rate-explicit": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 1233,
+      "type": "proposition"
+    },
+    "prop-position-rate-explicit": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 1321,
+      "type": "proposition"
+    },
+    "prop-wasserstein-rate-explicit": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 1419,
+      "type": "proposition"
+    },
+    "prop-boundary-rate-explicit": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 1518,
+      "type": "proposition"
+    },
+    "thm-synergistic-rate-derivation": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 1621,
+      "type": "theorem"
+    },
+    "thm-total-rate-explicit": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 1715,
+      "type": "theorem"
+    },
+    "prop-mixing-time-explicit": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 1821,
+      "type": "proposition"
+    },
+    "prop-parameter-classification": {
+      "dependencies": [
+        "prop-position-rate-explicit",
+        "prop-wasserstein-rate-explicit",
+        "prop-velocity-rate-explicit"
+      ],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 2200,
+      "type": "proposition"
+    },
+    "thm-explicit-rate-sensitivity": {
+      "dependencies": [
+        "prop-boundary-rate-explicit",
+        "prop-wasserstein-rate-explicit"
+      ],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 2384,
+      "type": "theorem"
+    },
+    "thm-svd-rate-matrix": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 2483,
+      "type": "theorem"
+    },
+    "prop-condition-number-rate": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 2580,
+      "type": "proposition"
+    },
+    "thm-subgradient-min": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 2634,
+      "type": "theorem"
+    },
+    "thm-balanced-optimality": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 2667,
+      "type": "theorem"
+    },
+    "prop-restitution-friction-coupling": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 2774,
+      "type": "proposition"
+    },
+    "prop-jitter-cloning-coupling": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 2829,
+      "type": "proposition"
+    },
+    "prop-phase-space-pairing": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 2878,
+      "type": "proposition"
+    },
+    "thm-error-propagation": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 2928,
+      "type": "theorem"
+    },
+    "thm-closed-form-optimum": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "06_convergence.md",
+      "line": 3092,
+      "type": "theorem"
+    },
+    "lem-hormander-bracket": {
+      "dependencies": [
+        "thm-parabolic-harnack"
+      ],
+      "status": "pending",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "line": 106,
+      "type": "lemma"
+    },
+    "thm-parabolic-harnack": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "line": 140,
+      "type": "theorem"
+    },
+    "lem-linfty-full-operator": {
+      "dependencies": [
+        "thm-parabolic-harnack"
+      ],
+      "status": "pending",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "line": 181,
+      "type": "lemma"
+    },
+    "lem-gaussian-kernel-lower-bound": {
+      "dependencies": [
+        "lem-linfty-full-operator"
+      ],
+      "status": "pending",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "line": 384,
+      "type": "lemma"
+    },
+    "lem-strict-positivity-cloning": {
+      "dependencies": [
+        "lem-linfty-full-operator",
+        "lem-gaussian-kernel-lower-bound"
+      ],
+      "status": "pending",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "line": 432,
+      "type": "lemma"
+    },
+    "lem-qsd-strict-positivity": {
+      "dependencies": [
+        "lem-linfty-full-operator",
+        "lem-gaussian-kernel-lower-bound"
+      ],
+      "status": "pending",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "line": 472,
+      "type": "lemma"
+    },
+    "thm-exponential-survival": {
+      "dependencies": [
+        "lem-mass-lower-bound-high-prob",
+        "lem-linfty-full-operator"
+      ],
+      "status": "pending",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "line": 582,
+      "type": "theorem"
+    },
+    "lem-mass-lower-bound-high-prob": {
+      "dependencies": [
+        "thm-exponential-survival",
+        "lem-qsd-strict-positivity",
+        "lem-linfty-full-operator",
+        "lem-gaussian-kernel-lower-bound"
+      ],
+      "status": "pending",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "line": 628,
+      "type": "lemma"
+    },
+    "thm-hk-convergence-unconditional": {
+      "dependencies": [
+        "lem-mass-lower-bound-high-prob"
+      ],
+      "status": "pending",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof.md",
+      "line": 935,
+      "type": "theorem"
+    },
+    "thm-complete-boundary-drift": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "03_cloning.md",
+      "line": 7640,
+      "type": "theorem"
+    },
+    "prop-coupling-constant-existence": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "03_cloning.md",
+      "line": 8230,
+      "type": "proposition"
+    },
+    "thm-main-results-summary": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "03_cloning.md",
+      "line": 8276,
+      "type": "theorem"
+    },
+    "lem-variance-decomposition": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "04_wasserstein_contraction.md",
+      "line": 278,
+      "type": "lemma"
+    },
+    "cor-between-group-dominance": {
+      "dependencies": [
+        "lem-variance-decomposition"
+      ],
+      "status": "pending",
+      "document": "04_wasserstein_contraction.md",
+      "line": 354,
+      "type": "corollary"
+    },
+    "lem-cross-swarm-distance": {
+      "dependencies": [
+        "lem-variance-decomposition",
+        "cor-between-group-dominance"
+      ],
+      "status": "pending",
+      "document": "04_wasserstein_contraction.md",
+      "line": 401,
+      "type": "lemma"
+    },
+    "lem-variance-wasserstein-link": {
+      "dependencies": [
+        "lem-variance-decomposition",
+        "cor-between-group-dominance"
+      ],
+      "status": "pending",
+      "document": "04_wasserstein_contraction.md",
+      "line": 447,
+      "type": "lemma"
+    },
+    "lem-expected-distance-change": {
+      "dependencies": [
+        "lem-target-cloning-pressure"
+      ],
+      "status": "pending",
+      "document": "04_wasserstein_contraction.md",
+      "line": 712,
+      "type": "lemma"
+    },
+    "lem-target-cloning-pressure": {
+      "dependencies": [
+        "lem-expected-distance-change",
+        "lem-cross-swarm-distance",
+        "lem-variance-wasserstein-link",
+        "cor-between-group-dominance"
+      ],
+      "status": "pending",
+      "document": "04_wasserstein_contraction.md",
+      "line": 804,
+      "type": "lemma"
+    },
+    "cor-mean-field-lsi": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "10_qsd_exchangeability_theory.md",
+      "line": 456,
+      "type": "corollary"
+    },
+    "prop-explicit-constants": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "05_kinetic_contraction.md",
+      "line": 1043,
+      "type": "proposition"
+    },
+    "cor-net-velocity-contraction": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "05_kinetic_contraction.md",
+      "line": 1989,
+      "type": "corollary"
+    },
+    "cor-total-boundary-safety": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "05_kinetic_contraction.md",
+      "line": 2533,
+      "type": "corollary"
+    },
+    "prop-killing-rate-continuous": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "11_hk_convergence.md",
+      "line": 1310,
+      "type": "proposition"
+    },
+    "lem-hypoelliptic-density-bound": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "11_hk_convergence.md",
+      "line": 1940,
+      "type": "lemma"
+    },
+    "lem-gaussian-lower-bound": {
+      "dependencies": [
+        "lem-hypoelliptic-density-bound"
+      ],
+      "status": "pending",
+      "document": "11_hk_convergence.md",
+      "line": 2043,
+      "type": "lemma"
+    },
+    "thm-hk-summary": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "11_hk_convergence.md",
+      "line": 3123,
+      "type": "theorem"
+    },
+    "thm-meyn-tweedie-drift-minor": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "12_quantitative_error_bounds.md",
+      "line": 2194,
+      "type": "theorem"
+    },
+    "thm-mean-field-limit-informal": {
+      "dependencies": [],
+      "status": "pending",
+      "document": "07_mean_field.md",
+      "line": 1309,
+      "type": "theorem"
+    }
+  }
+}

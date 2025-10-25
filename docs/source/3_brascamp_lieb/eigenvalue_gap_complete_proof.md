@@ -509,7 +509,7 @@ The Hessian $H(x, S)$ uses ONLY the diversity pairing mechanism, filtered by loc
 :::{prf:lemma} Companion Indicator Simplification
 :label: lem-companion-indicator-geometric
 
-Under Definition 5.1.2 from `docs/source/1_euclidean_gas/03_cloning.md` (Sequential Stochastic Greedy Pairing Operator), the diversity pairing $\Pi(S)$ is a perfect matching on $\mathcal{A}(S)$, the set of alive walkers.
+Under Definition 5.1.2 from `docs/source/1_euclidean_gas/03_cloning.md` (Sequential Stochastic Greedy Pairing Operator), the diversity pairing $\Pi(S)$ is a perfect matching (if $|\mathcal{A}(S)|$ is even) or maximal matching (if $|\mathcal{A}(S)|$ is odd) on $\mathcal{A}(S)$, the set of alive walkers.
 
 Consequently, for an alive walker $i \in \mathcal{A}(S)$ and query position $x \in \mathcal{X}$:
 
@@ -519,7 +519,13 @@ $$
 
 The companion indicator depends only on walker $i$'s position relative to $x$, not on the pairing structure.
 
-**Proof**: By Definition 5.1.2, $\Pi(S)$ constructs a perfect (or maximal) matching on all alive walkers in $\mathcal{A}(S)$. Therefore, the condition "$i \in \Pi(S)$" is automatically satisfied for all $i \in \mathcal{A}(S)$. At QSD, walkers are alive with probability approaching 1 by the Axiom of Guaranteed Revival (Theorem {prf:ref}`thm-revival-guarantee` from `01_fragile_gas_framework.md`). Thus, the companion indicator simplifies to a purely geometric indicator. $\square$
+**Proof**: By Definition 5.1.2, $\Pi(S)$ constructs a perfect matching (if $|\mathcal{A}(S)|$ is even) or maximal matching (if $|\mathcal{A}(S)|$ is odd) on the alive walkers in $\mathcal{A}(S)$.
+
+**Perfect matching case** ($|\mathcal{A}(S)|$ even): All walkers are matched, so "$i \in \Pi(S)$" holds for all $i \in \mathcal{A}(S)$.
+
+**Maximal matching case** ($|\mathcal{A}(S)|$ odd): Exactly one walker remains unmatched. For the unmatched walker $i_{\text{unmatched}}$, the companion indicator $\xi_{i_{\text{unmatched}}}(x,S) = 0$. This contributes at most $O(1/N)$ error to any average over walkers, since at QSD we have $|\mathcal{A}(S)| \to N$ (by Axiom of Guaranteed Revival, Theorem {prf:ref}`thm-revival-guarantee` from `01_fragile_gas_framework.md`).
+
+For all **matched** walkers (which constitute fraction $1 - O(1/N)$ of the swarm), the condition "$i \in \Pi(S)$" is satisfied, so the companion indicator simplifies to a purely geometric indicator. $\square$
 
 **Reference**: Definition 5.1.2 from `docs/source/1_euclidean_gas/03_cloning.md`, Section 1.5.
 :::
@@ -527,15 +533,19 @@ The companion indicator depends only on walker $i$'s position relative to $x$, n
 :::{important} Geometric Nature of Companion Indicators
 :label: note-geometric-independence
 
-Since Π(S) is a perfect/maximal matching on ALL alive walkers (Definition 5.1.2 in `03_cloning.md`), the condition "i ∈ Π(S)" is satisfied by all alive walkers. Therefore:
+Since Π(S) is a perfect matching (if $|\mathcal{A}(S)|$ even) or maximal matching (if $|\mathcal{A}(S)|$ odd) on alive walkers (Definition 5.1.2 in `03_cloning.md`):
+
+**For matched walkers** (all walkers if $|\mathcal{A}(S)|$ even, or all but one if $|\mathcal{A}(S)|$ odd):
 
 $$
 \xi_i(x, S) = \mathbb{1}\{i \in \mathcal{A}(S) \text{ and } d_{\text{alg}}(x, w_i) \leq \varepsilon_c\} = \mathbb{1}\{d_{\text{alg}}(x, w_i) \leq \varepsilon_c\}
 $$
 
-(assuming walker i is alive at QSD, which holds with probability approaching 1 by the Axiom of Guaranteed Revival).
+The companion indicator is a purely geometric function depending only on walker position $x_i$ relative to query point $x$.
 
-The companion indicator is a purely geometric function: it depends only on walker position $x_i$ relative to query point $x$.
+**For the unmatched walker** (if $|\mathcal{A}(S)|$ odd): $\xi_{i_{\text{unmatched}}}(x,S) = 0$, contributing $O(1/N)$ error to swarm averages.
+
+At QSD, walkers are alive with probability approaching 1 (Axiom of Guaranteed Revival), so the geometric simplification holds for fraction $1 - O(1/N)$ of the swarm.
 :::
 
 :::{prf:theorem} Decorrelation via Geometric Indicators
@@ -604,35 +614,46 @@ $\square$
 
 This $O(1/N)$ covariance bound follows directly from the framework's propagation of chaos result. Since companions are geometric indicators (ball membership), their covariance is controlled by the mixing properties of the QSD.
 
-:::{important} Implications of O(1/N) Decorrelation for Concentration
-:label: note-decorrelation-implications
+:::{important} Implications of O(1/N) Decorrelation for Concentration (CORRECTED)
+:label: note-decorrelation-implications-corrected
 
 The O(1/N) covariance bound from propagation of chaos has **direct and unavoidable consequences** for concentration bounds:
 
 **Variance Scaling:**
-- **Diagonal contribution**: $\sum_{i=1}^N \text{Var}(\xi_i A_i) = O(K_{\max}) \cdot C^2_{\text{Hess}}$ (from sparsity in local regime)
+- **Diagonal contribution**: $\sum_{i=1}^N \text{Var}(\xi_i A_i) = O(N) \cdot C^2_{\text{Hess}}$ (N terms, each O(1))
 - **Off-diagonal contribution**: $\sum_{i \neq j} \text{Cov}(\xi_i A_i, \xi_j A_j) = N^2 \cdot O(1/N) \cdot C^2_{\text{Hess}} = O(N) \cdot C^2_{\text{Hess}}$
-- **Total variance**: $\text{Var}(H) = O(N) \cdot C^2_{\text{Hess}}$ (off-diagonal dominates when summed over all pairs)
+- **Total variance**: $\text{Var}(H) = O(N) \cdot C^2_{\text{Hess}}$ (both diagonal and off-diagonal contribute O(N))
 
 **Concentration Rate:**
-- With $O(N)$ total variance, standard martingale inequalities (Freedman, Azuma-Hoeffding) yield:
+- With variance $\sigma^2_N = C_{\text{var}} N C^2_{\text{Hess}}$, standard martingale inequalities yield:
 $$
-\mathbb{P}(\|H - \mathbb{E}[H]\| \ge \epsilon) \le \exp\left(-\frac{c\epsilon^2}{N}\right)
+\mathbb{P}(\|H - \mathbb{E}[H]\| \ge \epsilon) \le 2d \cdot \exp\left(-\frac{c\epsilon^2}{N}\right)
 $$
-- This is **exp(-c/N) concentration**, NOT exp(-c) (N-independent)
-- The denominator scaling with $N$ is the **unavoidable consequence** of O(1/N) pairwise correlations
 
-**Asymptotic Behavior:**
-- For **fixed gap** $\epsilon$: As $N \to \infty$, failure probability $\to 0$ (exponential improvement in N)
-- For **growing swarm**: Concentration improves, making uniform gaps increasingly likely
-- This is the **standard result for weakly dependent exchangeable sequences** (Kallenberg 2005, Ch. 1)
+**CRITICAL INTERPRETATION:**
 
-**Relationship to stronger concentration:**
-- Stronger concentration would require $|\text{Cov}(\xi_i, \xi_j)| = O(1/N^2)$ or better
-- No such bound is available from the framework's propagation of chaos result
-- The $O(1/N)$ rate is optimal given the Wasserstein-2 convergence rate
+- **For FIXED gap $\epsilon$**: As $N \to \infty$, the exponent $-c\epsilon^2/N \to 0$, so the bound $\to 2d$ (does NOT vanish!)
+- **For SCALING gap $\epsilon_N = \epsilon_0\sqrt{N}$**: The bound becomes $2d \cdot \exp(-c\epsilon_0^2)$, which DOES vanish exponentially in $\epsilon_0$
 
-The exp(-c/N) concentration bound is the mathematically correct rate for O(1/N) decorrelation between exchangeable walkers at QSD.
+**Asymptotic Behavior (CORRECTED):**
+- **Fixed gap threshold**: Concentration bound does NOT improve with N
+- **Scaling gap threshold**: Must allow $\epsilon = \Theta(\sqrt{N})$ to achieve vanishing failure probability
+- This is the **standard result for sums with variance $\Theta(N)$** in concentration theory
+
+**Pointwise vs. Uniform Concentration:**
+- **Pointwise** (fixed $x \in \mathcal{X}$): Concentration holds with probability $1 - 2d \cdot \exp(-c/N)$
+- **Uniform** (all $x \in \mathcal{X}$): NOT achievable via covering + union bound for fixed gap thresholds
+  - Covering net has $(D_{\max}/\rho)^d$ points
+  - Union bound: $(D_{\max}/\rho)^d \cdot \exp(-c/N) \not\to 0$ for fixed $\rho$
+
+**Implication for Main Results:**
+- This document establishes **pointwise concentration** at any fixed position $x$
+- Uniform gaps over continuous $\mathcal{X}$ would require either:
+  1. Scaling gaps $\epsilon_N = \Theta(\sqrt{N})$, OR
+  2. Stronger variance bounds $\sigma^2 = O(1)$ (requires new structural arguments), OR
+  3. Advanced continuity/chaining techniques
+
+The exp(-c/N) form is mathematically correct but requires careful interpretation.
 :::
 
 :::{important} Spatial Decorrelation vs. Temporal Mixing
@@ -775,10 +796,23 @@ $$
 
 $$
 
-**Correct expansion including cross terms**:
+**IMPORTANT NOTE ON DERIVATION**:
+
+The expansion below treats $A_i$ as if deterministic for notational simplicity. Rigorously, both $\xi_i$ and $A_i$ depend on the random swarm state $S$. The correct approach defines $Y_i := \xi_i(x,S) \cdot A_i(x,S)$ and bounds:
 
 $$
-\mathbb{E}\left[\|H - \bar{H}\|_F^2\right] = \sum_{i=1}^N \sum_{j=1}^N \text{Cov}(\xi_i, \xi_j) \cdot \langle A_i, A_j \rangle_F
+\mathbb{E}\left[\|H - \bar{H}\|_F^2\right] = \sum_{i=1}^N \text{Var}(Y_i) + \sum_{i \neq j} \text{Cov}(Y_i, Y_j)
+$$
+
+For the covariance $\text{Cov}(Y_i, Y_j) = \text{Cov}(\xi_i A_i, \xi_j A_j)$, we use:
+- $\xi_i$ is geometric (depends only on position $x_i$) with $|\text{Cov}(\xi_i, \xi_j)| \leq C_{\text{mix}}/N$
+- $A_i = A_i(S)$ has bounded Lipschitz dependence on walker positions (from C^∞ regularity)
+- These combine to give $|\text{tr}(\text{Cov}(Y_i, Y_j))| \leq (C_{\text{mix}}/N) \cdot d \cdot C^2_{\text{Hess}}$
+
+The simplified expansion below captures the correct scaling:
+
+$$
+\mathbb{E}\left[\|H - \bar{H}\|_F^2\right] \approx \sum_{i=1}^N \sum_{j=1}^N \text{Cov}(\xi_i, \xi_j) \cdot \langle A_i, A_j \rangle_F
 
 $$
 
@@ -1176,32 +1210,11 @@ $$
 
 Set $c_{\text{curv}} := c_0 / (2d)$.
 
-*Case 2: Regularization-dominated regime*
+:::{important} Note on Proof Structure
+This bound relies solely on Assumption {prf:ref}`assump-curvature-variance` (curvature-variance relationship).
 
-If $\lambda_{\min}^{\text{Hess}} < 2\epsilon_\Sigma$ (flat landscape), then:
-
-$$
-v^T g(x,S) v = v^T H(x,S) v + \epsilon_\Sigma \ge \epsilon_\Sigma
-
-$$
-
-directly from regularization.
-
-In this case:
-
-$$
-\frac{c_{\text{curv}} \sigma_{\min}^2}{R_{\max}^2} \le \epsilon_\Sigma
-
-$$
-
-(by threshold definition), so the bound holds trivially.
-
-**Combining both cases**: The minimum of curvature-derived bound and regularization bound gives:
-
-$$
-\frac{1}{K}\sum v^T A_i v \ge \min\left(\frac{c_{\text{curv}} \sigma_{\min}^2}{R_{\max}^2}, \epsilon_\Sigma\right)
-
-$$
+**Why no Case 2**: The regularization parameter $\epsilon_\Sigma$ in the metric $g = H + \epsilon_\Sigma I$ applies to the full metric tensor, not to individual Hessian contributions $A_i$. Using $\epsilon_\Sigma$ to bound $(1/K)\sum v^T A_i v$ would be a category error, as the bound concerns the *average unregularized Hessian*, while $\epsilon_\Sigma$ regularizes the *combined metric*.
+:::
 
 $\square$
 :::
@@ -1918,7 +1931,7 @@ $$
 
 $$
 
- The concentration bound decays as $\exp(-c/N)$ due to the $O(N)$ variance scaling from O(1/N) correlations between exchangeable walkers at QSD. This is the **standard concentration rate for weakly dependent sequences**. For sufficiently large $N$, high-probability concentration is achieved with exponentially small (in 1/N) failure probability.
+**CRITICAL**: The concentration bound has form $\exp(-c\delta^2_{\text{mean}}/N)$. For **fixed** $\delta_{\text{mean}}$, this bound does NOT vanish as $N \to \infty$ (the exponent $\to 0$, so the bound $\to$ constant). This provides **pointwise concentration** at each fixed $x \in \mathcal{X}$, not uniform concentration over continuous state space. See {prf:ref}`note-decorrelation-implications-corrected` for detailed explanation.
 :::
 
 :::{prf:proof}
@@ -2038,9 +2051,9 @@ $$
 
 where $\delta_{\text{mean}} = \min\left(\frac{c_{\text{curv}} \kappa_{\text{fit}} \delta_{\min}^2}{4L_\phi^2 D_{\max}^2}, \epsilon_\Sigma\right)$.
 
-**Concentration rate**: The failure probability decays as $\exp(-c/N)$ due to O(N) variance from O(1/N) correlations. For sufficiently large N, the eigenvalue gap holds with high probability.
+**Concentration rate (CORRECTED)**: The bound has form $\exp(-c\delta^2_{\text{mean}}/N)$. For **fixed** $\delta_{\text{mean}}$, this does NOT vanish as $N \to \infty$. This provides **pointwise concentration** at each fixed $x \in \mathcal{X}$.
 
-**Note on uniform gap**: For continuous state space, union bound over covering net gives failure probability $\sim (D_{\max}/\rho)^d \cdot \exp(-c/N)$, which vanishes as $N \to \infty$. See Remark {prf:ref}`rem-uniform-gap-caveat` below.
+**Note on uniform gap (CRITICAL)**: Uniform gaps over continuous state space are **NOT established** by this theorem. The union bound approach fails because $(D_{\max}/\rho)^d \cdot \exp(-c/N) \not\to 0$ for fixed $\rho$ and fixed $\delta_{\text{mean}}$. See Remark {prf:ref}`rem-uniform-gap-caveat` below for discussion of alternatives.
 
 :::{warning}
 This theorem is **conditional on two unproven assumptions** (items 5-6 above). The implication is rigorously proven, but the antecedent requires verification (see Section 9).
@@ -2061,7 +2074,7 @@ $$
 
 $$
 
- This bound decays as $\exp(-c/N)$, giving exponentially small (in 1/N) failure probability for large N. This is the standard concentration rate for weakly dependent exchangeable sequences.
+**CRITICAL**: For **fixed** $\delta_{\text{mean}}$, this bound does NOT vanish as $N \to \infty$ (exponent $\to 0$). The theorem establishes pointwise concentration at each fixed $x$, not uniform concentration.
 
 *Step 2: Weyl's inequality for eigenvalue gaps.*
 
@@ -2115,21 +2128,21 @@ $$
 
 $$
 
-For fixed M, this vanishes as $N \to \infty$ due to the $\exp(-c/N)$ factor.
+**CRITICAL ERROR**: This claim is FALSE. For fixed $M$ and $\delta_{\text{mean}}$, as $N \to \infty$: $\exp(-c/N) \to 1$, so the RHS $\to M \cdot 2d$ (constant, does NOT vanish).
 
-**Extension to continuous $\mathcal{X}$**: For a covering net with $\mathcal{N}(\rho) = (D_{\max}/\rho)^d$ balls at resolution ρ, the union bound gives:
-
-$$
-\mathbb{P}(\exists x \in \mathcal{X}: \text{gap}(x) < \delta_{\text{mean}}/2 - 2\rho) \le \left(\frac{D_{\max}}{\rho}\right)^d \cdot 2d \cdot \exp\left(-\frac{c}{N}\right)
+**Extension to continuous $\mathcal{X}$ FAILS**: For a covering net with $\mathcal{N}(\rho) = (D_{\max}/\rho)^d$ balls at resolution $\rho$, the union bound gives:
 
 $$
+\mathbb{P}(\exists x \in \mathcal{X}: \text{gap}(x) < \delta_{\text{mean}}/2 - 2\rho) \le \left(\frac{D_{\max}}{\rho}\right)^d \cdot 2d \cdot \exp\left(-\frac{c\delta^2_{\text{mean}}}{N}\right)
 
- As $N \to \infty$, we can choose ρ → 0 while maintaining vanishing failure probability. For example:
-- Choose $\rho = 1/\log N$
-- Then $\mathcal{N}(\rho)^d = (D_{\max} \log N)^d = \text{poly}(N)$
-- Failure probability: $\text{poly}(N) \cdot \exp(-c/N) \to 0$ as $N \to \infty$
+$$
 
-This gives a **uniform eigenvalue gap over the entire continuous state space** with high probability that tends to 1 as $N \to \infty$. $\square$
+**Why this FAILS**: For any fixed $\rho > 0$ and fixed $\delta_{\text{mean}}$:
+- As $N \to \infty$: $\exp(-c\delta^2_{\text{mean}}/N) \to 1$
+- Therefore: RHS $\to (D_{\max}/\rho)^d \cdot 2d$ (positive constant, does NOT vanish)
+- Choosing $\rho = 1/\log N$ gives: $(D_{\max} \log N)^d \cdot \exp(-c/N) = \text{poly}(N) \cdot 1 \to +\infty$
+
+**Conclusion**: The theorem establishes **pointwise concentration ONLY**. Uniform gaps over continuous $\mathcal{X}$ are **NOT proven**. See Remark {prf:ref}`rem-uniform-gap-caveat` for alternative approaches. $\square$
 :::
 
 :::{prf:remark} Uniform Gap Over Continuous State Space
