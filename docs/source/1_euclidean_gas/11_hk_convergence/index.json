@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0",
+  "statistics": {
+    "total_objects": 11,
+    "counts_by_type": {
+      "MathematicalObject": 1,
+      "Axiom": 1,
+      "Parameter": 0,
+      "Property": 0,
+      "Relationship": 0,
+      "TheoremBox": 9
+    },
+    "total_tags": 2,
+    "all_tags": [
+      "convergence",
+      "particle"
+    ]
+  },
+  "all_ids": [
+    "obj-hk-metric-intro",
+    "axiom-ax-uniform-density-bound-hk",
+    "thm-hk-convergence-main-assembly",
+    "thm-hk-summary",
+    "lem-mass-contraction-revival-death",
+    "lem-structural-variance-contraction",
+    "lem-kinetic-hellinger-contraction",
+    "lem-hypoelliptic-density-bound",
+    "lem-gaussian-lower-bound",
+    "lem-qsd-lower-bound",
+    "attr-killing-rate-continuous"
+  ],
+  "all_tags": [
+    "convergence",
+    "particle"
+  ]
+}

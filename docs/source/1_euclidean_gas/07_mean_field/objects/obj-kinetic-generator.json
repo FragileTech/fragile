@@ -1,0 +1,14 @@
+{
+  "label": "obj-kinetic-generator",
+  "name": "Kinetic Transport Operator",
+  "mathematical_expression": "\\mathrm d x_i = v_i\\,\\mathrm dt,\\qquad\n\\mathrm d v_i = \\left(\\frac{1}{m}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\,\\mathrm dt \\;+\\; \\sigma_v\\,\\mathrm dW_t",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "euclidean-gas",
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

@@ -1,0 +1,313 @@
+{
+  "source_file": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+  "total_directives": 22,
+  "counts_by_type": {
+    "lemma": 7,
+    "proposition": 6,
+    "theorem": 6,
+    "remark": 3
+  },
+  "directives": [
+    {
+      "type": "lemma",
+      "label": "lem-wasserstein-entropy",
+      "title": "Wasserstein-Entropy Inequality",
+      "content": "Under the N-uniform LSI ({prf:ref}`thm-kl-convergence-euclidean` from [09_kl_convergence](09_kl_convergence)), the 2-Wasserstein distance between $\\nu_N^{QSD}$ (the N-particle quasi-stationary distrib...",
+      "math_expression_count": 4,
+      "first_math": "W_2^2(\\nu_N^{QSD}, \\rho_0^{\\otimes N}) \\leq \\frac{2}{\\lambda_{\\text{LSI}}} \\cdot D_{KL}(\\nu_N^{QSD} \\| \\rho_0^{\\otimes N})",
+      "cross_refs": [
+        "thm-kl-convergence-euclidean",
+        "thm-kl-convergence-euclidean"
+      ],
+      "line_range": [
+        37,
+        48
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-quantitative-kl-bound",
+      "title": "Quantitative KL Bound",
+      "content": "Let $\\mathcal{H}_N := D_{KL}(\\nu_N^{QSD} \\| \\rho_0^{\\otimes N})$ be the relative entropy between the N-particle QSD and the product of mean-field measures. Under the cloning mechanism with rate $\\lamb...",
+      "math_expression_count": 9,
+      "first_math": "\\mathcal{H}_N \\leq \\frac{C_{\\text{int}}}{N}",
+      "cross_refs": [],
+      "line_range": [
+        173,
+        192
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-interaction-complexity-bound",
+      "title": "Boundedness of Interaction Complexity Constant",
+      "content": "The interaction complexity constant appearing in {prf:ref}`lem-quantitative-kl-bound`, which arises from the KL-divergence evolution equation:\n\n$$\n|R_N(k)| \\leq \\frac{C_{\\text{int}}}{N}\n$$\n\nis finite ...",
+      "math_expression_count": 8,
+      "first_math": "|R_N(k)| \\leq \\frac{C_{\\text{int}}}{N}",
+      "cross_refs": [
+        "lem-quantitative-kl-bound"
+      ],
+      "line_range": [
+        288,
+        310
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-lipschitz-observable-error",
+      "title": "Empirical Measure Observable Error",
+      "content": "For any Lipschitz observable $\\phi: \\Omega \\to \\mathbb{R}$ with constant $L_\\phi$, the expected Wasserstein distance between the empirical measure and the target measure controls the observable error:...",
+      "math_expression_count": 9,
+      "first_math": "\\left| \\mathbb{E}_{\\nu_N^{QSD}} \\left[ \\frac{1}{N} \\sum_{i=1}^N \\phi(z_i) \\right] - \\int_\\Omega \\phi(z) \\rho_0(z) dz \\right| \\leq L_\\phi \\cdot \\mathbb{E}_{\\nu_N^{QSD}} \\left[ W_1(\\bar{\\mu}_N, \\rho_0) \\right]",
+      "cross_refs": [],
+      "line_range": [
+        440,
+        459
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-empirical-wasserstein-concentration",
+      "title": "Empirical Measure Concentration",
+      "content": "For i.i.d. samples $(z_1, \\ldots, z_N) \\sim \\rho_0^{\\otimes N}$, the empirical measure $\\bar{\\mu}_N = \\frac{1}{N}\\sum_{i=1}^N \\delta_{z_i}$ satisfies:\n\n$$\n\\mathbb{E}_{\\rho_0^{\\otimes N}} \\left[ W_2^2(...",
+      "math_expression_count": 7,
+      "first_math": "\\mathbb{E}_{\\rho_0^{\\otimes N}} \\left[ W_2^2(\\bar{\\mu}_N, \\rho_0) \\right] \\leq \\frac{C_{\\text{var}}}{N}",
+      "cross_refs": [],
+      "line_range": [
+        512,
+        525
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-finite-second-moment-meanfield",
+      "title": "Finite Second Moment of Mean-Field QSD",
+      "content": "The mean-field invariant measure $\\rho_0$ of the McKean-Vlasov PDE has finite second moment:\n\n$$\nC_{\\text{var}}(\\rho_0) := \\int_\\Omega |z - \\bar{z}|^2 d\\rho_0(z) < \\infty\n$$\n\nwhere $\\bar{z} = \\int_\\Om...",
+      "math_expression_count": 4,
+      "first_math": "C_{\\text{var}}(\\rho_0) := \\int_\\Omega |z - \\bar{z}|^2 d\\rho_0(z) < \\infty",
+      "cross_refs": [],
+      "line_range": [
+        591,
+        608
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-quantitative-propagation-chaos",
+      "title": "Quantitative Propagation of Chaos",
+      "content": "Let $\\nu_N^{QSD}$ be the quasi-stationary distribution of the N-particle system and let $\\rho_0$ be the mean-field invariant measure. For any Lipschitz observable $\\phi: \\Omega \\to \\mathbb{R}$ with co...",
+      "math_expression_count": 11,
+      "first_math": "\\left| \\mathbb{E}_{\\nu_N^{QSD}} \\left[ \\frac{1}{N} \\sum_{i=1}^N \\phi(z_i) \\right] - \\int_\\Omega \\phi(z) \\rho_0(z) dz \\right| \\leq \\frac{C_{\\text{obs}} \\cdot L_\\phi}{\\sqrt{N}}",
+      "cross_refs": [],
+      "line_range": [
+        710,
+        730
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-fourth-moment-baoab",
+      "title": "Fourth-Moment Uniform Bounds for BAOAB",
+      "content": "Let $\\{Z_k\\}_{k \\geq 0}$ be the BAOAB chain with step size $\\Delta t$ initialized from the continuous-time invariant measure $\\nu^{\\text{cont}}$. Under the confinement axiom ({prf:ref}`def-confined-po...",
+      "math_expression_count": 9,
+      "first_math": "\\sup_{k \\geq 0} \\mathbb{E}_{\\nu^{\\text{cont}}} [|Z_k|^4] \\leq M_4",
+      "cross_refs": [
+        "def-confined-potential"
+      ],
+      "line_range": [
+        834,
+        845
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-baoab-weak-error",
+      "title": "BAOAB Second-Order Weak Convergence",
+      "content": "Let $Z(t)$ be the solution of the continuous-time Langevin SDE:\n\n$$\n\\begin{cases}\ndX_t = V_t dt \\\\\ndV_t = -\\nabla U(X_t) dt - \\gamma V_t dt + \\sigma dW_t\n\\end{cases}\n$$\n\nand let $Z_k$ be the BAOAB app...",
+      "math_expression_count": 13,
+      "first_math": "\\begin{cases}\ndX_t = V_t dt \\\\\ndV_t = -\\nabla U(X_t) dt - \\gamma V_t dt + \\sigma dW_t\n\\end{cases}",
+      "cross_refs": [],
+      "line_range": [
+        1179,
+        1205
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-baoab-invariant-measure-error",
+      "title": "BAOAB Invariant Measure Error",
+      "content": "Let $\\nu^{\\text{cont}}$ be the invariant measure of the continuous-time Langevin dynamics and let $\\nu^{\\Delta t}$ be the invariant measure of the BAOAB chain with step size $\\Delta t$. For any observ...",
+      "math_expression_count": 11,
+      "first_math": "\\left| \\mathbb{E}_{\\nu^{\\Delta t}} [\\phi] - \\mathbb{E}_{\\nu^{\\text{cont}}} [\\phi] \\right| \\leq C_{\\text{inv}} \\cdot \\|\\phi\\|_{C^4} \\cdot (\\Delta t)^2",
+      "cross_refs": [],
+      "line_range": [
+        1295,
+        1308
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-langevin-baoab-discretization-error",
+      "title": "Langevin-BAOAB Time Discretization Error",
+      "content": "Let $\\nu_N^{\\text{Langevin}}$ be the invariant measure of the continuous-time N-particle Langevin dynamics (without cloning) and let $\\nu_N^{\\text{BAOAB}}$ be the invariant measure of the discrete-tim...",
+      "math_expression_count": 14,
+      "first_math": "\\left| \\mathbb{E}_{\\nu_N^{\\text{BAOAB}}} [\\phi] - \\mathbb{E}_{\\nu_N^{\\text{Langevin}}} [\\phi] \\right| \\leq C_{\\text{BAOAB}} \\cdot \\|\\phi\\|_{C^4} \\cdot (\\Delta t)^2",
+      "cross_refs": [],
+      "line_range": [
+        1489,
+        1504
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-full-system-discretization-error",
+      "title": "Full System Time Discretization Error",
+      "content": "Let $\\nu_N^{\\text{cont}}$ be the QSD of the continuous-time N-particle system (Langevin dynamics + continuous-time cloning) and let $\\nu_N^{\\text{discrete}}$ be the QSD of the discrete-time system (BA...",
+      "math_expression_count": 13,
+      "first_math": "\\left| \\mathbb{E}_{\\nu_N^{\\text{discrete}}} [\\phi] - \\mathbb{E}_{\\nu_N^{\\text{cont}}} [\\phi] \\right| \\leq C_{\\text{total}} \\cdot \\|\\phi\\|_{C^4} \\cdot \\Delta t",
+      "cross_refs": [],
+      "line_range": [
+        1625,
+        1638
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-lie-splitting-weak-error",
+      "title": "One-Step Weak Error for Lie Splitting",
+      "content": "For the Lie splitting $\\mathcal{T}^{\\Delta t} = \\mathcal{T}_{\\text{clone}}^{\\Delta t} \\circ \\mathcal{T}_{\\text{BAOAB}}^{\\Delta t}$, the local weak error is:\n\n$$\n\\left|\\mathbb{E}[(\\mathcal{T}^{\\Delta t...",
+      "math_expression_count": 6,
+      "first_math": "\\left|\\mathbb{E}[(\\mathcal{T}^{\\Delta t} - \\mathcal{P}^{\\Delta t})\\phi(Z)]\\right| \\leq C_{\\text{split}} \\|\\phi\\|_{C^4} (\\Delta t)^2",
+      "cross_refs": [],
+      "line_range": [
+        1671,
+        1684
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-uniform-geometric-ergodicity",
+      "title": "Uniform Geometric Ergodicity",
+      "content": "Under the confinement axiom, there exist constants $\\kappa_{\\text{mix}} > 0$ and $C_{\\text{erg}} < \\infty$ such that for all $\\Delta t < \\Delta t_0$, the discrete-time Markov chain with transition ker...",
+      "math_expression_count": 11,
+      "first_math": "\\left\\|\\mathcal{P}_k - \\nu_N^{\\text{discrete}}\\right\\|_{\\text{TV}} \\leq C_{\\text{erg}} e^{-\\kappa_{\\text{mix}} k \\Delta t}",
+      "cross_refs": [],
+      "line_range": [
+        1983,
+        1996
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-meyn-tweedie-drift-minor",
+      "title": "Drift-Minorization Implies Geometric Ergodicity (Meyn & Tweedie)",
+      "content": "Let $\\mathcal{T}$ be a Markov transition kernel on a state space $\\mathcal{S}$ with invariant measure $\\nu$. Suppose:\n\n1. **Drift condition**: There exists a Lyapunov function $V: \\mathcal{S} \\to [1, ...",
+      "math_expression_count": 18,
+      "first_math": "\\mathcal{T}V(s) \\leq (1 - \\kappa)V(s) + b",
+      "cross_refs": [],
+      "line_range": [
+        2194,
+        2218
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-mixing-rate-relationship",
+      "title": "Relationship Between Continuous and Discrete Mixing Rates",
+      "content": "Let $\\mathcal{L}$ be a generator with spectral gap $\\lambda_1 > 0$ (so the continuous-time semigroup $\\mathcal{P}^t = e^{t\\mathcal{L}}$ has mixing rate $\\kappa_{\\text{mix}}^{\\text{cont}} = \\lambda_1$)...",
+      "math_expression_count": 12,
+      "first_math": "\\kappa_{\\text{mix}}^{\\text{discrete}}(\\tau) = -\\frac{1}{\\tau} \\log(1 - \\lambda_1(\\tau))",
+      "cross_refs": [],
+      "line_range": [
+        2276,
+        2297
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-quantitative-error-propagation",
+      "title": "Error Propagation for Ergodic Chains",
+      "content": "Suppose:\n1. The one-step weak error satisfies $\\left|\\mathbb{E}[(\\mathcal{T}^{\\Delta t} - \\mathcal{P}^{\\Delta t})\\phi(Z)]\\right| \\leq C_{\\text{split}} \\|\\phi\\|_{C^4} (\\Delta t)^2$\n2. The discrete chai...",
+      "math_expression_count": 4,
+      "first_math": "\\left| \\mathbb{E}_{\\nu_N^{\\text{discrete}}} [\\phi] - \\mathbb{E}_{\\nu_N^{\\text{cont}}} [\\phi] \\right| \\leq \\frac{C_{\\text{split}}}{\\kappa_{\\text{mix}}} \\|\\phi\\|_{C^4} \\Delta t",
+      "cross_refs": [],
+      "line_range": [
+        2343,
+        2356
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-total-error-bound",
+      "title": "Total Error Bound for Discrete Fragile Gas",
+      "content": "Let $\\nu_N^{\\text{discrete}}$ be the invariant measure of the fully discrete N-particle Fragile Gas with time step $\\Delta t$, and let $\\rho_0$ be the invariant measure of the continuous-time mean-fie...",
+      "math_expression_count": 32,
+      "first_math": "\\boxed{\n\\left| \\mathbb{E}_{\\nu_N^{\\text{discrete}}} \\left[ \\frac{1}{N}\\sum_{i=1}^N \\phi(Z^{(i)}) \\right] - \\mathbb{E}_{\\rho_0} [\\phi] \\right| \\leq \\left( \\frac{C_{\\text{MF}}}{\\sqrt{N}} + \\frac{C_{\\text{discrete}}}{N} \\Delta t \\right) \\|\\phi\\|_{C^4}\n}",
+      "cross_refs": [
+        "thm-kl-convergence-euclidean",
+        "thm-quantitative-propagation-chaos",
+        "thm-error-propagation"
+      ],
+      "line_range": [
+        2494,
+        2528
+      ]
+    },
+    {
+      "type": "remark",
+      "label": "rem-rate-interpretation",
+      "title": "Rate Interpretation",
+      "content": "The total error bound reveals two competing sources:\n\n1. **Statistical error** ($O(1/\\sqrt{N})$): From finite-sample approximation of the mean-field limit\n   - Dominant for small $N$ (e.g., $N = 100 \\...",
+      "math_expression_count": 19,
+      "first_math": "\\frac{C_{\\text{MF}}}{\\sqrt{N}} \\approx C_{\\text{discrete}} \\Delta t \\approx \\frac{\\varepsilon}{2}",
+      "cross_refs": [],
+      "line_range": [
+        2708,
+        2741
+      ]
+    },
+    {
+      "type": "remark",
+      "label": "rem-higher-order-splitting",
+      "title": "Higher-Order Splitting Methods",
+      "content": "The discretization term $O(\\Delta t / N)$ is already negligible for large $N$, but can we further reduce it using higher-order splitting?\n\n**General principle:** For ergodic systems with a unique inva...",
+      "math_expression_count": 19,
+      "first_math": "\\mathcal{T}^{\\Delta t}_{\\text{Strang}} = \\mathcal{T}_{\\text{Langevin}}^{\\Delta t/2} \\circ \\mathcal{T}_{\\text{clone}}^{\\Delta t} \\circ \\mathcal{T}_{\\text{Langevin}}^{\\Delta t/2}",
+      "cross_refs": [
+        "thm-error-propagation"
+      ],
+      "line_range": [
+        2742,
+        2779
+      ]
+    },
+    {
+      "type": "remark",
+      "label": "rem-optimality-mean-field-rate",
+      "title": "Optimality of the Mean-Field Rate",
+      "content": "The $O(1/\\sqrt{N})$ rate is **optimal** for empirical measure convergence in mean-field particle systems.\n\n**Why?** This is the rate of the **Central Limit Theorem**:\n\n$$\n\\sqrt{N} (\\bar{\\mu}_N - \\rho_...",
+      "math_expression_count": 4,
+      "first_math": "\\sqrt{N} (\\bar{\\mu}_N - \\rho_0) \\xrightarrow{d} \\mathcal{N}(0, \\Sigma)",
+      "cross_refs": [],
+      "line_range": [
+        2780,
+        2799
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-quantitative-explicit-constants",
+      "title": "Explicit Constant Formulas",
+      "content": "Under the framework axioms, the error constants admit the following explicit bounds:\n\n**1. Mean-field constant:**\n\n$$\nC_{\\text{MF}} = \\sqrt{C_{\\text{var}} + C' \\cdot C_{\\text{int}}}\n$$\n\nwhere:\n- $C_{\\...",
+      "math_expression_count": 26,
+      "first_math": "C_{\\text{MF}} = \\sqrt{C_{\\text{var}} + C' \\cdot C_{\\text{int}}}",
+      "cross_refs": [
+        "lem-quantitative-kl-bound"
+      ],
+      "line_range": [
+        2804,
+        2848
+      ]
+    }
+  ]
+}

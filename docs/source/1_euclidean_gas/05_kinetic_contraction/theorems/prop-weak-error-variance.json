@@ -1,0 +1,45 @@
+{
+  "label": "attr-weak-error-variance",
+  "name": "BAOAB Weak Error for Variance Lyapunov Functions",
+  "statement_type": "proposition",
+  "source": {
+    "file": "05_kinetic_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-baoab-integrator",
+    "def-variance-lyapunov"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "V_Var",
+    "V_Var_x",
+    "V_Var_v",
+    "delta_z_k_i",
+    "N",
+    "d",
+    "gamma",
+    "L_F",
+    "sigma_max",
+    "tau"
+  ],
+  "attributes_required": {
+    "V_Var": [
+      "globally-bounded-derivatives"
+    ]
+  },
+  "internal_lemmas": [
+    "variance-gradient-bound",
+    "variance-hessian-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "weak-error-O-tau-squared"
+  ],
+  "relations_established": [
+    "baoab-discretization-error-for-variance"
+  ]
+}

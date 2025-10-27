@@ -1,0 +1,517 @@
+{
+  "source_file": "/home/guillem/fragile/docs/source/1_euclidean_gas/06_convergence.md",
+  "total_directives": 38,
+  "counts_by_type": {
+    "remark": 2,
+    "definition": 8,
+    "proposition": 12,
+    "theorem": 13,
+    "algorithm": 3
+  },
+  "directives": [
+    {
+      "type": "remark",
+      "label": "rem-prerequisite-drifts",
+      "title": "Summary of Required Operator Drifts",
+      "content": "The following drift inequalities are established in the prerequisite documents and used throughout:\n\n| Component | Cloning Drift (03_cloning.md) | Kinetic Drift (05_kinetic_contraction.md) |\n|:-------...",
+      "math_expression_count": 12,
+      "first_math": "V_W",
+      "cross_refs": [],
+      "line_range": [
+        167,
+        181
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-full-lyapunov-recall",
+      "title": "Synergistic Lyapunov Function (Recall)",
+      "content": "From 03_cloning.md Definition 3.3.1:\n\n$$\nV_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)\n$$\n\nwhere:\n- $V_W = V_{\\text{loc}} + V_{\\text{struct}}$: Inter-sw...",
+      "math_expression_count": 5,
+      "first_math": "V_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)",
+      "cross_refs": [],
+      "line_range": [
+        229,
+        244
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-complete-drift-summary",
+      "title": "Complete Drift Characterization",
+      "content": "| Component | $\\mathbb{E}_{\\text{clone}}[\\Delta \\cdot]$ | $\\mathbb{E}_{\\text{kin}}[\\Delta \\cdot]$ |\n|:----------|:------------------------------------------|:----------------------------------------|\n...",
+      "math_expression_count": 14,
+      "first_math": "\\mathbb{E}_{\\text{clone}}[\\Delta \\cdot]",
+      "cross_refs": [],
+      "line_range": [
+        249,
+        263
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-foster-lyapunov-main",
+      "title": "Foster-Lyapunov Drift for the Composed Operator",
+      "content": "Under the foundational axioms, there exist coupling constants $c_V^*, c_B^* > 0$ such that the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies:\n\n$$\n\\mat...",
+      "math_expression_count": 6,
+      "first_math": "\\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S') \\mid S] \\leq (1 - \\kappa_{\\text{total}}\\tau) V_{\\text{total}}(S) + C_{\\text{total}}",
+      "cross_refs": [],
+      "line_range": [
+        266,
+        291
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-cemetery-state",
+      "title": "The Cemetery State",
+      "content": "The **cemetery state** $\\dagger$ is the absorbing state where all walkers are dead:\n\n$$\\dagger := \\{(x_i, v_i, 0) : i = 1, \\ldots, N\\}$$\n\nOnce the swarm enters this state, it remains there forever (no...",
+      "math_expression_count": 6,
+      "first_math": "\\dagger := \\{(x_i, v_i, 0) : i = 1, \\ldots, N\\}",
+      "cross_refs": [],
+      "line_range": [
+        576,
+        592
+      ]
+    },
+    {
+      "type": "remark",
+      "label": "rem-extinction-inevitable",
+      "title": "Why Extinction is Inevitable (Eventually)",
+      "content": "The use of **unbounded Gaussian noise** means:\n\n$$P(\\text{all } N \\text{ walkers cross boundary in one step} \\mid S) > 0$$\n\nfor ANY state $S$, no matter how safe. This is because Gaussian tails extend...",
+      "math_expression_count": 4,
+      "first_math": "P(\\text{all } N \\text{ walkers cross boundary in one step} \\mid S) > 0",
+      "cross_refs": [],
+      "line_range": [
+        593,
+        608
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-qsd",
+      "title": "Quasi-Stationary Distribution (QSD)",
+      "content": "A **quasi-stationary distribution** is a probability measure $\\nu_{\\text{QSD}}$ on the alive state space $\\Sigma_N^{\\text{alive}} := \\{S : |\\mathcal{A}(S)| \\geq 1\\}$ such that:\n\n$$\nP(S_{t+1} \\in A \\mi...",
+      "math_expression_count": 9,
+      "first_math": "P(S_{t+1} \\in A \\mid S_t \\sim \\nu_{\\text{QSD}}, \\text{not absorbed}) = \\nu_{\\text{QSD}}(A)",
+      "cross_refs": [],
+      "line_range": [
+        611,
+        626
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-phi-irreducibility",
+      "title": "\u03c6-Irreducibility of the Euclidean Gas",
+      "content": "The Euclidean Gas Markov chain on $\\Sigma_N^{\\text{alive}}$ is **\u03c6-irreducible** with respect to Lebesgue measure: For any starting state $S_A \\in \\Sigma_N^{\\text{alive}}$ and any open set $O_B \\subse...",
+      "math_expression_count": 5,
+      "first_math": "P^M(S_A, O_B) := P(S_M \\in O_B \\mid S_0 = S_A) > 0",
+      "cross_refs": [],
+      "line_range": [
+        635,
+        646
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-aperiodicity",
+      "title": "Aperiodicity of the Euclidean Gas",
+      "content": "The Euclidean Gas Markov chain is **aperiodic**: For any state $S \\in \\Sigma_N^{\\text{alive}}$ and any open set $U$ containing $S$, there exist integers $m, n$ with $\\gcd(m,n) = 1$ such that:\n\n$$\nP^m(...",
+      "math_expression_count": 6,
+      "first_math": "P^m(S, U) > 0 \\quad \\text{and} \\quad P^n(S, U) > 0",
+      "cross_refs": [],
+      "line_range": [
+        836,
+        847
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-main-convergence",
+      "title": "Geometric Ergodicity and Convergence to QSD",
+      "content": "Under the foundational axioms (03_cloning.md Ch 4, this document Ch 1), the Euclidean Gas Markov chain satisfies:\n\n**1. Existence and Uniqueness of QSD:**\n\nThere exists a unique quasi-stationary distr...",
+      "math_expression_count": 19,
+      "first_math": "\\|\\mu_t - \\nu_{\\text{QSD}}\\|_{\\text{TV}} \\leq C_{\\text{conv}} e^{-\\kappa_{\\text{QSD}} t}",
+      "cross_refs": [],
+      "line_range": [
+        906,
+        948
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-qsd-properties",
+      "title": "Properties of the Quasi-Stationary Distribution",
+      "content": "The QSD $\\nu_{\\text{QSD}}$ satisfies:\n\n**1. Position Distribution:**\n\nThe marginal position distribution is approximately:\n$$\n\\rho_{\\text{pos}}(x) \\propto e^{-U(x) - \\varphi_{\\text{barrier}}(x)} \\quad...",
+      "math_expression_count": 7,
+      "first_math": "\\rho_{\\text{pos}}(x) \\propto e^{-U(x) - \\varphi_{\\text{barrier}}(x)} \\quad \\text{for } x \\in \\mathcal{X}_{\\text{valid}}",
+      "cross_refs": [],
+      "line_range": [
+        1013,
+        1054
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-equilibrium-variance-bounds",
+      "title": "Equilibrium Variance Bounds from Drift Inequalities",
+      "content": "The quasi-stationary distribution satisfies explicit variance bounds derived from the component drift inequalities:\n\n**Positional Variance Equilibrium:**\n\nFrom {prf:ref}`thm-positional-variance-contra...",
+      "math_expression_count": 14,
+      "first_math": "V_{\\text{Var},x}^{\\text{QSD}} \\leq \\frac{C_x}{\\kappa_x}",
+      "cross_refs": [
+        "thm-positional-variance-contraction",
+        "thm-bounded-velocity-expansion-cloning",
+        "thm-velocity-variance-contraction-kinetic",
+        "thm-boundary-potential-contraction"
+      ],
+      "line_range": [
+        1055,
+        1111
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-velocity-rate-explicit",
+      "title": "Velocity Dissipation Rate (Parameter-Explicit)",
+      "content": "The velocity variance dissipation rate and equilibrium constant are:\n\n$$\n\\kappa_v = 2\\gamma - O(\\tau)\n$$\n\n$$\nC_v' = \\frac{d \\sigma_v^2}{\\gamma} + O(\\tau \\sigma_v^2)\n$$\n\n**Proof:**\n\nFrom the BAOAB sche...",
+      "math_expression_count": 15,
+      "first_math": "\\kappa_v = 2\\gamma - O(\\tau)",
+      "cross_refs": [],
+      "line_range": [
+        1233,
+        1300
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-position-rate-explicit",
+      "title": "Positional Contraction Rate (Parameter-Explicit)",
+      "content": "The positional variance contraction rate depends on the cloning rate $\\lambda$ and the fitness-variance correlation:\n\n$$\n\\kappa_x = \\lambda \\cdot \\mathbb{E}\\left[\\frac{\\text{Cov}(f_i, \\|x_i - \\bar{x}\\...",
+      "math_expression_count": 22,
+      "first_math": "\\kappa_x = \\lambda \\cdot \\mathbb{E}\\left[\\frac{\\text{Cov}(f_i, \\|x_i - \\bar{x}\\|^2)}{\\mathbb{E}[\\|x_i - \\bar{x}\\|^2]}\\right] + O(\\tau)",
+      "cross_refs": [],
+      "line_range": [
+        1321,
+        1396
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-wasserstein-rate-explicit",
+      "title": "Wasserstein Contraction Rate (Parameter-Explicit)",
+      "content": "The Wasserstein contraction rate depends on friction and the spectral gap of the potential:\n\n$$\n\\kappa_W = \\frac{c_{\\text{hypo}}^2 \\gamma}{1 + \\gamma^2/\\lambda_{\\min}^2}\n$$\n\nwhere:\n- $c_{\\text{hypo}} ...",
+      "math_expression_count": 22,
+      "first_math": "\\kappa_W = \\frac{c_{\\text{hypo}}^2 \\gamma}{1 + \\gamma^2/\\lambda_{\\min}^2}",
+      "cross_refs": [],
+      "line_range": [
+        1419,
+        1493
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-boundary-rate-explicit",
+      "title": "Boundary Contraction Rate (Parameter-Explicit)",
+      "content": "The boundary contraction rate depends on the cloning rate and boundary stiffness:\n\n$$\n\\kappa_b = \\min\\left(\\lambda \\cdot \\frac{\\Delta f_{\\text{boundary}}}{f_{\\text{typical}}}, \\kappa_{\\text{wall}}\\rig...",
+      "math_expression_count": 19,
+      "first_math": "\\kappa_b = \\min\\left(\\lambda \\cdot \\frac{\\Delta f_{\\text{boundary}}}{f_{\\text{typical}}}, \\kappa_{\\text{wall}}\\right)",
+      "cross_refs": [],
+      "line_range": [
+        1518,
+        1595
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-synergistic-rate-derivation",
+      "title": "Synergistic Rate Derivation from Component Drifts",
+      "content": "The total drift inequality combines component-wise drift bounds from cloning and kinetic operators to yield explicit synergistic convergence.\n\n**Component Drift Structure:**\n\nFrom the cloning operator...",
+      "math_expression_count": 17,
+      "first_math": "\\begin{aligned}\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x + C_{xv} V_{\\text{Var},v} + C_{xW} V_W \\\\\n\\mathbb{E}_{\\text{kin}}[\\Delta V_{\\text{Var},v}] &\\leq -\\kappa_v V_{\\text{Var},v} + C_v + C_{vx} V_{\\text{Var},x} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq -\\kappa_W V_W + C_W \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b\n\\end{aligned}",
+      "cross_refs": [
+        "thm-positional-variance-contraction",
+        "thm-velocity-variance-contraction"
+      ],
+      "line_range": [
+        1621,
+        1714
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-total-rate-explicit",
+      "title": "Total Convergence Rate (Parameter-Explicit)",
+      "content": "The total geometric convergence rate is:\n\n$$\n\\kappa_{\\text{total}} = \\min(\\kappa_x, \\kappa_v, \\kappa_W, \\kappa_b) \\cdot (1 - \\epsilon_{\\text{coupling}})\n$$\n\nwhere $\\epsilon_{\\text{coupling}} \\ll 1$ is...",
+      "math_expression_count": 13,
+      "first_math": "\\kappa_{\\text{total}} = \\min(\\kappa_x, \\kappa_v, \\kappa_W, \\kappa_b) \\cdot (1 - \\epsilon_{\\text{coupling}})",
+      "cross_refs": [
+        "thm-foster-lyapunov-main"
+      ],
+      "line_range": [
+        1715,
+        1793
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-mixing-time-explicit",
+      "title": "Mixing Time (Parameter-Explicit)",
+      "content": "The time to reach $\\epsilon$-proximity to equilibrium is:\n\n$$\nT_{\\text{mix}}(\\epsilon) = \\frac{1}{\\kappa_{\\text{total}}} \\ln\\left(\\frac{V_{\\text{total}}^{\\text{init}}}{\\epsilon C_{\\text{total}}}\\right...",
+      "math_expression_count": 15,
+      "first_math": "T_{\\text{mix}}(\\epsilon) = \\frac{1}{\\kappa_{\\text{total}}} \\ln\\left(\\frac{V_{\\text{total}}^{\\text{init}}}{\\epsilon C_{\\text{total}}}\\right)",
+      "cross_refs": [],
+      "line_range": [
+        1821,
+        1876
+      ]
+    },
+    {
+      "type": "algorithm",
+      "label": "alg-param-selection",
+      "title": "Parameter Selection for Optimal Convergence",
+      "content": "**Input:** Problem dimension $d$, budget $N$, landscape curvature estimate $\\lambda_{\\min}$\n\n**Goal:** Choose $(\\gamma, \\lambda, \\sigma_v, \\tau, d_{\\text{safe}}, \\kappa_{\\text{wall}})$ to maximize $\\k...",
+      "math_expression_count": 30,
+      "first_math": "\\gamma = \\lambda = \\sqrt{\\lambda_{\\min}}",
+      "cross_refs": [],
+      "line_range": [
+        1896,
+        1978
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-complete-parameter-space",
+      "title": "Complete Parameter Space",
+      "content": "The Euclidean Gas algorithm is controlled by the parameter vector:\n\n$$\n\\mathbf{P} = (\\lambda, \\sigma_x, \\alpha_{\\text{rest}}, \\lambda_{\\text{alg}}, \\epsilon_c, \\epsilon_d, \\gamma, \\sigma_v, \\tau, N, \\...",
+      "math_expression_count": 22,
+      "first_math": "\\mathbf{P} = (\\lambda, \\sigma_x, \\alpha_{\\text{rest}}, \\lambda_{\\text{alg}}, \\epsilon_c, \\epsilon_d, \\gamma, \\sigma_v, \\tau, N, \\kappa_{\\text{wall}}, d_{\\text{safe}}) \\in \\mathbb{R}_{+}^{12}",
+      "cross_refs": [],
+      "line_range": [
+        2148,
+        2182
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-parameter-classification",
+      "title": "Parameter Classification",
+      "content": "Parameters can be grouped into five functional classes:\n\n**Class A: Direct Rate Controllers**\n\nThese parameters have **first-order effects** on convergence rates:\n\n- $\\lambda$ \u2192 $\\kappa_x$ (proportion...",
+      "math_expression_count": 31,
+      "first_math": "\\lambda",
+      "cross_refs": [],
+      "line_range": [
+        2200,
+        2251
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-rate-sensitivity-matrix",
+      "title": "Log-Sensitivity Matrix for Convergence Rates",
+      "content": "The **rate sensitivity matrix** $M_\\kappa \\in \\mathbb{R}^{4 \\times 12}$ is defined by:\n\n$$\n(M_\\kappa)_{ij} = \\frac{\\partial \\log \\kappa_i}{\\partial \\log P_j}\\bigg|_{P_0}\n$$\n\nwhere $\\kappa = (\\kappa_x,...",
+      "math_expression_count": 11,
+      "first_math": "(M_\\kappa)_{ij} = \\frac{\\partial \\log \\kappa_i}{\\partial \\log P_j}\\bigg|_{P_0}",
+      "cross_refs": [],
+      "line_range": [
+        2260,
+        2279
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-explicit-rate-sensitivity",
+      "title": "Explicit Rate Sensitivity Matrix",
+      "content": "At a balanced operating point with $\\gamma \\approx \\lambda \\approx \\sqrt{\\lambda_{\\min}}$, $\\lambda_{\\text{alg}} = 0.1$, $\\tau = 0.01$, the rate sensitivity matrix is approximately:\n\n$$\nM_\\kappa = \\be...",
+      "math_expression_count": 13,
+      "first_math": "M_\\kappa = \\begin{bmatrix}\n1.0 & 0 & 0 & 0.3 & -0.3 & 0 & 0 & 0 & -0.1 & 0 & 0 & 0 \\\\\n0 & 0 & 0 & 0 & 0 & 0 & 1.0 & 0 & -0.1 & 0 & 0 & 0 \\\\\n0 & 0 & 0 & 0 & 0 & 0 & 0.5 & 0 & 0 & 0 & 0 & 0 \\\\\n0.5 & 0 & 0 & 0 & 0 & 0 & 0.3 & 0 & 0 & 0 & 0.4 & 0\n\\end{bmatrix}",
+      "cross_refs": [],
+      "line_range": [
+        2384,
+        2411
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-equilibrium-sensitivity-matrix",
+      "title": "Equilibrium Constant Sensitivity Matrix",
+      "content": "$$\n(M_C)_{ij} = \\frac{\\partial \\log C_i}{\\partial \\log P_j}\\bigg|_{P_0}\n$$\n\nwhere $\\mathbf{C} = (C_x, C_v, C_W, C_b)$.",
+      "math_expression_count": 2,
+      "first_math": "(M_C)_{ij} = \\frac{\\partial \\log C_i}{\\partial \\log P_j}\\bigg|_{P_0}",
+      "cross_refs": [],
+      "line_range": [
+        2416,
+        2425
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-svd-rate-matrix",
+      "title": "SVD of Rate Sensitivity Matrix",
+      "content": "The singular value decomposition of $M_\\kappa \\in \\mathbb{R}^{4 \\times 12}$ is:\n\n$$\nM_\\kappa = U \\Sigma V^T\n$$\n\nwhere:\n- $U \\in \\mathbb{R}^{4 \\times 4}$ has orthonormal columns (left singular vectors,...",
+      "math_expression_count": 35,
+      "first_math": "M_\\kappa = U \\Sigma V^T",
+      "cross_refs": [],
+      "line_range": [
+        2483,
+        2575
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-condition-number-rate",
+      "title": "Condition Number of Rate Sensitivity",
+      "content": "$$\n\\kappa(M_\\kappa) = \\frac{\\sigma_1}{\\sigma_4} = \\frac{1.58}{0.29} \\approx 5.4\n$$\n\nThis is a **moderately well-conditioned** matrix:\n- Not too sensitive (would have $\\kappa > 100$ for ill-conditioned...",
+      "math_expression_count": 3,
+      "first_math": "\\kappa(M_\\kappa) = \\frac{\\sigma_1}{\\sigma_4} = \\frac{1.58}{0.29} \\approx 5.4",
+      "cross_refs": [],
+      "line_range": [
+        2580,
+        2593
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-parameter-optimization",
+      "title": "Parameter Optimization Problem",
+      "content": "$$\n\\max_{\\mathbf{P} \\in \\mathbb{R}_{+}^{12}} \\kappa_{\\text{total}}(\\mathbf{P}) = \\max_{\\mathbf{P}} \\left[\\min(\\kappa_x, \\kappa_v, \\kappa_W, \\kappa_b) \\cdot (1 - \\epsilon_{\\text{coupling}}(\\mathbf{P}))...",
+      "math_expression_count": 5,
+      "first_math": "\\max_{\\mathbf{P} \\in \\mathbb{R}_{+}^{12}} \\kappa_{\\text{total}}(\\mathbf{P}) = \\max_{\\mathbf{P}} \\left[\\min(\\kappa_x, \\kappa_v, \\kappa_W, \\kappa_b) \\cdot (1 - \\epsilon_{\\text{coupling}}(\\mathbf{P}))\\right]",
+      "cross_refs": [],
+      "line_range": [
+        2600,
+        2629
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-subgradient-min",
+      "title": "Subgradient of min() Function",
+      "content": "At a point $\\mathbf{P}$ where $\\kappa_{\\text{total}} = \\min(\\kappa_1, \\ldots, \\kappa_4)$, the subgradient set is:\n\n$$\n\\partial \\kappa_{\\text{total}} = \\text{conv}\\left\\{\\nabla \\kappa_i : \\kappa_i(\\mat...",
+      "math_expression_count": 10,
+      "first_math": "\\partial \\kappa_{\\text{total}} = \\text{conv}\\left\\{\\nabla \\kappa_i : \\kappa_i(\\mathbf{P}) = \\kappa_{\\text{total}}(\\mathbf{P})\\right\\}",
+      "cross_refs": [],
+      "line_range": [
+        2634,
+        2662
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-balanced-optimality",
+      "title": "Necessity of Balanced Rates at Optimum",
+      "content": "If $\\mathbf{P}^*$ is a **local maximum** of $\\kappa_{\\text{total}}(\\mathbf{P})$ in the interior of the feasible region, then at least two rates must be equal:\n\n$$\n\\exists i \\neq j : \\kappa_i(\\mathbf{P...",
+      "math_expression_count": 19,
+      "first_math": "\\exists i \\neq j : \\kappa_i(\\mathbf{P}^*) = \\kappa_j(\\mathbf{P}^*) = \\kappa_{\\text{total}}(\\mathbf{P}^*)",
+      "cross_refs": [],
+      "line_range": [
+        2667,
+        2713
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-restitution-friction-coupling",
+      "title": "Restitution-Friction Coupling",
+      "content": "For a target velocity equilibrium width $V_{\\text{eq}}^{\\text{target}}$, the optimal friction is:\n\n$$\n\\gamma^*(\\alpha_{\\text{rest}}) = \\frac{d\\sigma_v^2}{V_{\\text{eq}}^{\\text{target}}} \\cdot (1 + f(\\a...",
+      "math_expression_count": 19,
+      "first_math": "\\gamma^*(\\alpha_{\\text{rest}}) = \\frac{d\\sigma_v^2}{V_{\\text{eq}}^{\\text{target}}} \\cdot (1 + f(\\alpha_{\\text{rest}}))",
+      "cross_refs": [],
+      "line_range": [
+        2774,
+        2816
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-jitter-cloning-coupling",
+      "title": "Position Jitter - Cloning Rate Coupling",
+      "content": "For a target positional variance $V_{\\text{Var},x}^{\\text{target}}$, the iso-variance curve in $(\\sigma_x, \\lambda)$ space is:\n\n$$\n\\lambda^*(\\sigma_x) = \\frac{\\sigma_x^2 + \\sigma_v^2\\tau^2/\\gamma}{V_{...",
+      "math_expression_count": 15,
+      "first_math": "\\lambda^*(\\sigma_x) = \\frac{\\sigma_x^2 + \\sigma_v^2\\tau^2/\\gamma}{V_{\\text{Var},x}^{\\text{target}}}",
+      "cross_refs": [],
+      "line_range": [
+        2829,
+        2871
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-phase-space-pairing",
+      "title": "Phase-Space Pairing Quality",
+      "content": "The fitness-variance correlation coefficient is:\n\n$$\nc_{\\text{fit}}(\\lambda_{\\text{alg}}, \\epsilon_c) \\approx c_0 \\cdot \\left(1 + \\frac{\\lambda_{\\text{alg}} \\sigma_v^2}{\\sigma_x^2}\\right)^{-1/2} \\cdot...",
+      "math_expression_count": 19,
+      "first_math": "c_{\\text{fit}}(\\lambda_{\\text{alg}}, \\epsilon_c) \\approx c_0 \\cdot \\left(1 + \\frac{\\lambda_{\\text{alg}} \\sigma_v^2}{\\sigma_x^2}\\right)^{-1/2} \\cdot \\left(1 + \\frac{\\epsilon_c^2}{\\sigma_x^2}\\right)^{-1}",
+      "cross_refs": [],
+      "line_range": [
+        2878,
+        2919
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-error-propagation",
+      "title": "Parameter Error Propagation Bound",
+      "content": "If parameters have multiplicative errors $\\delta \\mathbf{P} / \\mathbf{P}_0 = \\mathbf{\\epsilon}$ with $\\|\\mathbf{\\epsilon}\\|_\\infty = \\epsilon_{\\max}$, then the convergence rate error satisfies:\n\n$$\n\\f...",
+      "math_expression_count": 11,
+      "first_math": "\\frac{|\\delta \\kappa_{\\text{total}}|}{\\kappa_{\\text{total}}} \\leq \\kappa(M_\\kappa) \\cdot \\|M_\\kappa\\|_\\infty \\cdot \\epsilon_{\\max} + O(\\epsilon_{\\max}^2)",
+      "cross_refs": [],
+      "line_range": [
+        2928,
+        2957
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-closed-form-optimum",
+      "title": "Closed-Form Balanced Optimum",
+      "content": "For the unconstrained optimization problem, the optimal parameters are:\n\n**Step 1: Friction from landscape**\n$$\n\\gamma^* = \\lambda_{\\min}\n$$\n\n**Justification:** Maximizes $\\kappa_W = c^2\\gamma/(1 + \\g...",
+      "math_expression_count": 19,
+      "first_math": "\\gamma^* = \\lambda_{\\min}",
+      "cross_refs": [],
+      "line_range": [
+        3092,
+        3164
+      ]
+    },
+    {
+      "type": "algorithm",
+      "label": "alg-projected-gradient-ascent",
+      "title": "Projected Gradient Ascent for Parameter Optimization",
+      "content": "**Input:**\n- Landscape: $(\\lambda_{\\min}, \\lambda_{\\max}, d)$\n- Constraints: $(N_{\\max}, \\lambda_{\\max}, V_{\\max}, \\ldots)$\n- Initial guess: $\\mathbf{P}_0$ (from closed-form solution)\n\n**Output:** Opt...",
+      "math_expression_count": 5,
+      "first_math": "(\\lambda_{\\min}, \\lambda_{\\max}, d)",
+      "cross_refs": [],
+      "line_range": [
+        3192,
+        3297
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-pareto-optimality",
+      "title": "Pareto Optimality in Parameter Space",
+      "content": "A parameter choice $\\mathbf{P}^*$ is **Pareto optimal** if there exists no other $\\mathbf{P}$ such that:\n- $\\kappa_{\\text{total}}(\\mathbf{P}) \\geq \\kappa_{\\text{total}}(\\mathbf{P}^*)$ (at least as fas...",
+      "math_expression_count": 5,
+      "first_math": "\\mathbf{P}^*",
+      "cross_refs": [],
+      "line_range": [
+        3304,
+        3314
+      ]
+    },
+    {
+      "type": "algorithm",
+      "label": "alg-adaptive-tuning",
+      "title": "Adaptive Parameter Tuning",
+      "content": "**Input:**\n- Swarm system (black box)\n- Initial parameter guess $\\mathbf{P}_0$\n- Measurement window $T_{\\text{sample}}$\n\n**Output:** Tuned parameters $\\mathbf{P}_{\\text{tuned}}$\n\n**Algorithm:**\n\n```py...",
+      "math_expression_count": 3,
+      "first_math": "\\mathbf{P}_0",
+      "cross_refs": [],
+      "line_range": [
+        3381,
+        3474
+      ]
+    }
+  ]
+}

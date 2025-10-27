@@ -1,0 +1,34 @@
+{
+  "label": "thm-lipschitz-structural-error-bound",
+  "name": "Bounding the Squared Structural Error",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-lipschitz-structural-error-coefficients",
+    "obj-components-mean-square-standardization-error"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-structural-error-lipschitz",
+      "expression": "\\|E_{struct}\\| \\le L_{struct} \\cdot \\|\\Delta_{struct}\\|",
+      "object_label": "obj-lipschitz-structural-error-coefficients",
+      "established_by": "thm-lipschitz-structural-error-bound",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

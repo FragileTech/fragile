@@ -1,0 +1,165 @@
+{
+  "label": "thm-main-contraction-full",
+  "name": "Wasserstein-2 Contraction (Cluster-Based)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-cloning-operator",
+    "def-target-complement",
+    "def-wasserstein-distance",
+    "def-cluster-coupling"
+  ],
+  "input_axioms": [
+    "axiom-confining-potential",
+    "axiom-environmental-richness"
+  ],
+  "input_parameters": [
+    "epsilon",
+    "delta",
+    "d",
+    "N",
+    "f_UH",
+    "p_u",
+    "c_align",
+    "c_geom",
+    "c_sep"
+  ],
+  "properties_required": {
+    "swarms": [
+      "Separation regime: L > D_min(ε)",
+      "High structural error: V_struct > R²_spread",
+      "All conditions from preceding lemmas apply"
+    ],
+    "constants": [
+      "f_UH(ε) > 0 from Theorem 7.6.1",
+      "p_u(ε) > 0 from Lemma 8.3.2",
+      "All constants N-uniform by Theorem 8.7.1"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-expected-distance-change",
+    "cor-average-cloning",
+    "cor-between-group-dominance",
+    "lem-variance-wasserstein-link",
+    "lem-cluster-alignment",
+    "lem-target-cloning-pressure",
+    "lem-wasserstein-population-bound",
+    "def-unified-high-low-error-sets",
+    "lem-phase-space-packing",
+    "thm-unfit-high-error-overlap",
+    "lem-cloning-pressure-unfit",
+    "thm-n-uniformity-constants"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-expected-distance-change",
+      "thm-main-contraction-full"
+    ],
+    [
+      "cor-average-cloning",
+      "thm-main-contraction-full"
+    ],
+    [
+      "cor-between-group-dominance",
+      "thm-main-contraction-full"
+    ],
+    [
+      "lem-variance-wasserstein-link",
+      "thm-main-contraction-full"
+    ]
+  ],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-main-contraction-full-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-target-complement",
+      "established_by": "thm-main-contraction-full",
+      "expression": "W_2²(Ψ_clone(μ_1), Ψ_clone(μ_2)) ≤ (1 - κ_W) W_2²(μ_1, μ_2) + C_W",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    },
+    {
+      "label": "rel-thm-main-contraction-full-1-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-target-complement",
+      "established_by": "thm-main-contraction-full",
+      "expression": "κ_W = (1/2) · f_UH(ε) · p_u(ε) · c_align(ε) · c_geom",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    },
+    {
+      "label": "rel-thm-main-contraction-full-2-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-target-complement",
+      "established_by": "thm-main-contraction-full",
+      "expression": "Alternate form: κ_W = (1/2) · f_UH(ε) · p_u(ε) · c_geom · c_sep(ε)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    },
+    {
+      "label": "rel-thm-main-contraction-full-3-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-target-complement",
+      "established_by": "thm-main-contraction-full",
+      "expression": "All constants N-uniform and explicitly computable",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    },
+    {
+      "label": "rel-thm-main-contraction-full-4-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-target-complement",
+      "established_by": "thm-main-contraction-full",
+      "expression": "Foundation for mean-field limit and propagation of chaos",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    }
+  ]
+}

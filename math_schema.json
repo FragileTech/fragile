@@ -1,0 +1,3050 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fragile.ai/schemas/mathematical-document.json",
+  "title": "Fragile Gas Mathematical Documentation Schema",
+  "description": "Comprehensive JSON schema for rigorous mathematical documentation in the Fragile Gas framework. This schema ensures publication-grade mathematical rigor by capturing all definitions, theorems, proofs, dependencies, computational verifications, and cross-references.",
+  "version": "1.0.0",
+  "type": "object",
+  "definitions": {
+    "Label": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*[a-z0-9]$",
+      "description": "Unique identifier for cross-referencing (kebab-case). Examples: 'def-walker', 'thm-main-convergence', 'lem-keystone'"
+    },
+    "MathExpression": {
+      "type": "string",
+      "description": "LaTeX mathematical expression. Use $ for inline and $$ for display math. Must be valid LaTeX that compiles with standard AMS packages."
+    },
+    "CrossReference": {
+      "type": "object",
+      "required": ["label", "type"],
+      "properties": {
+        "label": {
+          "$ref": "#/definitions/Label",
+          "description": "Label of the referenced item"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "definition",
+            "theorem",
+            "lemma",
+            "proposition",
+            "corollary",
+            "axiom",
+            "assumption",
+            "proof",
+            "remark",
+            "observation",
+            "conjecture",
+            "property",
+            "algorithm",
+            "example",
+            "equation"
+          ],
+          "description": "Type of the referenced mathematical object"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "prerequisite",
+            "uses",
+            "proves",
+            "extends",
+            "contradicts",
+            "generalizes",
+            "specializes",
+            "equivalent",
+            "motivation",
+            "application",
+            "counterexample"
+          ],
+          "description": "How this reference is used in the current context"
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief explanation of how this reference is used (e.g., 'provides the bound on variance')"
+        },
+        "location": {
+          "type": "string",
+          "description": "Where in the current item this reference is used (e.g., 'Step 2.3', 'Part 1', 'Equation (5)')"
+        }
+      }
+    },
+    "MathematicalAssumption": {
+      "type": "object",
+      "required": ["statement", "type"],
+      "properties": {
+        "statement": {
+          "$ref": "#/definitions/MathExpression",
+          "description": "Mathematical statement of the assumption"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "regularity",
+            "boundedness",
+            "continuity",
+            "differentiability",
+            "integrability",
+            "existence",
+            "uniqueness",
+            "compatibility",
+            "non-degeneracy",
+            "structural",
+            "technical"
+          ],
+          "description": "Category of the assumption"
+        },
+        "label": {
+          "type": "string",
+          "description": "Optional label for referencing this specific assumption"
+        },
+        "justification": {
+          "type": "string",
+          "description": "Why this assumption is necessary or reasonable"
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CrossReference"
+          },
+          "description": "References establishing or validating this assumption"
+        }
+      }
+    },
+    "MathematicalProperty": {
+      "type": "object",
+      "required": ["name", "statement"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the property (e.g., 'N-uniform stability', 'Exponential convergence', 'Lipschitz continuity')"
+        },
+        "statement": {
+          "$ref": "#/definitions/MathExpression",
+          "description": "Mathematical statement of the property"
+        },
+        "quantitative": {
+          "type": "boolean",
+          "description": "Whether this property includes explicit constants/bounds"
+        },
+        "constants": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "symbol": {
+                "type": "string",
+                "description": "Mathematical symbol (e.g., 'κ_x', 'C_bound')"
+              },
+              "value": {
+                "type": "string",
+                "description": "Explicit value or bound expression"
+              },
+              "dependencies": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Parameters this constant depends on"
+              }
+            }
+          },
+          "description": "Explicit constants appearing in this property"
+        },
+        "scope": {
+          "type": "string",
+          "description": "Scope or regime where this property holds (e.g., 'for large N', 'in the high-friction limit')"
+        }
+      }
+    },
+    "ComputationalVerification": {
+      "type": "object",
+      "required": ["type", "status"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "symbolic",
+            "numerical",
+            "simulation",
+            "visualization",
+            "unit-test",
+            "integration-test"
+          ],
+          "description": "Type of computational verification"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["verified", "partial", "planned", "failed", "not-applicable"],
+          "description": "Verification status"
+        },
+        "script_path": {
+          "type": "string",
+          "description": "Path to Python/SymPy verification script relative to docs root"
+        },
+        "notebook_path": {
+          "type": "string",
+          "description": "Path to Jupyter notebook with interactive verification"
+        },
+        "description": {
+          "type": "string",
+          "description": "What aspect is being verified computationally"
+        },
+        "results": {
+          "type": "object",
+          "properties": {
+            "summary": {
+              "type": "string",
+              "description": "Brief summary of verification results"
+            },
+            "numerical_values": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number"
+              },
+              "description": "Key numerical values obtained"
+            },
+            "plots": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Paths to generated plots/visualizations"
+            },
+            "error_bounds": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number"
+              },
+              "description": "Numerical error bounds achieved"
+            }
+          }
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["sympy", "numpy", "scipy", "pytorch", "matplotlib", "holoviews", "bokeh", "plotly", "other"]
+          },
+          "description": "Computational tools used"
+        }
+      }
+    },
+    "ProofStep": {
+      "type": "object",
+      "required": ["id", "content"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^(Part|Step|Case)\\s+[0-9]+(\\.[0-9]+)*",
+          "description": "Hierarchical identifier (e.g., 'Step 1', 'Part 2', 'Step 3.2', 'Case A')"
+        },
+        "title": {
+          "type": "string",
+          "description": "Descriptive title of this step (e.g., 'Eigenvalue bounds', 'Construction of coupling')"
+        },
+        "content": {
+          "type": "string",
+          "description": "Full markdown content of the proof step, including mathematical expressions"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "construction",
+            "calculation",
+            "bound",
+            "substitution",
+            "case-analysis",
+            "contradiction",
+            "induction-base",
+            "induction-step",
+            "conclusion",
+            "intermediate-result"
+          ],
+          "description": "Type of proof step"
+        },
+        "techniques": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "direct-proof",
+              "contradiction",
+              "contrapositive",
+              "induction",
+              "case-analysis",
+              "construction",
+              "inequality-chain",
+              "algebraic-manipulation",
+              "triangle-inequality",
+              "cauchy-schwarz",
+              "holder-inequality",
+              "jensen-inequality",
+              "dominated-convergence",
+              "monotone-convergence",
+              "integration-by-parts",
+              "change-of-variables",
+              "taylor-expansion",
+              "mean-value-theorem",
+              "implicit-function-theorem",
+              "compactness-argument",
+              "continuity-argument",
+              "density-argument",
+              "approximation",
+              "variational-calculus",
+              "fixed-point-theorem",
+              "contraction-mapping",
+              "other"
+            ]
+          },
+          "description": "Mathematical techniques employed in this step"
+        },
+        "justification": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CrossReference"
+          },
+          "description": "References to results that justify this step"
+        },
+        "intermediate_result": {
+          "$ref": "#/definitions/MathExpression",
+          "description": "Key intermediate result established by this step"
+        },
+        "computational_verification": {
+          "$ref": "#/definitions/ComputationalVerification",
+          "description": "Computational verification of this step's claims"
+        },
+        "substeps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ProofStep"
+          },
+          "description": "Nested sub-steps (for hierarchical proofs)"
+        }
+      }
+    },
+    "BaseDirective": {
+      "type": "object",
+      "required": ["label", "title", "type", "statement"],
+      "properties": {
+        "label": {
+          "$ref": "#/definitions/Label",
+          "description": "Unique identifier for cross-referencing"
+        },
+        "title": {
+          "type": "string",
+          "description": "Human-readable title (e.g., 'Main Convergence Result', 'Walker State Space')"
+        },
+        "type": {
+          "type": "string",
+          "description": "Directive type (definition, theorem, etc.)"
+        },
+        "statement": {
+          "type": "string",
+          "description": "Full mathematical statement in markdown with LaTeX math. Must include complete mathematical formulation."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "general",
+              "viability",
+              "convergence",
+              "cloning",
+              "measurement",
+              "fitness",
+              "kinetic",
+              "boundary",
+              "metric",
+              "lsi",
+              "kl-convergence",
+              "mean-field",
+              "qsd",
+              "hypocoercivity",
+              "wasserstein",
+              "variance",
+              "n-uniform",
+              "adaptive",
+              "geometric",
+              "euclidean",
+              "regularity",
+              "continuity",
+              "lipschitz",
+              "smoothness",
+              "assumption",
+              "technical"
+            ]
+          },
+          "description": "Semantic tags for categorization and search (from glossary)"
+        },
+        "source": {
+          "type": "object",
+          "required": ["document", "section"],
+          "properties": {
+            "document": {
+              "type": "string",
+              "description": "Source document path relative to docs/source/"
+            },
+            "section": {
+              "type": "string",
+              "description": "Section number or title where this appears"
+            },
+            "line_start": {
+              "type": "integer",
+              "description": "Starting line number in source file"
+            },
+            "line_end": {
+              "type": "integer",
+              "description": "Ending line number in source file"
+            }
+          }
+        },
+        "informal_description": {
+          "type": "string",
+          "description": "Intuitive explanation in plain language (for pedagogical admonitions)"
+        },
+        "mathematical_notation": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "symbol": {
+                "type": "string",
+                "description": "Mathematical symbol (LaTeX)"
+              },
+              "description": {
+                "type": "string",
+                "description": "What this symbol represents"
+              },
+              "type": {
+                "type": "string",
+                "description": "Mathematical type (e.g., 'scalar', 'vector', 'matrix', 'function', 'operator', 'space', 'measure')"
+              },
+              "domain": {
+                "type": "string",
+                "description": "Domain or space where this object lives"
+              },
+              "units": {
+                "type": "string",
+                "description": "Physical units if applicable"
+              }
+            }
+          },
+          "description": "Notation dictionary for all symbols used in this directive"
+        },
+        "related_concepts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CrossReference"
+          },
+          "description": "Related mathematical objects (not necessarily prerequisites)"
+        }
+      }
+    },
+    "Definition": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseDirective"
+        },
+        {
+          "type": "object",
+          "required": ["defined_objects"],
+          "properties": {
+            "type": {
+              "const": "definition"
+            },
+            "defined_objects": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "mathematical_definition"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the object being defined (e.g., 'Walker', 'Swarm State Space')"
+                  },
+                  "symbol": {
+                    "type": "string",
+                    "description": "Primary mathematical symbol (e.g., 'w', '\\mathcal{S}', '\\Sigma_N')"
+                  },
+                  "mathematical_definition": {
+                    "$ref": "#/definitions/MathExpression",
+                    "description": "Formal mathematical definition"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "set",
+                      "function",
+                      "operator",
+                      "measure",
+                      "metric",
+                      "space",
+                      "relation",
+                      "constant",
+                      "variable",
+                      "parameter",
+                      "structure"
+                    ],
+                    "description": "Mathematical type of the defined object"
+                  },
+                  "properties": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/MathematicalProperty"
+                    },
+                    "description": "Key properties that follow immediately from the definition"
+                  }
+                }
+              },
+              "description": "Objects being defined (can define multiple related objects)"
+            },
+            "motivation": {
+              "type": "string",
+              "description": "Why this definition is introduced (mathematical or intuitive motivation)"
+            },
+            "examples": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string"
+                  },
+                  "instance": {
+                    "$ref": "#/definitions/MathExpression"
+                  },
+                  "verification": {
+                    "type": "string",
+                    "description": "Why this is a valid example"
+                  }
+                }
+              },
+              "description": "Concrete examples illustrating the definition"
+            },
+            "counterexamples": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string"
+                  },
+                  "instance": {
+                    "$ref": "#/definitions/MathExpression"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "description": "Why this fails to satisfy the definition"
+                  }
+                }
+              },
+              "description": "Examples that fail to satisfy the definition (clarifies boundaries)"
+            },
+            "peer_review": {
+              "$ref": "#/definitions/DualReviewAnalysis",
+              "description": "Dual review analysis (Gemini + Codex) tracking publication readiness"
+            },
+            "development_status": {
+              "$ref": "#/definitions/DevelopmentStatus",
+              "description": "Development maturity and completeness tracking"
+            },
+            "sketch_linkage": {
+              "$ref": "#/definitions/SketchProofLinkage",
+              "description": "Link to proof sketch and expansion history (if applicable)"
+            }
+          }
+        }
+      ]
+    },
+    "Axiom": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseDirective"
+        },
+        {
+          "type": "object",
+          "required": ["axiomatic_parameters"],
+          "properties": {
+            "type": {
+              "const": "axiom"
+            },
+            "axiomatic_parameters": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["symbol", "description", "type"],
+                "properties": {
+                  "symbol": {
+                    "type": "string",
+                    "description": "Parameter symbol (e.g., 'κ_revival', 'L_R', 'p_worst-case')"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "What this parameter quantifies"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["scalar", "bound", "rate", "probability", "dimension", "index"],
+                    "description": "Type of parameter"
+                  },
+                  "conditions": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/MathExpression"
+                    },
+                    "description": "Required conditions on this parameter (e.g., 'κ_revival > 1', 'L_R < ∞')"
+                  },
+                  "typical_values": {
+                    "type": "string",
+                    "description": "Typical or recommended parameter values"
+                  },
+                  "sensitivity": {
+                    "type": "string",
+                    "enum": ["low", "medium", "high", "critical"],
+                    "description": "How sensitive the framework is to this parameter"
+                  }
+                }
+              },
+              "description": "Quantifiable parameters introduced by this axiom"
+            },
+            "category": {
+              "type": "string",
+              "enum": [
+                "viability",
+                "environmental",
+                "measurement-quality",
+                "algorithmic-dynamics",
+                "regularity",
+                "geometric",
+                "structural"
+              ],
+              "description": "Axiom category in the framework hierarchy"
+            },
+            "failure_modes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "condition": {
+                    "$ref": "#/definitions/MathExpression",
+                    "description": "Parameter configuration that causes failure"
+                  },
+                  "consequence": {
+                    "type": "string",
+                    "description": "What goes wrong when axiom is violated"
+                  },
+                  "diagnostic": {
+                    "type": "string",
+                    "description": "How to detect this failure mode in practice"
+                  }
+                }
+              },
+              "description": "What happens when the axiom is violated (for debugging)"
+            },
+            "peer_review": {
+              "$ref": "#/definitions/DualReviewAnalysis",
+              "description": "Dual review analysis (Gemini + Codex) tracking publication readiness"
+            },
+            "development_status": {
+              "$ref": "#/definitions/DevelopmentStatus",
+              "description": "Development maturity and completeness tracking"
+            },
+            "sketch_linkage": {
+              "$ref": "#/definitions/SketchProofLinkage",
+              "description": "Link to proof sketch and expansion history (if applicable)"
+            }
+          }
+        }
+      ]
+    },
+    "Theorem": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseDirective"
+        },
+        {
+          "type": "object",
+          "required": ["hypotheses", "conclusion", "proof_reference"],
+          "properties": {
+            "type": {
+              "const": "theorem"
+            },
+            "hypotheses": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/MathematicalAssumption"
+              },
+              "description": "All hypotheses/assumptions required for the theorem to hold"
+            },
+            "conclusion": {
+              "type": "object",
+              "required": ["statement"],
+              "properties": {
+                "statement": {
+                  "$ref": "#/definitions/MathExpression",
+                  "description": "Main conclusion of the theorem"
+                },
+                "properties_established": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/MathematicalProperty"
+                  },
+                  "description": "Key properties established by this theorem (for downstream use)"
+                },
+                "quantitative_bounds": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "bound": {
+                        "$ref": "#/definitions/MathExpression"
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": ["upper", "lower", "two-sided", "asymptotic", "exponential", "polynomial", "logarithmic"]
+                      },
+                      "tightness": {
+                        "type": "string",
+                        "enum": ["tight", "optimal", "improvable", "crude"],
+                        "description": "How tight the bound is"
+                      }
+                    }
+                  },
+                  "description": "Explicit quantitative bounds established"
+                }
+              }
+            },
+            "proof_reference": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "required": ["inline"],
+                  "properties": {
+                    "inline": {
+                      "const": true
+                    }
+                  },
+                  "description": "Proof appears immediately after theorem statement"
+                },
+                {
+                  "type": "object",
+                  "required": ["label"],
+                  "properties": {
+                    "label": {
+                      "$ref": "#/definitions/Label"
+                    },
+                    "location": {
+                      "type": "string",
+                      "description": "Where the proof can be found (section, document, appendix)"
+                    }
+                  },
+                  "description": "Proof appears elsewhere and is referenced"
+                },
+                {
+                  "type": "object",
+                  "required": ["deferred"],
+                  "properties": {
+                    "deferred": {
+                      "const": true
+                    },
+                    "reason": {
+                      "type": "string",
+                      "description": "Why proof is deferred (e.g., 'proved in companion document')"
+                    },
+                    "reference": {
+                      "type": "string",
+                      "description": "Where to find the proof"
+                    }
+                  }
+                }
+              ],
+              "description": "How to locate the proof of this theorem"
+            },
+            "corollaries": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Label"
+              },
+              "description": "Immediate corollaries following from this theorem"
+            },
+            "generalizations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CrossReference"
+              },
+              "description": "More general results that imply this theorem"
+            },
+            "specializations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CrossReference"
+              },
+              "description": "Special cases of this theorem"
+            },
+            "importance": {
+              "type": "string",
+              "enum": ["foundational", "main-result", "technical", "auxiliary", "routine"],
+              "description": "Importance of this theorem in the framework hierarchy"
+            },
+            "computational_verification": {
+              "$ref": "#/definitions/ComputationalVerification",
+              "description": "Computational verification of the theorem's claims"
+            },
+            "peer_review": {
+              "$ref": "#/definitions/DualReviewAnalysis",
+              "description": "Dual review analysis (Gemini + Codex) tracking publication readiness"
+            },
+            "development_status": {
+              "$ref": "#/definitions/DevelopmentStatus",
+              "description": "Development maturity and completeness tracking"
+            },
+            "sketch_linkage": {
+              "$ref": "#/definitions/SketchProofLinkage",
+              "description": "Link to proof sketch and expansion history (if applicable)"
+            }
+          }
+        }
+      ]
+    },
+    "Lemma": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseDirective"
+        },
+        {
+          "type": "object",
+          "required": ["hypotheses", "conclusion", "proof_reference"],
+          "properties": {
+            "type": {
+              "const": "lemma"
+            },
+            "hypotheses": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/MathematicalAssumption"
+              }
+            },
+            "conclusion": {
+              "type": "object",
+              "required": ["statement"],
+              "properties": {
+                "statement": {
+                  "$ref": "#/definitions/MathExpression"
+                },
+                "properties_established": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/MathematicalProperty"
+                  }
+                }
+              }
+            },
+            "proof_reference": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "required": ["inline"],
+                  "properties": {
+                    "inline": {
+                      "const": true
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": ["label"],
+                  "properties": {
+                    "label": {
+                      "$ref": "#/definitions/Label"
+                    }
+                  }
+                }
+              ]
+            },
+            "purpose": {
+              "type": "string",
+              "description": "What larger result this lemma supports (e.g., 'Key step in proof of Theorem X')"
+            },
+            "used_in": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CrossReference"
+              },
+              "description": "Theorems/proofs that use this lemma"
+            },
+            "peer_review": {
+              "$ref": "#/definitions/DualReviewAnalysis",
+              "description": "Dual review analysis (Gemini + Codex) tracking publication readiness"
+            },
+            "development_status": {
+              "$ref": "#/definitions/DevelopmentStatus",
+              "description": "Development maturity and completeness tracking"
+            },
+            "sketch_linkage": {
+              "$ref": "#/definitions/SketchProofLinkage",
+              "description": "Link to proof sketch and expansion history (if applicable)"
+            }
+          }
+        }
+      ]
+    },
+    "Proposition": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseDirective"
+        },
+        {
+          "type": "object",
+          "required": ["hypotheses", "conclusion"],
+          "properties": {
+            "type": {
+              "const": "proposition"
+            },
+            "hypotheses": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/MathematicalAssumption"
+              }
+            },
+            "conclusion": {
+              "type": "object",
+              "required": ["statement"],
+              "properties": {
+                "statement": {
+                  "$ref": "#/definitions/MathExpression"
+                },
+                "properties_established": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/MathematicalProperty"
+                  }
+                }
+              }
+            },
+            "proof_reference": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "required": ["inline"],
+                  "properties": {
+                    "inline": {
+                      "const": true
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": ["label"],
+                  "properties": {
+                    "label": {
+                      "$ref": "#/definitions/Label"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": ["sketch_only"],
+                  "properties": {
+                    "sketch_only": {
+                      "const": true
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            },
+            "peer_review": {
+              "$ref": "#/definitions/DualReviewAnalysis",
+              "description": "Dual review analysis (Gemini + Codex) tracking publication readiness"
+            },
+            "development_status": {
+              "$ref": "#/definitions/DevelopmentStatus",
+              "description": "Development maturity and completeness tracking"
+            },
+            "sketch_linkage": {
+              "$ref": "#/definitions/SketchProofLinkage",
+              "description": "Link to proof sketch and expansion history (if applicable)"
+            }
+          }
+        }
+      ]
+    },
+    "Corollary": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseDirective"
+        },
+        {
+          "type": "object",
+          "required": ["follows_from", "conclusion"],
+          "properties": {
+            "type": {
+              "const": "corollary"
+            },
+            "follows_from": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CrossReference"
+              },
+              "description": "Theorems/lemmas this corollary immediately follows from"
+            },
+            "conclusion": {
+              "type": "object",
+              "required": ["statement"],
+              "properties": {
+                "statement": {
+                  "$ref": "#/definitions/MathExpression"
+                },
+                "properties_established": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/MathematicalProperty"
+                  }
+                }
+              }
+            },
+            "proof_reference": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "required": ["immediate"],
+                  "properties": {
+                    "immediate": {
+                      "const": true
+                    },
+                    "justification": {
+                      "type": "string",
+                      "description": "Brief explanation of why this follows immediately"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": ["inline"],
+                  "properties": {
+                    "inline": {
+                      "const": true
+                    }
+                  }
+                }
+              ]
+            },
+            "peer_review": {
+              "$ref": "#/definitions/DualReviewAnalysis",
+              "description": "Dual review analysis (Gemini + Codex) tracking publication readiness"
+            },
+            "development_status": {
+              "$ref": "#/definitions/DevelopmentStatus",
+              "description": "Development maturity and completeness tracking"
+            },
+            "sketch_linkage": {
+              "$ref": "#/definitions/SketchProofLinkage",
+              "description": "Link to proof sketch and expansion history (if applicable)"
+            }
+          }
+        }
+      ]
+    },
+    "Proof": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseDirective"
+        },
+        {
+          "type": "object",
+          "required": ["proves", "strategy", "steps"],
+          "properties": {
+            "type": {
+              "const": "proof"
+            },
+            "proves": {
+              "$ref": "#/definitions/CrossReference",
+              "description": "What theorem/lemma/proposition this proves"
+            },
+            "proof_type": {
+              "type": "string",
+              "enum": [
+                "direct",
+                "contradiction",
+                "contrapositive",
+                "induction",
+                "construction",
+                "computation",
+                "case-analysis",
+                "variational",
+                "probabilistic",
+                "combinatorial"
+              ],
+              "description": "Overall proof strategy type"
+            },
+            "strategy": {
+              "type": "string",
+              "description": "High-level overview of the proof approach (1-3 paragraphs explaining the main idea)"
+            },
+            "prerequisites": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CrossReference"
+              },
+              "description": "All results used in this proof (explicitly listed)"
+            },
+            "steps": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ProofStep"
+              },
+              "description": "Detailed proof steps in hierarchical structure",
+              "minItems": 1
+            },
+            "key_insights": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Main mathematical insights that make the proof work (pedagogical)"
+            },
+            "alternative_approaches": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string"
+                  },
+                  "advantages": {
+                    "type": "string"
+                  },
+                  "disadvantages": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Other possible proof strategies and why this one was chosen"
+            },
+            "computational_verification": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ComputationalVerification"
+              },
+              "description": "Computational verifications for different parts of the proof"
+            },
+            "difficulty": {
+              "type": "string",
+              "enum": ["routine", "standard", "technical", "intricate", "deep"],
+              "description": "Mathematical difficulty level"
+            },
+            "rigor_level": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10,
+              "description": "Self-assessed rigor level (1=sketch, 10=publication-ready)"
+            },
+            "peer_review": {
+              "$ref": "#/definitions/DualReviewAnalysis",
+              "description": "Dual review analysis (Gemini + Codex) tracking publication readiness"
+            },
+            "development_status": {
+              "$ref": "#/definitions/DevelopmentStatus",
+              "description": "Development maturity and completeness tracking"
+            },
+            "sketch_linkage": {
+              "$ref": "#/definitions/SketchProofLinkage",
+              "description": "Link to proof sketch and expansion history (if applicable)"
+            }
+          }
+        }
+      ]
+    },
+    "Algorithm": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseDirective"
+        },
+        {
+          "type": "object",
+          "required": ["inputs", "outputs", "steps"],
+          "properties": {
+            "type": {
+              "const": "algorithm"
+            },
+            "inputs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "type"],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Mathematical type (e.g., 'swarm state S ∈ Σ_N', 'parameter γ > 0')"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "constraints": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/MathExpression"
+                    }
+                  }
+                }
+              }
+            },
+            "outputs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "type"],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "guarantees": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/MathExpression"
+                    },
+                    "description": "Mathematical properties guaranteed for output"
+                  }
+                }
+              }
+            },
+            "steps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["description"],
+                "properties": {
+                  "step_number": {
+                    "type": "integer"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "pseudocode": {
+                    "type": "string"
+                  },
+                  "mathematical_operation": {
+                    "$ref": "#/definitions/MathExpression"
+                  },
+                  "complexity": {
+                    "type": "string",
+                    "description": "Time/space complexity for this step"
+                  }
+                }
+              }
+            },
+            "complexity": {
+              "type": "object",
+              "properties": {
+                "time": {
+                  "type": "string",
+                  "description": "Overall time complexity (e.g., 'O(N log N)', 'O(N²)')"
+                },
+                "space": {
+                  "type": "string",
+                  "description": "Space complexity"
+                },
+                "worst_case": {
+                  "type": "string"
+                },
+                "average_case": {
+                  "type": "string"
+                }
+              }
+            },
+            "correctness_proof": {
+              "$ref": "#/definitions/CrossReference",
+              "description": "Reference to proof of correctness"
+            },
+            "implementation": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "description": "Path to implementation code"
+                },
+                "language": {
+                  "type": "string",
+                  "enum": ["python", "pytorch", "julia", "c++", "other"]
+                },
+                "entry_point": {
+                  "type": "string",
+                  "description": "Function/class name implementing this algorithm"
+                },
+                "tests": {
+                  "type": "string",
+                  "description": "Path to test suite"
+                }
+              }
+            },
+            "peer_review": {
+              "$ref": "#/definitions/DualReviewAnalysis",
+              "description": "Dual review analysis (Gemini + Codex) tracking publication readiness"
+            },
+            "development_status": {
+              "$ref": "#/definitions/DevelopmentStatus",
+              "description": "Development maturity and completeness tracking"
+            },
+            "sketch_linkage": {
+              "$ref": "#/definitions/SketchProofLinkage",
+              "description": "Link to proof sketch and expansion history (if applicable)"
+            }
+          }
+        }
+      ]
+    },
+    "Remark": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseDirective"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "remark"
+            },
+            "remark_type": {
+              "type": "string",
+              "enum": [
+                "clarification",
+                "warning",
+                "connection",
+                "historical-note",
+                "interpretation",
+                "limitation",
+                "extension",
+                "special-case"
+              ]
+            },
+            "relates_to": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CrossReference"
+              },
+              "description": "What results this remark comments on"
+            },
+            "peer_review": {
+              "$ref": "#/definitions/DualReviewAnalysis",
+              "description": "Dual review analysis (Gemini + Codex) tracking publication readiness"
+            },
+            "development_status": {
+              "$ref": "#/definitions/DevelopmentStatus",
+              "description": "Development maturity and completeness tracking"
+            },
+            "sketch_linkage": {
+              "$ref": "#/definitions/SketchProofLinkage",
+              "description": "Link to proof sketch and expansion history (if applicable)"
+            }
+          }
+        }
+      ]
+    },
+    "Observation": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseDirective"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "observation"
+            },
+            "empirical": {
+              "type": "boolean",
+              "description": "Whether this is an empirical observation (vs. mathematical)"
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["computational", "analytical", "heuristic"]
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "reference": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Supporting evidence for this observation"
+            },
+            "peer_review": {
+              "$ref": "#/definitions/DualReviewAnalysis",
+              "description": "Dual review analysis (Gemini + Codex) tracking publication readiness"
+            },
+            "development_status": {
+              "$ref": "#/definitions/DevelopmentStatus",
+              "description": "Development maturity and completeness tracking"
+            },
+            "sketch_linkage": {
+              "$ref": "#/definitions/SketchProofLinkage",
+              "description": "Link to proof sketch and expansion history (if applicable)"
+            }
+          }
+        }
+      ]
+    },
+    "Conjecture": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseDirective"
+        },
+        {
+          "type": "object",
+          "required": ["confidence", "evidence"],
+          "properties": {
+            "type": {
+              "const": "conjecture"
+            },
+            "confidence": {
+              "type": "string",
+              "enum": ["low", "medium", "high", "very-high"],
+              "description": "Confidence level in this conjecture"
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["numerical", "heuristic", "special-cases", "analogous-results", "physical-intuition"]
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "partial_results": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CrossReference"
+              },
+              "description": "Partial results supporting this conjecture"
+            },
+            "obstacles": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Known obstacles to proving this conjecture"
+            },
+            "peer_review": {
+              "$ref": "#/definitions/DualReviewAnalysis",
+              "description": "Dual review analysis (Gemini + Codex) tracking publication readiness"
+            },
+            "development_status": {
+              "$ref": "#/definitions/DevelopmentStatus",
+              "description": "Development maturity and completeness tracking"
+            },
+            "sketch_linkage": {
+              "$ref": "#/definitions/SketchProofLinkage",
+              "description": "Link to proof sketch and expansion history (if applicable)"
+            }
+          }
+        }
+      ]
+    },
+    "Example": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseDirective"
+        },
+        {
+          "type": "object",
+          "required": ["demonstrates"],
+          "properties": {
+            "type": {
+              "const": "example"
+            },
+            "demonstrates": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CrossReference"
+              },
+              "description": "What concepts/results this example illustrates"
+            },
+            "setup": {
+              "type": "string",
+              "description": "Description of the example setup"
+            },
+            "calculation": {
+              "type": "string",
+              "description": "Worked calculation or construction"
+            },
+            "conclusion": {
+              "type": "string",
+              "description": "What this example shows"
+            },
+            "computational_verification": {
+              "$ref": "#/definitions/ComputationalVerification"
+            },
+            "peer_review": {
+              "$ref": "#/definitions/DualReviewAnalysis",
+              "description": "Dual review analysis (Gemini + Codex) tracking publication readiness"
+            },
+            "development_status": {
+              "$ref": "#/definitions/DevelopmentStatus",
+              "description": "Development maturity and completeness tracking"
+            },
+            "sketch_linkage": {
+              "$ref": "#/definitions/SketchProofLinkage",
+              "description": "Link to proof sketch and expansion history (if applicable)"
+            }
+          }
+        }
+      ]
+    },
+    "Property": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseDirective"
+        },
+        {
+          "type": "object",
+          "required": ["applies_to"],
+          "properties": {
+            "type": {
+              "const": "property"
+            },
+            "applies_to": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CrossReference"
+              },
+              "description": "What objects have this property"
+            },
+            "property_type": {
+              "type": "string",
+              "enum": [
+                "algebraic",
+                "topological",
+                "geometric",
+                "analytic",
+                "probabilistic",
+                "combinatorial",
+                "structural"
+              ]
+            },
+            "peer_review": {
+              "$ref": "#/definitions/DualReviewAnalysis",
+              "description": "Dual review analysis (Gemini + Codex) tracking publication readiness"
+            },
+            "development_status": {
+              "$ref": "#/definitions/DevelopmentStatus",
+              "description": "Development maturity and completeness tracking"
+            },
+            "sketch_linkage": {
+              "$ref": "#/definitions/SketchProofLinkage",
+              "description": "Link to proof sketch and expansion history (if applicable)"
+            }
+          }
+        }
+      ]
+    },
+    "ReviewIssue": {
+      "type": "object",
+      "description": "A specific issue identified during peer review",
+      "required": ["severity", "title", "location", "problem"],
+      "properties": {
+        "severity": {
+          "type": "string",
+          "enum": ["critical", "major", "minor", "suggestion"],
+          "description": "Issue severity level: CRITICAL (invalidates theorem), MAJOR (significant gap), MINOR (subtle error), SUGGESTION (improvement)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Brief descriptive title of the issue"
+        },
+        "location": {
+          "type": "object",
+          "properties": {
+            "section": {
+              "type": "string",
+              "description": "Section number or name (e.g., '§2.3.5', 'Step 3')"
+            },
+            "line_start": {
+              "type": "integer",
+              "description": "Starting line number"
+            },
+            "line_end": {
+              "type": "integer",
+              "description": "Ending line number"
+            },
+            "context": {
+              "type": "string",
+              "description": "Brief context (e.g., 'Proof of Theorem 4.2')"
+            }
+          },
+          "description": "Precise location of the issue"
+        },
+        "problem": {
+          "type": "string",
+          "description": "Clear explanation of the mathematical error or gap"
+        },
+        "mechanism": {
+          "type": "string",
+          "description": "WHY this fails - precise mechanism of failure (e.g., 'SDE evolves unsquashed velocity → unbounded')"
+        },
+        "evidence": {
+          "type": "string",
+          "description": "Quoted passage, counterexample, or calculation demonstrating the issue"
+        },
+        "impact": {
+          "type": "string",
+          "description": "How this affects validity of proofs, conclusions, or the framework"
+        },
+        "distinction": {
+          "type": "string",
+          "enum": ["missing-proof", "incorrect-claim", "ambiguous", "unclear"],
+          "description": "Is this a missing proof (claim may be true but unjustified) or incorrect claim (statement is false)?"
+        },
+        "suggested_fix": {
+          "type": "string",
+          "description": "Concrete actionable recommendation for fixing the issue"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["open", "addressed", "verified", "wontfix"],
+          "default": "open",
+          "description": "Current status of issue resolution"
+        },
+        "resolution": {
+          "type": "string",
+          "description": "How the issue was resolved (if status is 'addressed' or 'verified')"
+        },
+        "estimated_difficulty": {
+          "type": "string",
+          "enum": ["straightforward", "moderate", "requires-new-proof", "fundamental-rework"],
+          "description": "Estimated difficulty of fixing this issue"
+        }
+      }
+    },
+    "ReviewScore": {
+      "type": "object",
+      "description": "Numerical scores and verdict from a single reviewer",
+      "required": ["reviewer", "date", "rigor", "soundness", "consistency", "verdict"],
+      "properties": {
+        "reviewer": {
+          "type": "string",
+          "enum": ["gemini-2.5-pro", "codex", "claude-synthesis", "human-expert", "other"],
+          "description": "Identity of the reviewer"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Review timestamp (ISO 8601 format)"
+        },
+        "rigor": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Mathematical rigor score (1-10): Are all definitions unambiguous? All claims proven? All proofs complete?"
+        },
+        "soundness": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Logical soundness score (1-10): Are all logical steps valid? Free of circular reasoning? Correct application of theorems?"
+        },
+        "consistency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Framework consistency score (1-10): Consistent with established axioms? Notation alignment? No contradictions?"
+        },
+        "verdict": {
+          "type": "string",
+          "enum": ["ready", "minor-revisions", "major-revisions", "reject"],
+          "description": "Publication readiness verdict: ready (publication-ready), minor-revisions (fixable issues), major-revisions (significant rework), reject (fundamental flaws)"
+        },
+        "justification": {
+          "type": "object",
+          "properties": {
+            "rigor": {
+              "type": "string",
+              "description": "Specific reasons for rigor score"
+            },
+            "soundness": {
+              "type": "string",
+              "description": "Specific reasons for soundness score"
+            },
+            "consistency": {
+              "type": "string",
+              "description": "Specific reasons for consistency score"
+            },
+            "verdict": {
+              "type": "string",
+              "description": "Reasoning behind publication readiness verdict"
+            }
+          },
+          "description": "Detailed justifications for each score and verdict"
+        },
+        "review_file": {
+          "type": "string",
+          "description": "Path to full review document (e.g., 'proofs/reviewer/review_20251025_095526.md')"
+        },
+        "issues_identified": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ReviewIssue"
+          },
+          "description": "List of all issues identified by this reviewer"
+        },
+        "strengths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Positive aspects noted by the reviewer (e.g., 'Sound proof strategy', 'Clear pedagogical structure')"
+        },
+        "required_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Prioritized list of required actions before acceptance"
+        }
+      }
+    },
+    "DualReviewAnalysis": {
+      "type": "object",
+      "description": "Comparative analysis of dual independent review (Gemini + Codex) following the dual review protocol",
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Date of dual review analysis"
+        },
+        "gemini_review": {
+          "$ref": "#/definitions/ReviewScore",
+          "description": "Gemini 2.5 Pro review"
+        },
+        "codex_review": {
+          "$ref": "#/definitions/ReviewScore",
+          "description": "Codex review"
+        },
+        "consensus_issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ReviewIssue"
+          },
+          "description": "Issues both reviewers agree on (high confidence - prioritize these)"
+        },
+        "discrepancies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "issue": {
+                "$ref": "#/definitions/ReviewIssue",
+                "description": "The disputed issue"
+              },
+              "gemini_position": {
+                "type": "string",
+                "description": "Gemini's perspective on this issue"
+              },
+              "codex_position": {
+                "type": "string",
+                "description": "Codex's perspective on this issue"
+              },
+              "claude_evaluation": {
+                "type": "string",
+                "description": "Claude's critical evaluation and reasoning about who is correct"
+              },
+              "confidence": {
+                "type": "string",
+                "enum": ["low", "medium", "high", "very-high"],
+                "description": "Confidence in the resolution after cross-validation"
+              },
+              "resolution": {
+                "type": "string",
+                "description": "How the discrepancy was resolved (with references to framework documents)"
+              }
+            }
+          },
+          "description": "Contradictory findings requiring manual verification against framework docs"
+        },
+        "unique_findings": {
+          "type": "object",
+          "properties": {
+            "gemini_only": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ReviewIssue"
+              },
+              "description": "Issues identified only by Gemini (medium confidence - verify before accepting)"
+            },
+            "codex_only": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ReviewIssue"
+              },
+              "description": "Issues identified only by Codex (medium confidence - verify before accepting)"
+            }
+          },
+          "description": "Issues identified by only one reviewer"
+        },
+        "aggregate_score": {
+          "type": "object",
+          "properties": {
+            "rigor": {
+              "type": "number",
+              "description": "Average rigor score from both reviewers"
+            },
+            "soundness": {
+              "type": "number",
+              "description": "Average soundness score from both reviewers"
+            },
+            "consistency": {
+              "type": "number",
+              "description": "Average consistency score from both reviewers"
+            },
+            "overall": {
+              "type": "number",
+              "description": "Overall average score across all metrics"
+            }
+          },
+          "description": "Aggregate scores from both reviewers"
+        },
+        "final_verdict": {
+          "type": "string",
+          "enum": ["ready", "minor-revisions", "major-revisions", "reject"],
+          "description": "Synthesized publication readiness verdict after evaluating both reviews"
+        },
+        "synthesis_notes": {
+          "type": "string",
+          "description": "Claude's critical evaluation, reasoning, and recommendations based on comparing both reviews"
+        },
+        "blocking_issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ReviewIssue"
+          },
+          "description": "CRITICAL issues that must be resolved before publication"
+        }
+      }
+    },
+    "DevelopmentStatus": {
+      "type": "object",
+      "description": "Tracks development maturity and completeness of a mathematical item",
+      "properties": {
+        "stage": {
+          "type": "string",
+          "enum": ["sketch", "partial", "complete", "verified", "published"],
+          "description": "Current development stage: sketch (initial outline), partial (work in progress), complete (fully developed), verified (peer reviewed), published (accepted for publication)"
+        },
+        "completeness": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Completeness percentage (0-100): How much of the intended content is present?"
+        },
+        "missing_components": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "component": {
+                "type": "string",
+                "description": "Name of the missing component (e.g., 'Proof of Lemma 3.2', 'Computational verification')"
+              },
+              "description": {
+                "type": "string",
+                "description": "What needs to be added"
+              },
+              "priority": {
+                "type": "string",
+                "enum": ["critical", "high", "medium", "low"],
+                "description": "Priority level for completing this component"
+              }
+            }
+          },
+          "description": "List of components that still need to be developed"
+        },
+        "verification_status": {
+          "type": "object",
+          "properties": {
+            "logic_verified": {
+              "type": "boolean",
+              "description": "Has logical correctness been verified?"
+            },
+            "computation_verified": {
+              "type": "boolean",
+              "description": "Have computational claims been verified?"
+            },
+            "framework_consistent": {
+              "type": "boolean",
+              "description": "Is it consistent with the framework axioms and established results?"
+            },
+            "notation_checked": {
+              "type": "boolean",
+              "description": "Has notation been checked for consistency?"
+            },
+            "cross_references_valid": {
+              "type": "boolean",
+              "description": "Are all cross-references valid and correct?"
+            }
+          },
+          "description": "Checklist of verification tasks"
+        },
+        "quality_metrics": {
+          "type": "object",
+          "properties": {
+            "rigor_level": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10,
+              "description": "Self-assessed rigor level (1=rough sketch, 5=informal proof, 8=publication-ready, 10=Annals-level)"
+            },
+            "detail_level": {
+              "type": "string",
+              "enum": ["outline", "sketch", "detailed", "complete", "exhaustive"],
+              "description": "Level of detail in the exposition"
+            },
+            "pedagogical_quality": {
+              "type": "string",
+              "enum": ["minimal", "basic", "good", "excellent"],
+              "description": "Quality of pedagogical explanations and intuition"
+            }
+          },
+          "description": "Quality assessment metrics"
+        },
+        "last_updated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of last update to this item"
+        },
+        "next_steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Immediate next steps for development"
+        }
+      }
+    },
+    "SketchProofLinkage": {
+      "type": "object",
+      "description": "Tracks expansion from proof sketch to complete rigorous proof",
+      "properties": {
+        "source_sketch": {
+          "type": "object",
+          "properties": {
+            "file_path": {
+              "type": "string",
+              "description": "Path to the source sketch file (e.g., 'sketcher/sketch_thm_keystone.md')"
+            },
+            "label": {
+              "type": "string",
+              "description": "Label of the sketch"
+            },
+            "date_created": {
+              "type": "string",
+              "format": "date",
+              "description": "Date the sketch was created"
+            },
+            "agent": {
+              "type": "string",
+              "description": "Agent that created the sketch (e.g., 'Proof Sketcher v1.0', 'Gemini', 'Manual')"
+            }
+          },
+          "description": "Reference to the source proof sketch"
+        },
+        "expansion_history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Timestamp of this expansion step"
+              },
+              "stage": {
+                "type": "string",
+                "description": "Development stage after this expansion (e.g., 'partial', 'complete')"
+              },
+              "agent": {
+                "type": "string",
+                "description": "Who performed the expansion (e.g., 'Claude', 'Gemini', 'Human')"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of what was expanded in this step"
+              },
+              "file_reference": {
+                "type": "string",
+                "description": "File path of the expansion output"
+              }
+            }
+          },
+          "description": "History of expansions from sketch to proof"
+        },
+        "sketch_coverage": {
+          "type": "object",
+          "properties": {
+            "total_items": {
+              "type": "integer",
+              "description": "Total number of items/steps in the sketch"
+            },
+            "completed_items": {
+              "type": "integer",
+              "description": "Number of sketch items that have been fully addressed"
+            },
+            "coverage_percentage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "description": "Percentage of sketch items covered in the proof"
+            },
+            "uncovered_items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "item": {
+                    "type": "string",
+                    "description": "Description of the uncovered sketch item"
+                  },
+                  "priority": {
+                    "type": "string",
+                    "enum": ["critical", "high", "medium", "low"],
+                    "description": "Priority for covering this item"
+                  }
+                }
+              },
+              "description": "Sketch items not yet covered in the proof"
+            }
+          },
+          "description": "Tracking of which sketch items have been addressed"
+        },
+        "strategy_comparison": {
+          "type": "object",
+          "properties": {
+            "strategies": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the proof strategy (e.g., 'Direct proof via KL variation', 'Coupling argument')"
+                  },
+                  "source": {
+                    "type": "string",
+                    "description": "Source of this strategy (e.g., 'Gemini', 'GPT-5', 'Manual', 'Codex')"
+                  },
+                  "chosen": {
+                    "type": "boolean",
+                    "description": "Whether this strategy was chosen for the final proof"
+                  },
+                  "rationale": {
+                    "type": "string",
+                    "description": "Why this strategy was chosen or rejected"
+                  },
+                  "key_steps": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Key steps in this strategy"
+                  }
+                }
+              },
+              "description": "Different proof strategies considered (from sketch)"
+            }
+          },
+          "description": "Comparison of different proof strategies proposed in the sketch"
+        },
+        "expansion_quality": {
+          "type": "object",
+          "properties": {
+            "faithfulness_to_sketch": {
+              "type": "string",
+              "enum": ["exact", "mostly-faithful", "significant-deviations", "completely-different"],
+              "description": "How closely the proof follows the sketch"
+            },
+            "deviations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "location": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Significant deviations from the sketch and why they were necessary"
+            }
+          },
+          "description": "Quality metrics for the sketch-to-proof expansion"
+        }
+      }
+    }
+  },
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["title", "document_id", "version"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Document title (e.g., 'The Keystone Principle and the Contractive Nature of Cloning')"
+        },
+        "document_id": {
+          "type": "string",
+          "description": "Unique document identifier (e.g., '03_cloning', '11_geometric_gas')"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+          "description": "Semantic version (e.g., '1.0.0', '2.3.1')"
+        },
+        "chapter": {
+          "type": "integer",
+          "description": "Chapter number in the overall framework"
+        },
+        "authors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "date_created": {
+          "type": "string",
+          "format": "date"
+        },
+        "date_modified": {
+          "type": "string",
+          "format": "date"
+        },
+        "rigor_level": {
+          "type": "string",
+          "enum": ["sketch", "informal", "rigorous", "publication-ready", "published"],
+          "description": "Overall rigor level of the document"
+        },
+        "peer_review_status": {
+          "type": "object",
+          "properties": {
+            "gemini_review": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["pending", "completed", "revised", "approved"]
+                },
+                "review_file": {
+                  "type": "string",
+                  "description": "Path to Gemini review output"
+                }
+              }
+            },
+            "codex_review": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["pending", "completed", "revised", "approved"]
+                },
+                "review_file": {
+                  "type": "string",
+                  "description": "Path to Codex review output"
+                }
+              }
+            },
+            "dual_review_consensus": {
+              "type": "boolean",
+              "description": "Whether both reviewers agree on approval"
+            }
+          },
+          "description": "Dual review protocol status (as per CLAUDE.md)"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Other documents this one depends on (prerequisite reading)"
+        },
+        "abstract": {
+          "type": "string",
+          "description": "Brief abstract summarizing the document (TLDR section)"
+        },
+        "publication_readiness_aggregate": {
+          "type": "object",
+          "description": "Aggregate publication readiness metrics across all directives in the document",
+          "properties": {
+            "overall_verdict": {
+              "type": "string",
+              "enum": ["ready", "minor-revisions", "major-revisions", "reject", "not-reviewed"],
+              "description": "Overall publication readiness based on worst blocking issue across all directives"
+            },
+            "aggregate_scores": {
+              "type": "object",
+              "description": "Average scores across all reviewed directives",
+              "properties": {
+                "rigor": {
+                  "type": "number",
+                  "minimum": 1,
+                  "maximum": 10,
+                  "description": "Average rigor score (1-10)"
+                },
+                "soundness": {
+                  "type": "number",
+                  "minimum": 1,
+                  "maximum": 10,
+                  "description": "Average soundness score (1-10)"
+                },
+                "consistency": {
+                  "type": "number",
+                  "minimum": 1,
+                  "maximum": 10,
+                  "description": "Average consistency score (1-10)"
+                }
+              }
+            },
+            "directive_summary": {
+              "type": "object",
+              "description": "Summary of directive-level readiness",
+              "properties": {
+                "total_directives": {
+                  "type": "integer",
+                  "description": "Total number of directives in the document"
+                },
+                "reviewed_directives": {
+                  "type": "integer",
+                  "description": "Number of directives that have been reviewed"
+                },
+                "ready_count": {
+                  "type": "integer",
+                  "description": "Number of directives marked as publication-ready"
+                },
+                "minor_revisions_count": {
+                  "type": "integer",
+                  "description": "Number requiring minor revisions"
+                },
+                "major_revisions_count": {
+                  "type": "integer",
+                  "description": "Number requiring major revisions"
+                },
+                "reject_count": {
+                  "type": "integer",
+                  "description": "Number rejected for publication"
+                }
+              }
+            },
+            "blocking_issues": {
+              "type": "array",
+              "description": "All CRITICAL issues across the document that block publication",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "directive_label": {
+                    "type": "string",
+                    "description": "Label of the directive with the blocking issue"
+                  },
+                  "directive_type": {
+                    "type": "string",
+                    "description": "Type of directive (theorem, proof, etc.)"
+                  },
+                  "issue": {
+                    "$ref": "#/definitions/ReviewIssue",
+                    "description": "The critical issue details"
+                  }
+                }
+              }
+            },
+            "development_summary": {
+              "type": "object",
+              "description": "Summary of development maturity across directives",
+              "properties": {
+                "sketch_count": {
+                  "type": "integer",
+                  "description": "Number of directives in sketch stage"
+                },
+                "partial_count": {
+                  "type": "integer",
+                  "description": "Number of directives partially complete"
+                },
+                "complete_count": {
+                  "type": "integer",
+                  "description": "Number of complete directives"
+                },
+                "verified_count": {
+                  "type": "integer",
+                  "description": "Number of verified directives"
+                },
+                "published_count": {
+                  "type": "integer",
+                  "description": "Number of published directives"
+                },
+                "average_completeness": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "Average completeness percentage across all directives"
+                }
+              }
+            },
+            "last_updated": {
+              "type": "string",
+              "format": "date-time",
+              "description": "When this aggregate was last computed"
+            }
+          }
+        }
+      }
+    },
+    "directives": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/definitions/Definition"
+          },
+          {
+            "$ref": "#/definitions/Axiom"
+          },
+          {
+            "$ref": "#/definitions/Theorem"
+          },
+          {
+            "$ref": "#/definitions/Lemma"
+          },
+          {
+            "$ref": "#/definitions/Proposition"
+          },
+          {
+            "$ref": "#/definitions/Corollary"
+          },
+          {
+            "$ref": "#/definitions/Proof"
+          },
+          {
+            "$ref": "#/definitions/Algorithm"
+          },
+          {
+            "$ref": "#/definitions/Remark"
+          },
+          {
+            "$ref": "#/definitions/Observation"
+          },
+          {
+            "$ref": "#/definitions/Conjecture"
+          },
+          {
+            "$ref": "#/definitions/Example"
+          },
+          {
+            "$ref": "#/definitions/Property"
+          }
+        ]
+      },
+      "description": "All mathematical directives in this document"
+    },
+    "dependency_graph": {
+      "type": "object",
+      "description": "Directed acyclic graph of dependencies between directives",
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["label", "type"],
+            "properties": {
+              "label": {
+                "$ref": "#/definitions/Label"
+              },
+              "type": {
+                "type": "string"
+              },
+              "level": {
+                "type": "integer",
+                "description": "Depth in dependency tree (0 = no dependencies)"
+              }
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from", "to", "relationship"],
+            "properties": {
+              "from": {
+                "$ref": "#/definitions/Label",
+                "description": "Source node (the item that uses)"
+              },
+              "to": {
+                "$ref": "#/definitions/Label",
+                "description": "Target node (the prerequisite)"
+              },
+              "relationship": {
+                "type": "string",
+                "enum": ["requires", "uses", "extends", "proves", "generalizes", "specializes"]
+              },
+              "critical": {
+                "type": "boolean",
+                "description": "Whether this dependency is essential (vs. auxiliary)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "constants_glossary": {
+      "type": "object",
+      "description": "Consolidated reference of all constants appearing in this document",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "description": "Explicit value or expression"
+          },
+          "units": {
+            "type": "string"
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Parameters this constant depends on"
+          },
+          "defined_in": {
+            "$ref": "#/definitions/Label"
+          },
+          "used_in": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Label"
+            }
+          }
+        }
+      }
+    },
+    "notation_index": {
+      "type": "object",
+      "description": "Index of all mathematical notation used in this document",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "description": "LaTeX representation"
+          },
+          "description": {
+            "type": "string"
+          },
+          "first_use": {
+            "$ref": "#/definitions/Label",
+            "description": "Where this notation is first introduced"
+          },
+          "scope": {
+            "type": "string",
+            "enum": ["global", "document", "local"],
+            "description": "Scope of this notation"
+          }
+        }
+      }
+    },
+    "TheoremOutputType": {
+      "type": "string",
+      "enum": [
+        "Property",
+        "Relation",
+        "Existence",
+        "Construction",
+        "Classification",
+        "Uniqueness",
+        "Impossibility",
+        "Embedding",
+        "Approximation",
+        "Equivalence",
+        "Decomposition",
+        "Extension",
+        "Reduction"
+      ],
+      "description": "The 13 fundamental theorem output types providing complete coverage of mathematical reasoning. Each theorem has exactly one primary output type."
+    },
+    "PipelineMathematicalObject": {
+      "type": "object",
+      "required": ["label", "name", "mathematical_expression", "object_type"],
+      "description": "Mathematical object created by Definition directives. Objects accumulate properties as they flow through theorems. Only definitions create objects; theorems only add properties.",
+      "properties": {
+        "label": {
+          "type": "string",
+          "pattern": "^obj-[a-z0-9-]+$",
+          "description": "Unique object identifier (must start with 'obj-')"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable name"
+        },
+        "mathematical_expression": {
+          "$ref": "#/definitions/MathExpression",
+          "description": "Mathematical definition of the object"
+        },
+        "object_type": {
+          "type": "string",
+          "enum": ["set", "function", "measure", "space", "operator", "distribution", "field", "structure"],
+          "description": "Category of mathematical object"
+        },
+        "current_attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PipelineProperty"
+          },
+          "default": [],
+          "description": "Properties accumulated from theorems. Empty initially. Mutates as theorems execute."
+        },
+        "property_history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["timestamp", "property_label", "added_by_theorem"],
+            "properties": {
+              "timestamp": {
+                "type": "integer",
+                "description": "Execution step when property was added"
+              },
+              "property_label": {
+                "type": "string",
+                "description": "Property that was added"
+              },
+              "added_by_theorem": {
+                "type": "string",
+                "pattern": "^thm-[a-z0-9-]+$",
+                "description": "Theorem that added this property"
+              },
+              "event_type": {
+                "type": "string",
+                "enum": ["added", "refined", "conditional_upgrade"],
+                "description": "Type of property event"
+              }
+            }
+          },
+          "default": [],
+          "description": "Complete timeline of property additions for this object"
+        }
+      }
+    },
+    "PipelineProperty": {
+      "type": "object",
+      "required": ["label", "expression", "object_label", "established_by"],
+      "description": "Property assigned to a mathematical object by a theorem. Conditionality is computed dynamically, not stored.",
+      "properties": {
+        "label": {
+          "type": "string",
+          "pattern": "^prop-[a-z0-9-]+$",
+          "description": "Unique property identifier (must start with 'prop-')"
+        },
+        "expression": {
+          "$ref": "#/definitions/MathExpression",
+          "description": "Mathematical expression of the property"
+        },
+        "object_label": {
+          "type": "string",
+          "pattern": "^obj-[a-z0-9-]+$",
+          "description": "Which object has this property"
+        },
+        "established_by": {
+          "type": "string",
+          "pattern": "^thm-[a-z0-9-]+$",
+          "description": "Theorem that established this property"
+        },
+        "timestamp": {
+          "type": "integer",
+          "description": "Pipeline execution step when property was added"
+        },
+        "can_be_refined": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether this property can be strengthened by later theorems"
+        },
+        "refinements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PipelinePropertyRefinement"
+          },
+          "default": [],
+          "description": "Stronger versions of this property proved later"
+        }
+      }
+    },
+    "PipelinePropertyRefinement": {
+      "type": "object",
+      "required": ["original_property", "refined_property", "refinement_theorem", "refinement_type"],
+      "description": "Tracks when a property is strengthened or generalized by a later theorem.",
+      "properties": {
+        "original_property": {
+          "type": "string",
+          "pattern": "^prop-[a-z0-9-]+$",
+          "description": "The weaker/original property"
+        },
+        "refined_property": {
+          "type": "string",
+          "pattern": "^prop-[a-z0-9-]+$",
+          "description": "The stronger/refined property"
+        },
+        "refinement_theorem": {
+          "type": "string",
+          "pattern": "^thm-[a-z0-9-]+$",
+          "description": "Theorem that proved the refinement"
+        },
+        "refinement_type": {
+          "type": "string",
+          "enum": ["strengthening", "generalization", "quantification"],
+          "description": "Type of refinement (e.g., continuous → C^∞ is strengthening)"
+        }
+      }
+    },
+    "PipelineAxiom": {
+      "type": "object",
+      "required": ["label", "statement", "mathematical_expression"],
+      "description": "Immutable foundational truth never modified by theorems. Axioms can be used by any theorem but are never proved.",
+      "properties": {
+        "label": {
+          "type": "string",
+          "pattern": "^axiom-[a-z0-9-]+$",
+          "description": "Unique axiom identifier (must start with 'axiom-')"
+        },
+        "statement": {
+          "type": "string",
+          "description": "Natural language statement of the axiom"
+        },
+        "mathematical_expression": {
+          "$ref": "#/definitions/MathExpression",
+          "description": "Formal mathematical expression"
+        },
+        "foundational_framework": {
+          "type": "string",
+          "description": "Which framework this axiom belongs to (e.g., 'Fragile Gas Framework', 'Euclidean Geometry')"
+        },
+        "never_modified": {
+          "type": "boolean",
+          "const": true,
+          "description": "Enforces that axioms are immutable"
+        }
+      }
+    },
+    "PipelineParameter": {
+      "type": "object",
+      "required": ["label", "name", "symbol", "parameter_type"],
+      "description": "Configuration value or constraint that controls theorem applicability. Not a mathematical object (doesn't accumulate properties).",
+      "properties": {
+        "label": {
+          "type": "string",
+          "pattern": "^param-[a-z0-9-]+$",
+          "description": "Unique parameter identifier (must start with 'param-')"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable name (e.g., 'Kinematic Viscosity')"
+        },
+        "symbol": {
+          "type": "string",
+          "description": "Mathematical symbol (e.g., 'ν', 'd', 'N')"
+        },
+        "parameter_type": {
+          "type": "string",
+          "enum": ["real", "integer", "natural", "rational", "complex", "boolean", "symbolic"],
+          "description": "Type of the parameter value"
+        },
+        "constraints": {
+          "type": "string",
+          "description": "Constraints on the parameter (e.g., 'ν > 0', 'd ≥ 2')"
+        },
+        "default_value": {
+          "type": ["string", "number", "null"],
+          "description": "Default value if not specified"
+        }
+      }
+    },
+    "PipelineTheoremBox": {
+      "type": "object",
+      "required": ["label", "name", "output_type"],
+      "description": "Theorem as processing box with inputs (objects/axioms/parameters), internal DAG (lemmas), and outputs (properties/relations/etc). Conditionality computed by checking properties_required against object's current_properties.",
+      "properties": {
+        "label": {
+          "type": "string",
+          "pattern": "^thm-[a-z0-9-]+$",
+          "description": "Unique theorem identifier (must start with 'thm-')"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable theorem name"
+        },
+        "input_objects": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^obj-[a-z0-9-]+$"
+          },
+          "default": [],
+          "description": "Mathematical objects used as inputs"
+        },
+        "input_axioms": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^axiom-[a-z0-9-]+$"
+          },
+          "default": [],
+          "description": "Axioms used in this theorem"
+        },
+        "input_parameters": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^param-[a-z0-9-]+$"
+          },
+          "default": [],
+          "description": "Parameters that constrain this theorem"
+        },
+        "attributes_required": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^prop-[a-z0-9-]+$"
+            }
+          },
+          "default": {},
+          "description": "API signature: properties each object must have. Example: {'obj-swarm': ['prop-bounded-variance']}. Missing properties become implicit assumptions."
+        },
+        "internal_lemmas": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^lem-[a-z0-9-]+$"
+          },
+          "default": [],
+          "description": "Lemmas used internally (part of the proof structure)"
+        },
+        "internal_propositions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^prop-[a-z0-9-]+$"
+          },
+          "default": [],
+          "description": "Propositions used internally (higher-level proof steps)"
+        },
+        "lemma_dag_edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from", "to"],
+            "properties": {
+              "from": {
+                "type": "string",
+                "description": "Source lemma/proposition label"
+              },
+              "to": {
+                "type": "string",
+                "description": "Target lemma/proposition label"
+              },
+              "relationship": {
+                "type": "string",
+                "enum": ["uses", "implies", "requires"],
+                "default": "uses"
+              }
+            }
+          },
+          "default": [],
+          "description": "DAG edges showing how internal lemmas compose"
+        },
+        "output_type": {
+          "$ref": "#/definitions/TheoremOutputType",
+          "description": "Primary output type (one of 13 categories)"
+        },
+        "attributes_added": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PipelineProperty"
+          },
+          "default": [],
+          "description": "Properties added to objects by this theorem"
+        },
+        "relations_established": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["relation_type", "left_object", "right_object"],
+            "properties": {
+              "relation_type": {
+                "type": "string",
+                "description": "Type of relation (e.g., 'equivalence', 'ordering', 'embedding')"
+              },
+              "left_object": {
+                "type": "string",
+                "pattern": "^obj-[a-z0-9-]+$"
+              },
+              "right_object": {
+                "type": "string",
+                "pattern": "^obj-[a-z0-9-]+$"
+              },
+              "expression": {
+                "$ref": "#/definitions/MathExpression"
+              }
+            }
+          },
+          "default": [],
+          "description": "Relations between objects (if output_type == 'Relation')"
+        },
+        "existence_statements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["object_type", "existence_condition"],
+            "properties": {
+              "object_type": {
+                "type": "string",
+                "description": "Type of object whose existence is proved"
+              },
+              "existence_condition": {
+                "$ref": "#/definitions/MathExpression",
+                "description": "Under what conditions the object exists"
+              },
+              "uniqueness": {
+                "type": "boolean",
+                "description": "Whether existence is unique"
+              }
+            }
+          },
+          "default": [],
+          "description": "Existence claims (if output_type == 'Existence')"
+        }
+      }
+    },
+    "PipelineDataFlowGraph": {
+      "type": "object",
+      "required": ["nodes", "edges"],
+      "description": "Tracks how objects accumulate properties as they flow through theorems. Orthogonal to dependency graph.",
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "type"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Object or theorem label"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["object", "theorem"],
+                "description": "Node type"
+              },
+              "current_attributes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^prop-[a-z0-9-]+$"
+                },
+                "description": "Current properties for object nodes"
+              }
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from", "to", "flow_type"],
+            "properties": {
+              "from": {
+                "type": "string",
+                "description": "Source node"
+              },
+              "to": {
+                "type": "string",
+                "description": "Target node"
+              },
+              "flow_type": {
+                "type": "string",
+                "enum": ["input", "output", "property_addition"],
+                "description": "Type of data flow"
+              },
+              "attributes_added": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^prop-[a-z0-9-]+$"
+                },
+                "description": "Which properties flow through this edge"
+              }
+            }
+          }
+        }
+      }
+    },
+    "PipelineDependencyGraph": {
+      "type": "object",
+      "required": ["nodes", "edges"],
+      "description": "Tracks which theorems depend on which lemmas/propositions/axioms. Orthogonal to data flow graph.",
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "type"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Theorem, lemma, proposition, or axiom label"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["theorem", "lemma", "proposition", "axiom"],
+                "description": "Node type"
+              }
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from", "to", "dependency_type"],
+            "properties": {
+              "from": {
+                "type": "string",
+                "description": "Dependent item (uses)"
+              },
+              "to": {
+                "type": "string",
+                "description": "Dependency (is used by)"
+              },
+              "dependency_type": {
+                "type": "string",
+                "enum": ["uses", "requires", "extends"],
+                "description": "Type of dependency"
+              }
+            }
+          }
+        },
+        "is_acyclic": {
+          "type": "boolean",
+          "description": "Whether the graph is a DAG (must be true for valid pipeline)"
+        }
+      }
+    },
+    "PipelineState": {
+      "type": "object",
+      "description": "State of the pipeline during or after execution. Tracks object states, theorem execution order, and conditionality.",
+      "properties": {
+        "objects": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/PipelineMathematicalObject"
+          },
+          "description": "Current state of all objects"
+        },
+        "executed_theorems": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^thm-[a-z0-9-]+$"
+          },
+          "description": "Theorems executed so far (in order)"
+        },
+        "blocked_theorems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["theorem_label", "missing_properties"],
+            "properties": {
+              "theorem_label": {
+                "type": "string",
+                "pattern": "^thm-[a-z0-9-]+$"
+              },
+              "missing_properties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Properties that are missing (format: 'obj-label:prop-label')"
+              }
+            }
+          },
+          "description": "Theorems that cannot execute yet (missing required properties)"
+        },
+        "execution_trace": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "step": {
+                "type": "integer"
+              },
+              "theorem": {
+                "type": "string",
+                "pattern": "^thm-[a-z0-9-]+$"
+              },
+              "attributes_added": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "conditionality_upgrades": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Theorems that became unconditional at this step"
+              }
+            }
+          },
+          "description": "Full execution trace for debugging and analysis"
+        }
+      }
+    }
+  },
+  "required": ["metadata", "directives"]
+}

@@ -1,0 +1,32 @@
+{
+  "label": "lem-potential-bounds",
+  "name": "Uniform Bounds of the Fitness Potential",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-fitness-potential-operator",
+    "obj-logistic-rescale"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "eta",
+    "alpha",
+    "beta",
+    "g_A_max"
+  ],
+  "properties_required": {
+    "obj-logistic-rescale": [
+      "prop-logistic-bounded-range"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": []
+}

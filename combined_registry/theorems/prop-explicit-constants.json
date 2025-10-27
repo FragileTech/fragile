@@ -1,0 +1,61 @@
+{
+  "label": "prop-explicit-constants",
+  "name": "Explicit Discretization Constants",
+  "statement_type": "proposition",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [
+    "L_F",
+    "C_F",
+    "sigma_min",
+    "sigma_max",
+    "K_V",
+    "kappa",
+    "gamma",
+    "tau",
+    "d"
+  ],
+  "properties_required": {
+    "force": [
+      "lipschitz",
+      "bounded-growth"
+    ],
+    "diffusion": [
+      "eigenvalue-bounds"
+    ],
+    "lyapunov": [
+      "bounded-regularity"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-discretization"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-prop-explicit-constants-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-unknown",
+      "target_object": "obj-unknown",
+      "established_by": "prop-explicit-constants",
+      "expression": "explicit-timestep-restrictions-for-discrete-inheritance",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "05_kinetic_contraction"
+    }
+  ]
+}

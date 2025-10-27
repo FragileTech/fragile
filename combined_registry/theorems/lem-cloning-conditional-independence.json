@@ -1,0 +1,46 @@
+{
+  "label": "lem-cloning-conditional-independence",
+  "name": "Conditional Independence of Cloning",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-cloning-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "delta"
+  ],
+  "properties_required": {
+    "measurement-independence": [
+      "Cloning measurements are conditionally independent"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-cloning-conditional-independence-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-cloning-operator",
+      "established_by": "lem-cloning-conditional-independence",
+      "expression": "Cloning preserves conditional independence",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

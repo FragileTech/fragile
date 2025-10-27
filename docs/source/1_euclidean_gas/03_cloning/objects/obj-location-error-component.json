@@ -1,0 +1,12 @@
+{
+  "label": "obj-location-error-component",
+  "name": "The Location Error Component ($V_{\\text{loc}}$)",
+  "mathematical_expression": "V_{\\text{loc}} := \\|\\Delta\\mu_x\\|^2 + \\lambda_v\\|\\Delta\\mu_v\\|^2 + b\\langle\\Delta\\mu_x, \\Delta\\mu_v\\rangle",
+  "object_type": "set",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "swarm"
+  ],
+  "source": null
+}

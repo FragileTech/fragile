@@ -1,0 +1,70 @@
+{
+  "label": "thm-inter-swarm-contraction-kinetic",
+  "name": "Inter-Swarm Error Contraction Under Kinetic Operator",
+  "statement_type": "theorem",
+  "source": {
+    "file": "05_kinetic_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-kinetic-operator-stratonovich",
+    "def-hypocoercive-norm"
+  ],
+  "input_axioms": [
+    "axiom-confining-potential",
+    "axiom-diffusion-tensor",
+    "axiom-friction-timestep"
+  ],
+  "input_parameters": [
+    "V_W",
+    "kappa_W",
+    "C_W_prime",
+    "tau",
+    "N",
+    "gamma",
+    "alpha_U",
+    "sigma_min",
+    "sigma_max",
+    "L_F",
+    "lambda_v",
+    "b"
+  ],
+  "attributes_required": {
+    "potential": [
+      "coercivity"
+    ],
+    "diffusion": [
+      "uniform-ellipticity"
+    ],
+    "force": [
+      "lipschitz"
+    ],
+    "hypocoercive-weights": [
+      "positive-definiteness"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-location-error-drift-kinetic",
+    "lem-structural-error-drift-kinetic"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-location-error-drift-kinetic",
+      "thm-inter-swarm-contraction-kinetic"
+    ],
+    [
+      "lem-structural-error-drift-kinetic",
+      "thm-inter-swarm-contraction-kinetic"
+    ]
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "hypocoercive-contraction-no-convexity"
+  ],
+  "relations_established": [
+    "kinetic-operator-contracts-inter-swarm-error",
+    "complements-cloning-expansion"
+  ]
+}

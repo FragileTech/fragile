@@ -1,0 +1,1229 @@
+{
+  "metadata": {
+    "generated_at": "2025-10-26T00:53:13.859147",
+    "version": "2.0.0",
+    "purpose": "LLM reference for writing proof sketches",
+    "task_focus": "proof_sketches",
+    "quality_standard": "Correct structure, clear strategy, valid dataflow (no full derivations required)",
+    "total_schemas": 7,
+    "excluded_from_full": 69
+  },
+  "task_guide": {
+    "objective": "Create proof sketches outlining strategy and structure without full mathematical derivation",
+    "when_to_use": "When planning proof approach, identifying key steps, or deferring complex sub-proofs for later expansion",
+    "quality_standard": "Clear strategy, correct dataflow, all key steps identified (even if not fully proven)",
+    "review_process": "Structural validation, strategy review (dual review optional for sketches)",
+    "key_difference_from_rigorous": "NO SymPy validation. Focus on STRUCTURE not DERIVATION. ProofStepStatus.SKETCHED encouraged."
+  },
+  "workflow": {
+    "steps": [
+      "1. Understand theorem: Read TheoremBox to see what we need to prove",
+      "2. Draft high-level strategy: Outline 3-5 key steps (approach, not full proof)",
+      "3. Create ProofBox: Define attribute-level ProofInputs (same structure as rigorous)",
+      "4. Write each ProofStep (SKETCHED mode):",
+      "   - DirectDerivation: Brief description of approach (NOT full mathematical content)",
+      "   - SubProofReference: Identify complex steps to defer for later expansion",
+      "   - LemmaApplication: Identify key results needed (even if not proven yet)",
+      "   - Set status=ProofStepStatus.SKETCHED for all initial steps",
+      "5. Validate dataflow: proof.validate_dataflow() must return empty list (even for sketches!)",
+      "6. Use ProofEngine.get_expansion_requests() to identify what needs expansion later",
+      "7. Review sketch for structural correctness:",
+      "   - Does the dataflow make sense?",
+      "   - Are all key steps identified?",
+      "   - Is the proof strategy clear?",
+      "8. Iterate: expand sketches \u2192 rigorous proofs using llm_proof.json"
+    ],
+    "best_practices": [
+      "Use ProofStepStatus.SKETCHED liberally - this is a SKETCH, not final proof",
+      "DirectDerivation: describe approach, not full derivation (e.g., 'Apply Gronwall inequality')",
+      "SubProofReference: defer complex sub-arguments for later expansion",
+      "LemmaApplication: identify key results needed (helps planning)",
+      "Dataflow still matters: proof.validate_dataflow() must return []",
+      "Property-level granularity: still use PropertyReference (good practice)",
+      "Don't claim you've proven something if you've only sketched it",
+      "Use ProofExpansionRequest to track what needs work",
+      "ProofEngine workflow: register proof \u2192 get expansion requests \u2192 expand systematically",
+      "Good sketches become rigorous proofs by expanding SKETCHED steps one by one"
+    ],
+    "common_patterns": [
+      "Proof strategy outline: 3-5 SKETCHED steps showing overall approach",
+      "Deferred complexity: Main proof with SubProofReference for technical details",
+      "Lemma identification: Mark which results you need (LemmaApplication)",
+      "Incremental expansion: Expand one SKETCHED step at a time to EXPANDED",
+      "Sketch \u2192 Rigorous pipeline: Use ProofEngine to manage expansion process"
+    ]
+  },
+  "schemas": {
+    "level_0_primitives": [
+      {
+        "name": "Axiom",
+        "module": "fragile.proofs.core.pipeline_types",
+        "docstring": "Immutable foundational truth never modified by theorems.\n\nAxioms can be used by any theorem but are never proved.\n\nMaps to Lean:\n    structure Axiom where\n      label : String\n      statement : String\n      mathematical_expression : String\n      foundational_framework : String",
+        "json_schema": {
+          "description": "Immutable foundational truth never modified by theorems.\n\nAxioms can be used by any theorem but are never proved.\n\nMaps to Lean:\n    structure Axiom where\n      label : String\n      statement : String\n      mathematical_expression : String\n      foundational_framework : String",
+          "attributes": {
+            "label": {
+              "pattern": "^axiom-[a-z0-9-]+$",
+              "title": "Label",
+              "type": "string"
+            },
+            "statement": {
+              "minLength": 1,
+              "title": "Statement",
+              "type": "string"
+            },
+            "mathematical_expression": {
+              "minLength": 1,
+              "title": "Mathematical Expression",
+              "type": "string"
+            },
+            "foundational_framework": {
+              "minLength": 1,
+              "title": "Foundational Framework",
+              "type": "string"
+            }
+          },
+          "required": [
+            "label",
+            "statement",
+            "mathematical_expression",
+            "foundational_framework"
+          ],
+          "title": "Axiom",
+          "type": "object"
+        },
+        "fields": {
+          "label": {
+            "type": "<class 'str'>",
+            "required": true,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "statement": {
+            "type": "<class 'str'>",
+            "required": true,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "mathematical_expression": {
+            "type": "<class 'str'>",
+            "required": true,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "foundational_framework": {
+            "type": "<class 'str'>",
+            "required": true,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          }
+        },
+        "dependencies": [],
+        "used_by": [],
+        "glossary_refs": [
+          "def-axiom-non-degenerate-noise",
+          "def-axiom-guaranteed-revival",
+          "def-axiom-bounded-deviation-variance",
+          "def-axiom-margin-stability",
+          "def-axiom-projection-compatibility",
+          "def-axiom-sufficient-amplification",
+          "def-axiom-boundary-regularity",
+          "def-swarm-aggregation-operator-axiomatic",
+          "def-axiom-geometric-consistency",
+          "lem-validation-uniform-ball",
+          "def-axiom-environmental-richness",
+          "def-axiom-boundary-smoothness",
+          "def-axiom-bounded-relative-collapse",
+          "def-axiom-bounded-algorithmic-diameter",
+          "def-axiom-range-respecting-mean",
+          "def-assumption-instep-independence",
+          "lem-empirical-aggregator-attributes",
+          "def-axiom-bounded-variance-production",
+          "def-axiom-reward-regularity"
+        ],
+        "example_instance": null
+      },
+      {
+        "name": "Err",
+        "module": "fragile.proofs.core.pipeline_types",
+        "docstring": "Error result containing error message.",
+        "json_schema": {
+          "description": "Error result containing error message.",
+          "attributes": {
+            "error": {
+              "title": "Error",
+              "type": "string"
+            }
+          },
+          "required": [
+            "error"
+          ],
+          "title": "Err",
+          "type": "object"
+        },
+        "fields": {
+          "error": {
+            "type": "<class 'str'>",
+            "required": true,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          }
+        },
+        "dependencies": [],
+        "used_by": [],
+        "glossary_refs": [
+          "thm-total-error-bound",
+          "thm-langevin-baoab-discretization-error",
+          "prop-mixing-rate-relationship",
+          "thm-full-system-discretization-error",
+          "lem-lipschitz-observable-error",
+          "prop-finite-second-moment-meanfield",
+          "prop-fourth-moment-baoab",
+          "thm-mean-square-standardization-error",
+          "thm-quantitative-propagation-chaos",
+          "lem-baoab-invariant-measure-error",
+          "lem-lie-splitting-weak-error",
+          "lem-wasserstein-entropy",
+          "def-components-mean-square-standardization-error",
+          "prop-empirical-wasserstein-concentration",
+          "thm-quantitative-error-propagation",
+          "lem-baoab-weak-error",
+          "prop-interaction-complexity-bound",
+          "lem-quantitative-kl-bound",
+          "lem-uniform-geometric-ergodicity"
+        ],
+        "example_instance": {
+          "error": "example"
+        }
+      },
+      {
+        "name": "Ok",
+        "module": "fragile.proofs.core.pipeline_types",
+        "docstring": "Success result containing a value.",
+        "json_schema": {
+          "description": "Success result containing a value.",
+          "attributes": {
+            "value": {
+              "title": "Value"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "title": "Ok",
+          "type": "object"
+        },
+        "fields": {
+          "value": {
+            "type": "~T",
+            "required": true,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          }
+        },
+        "dependencies": [],
+        "used_by": [],
+        "glossary_refs": [],
+        "example_instance": {
+          "value": null
+        }
+      },
+      {
+        "name": "Parameter",
+        "module": "fragile.proofs.core.pipeline_types",
+        "docstring": "Configuration value or constraint that controls theorem applicability.\n\nNot a mathematical object (doesn't accumulate attributes).\n\nMaps to Lean:\n    structure Parameter where\n      label : String\n      name : String\n      symbol : String\n      parameter_type : ParameterType\n      constraints : Option String\n      default_value : Option String",
+        "json_schema": {
+          "$defs": {
+            "ParameterType": {
+              "description": "Parameter value types.",
+              "enum": [
+                "real",
+                "integer",
+                "natural",
+                "rational",
+                "complex",
+                "boolean",
+                "symbolic"
+              ],
+              "title": "ParameterType",
+              "type": "string"
+            }
+          },
+          "description": "Configuration value or constraint that controls theorem applicability.\n\nNot a mathematical object (doesn't accumulate attributes).\n\nMaps to Lean:\n    structure Parameter where\n      label : String\n      name : String\n      symbol : String\n      parameter_type : ParameterType\n      constraints : Option String\n      default_value : Option String",
+          "attributes": {
+            "label": {
+              "pattern": "^param-[a-z0-9-]+$",
+              "title": "Label",
+              "type": "string"
+            },
+            "name": {
+              "minLength": 1,
+              "title": "Name",
+              "type": "string"
+            },
+            "symbol": {
+              "minLength": 1,
+              "title": "Symbol",
+              "type": "string"
+            },
+            "parameter_type": {
+              "$ref": "#/$defs/ParameterType"
+            },
+            "constraints": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Constraints"
+            },
+            "default_value": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Default Value"
+            }
+          },
+          "required": [
+            "label",
+            "name",
+            "symbol",
+            "parameter_type"
+          ],
+          "title": "Parameter",
+          "type": "object"
+        },
+        "fields": {
+          "label": {
+            "type": "<class 'str'>",
+            "required": true,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "name": {
+            "type": "<class 'str'>",
+            "required": true,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "symbol": {
+            "type": "<class 'str'>",
+            "required": true,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "parameter_type": {
+            "type": "<enum 'ParameterType'>",
+            "required": true,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "constraints": {
+            "type": "typing.Optional[str]",
+            "required": false,
+            "description": "No description",
+            "default": null
+          },
+          "default_value": {
+            "type": "typing.Optional[str]",
+            "required": false,
+            "description": "No description",
+            "default": null
+          }
+        },
+        "dependencies": [],
+        "used_by": [],
+        "glossary_refs": [
+          "def-reference-measures",
+          "def-ambient-euclidean"
+        ],
+        "example_instance": null
+      }
+    ],
+    "level_1_basic": [
+      {
+        "name": "ProofExpansionRequest",
+        "module": "fragile.proofs.core.proof_system",
+        "docstring": "Request to expand a sketched step.\n\nThis is what gets sent to the LLM for expansion.",
+        "json_schema": {
+          "$defs": {
+            "AssumptionReference": {
+              "description": "Reference to an assumption (attribute that may not be proven yet).\n\nAssumptions are attributes that we require but may not have proven.\nThey make the proof conditional.\n\nMaps to Lean:\n    structure AssumptionReference where\n      object_id : String\n      assumption_id : String\n      assumption_statement : String\n      justification : Option String",
+              "attributes": {
+                "object_id": {
+                  "description": "Object ID",
+                  "title": "Object Id",
+                  "type": "string"
+                },
+                "assumption_id": {
+                  "description": "Assumption ID",
+                  "title": "Assumption Id",
+                  "type": "string"
+                },
+                "assumption_statement": {
+                  "description": "Mathematical statement of assumption",
+                  "title": "Assumption Statement",
+                  "type": "string"
+                },
+                "justification": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null,
+                  "description": "Why this assumption is reasonable",
+                  "title": "Justification"
+                }
+              },
+              "required": [
+                "object_id",
+                "assumption_id",
+                "assumption_statement"
+              ],
+              "title": "AssumptionReference",
+              "type": "object"
+            },
+            "ProofInput": {
+              "description": "Input specification for a proof: object + specific attributes needed.\n\nThis is like a function signature: we specify exactly what attributes\nof what objects we need as input.\n\nMaps to Lean:\n    structure ProofInput where\n      object_id : String\n      required_properties : List PropertyReference\n      required_assumptions : List AssumptionReference",
+              "attributes": {
+                "object_id": {
+                  "description": "Object ID",
+                  "title": "Object Id",
+                  "type": "string"
+                },
+                "required_properties": {
+                  "description": "Proven attributes required",
+                  "items": {
+                    "$ref": "#/$defs/PropertyReference"
+                  },
+                  "title": "Required Properties",
+                  "type": "array"
+                },
+                "required_assumptions": {
+                  "description": "Assumptions required (make proof conditional)",
+                  "items": {
+                    "$ref": "#/$defs/AssumptionReference"
+                  },
+                  "title": "Required Assumptions",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "object_id"
+              ],
+              "title": "ProofInput",
+              "type": "object"
+            },
+            "ProofOutput": {
+              "description": "Output specification for a proof: object + attributes established.\n\nAfter the proof, these attributes are now available for the output object.\n\nMaps to Lean:\n    structure ProofOutput where\n      object_id : String\n      properties_established : List PropertyReference",
+              "attributes": {
+                "object_id": {
+                  "description": "Object ID",
+                  "title": "Object Id",
+                  "type": "string"
+                },
+                "properties_established": {
+                  "description": "Properties proven to hold",
+                  "items": {
+                    "$ref": "#/$defs/PropertyReference"
+                  },
+                  "minItems": 1,
+                  "title": "Properties Established",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "object_id",
+                "properties_established"
+              ],
+              "title": "ProofOutput",
+              "type": "object"
+            },
+            "AttributeReference": {
+              "description": "Reference to a specific attribute of an object.\n\nThis is the fundamental unit of proof dataflow: we don't say\n\"I need object X\", we say \"I need attribute P of object X\".\n\nMaps to Lean:\n    structure PropertyReference where\n      object_id : String\n      property_id : String\n      property_statement : String",
+              "attributes": {
+                "object_id": {
+                  "description": "Object ID (e.g., 'obj-discrete-system')",
+                  "minLength": 1,
+                  "title": "Object Id",
+                  "type": "string"
+                },
+                "property_id": {
+                  "description": "Property ID (e.g., 'prop-lipschitz-continuity')",
+                  "minLength": 1,
+                  "title": "Property Id",
+                  "type": "string"
+                },
+                "property_statement": {
+                  "description": "Mathematical statement of the attribute",
+                  "title": "Property Statement",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "object_id",
+                "property_id",
+                "property_statement"
+              ],
+              "title": "AttributeReference",
+              "type": "object"
+            }
+          },
+          "description": "Request to expand a sketched step.\n\nThis is what gets sent to the LLM for expansion.",
+          "attributes": {
+            "proof_id": {
+              "description": "Parent proof ID",
+              "title": "Proof Id",
+              "type": "string"
+            },
+            "step_id": {
+              "description": "Step to expand",
+              "title": "Step Id",
+              "type": "string"
+            },
+            "step_description": {
+              "description": "What the step should accomplish",
+              "title": "Step Description",
+              "type": "string"
+            },
+            "inputs": {
+              "description": "Available inputs",
+              "items": {
+                "$ref": "#/$defs/ProofInput"
+              },
+              "title": "Inputs",
+              "type": "array"
+            },
+            "outputs": {
+              "description": "Required outputs",
+              "items": {
+                "$ref": "#/$defs/ProofOutput"
+              },
+              "title": "Outputs",
+              "type": "array"
+            },
+            "context": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Additional context from proof strategy",
+              "title": "Context"
+            }
+          },
+          "required": [
+            "proof_id",
+            "step_id",
+            "step_description",
+            "inputs",
+            "outputs"
+          ],
+          "title": "ProofExpansionRequest",
+          "type": "object"
+        },
+        "fields": {
+          "proof_id": {
+            "type": "<class 'str'>",
+            "required": true,
+            "description": "Parent proof ID",
+            "default": "PydanticUndefined"
+          },
+          "step_id": {
+            "type": "<class 'str'>",
+            "required": true,
+            "description": "Step to expand",
+            "default": "PydanticUndefined"
+          },
+          "step_description": {
+            "type": "<class 'str'>",
+            "required": true,
+            "description": "What the step should accomplish",
+            "default": "PydanticUndefined"
+          },
+          "inputs": {
+            "type": "typing.List[fragile.proofs.core.proof_system.ProofInput]",
+            "required": true,
+            "description": "Available inputs",
+            "default": "PydanticUndefined"
+          },
+          "outputs": {
+            "type": "typing.List[fragile.proofs.core.proof_system.ProofOutput]",
+            "required": true,
+            "description": "Required outputs",
+            "default": "PydanticUndefined"
+          },
+          "context": {
+            "type": "typing.Optional[str]",
+            "required": false,
+            "description": "Additional context from proof strategy",
+            "default": null
+          }
+        },
+        "dependencies": [
+          "ProofInput",
+          "ProofOutput"
+        ],
+        "used_by": [],
+        "glossary_refs": [],
+        "example_instance": {
+          "proof_id": "example",
+          "step_id": "example",
+          "step_description": "example",
+          "inputs": [],
+          "outputs": [],
+          "context": null
+        }
+      },
+      {
+        "name": "ProofValidationResult",
+        "module": "fragile.proofs.core.proof_integration",
+        "docstring": "Result of validating proof against theorem.\n\nMaps to Lean:\n    structure ProofValidationResult where\n      is_valid : Bool\n      mismatches : List ProofTheoremMismatch\n      warnings : List String",
+        "json_schema": {
+          "$defs": {
+            "ProofTheoremMismatch": {
+              "description": "Describes a mismatch between proof and theorem.\n\nMaps to Lean:\n    structure ProofTheoremMismatch where\n      mismatch_type : String\n      description : String\n      expected : String\n      actual : String",
+              "attributes": {
+                "mismatch_type": {
+                  "description": "Type of mismatch (input/output/attribute)",
+                  "title": "Mismatch Type",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "Human-readable description",
+                  "title": "Description",
+                  "type": "string"
+                },
+                "expected": {
+                  "description": "What the theorem expects",
+                  "title": "Expected",
+                  "type": "string"
+                },
+                "actual": {
+                  "description": "What the proof provides",
+                  "title": "Actual",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "mismatch_type",
+                "description",
+                "expected",
+                "actual"
+              ],
+              "title": "ProofTheoremMismatch",
+              "type": "object"
+            }
+          },
+          "description": "Result of validating proof against theorem.\n\nMaps to Lean:\n    structure ProofValidationResult where\n      is_valid : Bool\n      mismatches : List ProofTheoremMismatch\n      warnings : List String",
+          "attributes": {
+            "is_valid": {
+              "description": "Whether proof matches theorem",
+              "title": "Is Valid",
+              "type": "boolean"
+            },
+            "mismatches": {
+              "description": "Validation errors",
+              "items": {
+                "$ref": "#/$defs/ProofTheoremMismatch"
+              },
+              "title": "Mismatches",
+              "type": "array"
+            },
+            "warnings": {
+              "description": "Non-blocking warnings",
+              "items": {
+                "type": "string"
+              },
+              "title": "Warnings",
+              "type": "array"
+            }
+          },
+          "required": [
+            "is_valid"
+          ],
+          "title": "ProofValidationResult",
+          "type": "object"
+        },
+        "fields": {
+          "is_valid": {
+            "type": "<class 'bool'>",
+            "required": true,
+            "description": "Whether proof matches theorem",
+            "default": "PydanticUndefined"
+          },
+          "mismatches": {
+            "type": "typing.List[fragile.proofs.core.proof_integration.ProofTheoremMismatch]",
+            "required": false,
+            "description": "Validation errors",
+            "default": "PydanticUndefined"
+          },
+          "warnings": {
+            "type": "typing.List[str]",
+            "required": false,
+            "description": "Non-blocking warnings",
+            "default": "PydanticUndefined"
+          }
+        },
+        "dependencies": [
+          "ProofTheoremMismatch"
+        ],
+        "used_by": [],
+        "glossary_refs": [],
+        "example_instance": {
+          "is_valid": false,
+          "mismatches": [],
+          "warnings": []
+        }
+      },
+      {
+        "name": "TheoremBox",
+        "module": "fragile.proofs.core.pipeline_types",
+        "docstring": "Theorem as processing box with well-defined I/O.\n\nInputs: objects, axioms, parameters\nProperties Required: API signature (attributes objects must have)\nInternal Processing: DAG of lemmas\nOutputs: attributes, relations, existence statements, etc.\n\nConditionality is COMPUTED by checking properties_required\nagainst each object's current_properties.\n\nMaps to Lean:\n    structure TheoremBox where\n      label : String\n      name : String\n      input_objects : List String\n      input_axioms : List String\n      input_parameters : List String\n      properties_required : HashMap String (List String)\n      ...\n\n      def compute_conditionality\n        (thm : TheoremBox)\n        (objects : HashMap String MathematicalObject)\n        : List String := ...\n\n      def is_conditional\n        (thm : TheoremBox)\n        (objects : HashMap String MathematicalObject)\n        : Bool :=\n        !(thm.compute_conditionality objects).isEmpty",
+        "json_schema": {
+          "$defs": {
+            "Attribute": {
+              "description": "Property assigned to a mathematical object by a theorem.\n\nConditionality is COMPUTED dynamically (not stored here).\nCheck theorem.properties_required vs object.current_properties.\n\nMaps to Lean:\n    structure Property where\n      label : String\n      expression : String\n      object_label : String\n      established_by : String\n      ...\n\n      def is_unconditional (p : Property) (conds : List String) : Bool :=\n        conds.isEmpty",
+              "attributes": {
+                "label": {
+                  "pattern": "^prop-[a-z0-9-]+$",
+                  "title": "Label",
+                  "type": "string"
+                },
+                "expression": {
+                  "description": "LaTeX mathematical expression",
+                  "minLength": 1,
+                  "title": "Expression",
+                  "type": "string"
+                },
+                "object_label": {
+                  "pattern": "^obj-[a-z0-9-]+$",
+                  "title": "Object Label",
+                  "type": "string"
+                },
+                "established_by": {
+                  "pattern": "^thm-[a-z0-9-]+$",
+                  "title": "Established By",
+                  "type": "string"
+                },
+                "timestamp": {
+                  "anyOf": [
+                    {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null,
+                  "description": "Pipeline execution step",
+                  "title": "Timestamp"
+                },
+                "can_be_refined": {
+                  "default": true,
+                  "description": "Whether attribute can be strengthened",
+                  "title": "Can Be Refined",
+                  "type": "boolean"
+                },
+                "refinements": {
+                  "items": {
+                    "$ref": "#/$defs/PropertyRefinement"
+                  },
+                  "title": "Refinements",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "label",
+                "expression",
+                "object_label",
+                "established_by"
+              ],
+              "title": "Attribute",
+              "type": "object"
+            },
+            "AttributeRefinement": {
+              "description": "Tracks when a attribute is strengthened or generalized.\n\nExample: prop-continuous \u2192 prop-smooth (strengthening)\n\nMaps to Lean:\n    structure PropertyRefinement where\n      original_property : String\n      refined_property : String\n      ...",
+              "attributes": {
+                "original_property": {
+                  "pattern": "^prop-[a-z0-9-]+$",
+                  "title": "Original Property",
+                  "type": "string"
+                },
+                "refined_property": {
+                  "pattern": "^prop-[a-z0-9-]+$",
+                  "title": "Refined Property",
+                  "type": "string"
+                },
+                "refinement_theorem": {
+                  "pattern": "^thm-[a-z0-9-]+$",
+                  "title": "Refinement Theorem",
+                  "type": "string"
+                },
+                "refinement_type": {
+                  "$ref": "#/$defs/RefinementType"
+                }
+              },
+              "required": [
+                "original_property",
+                "refined_property",
+                "refinement_theorem",
+                "refinement_type"
+              ],
+              "title": "AttributeRefinement",
+              "type": "object"
+            },
+            "RefinementType": {
+              "description": "Property refinement types.",
+              "enum": [
+                "strengthening",
+                "generalization",
+                "quantification"
+              ],
+              "title": "RefinementType",
+              "type": "string"
+            },
+            "RelationType": {
+              "description": "Types of relationships between mathematical objects.\n\nMaps to Lean:\n    inductive RelationType where\n      | equivalence : RelationType\n      | embedding : RelationType\n      ...",
+              "enum": [
+                "equivalence",
+                "embedding",
+                "approximation",
+                "reduction",
+                "extension",
+                "generalization",
+                "specialization",
+                "other"
+              ],
+              "title": "RelationType",
+              "type": "string"
+            },
+            "Relationship": {
+              "description": "Relationship between two mathematical objects established by a theorem.\n\nFirst-class object with label, type, directionality, and attributes.\n\nExamples:\n    - Equivalence: discrete \u2261 continuous (bidirectional)\n    - Embedding: particles \u21aa fluid (directed)\n    - Approximation: discrete \u2248 continuous with O(N^{-1/d}) (directed)\n    - Reduction: PDE \u2192 ODE (directed)\n\nMaps to Lean:\n    structure Relationship where\n      label : String\n      relationship_type : RelationType\n      source_object : String\n      target_object : String\n      bidirectional : Bool\n      established_by : String\n      attributes : List RelationshipProperty\n      expression : String\n\n      def is_symmetric (r : Relationship) : Bool :=\n        r.bidirectional\n\n      def is_directed (r : Relationship) : Bool :=\n        !r.bidirectional",
+              "attributes": {
+                "label": {
+                  "description": "Relationship label (format: rel-{source}-{target}-{type})",
+                  "pattern": "^rel-[a-z0-9]+(-[a-z0-9]+)*-(equivalence|embedding|approximation|reduction|extension|generalization|specialization|other)$",
+                  "title": "Label",
+                  "type": "string"
+                },
+                "relationship_type": {
+                  "$ref": "#/$defs/RelationType"
+                },
+                "bidirectional": {
+                  "description": "Whether relationship is symmetric (auto-computed from type if not provided)",
+                  "title": "Bidirectional",
+                  "type": "boolean"
+                },
+                "source_object": {
+                  "description": "Source object label",
+                  "pattern": "^obj-[a-z0-9-]+$",
+                  "title": "Source Object",
+                  "type": "string"
+                },
+                "target_object": {
+                  "description": "Target object label",
+                  "pattern": "^obj-[a-z0-9-]+$",
+                  "title": "Target Object",
+                  "type": "string"
+                },
+                "established_by": {
+                  "description": "Theorem that established this relationship",
+                  "pattern": "^thm-[a-z0-9-]+$",
+                  "title": "Established By",
+                  "type": "string"
+                },
+                "expression": {
+                  "description": "Mathematical expression of relationship",
+                  "minLength": 1,
+                  "title": "Expression",
+                  "type": "string"
+                },
+                "attributes": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/RelationshipProperty"
+                  },
+                  "description": "Relationship-specific attributes (e.g., error bounds, convergence rates)",
+                  "title": "Properties"
+                },
+                "tags": {
+                  "description": "Category tags (e.g., 'mean-field', 'discrete-continuous')",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Tags",
+                  "type": "array"
+                },
+                "timestamp": {
+                  "anyOf": [
+                    {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null,
+                  "description": "Pipeline execution step when established",
+                  "title": "Timestamp"
+                }
+              },
+              "required": [
+                "label",
+                "relationship_type",
+                "bidirectional",
+                "source_object",
+                "target_object",
+                "established_by",
+                "expression"
+              ],
+              "title": "Relationship",
+              "type": "object"
+            },
+            "RelationshipAttribute": {
+              "description": "Property of a relationship (e.g., error bounds, convergence rates).\n\nExample: For an approximation relationship, might have error = O(N^{-1/d})\n\nMaps to Lean:\n    structure RelationshipProperty where\n      label : String\n      expression : String\n      description : String",
+              "attributes": {
+                "label": {
+                  "description": "Property label (e.g., 'approx-error-N')",
+                  "pattern": "^[a-z][a-zA-Z0-9-]*$",
+                  "title": "Label",
+                  "type": "string"
+                },
+                "expression": {
+                  "description": "Mathematical expression",
+                  "minLength": 1,
+                  "title": "Expression",
+                  "type": "string"
+                },
+                "description": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null,
+                  "title": "Description"
+                }
+              },
+              "required": [
+                "label",
+                "expression"
+              ],
+              "title": "RelationshipAttribute",
+              "type": "object"
+            },
+            "TheoremOutputType": {
+              "description": "The 13 fundamental theorem output types providing complete coverage\nof mathematical reasoning.\n\nMaps to Lean:\n    inductive TheoremOutputType where\n      | attribute : TheoremOutputType\n      | relation : TheoremOutputType\n      ...",
+              "enum": [
+                "Attribute",
+                "Relation",
+                "Existence",
+                "Construction",
+                "Classification",
+                "Uniqueness",
+                "Impossibility",
+                "Embedding",
+                "Approximation",
+                "Equivalence",
+                "Decomposition",
+                "Extension",
+                "Reduction"
+              ],
+              "title": "TheoremOutputType",
+              "type": "string"
+            }
+          },
+          "description": "Theorem as processing box with well-defined I/O.\n\nInputs: objects, axioms, parameters\nProperties Required: API signature (attributes objects must have)\nInternal Processing: DAG of lemmas\nOutputs: attributes, relations, existence statements, etc.\n\nConditionality is COMPUTED by checking properties_required\nagainst each object's current_properties.\n\nMaps to Lean:\n    structure TheoremBox where\n      label : String\n      name : String\n      input_objects : List String\n      input_axioms : List String\n      input_parameters : List String\n      properties_required : HashMap String (List String)\n      ...\n\n      def compute_conditionality\n        (thm : TheoremBox)\n        (objects : HashMap String MathematicalObject)\n        : List String := ...\n\n      def is_conditional\n        (thm : TheoremBox)\n        (objects : HashMap String MathematicalObject)\n        : Bool :=\n        !(thm.compute_conditionality objects).isEmpty",
+          "attributes": {
+            "label": {
+              "pattern": "^thm-[a-z0-9-]+$",
+              "title": "Label",
+              "type": "string"
+            },
+            "name": {
+              "minLength": 1,
+              "title": "Name",
+              "type": "string"
+            },
+            "input_objects": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Input Objects",
+              "type": "array"
+            },
+            "input_axioms": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Input Axioms",
+              "type": "array"
+            },
+            "input_parameters": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Input Parameters",
+              "type": "array"
+            },
+            "attributes_required": {
+              "additionalProperties": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "description": "API signature: {object_label: [required_properties]}",
+              "title": "Properties Required",
+              "type": "object"
+            },
+            "internal_lemmas": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Internal Lemmas",
+              "type": "array"
+            },
+            "internal_propositions": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Internal Propositions",
+              "type": "array"
+            },
+            "lemma_dag_edges": {
+              "description": "DAG edges: (from, to)",
+              "items": {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "type": "array"
+              },
+              "title": "Lemma Dag Edges",
+              "type": "array"
+            },
+            "output_type": {
+              "$ref": "#/$defs/TheoremOutputType"
+            },
+            "attributes_added": {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "title": "Properties Added",
+              "type": "array"
+            },
+            "relations_established": {
+              "description": "Relationships between objects established by this theorem",
+              "items": {
+                "$ref": "#/$defs/Relationship"
+              },
+              "title": "Relations Established",
+              "type": "array"
+            }
+          },
+          "required": [
+            "label",
+            "name",
+            "output_type"
+          ],
+          "title": "TheoremBox",
+          "type": "object"
+        },
+        "fields": {
+          "label": {
+            "type": "<class 'str'>",
+            "required": true,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "name": {
+            "type": "<class 'str'>",
+            "required": true,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "input_objects": {
+            "type": "typing.List[str]",
+            "required": false,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "input_axioms": {
+            "type": "typing.List[str]",
+            "required": false,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "input_parameters": {
+            "type": "typing.List[str]",
+            "required": false,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "attributes_required": {
+            "type": "typing.Dict[str, typing.List[str]]",
+            "required": false,
+            "description": "API signature: {object_label: [required_properties]}",
+            "default": "PydanticUndefined"
+          },
+          "internal_lemmas": {
+            "type": "typing.List[str]",
+            "required": false,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "internal_propositions": {
+            "type": "typing.List[str]",
+            "required": false,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "lemma_dag_edges": {
+            "type": "typing.List[typing.Tuple[str, str]]",
+            "required": false,
+            "description": "DAG edges: (from, to)",
+            "default": "PydanticUndefined"
+          },
+          "output_type": {
+            "type": "<enum 'TheoremOutputType'>",
+            "required": true,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "attributes_added": {
+            "type": "typing.List[fragile.proofs.core.pipeline_types.Property]",
+            "required": false,
+            "description": "No description",
+            "default": "PydanticUndefined"
+          },
+          "relations_established": {
+            "type": "typing.List[fragile.proofs.core.pipeline_types.Relationship]",
+            "required": false,
+            "description": "Relationships between objects established by this theorem",
+            "default": "PydanticUndefined"
+          }
+        },
+        "dependencies": [
+          "Attribute",
+          "Relationship"
+        ],
+        "used_by": [],
+        "glossary_refs": [],
+        "example_instance": null
+      }
+    ]
+  },
+  "examples": {
+    "simple_sketch": {
+      "description": "3-step sketch with SKETCHED status",
+      "use_case": "Initial proof planning before full development",
+      "example_structure": {
+        "proof_id": "proof-thm-sketch",
+        "proves": "thm-sketch",
+        "steps": [
+          {
+            "step_id": "step-1",
+            "description": "Establish well-posedness via contraction mapping",
+            "step_type": "DirectDerivation",
+            "status": "SKETCHED"
+          },
+          {
+            "step_id": "step-2",
+            "description": "Construct coupling between systems",
+            "step_type": "SubProofReference",
+            "status": "SKETCHED"
+          }
+        ]
+      },
+      "code_reference": "See examples/proof_system_example.py lines 150-200"
+    },
+    "hierarchical_sketch": {
+      "description": "Main sketch with deferred sub-proofs",
+      "use_case": "Complex proofs where sub-arguments need separate treatment",
+      "workflow": [
+        "1. Sketch main proof with 3-5 high-level steps",
+        "2. Identify complex steps \u2192 mark as SubProofReference",
+        "3. Create placeholder sub-proofs (also SKETCHED)",
+        "4. Use ProofEngine to track expansion requests",
+        "5. Expand sub-proofs first, then main proof"
+      ],
+      "code_reference": "See examples/proof_system_example.py full workflow"
+    },
+    "sketch_to_rigorous_progression": {
+      "description": "How to expand a sketch into rigorous proof",
+      "workflow": [
+        "1. Start with SKETCHED proof (use llm_sketch.json)",
+        "2. Validate dataflow: proof.validate_dataflow() == []",
+        "3. Register with ProofEngine: engine.register_proof(proof)",
+        "4. Get expansion requests: engine.get_expansion_requests(proof_id)",
+        "5. For each request: expand step from SKETCHED \u2192 EXPANDED",
+        "6. Switch to llm_proof.json for full derivations with SymPy",
+        "7. Mark expanded steps as VERIFIED after dual review"
+      ],
+      "tools": "ProofEngine, ProofExpansionRequest (see schemas above)"
+    }
+  },
+  "validation_checklist": [
+    "[ ] All ProofInputs use PropertyReference (even in sketches - good practice)",
+    "[ ] proof.validate_dataflow() returns empty list (structural correctness)",
+    "[ ] All key proof steps identified (even if SKETCHED)",
+    "[ ] Proof strategy is clear and makes sense",
+    "[ ] Complex steps deferred to SubProofReference (good decomposition)",
+    "[ ] ProofStepStatus.SKETCHED used appropriately (honest about incompleteness)",
+    "[ ] ProofExpansionRequest workflow understood (how to expand later)",
+    "[ ] NOT claiming more than actually proven (SKETCHED \u2260 VERIFIED)"
+  ],
+  "common_pitfalls": [
+    "\u274c Claiming sketch is rigorous proof (SKETCHED \u2260 VERIFIED)",
+    "\u274c Skipping dataflow validation (even sketches need valid structure)",
+    "\u274c Not using SubProofReference for complex steps (try to do everything in one step)",
+    "\u274c Forgetting to use ProofEngine for tracking expansion requests",
+    "\u274c Using PropertyReference inconsistently (use it even in sketches)",
+    "\u274c Vague step descriptions (be specific about approach, even if not full derivation)",
+    "\u274c Not identifying key lemmas needed (LemmaApplication helps planning)",
+    "\u274c Treating sketch as final proof (it's a PLAN, not the PROOF)"
+  ],
+  "documentation_refs": {
+    "examples": {
+      "proof_system_example.py": "Sketch workflow with ProofEngine (lines 150-250, 500-550)",
+      "complete_integration_example.py": "Basic proof structure"
+    },
+    "guides": {
+      "examples/README.md": "Proof system documentation (see 'Compositional Proofs' section)",
+      "CLAUDE.md": "\u00a7 Mathematical Proofing (focus on sketch \u2192 rigorous workflow)"
+    },
+    "expansion_workflow": "Use ProofEngine + ProofExpansionRequest to systematically expand sketches",
+    "rigorous_transition": "Once sketch validated, use llm_proof.json to expand with full derivations"
+  }
+}

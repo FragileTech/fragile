@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-mass-lower-bound-high-prob-2-equivalence",
+  "relationship_type": "equivalence",
+  "bidirectional": true,
+  "source_object": "obj-qsd",
+  "target_object": "obj-alive-mass",
+  "established_by": "lem-mass-lower-bound-high-prob",
+  "expression": "c_mass := m_eq/2",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+}

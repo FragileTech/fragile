@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-unfit-cloning-pressure-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-unfit-set",
+  "target_object": "obj-cloning-probability",
+  "established_by": "lem-unfit-cloning-pressure",
+  "expression": "p_k,i >= p_u(epsilon) > 0 for all i in U_k",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

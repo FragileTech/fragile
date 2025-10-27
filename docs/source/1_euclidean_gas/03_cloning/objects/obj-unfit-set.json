@@ -1,0 +1,13 @@
+{
+  "label": "obj-unfit-set",
+  "name": "The Unfit Set",
+  "mathematical_expression": "U_k := \\{i \\in \\mathcal{A}_k \\mid V_{k,i} \\le \\mu_{V,k}\\}",
+  "object_type": "set",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

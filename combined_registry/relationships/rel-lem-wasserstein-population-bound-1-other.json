@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-wasserstein-population-bound-1-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-target-complement",
+  "target_object": "obj-wasserstein-distance",
+  "established_by": "lem-wasserstein-population-bound",
+  "expression": "Bound valid for any cluster-respecting matching (not necessarily optimal)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction"
+}

@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-cross-swarm-distance-1-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-target-complement",
+  "target_object": "obj-target-complement",
+  "established_by": "lem-cross-swarm-distance",
+  "expression": "Analogous decompositions for D_IJ, D_JI, D_JJ",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction"
+}

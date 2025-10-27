@@ -1,0 +1,26 @@
+{
+  "label": "lem-cubic-patch-derivative",
+  "name": "Explicit Form of the Polynomial Patch Derivative",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-asymmetric-rescale-function"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-z_max"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-explicit-derivative-form",
+      "expression": "P'(z(s)) = 3(\\frac{1}{z_{\\max}} - 2\\log(1 + \\frac{1}{z_{\\max}}))s^2 + 2(3\\log(1 + \\frac{1}{z_{\\max}}) - \\frac{2}{z_{\\max}})s + \\frac{1}{z_{\\max}}",
+      "object_label": "obj-asymmetric-rescale-function"
+    }
+  ],
+  "relations_established": []
+}

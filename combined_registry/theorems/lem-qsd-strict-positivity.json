@@ -1,0 +1,113 @@
+{
+  "label": "lem-qsd-strict-positivity",
+  "name": "QSD Strict Positivity",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-qsd",
+    "def-cloning-operator"
+  ],
+  "input_axioms": [
+    "ax-domain-regularity",
+    "def-axiom-rescale-function",
+    "ax-lipschitz-fields",
+    "ax-velocity-regularization"
+  ],
+  "input_parameters": [
+    "sigma_x",
+    "R",
+    "eta",
+    "d",
+    "m_eq"
+  ],
+  "properties_required": {
+    "small-set-minorization": [
+      "K_clone ≥ η G_σ_x(x'−x) ⇒ P(z, ·) ≥ δ ν(·) with δ = η c_σ_x,R"
+    ],
+    "support": [
+      "φ-irreducible ⇒ supp(π_QSD) = X_valid"
+    ],
+    "smoothing": [
+      "Invariant density is C^∞ by hypoellipticity of full operator"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-gaussian-kernel-lower-bound",
+    "lem-strict-positivity-cloning",
+    "lem-linfty-full-operator"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-gaussian-kernel-lower-bound",
+      "lem-qsd-strict-positivity"
+    ],
+    [
+      "lem-strict-positivity-cloning",
+      "lem-qsd-strict-positivity"
+    ],
+    [
+      "lem-linfty-full-operator",
+      "lem-qsd-strict-positivity"
+    ]
+  ],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-qsd-strict-positivity-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-qsd",
+      "target_object": "obj-cloning-operator",
+      "established_by": "lem-qsd-strict-positivity",
+      "expression": "P(z, dx) ≥ η c_σ_x,R dx ⇒ π_QSD(dx) ≥ η c_σ_x,R ||π_QSD||_{L^1} dx",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    },
+    {
+      "label": "rel-lem-qsd-strict-positivity-1-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-qsd",
+      "target_object": "obj-cloning-operator",
+      "established_by": "lem-qsd-strict-positivity",
+      "expression": "c_π = η c_σ_x,R m_eq",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    },
+    {
+      "label": "rel-lem-qsd-strict-positivity-2-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-qsd",
+      "target_object": "obj-cloning-operator",
+      "established_by": "lem-qsd-strict-positivity",
+      "expression": "inf_{x ∈ X_valid} π_QSD(x) ≥ c_π > 0",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "label": "attr-qsd-properties",
+  "name": "Properties of the Quasi-Stationary Distribution",
+  "statement_type": "proposition",
+  "source": null,
+  "input_objects": [
+    "obj-qsd",
+    "obj-swarm-and-state-space"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-gamma",
+    "param-sigma-v"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-qsd-position-structure",
+      "expression": "\u03c1_pos(x) \u221d exp(\u2212U(x) \u2212 \u03c6_barrier(x)) on X_valid",
+      "object_label": "obj-qsd"
+    },
+    {
+      "label": "attr-qsd-velocity-gibbs",
+      "expression": "\u03c1_vel(v) \u221d exp( \u2212\u2225v\u2225^2 / (2 \u03c3_v^2/\u03b3) )",
+      "object_label": "obj-qsd"
+    },
+    {
+      "label": "attr-qsd-correlation-decay",
+      "expression": "E_{\u03bd_QSD}[\u27e8x-\\bar x, v-\\bar v\u27e9] = O(e^{\u2212\u03b3 \u0394t})",
+      "object_label": "obj-qsd"
+    },
+    {
+      "label": "attr-qsd-internal-variance-bounds",
+      "expression": "V_{Var,x}^{QSD} = O(C_x/\u03ba_x), V_{Var,v}^{QSD} = O(\u03c3_v^2/\u03b3)",
+      "object_label": "obj-qsd"
+    }
+  ],
+  "relations_established": []
+}

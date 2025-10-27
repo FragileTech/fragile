@@ -1,0 +1,52 @@
+{
+  "label": "thm-meanfield-lsi-standalone",
+  "name": "Exponential KL-Convergence via Mean-Field Generator Analysis",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-mean-field-operator"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf",
+    "kappa_W"
+  ],
+  "properties_required": {
+    "mean-field-limit": [
+      "N → ∞ limit"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-mean-field-cloning-sketch"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-meanfield-lsi-standalone-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-mean-field-operator",
+      "target_object": "obj-mean-field-operator",
+      "established_by": "thm-meanfield-lsi-standalone",
+      "expression": "Mean-field LSI constant independent of N",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

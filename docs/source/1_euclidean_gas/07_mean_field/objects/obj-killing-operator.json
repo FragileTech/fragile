@@ -1,0 +1,10 @@
+{
+  "label": "obj-killing-operator",
+  "name": "Interior Killing Operator",
+  "mathematical_expression": "k_{\\text{killed}}[f](t) := \\int_{\\Omega} c(z) f(t,z) \\, \\mathrm{d}z",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [],
+  "source": null
+}

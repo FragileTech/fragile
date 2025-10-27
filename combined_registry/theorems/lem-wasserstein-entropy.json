@@ -1,0 +1,59 @@
+{
+  "label": "lem-wasserstein-entropy",
+  "name": "Wasserstein-Entropy Inequality",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-nu-n-qsd",
+    "obj-rho-0-product",
+    "obj-n-particle-phase-space"
+  ],
+  "input_axioms": [
+    "axiom-confined-potential"
+  ],
+  "input_parameters": [
+    "lambda_lsi",
+    "gamma",
+    "kappa_conf",
+    "kappa_W",
+    "delta",
+    "C_0"
+  ],
+  "properties_required": {
+    "obj-nu-n-qsd": [
+      "prop-n-uniform-lsi",
+      "prop-absolute-continuity-lebesgue"
+    ],
+    "obj-rho-0-product": [
+      "prop-product-measure-structure"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-nu-n-qsd-rho-0-product-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-nu-n-qsd",
+      "target_object": "obj-rho-0-product",
+      "established_by": "lem-wasserstein-entropy",
+      "expression": "bound: W_2^2 <= (2/lambda_lsi) * D_KL",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    }
+  ]
+}

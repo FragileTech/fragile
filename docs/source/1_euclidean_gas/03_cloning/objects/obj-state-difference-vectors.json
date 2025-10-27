@@ -1,0 +1,13 @@
+{
+  "label": "obj-state-difference-vectors",
+  "name": "State Difference Vectors",
+  "mathematical_expression": "\\Delta x_i := x_{1,i} - x_{2,i} \\in \\mathbb{R}^d",
+  "object_type": "set",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

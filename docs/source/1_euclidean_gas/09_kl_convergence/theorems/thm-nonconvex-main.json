@@ -1,0 +1,41 @@
+{
+  "label": "thm-nonconvex-main",
+  "name": "Exponential KL Convergence for Non-Convex Fitness Landscapes",
+  "statement_type": "theorem",
+  "source": {
+    "file": "09_kl_convergence.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-total-operator",
+    "def-qsd"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf",
+    "kappa_W",
+    "delta"
+  ],
+  "attributes_required": {
+    "poincare": [
+      "Poincar\u00e9 inequality instead of LSI"
+    ],
+    "local-log-concave": [
+      "Local log-concavity or polynomial decay"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-nonconvex-informal"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Convergence without global log-concavity"
+  ],
+  "relations_established": [
+    "Polynomial or stretched-exponential convergence"
+  ]
+}

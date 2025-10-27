@@ -1,0 +1,155 @@
+{
+  "label": "lem-kinetic-hellinger-contraction",
+  "name": "Kinetic Operator Hellinger Contraction",
+  "statement_type": "lemma",
+  "source": {
+    "file": "docs/source/1_euclidean_gas/11_hk_convergence.md",
+    "line_start": 1172,
+    "line_end": 1218
+  },
+  "input_objects": [
+    "obj-empirical-measure",
+    "obj-qsd",
+    "obj-kinetic-operator",
+    "obj-baoab-integrator",
+    "obj-hellinger-distance"
+  ],
+  "input_axioms": [
+    "def-axiom-local-perturbation",
+    "ax-confining-potential",
+    "ax-uniform-density-bound-hk"
+  ],
+  "axiom_status": {
+    "ax-uniform-density-bound-hk": {
+      "status": "PROVEN",
+      "proof_document": "docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+      "proof_theorem": "thm-bounded-density-ratio-main",
+      "note": "Originally a conditional assumption, now rigorously proven using parabolic Harnack inequalities and QSD mass concentration theory. Pending manual verification before removing axiom label.",
+      "proof_methods": [
+        "Parabolic Harnack inequality for hypoelliptic operators",
+        "Gaussian mollification from cloning noise",
+        "Stochastic mass conservation via QSD theory",
+        "High-probability bounds with exponential concentration"
+      ]
+    }
+  },
+  "input_parameters": [
+    "M",
+    "tau",
+    "gamma",
+    "delta",
+    "kappa_kin",
+    "C_kin",
+    "alpha_U"
+  ],
+  "attributes_required": {
+    "obj-empirical-measure": [
+      "attr-normalized-density-bounded",
+      "attr-gaussian-regularization"
+    ],
+    "obj-kinetic-operator": [
+      "attr-baoab-integrator",
+      "attr-boundary-killing"
+    ],
+    "obj-qsd": [
+      "attr-smooth-density",
+      "attr-positive-lower-bound"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-mass-convergence",
+    "attr-killing-rate-continuous"
+  ],
+  "internal_propositions": [
+    "attr-killing-rate-continuous"
+  ],
+  "lemma_dag_edges": [
+    {
+      "depends_on": "lem-hypoelliptic-density-bound",
+      "reason": "Used in Step 1 for Hellinger decomposition and smoothness"
+    },
+    {
+      "depends_on": "lem-gaussian-lower-bound",
+      "reason": "Establishes Gaussian regularization from cloning"
+    }
+  ],
+  "output_type": "Contraction",
+  "attributes_added": [
+    "attr-hellinger-exponential-decay",
+    "attr-discrete-time-contraction"
+  ],
+  "relations_established": [
+    {
+      "type": "contraction",
+      "from": "obj-hellinger-distance",
+      "to": "obj-qsd",
+      "description": "E[d_H^2(mu_{t+1}, pi_QSD) | mu_t] <= (1 - kappa_kin(M) tau) d_H^2(mu_t, pi_QSD) + C_kin tau^2"
+    },
+    {
+      "type": "rate_dependence",
+      "from": "kappa_kin",
+      "to": "parameters",
+      "description": "Contraction rate depends on M (density bound), gamma (friction), alpha_U (potential coercivity), hypocoercive coupling"
+    }
+  ],
+  "dependencies_summary": {
+    "from_chapter_01": [
+      "def-axiom-local-perturbation: Gaussian perturbations delta^2 > 0"
+    ],
+    "from_chapter_03": [
+      "cloning operator mechanism",
+      "Gaussian position jitter"
+    ],
+    "from_chapter_06": [
+      "Section 4.4.1: Hypoellipticity and Gaussian Accessibility",
+      "Theorem 4.5: Geometric Ergodicity and Convergence to QSD",
+      "Foster-Lyapunov analysis"
+    ],
+    "from_chapter_07": [
+      "Mean-field limit",
+      "BAOAB discretization error O(tau^2)",
+      "Continuous-time killing rate c(x,v)",
+      "Section 4.4: Discrete-to-continuous bridge"
+    ],
+    "from_chapter_08": [
+      "Propagation of chaos"
+    ],
+    "from_this_chapter": [
+      "ax-uniform-density-bound-hk: Bounded density ratio assumption",
+      "lem-hypoelliptic-density-bound: Smoothness and L^infty bounds",
+      "lem-gaussian-lower-bound: Lower bound from mollification"
+    ],
+    "proof_structure": {
+      "step_1": "Hellinger decomposition into mass and shape components",
+      "step_2": "Mass contraction via boundary killing (connection to mean-field limit)",
+      "step_2a": "Discrete-to-continuous bridge via mean-field theory",
+      "step_2b": "Expected deaths in continuous time",
+      "step_2c": "Expected revivals from discrete Lemma A",
+      "step_3": "Shape contraction via diffusive smoothing using hypocoercivity",
+      "step_4": "Combine with BAOAB discretization error bounds"
+    },
+    "mathematical_references": [
+      "Meyn & Tweedie 2009 (Markov Chains and Stochastic Stability)",
+      "Evans (Partial Differential Equations, Chapter 7: parabolic regularity)"
+    ],
+    "assumption_justification": {
+      "bounded_density_ratio": {
+        "mechanism_1": "Bounded initial density (finite particle system)",
+        "mechanism_2": "Gaussian regularization from cloning (convolution with G_delta)",
+        "mechanism_3": "Parabolic maximum principle for Fokker-Planck evolution",
+        "mechanism_4": "Confinement prevents escape to low-density regions",
+        "practical_bound": "M = M(T, M_0, delta, gamma, U) finite for any T < infinity",
+        "rigorous_status": "Working assumption, consistent with framework axioms and numerical simulations"
+      }
+    },
+    "parameters": {
+      "M": "density ratio upper bound (from ax-uniform-density-bound-hk)",
+      "tau": "time step size",
+      "gamma": "friction coefficient",
+      "delta": "cloning noise scale",
+      "kappa_kin": "Hellinger contraction rate (depends on M, gamma, alpha_U, hypocoercive coupling)",
+      "C_kin": "discretization error constant (O(tau^2) from BAOAB)",
+      "alpha_U": "potential coercivity"
+    }
+  }
+}

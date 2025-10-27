@@ -1,0 +1,382 @@
+{
+  "document": "docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+  "extraction_mode": "pipeline-schema-compliant",
+  "schema_version": "2.0.0",
+  "framework": "Fragile Gas Framework",
+  "statistics": {
+    "total_directives": 34,
+    "mathematical_objects": 8,
+    "axioms": 3,
+    "theorems": 5,
+    "lemmas": 2,
+    "propositions": 5,
+    "algorithms": 0,
+    "other": 11
+  },
+  "mathematical_objects": [
+    {
+      "label": "obj-kinetic-operator-stratonovich",
+      "name": "The Kinetic Operator (Stratonovich Form)",
+      "mathematical_expression": "The Kinetic Operator (Stratonovich Form)",
+      "object_type": "operator",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "kinetic"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-baoab-integrator",
+      "name": "BAOAB Integrator for Stratonovich Langevin",
+      "mathematical_expression": "BAOAB Integrator for Stratonovich Langevin",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-generator",
+      "name": "Infinitesimal Generator of the Kinetic SDE",
+      "mathematical_expression": "Infinitesimal Generator of the Kinetic SDE",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "kinetic"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-hypocoercive-norm",
+      "name": "The Hypocoercive Norm",
+      "mathematical_expression": "The Hypocoercive Norm",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-core-exterior-regions",
+      "name": "**Proof (Drift Matrix Analysis).**",
+      "mathematical_expression": "**Proof (Drift Matrix Analysis).**",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-velocity-variance-recall",
+      "name": "Velocity Variance Component (Recall)",
+      "mathematical_expression": "Velocity Variance Component (Recall)",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-positional-variance-recall",
+      "name": "Positional Variance Component (Recall)",
+      "mathematical_expression": "Positional Variance Component (Recall)",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-boundary-potential-recall",
+      "name": "Boundary Potential (Recall)",
+      "mathematical_expression": "Boundary Potential (Recall)",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    }
+  ],
+  "axioms": [
+    {
+      "label": "axiom-confining-potential",
+      "statement": "Globally Confining Potential",
+      "mathematical_expression": "Globally Confining Potential",
+      "foundational_framework": "Fragile Gas Framework"
+    },
+    {
+      "label": "axiom-diffusion-tensor",
+      "statement": "Anisotropic Diffusion Tensor",
+      "mathematical_expression": "Anisotropic Diffusion Tensor",
+      "foundational_framework": "Fragile Gas Framework"
+    },
+    {
+      "label": "axiom-friction-timestep",
+      "statement": "Friction and Integration Parameters",
+      "mathematical_expression": "Friction and Integration Parameters",
+      "foundational_framework": "Fragile Gas Framework"
+    }
+  ],
+  "theorems": [
+    {
+      "label": "thm-discretization",
+      "name": "Discrete-Time Inheritance of Generator Drift",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-inter-swarm-contraction-kinetic",
+      "name": "Inter-Swarm Error Contraction Under Kinetic Operator",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-velocity-variance-contraction-kinetic",
+      "name": "Velocity Variance Contraction Under Kinetic Operator",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-positional-variance-bounded-expansion",
+      "name": "Bounded Positional Variance Expansion Under Kinetics",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-boundary-potential-contraction-kinetic",
+      "name": "Boundary Potential Contraction Under Kinetic Operator",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  ],
+  "lemmas": [
+    {
+      "label": "lem-location-error-drift-kinetic",
+      "name": "Drift of Location Error Under Kinetics",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-structural-error-drift-kinetic",
+      "name": "Drift of Structural Error Under Kinetics",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  ],
+  "propositions": [
+    {
+      "label": "attr-fokker-planck-kinetic",
+      "name": "Fokker-Planck Equation for the Kinetic Operator",
+      "statement_type": "proposition",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "attr-weak-error-variance",
+      "name": "BAOAB Weak Error for Variance Lyapunov Functions",
+      "statement_type": "proposition",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "attr-weak-error-boundary",
+      "name": "BAOAB Weak Error for Boundary Lyapunov Function",
+      "statement_type": "proposition",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "attr-weak-error-wasserstein",
+      "name": "BAOAB Weak Error for Wasserstein Distance",
+      "statement_type": "proposition",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "attr-explicit-constants",
+      "name": "Explicit Discretization Constants",
+      "statement_type": "proposition",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  ],
+  "algorithms": [],
+  "other_directives": [
+    {
+      "label": "rem-stratonovich-ito-equivalence",
+      "type": "remark",
+      "title": "Relationship to It\u00f4 Formulation"
+    },
+    {
+      "label": "ex-canonical-confining-potential",
+      "type": "example",
+      "title": "Canonical Confining Potential"
+    },
+    {
+      "label": "rem-uniform-ellipticity-importance",
+      "type": "remark",
+      "title": "Why Uniform Ellipticity Matters"
+    },
+    {
+      "label": "rem-formal-invariant-measure",
+      "type": "remark",
+      "title": "Formal Invariant Measure (Without Boundary)"
+    },
+    {
+      "label": "rem-baoab-anisotropic",
+      "type": "remark",
+      "title": "Stratonovich Correction for Anisotropic Case"
+    },
+    {
+      "label": "rem-gradient-flow-vs-coupling",
+      "type": "remark",
+      "title": "Comparison to Gradient Flow Approach"
+    },
+    {
+      "label": "rem-coupling-term-intuition",
+      "type": "remark",
+      "title": "Intuition for the Coupling Term"
+    },
+    {
+      "label": "cor-net-velocity-contraction",
+      "type": "corollary",
+      "title": "Net Velocity Variance Contraction for Composed Operator"
+    },
+    {
+      "label": "assump-uniform-variance-bounds",
+      "type": "proof",
+      "title": "**Proof (Integral Representation with OU Covariance Bounds).**"
+    },
+    {
+      "label": "cor-net-positional-contraction",
+      "type": "corollary",
+      "title": "Net Positional Variance Contraction for Composed Operator"
+    },
+    {
+      "label": "cor-total-boundary-safety",
+      "type": "corollary",
+      "title": "Total Boundary Safety from Dual Mechanisms"
+    }
+  ],
+  "metadata": {
+    "source_extraction": "docs/source/1_euclidean_gas/05_kinetic_contraction/data/deep_dependency_analysis.json",
+    "total_lines": 0
+  }
+}

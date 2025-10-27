@@ -1,0 +1,49 @@
+{
+  "label": "thm-correlation-decay",
+  "name": "Quantitative Decorrelation",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "10_qsd_exchangeability_theory",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-qsd"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-N"
+  ],
+  "properties_required": {
+    "obj-qsd": [
+      "prop-de-finetti-mixture"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-covariance-decay-on-n",
+      "expression": "|Cov_{π_N}(g(w_i), g(w_j))| ≤ C / N for ||g||_∞ ≤ 1, i ≠ j",
+      "object_label": "obj-qsd",
+      "established_by": "thm-correlation-decay",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-definetti-covariance-identity",
+      "expression": "Cov_{π_N}(g(w_i), g(w_j)) = Var_{𝒬_N}(E_μ[g])",
+      "object_label": "obj-qsd",
+      "established_by": "thm-correlation-decay",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

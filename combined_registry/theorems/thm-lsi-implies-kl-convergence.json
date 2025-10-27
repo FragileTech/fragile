@@ -1,0 +1,81 @@
+{
+  "label": "thm-lsi-implies-kl-convergence",
+  "name": "Exponential KL-Convergence via LSI",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-discrete-lsi",
+    "def-markov-kernel"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "C_LSI"
+  ],
+  "properties_required": {
+    "lsi": [
+      "Discrete-time LSI holds uniformly per step"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-lsi-implies-kl-convergence-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-discrete-lsi",
+      "target_object": "obj-markov-kernel",
+      "established_by": "thm-lsi-implies-kl-convergence",
+      "expression": "D_KL(μ_t||π) ≤ e^{-t/C_LSI} D_KL(μ_0||π)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    },
+    {
+      "label": "rel-thm-lsi-implies-kl-convergence-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-discrete-lsi",
+      "target_object": "obj-markov-kernel",
+      "established_by": "thm-lsi-implies-kl-convergence",
+      "expression": "Standard LSI → exponential KL convergence",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    },
+    {
+      "label": "rel-thm-lsi-implies-kl-convergence-2-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-discrete-lsi",
+      "target_object": "obj-markov-kernel",
+      "established_by": "thm-lsi-implies-kl-convergence",
+      "expression": "Iteration of one-step entropy contraction",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

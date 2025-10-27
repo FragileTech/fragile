@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-velocity-variance-contraction-kinetic-1-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-velocity-variance-recall",
+  "target_object": "obj-velocity-variance-recall",
+  "established_by": "thm-velocity-variance-contraction-kinetic",
+  "expression": "balances-cloning-velocity-expansion",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction"
+}

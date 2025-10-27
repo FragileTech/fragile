@@ -1,0 +1,16 @@
+{
+  "label": "obj-lipschitz-structural-error-coefficients",
+  "name": "Structural Error Coefficients",
+  "mathematical_expression": "\\sigma'_{\\min\\,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm",
+    "stability"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

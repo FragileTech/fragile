@@ -1,0 +1,55 @@
+{
+  "label": "lem-location-error-drift-kinetic",
+  "name": "Drift of Location Error Under Kinetics",
+  "statement_type": "lemma",
+  "source": {
+    "file": "05_kinetic_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-hypocoercive-norm"
+  ],
+  "input_axioms": [
+    "axiom-confining-potential",
+    "axiom-diffusion-tensor"
+  ],
+  "input_parameters": [
+    "V_loc",
+    "Q",
+    "M",
+    "alpha_eff",
+    "gamma",
+    "alpha_U",
+    "L_F",
+    "sigma_min",
+    "lambda_v",
+    "b",
+    "tau"
+  ],
+  "attributes_required": {
+    "hypocoercive-weights": [
+      "positive-definiteness"
+    ],
+    "potential": [
+      "coercivity"
+    ],
+    "force": [
+      "lipschitz-not-convexity"
+    ]
+  },
+  "internal_lemmas": [
+    "drift-matrix-calculation",
+    "noise-expansion-bound",
+    "force-contribution-lipschitz"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "location-error-drift-inequality"
+  ],
+  "relations_established": [
+    "hypocoercive-coupling-enables-contraction-without-convexity"
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "label": "lem-linfty-full-operator",
+  "name": "$L^\\infty$ Bound for the Full Operator",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-cloning-operator",
+    "def-kinetic-operator",
+    "def-qsd"
+  ],
+  "input_axioms": [
+    "ax-lipschitz-fields",
+    "ax-velocity-regularization",
+    "ax-domain-regularity",
+    "def-axiom-rescale-function",
+    "ax-safe-harbor"
+  ],
+  "input_parameters": [
+    "M_0",
+    "T",
+    "gamma",
+    "sigma_v",
+    "sigma_x",
+    "U",
+    "R",
+    "eta",
+    "tau",
+    "lambda_rev",
+    "d"
+  ],
+  "properties_required": {
+    "harnack-hypoelliptic": [
+      "Hörmander condition holds (lem-hormander-bracket)",
+      "Harnack constants depend on (γ, σ_v, ||F||_Lip, d)"
+    ],
+    "clone-boundedness": [
+      "V[f] ≤ V_max = max(1, 1/η)",
+      "∫ K_clone = 1",
+      "||K*f||_∞ ≤ ||f||_∞"
+    ],
+    "revival-conditioning": [
+      "m_a(t) ≥ c_mass > 0 to control r_rev (resolved in Section 4)"
+    ],
+    "gronwall-applicability": [
+      "Duhamel decomposition + integrable source bound"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-parabolic-harnack"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "thm-parabolic-harnack",
+      "lem-linfty-full-operator"
+    ]
+  ],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-linfty-full-operator-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-kinetic-operator",
+      "established_by": "lem-linfty-full-operator",
+      "expression": "||L_clone^* f||_∞ ≤ 2 V_max ||f||_∞",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    },
+    {
+      "label": "rel-lem-linfty-full-operator-1-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-kinetic-operator",
+      "established_by": "lem-linfty-full-operator",
+      "expression": "||r_rev||_∞ ≤ (λ_rev ||c||_∞ / c_mass) ||f||_∞ (conditional)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    },
+    {
+      "label": "rel-lem-linfty-full-operator-2-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-kinetic-operator",
+      "established_by": "lem-linfty-full-operator",
+      "expression": "||f(T)||_∞ ≤ C_kin(T) M_0 + ∫_0^T C_kin(T−s)[||f(s)||_∞ + C_revival] ds",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    },
+    {
+      "label": "rel-lem-linfty-full-operator-3-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-kinetic-operator",
+      "established_by": "lem-linfty-full-operator",
+      "expression": "sup_{t∈[0,T]} ||f(t,·)||_∞ ≤ C_hypo(M_0, T, γ, σ_v, σ_x, U, R) < ∞",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    }
+  ]
+}

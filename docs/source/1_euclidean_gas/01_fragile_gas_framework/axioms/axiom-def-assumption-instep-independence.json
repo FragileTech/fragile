@@ -1,0 +1,6 @@
+{
+  "label": "axiom-def-assumption-instep-independence",
+  "statement": "Conditional product structure within a step",
+  "mathematical_expression": "X_i \\;:=\\;\\big(U_i^{\\mathrm{comp}},\\,U_i^{\\mathrm{pert}},\\,U_i^{\\mathrm{status}},\\,U_i^{\\mathrm{clone}}\\big)",
+  "foundational_framework": "Euclidean Gas"
+}

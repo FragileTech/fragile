@@ -1,0 +1,16 @@
+{
+  "label": "thm-uniqueness-hypoelliptic-regularity",
+  "name": "Hypoelliptic Regularity for the Kinetic Operator",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": []
+}

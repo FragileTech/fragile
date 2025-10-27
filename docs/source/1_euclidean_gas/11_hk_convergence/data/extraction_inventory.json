@@ -1,0 +1,207 @@
+{
+  "source_file": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+  "total_directives": 13,
+  "counts_by_type": {
+    "definition": 1,
+    "lemma": 6,
+    "proposition": 1,
+    "axiom": 1,
+    "assumption": 2,
+    "theorem": 2
+  },
+  "directives": [
+    {
+      "type": "definition",
+      "label": "def-hk-metric-intro",
+      "title": "Additive Hellinger-Kantorovich Metric for the Fragile Gas",
+      "content": "For sub-probability measures $\\mu_1, \\mu_2$ on $(\\mathcal{X}, d)$, we define the **additive Hellinger-Kantorovich distance**:\n\n$$\nd_{HK}^2(\\mu_1, \\mu_2) := d_H^2(\\mu_1, \\mu_2) + W_2^2(\\tilde{\\mu}_1, \\...",
+      "math_expression_count": 8,
+      "first_math": "d_{HK}^2(\\mu_1, \\mu_2) := d_H^2(\\mu_1, \\mu_2) + W_2^2(\\tilde{\\mu}_1, \\tilde{\\mu}_2)",
+      "cross_refs": [],
+      "line_range": [
+        41,
+        67
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-mass-contraction-revival-death",
+      "title": "Mass Contraction via Revival and Death",
+      "content": "Let $k_t = \\|\\mu_t\\|$ denote the number of alive walkers at time $t$ (the total mass of the empirical measure). Let $k_* = \\|\\pi_{\\text{QSD}}\\|$ denote the equilibrium alive count under the QSD.\n\nAssu...",
+      "math_expression_count": 32,
+      "first_math": "\\mathbb{E}[(k_{t+1} - k_*)^2] \\leq (1 - 2\\kappa_{\\text{mass}}) \\mathbb{E}[(k_t - k_*)^2] + C_{\\text{mass}}",
+      "cross_refs": [
+        "def-axiom-guaranteed-revival"
+      ],
+      "line_range": [
+        186,
+        227
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-structural-variance-contraction",
+      "title": "Exponential Contraction of Structural Variance",
+      "content": "Let $\\mu_t$ denote the empirical measure of a single realization of the Fragile Gas at time $t$, and let $\\pi_{\\text{QSD}}$ be the quasi-stationary distribution.\n\nThen the structural variance contract...",
+      "math_expression_count": 10,
+      "first_math": "\\mathbb{E}[V_{\\text{struct}}(\\mu_t, \\pi_{\\text{QSD}})] \\leq e^{-\\lambda_{\\text{struct}} t} \\mathbb{E}[V_{\\text{struct}}(\\mu_0, \\pi_{\\text{QSD}})] + \\frac{C_{\\text{struct}}}{\\lambda_{\\text{struct}}}(1 - e^{-\\lambda_{\\text{struct}} t})",
+      "cross_refs": [
+        "thm-main-contraction-full",
+        "thm-foster-lyapunov-main"
+      ],
+      "line_range": [
+        1008,
+        1029
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-kinetic-hellinger-contraction",
+      "title": "Kinetic Operator Hellinger Contraction",
+      "content": "Let $\\mu_t$ be the empirical measure of alive walkers at time $t$ and let $\\pi_{\\text{QSD}}$ be the quasi-stationary distribution.\n\n**Assumption:** The normalized density ratio is uniformly bounded:\n\n...",
+      "math_expression_count": 43,
+      "first_math": "\\sup_{t \\geq 0} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M < \\infty",
+      "cross_refs": [
+        "def-axiom-local-perturbation",
+        "ax-confining-potential"
+      ],
+      "line_range": [
+        1172,
+        1219
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-killing-rate-continuous",
+      "title": "Continuous-Time Killing Rate from BAOAB",
+      "content": "The discrete-time exit probability over time step $\\tau$ converges to the continuous-time killing rate in the ballistic limit. For a walker at position $x$ with velocity $v$, let $d(x) := \\text{dist}(...",
+      "math_expression_count": 12,
+      "first_math": "c(x,v) = \\frac{v}{d(x)} \\cdot \\mathbb{1}_{\\{v \\cdot \\hat{n}(x) > 0\\}}",
+      "cross_refs": [],
+      "line_range": [
+        1310,
+        1333
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "ax-uniform-density-bound-hk",
+      "title": "Uniform Boundedness of Density Ratio",
+      "content": "For the Euclidean Gas with cloning noise $\\delta^2 > 0$ (from {prf:ref}`def-axiom-local-perturbation`) and confining potential $U$ satisfying the coercivity condition, there exists a constant $M < \\in...",
+      "math_expression_count": 35,
+      "first_math": "\\sup_{t \\geq 0} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M",
+      "cross_refs": [
+        "def-axiom-local-perturbation",
+        "def-axiom-local-perturbation"
+      ],
+      "line_range": [
+        1525,
+        1555
+      ]
+    },
+    {
+      "type": "assumption",
+      "label": "thm-bounded-density-ratio",
+      "title": "Bounded Density Ratio for the Euclidean Gas (Justified)",
+      "content": "**Status**: This is presented as a **justified assumption** rather than a theorem. The arguments below identify all key mechanisms and provide strong heuristic support, but a complete rigorous proof r...",
+      "math_expression_count": 17,
+      "first_math": "\\sup_{t \\in [0,T]} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M",
+      "cross_refs": [],
+      "line_range": [
+        1875,
+        1911
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-hypoelliptic-density-bound",
+      "title": "Hypoelliptic Regularity Provides Density Bounds",
+      "content": "**References**:\n- [06_convergence.md](06_convergence), Section 4.4.1 \"Hypoellipticity and Gaussian Accessibility\"\n- [09_kl_convergence.md](09_kl_convergence), Section 2 \"The Hypoelliptic Kinetic Opera...",
+      "math_expression_count": 40,
+      "first_math": "p_t(z, z') \\leq C t^{-d/\\alpha} \\exp\\left(-\\frac{d_{\\text{cc}}(z,z')^2}{Dt}\\right)",
+      "cross_refs": [],
+      "line_range": [
+        1940,
+        2029
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-gaussian-lower-bound",
+      "title": "Gaussian Mollification Provides Uniform Lower Bound",
+      "content": "**Reference**: Standard mollification theory (see [03_cloning.md](03_cloning), line 247 for mollifier construction)\n\nAfter applying the cloning operator with position jitter scale $\\sigma_x > 0$, the ...",
+      "math_expression_count": 10,
+      "first_math": "\\rho_{\\text{post-clone}}(x) = \\int_{B_R} \\rho_{\\text{pre-clone}}(y) \\frac{1}{(2\\pi \\sigma_x^2)^{d/2}} e^{-\\|x-y\\|^2/(2\\sigma_x^2)} dy",
+      "cross_refs": [],
+      "line_range": [
+        2043,
+        2077
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-qsd-lower-bound",
+      "title": "QSD Density Has Uniform Lower Bound",
+      "content": "**References**:\n- [06_convergence.md](06_convergence), Section 6.4.1 \"\u03c6-Irreducibility\"\n- [06_convergence.md](06_convergence), Theorem 4.5 \"Geometric Ergodicity and Convergence to QSD\"\n\nUnder the Eucl...",
+      "math_expression_count": 25,
+      "first_math": "\\pi_{\\text{QSD}}(x) \\geq c_\\pi > 0 \\quad \\forall x \\in B_R",
+      "cross_refs": [
+        "thm-phi-irreducibility",
+        "lem-hypoelliptic-density-bound",
+        "lem-gaussian-lower-bound"
+      ],
+      "line_range": [
+        2080,
+        2145
+      ]
+    },
+    {
+      "type": "assumption",
+      "label": "thm-bounded-density-summary",
+      "title": "Bounded Density Ratio (Justified Assumption - Summary)",
+      "content": "**Status**: The following is a **well-justified assumption** supported by strong heuristic arguments. A complete rigorous proof remains future work.\n\nFor the Euclidean Gas with:\n- **Cloning position j...",
+      "math_expression_count": 14,
+      "first_math": "\\sup_{t \\geq 0} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M_\\infty",
+      "cross_refs": [
+        "lem-hypoelliptic-density-bound",
+        "lem-gaussian-lower-bound",
+        "lem-qsd-lower-bound",
+        "ax-uniform-density-bound-hk"
+      ],
+      "line_range": [
+        2405,
+        2450
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-hk-convergence-main-assembly",
+      "title": "Conditional Exponential HK-Convergence of the Fragile Gas",
+      "content": "Let $\\mu_t$ denote the empirical measure of alive walkers at time $t$ under the Fragile Gas dynamics $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$, and let $\\pi_{\\text{QSD}}$ den...",
+      "math_expression_count": 9,
+      "first_math": "\\sup_{t \\geq 0} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M < \\infty",
+      "cross_refs": [
+        "lem-mass-contraction-revival-death",
+        "lem-structural-variance-contraction",
+        "ax-uniform-density-bound-hk"
+      ],
+      "line_range": [
+        2457,
+        2480
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-hk-summary",
+      "title": "Exponential HK-Convergence (Summary)",
+      "content": "The Fragile Gas converges exponentially fast to its quasi-stationary distribution in the Hellinger-Kantorovich metric:\n\n$$\nd_{HK}(\\mu_t, \\pi_{\\text{QSD}}) \\leq e^{-\\kappa_{HK} t/2} d_{HK}(\\mu_0, \\pi_{...",
+      "math_expression_count": 4,
+      "first_math": "d_{HK}(\\mu_t, \\pi_{\\text{QSD}}) \\leq e^{-\\kappa_{HK} t/2} d_{HK}(\\mu_0, \\pi_{\\text{QSD}}) + O\\left(\\sqrt{\\frac{C_{HK}}{\\kappa_{HK}}}\\right)",
+      "cross_refs": [],
+      "line_range": [
+        3123,
+        3146
+      ]
+    }
+  ]
+}

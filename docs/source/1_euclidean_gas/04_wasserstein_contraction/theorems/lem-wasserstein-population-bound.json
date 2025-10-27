@@ -1,0 +1,47 @@
+{
+  "label": "lem-wasserstein-population-bound",
+  "name": "Wasserstein Distance and Population Cross-Distances",
+  "statement_type": "lemma",
+  "source": {
+    "file": "04_wasserstein_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-target-complement",
+    "def-wasserstein-distance"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "N",
+    "f_I_1",
+    "f_I_2",
+    "f_J_1",
+    "f_J_2"
+  ],
+  "attributes_required": {
+    "matching": [
+      "Cluster-respecting matching is feasible",
+      "Pairs within (I_1, I_2) and (J_1, J_2)"
+    ],
+    "fractions": [
+      "f_{I,k} = |I_k|/N (N-uniform via Theorem 7.6.1 and 8.7.1)"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-cross-swarm-distance"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "lem-cross-swarm-distance"
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Upper bound on W_2\u00b2 via population cross-distances",
+    "Tractable computable bound using D_{AB} terms"
+  ],
+  "relations_established": [
+    "W_2\u00b2(\u03bc_1, \u03bc_2) \u2264 f_{I,1}f_{I,2}D_II + f_{I,1}f_{J,2}D_IJ + f_{J,1}f_{I,2}D_JI + f_{J,1}f_{J,2}D_JJ",
+    "Bound valid for any cluster-respecting matching (not necessarily optimal)"
+  ]
+}

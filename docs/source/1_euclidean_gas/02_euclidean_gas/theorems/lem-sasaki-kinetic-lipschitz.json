@@ -1,0 +1,66 @@
+{
+  "label": "lem-sasaki-kinetic-lipschitz",
+  "name": "Lipschitz property of the kinetic flow",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "02_euclidean_gas",
+    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+    "section": "§4.1 Viability axioms (survival)",
+    "directive_label": "lem-sasaki-kinetic-lipschitz",
+    "line_range": [557, 612],
+    "url_fragment": "#lem-sasaki-kinetic-lipschitz"
+  },
+  "input_objects": [
+    "obj-kinetic-flow-map",
+    "obj-force-field",
+    "obj-anisotropy-field",
+    "obj-squashing-map"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-dimension",
+    "param-tau",
+    "param-mass",
+    "param-gamma-fric",
+    "param-sigma-v",
+    "param-sigma-x",
+    "param-v-alg"
+  ],
+  "attributes_required": {
+    "obj-force-field": [
+      "attr-lipschitz"
+    ],
+    "obj-anisotropy-field": [
+      "attr-lipschitz"
+    ],
+    "obj-squashing-map": [
+      "attr-lipschitz"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-squashing-properties-generic"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-lipschitz",
+      "expression": "The one-step kinetic flow map $\\Phi_{x,v}(\\xi_v,\\xi_x) := x+\\tau\\psi_v\\big(v+\\tfrac{\\tau}{m}F(x)-\\gamma_{\\mathrm{fric}}\\tau(v-u(x))+\\sqrt{\\sigma_v^2\\tau}\\,\\xi_v\\big)+\\sqrt{\\tau}\\,\\sigma_x\\,\\xi_x$ is Lipschitz continuous with respect to the Sasaki metric, with constant $L_{\\mathrm{flow}} := 1+\\frac{\\tau^2}{m}L_F+\\gamma_{\\mathrm{fric}}\\tau^2L_u+\\frac{\\tau(1+\\gamma_{\\mathrm{fric}}\\tau)}{\\sqrt{\\lambda_v}}$.",
+      "object_label": "obj-kinetic-flow-map",
+      "established_by": "lem-sasaki-kinetic-lipschitz",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "§4.1 Viability axioms (survival)",
+        "directive_label": "lem-sasaki-kinetic-lipschitz",
+        "line_range": [557, 612],
+        "url_fragment": "#lem-sasaki-kinetic-lipschitz"
+      }
+    }
+  ],
+  "relations_established": []
+}

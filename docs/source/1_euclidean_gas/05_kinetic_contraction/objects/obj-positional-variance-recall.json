@@ -1,0 +1,10 @@
+{
+  "label": "obj-positional-variance-recall",
+  "name": "Positional Variance Component (Recall)",
+  "mathematical_expression": "V_{\\text{Var},x}(S_1, S_2) = \\frac{1}{N}\\sum_{k=1,2} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2",
+  "object_type": "set",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [],
+  "source": null
+}

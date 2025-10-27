@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-variance-decomposition-0-equivalence",
+  "relationship_type": "equivalence",
+  "bidirectional": true,
+  "source_object": "obj-target-complement",
+  "target_object": "obj-unified-high-low-error-sets",
+  "established_by": "lem-variance-decomposition",
+  "expression": "Var_x(S_k) = f_I Var_x(I_k) + f_J Var_x(J_k) + f_I f_J ||μ_x(I_k) - μ_x(J_k)||²",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction"
+}

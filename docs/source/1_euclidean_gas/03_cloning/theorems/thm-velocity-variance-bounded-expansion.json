@@ -1,0 +1,52 @@
+{
+  "label": "thm-velocity-variance-bounded-expansion",
+  "name": "Bounded Velocity Variance Expansion from Cloning",
+  "statement_type": "theorem",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-cloning-operator-formal",
+    "obj-inelastic-collision-update",
+    "obj-variance-conversions"
+  ],
+  "input_axioms": [
+    "axiom-ax-velocity-regularization"
+  ],
+  "input_parameters": [
+    "V_max",
+    "alpha_restitution",
+    "N"
+  ],
+  "attributes_required": {
+    "obj-inelastic-collision-update": [
+      "attr-momentum-conservation",
+      "attr-bounded-velocity-change"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-velocity-domain-boundedness",
+    "lem-per-walker-velocity-change",
+    "lem-variance-change-decomposition-velocity"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-velocity-domain-boundedness",
+      "lem-per-walker-velocity-change"
+    ],
+    [
+      "lem-per-walker-velocity-change",
+      "lem-variance-change-decomposition-velocity"
+    ]
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "attr-velocity-variance-bounded-expansion"
+  ],
+  "relations_established": [
+    "rel-cloning-expands-velocity-variance-bounded"
+  ]
+}

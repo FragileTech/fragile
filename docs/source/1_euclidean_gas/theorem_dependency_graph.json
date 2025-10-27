@@ -23,23 +23,23 @@
 
   "dependency_graph": {
     "thm-complete-boundary-drift": [],
-    "prop-coupling-constant-existence": [],
+    "attr-coupling-constant-existence": [],
     "thm-main-results-summary": [],
-    "prop-explicit-constants": [],
+    "attr-explicit-constants": [],
     "cor-net-velocity-contraction": [],
     "cor-total-boundary-safety": [],
     "thm-synergistic-rate-derivation": [],
     "thm-total-rate-explicit": [],
-    "prop-mixing-time-explicit": [],
-    "prop-parameter-classification": ["prop-position-rate-explicit", "prop-wasserstein-rate-explicit", "prop-velocity-rate-explicit"],
-    "thm-explicit-rate-sensitivity": ["prop-boundary-rate-explicit", "prop-wasserstein-rate-explicit"],
+    "attr-mixing-time-explicit": [],
+    "attr-parameter-classification": ["attr-position-rate-explicit", "attr-wasserstein-rate-explicit", "attr-velocity-rate-explicit"],
+    "thm-explicit-rate-sensitivity": ["attr-boundary-rate-explicit", "attr-wasserstein-rate-explicit"],
     "thm-svd-rate-matrix": [],
-    "prop-condition-number-rate": [],
+    "attr-condition-number-rate": [],
     "thm-subgradient-min": [],
     "thm-balanced-optimality": [],
-    "prop-restitution-friction-coupling": [],
-    "prop-jitter-cloning-coupling": [],
-    "prop-phase-space-pairing": [],
+    "attr-restitution-friction-coupling": [],
+    "attr-jitter-cloning-coupling": [],
+    "attr-phase-space-pairing": [],
     "thm-error-propagation": [],
     "thm-closed-form-optimum": [],
     "thm-mean-field-limit-informal": [],
@@ -59,7 +59,7 @@
     "thm-villani-hypocoercivity-recap": [],
     "thm-unconditional-lsi": ["lem-kinetic-lsi-established", "thm-fl-established", "thm-dobrushin-established"],
     "cor-mean-field-lsi": [],
-    "prop-killing-rate-continuous": [],
+    "attr-killing-rate-continuous": [],
     "lem-gaussian-lower-bound": ["lem-hypoelliptic-density-bound"],
     "thm-hk-summary": [],
     "lem-hormander-bracket": ["thm-parabolic-harnack"],
@@ -72,10 +72,10 @@
     "lem-variance-wasserstein-link": ["lem-variance-decomposition", "cor-between-group-dominance"],
     "lem-expected-distance-change": ["lem-target-cloning-pressure"],
     "lem-target-cloning-pressure": ["lem-expected-distance-change", "lem-cross-swarm-distance", "lem-variance-wasserstein-link", "cor-between-group-dominance"],
-    "prop-velocity-rate-explicit": [],
-    "prop-position-rate-explicit": [],
-    "prop-wasserstein-rate-explicit": [],
-    "prop-boundary-rate-explicit": [],
+    "attr-velocity-rate-explicit": [],
+    "attr-position-rate-explicit": [],
+    "attr-wasserstein-rate-explicit": [],
+    "attr-boundary-rate-explicit": [],
     "thm-main-kl-convergence": [],
     "cor-n-particle-kinetic-lsi": [],
     "lem-meanfield-cloning-dissipation-hybrid": [],
@@ -94,27 +94,27 @@
 
   "reverse_dependencies": {
     "thm-complete-boundary-drift": [],
-    "prop-coupling-constant-existence": [],
+    "attr-coupling-constant-existence": [],
     "thm-main-results-summary": [],
-    "prop-explicit-constants": [],
+    "attr-explicit-constants": [],
     "cor-net-velocity-contraction": [],
     "cor-total-boundary-safety": [],
     "thm-synergistic-rate-derivation": [],
     "thm-total-rate-explicit": [],
-    "prop-mixing-time-explicit": [],
-    "prop-position-rate-explicit": ["prop-parameter-classification"],
-    "prop-wasserstein-rate-explicit": ["prop-parameter-classification", "thm-explicit-rate-sensitivity"],
-    "prop-velocity-rate-explicit": ["prop-parameter-classification"],
-    "prop-boundary-rate-explicit": ["thm-explicit-rate-sensitivity"],
-    "prop-parameter-classification": [],
+    "attr-mixing-time-explicit": [],
+    "attr-position-rate-explicit": ["attr-parameter-classification"],
+    "attr-wasserstein-rate-explicit": ["attr-parameter-classification", "thm-explicit-rate-sensitivity"],
+    "attr-velocity-rate-explicit": ["attr-parameter-classification"],
+    "attr-boundary-rate-explicit": ["thm-explicit-rate-sensitivity"],
+    "attr-parameter-classification": [],
     "thm-explicit-rate-sensitivity": [],
     "thm-svd-rate-matrix": [],
-    "prop-condition-number-rate": [],
+    "attr-condition-number-rate": [],
     "thm-subgradient-min": [],
     "thm-balanced-optimality": [],
-    "prop-restitution-friction-coupling": [],
-    "prop-jitter-cloning-coupling": [],
-    "prop-phase-space-pairing": [],
+    "attr-restitution-friction-coupling": [],
+    "attr-jitter-cloning-coupling": [],
+    "attr-phase-space-pairing": [],
     "thm-error-propagation": [],
     "thm-closed-form-optimum": [],
     "thm-mean-field-limit-informal": [],
@@ -141,7 +141,7 @@
     "thm-dobrushin-established": ["thm-unconditional-lsi"],
     "thm-unconditional-lsi": [],
     "cor-mean-field-lsi": [],
-    "prop-killing-rate-continuous": [],
+    "attr-killing-rate-continuous": [],
     "lem-hypoelliptic-density-bound": ["lem-gaussian-lower-bound"],
     "lem-gaussian-lower-bound": [],
     "thm-hk-summary": [],
@@ -202,7 +202,7 @@
   "by_document": {
     "03_cloning.md": {
       "theorem_count": 3,
-      "theorems": ["thm-complete-boundary-drift", "prop-coupling-constant-existence", "thm-main-results-summary"],
+      "theorems": ["thm-complete-boundary-drift", "attr-coupling-constant-existence", "thm-main-results-summary"],
       "completed": 1,
       "needs_revision": 2,
       "sketched": 0,
@@ -219,7 +219,7 @@
     },
     "05_kinetic_contraction.md": {
       "theorem_count": 3,
-      "theorems": ["prop-explicit-constants", "cor-net-velocity-contraction", "cor-total-boundary-safety"],
+      "theorems": ["attr-explicit-constants", "cor-net-velocity-contraction", "cor-total-boundary-safety"],
       "completed": 0,
       "needs_revision": 1,
       "sketched": 2,
@@ -227,7 +227,7 @@
     },
     "06_convergence.md": {
       "theorem_count": 18,
-      "theorems": ["thm-synergistic-rate-derivation", "thm-total-rate-explicit", "prop-mixing-time-explicit", "prop-parameter-classification", "thm-explicit-rate-sensitivity", "thm-svd-rate-matrix", "prop-condition-number-rate", "thm-subgradient-min", "thm-balanced-optimality", "prop-restitution-friction-coupling", "prop-jitter-cloning-coupling", "prop-phase-space-pairing", "thm-error-propagation", "thm-closed-form-optimum", "prop-velocity-rate-explicit", "prop-position-rate-explicit", "prop-wasserstein-rate-explicit", "prop-boundary-rate-explicit"],
+      "theorems": ["thm-synergistic-rate-derivation", "thm-total-rate-explicit", "attr-mixing-time-explicit", "attr-parameter-classification", "thm-explicit-rate-sensitivity", "thm-svd-rate-matrix", "attr-condition-number-rate", "thm-subgradient-min", "thm-balanced-optimality", "attr-restitution-friction-coupling", "attr-jitter-cloning-coupling", "attr-phase-space-pairing", "thm-error-propagation", "thm-closed-form-optimum", "attr-velocity-rate-explicit", "attr-position-rate-explicit", "attr-wasserstein-rate-explicit", "attr-boundary-rate-explicit"],
       "completed": 0,
       "needs_revision": 0,
       "sketched": 0,
@@ -259,7 +259,7 @@
     },
     "11_hk_convergence.md": {
       "theorem_count": 3,
-      "theorems": ["prop-killing-rate-continuous", "lem-gaussian-lower-bound", "thm-hk-summary", "lem-hypoelliptic-density-bound"],
+      "theorems": ["attr-killing-rate-continuous", "lem-gaussian-lower-bound", "thm-hk-summary", "lem-hypoelliptic-density-bound"],
       "completed": 0,
       "needs_revision": 0,
       "sketched": 0,
@@ -286,9 +286,9 @@
 
   "processing_summary": {
     "completed": ["thm-main-results-summary"],
-    "needs_revision": ["thm-complete-boundary-drift", "prop-coupling-constant-existence", "prop-explicit-constants"],
+    "needs_revision": ["thm-complete-boundary-drift", "attr-coupling-constant-existence", "attr-explicit-constants"],
     "sketched": ["cor-net-velocity-contraction", "cor-total-boundary-safety"],
-    "pending": ["thm-synergistic-rate-derivation", "thm-total-rate-explicit", "prop-mixing-time-explicit", "prop-parameter-classification", "thm-explicit-rate-sensitivity", "thm-svd-rate-matrix", "prop-condition-number-rate", "thm-subgradient-min", "thm-balanced-optimality", "prop-restitution-friction-coupling", "prop-jitter-cloning-coupling", "prop-phase-space-pairing", "thm-error-propagation", "thm-closed-form-optimum", "thm-mean-field-limit-informal", "lem-log-concave-yang-mills", "cor-adaptive-lsi", "lem-mean-field-cloning-sketch", "thm-meanfield-kl-convergence-hybrid", "thm-kinetic-lsi-reference", "thm-discrete-lsi-hybrid", "thm-exp-convergence-hybrid", "thm-meanfield-lsi-standalone", "thm-nonconvex-informal", "thm-villani-hypocoercivity", "thm-fl-recap", "thm-lsi-target", "thm-bakry-emery-classical", "thm-villani-hypocoercivity-recap", "thm-unconditional-lsi", "cor-mean-field-lsi", "prop-killing-rate-continuous", "lem-gaussian-lower-bound", "thm-hk-summary", "lem-hormander-bracket", "lem-strict-positivity-cloning", "thm-hk-convergence-unconditional", "thm-meyn-tweedie-drift-minor", "lem-variance-decomposition", "cor-between-group-dominance", "lem-cross-swarm-distance", "lem-variance-wasserstein-link", "lem-expected-distance-change", "lem-target-cloning-pressure", "prop-velocity-rate-explicit", "prop-position-rate-explicit", "prop-wasserstein-rate-explicit", "prop-boundary-rate-explicit", "thm-main-kl-convergence", "cor-n-particle-kinetic-lsi", "lem-meanfield-cloning-dissipation-hybrid", "thm-composition-reference", "thm-fl-established", "lem-kinetic-lsi-established", "thm-dobrushin-established", "lem-hypoelliptic-density-bound", "thm-parabolic-harnack", "lem-linfty-full-operator", "lem-gaussian-kernel-lower-bound", "lem-qsd-strict-positivity", "thm-exponential-survival", "lem-mass-lower-bound-high-prob"],
+    "pending": ["thm-synergistic-rate-derivation", "thm-total-rate-explicit", "attr-mixing-time-explicit", "attr-parameter-classification", "thm-explicit-rate-sensitivity", "thm-svd-rate-matrix", "attr-condition-number-rate", "thm-subgradient-min", "thm-balanced-optimality", "attr-restitution-friction-coupling", "attr-jitter-cloning-coupling", "attr-phase-space-pairing", "thm-error-propagation", "thm-closed-form-optimum", "thm-mean-field-limit-informal", "lem-log-concave-yang-mills", "cor-adaptive-lsi", "lem-mean-field-cloning-sketch", "thm-meanfield-kl-convergence-hybrid", "thm-kinetic-lsi-reference", "thm-discrete-lsi-hybrid", "thm-exp-convergence-hybrid", "thm-meanfield-lsi-standalone", "thm-nonconvex-informal", "thm-villani-hypocoercivity", "thm-fl-recap", "thm-lsi-target", "thm-bakry-emery-classical", "thm-villani-hypocoercivity-recap", "thm-unconditional-lsi", "cor-mean-field-lsi", "attr-killing-rate-continuous", "lem-gaussian-lower-bound", "thm-hk-summary", "lem-hormander-bracket", "lem-strict-positivity-cloning", "thm-hk-convergence-unconditional", "thm-meyn-tweedie-drift-minor", "lem-variance-decomposition", "cor-between-group-dominance", "lem-cross-swarm-distance", "lem-variance-wasserstein-link", "lem-expected-distance-change", "lem-target-cloning-pressure", "attr-velocity-rate-explicit", "attr-position-rate-explicit", "attr-wasserstein-rate-explicit", "attr-boundary-rate-explicit", "thm-main-kl-convergence", "cor-n-particle-kinetic-lsi", "lem-meanfield-cloning-dissipation-hybrid", "thm-composition-reference", "thm-fl-established", "lem-kinetic-lsi-established", "thm-dobrushin-established", "lem-hypoelliptic-density-bound", "thm-parabolic-harnack", "lem-linfty-full-operator", "lem-gaussian-kernel-lower-bound", "lem-qsd-strict-positivity", "thm-exponential-survival", "lem-mass-lower-bound-high-prob"],
 
     "by_priority": {
       "high": [
@@ -318,7 +318,7 @@
           "depended_by_count": 3
         },
         {
-          "label": "prop-wasserstein-rate-explicit",
+          "label": "attr-wasserstein-rate-explicit",
           "depended_by_count": 2
         },
         {
@@ -351,13 +351,13 @@
   "independent_sets": [
     {
       "set_id": 1,
-      "theorems": ["thm-complete-boundary-drift", "prop-coupling-constant-existence", "thm-main-results-summary", "prop-explicit-constants", "cor-net-velocity-contraction", "cor-total-boundary-safety", "thm-synergistic-rate-derivation", "thm-total-rate-explicit", "prop-mixing-time-explicit"],
+      "theorems": ["thm-complete-boundary-drift", "attr-coupling-constant-existence", "thm-main-results-summary", "attr-explicit-constants", "cor-net-velocity-contraction", "cor-total-boundary-safety", "thm-synergistic-rate-derivation", "thm-total-rate-explicit", "attr-mixing-time-explicit"],
       "count": 9,
       "note": "First batch - no dependencies, can be processed in parallel"
     },
     {
       "set_id": 2,
-      "theorems": ["prop-velocity-rate-explicit", "prop-position-rate-explicit", "prop-wasserstein-rate-explicit", "prop-boundary-rate-explicit", "lem-variance-decomposition", "thm-main-kl-convergence", "cor-n-particle-kinetic-lsi", "lem-meanfield-cloning-dissipation-hybrid", "thm-composition-reference"],
+      "theorems": ["attr-velocity-rate-explicit", "attr-position-rate-explicit", "attr-wasserstein-rate-explicit", "attr-boundary-rate-explicit", "lem-variance-decomposition", "thm-main-kl-convergence", "cor-n-particle-kinetic-lsi", "lem-meanfield-cloning-dissipation-hybrid", "thm-composition-reference"],
       "count": 9,
       "note": "Second batch - foundational results for later chains"
     },

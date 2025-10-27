@@ -1,0 +1,16 @@
+{
+  "label": "obj-unified-high-low-error-sets",
+  "name": "The Unified High-Error and Low-Error Sets",
+  "mathematical_expression": "\\text{diam}(G_m) := \\max_{i,j \\in G_m} d_{\\text{alg}}(i, j) \\le D_{\\text{diam}}(\\epsilon)",
+  "object_type": "space",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm",
+    "variance"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

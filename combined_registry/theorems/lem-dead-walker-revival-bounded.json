@@ -1,0 +1,43 @@
+{
+  "label": "lem-dead-walker-revival-bounded",
+  "name": "Bounded Contribution from Dead Walker Revival",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-alive-dead-sets",
+    "obj-cloning-score",
+    "obj-fitness-operator",
+    "obj-fitness-potential-operator",
+    "obj-swarm-and-state-space",
+    "obj-walker"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-dimension",
+    "param-sigma",
+    "param-sigma-x",
+    "param-swarm-size"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-dead-walker-revival-bounded",
+      "expression": "\\mathbb{E}_{\\text{clone}}\\left[\\sum_{k=1,2} \\Delta V_{\\text{Var},x}^{(k,\\text{status})}\\right] \\leq \\frac{2}{N} \\sum_{k=1,2} |\\mathcal{D}(S_k)| \\cdot D_{\\text{valid}}^2",
+      "object_label": "obj-variance-conversions",
+      "established_by": "lem-dead-walker-revival-bounded",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

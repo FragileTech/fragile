@@ -1,0 +1,61 @@
+{
+  "label": "lem-baoab-invariant-measure-error",
+  "type": "lemma",
+  "name": "BAOAB Invariant Measure Error",
+  "line_range": [
+    1295,
+    1477
+  ],
+  "status": "complete",
+  "input_objects": [
+    "obj-nu-continuous",
+    "obj-nu-dt-baoab"
+  ],
+  "input_axioms": [],
+  "input_theorems": [
+    "lem-baoab-weak-error",
+    "attr-fourth-moment-baoab"
+  ],
+  "input_parameters": [
+    "C_inv",
+    "kappa_mix",
+    "C_poisson",
+    "C_2",
+    "M_4"
+  ],
+  "attributes_required": {
+    "obj-continuous-generator": [
+      "attr-geometric-ergodicity",
+      "attr-poisson-equation-solvability"
+    ]
+  },
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-o-dt-squared-error"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-nu-dt-baoab",
+      "to": "obj-nu-continuous",
+      "type": "invariant_measure_error",
+      "bound": "|E_nu_dt[phi] - E_nu_cont[phi]| <= C_inv * ||phi||_C4 * (dt)^2",
+      "order": "O((dt)^2)"
+    }
+  ],
+  "internal_lemmas": [],
+  "proof_strategy": "Poisson equation + symmetric integrator cancellation (Talay)",
+  "poisson_equation": "L psi = -phi_c",
+  "talay_cancellation": "For symmetric integrators, odd-order errors cancel in invariant measure",
+  "notes": [
+    "O((dt)^2) rate NOT O(dt) due to BAOAB symmetry",
+    "Poisson equation regularity: ||psi||_C6 <= C_poisson/kappa_mix * ||phi||_C4",
+    "Uses uniform fourth moment bounds from prop-fourth-moment-baoab",
+    "Simplified proof via moment bounds (not full Talay cancellation)"
+  ],
+  "explicit_constant": "C_inv = C_2 * C_poisson * (1 + M_4^{1/2}) / kappa_mix^5",
+  "external_references": [
+    "Talay (1990) - Second-order discretization schemes",
+    "Mattingly et al (2010) - Poisson equation method",
+    "Leimkuhler & Matthews (2015) - Theorem 7.4.3"
+  ]
+}

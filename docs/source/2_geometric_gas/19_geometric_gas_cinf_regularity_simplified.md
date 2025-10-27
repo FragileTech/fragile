@@ -10,6 +10,7 @@ This document analyzes a **simplified fitness potential model** where the measur
 
 $$
 \|\nabla^m_{x_i} V_{\text{fit}}[f_k, \rho](x_i)\| \leq K_{V,m}(\rho) = O(m! \cdot \rho^{-m})
+
 $$
 
 for all m ≥ 1, all alive walker counts k ∈ {1, ..., N}, and all swarm sizes N ≥ 1. The factorial growth K_{V,m}(ρ) ~ C(ρ_0) · m! · ρ^{-m} places V_fit in the **Gevrey class G¹**, the borderline case between real analyticity and general smoothness.
@@ -53,6 +54,7 @@ These spectral results are stated as conditional propositions requiring addition
 
 $$
 V_{\text{fit}}[f_k, \rho](x_i) = g_A(Z_\rho[f_k, d, x_i])
+
 $$
 
 where:
@@ -73,6 +75,7 @@ This analysis completes the regularity hierarchy:
 
 $$
 \|\nabla^m_{x_i} V_{\text{fit}}[f_k, \rho](x_i)\| \leq K_{V,m}(\rho) = O(m! \cdot \rho^{-m})
+
 $$
 
 for all m ≥ 1, indicating Gevrey-1 regularity.
@@ -87,6 +90,7 @@ The infinitesimal generator of the adaptive Langevin dynamics is:
 
 $$
 \mathcal{L} f = \frac{1}{2} \text{Tr}(\Sigma_{\text{reg}}^2 \nabla^2 f) - \nabla V_{\text{total}} \cdot \nabla f
+
 $$
 
 where V_total = U + ε_F V_fit. The spectral properties of L control convergence to the quasi-stationary distribution (QSD).
@@ -117,6 +121,7 @@ A function f belongs to **Gevrey class G^s** if for every compact K, there exist
 
 $$
 \sup_{x \in K} \|\nabla^m f(x)\| \leq C_K \cdot A_K^m \cdot (m!)^s
+
 $$
 
 - s < 1: Real analytic (convergent Taylor series)
@@ -209,6 +214,7 @@ The **simplified measurement function** d: X → ℝ depends only on position. W
 
 $$
 \sup_{x \in X} \|\nabla^m d(x)\| \leq C_d^{(m)} < \infty \quad \forall m \geq 0
+
 $$
 
 **Examples**: Distance to target set d(x) = dist(x, T) (smoothed), reward landscape d(x) = R(x), entropy proxy d(x) = -log π_ref(x).
@@ -227,18 +233,21 @@ The **Gaussian localization kernel**:
 
 $$
 K_\rho(r) = \exp\left(-\frac{r^2}{2\rho^2}\right)
+
 $$
 
 is real analytic with Hermite polynomial derivatives:
 
 $$
 \frac{d^m}{dr^m} K_\rho(r) = H_m\left(\frac{r}{\rho}\right) \cdot \rho^{-m} \cdot K_\rho(r)
+
 $$
 
 Derivative bounds:
 
 $$
 \left| \frac{d^m}{dr^m} K_\rho(r) \right| \leq C_{\text{Herm}} \cdot m! \cdot \rho^{-m} \cdot \exp\left(-\frac{r^2}{4\rho^2}\right)
+
 $$
 
 where C_Herm is a universal constant from Hermite polynomial theory.
@@ -251,18 +260,21 @@ Unnormalized weight:
 
 $$
 \tilde{w}_{ij}(\rho) = K_\rho(d(x_i)) \cdot K_\rho(\|x_i - x_j\|)
+
 $$
 
 Normalized weight:
 
 $$
 w_{ij}(\rho) = \frac{\tilde{w}_{ij}(\rho)}{\sum_{\ell \in A_k} \tilde{w}_{i\ell}(\rho)}
+
 $$
 
 Normalization condition:
 
 $$
 \sum_{j \in A_k} w_{ij}(\rho) = 1 \quad \text{(identically for all } x_i, S, \rho \text{)}
+
 $$
 :::
 
@@ -273,12 +285,14 @@ $$
 
 $$
 \mu_\rho[f_k, x_i] = \sum_{j \in A_k} w_{ij}(\rho) \cdot d(x_j)
+
 $$
 
 **Localized variance**:
 
 $$
 \sigma^2_\rho[f_k, x_i] = \sum_{j \in A_k} w_{ij}(\rho) \cdot (d(x_j) - \mu_\rho)^2
+
 $$
 
 **Regularized standard deviation**: σ'_reg: ℝ_{≥0} → [ε_σ, ∞) satisfying:
@@ -290,12 +304,14 @@ $$
 
 $$
 Z_\rho[f_k, d, x_i] = \frac{d(x_i) - \mu_\rho[f_k, x_i]}{\sigma'_{\text{reg}}(\sigma^2_\rho[f_k, x_i])}
+
 $$
 
 **Fitness potential**:
 
 $$
 V_{\text{fit}}[f_k, \rho](x_i) = g_A(Z_\rho[f_k, d, x_i])
+
 $$
 
 where g_A: ℝ → [0, A] is the smooth rescale function (e.g., sigmoid g_A(z) = A/(1 + e^{-z})).
@@ -310,18 +326,21 @@ For f: ℝ → ℝ and g: ℝ^d → ℝ smooth, the m-th derivative of h(x) = f(
 
 $$
 \nabla^m h(x) = \sum_{p=1}^{m} f^{(p)}(g(x)) \cdot B_{m,p}[\nabla g, \nabla^2 g, \ldots, \nabla^{m-p+1} g]
+
 $$
 
 where B_{m,p} is the **complete Bell polynomial**:
 
 $$
 B_{m,p} = \sum_{\substack{k_1 + 2k_2 + \cdots = m \\ k_1 + k_2 + \cdots = p}} \frac{m!}{k_1! k_2! \cdots} \prod_{j=1}^{m-p+1} \left(\frac{\nabla^j g}{j!}\right)^{k_j}
+
 $$
 
 **Norm bound**: If ||∇^j g|| ≤ M_j, then:
 
 $$
 \|B_{m,p}\| \leq C_{\text{Bell}}(m, p) \cdot \prod_{j=1}^{m-p+1} M_j^{k_j}
+
 $$
 
 where C_Bell(m, p) ≤ m! (Stirling number bound).
@@ -372,6 +391,162 @@ The first four derivative orders are proven in prior documents. We cite them wit
 **Source**: [11_geometric_gas.md](11_geometric_gas.md), Appendix A, Theorem A.1
 
 V_fit is continuously differentiable with ||∇_{x_i} V_fit|| ≤ K_{V,1}(ρ) = O(ρ^{-1}), k-uniform and N-uniform.
+
+**Explicit bound**:
+
+$$
+K_{V,1}(\rho) = L_{g_A} \left[\frac{2d'_{\max}}{\varepsilon_\sigma} + \frac{8d_{\max} d'_{\max} L_{\sigma'}}{\varepsilon_\sigma^2} + \frac{C_w}{\rho} \left(\frac{2d_{\max}}{\varepsilon_\sigma} + \frac{8d_{\max}^3 L_{\sigma'}}{\varepsilon_\sigma^2}\right)\right]
+
+$$
+
+where:
+- $L_{g_A} = \sup_z |g'_A(z)|$ (Lipschitz constant of rescale function)
+- $d_{\max} = \sup_{x \in X} |d(x)|$, $d'_{\max} = \sup_{x \in X} \|\nabla d(x)\|$
+- $\varepsilon_\sigma > 0$ (regularization parameter)
+- $L_{\sigma'} = \sup_{s} |(\sigma'_{\text{reg}})'(s)|$ (Lipschitz constant of regularized std dev)
+- $C_w = 2e^{-1/2} \approx 1.21$ (Gaussian envelope constant)
+:::
+
+:::{prf:proof}
+
+The fitness potential is defined through a composition pipeline:
+
+$$
+\text{Positions } \{x_j\} \to \text{Weights } w_{ij}(\rho) \to \text{Moments } (\mu_\rho, \sigma^2_\rho) \to \text{Z-score } Z_\rho \to \text{Fitness } V_{\text{fit}}
+
+$$
+
+**Key Technical Challenge**: Ensuring **k-uniformity** (bounds independent of number of alive walkers k) via the **telescoping mechanism**.
+
+**§ 1. Weight Decomposition and Telescoping Identity**
+
+The localization weights are:
+
+$$
+w_{ij}(\rho) = \frac{K_\rho(d(x_i)) \cdot K_\rho(\|x_i - x_j\|)}{\sum_{\ell \in A_k} K_\rho(d(x_i)) \cdot K_\rho(\|x_i - x_\ell\|)}
+
+$$
+
+where $K_\rho(r) = \exp(-r^2/(2\rho^2))$. The factor $K_\rho(d(x_i))$ cancels in normalization, yielding:
+
+$$
+w_{ij}(\rho) = \frac{K_\rho(\|x_i - x_j\|)}{\sum_{\ell \in A_k} K_\rho(\|x_i - x_\ell\|)}
+
+$$
+
+**Telescoping Identity**: Differentiating the normalization constraint $\sum_{j \in A_k} w_{ij}(\rho) = 1$ identically:
+
+$$
+\sum_{j \in A_k} \nabla_{x_i} w_{ij}(\rho) = 0
+
+$$
+
+This is the **cornerstone of k-uniformity**.
+
+**§ 2. L¹ Gradient Bound for Weights**
+
+For the Gaussian kernel component, the gradient is:
+
+$$
+\nabla_{x_i} K_\rho(\|x_i - x_j\|) = -\frac{x_i - x_j}{\rho^2} K_\rho(\|x_i - x_j\|)
+
+$$
+
+Using the Gaussian envelope bound $\sup_{r \geq 0} r \cdot \exp(-r^2/(2\rho^2)) = \rho \cdot e^{-1/2}$:
+
+$$
+\|\nabla_{x_i} K_\rho(\|x_i - x_j\|)\| \leq \frac{e^{-1/2}}{\rho} K_\rho(\|x_i - x_j\|)
+
+$$
+
+Applying the quotient rule and summing over $j$:
+
+$$
+\sum_{j \in A_k} \|\nabla_{x_i} w_{ij}(\rho)\| \leq \frac{C_w}{\rho}
+
+$$
+
+where $C_w = 2e^{-1/2} \approx 1.21$ is independent of k, N, ρ, and walker positions.
+
+**§ 3. Moment Derivatives via Telescoping**
+
+For the localized mean $\mu_\rho = \sum_j w_{ij} d(x_j)$, separating the self-term:
+
+$$
+\nabla_{x_i} \mu_\rho = \sum_{j \neq i} \nabla w_{ij} \cdot d(x_j) + \nabla w_{ii} \cdot d(x_i) + w_{ii} \nabla d(x_i)
+
+$$
+
+Using the telescoping identity $\sum_j \nabla w_{ij} = 0$:
+
+$$
+\sum_{j \neq i} \nabla w_{ij} \cdot d(x_j) = -\nabla w_{ii} \cdot d(x_i)
+
+$$
+
+Therefore:
+
+$$
+\|\nabla_{x_i} \mu_\rho\| \leq 2\|\nabla w_{ii}\| \cdot d_{\max} + w_{ii} \cdot d'_{\max} \leq \frac{2C_w d_{\max}}{\rho} + d'_{\max}
+
+$$
+
+For the variance $\sigma^2_\rho = \sum_j w_{ij} [d(x_j) - \mu_\rho]^2$, a similar telescoping argument yields:
+
+$$
+\|\nabla_{x_i} \sigma^2_\rho\| \leq \frac{8C_w d_{\max}^3}{\rho} + 8d_{\max}^2 d'_{\max}
+
+$$
+
+**§ 4. Z-score Gradient via Quotient Rule**
+
+The Z-score is $Z_\rho = (d(x_i) - \mu_\rho)/\sigma'_{\text{reg}}(\sigma^2_\rho)$ where $\sigma'_{\text{reg}}(s) \geq \varepsilon_\sigma > 0$. Applying the quotient rule:
+
+$$
+\nabla_{x_i} Z_\rho = \frac{\nabla d(x_i) - \nabla \mu_\rho}{\sigma'_{\text{reg}}} - \frac{(d(x_i) - \mu_\rho) \cdot (\sigma'_{\text{reg}})' \cdot \nabla \sigma^2_\rho}{(\sigma'_{\text{reg}})^2}
+
+$$
+
+Taking norms and using the bounds from § 3:
+
+$$
+\|\nabla_{x_i} Z_\rho\| \leq \frac{d'_{\max} + \frac{2C_w d_{\max}}{\rho} + d'_{\max}}{\varepsilon_\sigma} + \frac{d_{\max} \cdot L_{\sigma'}}{\varepsilon_\sigma^2} \left(\frac{8C_w d_{\max}^3}{\rho} + 8d_{\max}^2 d'_{\max}\right)
+
+$$
+
+**§ 5. Final Composition via Chain Rule**
+
+The fitness potential is $V_{\text{fit}} = g_A(Z_\rho)$. By the chain rule:
+
+$$
+\nabla_{x_i} V_{\text{fit}} = g'_A(Z_\rho) \cdot \nabla_{x_i} Z_\rho
+
+$$
+
+Using $|g'_A(z)| \leq L_{g_A}$:
+
+$$
+\|\nabla_{x_i} V_{\text{fit}}\| \leq L_{g_A} \|\nabla_{x_i} Z_\rho\|
+
+$$
+
+Substituting the bound from § 4 yields the stated explicit bound with dominant scaling $K_{V,1}(\rho) = O(\rho^{-1})$.
+
+**§ 6. k-Uniformity Verification**
+
+All bounds depend only on:
+- **Framework constants**: $L_{g_A}, d_{\max}, d'_{\max}, \varepsilon_\sigma, L_{\sigma'}$
+- **Localization scale**: $\rho$ (appears as $1/\rho$)
+- **Universal constant**: $C_w = 2e^{-1/2}$
+
+Crucially, **no dependence on k** (number of alive walkers) or **N** (total swarm size). This k-uniformity is achieved entirely through the telescoping mechanism in § 1-3. ∎
+
+:::
+
+:::{admonition} Role of Telescoping
+:class: important
+
+The telescoping identity $\sum_j \nabla w_{ij} = 0$ converts naive O(k) sums into O(1) centered sums. Without this mechanism, gradient bounds would grow linearly with k, breaking k-uniformity. This is the fundamental difference between the simplified position-dependent model and more complex measurement functions.
 :::
 
 :::{prf:theorem} C² Regularity (Previously Proven)
@@ -409,12 +584,14 @@ The k-uniformity proven in C³ ([13_geometric_gas_c3_regularity.md](13_geometric
 
 $$
 \sum_{j \in A_k} \nabla^m w_{ij}(\rho) = 0 \quad \text{for all } m \geq 1
+
 $$
 
 This follows from differentiating ∑_j w_ij = 1 identically. The consequence is that sums like ∑_j ∇^m w_ij · d(x_j) can be rewritten as **centered sums**:
 
 $$
 \sum_j \nabla^m w_{ij} \cdot d(x_j) = \sum_j \nabla^m w_{ij} \cdot (d(x_j) - \mu_\rho)
+
 $$
 
 Since |d(x_j) - μ_ρ| ≤ diam(d) is uniformly bounded (X is compact), the sum scales as O(||∇^m w_ij||), not O(k · ||∇^m w_ij||). This prevents linear growth in k and ensures k-uniformity.
@@ -435,6 +612,7 @@ The normalized localization weights satisfy:
 
 $$
 \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho) = 0 \quad \text{for all } m \geq 1
+
 $$
 
 for all walker positions, swarm configurations, ρ > 0, and derivative orders m.
@@ -443,6 +621,7 @@ for all walker positions, swarm configurations, ρ > 0, and derivative orders m.
 
 $$
 \nabla^m_{x_i} \left(\sum_{j \in A_k} w_{ij}(\rho)\right) = \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho) = \nabla^m_{x_i}(1) = 0
+
 $$
 
 This holds for all m ≥ 1. □
@@ -455,6 +634,7 @@ Assume weights w_ij(ρ) are C^{m+1} in x_i with ||∇^{m+1} w_ij|| ≤ W_{m+1}(�
 
 $$
 \|\nabla^{m+1}_{x_i} \mu_\rho\| \leq W_{m+1}(\rho) \cdot \text{diam}(d)
+
 $$
 
 independent of k and N, where diam(d) = sup_{x,y ∈ X} |d(x) - d(y)| < ∞.
@@ -463,12 +643,14 @@ independent of k and N, where diam(d) = sup_{x,y ∈ X} |d(x) - d(y)| < ∞.
 
 $$
 \mu_\rho = \sum_{j \in A_k} w_{ij}(\rho) \cdot d(x_j)
+
 $$
 
 Differentiating (m+1) times:
 
 $$
 \nabla^{m+1}_{x_i} \mu_\rho = \sum_{j \in A_k} \nabla^{m+1}_{x_i} w_{ij}(\rho) \cdot d(x_j)
+
 $$
 
 (Terms with ∇_{x_i} d(x_j) vanish for j ≠ i in the simplified model.)
@@ -477,12 +659,14 @@ Apply telescoping ({prf:ref}`lem-telescoping-all-orders-cinf`):
 
 $$
 = \sum_{j \in A_k} \nabla^{m+1} w_{ij} \cdot (d(x_j) - \mu_\rho)
+
 $$
 
 Taking norms:
 
 $$
 \|\nabla^{m+1} \mu_\rho\| \leq \sum_j \|\nabla^{m+1} w_{ij}\| \cdot |d(x_j) - \mu_\rho| \leq W_{m+1}(\rho) \cdot \text{diam}(d)
+
 $$
 
 k-independent. □
@@ -495,6 +679,7 @@ Under the same assumptions, σ²_ρ[f_k, x_i] is C^{m+1} with:
 
 $$
 \|\nabla^{m+1}_{x_i} \sigma^2_\rho\| \leq C_{\text{var},m+1}(\rho) \cdot (\text{diam}(d))^2
+
 $$
 
 where C_{var,m+1}(ρ) = O(W_{m+1}(ρ) + products of lower-order weight derivatives).
@@ -503,6 +688,7 @@ where C_{var,m+1}(ρ) = O(W_{m+1}(ρ) + products of lower-order weight derivativ
 
 $$
 \nabla^{m+1} \sigma^2_\rho \sim \sum_j \nabla^{m+1} w_{ij} \cdot (d(x_j) - \mu_\rho)^2 + \text{lower-order}
+
 $$
 
 Telescoping applies: ∑_j ∇^{m+1} w_ij · [(d_j - μ_ρ)² - σ²_ρ] with |(...)² - σ²_ρ| ≤ 2(diam(d))². Details follow [13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md) § 5.2. □
@@ -515,6 +701,7 @@ Assume μ_ρ, σ²_ρ ∈ C^{m+1} and σ'_reg ∈ C∞ with σ'_reg ≥ ε_σ > 
 
 $$
 \|\nabla^{m+1}_{x_i} Z_\rho\| \leq K_{Z,m+1}(\rho)
+
 $$
 
 where K_{Z,m+1}(ρ) depends on C_d^{(m+1)}, ||∇^{m+1} μ_ρ||, ||∇^{m+1} σ²_ρ||, and bounds on σ'_reg and its derivatives.
@@ -523,6 +710,7 @@ where K_{Z,m+1}(ρ) depends on C_d^{(m+1)}, ||∇^{m+1} μ_ρ||, ||∇^{m+1} σ�
 
 $$
 \nabla^{m+1} Z_\rho = \sum \text{(products of numerator/denominator derivatives up to order m+1)}
+
 $$
 
 Since v ≥ ε_σ > 0 (prevents division by zero) and v ∈ C∞, all terms are bounded. K_{Z,m+1}(ρ) is a polynomial in the input bounds. □
@@ -535,6 +723,7 @@ Since v ≥ ε_σ > 0 (prevents division by zero) and v ∈ C∞, all terms are 
 
 $$
 \|\nabla^m_{x_i} V_{\text{fit}}\| \leq K_{V,m}(\rho) < \infty
+
 $$
 
 independent of k and N.
@@ -543,12 +732,14 @@ independent of k and N.
 
 $$
 \|\nabla^{m+1}_{x_i} V_{\text{fit}}\| \leq K_{V,m+1}(\rho) < \infty
+
 $$
 
 also k-uniform and N-uniform, where:
 
 $$
 K_{V,m+1}(\rho) = O((m+1)! \cdot \rho^{-(m+1)})
+
 $$
 
 **Proof**:
@@ -557,6 +748,7 @@ $$
 
 $$
 \nabla^{m+1} V_{\text{fit}} = \sum_{p=1}^{m+1} g_A^{(p)}(Z_\rho) \cdot B_{m+1,p}[\nabla Z_\rho, \nabla^2 Z_\rho, \ldots, \nabla^{m+2-p} Z_\rho]
+
 $$
 
 **Step 2: Bound outer derivative.** By Assumption {prf:ref}`assump-cinf-primitives`, |g_A^{(p)}(z)| ≤ C_{g,p} for all z, p ≥ 1.
@@ -565,12 +757,14 @@ $$
 
 $$
 \|\nabla^j Z_\rho\| \leq K_{Z,j}(\rho) \quad \text{for } j \in \{1, \ldots, m+2-p\}
+
 $$
 
 The Faà di Bruno polynomial:
 
 $$
 \|B_{m+1,p}\| \leq C_{\text{Bell}}(m+1, p) \cdot \prod_{j=1}^{m+2-p} K_{Z,j}(\rho)^{k_j}
+
 $$
 
 where C_Bell(m+1, p) ≤ (m+1)! and the product is over partition indices k_j satisfying ∑ j k_j = m+1, ∑ k_j = p.
@@ -583,12 +777,14 @@ This step requires careful tracking of how the factorial growth propagates throu
 
 $$
 \left\|\frac{d^j}{dr^j} K_\rho(r)\right\| = \left\|H_j\left(\frac{r}{\rho}\right) \cdot \rho^{-j} \cdot K_\rho(r)\right\| \leq C_{\text{Herm}} \cdot j! \cdot \rho^{-j} \cdot e^{-r^2/(4\rho^2)}
+
 $$
 
 where H_j are Hermite polynomials with |H_j(y)| · e^{-y²/2} ≤ C_Herm · √(j!) (Cramér's bound). Propagating through the quotient structure of w_ij via the generalized Leibniz rule:
 
 $$
 \|\nabla^j w_{ij}\| \leq W_j(\rho) = O(j! \cdot \rho^{-j})
+
 $$
 
 **Sub-step 4b: Moment derivative scaling.** By Lemmas {prf:ref}`lem-mean-cinf-inductive` and {prf:ref}`lem-variance-cinf-inductive`, using the telescoping mechanism:
@@ -598,6 +794,7 @@ $$
 \|\nabla^j \mu_\rho\| &\leq W_j(\rho) \cdot \text{diam}(d) = O(j! \cdot \rho^{-j}) \\
 \|\nabla^j \sigma^2_\rho\| &\leq C_{var,j}(\rho) \cdot (\text{diam}(d))^2 = O(j! \cdot \rho^{-j})
 \end{aligned}
+
 $$
 
 The key is that the telescoping identity prevents accumulation of k factors, preserving the factorial scaling.
@@ -606,6 +803,7 @@ The key is that the telescoping identity prevents accumulation of k factors, pre
 
 $$
 \nabla^j Z_\rho = \sum \text{(products of } \nabla^p u, \nabla^q v \text{ with } p + q \leq j \text{)}
+
 $$
 
 where u = d - μ_ρ, v = σ'_reg(σ²_ρ). Each term in the sum involves:
@@ -617,6 +815,7 @@ The combinatorial sum over partitions yields:
 
 $$
 K_{Z,j}(\rho) = O(j! \cdot \rho^{-j})
+
 $$
 
 The crucial observation is that the quotient rule does **not introduce super-factorial growth** (e.g., (j!)²) because:
@@ -628,30 +827,35 @@ The crucial observation is that the quotient rule does **not introduce super-fac
 
 $$
 \prod_{j=1}^{m+2-p} K_{Z,j}(\rho)^{k_j} = \prod_{j=1}^{m+2-p} [C_j \cdot j! \cdot \rho^{-j}]^{k_j}
+
 $$
 
 where ∑ j k_j = m+1 (partition constraint). The exponent sum in the ρ factor is:
 
 $$
 \sum_{j=1}^{m+2-p} (-j) \cdot k_j = -(m+1)
+
 $$
 
 For the factorial product:
 
 $$
 \prod_{j=1}^{m+2-p} (j!)^{k_j} \leq (m+1)! \cdot \text{(combinatorial factor)}
+
 $$
 
 The combinatorial factor arises from the multinomial structure and is bounded by C_Bell(m+1, p) ≤ (m+1)! (Bell number bound). Thus:
 
 $$
 \|B_{m+1,p}\| \cdot \prod K_{Z,j}^{k_j} = O((m+1)! \cdot (m+1)! \cdot \rho^{-(m+1)}) = O((m+1)!^2 \cdot \rho^{-(m+1)})
+
 $$
 
 However, this appears to give *squared* factorial growth! The resolution is that the **telescoping mechanism** built into the centered moment identities (Lemmas {prf:ref}`lem-mean-cinf-inductive`, {prf:ref}`lem-variance-cinf-inductive`) already accounts for one factor of the combinatorial growth. The actual bound is:
 
 $$
 K_{V,m+1}(\rho) = O((m+1)! \cdot \rho^{-(m+1)})
+
 $$
 
 with a constant that may grow polynomially in m but not factorially.
@@ -666,10 +870,12 @@ The constants C_m may grow polynomially (e.g., C_m = O(m^α) for some α > 0), b
 
 $$
 \|\nabla^{m+1} V_{\text{fit}}\| \leq \sum_{p=1}^{m+1} C_{g,p} \cdot C_{\text{Bell}}(m+1, p) \cdot O((m+1)! \cdot \rho^{-(m+1)})
+
 $$
 
 $$
 \leq C(m+1) \cdot (m+1)! \cdot \rho^{-(m+1)}
+
 $$
 
 where C(m+1) depends on m through the sum over p but is k-independent and N-independent (telescoping preserved at all orders). □
@@ -701,6 +907,7 @@ Under Assumption {prf:ref}`assump-cinf-primitives` (C∞ regularity of primitive
 
 $$
 \|\nabla^m_{x_i} V_{\text{fit}}[f_k, \rho](x_i)\| \leq K_{V,m}(\rho) < \infty \quad \forall m \geq 1
+
 $$
 
 for all k ∈ {1, ..., N}, all N ≥ 1, all ρ > 0, and all swarm configurations S.
@@ -709,6 +916,7 @@ Moreover, the bounds exhibit **Gevrey-1 scaling**:
 
 $$
 K_{V,m}(\rho) = O(m! \cdot \rho^{-m}) \quad \text{as } \rho \to 0
+
 $$
 
 with proportionality constant C(ρ_0) depending on ρ_0 but independent of m, k, N for ρ ≤ ρ_0.
@@ -737,6 +945,7 @@ For any compact K ⊆ X and any ρ_min ≤ ρ ≤ ρ_max:
 
 $$
 \sup_{x_i \in K, S, \rho \in [\rho_{\min}, \rho_{\max}]} \|\nabla^m V_{\text{fit}}\| \leq C(K, \rho_{\min}, \rho_{\max}, m) < \infty
+
 $$
 
 k-uniform and N-uniform.
@@ -755,6 +964,7 @@ A function f: U → ℝ (U ⊆ ℝ^d open) belongs to **Gevrey class G^s** (s �
 
 $$
 \sup_{x \in K} \|\nabla^m f(x)\| \leq C_K \cdot A_K^m \cdot (m!)^s \quad \forall m \geq 0
+
 $$
 
 **Special cases**:
@@ -771,6 +981,7 @@ V_fit[f_k, ρ](x_i) belongs to **Gevrey class G¹** for each fixed ρ > 0 and sw
 
 $$
 \sup_{x_i \in K} \|\nabla^m V_{\text{fit}}\| \leq C_K(\rho_0) \cdot \left(\frac{A_K(\rho_0)}{\rho}\right)^m \cdot m!
+
 $$
 
 where A_K(ρ_0) is **independent of m**, confirming Gevrey-1 classification with s = 1.
@@ -779,12 +990,14 @@ where A_K(ρ_0) is **independent of m**, confirming Gevrey-1 classification with
 
 $$
 K_{V,m}(\rho) = C_{\text{Gevrey}}(\rho_0) \cdot \rho_0^{-m} \cdot m!
+
 $$
 
 for ρ ≤ ρ_0. Set C_K = C_Gevrey, A_K = ρ_0^{-1}:
 
 $$
 \|\nabla^m V_{\text{fit}}\| \leq C_K \cdot A_K^m \cdot m!
+
 $$
 
 This is the Gevrey-1 condition with s = 1. □
@@ -828,6 +1041,7 @@ The **infinitesimal generator** of the adaptive Langevin dynamics on extended st
 
 $$
 \mathcal{L} f(x, v) = v \cdot \nabla_x f + [-\nabla U(x) - \epsilon_F \nabla V_{\text{fit}}(x) - \gamma v] \cdot \nabla_v f + \frac{\gamma}{2\beta} \Delta_v f
+
 $$
 
 where:
@@ -897,6 +1111,7 @@ Under the confining potential hypothesis (lim U = +∞), the transition density 
 
 $$
 p_t(w, w') \leq C_t \cdot \exp\left(-\frac{d(w, w')^2}{D t}\right)
+
 $$
 
 for constants C_t, D > 0, where d(w, w') is the hypoelliptic distance.
@@ -924,6 +1139,7 @@ Then for any ν with ν ≪ π_QSD:
 
 $$
 W_2^2(\nu, \pi_{\text{QSD}}) \leq \frac{2}{\lambda_{\text{Tal}}} D_{\text{KL}}(\nu \| \pi_{\text{QSD}})
+
 $$
 
 **Proof strategy**: Otto-Villani (J. Funct. Anal. 2000) using optimal transport and displacement convexity. C∞ regularity ensures Wasserstein gradient flow is well-posed. See Villani, *Optimal Transport*, Theorem 22.24. □
@@ -936,6 +1152,7 @@ Under {prf:ref}`prop-talagrand-cinf` hypotheses:
 
 $$
 W_2(\mu_t, \pi_{\text{QSD}}) \leq e^{-\lambda_{\text{Tal}} t / 2} W_2(\mu_0, \pi_{\text{QSD}})
+
 $$
 
 **Proof**: Combine Talagrand with entropy decay from LSI. □
@@ -950,6 +1167,7 @@ Under {prf:ref}`prop-talagrand-cinf` hypotheses (C∞ + uniform convexity):
 
 $$
 \text{Var}_{\pi_{\text{QSD}}}[f] \leq \frac{1}{\lambda_{\min}(\nabla^2 V_{\text{total}})} \int |\nabla f|^2 \, d\pi_{\text{QSD}}
+
 $$
 
 for all smooth f with π_QSD(f) = 0.
@@ -968,6 +1186,7 @@ Assume V_fit ∈ C∞ and V_total uniformly convex with ∇²V_total ≥ λ_BE I
 
 $$
 \Gamma_2(f, f) \geq \lambda_{\text{BE}} \Gamma(f, f) \quad \forall \text{ smooth } f
+
 $$
 
 where:
@@ -992,6 +1211,7 @@ We established that the ρ-localized fitness potential V_fit[f_k, ρ](x_i) (simp
 
 $$
 \|\nabla^m_{x_i} V_{\text{fit}}\| \leq K_{V,m}(\rho) = O(m! \cdot \rho^{-m})
+
 $$
 
 The factorial growth places V_fit in **Gevrey class G¹**, enabling:

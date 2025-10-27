@@ -1,0 +1,6 @@
+{
+  "label": "axiom-friction-timestep",
+  "statement": "Friction and Integration Parameters",
+  "mathematical_expression": "\\gamma > 0",
+  "foundational_framework": "Euclidean Gas"
+}

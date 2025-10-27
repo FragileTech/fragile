@@ -1,0 +1,15 @@
+{
+  "label": "obj-cloning-score-function",
+  "name": "Cloning Score Function",
+  "mathematical_expression": "S(v_c, v_i) := \\frac{v_c - v_i}{v_i + \\varepsilon}",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

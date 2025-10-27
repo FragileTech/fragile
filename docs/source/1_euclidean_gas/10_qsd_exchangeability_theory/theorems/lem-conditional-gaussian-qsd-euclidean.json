@@ -1,0 +1,35 @@
+{
+  "label": "lem-conditional-gaussian-qsd-euclidean",
+  "name": "Conditional Gaussian Structure (Euclidean Gas)",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-qsd",
+    "obj-kinetic-operator-stratonovich"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-non-degenerate-noise"
+  ],
+  "input_parameters": [
+    "param-gamma",
+    "param-sigma-v"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-conditional-gaussian-velocities",
+      "expression": "\u03c0_N(v | x) = \u220f_{i=1}^N \ud835\udca9(0, \u03a3_{v_i}),  \u03a3_{v_i} = (\u03c3^2 / (2\u03b3)) I",
+      "object_label": "obj-qsd"
+    },
+    {
+      "label": "attr-velocity-eigenvalue-bound",
+      "expression": "\u03bb_max(\u03a3_{v_i}) = \u03c3^2 / (2\u03b3) (independent of N, x)",
+      "object_label": "obj-qsd"
+    }
+  ],
+  "relations_established": []
+}

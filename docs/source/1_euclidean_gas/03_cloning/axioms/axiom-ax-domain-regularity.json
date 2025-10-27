@@ -1,0 +1,6 @@
+{
+  "label": "axiom-ax-domain-regularity",
+  "statement": "**(Axiom EG-0): Regularity of the Domain**",
+  "mathematical_expression": "\\mathcal{X}_{\\text{valid}}",
+  "foundational_framework": "Euclidean Gas"
+}

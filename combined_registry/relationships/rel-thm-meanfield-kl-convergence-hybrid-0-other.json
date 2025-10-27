@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-meanfield-kl-convergence-hybrid-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-mean-field-operator",
+  "target_object": "obj-qsd",
+  "established_by": "thm-meanfield-kl-convergence-hybrid",
+  "expression": "Mean-field KL convergence rate",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

@@ -1,0 +1,13 @@
+{
+  "label": "obj-fitness-operator",
+  "name": "The Fitness Evaluation Operator",
+  "mathematical_expression": "r_i = g_A(x_i) = \\varphi_{\\text{barrier}}(x_i)",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

@@ -1,0 +1,35 @@
+{
+  "label": "attr-finite-second-moment-meanfield",
+  "name": "Finite Variance of Mean-Field QSD",
+  "statement_type": "proposition",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-rho-0",
+    "obj-mckean-vlasov-pde"
+  ],
+  "input_theorems": [],
+  "input_axioms": [
+    "axiom-confined-potential"
+  ],
+  "input_parameters": [
+    "C_var"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "attr-finite-second-moment",
+    "attr-finite-variance"
+  ],
+  "relations_established": [
+    "energy-functional-plus-confinement-gives-finite-variance",
+    "prerequisite-for-fournier-guillin"
+  ],
+  "estimate": "For quadratic potential U = (1/2)k|x|^2, have C_var ~ sigma^2/k"
+}

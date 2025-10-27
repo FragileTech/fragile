@@ -1,0 +1,17 @@
+{
+  "label": "rel-prop-fokker-planck-kinetic-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-kinetic-operator-stratonovich",
+  "target_object": "obj-kinetic-operator-stratonovich",
+  "established_by": "prop-fokker-planck-kinetic",
+  "expression": "kinetic-sde-to-fokker-planck-pde",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction"
+}

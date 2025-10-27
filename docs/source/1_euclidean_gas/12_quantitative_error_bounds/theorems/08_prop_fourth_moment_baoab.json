@@ -1,0 +1,63 @@
+{
+  "label": "attr-fourth-moment-baoab",
+  "type": "proposition",
+  "name": "Fourth-Moment Uniform Bounds for BAOAB",
+  "line_range": [
+    834,
+    1168
+  ],
+  "status": "complete",
+  "input_objects": [
+    "obj-baoab-chain",
+    "obj-continuous-langevin-invariant"
+  ],
+  "input_axioms": [
+    "axiom-confined-potential"
+  ],
+  "input_theorems": [
+    "thm-energy-bounds"
+  ],
+  "input_parameters": [
+    "delta_t",
+    "gamma",
+    "sigma",
+    "kappa_E",
+    "C_E",
+    "M_4"
+  ],
+  "attributes_required": {
+    "obj-potential-u": [
+      "attr-confinement",
+      "attr-bounded-hessian"
+    ]
+  },
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-uniform-fourth-moment",
+    "attr-lyapunov-e2-drift"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-baoab-iterates",
+      "to": "obj-moment-bound",
+      "type": "uniform_bound",
+      "bound": "sup_k E[|Z_k|^4] <= M_4",
+      "order": "O(1)",
+      "delta_t_independence": true
+    }
+  ],
+  "internal_lemmas": [],
+  "proof_strategy": "Lyapunov on E^2(Z) = (1/2|v|^2 + U(x))^2 + rigorous variance bound + Young's inequality",
+  "lyapunov_inequality": "E[E^2(Z_{k+1}) | Z_k] <= (1 - kappa_E * dt) E^2(Z_k) + C_4 * dt",
+  "notes": [
+    "Prerequisite for BAOAB weak convergence analysis",
+    "Uses Lyapunov on energy squared (not just energy)",
+    "Rigorous variance calculation for energy change",
+    "Constants independent of dt for dt < dt_0",
+    "Key: Fourth moment needed for higher-order generator expansions"
+  ],
+  "external_references": [
+    "Mattingly et al (2002) - Ergodicity for SDEs",
+    "Bou-Rabee & Sanz-Serna (2017) - Geometric integration"
+  ]
+}

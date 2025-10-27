@@ -1,0 +1,12 @@
+{
+  "label": "obj-pareto-optimality",
+  "name": "Pareto Optimality in Parameter Space",
+  "mathematical_expression": "\\mathbf{P}^*",
+  "object_type": "space",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence"
+}

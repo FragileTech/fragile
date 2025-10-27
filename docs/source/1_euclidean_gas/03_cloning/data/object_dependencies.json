@@ -1,0 +1,740 @@
+[
+  {
+    "object_id": "obj-remark-extinction-possibility",
+    "type": "remark",
+    "label": "remark-extinction-possibility",
+    "title": "A Note on the Possibility of Extinction and Quasi-Stationary Distributions",
+    "chapter_section": "1.1",
+    "inputs": {
+      "definitions": [],
+      "axioms": [],
+      "framework_objects": ["absorbing-cemetery-state", "unbounded-noise-kernels"]
+    },
+    "outputs": {
+      "quantities": ["Quasi-Stationary-Distributions-QSD"],
+      "properties": ["process-is-absorbed-markov-chain", "convergence-to-qsd-not-stationary-distribution"]
+    },
+    "used_by": [],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-single-swarm-space",
+    "type": "definition",
+    "label": "def-single-swarm-space",
+    "title": "Single-Walker and Swarm State Spaces",
+    "chapter_section": "2.1",
+    "inputs": {
+      "definitions": [],
+      "axioms": [],
+      "framework_objects": ["state-space-X", "survival-status"]
+    },
+    "outputs": {
+      "quantities": ["walker-tuple", "swarm-configuration-S", "state-space-Sigma-N", "kinematic-state"],
+      "properties": []
+    },
+    "used_by": ["def-coupled-state-space"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-coupled-state-space",
+    "type": "definition",
+    "label": "def-coupled-state-space",
+    "title": "The Coupled State Space",
+    "chapter_section": "2.2",
+    "inputs": {
+      "definitions": ["def-single-swarm-space"],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["coupled-state-space", "pair-of-swarm-configurations"],
+      "properties": ["synchronous-coupling"]
+    },
+    "used_by": ["def-state-difference-vectors"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-state-difference-vectors",
+    "type": "definition",
+    "label": "def-state-difference-vectors",
+    "title": "State Difference Vectors",
+    "chapter_section": "2.3",
+    "inputs": {
+      "definitions": ["def-coupled-state-space"],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["position-difference-vector", "velocity-difference-vector"],
+      "properties": []
+    },
+    "used_by": ["lem-V-coercive"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-ax-domain-regularity",
+    "type": "axiom",
+    "label": "ax:domain-regularity",
+    "title": "(Axiom EG-0): Regularity of the Domain",
+    "chapter_section": "2.4.1",
+    "inputs": {
+      "definitions": [],
+      "axioms": [],
+      "framework_objects": ["C-infinity-smooth-manifold"]
+    },
+    "outputs": {
+      "quantities": [],
+      "properties": ["domain-open-bounded-connected", "boundary-is-smooth-compact-manifold"]
+    },
+    "used_by": ["attr-barrier-existence"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-prop-barrier-existence",
+    "type": "proposition",
+    "label": "attr-barrier-existence",
+    "title": "Existence of a Global Smooth Barrier Function",
+    "chapter_section": "2.4.2",
+    "inputs": {
+      "definitions": [],
+      "axioms": ["ax:domain-regularity"],
+      "framework_objects": ["Tubular-Neighborhood-Theorem", "mollifier-function"]
+    },
+    "outputs": {
+      "quantities": ["global-smooth-barrier-function-phi"],
+      "properties": ["phi-is-smooth", "phi-is-positive", "phi-diverges-at-boundary"]
+    },
+    "used_by": ["def-full-synergistic-lyapunov-function", "def-boundary-potential-recall"],
+    "proof_dependencies": ["ax:domain-regularity"]
+  },
+  {
+    "object_id": "obj-barycentres-and-centered-vectors",
+    "type": "definition",
+    "label": "def-barycentres-and-centered-vectors",
+    "title": "Barycentres and Centered Vectors (Alive Walkers Only)",
+    "chapter_section": "3.1",
+    "inputs": {
+      "definitions": ["def-coupled-state-space"],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["positional-center-of-mass", "velocity-center-of-mass", "centered-position-vector", "centered-velocity-vector"],
+      "properties": ["alive-walker-only-statistics"]
+    },
+    "used_by": ["def-location-error-component", "def-structural-error-component", "def-full-synergistic-lyapunov-function"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-location-error-component",
+    "type": "definition",
+    "label": "def-location-error-component",
+    "title": "The Location Error Component (V_loc)",
+    "chapter_section": "3.2.1",
+    "inputs": {
+      "definitions": ["def-barycentres-and-centered-vectors"],
+      "axioms": [],
+      "framework_objects": ["hypocoercive-coefficients"]
+    },
+    "outputs": {
+      "quantities": ["location-error-component-V-loc"],
+      "properties": []
+    },
+    "used_by": ["lem-wasserstein-decomposition"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-structural-error-component",
+    "type": "definition",
+    "label": "def-structural-error-component",
+    "title": "The Structural Error Component (V_struct)",
+    "chapter_section": "3.2.2",
+    "inputs": {
+      "definitions": ["def-barycentres-and-centered-vectors"],
+      "axioms": [],
+      "framework_objects": ["hypocoercive-Wasserstein-distance", "empirical-measures"]
+    },
+    "outputs": {
+      "quantities": ["structural-error-component-V-struct"],
+      "properties": ["optimal-matching-of-centered-vectors"]
+    },
+    "used_by": ["lem-wasserstein-decomposition", "lem-sx-implies-variance"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-wasserstein-decomposition",
+    "type": "lemma",
+    "label": "lem-wasserstein-decomposition",
+    "title": "Decomposition of the Hypocoercive Wasserstein Distance",
+    "chapter_section": "3.2.3",
+    "inputs": {
+      "definitions": ["def-location-error-component", "def-structural-error-component"],
+      "axioms": [],
+      "framework_objects": ["optimal-transport-theory", "gluing-lemma"]
+    },
+    "outputs": {
+      "quantities": [],
+      "properties": ["W-h-squared-decomposes-to-V-loc-plus-V-struct"]
+    },
+    "used_by": ["def-full-synergistic-lyapunov-function"],
+    "proof_dependencies": ["def-location-error-component", "def-structural-error-component"]
+  },
+  {
+    "object_id": "obj-sx-implies-variance",
+    "type": "lemma",
+    "label": "lem-sx-implies-variance",
+    "title": "Structural Positional Error and Internal Variance",
+    "chapter_section": "3.2.4",
+    "inputs": {
+      "definitions": ["def-structural-error-component"],
+      "axioms": [],
+      "framework_objects": ["Wasserstein-distance", "Cauchy-Schwarz-inequality"]
+    },
+    "outputs": {
+      "quantities": [],
+      "properties": ["V-x-struct-le-2-Var1-plus-Var2", "large-V-x-struct-implies-large-internal-variance"]
+    },
+    "used_by": ["lem-error-concentration-target-set"],
+    "proof_dependencies": ["def-structural-error-component"]
+  },
+  {
+    "object_id": "obj-full-synergistic-lyapunov-function",
+    "type": "definition",
+    "label": "def-full-synergistic-lyapunov-function",
+    "title": "The Full Synergistic Hypocoercive Lyapunov Function",
+    "chapter_section": "3.3",
+    "inputs": {
+      "definitions": ["lem-wasserstein-decomposition", "def-barycentres-and-centered-vectors", "attr-barrier-existence"],
+      "axioms": [],
+      "framework_objects": ["hypocoercive-parameters"]
+    },
+    "outputs": {
+      "quantities": ["total-synergistic-lyapunov-function-V-total", "inter-swarm-error-Wh2", "intra-swarm-error-V-Var", "boundary-potential-Wb"],
+      "properties": ["N-normalization-in-lyapunov-function"]
+    },
+    "used_by": ["lem-V_Varx-implies-variance", "thm-complete-cloning-drift"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-variance-conversions",
+    "type": "definition",
+    "label": "def-variance-conversions",
+    "title": "Variance Notation Conversion Formulas",
+    "chapter_section": "3.3.1",
+    "inputs": {
+      "definitions": [],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["un-normalized-sum-of-squared-deviations-Sk", "physical-internal-variance-k-normalized", "lyapunov-variance-component-N-normalized"],
+      "properties": []
+    },
+    "used_by": ["lem-variance-change-decomposition", "lem-error-concentration-target-set"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-lyapunov-necessity",
+    "type": "proposition",
+    "label": "attr-lyapunov-necessity",
+    "title": "Necessity of the Augmented Lyapunov Structure",
+    "chapter_section": "3.3.2",
+    "inputs": {
+      "definitions": ["def-full-synergistic-lyapunov-function"],
+      "axioms": [],
+      "framework_objects": ["classical-hypocoercivity-theory"]
+    },
+    "outputs": {
+      "quantities": [],
+      "properties": ["complementary-information-content-of-Wh2-and-V-Var", "operator-specific-targeting", "synergistic-dissipation-necessity"]
+    },
+    "used_by": [],
+    "proof_dependencies": ["def-full-synergistic-lyapunov-function"]
+  },
+  {
+    "object_id": "obj-V-coercive",
+    "type": "lemma",
+    "label": "lem-V-coercive",
+    "title": "Coercivity of the Hypocoercive Lyapunov Components",
+    "chapter_section": "3.4",
+    "inputs": {
+      "definitions": ["def-location-error-component", "def-structural-error-component", "def-state-difference-vectors"],
+      "axioms": [],
+      "framework_objects": ["Sylvesters-criterion"]
+    },
+    "outputs": {
+      "quantities": [],
+      "properties": ["V-loc-and-V-struct-are-positive-definite", "coercivity-condition-b2-lt-4-lambda-v"]
+    },
+    "used_by": ["lem-error-concentration-target-set"],
+    "proof_dependencies": ["def-location-error-component", "def-structural-error-component"]
+  },
+  {
+    "object_id": "obj-ax-lipschitz-fields",
+    "type": "axiom",
+    "label": "ax:lipschitz-fields",
+    "title": "(Axiom EG-1): Lipschitz Regularity of Environmental Fields",
+    "chapter_section": "4.1",
+    "inputs": {
+      "definitions": [],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": [],
+      "properties": ["force-field-is-lipschitz", "flow-field-is-lipschitz"]
+    },
+    "used_by": ["attr-bounded-velocity-expansion"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-ax-safe-harbor",
+    "type": "axiom",
+    "label": "ax:safe-harbor",
+    "title": "(Axiom EG-2): Existence of a Safe Harbor",
+    "chapter_section": "4.1",
+    "inputs": {
+      "definitions": [],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["safe-harbor-set-C-safe", "reward-threshold-R-safe"],
+      "properties": ["safe-harbor-is-strictly-inside-domain", "reward-is-better-in-safe-harbor"]
+    },
+    "used_by": ["thm-boundary-potential-contraction"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-ax-non-deceptive-landscape",
+    "type": "axiom",
+    "label": "ax:non-deceptive-landscape",
+    "title": "(Axiom EG-3): Non-Deceptive Landscape",
+    "chapter_section": "4.2",
+    "inputs": {
+      "definitions": [],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": [],
+      "properties": ["sufficient-separation-guarantees-reward-difference"]
+    },
+    "used_by": ["thm-derivation-of-stability-condition"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-ax-velocity-regularization",
+    "type": "axiom",
+    "label": "ax:velocity-regularization",
+    "title": "(Axiom EG-4): Velocity Regularization via Reward",
+    "chapter_section": "4.3",
+    "inputs": {
+      "definitions": [],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["total-reward-function-R-x-v"],
+      "properties": ["reward-penalizes-high-kinetic-energy"]
+    },
+    "used_by": ["def-raw-value-operators", "attr-bounded-velocity-expansion"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-ax-active-diversity",
+    "type": "axiom",
+    "label": "ax:active-diversity",
+    "title": "(Axiom EG-5): Active Diversity Signal",
+    "chapter_section": "4.3",
+    "inputs": {
+      "definitions": [],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": [],
+      "properties": ["dynamics-weight-beta-is-positive"]
+    },
+    "used_by": ["def-fitness-potential-operator"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-algorithmic-distance-metric",
+    "type": "definition",
+    "label": "def-algorithmic-distance-metric",
+    "title": "Algorithmic Distance for Companion Selection",
+    "chapter_section": "5.0",
+    "inputs": {
+      "definitions": [],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["algorithmic-distance-d-alg"],
+      "properties": ["lambda-alg-controls-velocity-importance"]
+    },
+    "used_by": ["def-spatial-pairing-operator-diversity", "def-greedy-pairing-algorithm", "def-raw-value-operators", "lem-phase-space-packing"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-spatial-pairing-operator-diversity",
+    "type": "definition",
+    "label": "def-spatial-pairing-operator-diversity",
+    "title": "Spatially-Aware Pairing Operator (Idealized Model)",
+    "chapter_section": "5.1.1",
+    "inputs": {
+      "definitions": ["def-algorithmic-distance-metric"],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["spatially-aware-pairing-operator-P-pair"],
+      "properties": ["favors-pairings-close-in-algorithmic-space"]
+    },
+    "used_by": ["def-measurement-operator"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-greedy-pairing-algorithm",
+    "type": "definition",
+    "label": "def-greedy-pairing-algorithm",
+    "title": "Sequential Stochastic Greedy Pairing Operator",
+    "chapter_section": "5.1.2",
+    "inputs": {
+      "definitions": ["def-algorithmic-distance-metric"],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["companion-map-c"],
+      "properties": ["O-k2-complexity"]
+    },
+    "used_by": ["lem-greedy-preserves-signal"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-geometric-partition",
+    "type": "definition",
+    "label": "def-geometric-partition",
+    "title": "Geometric Partitioning of High-Variance Swarms",
+    "chapter_section": "5.1.3",
+    "inputs": {
+      "definitions": [],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["high-error-set-Hk", "low-error-set-Lk"],
+      "properties": ["high-error-walkers-are-kinematically-isolated", "low-error-walkers-are-in-dense-clusters"]
+    },
+    "used_by": ["lem-greedy-preserves-signal"],
+    "proof_dependencies": ["cor-vvarx-to-high-error-fraction"]
+  },
+  {
+    "object_id": "obj-greedy-preserves-signal",
+    "type": "lemma",
+    "label": "lem-greedy-preserves-signal",
+    "title": "Greedy Pairing Guarantees Signal Separation",
+    "chapter_section": "5.1.3",
+    "inputs": {
+      "definitions": ["def-greedy-pairing-algorithm", "def-geometric-partition"],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": [],
+      "properties": ["statistical-separation-in-expected-raw-distance"]
+    },
+    "used_by": ["thm-geometry-guarantees-variance"],
+    "proof_dependencies": ["def-greedy-pairing-algorithm", "def-geometric-partition", "cor-vvarx-to-high-error-fraction"]
+  },
+  {
+    "object_id": "obj-raw-value-operators",
+    "type": "definition",
+    "label": "def-raw-value-operators",
+    "title": "Raw Value Operators",
+    "chapter_section": "5.2",
+    "inputs": {
+      "definitions": ["def-algorithmic-distance-metric", "def-greedy-pairing-algorithm"],
+      "axioms": ["ax:velocity-regularization"],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["raw-reward-ri", "raw-distance-di"],
+      "properties": []
+    },
+    "used_by": ["def-fitness-potential-operator"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-swarm-aggregation-operator",
+    "type": "definition",
+    "label": "def-swarm-aggregation-operator",
+    "title": "Swarm Aggregation Operator",
+    "chapter_section": "5.3",
+    "inputs": {
+      "definitions": [],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["swarm-aggregation-operator-M"],
+      "properties": ["canonical-instantiation-is-empirical-measure-aggregator"]
+    },
+    "used_by": ["def-standardization-operator"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-patched-std-dev-function",
+    "type": "definition",
+    "label": "def-patched-std-dev-function",
+    "title": "Patched Standard Deviation Function",
+    "chapter_section": "5.3",
+    "inputs": {
+      "definitions": [],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["patched-standard-deviation-function-sigma-prime-patch"],
+      "properties": ["C1-smooth", "globally-lipschitz", "bounded-away-from-zero"]
+    },
+    "used_by": ["lem-patching-properties", "def-standardization-operator"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-patching-properties",
+    "type": "lemma",
+    "label": "lem-patching-properties",
+    "title": "Properties of the Patching Function",
+    "chapter_section": "5.3",
+    "inputs": {
+      "definitions": ["def-patched-std-dev-function"],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": [],
+      "properties": ["continuously-differentiable", "strictly-positive", "globally-lipschitz-continuous"]
+    },
+    "used_by": [],
+    "proof_dependencies": ["def-patched-std-dev-function"]
+  },
+  {
+    "object_id": "obj-standardization-operator",
+    "type": "definition",
+    "label": "def-standardization-operator",
+    "title": "N-Dimensional Standardization Operator",
+    "chapter_section": "5.4",
+    "inputs": {
+      "definitions": ["def-swarm-aggregation-operator", "def-patched-std-dev-function"],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["z-scores-zi"],
+      "properties": []
+    },
+    "used_by": ["def-fitness-potential-operator"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-compact-support-z-scores",
+    "type": "lemma",
+    "label": "lem-compact-support-z-scores",
+    "title": "Compact Support of Standardized Scores",
+    "chapter_section": "5.4",
+    "inputs": {
+      "definitions": ["def-standardization-operator", "def-patched-std-dev-function"],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["compact-interval-Z-supp"],
+      "properties": ["z-scores-lie-in-compact-interval"]
+    },
+    "used_by": ["lem-rescale-derivative-lower-bound"],
+    "proof_dependencies": ["def-standardization-operator", "def-patched-std-dev-function"]
+  },
+  {
+    "object_id": "obj-logistic-rescale",
+    "type": "definition",
+    "label": "def-logistic-rescale",
+    "title": "Canonical Logistic Rescale Function",
+    "chapter_section": "5.5",
+    "inputs": {
+      "definitions": [],
+      "axioms": ["Axiom-of-a-Well-Behaved-Rescale-Function"],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["canonical-logistic-rescale-function-gA"],
+      "properties": []
+    },
+    "used_by": ["lem-logistic-properties", "def-fitness-potential-operator"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-logistic-properties",
+    "type": "lemma",
+    "label": "lem-logistic-properties",
+    "title": "Verification of Axiomatic Properties",
+    "chapter_section": "5.5",
+    "inputs": {
+      "definitions": ["def-logistic-rescale"],
+      "axioms": ["Axiom-of-a-Well-Behaved-Rescale-Function"],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": [],
+      "properties": ["infinitely-differentiable", "strictly-increasing", "bounded-range", "globally-lipschitz"]
+    },
+    "used_by": [],
+    "proof_dependencies": ["def-logistic-rescale"]
+  },
+  {
+    "object_id": "obj-fitness-potential-operator",
+    "type": "definition",
+    "label": "def-fitness-potential-operator",
+    "title": "Fitness Potential Operator",
+    "chapter_section": "5.6",
+    "inputs": {
+      "definitions": ["def-standardization-operator", "def-logistic-rescale", "def-raw-value-operators"],
+      "axioms": ["ax:active-diversity"],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["fitness-potential-vector-V-fit"],
+      "properties": []
+    },
+    "used_by": ["lem-potential-bounds", "def-decision-operator"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-potential-bounds",
+    "type": "lemma",
+    "label": "lem-potential-bounds",
+    "title": "Uniform Bounds of the Fitness Potential",
+    "chapter_section": "5.6",
+    "inputs": {
+      "definitions": ["def-fitness-potential-operator"],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["V-pot-min", "V-pot-max"],
+      "properties": ["fitness-potential-is-uniformly-bounded"]
+    },
+    "used_by": ["lem-unfit-fraction-lower-bound"],
+    "proof_dependencies": ["def-fitness-potential-operator"]
+  },
+  {
+    "object_id": "obj-cloning-companion-operator",
+    "type": "definition",
+    "label": "def-cloning-companion-operator",
+    "title": "Companion Selection Operator for Cloning",
+    "chapter_section": "5.7.1",
+    "inputs": {
+      "definitions": ["def-algorithmic-distance-metric"],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["companion-selection-operator-for-cloning-C-i"],
+      "properties": ["phase-space-aware-for-alive-walkers", "uniform-for-dead-walkers"]
+    },
+    "used_by": ["def-decision-operator"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-cloning-score",
+    "type": "definition",
+    "label": "def-cloning-score",
+    "title": "The Canonical Cloning Score",
+    "chapter_section": "5.7.2",
+    "inputs": {
+      "definitions": ["def-fitness-potential-operator"],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["canonical-cloning-score-Si"],
+      "properties": []
+    },
+    "used_by": ["def-cloning-probability"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-cloning-probability",
+    "type": "definition",
+    "label": "def-cloning-probability",
+    "title": "Total Cloning Probability",
+    "chapter_section": "5.7.2",
+    "inputs": {
+      "definitions": ["def-cloning-score", "def-cloning-companion-operator"],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["total-cloning-probability-pi"],
+      "properties": []
+    },
+    "used_by": ["lem-quantitative-keystone", "def-key-operator-outputs"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-cloning-decision",
+    "type": "definition",
+    "label": "def-cloning-decision",
+    "title": "The Stochastic Cloning Decision",
+    "chapter_section": "5.7.3",
+    "inputs": {
+      "definitions": ["def-cloning-score"],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": [],
+      "properties": ["walker-marked-for-cloning-or-persist"]
+    },
+    "used_by": ["def-decision-operator"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-inelastic-collision-update",
+    "type": "definition",
+    "label": "def-inelastic-collision-update",
+    "title": "The Inelastic Collision State Update",
+    "chapter_section": "5.7.4",
+    "inputs": {
+      "definitions": ["def-cloning-decision"],
+      "axioms": [],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": ["center-of-mass-velocity-V-COM-c"],
+      "properties": ["momentum-conservation", "tunable-energy-dissipation-via-alpha-restitution"]
+    },
+    "used_by": ["def-update-operator", "attr-bounded-velocity-expansion"],
+    "proof_dependencies": null
+  },
+  {
+    "object_id": "obj-bounded-velocity-expansion",
+    "type": "proposition",
+    "label": "attr-bounded-velocity-expansion",
+    "title": "Bounded Velocity Variance Expansion from Cloning",
+    "chapter_section": "5.7.5",
+    "inputs": {
+      "definitions": ["def-inelastic-collision-update"],
+      "axioms": ["ax:lipschitz-fields", "ax:velocity-regularization"],
+      "framework_objects": []
+    },
+    "outputs": {
+      "quantities": [],
+      "properties": ["delta-V-Var-v-is-bounded"]
+    },
+    "used_by": ["thm-velocity-variance-bounded-expansion"],
+    "proof_dependencies": ["def-inelastic-collision-update", "ax:velocity-regularization"]
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "label": "lem-mean-companion-fitness-gap",
+  "name": "Lower Bound on Mean Companion Fitness Gap",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-fitness-potential-operator",
+    "obj-unfit-set"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "k",
+    "f_U",
+    "f_F",
+    "kappa_V_gap"
+  ],
+  "properties_required": {
+    "obj-fitness-potential-operator": [
+      "prop-non-degenerate-range"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": []
+}

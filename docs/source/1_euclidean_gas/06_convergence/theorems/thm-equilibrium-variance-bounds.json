@@ -1,0 +1,53 @@
+{
+  "label": "thm-equilibrium-variance-bounds",
+  "name": "Equilibrium Variance Bounds from Drift Inequalities",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-qsd",
+    "obj-cloning-measure",
+    "obj-kinetic-operator-stratonovich",
+    "obj-positional-variance-recall",
+    "obj-velocity-variance-recall",
+    "obj-boundary-potential-recall"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-gamma",
+    "param-tau",
+    "param-sigma-v"
+  ],
+  "attributes_required": {
+    "obj-positional-variance-recall": [
+      "attr-positional-variance-drift-bound"
+    ],
+    "obj-velocity-variance-recall": [
+      "attr-velocity-variance-drift-bound"
+    ],
+    "obj-boundary-potential-recall": [
+      "attr-boundary-drift-bound"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-qsd-positional-variance-bound",
+      "expression": "V_{Var,x}^{QSD} \u2264 C_x/\u03ba_x",
+      "object_label": "obj-positional-variance-recall"
+    },
+    {
+      "label": "attr-qsd-velocity-variance-bound",
+      "expression": "V_{Var,v}^{QSD} \u2264 (C_v + d \u03c3_{max}^2 \u03c4)/(2\u03b3 \u03c4) \u2248 d \u03c3_{max}^2/(2\u03b3)",
+      "object_label": "obj-velocity-variance-recall"
+    },
+    {
+      "label": "attr-qsd-boundary-potential-bound",
+      "expression": "W_b^{QSD} \u2264 C_b/\u03ba_b",
+      "object_label": "obj-boundary-potential-recall"
+    }
+  ],
+  "relations_established": []
+}

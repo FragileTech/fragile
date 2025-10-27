@@ -1,0 +1,79 @@
+{
+  "label": "lem-wasserstein-population-bound",
+  "name": "Wasserstein Distance and Population Cross-Distances",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-target-complement",
+    "def-wasserstein-distance"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "N",
+    "f_I_1",
+    "f_I_2",
+    "f_J_1",
+    "f_J_2"
+  ],
+  "properties_required": {
+    "matching": [
+      "Cluster-respecting matching is feasible",
+      "Pairs within (I_1, I_2) and (J_1, J_2)"
+    ],
+    "fractions": [
+      "f_{I,k} = |I_k|/N (N-uniform via Theorem 7.6.1 and 8.7.1)"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-cross-swarm-distance"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-cross-swarm-distance",
+      "lem-wasserstein-population-bound"
+    ]
+  ],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-wasserstein-population-bound-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-target-complement",
+      "target_object": "obj-wasserstein-distance",
+      "established_by": "lem-wasserstein-population-bound",
+      "expression": "W_2²(μ_1, μ_2) ≤ f_{I,1}f_{I,2}D_II + f_{I,1}f_{J,2}D_IJ + f_{J,1}f_{I,2}D_JI + f_{J,1}f_{J,2}D_JJ",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    },
+    {
+      "label": "rel-lem-wasserstein-population-bound-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-target-complement",
+      "target_object": "obj-wasserstein-distance",
+      "established_by": "lem-wasserstein-population-bound",
+      "expression": "Bound valid for any cluster-respecting matching (not necessarily optimal)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    }
+  ]
+}

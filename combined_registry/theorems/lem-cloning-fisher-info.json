@@ -1,0 +1,50 @@
+{
+  "label": "lem-cloning-fisher-info",
+  "name": "Fisher Information Bound After Cloning",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-cloning-operator",
+    "def-fisher-information"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "delta",
+    "C_I"
+  ],
+  "properties_required": {
+    "log-concave": [
+      "π_QSD is log-concave"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-cloning-fisher-info-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-fisher-information",
+      "established_by": "lem-cloning-fisher-info",
+      "expression": "I(Ψ_clone μ | π) ≤ C_I D_KL(μ | π)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

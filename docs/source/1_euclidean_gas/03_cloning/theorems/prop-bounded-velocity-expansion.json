@@ -1,0 +1,24 @@
+{
+  "label": "attr-bounded-velocity-expansion",
+  "name": "Bounded Velocity Variance Expansion from Cloning",
+  "statement_type": "proposition",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-cloning-operator-formal"
+  ],
+  "input_axioms": [
+    "axiom-ax-velocity-regularization"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": []
+}

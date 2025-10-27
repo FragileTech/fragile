@@ -1,0 +1,72 @@
+{
+  "version": "1.0.0",
+  "statistics": {
+    "total_objects": 13,
+    "counts_by_type": {
+      "MathematicalObject": 5,
+      "Axiom": 0,
+      "Parameter": 0,
+      "Property": 0,
+      "Relationship": 4,
+      "TheoremBox": 4
+    },
+    "total_tags": 19,
+    "all_tags": [
+      "adaptive",
+      "adaptive-gas",
+      "continuous",
+      "convergence",
+      "core",
+      "discrete",
+      "equilibrium",
+      "euclidean-gas",
+      "extended",
+      "framework-extension",
+      "fundamental",
+      "geometric",
+      "geometric-gas",
+      "manifold",
+      "mean-field",
+      "particle-system",
+      "pde",
+      "qsd",
+      "riemannian"
+    ]
+  },
+  "all_ids": [
+    "obj-euclidean-gas-discrete",
+    "obj-euclidean-gas-continuous",
+    "obj-quasi-stationary-distribution",
+    "obj-adaptive-gas",
+    "obj-geometric-gas",
+    "rel-discrete-continuous-equivalence",
+    "rel-continuous-qsd-reduction",
+    "rel-euclidean-adaptive-extension",
+    "rel-euclidean-geometric-generalization",
+    "thm-mean-field-limit",
+    "thm-exponential-convergence",
+    "thm-adaptive-gas-extension",
+    "thm-geometric-generalization"
+  ],
+  "all_tags": [
+    "riemannian",
+    "core",
+    "adaptive",
+    "framework-extension",
+    "particle-system",
+    "mean-field",
+    "continuous",
+    "discrete",
+    "geometric-gas",
+    "qsd",
+    "adaptive-gas",
+    "pde",
+    "convergence",
+    "extended",
+    "manifold",
+    "euclidean-gas",
+    "geometric",
+    "equilibrium",
+    "fundamental"
+  ]
+}

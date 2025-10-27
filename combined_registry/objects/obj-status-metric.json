@@ -1,0 +1,15 @@
+{
+  "label": "obj-status-metric",
+  "name": "Discrete Status-Change Metric",
+  "mathematical_expression": "d_{\\text{status}}(\\mathcal{S}_1, \\mathcal{S}_2) := n_c(\\mathcal{S}_1, \\mathcal{S}_2)",
+  "object_type": "set",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

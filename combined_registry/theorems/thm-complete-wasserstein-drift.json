@@ -1,0 +1,81 @@
+{
+  "label": "thm-complete-wasserstein-drift",
+  "name": "Complete Wasserstein Decomposition Drift",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-cloning-operator-formal",
+    "obj-w2-output-metric",
+    "obj-swarm-and-state-space",
+    "obj-location-error-component",
+    "obj-structural-error-component"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "C_W",
+    "C_loc",
+    "C_struct",
+    "sigma_x"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [
+    "lem-wasserstein-decomposition"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-wasserstein-decomposition",
+      "thm-complete-wasserstein-drift"
+    ],
+    [
+      "cor-component-bounds-vw",
+      "thm-complete-wasserstein-drift"
+    ],
+    [
+      "thm-inter-swarm-bounded-expansion",
+      "thm-complete-wasserstein-drift"
+    ]
+  ],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-complete-wasserstein-drift-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator-formal",
+      "target_object": "obj-w2-output-metric",
+      "established_by": "thm-complete-wasserstein-drift",
+      "expression": "cloning_expands_inter_swarm_distance",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    },
+    {
+      "label": "rel-thm-complete-wasserstein-drift-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator-formal",
+      "target_object": "obj-w2-output-metric",
+      "established_by": "thm-complete-wasserstein-drift",
+      "expression": "kinetic_provides_contraction",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

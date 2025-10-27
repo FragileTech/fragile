@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-linfty-full-operator-3-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-cloning-operator",
+  "target_object": "obj-kinetic-operator",
+  "established_by": "lem-linfty-full-operator",
+  "expression": "sup_{t∈[0,T]} ||f(t,·)||_∞ ≤ C_hypo(M_0, T, γ, σ_v, σ_x, U, R) < ∞",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+}

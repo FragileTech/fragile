@@ -1,0 +1,65 @@
+{
+  "label": "thm-discretization",
+  "name": "Discrete-Time Inheritance of Generator Drift",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-baoab-integrator",
+    "def-generator"
+  ],
+  "input_axioms": [
+    "axiom-diffusion-tensor",
+    "axiom-friction-timestep"
+  ],
+  "input_parameters": [
+    "V",
+    "kappa",
+    "C",
+    "tau",
+    "K_V",
+    "gamma",
+    "sigma_v",
+    "F",
+    "d",
+    "N"
+  ],
+  "properties_required": {
+    "V": [
+      "C3-smooth",
+      "bounded-second-third-derivatives"
+    ],
+    "generator": [
+      "global-drift-bound"
+    ]
+  },
+  "internal_lemmas": [
+    "remainder-term-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-discretization-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-baoab-integrator",
+      "target_object": "obj-generator",
+      "established_by": "thm-discretization",
+      "expression": "continuous-generator-to-discrete-expectation",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "05_kinetic_contraction"
+    }
+  ]
+}

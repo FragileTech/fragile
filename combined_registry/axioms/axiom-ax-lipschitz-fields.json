@@ -1,0 +1,8 @@
+{
+  "label": "axiom-ax-lipschitz-fields",
+  "statement": "**(Axiom EG-1): Lipschitz Regularity of Environmental Fields**",
+  "mathematical_expression": "\\mathcal X_{\\mathrm{valid}}",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

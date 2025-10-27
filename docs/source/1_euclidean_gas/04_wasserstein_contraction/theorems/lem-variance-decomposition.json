@@ -1,0 +1,38 @@
+{
+  "label": "lem-variance-decomposition",
+  "name": "Variance Decomposition by Clusters",
+  "statement_type": "lemma",
+  "source": {
+    "file": "04_wasserstein_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-target-complement",
+    "def-unified-high-low-error-sets",
+    "def-unfit-set"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "k",
+    "f_I",
+    "f_J"
+  ],
+  "attributes_required": {
+    "def-target-complement": [
+      "I_k and J_k form a partition of alive set",
+      "Finite second moments"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "Variance decomposition identity",
+    "Within-cluster and between-cluster variance separation"
+  ],
+  "relations_established": [
+    "Var_x(S_k) = f_I Var_x(I_k) + f_J Var_x(J_k) + f_I f_J ||\u03bc_x(I_k) - \u03bc_x(J_k)||\u00b2"
+  ]
+}

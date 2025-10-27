@@ -1,0 +1,50 @@
+{
+  "label": "thm-mean-field-equation",
+  "name": "The Mean-Field Equations for the Euclidean Gas",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-phase-space-density",
+    "obj-transport-operator",
+    "obj-killing-operator",
+    "obj-revival-operator",
+    "obj-cloning-generator",
+    "obj-mean-field-phase-space"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-gamma",
+    "param-m",
+    "param-sigma-v",
+    "param-tau",
+    "param-lambda-revive"
+  ],
+  "attributes_required": {
+    "obj-transport-operator": [
+      "attr-mass-conservation-transport"
+    ],
+    "obj-revival-operator": [
+      "attr-revival-integral-equals-lambda-md"
+    ],
+    "obj-cloning-generator": [
+      "attr-cloning-mass-neutrality"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "StructuralTheorem",
+  "attributes_added": [
+    {
+      "label": "attr-mean-field-forward-equation",
+      "expression": "\u2202_t f = L^\u2020 f \u2212 c(z) f + B[f,m_d] + S[f]",
+      "object_label": "obj-phase-space-density"
+    },
+    {
+      "label": "attr-dead-mass-ode",
+      "expression": "d/dt m_d(t) = \u222b_\u03a9 c(z) f(t,z) dz \u2212 \u03bb_rev m_d(t)",
+      "object_label": "obj-mean-field-phase-space"
+    }
+  ],
+  "relations_established": []
+}

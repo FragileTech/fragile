@@ -1,0 +1,51 @@
+{
+  "label": "thm-kinetic-lsi-reference",
+  "name": "Hypocoercive LSI for Kinetic Operator (Reference)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-kinetic-operator"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf"
+  ],
+  "properties_required": {
+    "log-concave": [
+      "Target measure is log-concave"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-bakry-emery-classical"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-kinetic-lsi-reference-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-kinetic-operator",
+      "target_object": "obj-kinetic-operator",
+      "established_by": "thm-kinetic-lsi-reference",
+      "expression": "Kinetic LSI from Bakry-Émery theory",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

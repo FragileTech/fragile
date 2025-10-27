@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-gaussian-kernel-lower-bound-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-cloning-operator",
+  "target_object": "obj-state-space",
+  "established_by": "lem-gaussian-kernel-lower-bound",
+  "expression": "inf_{x∈B_R} ∫_{B_R} G_σ_x(x−y) ρ(y) dy ≥ m · c_σ_x,R",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+}

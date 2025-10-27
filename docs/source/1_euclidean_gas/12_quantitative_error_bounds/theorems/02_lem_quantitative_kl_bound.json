@@ -1,0 +1,60 @@
+{
+  "label": "lem-quantitative-kl-bound",
+  "type": "lemma",
+  "name": "Quantitative KL Bound",
+  "line_range": [
+    173,
+    277
+  ],
+  "status": "complete",
+  "input_objects": [
+    "obj-nu-n-qsd",
+    "obj-rho-0-product",
+    "obj-diversity-companion-prob"
+  ],
+  "input_axioms": [],
+  "input_theorems": [
+    "thm-kl-convergence-euclidean",
+    "thm-entropy-production-discrete"
+  ],
+  "input_parameters": [
+    "lambda",
+    "lambda_lsi",
+    "lambda_eff",
+    "C_int"
+  ],
+  "attributes_required": {
+    "obj-nu-n-qsd": [
+      "attr-n-uniform-lsi",
+      "attr-exchangeability"
+    ],
+    "obj-diversity-companion-prob": [
+      "attr-fitness-dependent-selection"
+    ]
+  },
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-kl-divergence-o-1-over-n"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-nu-n-qsd",
+      "to": "obj-rho-0-product",
+      "type": "relative_entropy_bound",
+      "bound": "D_KL(nu_N^QSD || rho_0^otimes_N) <= C_int / N",
+      "order": "O(1/N)"
+    }
+  ],
+  "internal_lemmas": [
+    "attr-interaction-complexity-bound"
+  ],
+  "proof_strategy": "Modulated free energy + entropy production + Gr\u00f6nwall argument",
+  "notes": [
+    "Establishes O(1/N) KL-divergence rate",
+    "Interaction complexity C_int quantifies particle coupling strength",
+    "Key step in mean-field convergence proof chain"
+  ],
+  "external_references": [
+    "Jabin & Wang (2016) - Mean field limit for stochastic particle systems"
+  ]
+}

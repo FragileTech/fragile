@@ -1,0 +1,31 @@
+{
+  "label": "lem-single-walker-positional-error",
+  "name": "Bound on Single-Walker Error from Positional Change",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-fragile-swarm-instantiation",
+    "obj-walker",
+    "obj-alive-dead-sets",
+    "obj-companion-selection-measure",
+    "obj-distance-positional-measures",
+    "obj-raw-value-operator"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-single-walker-positional-error-bound",
+      "expression": "|\\mathbb{E}[d(x_{2,i}, \\mathbb{C}_i(\\mathcal{S}_2))] - \\mathbb{E}[d(x_{1,i}, \\mathbb{C}_i(\\mathcal{S}_1))]| \\le K",
+      "object_label": "obj-distance-positional-measures"
+    }
+  ],
+  "relations_established": []
+}

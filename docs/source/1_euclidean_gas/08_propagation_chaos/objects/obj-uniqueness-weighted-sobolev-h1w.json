@@ -1,0 +1,10 @@
+{
+  "label": "obj-uniqueness-weighted-sobolev-h1w",
+  "name": "Weighted Sobolev Space $H^1_w(\\Omega)$",
+  "mathematical_expression": "\\|\\rho\\|_{H^1_w}^2 := \\int_{\\Omega} \\left[\\rho(z)^2 + \\|\\nabla_z \\rho(z)\\|^2\\right] w(z) \\, dz < \\infty",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [],
+  "source": null
+}

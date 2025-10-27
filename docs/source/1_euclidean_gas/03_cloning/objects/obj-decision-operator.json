@@ -1,0 +1,13 @@
+{
+  "label": "obj-decision-operator",
+  "name": "The Cloning Decision Operator",
+  "mathematical_expression": "P(c_i = j) = \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}(x_i, x_j)^2}{2\\epsilon_c^2}\\right)}{\\sum_{\\ell \\in \\mathcal{A}(S) \\setminus \\{i\\}} \\exp\\left(-\\frac{d_{\\text{alg}}(x_i, x_\\ell)^2}{2\\epsilon_c^2}\\right)} \\quad \\text{for } j \\in \\mathcal{A}(S) \\setminus \\{i\\}",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

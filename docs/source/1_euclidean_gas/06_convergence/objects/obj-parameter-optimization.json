@@ -1,0 +1,12 @@
+{
+  "label": "obj-parameter-optimization",
+  "name": "Parameter Optimization Problem",
+  "mathematical_expression": "\\max_{\\mathbf{P} \\in \\mathbb{R}_{+}^{12}} \\kappa_{\\text{total}}(\\mathbf{P}) = \\max_{\\mathbf{P}} \\left[\\min(\\kappa_x, \\kappa_v, \\kappa_W, \\kappa_b) \\cdot (1 - \\epsilon_{\\text{coupling}}(\\mathbf{P}))\\right]",
+  "object_type": "set",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "stability"
+  ],
+  "source": null
+}

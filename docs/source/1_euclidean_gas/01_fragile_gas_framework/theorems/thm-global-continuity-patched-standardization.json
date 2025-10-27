@@ -1,0 +1,25 @@
+{
+  "label": "thm-global-continuity-patched-standardization",
+  "name": "Global Continuity of the Patched Standardization Operator",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-standardization-operator-n-dimensional",
+    "obj-statistical-properties-measurement"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-globally-continuous",
+      "expression": "z(\\mathcal{S}, v, M) \\text{ is continuous on entire state space}",
+      "object_label": "obj-standardization-operator-n-dimensional"
+    }
+  ],
+  "relations_established": []
+}

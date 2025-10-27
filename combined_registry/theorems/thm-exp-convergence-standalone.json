@@ -1,0 +1,59 @@
+{
+  "label": "thm-exp-convergence-standalone",
+  "name": "Exponential KL Convergence",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-total-operator",
+    "def-qsd"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf",
+    "kappa_W",
+    "delta",
+    "C_LSI"
+  ],
+  "properties_required": {
+    "lsi": [
+      "Ψ_total satisfies LSI with constant C_LSI"
+    ],
+    "qsd-unique": [
+      "Unique QSD exists"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-composition-standalone",
+    "thm-lsi-implies-kl-convergence"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-exp-convergence-standalone-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-total-operator",
+      "target_object": "obj-qsd",
+      "established_by": "thm-exp-convergence-standalone",
+      "expression": "D_KL(μ_t || π_QSD) ≤ e^{-t/C_LSI} D_KL(μ_0 || π_QSD)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

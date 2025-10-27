@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-discrete-lsi-hybrid-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-total-operator",
+  "target_object": "obj-total-operator",
+  "established_by": "thm-discrete-lsi-hybrid",
+  "expression": "Discrete LSI constant accounts for time step τ",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

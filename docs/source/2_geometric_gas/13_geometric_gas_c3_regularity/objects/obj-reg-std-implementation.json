@@ -1,0 +1,13 @@
+{
+  "label": "obj-reg-std-implementation",
+  "name": "Regularized Standard Deviation (Implementation)",
+  "mathematical_expression": "\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}",
+  "object_type": "set",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "stability",
+    "variance"
+  ],
+  "source": null
+}

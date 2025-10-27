@@ -1,0 +1,20 @@
+{
+  "label": "thm-sasaki-distance-ms",
+  "name": "Mean-square continuity of the distance measurement (Sasaki)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "root",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": []
+}

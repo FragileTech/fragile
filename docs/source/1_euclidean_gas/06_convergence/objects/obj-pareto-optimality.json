@@ -1,0 +1,10 @@
+{
+  "label": "obj-pareto-optimality",
+  "name": "Pareto Optimality in Parameter Space",
+  "mathematical_expression": "\\mathbf{P}^*",
+  "object_type": "space",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [],
+  "source": null
+}

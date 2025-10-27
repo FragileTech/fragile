@@ -1,0 +1,327 @@
+{
+  "$schema": "./math_schema.json",
+  "metadata": {
+    "title": "The Keystone Principle - Chapters 6-8: The N-Uniform Quantitative Keystone Lemma",
+    "document_id": "cloning_ch06_ch08_keystone",
+    "version": "1.0.0",
+    "date_created": "2025-10-25",
+    "source_document": "docs/source/1_euclidean_gas/03_cloning.md",
+    "source_lines": "2288-4947",
+    "chapters_covered": [
+      "6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure",
+      "7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+      "8. The N-Uniform Quantitative Keystone Lemma"
+    ],
+    "authors": ["Guillem Duran Ballester"],
+    "tags": ["keystone-lemma", "n-uniform", "geometric-structure", "intelligent-targeting", "corrective-feedback"],
+    "description": "The central result of the cloning analysis: establishes N-uniform quantitative link between structural error and collective cloning response. Proves that large error generates detectable signal and algorithm intelligently targets responsible walkers.",
+    "dependencies": {
+      "requires": ["cloning_ch01_ch02.json", "cloning_ch03.json", "cloning_ch04.json", "cloning_ch05.json"],
+      "builds_on": ["Lyapunov decomposition", "Foundational axioms", "Measurement pipeline"]
+    },
+    "peer_review_status": {
+      "status": "in_progress",
+      "notes": "Core theorems extracted - full proofs to be expanded"
+    }
+  },
+  "directives": [
+    {
+      "type": "definition",
+      "label": "def-critical-target-set",
+      "title": "The Critical Target Set",
+      "content": "For a state in the high-error regime, the **critical target set** is the intersection of walkers that are simultaneously stably alive, unfit, and high-error.",
+      "defined_objects": [
+        {
+          "symbol": "I_{\\text{target}}",
+          "name": "Critical Target Set",
+          "description": "For a high-variance swarm $k$: $$I_{\\text{target}} := I_{11} \\cap U_k \\cap H_k(\\epsilon)$$ where $I_{11}$ is the stably alive set, $U_k$ is the unfit set, and $H_k(\\epsilon)$ is the high-error set.",
+          "properties": [
+            "Non-empty in high-error regime",
+            "Contains N-uniform fraction of alive population",
+            "Concentrated corrective cloning pressure",
+            "Responsible for substantial fraction of total error"
+          ]
+        }
+      ],
+      "rationale": "This intersection isolates walkers that are (1) alive in both swarms (can contribute to contractive force), (2) unfit (targeted for cloning), and (3) high-error (source of the problem). The guaranteed overlap between unfit and high-error sets ensures this target set is non-empty and substantial.",
+      "prerequisites": [],
+      "tags": ["critical-target", "keystone-core", "error-attribution"],
+      "notation_introduced": [
+        {"symbol": "I_{\\text{target}}", "description": "Critical target set", "type": "set"},
+        {"symbol": "I_{11}", "description": "Stably alive set (alive in both swarms)", "type": "set"},
+        {"symbol": "U_k", "description": "Unfit set in swarm $k$", "type": "set"},
+        {"symbol": "H_k(\\epsilon)", "description": "High-error set in swarm $k$", "type": "set"}
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-mean-companion-fitness-gap",
+      "title": "Lower Bound on Mean Companion Fitness Gap",
+      "statement": "Let a swarm $k$ with $k \\geq 2$ alive walkers have non-degenerate fitness range $\\kappa_{V,\\text{gap}}(\\epsilon) > 0$. Let $U_k$ and $F_k$ denote unfit and fit sets with population fractions $f_U := |U_k|/k$ and $f_F := |F_k|/k$, where $f_U, f_F > 0$ and $f_U + f_F = 1$. Denote by $\\mu_U$ and $\\mu_F$ the mean fitness values of the two sets.\n\nFor any walker $i \\in U_k$ (unfit set), the difference between its mean companion fitness and its own fitness is bounded below by:\n\n$$\\mu_{\\text{comp},i} - V_{k,i} \\geq \\frac{f_F f_U}{(k-1)(f_F + f_U^2/f_F)} \\kappa_{V,\\text{gap}}(\\epsilon) =: \\Delta_{\\min}(\\epsilon, f_U, f_F, k) > 0$$",
+      "hypotheses": [
+        {
+          "statement": "Swarm has $k \\geq 2$ alive walkers",
+          "type": "structural"
+        },
+        {
+          "statement": "Non-degenerate fitness range: $\\kappa_{V,\\text{gap}}(\\epsilon) > 0$",
+          "type": "non-degeneracy"
+        },
+        {
+          "statement": "Unfit and fit sets partition alive walkers: $f_U + f_F = 1$, $f_U, f_F > 0$",
+          "type": "partition"
+        }
+      ],
+      "conclusion": {
+        "statement": "Mean companion fitness systematically exceeds unfit walker's fitness",
+        "properties_established": [
+          "$\\mu_{\\text{comp},i} - V_{k,i} \\geq \\Delta_{\\min}(\\epsilon, f_U, f_F, k)$",
+          "$\\Delta_{\\min} > 0$ for all $k \\geq 2$",
+          "Bound is N-uniform (doesn't vanish as $k \\to \\infty$)",
+          "Inter-set mean gap: $\\mu_F - \\mu_U \\geq \\frac{f_U}{f_F + f_U^2/f_F} \\kappa_{V,\\text{gap}}(\\epsilon)$"
+        ],
+        "quantitative_bounds": {
+          "minimum_gap": "$\\Delta_{\\min}(\\epsilon, f_U, f_F, k)$",
+          "description": "Explicit formula for minimum fitness gap",
+          "n_uniformity": "Depends on $k$ through factor $1/(k-1)$ but remains positive",
+          "dependencies": ["Population fractions $f_U, f_F$", "Fitness range $\\kappa_{V,\\text{gap}}(\\epsilon)$"]
+        }
+      },
+      "importance": "technical",
+      "proof_reference": {
+        "type": "inline",
+        "inline": true,
+        "summary": "Three-step proof: (1) Express mean companion fitness algebraically, (2) Bound using population fractions and partition structure, (3) Relate inter-set mean difference to fitness range using variance decomposition"
+      },
+      "prerequisites": [],
+      "tags": ["fitness-gap", "companion-selection", "n-uniform-bound", "keystone-component"],
+      "related_concepts": [
+        {
+          "label": "lem-unfit-cloning-pressure",
+          "description": "Uses this gap to establish guaranteed cloning probability",
+          "relationship": "enables"
+        }
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-unfit-cloning-pressure",
+      "title": "Guaranteed Cloning Pressure on the Unfit Set",
+      "statement": "Let a swarm $k$ with $k \\geq 2$ alive walkers be in a state such that its fitness potential range is bounded below by $\\kappa_{V,\\text{gap}}(\\epsilon) > 0$. For any walker $i$ in the unfit set $U_k$, its total cloning probability is bounded below by a positive, N-uniform, and $\\epsilon$-dependent constant:\n\n$$p_{k,i} = \\mathbb{E}_{c \\sim \\mathbb{C}_i(S_k)}[\\pi(S(V_{k,c}, V_{k,i}))] \\geq p_u(\\epsilon) > 0$$",
+      "hypotheses": [
+        {
+          "statement": "Swarm has $k \\geq 2$ alive walkers",
+          "type": "structural"
+        },
+        {
+          "statement": "Fitness range bounded below: $\\kappa_{V,\\text{gap}}(\\epsilon) > 0$",
+          "type": "non-degeneracy"
+        },
+        {
+          "statement": "Walker $i$ is in unfit set: $i \\in U_k$",
+          "type": "classification"
+        }
+      ],
+      "conclusion": {
+        "statement": "Every unfit walker has guaranteed positive cloning probability",
+        "properties_established": [
+          "$p_{k,i} \\geq p_u(\\epsilon) > 0$ for all $i \\in U_k$",
+          "Bound is N-uniform: $p_u(\\epsilon)$ independent of $N$",
+          "Bound is $\\epsilon$-dependent: explicit function of interaction range",
+          "Uniform across entire unfit set"
+        ],
+        "quantitative_bounds": {
+          "minimum_probability": "$p_u(\\epsilon) := \\pi(S_u(\\epsilon, k))$",
+          "description": "Explicit lower bound on cloning probability for unfit walkers",
+          "dependencies": ["Fitness gap $\\Delta_{\\min}$", "Cloning score function $\\pi$", "Maximum fitness $V_{\\text{pot,max}}$"]
+        }
+      },
+      "importance": "foundational",
+      "proof_reference": {
+        "type": "inline",
+        "inline": true,
+        "summary": "Uses fitness gap from lem-mean-companion-fitness-gap to establish positive average cloning score, then applies Jensen's inequality to convert average score to guaranteed probability"
+      },
+      "prerequisites": [
+        {
+          "label": "lem-mean-companion-fitness-gap",
+          "type": "lemma",
+          "role": "required",
+          "description": "Provides guaranteed fitness gap for unfit walkers"
+        }
+      ],
+      "tags": ["cloning-pressure", "unfit-targeting", "n-uniform", "keystone-component"],
+      "related_concepts": [
+        {
+          "label": "lem-quantitative-keystone",
+          "description": "Extends this to critical target set for main theorem",
+          "relationship": "component-of"
+        }
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-quantitative-keystone",
+      "title": "The N-Uniform Quantitative Keystone Lemma",
+      "statement": "Under the foundational axioms laid out in Chapter 4, there exist:\n- a structural error threshold $R^2_{\\text{spread}} > 0$,\n- a minimum feedback coefficient $\\chi(\\epsilon) > 0$,\n- and a constant offset $g_{\\max}(\\epsilon) \\geq 0$,\n\nall of which may depend on $\\epsilon$ but are independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n\n$$\\frac{1}{N}\\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i})\\|\\Delta\\delta_{x,i}\\|^2 \\geq \\chi(\\epsilon) V_{\\text{struct}} - g_{\\max}(\\epsilon)$$\n\nwhere $I_{11}$ is the set of stably alive walkers and $p_{k,i}$ is the total cloning probability for walker $i$ in swarm $k$.",
+      "hypotheses": [
+        {
+          "statement": "Foundational axioms from Chapter 4 satisfied (Lipschitz regularity, Safe Harbor, Non-deceptive landscape, Velocity regularization, Active diversity)",
+          "type": "axiomatic"
+        },
+        {
+          "statement": "Pair of swarms $(S_1, S_2)$ in coupled state space",
+          "type": "structural"
+        }
+      ],
+      "conclusion": {
+        "statement": "Quantitative link between structural error and collective cloning response",
+        "properties_established": [
+          "N-uniform feedback: coefficients independent of $N$",
+          "Linear lower bound on cloning response for large error",
+          "Trivially satisfied in low-error regime ($V_{\\text{struct}} \\leq R^2_{\\text{spread}}$)",
+          "Constructive proof in high-error regime ($V_{\\text{struct}} > R^2_{\\text{spread}}$)",
+          "Corrective pressure concentrated on critical target set $I_{\\text{target}}$"
+        ],
+        "quantitative_bounds": {
+          "feedback_coefficient": "$\\chi(\\epsilon) > 0$",
+          "offset": "$g_{\\max}(\\epsilon) \\geq \\chi(\\epsilon) R^2_{\\text{spread}}$",
+          "description": "Left-hand side (weighted cloning action) lower-bounded by linear function of structural error",
+          "dependencies": ["Interaction range $\\epsilon$", "System parameters", "Foundational axioms"]
+        }
+      },
+      "importance": "foundational",
+      "proof_reference": {
+        "type": "deferred",
+        "deferred": true,
+        "reason": "Main theorem requiring full causal chain from Chapters 6-8",
+        "summary": "Proof strategy: (1) Low-error regime satisfied by choice of $g_{\\max}$, (2) High-error regime uses geometric partitioning (Ch 6) + intelligent targeting (Ch 7) + concentrated cloning pressure (lem-unfit-cloning-pressure) to construct explicit bounds"
+      },
+      "prerequisites": [
+        {
+          "label": "def-critical-target-set",
+          "type": "definition",
+          "role": "uses"
+        },
+        {
+          "label": "lem-unfit-cloning-pressure",
+          "type": "lemma",
+          "role": "required",
+          "description": "Provides guaranteed cloning probability on target set"
+        }
+      ],
+      "tags": ["keystone-lemma", "main-theorem", "n-uniform", "corrective-feedback", "convergence-engine"],
+      "related_concepts": [
+        {
+          "label": "synergistic-dissipation",
+          "description": "Keystone Lemma enables proof that cloning contracts $V_{\\text{Var}}$ (Chapter 9-11)",
+          "relationship": "enables"
+        },
+        {
+          "label": "geometric-ergodicity",
+          "description": "Keystone Lemma is central tool for drift analysis proving exponential convergence",
+          "relationship": "critical-for"
+        }
+      ]
+    }
+  ],
+  "dependency_graph": {
+    "nodes": [
+      {"label": "def-critical-target-set", "type": "definition", "level": 0},
+      {"label": "lem-mean-companion-fitness-gap", "type": "lemma", "level": 1},
+      {"label": "lem-unfit-cloning-pressure", "type": "lemma", "level": 2},
+      {"label": "lem-quantitative-keystone", "type": "lemma", "level": 3}
+    ],
+    "edges": [
+      {
+        "from": "lem-unfit-cloning-pressure",
+        "to": "lem-mean-companion-fitness-gap",
+        "relationship": "requires",
+        "critical": true,
+        "description": "Uses fitness gap to establish cloning probability"
+      },
+      {
+        "from": "lem-quantitative-keystone",
+        "to": "def-critical-target-set",
+        "relationship": "uses",
+        "critical": true,
+        "description": "Concentrates analysis on critical target set"
+      },
+      {
+        "from": "lem-quantitative-keystone",
+        "to": "lem-unfit-cloning-pressure",
+        "relationship": "requires",
+        "critical": true,
+        "description": "Extends cloning pressure guarantee to full inequality"
+      }
+    ]
+  },
+  "constants_glossary": {
+    "R_spread": {
+      "symbol": "R^2_{\\text{spread}}",
+      "value": "$\\epsilon$-dependent threshold",
+      "description": "Structural error threshold distinguishing low/high error regimes",
+      "units": "squared distance",
+      "defined_in": "lem-quantitative-keystone",
+      "used_in": ["lem-quantitative-keystone"]
+    },
+    "chi_epsilon": {
+      "symbol": "\\chi(\\epsilon)",
+      "value": "N-uniform positive function of $\\epsilon$",
+      "description": "Minimum feedback coefficient (slope of linear bound)",
+      "units": "dimensionless",
+      "defined_in": "lem-quantitative-keystone",
+      "used_in": ["lem-quantitative-keystone"]
+    },
+    "g_max": {
+      "symbol": "g_{\\max}(\\epsilon)",
+      "value": "$\\epsilon$-dependent non-negative constant",
+      "description": "Constant offset in Keystone inequality",
+      "units": "squared distance",
+      "defined_in": "lem-quantitative-keystone",
+      "used_in": ["lem-quantitative-keystone"]
+    },
+    "kappa_V_gap": {
+      "symbol": "\\kappa_{V,\\text{gap}}(\\epsilon)",
+      "value": "$\\epsilon$-dependent positive function",
+      "description": "Fitness potential range (max - min fitness)",
+      "units": "fitness units",
+      "defined_in": "lem-mean-companion-fitness-gap",
+      "used_in": ["lem-mean-companion-fitness-gap", "lem-unfit-cloning-pressure"]
+    },
+    "Delta_min": {
+      "symbol": "\\Delta_{\\min}(\\epsilon, f_U, f_F, k)",
+      "value": "Explicit function of parameters",
+      "description": "Minimum companion fitness gap for unfit walkers",
+      "units": "fitness units",
+      "defined_in": "lem-mean-companion-fitness-gap",
+      "used_in": ["lem-mean-companion-fitness-gap", "lem-unfit-cloning-pressure"]
+    },
+    "p_u": {
+      "symbol": "p_u(\\epsilon)",
+      "value": "N-uniform positive function of $\\epsilon$",
+      "description": "Minimum cloning probability for unfit walkers",
+      "units": "probability",
+      "defined_in": "lem-unfit-cloning-pressure",
+      "used_in": ["lem-unfit-cloning-pressure", "lem-quantitative-keystone"]
+    }
+  },
+  "notation_index": {
+    "I_{\\text{target}}": "Critical target set (stably alive ∩ unfit ∩ high-error)",
+    "I_{11}": "Stably alive set (alive in both swarms)",
+    "U_k": "Unfit set in swarm $k$",
+    "F_k": "Fit set in swarm $k$",
+    "H_k(\\epsilon)": "High-error set in swarm $k$",
+    "f_U": "Population fraction of unfit set",
+    "f_F": "Population fraction of fit set",
+    "\\mu_U": "Mean fitness of unfit set",
+    "\\mu_F": "Mean fitness of fit set",
+    "\\mu_{\\text{comp},i}": "Mean fitness of walker $i$'s potential companions",
+    "V_{k,i}": "Fitness potential of walker $i$ in swarm $k$",
+    "p_{k,i}": "Total cloning probability for walker $i$ in swarm $k$",
+    "\\pi(S)": "Cloning probability function",
+    "S(V_c, V_i)": "Cloning score (companion fitness $V_c$ vs. walker fitness $V_i$)",
+    "V_{\\text{struct}}": "Structural error component of Lyapunov function",
+    "\\Delta\\delta_{x,i}": "Difference of centered position vectors"
+  }
+}

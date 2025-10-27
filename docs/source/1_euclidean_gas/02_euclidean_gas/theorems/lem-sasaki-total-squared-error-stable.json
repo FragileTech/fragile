@@ -1,0 +1,287 @@
+{
+  "label": "lem-sasaki-total-squared-error-stable",
+  "name": "Mean-square error on stable walkers (Sasaki)",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "02_euclidean_gas",
+    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+    "section": "§2.3.3 Continuity of the Expected Raw Distance Vector (k >= 2 Regime)",
+    "directive_label": "lem-sasaki-total-squared-error-stable",
+    "line_range": [1152, 1186]
+  },
+  "input_objects": [
+    "obj-swarm-state-1",
+    "obj-swarm-state-2",
+    "obj-measurement-operator",
+    "obj-sasaki-metric",
+    "obj-alive-set",
+    "obj-expected-distance-vector"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-N",
+    "param-k1",
+    "param-k-stable"
+  ],
+  "attributes_required": {
+    "obj-swarm-state-1": [
+      "attr-has-alive-set",
+      "attr-alive-count-k1"
+    ],
+    "obj-swarm-state-2": [
+      "attr-has-alive-set"
+    ],
+    "obj-measurement-operator": [
+      "attr-produces-expected-distance-vector"
+    ],
+    "obj-sasaki-metric": [
+      "attr-is-metric",
+      "attr-defined-on-algorithmic-space"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-sasaki-single-walker-positional-error"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-sasaki-single-walker-positional-error",
+      "lem-sasaki-total-squared-error-stable"
+    ]
+  ],
+  "output_type": "Relation",
+  "attributes_added": [
+    {
+      "label": "attr-mean-square-error-stable-walkers-bounded",
+      "expression": "\\sum_{i\\in\\mathcal A_{\\mathrm{stable}}}\\big|d^{(1)}_i-d^{(2)}_i\\big|^2\\le C_{\\mathrm{pos}}^{\\mathrm{Sasaki}}(k_1,k_{\\mathrm{stable}})\\,\\Delta_{\\mathrm{pos,Sasaki}}^2(\\mathcal S_1,\\mathcal S_2)",
+      "object_label": "obj-expected-distance-vector",
+      "established_by": "lem-sasaki-total-squared-error-stable",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "§2.3.3",
+        "line_range": [1157, 1159]
+      }
+    },
+    {
+      "label": "attr-positional-error-coefficient-defined",
+      "expression": "C_{\\mathrm{pos}}^{\\mathrm{Sasaki}}(k_1,k_{\\mathrm{stable}}):=2\\Big(1+\\frac{k_{\\mathrm{stable}}}{\\max\\{1,k_1-1\\}}\\Big)",
+      "object_label": "obj-measurement-operator",
+      "established_by": "lem-sasaki-total-squared-error-stable",
+      "timestamp": null,
+      "can_be_refined": false,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "§2.3.3",
+        "line_range": [1162, 1162]
+      }
+    }
+  ],
+  "relations_established": [
+    {
+      "label": "rel-distance-vectors-error-bounded-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-expected-distance-vector-1",
+      "target_object": "obj-expected-distance-vector-2",
+      "established_by": "lem-sasaki-total-squared-error-stable",
+      "expression": "\\|\\mathbf{d}^{(1)} - \\mathbf{d}^{(2)}\\|_2^2 \\le C_{\\mathrm{pos}}^{\\mathrm{Sasaki}}(k_1,k_{\\mathrm{stable}})\\,\\Delta_{\\mathrm{pos,Sasaki}}^2(\\mathcal S_1,\\mathcal S_2)",
+      "properties": [
+        {
+          "label": "approx-error-positional",
+          "expression": "C_{\\mathrm{pos}}^{\\mathrm{Sasaki}}(k_1,k_{\\mathrm{stable}})\\,\\Delta_{\\mathrm{pos,Sasaki}}^2(\\mathcal S_1,\\mathcal S_2)",
+          "description": "Mean-square error bound on stable walkers in terms of positional displacement"
+        },
+        {
+          "label": "approx-error-coefficient",
+          "expression": "C_{\\mathrm{pos}}^{\\mathrm{Sasaki}}(k_1,k_{\\mathrm{stable}}) = 2\\Big(1+\\frac{k_{\\mathrm{stable}}}{\\max\\{1,k_1-1\\}}\\Big)",
+          "description": "Positional error amplification coefficient"
+        }
+      ],
+      "tags": [
+        "sasaki-metric",
+        "measurement-operator",
+        "continuity",
+        "stable-walkers",
+        "mean-square-error"
+      ],
+      "timestamp": null,
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "§2.3.3",
+        "directive_label": "lem-sasaki-total-squared-error-stable",
+        "line_range": [1152, 1186]
+      }
+    }
+  ],
+  "statement": "Let $\\mathcal S_1,\\mathcal S_2$ be swarms with alive sets $\\mathcal A_r$ and let $\\mathbf d^{(r)}$ denote the expected raw distance vector produced by the measurement operator on $\\mathcal S_r$. Write $\\mathcal A_{\\mathrm{stable}}:=\\mathcal A_1\\cap\\mathcal A_2$ and $k_{\\mathrm{stable}}:=|\\mathcal A_{\\mathrm{stable}}|$. Then\n\n$$\n\\sum_{i\\in\\mathcal A_{\\mathrm{stable}}}\\big|d^{(1)}_i-d^{(2)}_i\\big|^2\\le C_{\\mathrm{pos}}^{\\mathrm{Sasaki}}(k_1,k_{\\mathrm{stable}})\\,\\Delta_{\\mathrm{pos,Sasaki}}^2(\\mathcal S_1,\\mathcal S_2),\n$$\n\nwhere $C_{\\mathrm{pos}}^{\\mathrm{Sasaki}}(k_1,k_{\\mathrm{stable}}):=2\\Big(1+\\frac{k_{\\mathrm{stable}}}{\\max\\{1,k_1-1\\}}\\Big)$.",
+  "proof_strategy": "Apply Lemma lem-sasaki-single-walker-positional-error to bound individual walker errors $\\Delta_i := |d^{(1)}_i - d^{(2)}_i|$. Square using $(a+b)^2 \\le 2a^2 + 2b^2$ and apply Jensen's inequality. Sum over stable walkers $i \\in \\mathcal A_{\\mathrm{stable}}$ to obtain the total squared error bound with explicit coefficient.",
+  "proof_techniques": [
+    "single-walker-error-decomposition",
+    "cauchy-schwarz",
+    "jensen-inequality",
+    "algebraic-sum-bound"
+  ],
+  "key_dependencies": [
+    "lem-sasaki-single-walker-positional-error"
+  ],
+  "parameters_detailed": [
+    {
+      "label": "param-N",
+      "name": "Number of walkers",
+      "symbol": "N",
+      "parameter_type": "natural",
+      "constraints": "N \\ge 1",
+      "default_value": null
+    },
+    {
+      "label": "param-k1",
+      "name": "Number of alive walkers in swarm 1",
+      "symbol": "k_1",
+      "parameter_type": "natural",
+      "constraints": "k_1 := |\\mathcal A_1|, k_1 \\ge 2",
+      "default_value": null
+    },
+    {
+      "label": "param-k-stable",
+      "name": "Number of stable alive walkers",
+      "symbol": "k_{\\mathrm{stable}}",
+      "parameter_type": "natural",
+      "constraints": "k_{\\mathrm{stable}} := |\\mathcal A_{\\mathrm{stable}}|, k_{\\mathrm{stable}} \\le \\min(k_1, k_2)",
+      "default_value": null
+    }
+  ],
+  "objects_detailed": [
+    {
+      "label": "obj-swarm-state-1",
+      "name": "First swarm state",
+      "mathematical_expression": "\\mathcal S_1 = ((x_{1,i}, v_{1,i}, s_{1,i}))_{i=1}^N",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "swarm",
+        "euclidean-gas",
+        "state-space"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-swarm-state-2",
+      "name": "Second swarm state",
+      "mathematical_expression": "\\mathcal S_2 = ((x_{2,i}, v_{2,i}, s_{2,i}))_{i=1}^N",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "swarm",
+        "euclidean-gas",
+        "state-space"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-measurement-operator",
+      "name": "Measurement operator",
+      "mathematical_expression": "\\mathcal M: \\Sigma_N \\to \\mathbb{R}^N, \\mathcal S \\mapsto \\mathbf{d}",
+      "object_type": "operator",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "measurement",
+        "euclidean-gas",
+        "operator"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-sasaki-metric",
+      "name": "Sasaki metric on algorithmic space",
+      "mathematical_expression": "d_{\\mathcal Y}^{\\mathrm{Sasaki}}((x_1, v_1), (x_2, v_2)) = \\sqrt{\\|x_1 - x_2\\|^2 + \\lambda_v \\|v_1 - v_2\\|^2}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "metric",
+        "sasaki",
+        "algorithmic-space"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-alive-set",
+      "name": "Alive walker set",
+      "mathematical_expression": "\\mathcal A(\\mathcal S) = \\{i \\in [N] : s_i = 1\\}",
+      "object_type": "set",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "swarm",
+        "alive-set",
+        "index-set"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-expected-distance-vector",
+      "name": "Expected raw distance vector",
+      "mathematical_expression": "\\mathbf{d}^{(r)} = (d_i^{(r)})_{i=1}^N, d_i^{(r)} := \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal S_r)}[d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{r,i}), \\varphi(w_{r,c}))]",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "measurement",
+        "distance",
+        "expected-value"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-expected-distance-vector-1",
+      "name": "Expected distance vector for swarm 1",
+      "mathematical_expression": "\\mathbf{d}^{(1)} = (d_i^{(1)})_{i \\in \\mathcal A_1}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "measurement",
+        "distance",
+        "swarm-1"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-expected-distance-vector-2",
+      "name": "Expected distance vector for swarm 2",
+      "mathematical_expression": "\\mathbf{d}^{(2)} = (d_i^{(2)})_{i \\in \\mathcal A_2}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "measurement",
+        "distance",
+        "swarm-2"
+      ],
+      "source": null
+    }
+  ],
+  "tags": [
+    "euclidean-gas",
+    "sasaki-metric",
+    "measurement-operator",
+    "continuity",
+    "mean-square-error",
+    "stable-walkers",
+    "positional-displacement"
+  ],
+  "related_theorems": [
+    "lem-sasaki-single-walker-positional-error",
+    "thm-sasaki-distance-ms"
+  ]
+}

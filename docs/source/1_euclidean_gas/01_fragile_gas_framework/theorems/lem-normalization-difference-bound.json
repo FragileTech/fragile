@@ -1,0 +1,34 @@
+{
+  "label": "lem-normalization-difference-bound",
+  "name": "Bound on the Error from Normalization Change",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-alive-dead-sets",
+    "obj-raw-value-operator",
+    "obj-companion-selection-measure"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-M-f",
+    "param-card-S1",
+    "param-card-S2"
+  ],
+  "attributes_required": {
+    "obj-raw-value-operator": [
+      "attr-bounded"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-normalization-difference-bound",
+      "expression": "| \\frac{1}{|S_1|} \\sum_{j \\in S_1} f(x_j) - \\frac{1}{|S_2|} \\sum_{k \\in S_2} f(x_k) | \\leq \\text{ErrorBound}(M_f, |S_1|, |S_2|)",
+      "object_label": "obj-swarm-aggregation-operator-axiomatic"
+    }
+  ],
+  "relations_established": []
+}

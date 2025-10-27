@@ -1,0 +1,17 @@
+{
+  "label": "rel-prop-quantitative-explicit-constants-1-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-unknown",
+  "target_object": "obj-unknown",
+  "established_by": "prop-quantitative-explicit-constants",
+  "expression": "parameter-to-error-mapping",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds"
+}

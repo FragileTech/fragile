@@ -1,0 +1,202 @@
+{
+  "label": "thm-hk-convergence-main-assembly",
+  "name": "Conditional Exponential HK-Convergence of the Fragile Gas",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-empirical-measure",
+    "obj-qsd",
+    "obj-hk-metric",
+    "obj-hellinger-distance",
+    "obj-wasserstein-distance",
+    "obj-fragile-gas-dynamics",
+    "obj-kinetic-operator",
+    "obj-cloning-operator",
+    "obj-normalized-measure",
+    "obj-alive-walkers",
+    "obj-density-ratio"
+  ],
+  "input_axioms": [
+    "ax-uniform-density-bound-hk",
+    "def-axiom-guaranteed-revival",
+    "def-axiom-local-perturbation",
+    "ax-confining-potential",
+    "ax-bounded-displacement"
+  ],
+  "input_parameters": [
+    "param-time-step",
+    "param-cloning-noise-variance",
+    "param-friction-coefficient",
+    "param-convergence-rate-hk",
+    "param-convergence-rate-kinetic",
+    "param-convergence-rate-structural",
+    "param-wasserstein-contraction-rate",
+    "param-revival-rate",
+    "param-death-rate",
+    "param-mass-contraction-rate",
+    "param-shape-contraction-rate",
+    "param-noise-constant",
+    "param-hypocoercive-coupling",
+    "param-density-bound-M"
+  ],
+  "properties_required": {
+    "obj-empirical-measure": [
+      "prop-sub-probability-measure"
+    ],
+    "obj-qsd": [
+      "prop-quasi-stationary",
+      "prop-gibbs-structure",
+      "prop-smooth-density"
+    ],
+    "obj-kinetic-operator": [
+      "prop-langevin-dynamics",
+      "prop-hypocoercive"
+    ],
+    "obj-cloning-operator": [
+      "prop-gaussian-regularization",
+      "prop-fitness-weighted"
+    ],
+    "obj-normalized-measure": [
+      "prop-probability-measure"
+    ],
+    "obj-density-ratio": [
+      "prop-uniformly-bounded"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-mass-contraction-revival-death",
+    "lem-structural-variance-contraction",
+    "lem-kinetic-hellinger-contraction"
+  ],
+  "internal_propositions": [
+    "prop-killing-rate-continuous"
+  ],
+  "lemma_dag_edges": [
+    [
+      "lem-mass-contraction-revival-death",
+      "thm-hk-convergence-main-assembly"
+    ],
+    [
+      "lem-structural-variance-contraction",
+      "thm-hk-convergence-main-assembly"
+    ],
+    [
+      "lem-kinetic-hellinger-contraction",
+      "thm-hk-convergence-main-assembly"
+    ],
+    [
+      "prop-killing-rate-continuous",
+      "lem-mass-contraction-revival-death"
+    ]
+  ],
+  "output_type": "Convergence",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-hk-convergence-main-assembly-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-empirical-measure",
+      "target_object": "obj-qsd",
+      "established_by": "thm-hk-convergence-main-assembly",
+      "expression": "rel-hk-exponential-bound",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    },
+    {
+      "label": "rel-thm-hk-convergence-main-assembly-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-empirical-measure",
+      "target_object": "obj-qsd",
+      "established_by": "thm-hk-convergence-main-assembly",
+      "expression": "rel-hellinger-contraction-coupling",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    },
+    {
+      "label": "rel-thm-hk-convergence-main-assembly-2-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-empirical-measure",
+      "target_object": "obj-qsd",
+      "established_by": "thm-hk-convergence-main-assembly",
+      "expression": "rel-wasserstein-contraction-coupling",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    },
+    {
+      "label": "rel-thm-hk-convergence-main-assembly-3-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-empirical-measure",
+      "target_object": "obj-qsd",
+      "established_by": "thm-hk-convergence-main-assembly",
+      "expression": "rel-mass-shape-convergence",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    },
+    {
+      "label": "rel-thm-hk-convergence-main-assembly-4-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-empirical-measure",
+      "target_object": "obj-qsd",
+      "established_by": "thm-hk-convergence-main-assembly",
+      "expression": "rel-error-accumulation",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    },
+    {
+      "label": "rel-thm-hk-convergence-main-assembly-5-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-empirical-measure",
+      "target_object": "obj-qsd",
+      "established_by": "thm-hk-convergence-main-assembly",
+      "expression": "rel-rate-bottleneck-analysis",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    }
+  ]
+}

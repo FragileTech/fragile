@@ -1,0 +1,85 @@
+{
+  "label": "thm-geometry-guarantees-variance",
+  "name": "Geometric Structure Guarantees Measurement Variance",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-greedy-pairing-algorithm",
+    "obj-swarm-and-state-space",
+    "obj-unified-high-low-error-sets",
+    "obj-distance-to-companion-measurement"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "R_var",
+    "kappa_meas",
+    "epsilon",
+    "D_H",
+    "R_L",
+    "f_H",
+    "f_L"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [
+    "lem-greedy-preserves-signal",
+    "lem-outlier-fraction-lower-bound",
+    "lem-geometric-separation-of-partition"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-greedy-preserves-signal",
+      "thm-geometry-guarantees-variance"
+    ],
+    [
+      "lem-outlier-fraction-lower-bound",
+      "thm-geometry-guarantees-variance"
+    ],
+    [
+      "lem-geometric-separation-of-partition",
+      "thm-geometry-guarantees-variance"
+    ]
+  ],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-geometry-guarantees-variance-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-greedy-pairing-algorithm",
+      "target_object": "obj-swarm-and-state-space",
+      "established_by": "thm-geometry-guarantees-variance",
+      "expression": "high_variance_implies_measurement_signal",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    },
+    {
+      "label": "rel-thm-geometry-guarantees-variance-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-greedy-pairing-algorithm",
+      "target_object": "obj-swarm-and-state-space",
+      "established_by": "thm-geometry-guarantees-variance",
+      "expression": "law_of_total_variance_application",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

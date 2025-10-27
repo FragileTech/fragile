@@ -1,0 +1,63 @@
+================================================================================
+ULTRATHINK DEEP DEPENDENCY ANALYSIS REPORT
+Document: 05_kinetic_contraction.md
+Size: 107.6 KB, 3175 lines
+================================================================================
+
+SUMMARY STATISTICS
+--------------------------------------------------------------------------------
+Total directives: 34
+Total references: 11
+Unique references: 7
+Dependencies: 84
+Missing references: 1
+Cross-document deps: 1
+Framework axiom deps: 1
+
+DIRECTIVES BY TYPE
+--------------------------------------------------------------------------------
+  definition: 7
+  remark: 6
+  proposition: 5
+  theorem: 5
+  axiom: 3
+  corollary: 3
+  lemma: 2
+  proof: 2
+  example: 1
+
+DEPENDENCIES BY TYPE
+--------------------------------------------------------------------------------
+  implicit_notation: 79
+  explicit_ref: 3
+  framework_axiom: 1
+  cross_doc: 1
+
+DEPENDENCIES BY STRENGTH
+--------------------------------------------------------------------------------
+  supporting: 80
+  important: 3
+  critical: 1
+
+CROSS-DOCUMENT DEPENDENCIES
+--------------------------------------------------------------------------------
+
+03_cloning.md:
+  assump-uniform-variance-bounds → thm-positional-variance-contraction
+
+MISSING REFERENCES
+--------------------------------------------------------------------------------
+  - thm-positional-variance-contraction
+
+STANDARD MATHEMATICAL PREREQUISITES
+--------------------------------------------------------------------------------
+  - analysis
+  - calculus
+  - differential_equations
+  - geometry
+  - linear_algebra
+  - measure_theory
+  - metric_space
+  - probability
+  - stochastic_processes
+  - topology

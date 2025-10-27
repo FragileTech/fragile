@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-variance-to-gap-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-unknown",
+  "target_object": "obj-unknown",
+  "established_by": "lem-variance-to-gap",
+  "expression": "max|v_i - v_j| >= sqrt(2*kappa)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

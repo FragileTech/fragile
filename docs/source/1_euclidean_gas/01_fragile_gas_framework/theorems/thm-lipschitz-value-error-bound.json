@@ -1,0 +1,25 @@
+{
+  "label": "thm-lipschitz-value-error-bound",
+  "name": "Bounding the Squared Value Error",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-lipschitz-value-error-coefficients",
+    "obj-components-mean-square-standardization-error"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-value-error-lipschitz",
+      "expression": "\\|E_{value}\\| \\le L_{value} \\cdot \\|\\Delta_{value}\\|",
+      "object_label": "obj-lipschitz-value-error-coefficients"
+    }
+  ],
+  "relations_established": []
+}

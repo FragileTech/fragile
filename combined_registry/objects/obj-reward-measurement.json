@@ -1,0 +1,14 @@
+{
+  "label": "obj-reward-measurement",
+  "name": "Reward Measurement",
+  "mathematical_expression": "r_i := \\mathbb{E}_{\\delta_{x_i}}[R] = \\int_{\\mathcal{X}} R(x) \\, d\\delta_{x_i}(x) = R(x_i)",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

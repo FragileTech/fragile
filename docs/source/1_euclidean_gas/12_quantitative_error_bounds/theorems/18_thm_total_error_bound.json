@@ -1,0 +1,99 @@
+{
+  "label": "thm-total-error-bound",
+  "type": "theorem",
+  "name": "Total Error Bound for Discrete Fragile Gas",
+  "line_range": [
+    2494,
+    2703
+  ],
+  "status": "complete",
+  "main_result": true,
+  "part": "IV",
+  "input_objects": [
+    "obj-nu-n-discrete",
+    "obj-rho-0"
+  ],
+  "input_axioms": [
+    "axiom-confined-potential"
+  ],
+  "input_theorems": [
+    "thm-kl-convergence-euclidean",
+    "thm-quantitative-propagation-chaos",
+    "thm-quantitative-error-propagation"
+  ],
+  "input_parameters": [
+    "C_MF",
+    "C_discrete",
+    "N",
+    "delta_t"
+  ],
+  "attributes_required": {
+    "obj-nu-n-discrete": [
+      "attr-n-uniform-lsi",
+      "attr-geometric-ergodicity"
+    ],
+    "obj-potential-u": [
+      "attr-c4-regularity",
+      "attr-confinement"
+    ],
+    "obj-fitness-f": [
+      "attr-c4-regularity"
+    ],
+    "obj-observable-phi": [
+      "attr-c4-regularity"
+    ]
+  },
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-total-error-two-sources",
+    "attr-optimal-mean-field-rate",
+    "attr-n-and-dt-uniform-constants"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-fully-discrete-system",
+      "to": "obj-mean-field-limit",
+      "type": "total_approximation_error",
+      "bound": "|E_nu_N_discrete[phi_N] - E_rho_0[phi]| <= (C_MF/sqrt(N) + C_discrete*dt/N) * ||phi||_C4",
+      "order": "O(1/sqrt(N) + dt/N)"
+    }
+  ],
+  "internal_lemmas": [],
+  "proof_strategy": "Triangle inequality: discrete\u2192continuous N-particle + N-particle\u2192mean-field",
+  "error_decomposition": {
+    "statistical_error": "O(1/sqrt(N)) - from particle approximation",
+    "discretization_error": "O(dt/N) - from operator splitting"
+  },
+  "notes": [
+    "MAIN RESULT of entire document",
+    "Two error sources with explicit constants",
+    "Discretization term O(dt/N) NEGLIGIBLE vs mean-field O(1/sqrt(N))",
+    "Both constants uniform in N and dt (for dt < dt_0)",
+    "Optimal O(1/sqrt(N)) rate (CLT)",
+    "Simple scaling: increase N reduces BOTH errors",
+    "No balancing needed between N and dt"
+  ],
+  "practical_implications": {
+    "balanced_regime": "dt ~ 1/sqrt(N) for equal contribution",
+    "typical_case": "For N=10^4, dt=0.01: MF error ~0.01, discrete ~10^-6",
+    "recommendation": "Use simple Lie splitting; discretization already negligible"
+  },
+  "constant_dependencies": {
+    "C_MF": [
+      "gamma",
+      "sigma",
+      "lambda",
+      "delta",
+      "beta",
+      "kappa_conf",
+      "kappa_W",
+      "C_0"
+    ],
+    "C_discrete": [
+      "C_split",
+      "C_poisson",
+      "kappa_mix"
+    ]
+  },
+  "external_references": []
+}

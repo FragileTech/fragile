@@ -1,0 +1,15 @@
+{
+  "label": "obj-alive-set-potential-operator",
+  "name": "Rescaled Potential Operator for the Alive Set",
+  "mathematical_expression": "V_i := (d'_i)^{\\beta} \\cdot (r'_i)^{\\alpha} \\quad \\text{for } i \\in \\mathcal{A}_t",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

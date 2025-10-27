@@ -1,0 +1,16 @@
+{
+  "label": "lem-sasaki-direct-shift-bound-sq",
+  "name": "Bound on the Squared Direct Shift Component",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": []
+}

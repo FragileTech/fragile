@@ -1,0 +1,6 @@
+{
+  "label": "axiom-def-axiom-bounded-relative-collapse",
+  "statement": "Axiom of Bounded Relative Collapse",
+  "mathematical_expression": "\\frac{|\\mathcal{A}(\\mathcal{S}_2)|}{|\\mathcal{A}(\\mathcal{S}_1)|} \\ge c_{\\min}",
+  "foundational_framework": "Euclidean Gas"
+}

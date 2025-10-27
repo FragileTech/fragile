@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0",
+  "statistics": {
+    "total_objects": 23,
+    "counts_by_type": {
+      "MathematicalObject": 8,
+      "Axiom": 3,
+      "Parameter": 0,
+      "Property": 0,
+      "Relationship": 0,
+      "TheoremBox": 12
+    },
+    "total_tags": 3,
+    "all_tags": [
+      "particle",
+      "swarm",
+      "variance"
+    ]
+  },
+  "all_ids": [
+    "obj-kinetic-operator-stratonovich",
+    "obj-baoab-integrator",
+    "obj-generator",
+    "obj-hypocoercive-norm",
+    "obj-core-exterior-regions",
+    "obj-velocity-variance-recall",
+    "obj-positional-variance-recall",
+    "obj-boundary-potential-recall",
+    "axiom-confining-potential",
+    "axiom-diffusion-tensor",
+    "axiom-friction-timestep",
+    "thm-discretization",
+    "thm-inter-swarm-contraction-kinetic",
+    "thm-velocity-variance-contraction-kinetic",
+    "thm-positional-variance-bounded-expansion",
+    "thm-boundary-potential-contraction-kinetic",
+    "lem-location-error-drift-kinetic",
+    "lem-structural-error-drift-kinetic",
+    "attr-fokker-planck-kinetic",
+    "attr-weak-error-variance",
+    "attr-weak-error-boundary",
+    "attr-weak-error-wasserstein",
+    "attr-explicit-constants"
+  ],
+  "all_tags": [
+    "particle",
+    "swarm",
+    "variance"
+  ]
+}

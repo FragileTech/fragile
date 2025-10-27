@@ -1,0 +1,14 @@
+{
+  "label": "obj-adaptive-tuning",
+  "name": "Adaptive Parameter Tuning",
+  "mathematical_expression": "\\mathbf{P}_0",
+  "object_type": "operator",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "swarm",
+    "convergence",
+    "variance"
+  ],
+  "source": null
+}

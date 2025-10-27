@@ -1,0 +1,67 @@
+{
+  "label": "lem-cross-swarm-distance",
+  "name": "Cross-Swarm Distance Decomposition",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-target-complement"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "L",
+    "R_I",
+    "d"
+  ],
+  "properties_required": {
+    "swarm-separation": [
+      "L >> R_I (separated swarms regime)",
+      "Finite diameters",
+      "Well-defined cluster barycenters"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-cross-swarm-distance-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-target-complement",
+      "target_object": "obj-target-complement",
+      "established_by": "lem-cross-swarm-distance",
+      "expression": "D_II ≈ L² + Var_x(I_1) + Var_x(I_2) + O(L·R_I)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    },
+    {
+      "label": "rel-lem-cross-swarm-distance-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-target-complement",
+      "target_object": "obj-target-complement",
+      "established_by": "lem-cross-swarm-distance",
+      "expression": "Analogous decompositions for D_IJ, D_JI, D_JJ",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "label": "thm-derivation-of-stability-condition",
+  "name": "Derivation of the Stability Condition for Intelligent Adaptation",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-fitness-operator",
+    "obj-fitness-potential-operator",
+    "obj-swarm-and-state-space",
+    "obj-unified-high-low-error-sets"
+  ],
+  "input_axioms": [
+    "axiom-ax-non-deceptive-landscape",
+    "axiom-def-axiom-sufficient-amplification"
+  ],
+  "input_parameters": [
+    "alpha",
+    "beta",
+    "epsilon",
+    "kappa_mean_d",
+    "kappa_mean_r",
+    "g_A_max",
+    "eta"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [
+    "lem-variance-to-mean-separation",
+    "lem-log-gap-lower-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "thm-geometry-guarantees-variance",
+      "thm-derivation-of-stability-condition"
+    ],
+    [
+      "lem-variance-to-mean-separation",
+      "thm-derivation-of-stability-condition"
+    ],
+    [
+      "lem-log-gap-lower-bound",
+      "thm-derivation-of-stability-condition"
+    ]
+  ],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-derivation-of-stability-condition-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-fitness-operator",
+      "target_object": "obj-fitness-potential-operator",
+      "established_by": "thm-derivation-of-stability-condition",
+      "expression": "diversity_signal_overcomes_reward_deception",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    },
+    {
+      "label": "rel-thm-derivation-of-stability-condition-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-fitness-operator",
+      "target_object": "obj-fitness-potential-operator",
+      "established_by": "thm-derivation-of-stability-condition",
+      "expression": "necessary_sufficient_condition_for_intelligence",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

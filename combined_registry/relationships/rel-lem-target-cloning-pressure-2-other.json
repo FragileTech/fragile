@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-target-cloning-pressure-2-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-target-complement",
+  "target_object": "obj-unfit-set",
+  "established_by": "lem-target-cloning-pressure",
+  "expression": "N-uniformity established by Theorem 8.7.1",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction"
+}

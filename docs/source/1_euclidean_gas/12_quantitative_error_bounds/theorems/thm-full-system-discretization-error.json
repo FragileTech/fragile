@@ -1,0 +1,39 @@
+{
+  "label": "thm-full-system-discretization-error",
+  "name": "Full System (Langevin + Cloning) O(\u0394t) Discretization Error",
+  "statement_type": "theorem",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [],
+  "input_theorems": [
+    "thm-langevin-baoab-discretization-error",
+    "lem-lie-splitting-weak-error",
+    "lem-uniform-geometric-ergodicity",
+    "thm-quantitative-error-propagation"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "C_total",
+    "phi_C4",
+    "Delta_t"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-o-dt-total-error"
+  ],
+  "relations_established": [
+    "order-drop-from-non-commutativity",
+    "cloning-langevin-interaction-reduces-order"
+  ],
+  "bound": "|E_nu_discrete[phi] - E_nu_cont[phi]| <= C_total * ||phi||_C4 * Delta_t",
+  "key_insight": "O(Delta_t) dominated by cloning (not O((Delta_t)^2) from BAOAB)",
+  "reason": "Non-commutativity [L_clone, L_Langevin] != 0",
+  "target_for": "Part III analysis"
+}

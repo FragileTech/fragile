@@ -1,0 +1,72 @@
+{
+  "label": "lem-cubic-patch-coefficients",
+  "name": "Explicit Coefficients of the Smooth Rescale Patch",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-asymmetric-rescale-function"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-boundary-smoothness",
+    "axiom-def-axiom-boundary-regularity"
+  ],
+  "input_parameters": [
+    "param-z-max"
+  ],
+  "properties_required": {
+    "obj-asymmetric-rescale-function": [
+      "prop-is-cubic-polynomial"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-coefficient-a",
+      "expression": "a = -2",
+      "object_label": "obj-asymmetric-rescale-function",
+      "established_by": "lem-cubic-patch-coefficients",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-coefficient-b",
+      "expression": "b = 3",
+      "object_label": "obj-asymmetric-rescale-function",
+      "established_by": "lem-cubic-patch-coefficients",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-coefficient-c",
+      "expression": "c = 0",
+      "object_label": "obj-asymmetric-rescale-function",
+      "established_by": "lem-cubic-patch-coefficients",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-coefficient-d",
+      "expression": "d = 0",
+      "object_label": "obj-asymmetric-rescale-function",
+      "established_by": "lem-cubic-patch-coefficients",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

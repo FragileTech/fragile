@@ -1,0 +1,486 @@
+{
+  "axioms": [
+    {
+      "label": "axiom-domain-regularity",
+      "statement": "(Axiom EG-0): Regularity of the Domain",
+      "mathematical_expression": "Mathematical formulation of (Axiom EG-0): Regularity of the Domain",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-lipschitz-fields",
+      "statement": "(Axiom EG-1): Lipschitz Regularity of Environmental Fields",
+      "mathematical_expression": "Mathematical formulation of (Axiom EG-1): Lipschitz Regularity of Environmental Fields",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-safe-harbor",
+      "statement": "(Axiom EG-2): Existence of a Safe Harbor",
+      "mathematical_expression": "safe-harbor-set-C-safe",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-non-deceptive-landscape",
+      "statement": "(Axiom EG-3): Non-Deceptive Landscape",
+      "mathematical_expression": "Mathematical formulation of (Axiom EG-3): Non-Deceptive Landscape",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-velocity-regularization",
+      "statement": "(Axiom EG-4): Velocity Regularization via Reward",
+      "mathematical_expression": "total-reward-function-R-x-v",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-active-diversity",
+      "statement": "(Axiom EG-5): Active Diversity Signal",
+      "mathematical_expression": "Mathematical formulation of (Axiom EG-5): Active Diversity Signal",
+      "foundational_framework": "Euclidean Gas"
+    }
+  ],
+  "objects": [
+    {
+      "label": "obj-single-swarm-space",
+      "name": "Single-Walker and Swarm State Spaces",
+      "mathematical_expression": "walker-tuple",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-coupled-state-space",
+      "name": "The Coupled State Space",
+      "mathematical_expression": "coupled-state-space",
+      "object_type": "space",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-state-difference-vectors",
+      "name": "State Difference Vectors",
+      "mathematical_expression": "position-difference-vector",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-barycentres-and-centered-vectors",
+      "name": "Barycentres and Centered Vectors (Alive Walkers Only)",
+      "mathematical_expression": "positional-center-of-mass",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-location-error-component",
+      "name": "The Location Error Component (V_loc)",
+      "mathematical_expression": "location-error-component-V-loc",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-structural-error-component",
+      "name": "The Structural Error Component (V_struct)",
+      "mathematical_expression": "structural-error-component-V-struct",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-full-synergistic-lyapunov-function",
+      "name": "The Full Synergistic Hypocoercive Lyapunov Function",
+      "mathematical_expression": "total-synergistic-lyapunov-function-V-total",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-variance-conversions",
+      "name": "Variance Notation Conversion Formulas",
+      "mathematical_expression": "un-normalized-sum-of-squared-deviations-Sk",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-algorithmic-distance-metric",
+      "name": "Algorithmic Distance for Companion Selection",
+      "mathematical_expression": "algorithmic-distance-d-alg",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-spatial-pairing-operator-diversity",
+      "name": "Spatially-Aware Pairing Operator (Idealized Model)",
+      "mathematical_expression": "spatially-aware-pairing-operator-P-pair",
+      "object_type": "operator",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-greedy-pairing-algorithm",
+      "name": "Sequential Stochastic Greedy Pairing Operator",
+      "mathematical_expression": "companion-map-c",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-geometric-partition",
+      "name": "Geometric Partitioning of High-Variance Swarms",
+      "mathematical_expression": "high-error-set-Hk",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-raw-value-operators",
+      "name": "Raw Value Operators",
+      "mathematical_expression": "raw-reward-ri",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-swarm-aggregation-operator",
+      "name": "Swarm Aggregation Operator",
+      "mathematical_expression": "swarm-aggregation-operator-M",
+      "object_type": "operator",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-patched-std-dev-function",
+      "name": "Patched Standard Deviation Function",
+      "mathematical_expression": "patched-standard-deviation-function-sigma-prime-patch",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-standardization-operator",
+      "name": "N-Dimensional Standardization Operator",
+      "mathematical_expression": "z-scores-zi",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-logistic-rescale",
+      "name": "Canonical Logistic Rescale Function",
+      "mathematical_expression": "canonical-logistic-rescale-function-gA",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-fitness-potential-operator",
+      "name": "Fitness Potential Operator",
+      "mathematical_expression": "fitness-potential-vector-V-fit",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-cloning-companion-operator",
+      "name": "Companion Selection Operator for Cloning",
+      "mathematical_expression": "companion-selection-operator-for-cloning-C-i",
+      "object_type": "operator",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-cloning-score",
+      "name": "The Canonical Cloning Score",
+      "mathematical_expression": "canonical-cloning-score-Si",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-cloning-probability",
+      "name": "Total Cloning Probability",
+      "mathematical_expression": "total-cloning-probability-pi",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-cloning-decision",
+      "name": "The Stochastic Cloning Decision",
+      "mathematical_expression": "Mathematical expression for obj-cloning-decision",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-inelastic-collision-update",
+      "name": "The Inelastic Collision State Update",
+      "mathematical_expression": "center-of-mass-velocity-V-COM-c",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    }
+  ],
+  "theorems": [],
+  "lemmas": [
+    {
+      "label": "lem-wasserstein-decomposition",
+      "name": "Decomposition of the Hypocoercive Wasserstein Distance",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [
+        "obj-location-error-component",
+        "obj-structural-error-component"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Decomposition",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-sx-implies-variance",
+      "name": "Structural Positional Error and Internal Variance",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [
+        "obj-structural-error-component"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-v-coercive",
+      "name": "Coercivity of the Hypocoercive Lyapunov Components",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [
+        "obj-location-error-component",
+        "obj-structural-error-component",
+        "obj-state-difference-vectors"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-greedy-preserves-signal",
+      "name": "Greedy Pairing Guarantees Signal Separation",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [
+        "obj-greedy-pairing-algorithm",
+        "obj-geometric-partition"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-patching-properties",
+      "name": "Properties of the Patching Function",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [
+        "obj-patched-std-dev-function"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-compact-support-z-scores",
+      "name": "Compact Support of Standardized Scores",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [
+        "obj-standardization-operator",
+        "obj-patched-std-dev-function"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-logistic-properties",
+      "name": "Verification of Axiomatic Properties",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [
+        "obj-logistic-rescale"
+      ],
+      "input_axioms": [
+        "axiom-Axiom-of-a-Well-Behaved-Rescale-Function"
+      ],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-potential-bounds",
+      "name": "Uniform Bounds of the Fitness Potential",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [
+        "obj-fitness-potential-operator"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  ],
+  "propositions": [
+    {
+      "label": "attr-barrier-existence",
+      "name": "Existence of a Global Smooth Barrier Function",
+      "statement_type": "proposition",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [
+        "axiom-domain-regularity"
+      ],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Existence",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "attr-lyapunov-necessity",
+      "name": "Necessity of the Augmented Lyapunov Structure",
+      "statement_type": "proposition",
+      "source": null,
+      "input_objects": [
+        "obj-full-synergistic-lyapunov-function"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "attr-bounded-velocity-expansion",
+      "name": "Bounded Velocity Variance Expansion from Cloning",
+      "statement_type": "proposition",
+      "source": null,
+      "input_objects": [
+        "obj-inelastic-collision-update"
+      ],
+      "input_axioms": [
+        "axiom-lipschitz-fields",
+        "axiom-velocity-regularization"
+      ],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  ],
+  "errors": []
+}

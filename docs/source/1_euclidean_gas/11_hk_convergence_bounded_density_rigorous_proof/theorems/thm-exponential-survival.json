@@ -1,0 +1,44 @@
+{
+  "label": "thm-exponential-survival",
+  "name": "Exponential Survival Time (QSD Theory)",
+  "statement_type": "theorem",
+  "source": {
+    "file": "11_hk_convergence_bounded_density_rigorous_proof.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-qsd",
+    "def-alive-mass"
+  ],
+  "input_axioms": [
+    "ax-guaranteed-revival"
+  ],
+  "input_parameters": [
+    "N",
+    "T",
+    "C_death",
+    "C_revival"
+  ],
+  "attributes_required": {
+    "qsd-init-or-near": [
+      "Results stated for initialization at QSD; extension via mixing for t \u2265 t_eq"
+    ],
+    "large-deviations": [
+      "Survival tail estimates scale as e^{\u2212\u0398(N)}"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Exponential (in N) survival probability over finite horizon",
+    "Mean absorption time grows as e^{\u0398(N)}"
+  ],
+  "relations_established": [
+    "E_{\u03c0_QSD}[\u03c4_\u2020] = e^{\u0398(N)}",
+    "P_{\u03c0_QSD}(\u03c4_\u2020 > T) \u2265 1 \u2212 T e^{\u2212\u0398(N)}",
+    "m_a^* = C_revival/(C_death + C_revival) > 0"
+  ]
+}

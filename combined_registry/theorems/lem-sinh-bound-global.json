@@ -1,0 +1,42 @@
+{
+  "label": "lem-sinh-bound-global",
+  "name": "Sinh Inequality",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {
+    "sinh-inequality": [
+      "sinh(x) ≤ e^x for x ≥ 0"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-sinh-bound-global-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-unknown",
+      "target_object": "obj-unknown",
+      "established_by": "lem-sinh-bound-global",
+      "expression": "Elementary inequality for sinh",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "label": "obj-mean-field-phase-space",
+  "name": "Phase Space",
+  "mathematical_expression": "\\Omega := X_{\\text{valid}} \\times V_{\\text{alg}}",
+  "object_type": "space",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "euclidean-gas",
+    "particle"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "07_mean_field"
+}

@@ -1,0 +1,48 @@
+{
+  "label": "thm-dobrushin-established",
+  "name": "Dobrushin Contraction (Established)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-total-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa_W"
+  ],
+  "properties_required": {
+    "dobrushin": [
+      "Dobrushin coefficient < 1"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-dobrushin-contraction"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-dobrushin-established-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-total-operator",
+      "target_object": "obj-total-operator",
+      "established_by": "thm-dobrushin-established",
+      "expression": "Reference to classical Dobrushin theory",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

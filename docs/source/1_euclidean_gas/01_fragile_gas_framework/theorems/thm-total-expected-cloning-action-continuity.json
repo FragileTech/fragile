@@ -1,0 +1,27 @@
+{
+  "label": "thm-total-expected-cloning-action-continuity",
+  "name": "Continuity of the Total Expected Cloning Action",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-total-expected-cloning-action",
+    "obj-expected-cloning-action",
+    "obj-alg-distance",
+    "obj-cloning-probability-function"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-lipschitz-continuous",
+      "expression": "|\\mathbb{E}[A_{total}(\\mathcal{S}_1)] - \\mathbb{E}[A_{total}(\\mathcal{S}_2)]| \\le L \\cdot d_{alg}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "object_label": "obj-total-expected-cloning-action"
+    }
+  ],
+  "relations_established": []
+}

@@ -1,0 +1,38 @@
+{
+  "label": "lem-error-concentration-target-set",
+  "name": "Error Concentration in the Target Set",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 5090,
+    "line_end": 5205
+  },
+  "input_objects": [
+    "obj-critical-target-set",
+    "obj-swarm-and-state-space",
+    "obj-walker"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-dimension",
+    "param-swarm-size"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-error-concentration-target-set",
+      "expression": "\\frac{1}{N}\\sum_{i \\in I_{\\text{target}}} \\|\\Delta\\delta_{x,i}\\|^2 \\ge c_{err}(\\epsilon)V_{\\mathrm{struct}} - g_{err}(\\epsilon)",
+      "object_label": "obj-critical-target-set",
+      "established_by": "lem-error-concentration-target-set",
+      "source": {
+        "file": "03_cloning.md",
+        "section": "lem-error-concentration-target-set"
+      }
+    }
+  ],
+  "relations_established": []
+}

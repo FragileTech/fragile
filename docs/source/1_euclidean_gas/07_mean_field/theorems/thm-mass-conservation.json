@@ -1,0 +1,47 @@
+{
+  "label": "thm-mass-conservation",
+  "name": "Total Mass Conservation and Population Dynamics",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-phase-space-density",
+    "obj-transport-operator",
+    "obj-killing-operator",
+    "obj-revival-operator",
+    "obj-cloning-generator",
+    "obj-mean-field-phase-space"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-lambda-rev",
+    "param-lambda-revive"
+  ],
+  "attributes_required": {
+    "obj-transport-operator": [
+      "attr-mass-conservation-transport"
+    ],
+    "obj-revival-operator": [
+      "attr-revival-integral-equals-lambda-md"
+    ],
+    "obj-cloning-generator": [
+      "attr-cloning-mass-neutrality"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-total-population-mass-conservation",
+      "expression": "d/dt [m_a(t) + m_d(t)] = 0",
+      "object_label": "obj-mean-field-phase-space"
+    },
+    {
+      "label": "attr-alive-mass-balance",
+      "expression": "d/dt m_a(t) = \u03bb_rev m_d(t) \u2212 \u222b_\u03a9 c(z) f(t,z) dz",
+      "object_label": "obj-phase-space-density"
+    }
+  ],
+  "relations_established": []
+}

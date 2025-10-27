@@ -1,0 +1,16 @@
+{
+  "label": "obj-inelastic-collision-update",
+  "name": "The Inelastic Collision State Update",
+  "mathematical_expression": "I_c := \\{j \\in C_{set} \\mid c_j = c\\}",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm",
+    "variance"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-kinetic-lsi-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-kinetic-operator",
+  "target_object": "obj-qsd",
+  "established_by": "thm-kinetic-lsi",
+  "expression": "Ent(Ψ_kin μ | π) ≤ (1 - τ/C_kin) Ent(μ | π) + o(τ)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

@@ -1,0 +1,43 @@
+{
+  "label": "attr-fourth-moment-baoab",
+  "name": "Uniform Fourth-Moment Bounds for BAOAB Chain",
+  "statement_type": "proposition",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-baoab-chain"
+  ],
+  "input_theorems": [
+    "thm-energy-bounds"
+  ],
+  "input_axioms": [
+    "axiom-confined-potential"
+  ],
+  "input_parameters": [
+    "M_4",
+    "kappa_E",
+    "C_4",
+    "Delta_t"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lyapunov-e2-drift",
+    "youngs-inequality-absorption"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-uniform-fourth-moment",
+    "attr-lyapunov-e2-drift"
+  ],
+  "relations_established": [
+    "fourth-moments-uniform-in-dt",
+    "prerequisite-for-weak-convergence"
+  ],
+  "bound": "sup_k E[|Z_k|^4] <= M_4 (uniform in Delta_t)",
+  "lyapunov": "E[E^2(Z_{k+1}) | Z_k] <= (1 - kappa_E * Delta_t) * E^2(Z_k) + C_4 * Delta_t"
+}

@@ -1,0 +1,12 @@
+{
+  "label": "obj-walker",
+  "name": "Walker",
+  "mathematical_expression": "w := (x, s)",
+  "object_type": "space",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle"
+  ],
+  "source": null
+}

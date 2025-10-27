@@ -1,0 +1,43 @@
+{
+  "label": "lem-variance-to-mean-separation",
+  "name": "**(From Total Variance to Mean Separation)**",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa_var",
+    "f_min",
+    "V_min",
+    "V_max"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-variance-to-mean-separation-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-unknown",
+      "target_object": "obj-unknown",
+      "established_by": "lem-variance-to-mean-separation",
+      "expression": "(mu_H - mu_L)^2 >= (kappa_var - Var_max)/(f_H * f_L)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

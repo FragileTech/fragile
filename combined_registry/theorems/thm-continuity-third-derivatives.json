@@ -1,0 +1,20 @@
+{
+  "label": "thm-continuity-third-derivatives",
+  "name": "Continuity of Third Derivatives",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "2_geometric_gas",
+  "document": "13_geometric_gas_c3_regularity",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": []
+}

@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-bounded-density-ratio-main-0-equivalence",
+  "relationship_type": "equivalence",
+  "bidirectional": true,
+  "source_object": "obj-qsd",
+  "target_object": "obj-cloning-operator",
+  "established_by": "thm-bounded-density-ratio-main",
+  "expression": "M = C_hypo(M_0, T_0, …)/(c_σ_x,R c_mass) with T_0 = O(κ_QSD^{-1})",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+}

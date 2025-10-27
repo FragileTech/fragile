@@ -1,0 +1,17 @@
+{
+  "label": "rel-kappa-kin-parameters-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-kappa-kin",
+  "target_object": "obj-parameters",
+  "established_by": "lem-kinetic-hellinger-contraction",
+  "expression": "{'type': 'rate_dependence', 'from': 'kappa_kin', 'to': 'parameters', 'description': 'Contraction rate depends on M (density bound), gamma (friction), alpha_U (potential coercivity), hypocoercive coupling'}",
+  "properties": [],
+  "tags": [
+    "inferred-from-dict"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence"
+}

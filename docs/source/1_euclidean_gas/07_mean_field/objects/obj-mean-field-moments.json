@@ -1,0 +1,13 @@
+{
+  "label": "obj-mean-field-moments",
+  "name": "Mean-Field Statistical Moments",
+  "mathematical_expression": "\\mu_R[f](t) := \\int_{\\Omega} R(z) \\frac{f(t,z)}{m_a(t)}\\,\\mathrm dz",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "mean-field"
+  ],
+  "source": null
+}

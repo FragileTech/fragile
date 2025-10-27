@@ -1,0 +1,60 @@
+{
+  "label": "thm-main-lsi-composition",
+  "name": "Discrete-Time LSI for the Euclidean Gas",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-total-operator",
+    "def-kinetic-operator",
+    "def-cloning-operator"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf",
+    "kappa_W",
+    "delta"
+  ],
+  "properties_required": {
+    "kinetic-lsi": [
+      "Kinetic LSI established"
+    ],
+    "cloning-contraction": [
+      "Cloning W₂ contraction"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-kinetic-lsi",
+    "lem-cloning-wasserstein-contraction",
+    "thm-composition-standalone"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-main-lsi-composition-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-total-operator",
+      "target_object": "obj-kinetic-operator",
+      "established_by": "thm-main-lsi-composition",
+      "expression": "Composed LSI constant from kinetic + cloning interaction",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

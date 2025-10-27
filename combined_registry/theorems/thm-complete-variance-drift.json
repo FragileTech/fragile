@@ -1,0 +1,74 @@
+{
+  "label": "thm-complete-variance-drift",
+  "name": "Complete Variance Drift Characterization for Cloning",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-cloning-operator-formal",
+    "obj-full-synergistic-lyapunov-function",
+    "obj-swarm-and-state-space"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-sufficient-amplification"
+  ],
+  "input_parameters": [
+    "kappa_x",
+    "C_x",
+    "C_v"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "thm-positional-variance-contraction",
+      "thm-complete-variance-drift"
+    ],
+    [
+      "thm-bounded-velocity-expansion-cloning",
+      "thm-complete-variance-drift"
+    ]
+  ],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-complete-variance-drift-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator-formal",
+      "target_object": "obj-full-synergistic-lyapunov-function",
+      "established_by": "thm-complete-variance-drift",
+      "expression": "net_variance_contraction_when_large",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    },
+    {
+      "label": "rel-thm-complete-variance-drift-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator-formal",
+      "target_object": "obj-full-synergistic-lyapunov-function",
+      "established_by": "thm-complete-variance-drift",
+      "expression": "synergistic_role_of_cloning",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

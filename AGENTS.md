@@ -45,6 +45,116 @@ Before reviewing any content, you should understand:
 2. Refer to source documents directly for full mathematical statements and complete proofs
 3. Consult framework documents for deep context and proof details
 
+### 2.5. Document Type Classification and Context-Aware Review
+
+**CRITICAL**: Before beginning any review, you must identify the **document type** to calibrate your expectations appropriately. The Fragile framework contains documents at different maturity levels, each requiring a different review approach.
+
+#### Document Types
+
+**1. Proof Sketch** (`sketcher/sketch_*.md`)
+- **Purpose**: Strategic outline/roadmap for a full proof
+- **Expected Completeness**: 30-50% (outline only)
+- **Your Role**: Validate the strategic approach, not the detailed derivations
+- **Characteristics**:
+  - Located in `sketcher/` subdirectory
+  - Filename starts with `sketch_`
+  - Contains "**Agent**: Proof Sketcher" in metadata
+  - Includes "Proof Strategy Comparison" section
+- **What to Focus On**:
+  - Is the overall strategy sound?
+  - Are framework dependencies valid?
+  - Is there circular logic in the approach?
+  - Are claimed bounds plausible (even if not fully derived)?
+- **What to IGNORE**: Missing intermediate steps, incomplete calculations, gaps in derivations
+
+**2. Full Proof** (`proofs/proof_*.md`)
+- **Purpose**: Complete, publication-ready mathematical proof
+- **Expected Completeness**: 95-100%
+- **Your Role**: Verify every step with publication-standard rigor
+- **Characteristics**:
+  - Located in `proofs/` subdirectory
+  - Filename starts with `proof_`
+  - Contains "**Rigor Level:** 8-10/10" in metadata
+  - Contains "**Prover:** Claude (Theorem Prover Agent)" or similar
+- **What to Focus On**: Everything—full rigor required
+- **What to FLAG**: Any missing steps, computational errors, logical gaps
+
+**3. Review Document** (`reviewer/review_*.md`)
+- **Purpose**: Meta-commentary on proofs (dual review analysis)
+- **Expected Completeness**: N/A (commentary)
+- **Your Role**: Verify the accuracy of the review itself
+- **Characteristics**:
+  - Located in `reviewer/` subdirectory
+  - Filename starts with `review_`
+  - Contains "**Reviewers:** Gemini, Codex" in metadata
+
+**4. Main Framework Document** (numbered `.md` files)
+- **Purpose**: Comprehensive framework specification
+- **Expected Completeness**: 100% (publication-ready)
+- **Your Role**: Apply maximum rigor (same as Full Proof)
+
+#### Detection Protocol
+
+**Step 1: Check File Path**
+- `/sketcher/` in path → **Proof Sketch**
+- `/proofs/` in path → **Full Proof**
+- `/reviewer/` in path → **Review Document**
+- Numbered file in main directory → **Main Framework Document**
+
+**Step 2: Check Filename**
+- Starts with `sketch_` → **Proof Sketch**
+- Starts with `proof_` → **Full Proof**
+- Starts with `review_` → **Review Document**
+
+**Step 3: Check Metadata Headers**
+- Has "**Agent**: Proof Sketcher" → **Proof Sketch**
+- Has "**Rigor Level:** 8-10/10" → **Full Proof**
+- Has "**Reviewers:** Gemini, Codex" → **Review Document**
+
+**Step 4: Check User Prompt**
+- User says "review this proof sketch" → **Proof Sketch**
+- User says "review this full proof" → **Full Proof**
+
+**Default**: If uncertain, assume **Full Proof** and apply maximum rigor.
+
+#### Context-Aware Severity Guidelines
+
+The same issue has **different severity** depending on document type:
+
+| Issue Type | Proof Sketch | Full Proof | Main Document |
+|------------|--------------|------------|---------------|
+| **Missing intermediate steps** | MINOR or ignore | MAJOR | CRITICAL |
+| **Incomplete derivation** | MINOR or ignore | MAJOR | CRITICAL |
+| **Computational bound not proven** | MINOR | MAJOR | CRITICAL |
+| **Wrong strategy/approach** | CRITICAL | CRITICAL | CRITICAL |
+| **Invalid framework reference** | MAJOR | CRITICAL | CRITICAL |
+| **Circular logic** | CRITICAL | CRITICAL | CRITICAL |
+| **Computational error (verifiable)** | MAJOR | CRITICAL | CRITICAL |
+| **Notation inconsistency** | SUGGESTION | MINOR | MAJOR |
+
+**Key Principle for Proof Sketches**: Your strength is computational verification—use it to validate **bounds and claims are plausible**, not to demand full derivations. If a sketch claims "$k_{\text{eff}} = O(\epsilon_c^{2d})$", check if this is dimensionally consistent and order-of-magnitude reasonable, but don't flag missing integration steps as CRITICAL.
+
+#### Review Output Format Adjustments
+
+**First Section of Your Review (Required):**
+
+```
+## Document Type Classification
+
+**Detected Type**: [Proof Sketch / Full Proof / Review Document / Main Document]
+
+**Detection Basis**:
+- File path: [path]
+- Filename pattern: [sketch_* / proof_* / review_*]
+- Metadata: [Agent / Rigor Level / Reviewers header]
+
+**Adjusted Expectations**:
+- [For Proof Sketch: "Validating strategic approach and computational plausibility. Missing derivations are expected."]
+- [For Full Proof: "Applying publication-standard rigor. All steps must be justified."]
+
+**Review Standard**: [Strategic validation / Publication rigor / Meta-commentary accuracy]
+```
+
 ### 3. Review Focus Areas
 
 When reviewing mathematical content, assess:
@@ -162,19 +272,25 @@ References:
 
 ### 5. Severity Guidelines
 
+**IMPORTANT**: Severity depends on document type (see § 2.5). Always identify document type first, then apply context-appropriate severity.
+
+#### For Full Proofs and Main Documents (Publication Rigor)
+
 **CRITICAL:** Proof is incorrect, invalid, or has major logical gaps
 - Mathematical error that invalidates the result
 - Missing essential hypothesis
 - Circular reasoning or invalid inference
 - Contradiction with framework axioms
-- **NEW**: Computational bound is provably false (provide counterexample)
+- Computational bound is provably false (provide counterexample)
+- Missing intermediate steps in key derivations
 
 **MAJOR:** Proof is incomplete or framework inconsistency
 - Missing intermediate steps that aren't obvious
 - Undefined notation or terms
 - Inconsistent with established definitions
 - Missing regularity conditions
-- **NEW**: Bound has hidden factors (e.g., claims O(1) but actually O(log k))
+- Bound has hidden factors (e.g., claims O(1) but actually O(log k))
+- Incomplete derivation of claimed result
 
 **MINOR:** Clarity, organization, or minor technical issues
 - Proof could be clearer or better organized
@@ -187,16 +303,55 @@ References:
 - Additional intuition or examples
 - More elegant proof possible
 
+#### For Proof Sketches (Strategic Validation)
+
+**CRITICAL:** Strategic or logical errors
+- Wrong overall approach or strategy
+- Circular reasoning in the proof structure
+- Invalid framework reference (theorem doesn't exist)
+- Contradiction with framework axioms
+- Computational bound is dimensionally inconsistent or clearly impossible
+
+**MAJOR:** Framework inconsistency or major strategic gaps
+- Missing essential framework dependency
+- Strategy relies on unproven intermediate result not in framework
+- Computational claim is implausible (order-of-magnitude off)
+- Approach doesn't align with framework structure
+
+**MINOR:** Everything else (including typical gaps)
+- Missing intermediate steps (EXPECTED in sketches)
+- Incomplete derivations (EXPECTED in sketches)
+- Missing calculation details (EXPECTED in sketches)
+- Gaps in proofs (EXPECTED in sketches)
+- Notation inconsistencies
+
+**SUGGESTION:** Improvements for when full proof is developed
+- Note where rigorous justification will be needed
+- Suggest computational checks for bounds
+- Recommend specific lemmas to prove
+
+**Key for Proof Sketches**: Use your computational strength to validate **plausibility** (dimensional analysis, order-of-magnitude, sign correctness), NOT to demand complete derivations. Missing steps are the POINT of a sketch.
+
 ### 6. Anti-Hallucination Protocol
 
-**CRITICAL REQUIREMENT**: Always verify your claims against framework documents.
+**CRITICAL REQUIREMENT**: Always verify your claims against framework documents AND identify document type before reviewing.
+
+**Step 0: Document Type Detection (MANDATORY)**
+1. ✅ Check file path for `/sketcher/`, `/proofs/`, `/reviewer/` directories
+2. ✅ Check filename pattern (`sketch_*`, `proof_*`, `review_*`)
+3. ✅ Check metadata headers (Agent, Rigor Level, Reviewers)
+4. ✅ Check user prompt for explicit type statement
+5. ✅ Default to Full Proof if uncertain
+6. ✅ State detected type at start of review (required)
 
 **Before flagging an issue:**
-1. ✅ Search `docs/glossary.md` for relevant definitions/theorems
-2. ✅ Verify your claim against source documents directly
-3. ✅ Provide specific evidence (quotes, calculations, counterexamples)
-4. ✅ DO NOT assume something is wrong without verification
-5. ✅ If uncertain, express uncertainty explicitly
+1. ✅ Verify document type and apply appropriate severity (see § 2.5)
+2. ✅ Search `docs/glossary.md` for relevant definitions/theorems
+3. ✅ Verify your claim against source documents directly
+4. ✅ Provide specific evidence (quotes, calculations, counterexamples)
+5. ✅ DO NOT assume something is wrong without verification
+6. ✅ If uncertain, express uncertainty explicitly
+7. ✅ **For Proof Sketches**: Do NOT flag missing steps as CRITICAL/MAJOR
 
 **Uncertainty Language:**
 - "This appears inconsistent with... but verify against [document]"

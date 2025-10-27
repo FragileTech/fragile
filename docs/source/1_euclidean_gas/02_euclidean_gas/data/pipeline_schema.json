@@ -1,0 +1,222 @@
+{
+  "document": "/home/guillem/fragile/docs/source/1_euclidean_gas/02_euclidean_gas.md",
+  "extraction_mode": "pipeline-schema-compliant",
+  "schema_version": "2.0.0",
+  "framework": "Fragile Gas Framework",
+  "statistics": {
+    "total_directives": 31,
+    "mathematical_objects": 3,
+    "axioms": 1,
+    "theorems": 1,
+    "lemmas": 0,
+    "propositions": 0,
+    "algorithms": 1,
+    "other": 25
+  },
+  "mathematical_objects": [
+    {
+      "label": "obj-sasaki-standardization-constants",
+      "name": "Let [math] be the uniform lower bound on the regularized standard deviation, and let [math] be its global Lipschitz constant from Lemma {prf:ref}`lem-sigma-patch-lipschitz`.",
+      "mathematical_expression": "C_{V,\\mathrm{direct}} := \\frac{1}{\\sigma_{\\min,\\mathrm{patch}}}",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "sasaki-metric"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-sasaki-standardization-constants-sq",
+      "name": "Let [math] be a fixed swarm state with alive set [math] of size [math], and let [math] be the chosen Swarm Aggregation Operator. The coefficients for the bounds on the squared value error are defined ",
+      "mathematical_expression": "C_{V,\\mathrm{direct}}^{\\mathrm{sq}}(\\mathcal S) := \\frac{1}{\\sigma_{\\min,\\mathrm{patch}}^2}",
+      "object_type": "operator",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "sasaki-metric"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-sasaki-structural-coeffs-sq",
+      "name": "Let [math] and [math] be two swarm states with alive sets [math] and [math], of sizes [math] and [math]. Let [math]. The coefficients for the bounds on the squared structural error are defined as foll",
+      "mathematical_expression": "C_{S,\\mathrm{direct}}^{\\mathrm{sq}} := \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "sasaki-metric"
+      ],
+      "source": null
+    }
+  ],
+  "axioms": [
+    {
+      "label": "axiom-non-deceptive",
+      "statement": "The environment [math] is non-deceptive if there exist constants [math] and [math] such that for any two points [math] with [math], the average squared norm of the reward gradient along the line segme",
+      "mathematical_expression": "\\frac{1}{\\|x-y\\|} \\int_{0}^{\\|x-y\\|} \\big\\|\\nabla R_{\\mathrm{pos}}\\big(x + t\\tfrac{y-x}{\\|y-x\\|}\\big)\\big\\|^2 dt \\ge \\kappa_{\\mathrm{grad}}.",
+      "foundational_framework": "Fragile Gas Framework"
+    }
+  ],
+  "theorems": [
+    {
+      "label": "thm-sasaki-standardization-structural-sq",
+      "name": "For general swarms [math] with alive counts [math], the squared L2-norm of the output error of the standardization operator is bounded by a function of the number of status changes, [math].",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [
+        "obj-sasaki-structural-coeffs-sq"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "Property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  ],
+  "lemmas": [],
+  "propositions": [],
+  "algorithms": [
+    {
+      "label": "alg-euclidean-gas",
+      "title": "Given a swarm state [math] with walkers [math], the Euclidean Gas performs one update as follows:",
+      "content": ""
+    }
+  ],
+  "other_directives": [
+    {
+      "label": "unlabeled-430",
+      "type": "proof",
+      "title": "1. *Lipschitz continuity.* The Jacobian at [math] is"
+    },
+    {
+      "label": "unlabeled-462",
+      "type": "proof",
+      "title": "Because [math] and [math] are [math]-Lipschitz (Lemma {prf:ref}`lem-squashing-properties-generic`),"
+    },
+    {
+      "label": "unlabeled-574",
+      "type": "proof",
+      "title": "Fix [math] and [math]. Define the uncapped velocities"
+    },
+    {
+      "label": "unlabeled-618",
+      "type": "proof",
+      "title": "Fix [math] and set [math]. Let [math] be any compact subset of [math] containing [math] and [math], so that the local constants from Lemma {prf:ref}`lem-euclidean-geometric-consistency` apply uniforml"
+    },
+    {
+      "label": "unlabeled-742",
+      "type": "proof",
+      "title": "Let [math] be the image of the projection [math]. For [math] the inverse mapping is explicit:"
+    },
+    {
+      "label": "unlabeled-769",
+      "type": "proof",
+      "title": "Fix [math] and radius [math]. Every Sasaki ball of radius [math] contains the set of velocities with Euclidean norm at most [math] around [math]. Let"
+    },
+    {
+      "label": "unlabeled-807",
+      "type": "proof",
+      "title": "Introduce the uncapped velocity update"
+    },
+    {
+      "label": "unlabeled-898",
+      "type": "proof",
+      "title": "Because [math] is compact and [math] and [math] are continuous, the drift and anisotropy envelopes appearing in the Axiom of Geometric Consistency admit finite global bounds. To make the dependence on"
+    },
+    {
+      "label": "unlabeled-1071",
+      "type": "proof",
+      "title": "Let [math] denote the absolute error term we wish to bound. The proof proceeds by applying standard metric and probability inequalities."
+    },
+    {
+      "label": "unlabeled-1125",
+      "type": "proof",
+      "title": "This result is a direct application of the framework's Total Error Bound in Terms of Status Changes ({prf:ref}`thm-total-error-status-bound`) to the specific function of interest in the Sasaki geometr"
+    },
+    {
+      "label": "unlabeled-1165",
+      "type": "proof",
+      "title": "For [math] set [math]. Lemma {prf:ref}`lem-sasaki-single-walker-positional-error` gives"
+    },
+    {
+      "label": "unlabeled-1206",
+      "type": "proof",
+      "title": "Decompose the index set into stable walkers [math] and the complement. For stable walkers the bound in Lemma {prf:ref}`lem-sasaki-total-squared-error-stable` applies. For walkers whose status changes "
+    },
+    {
+      "label": "unlabeled-1235",
+      "type": "proof",
+      "title": "The identities follow from the gradient calculations [math] and [math] together with Cauchy\u2013Schwarz, as in Lemma 6.2.2.a of the framework."
+    },
+    {
+      "label": "unlabeled-1252",
+      "type": "proof",
+      "title": "The proof mirrors Lemma 6.2.2.b of the framework. Decompose the difference in means into contributions from walkers that remain alive in both swarms and those that change status. The former vanish, wh"
+    },
+    {
+      "label": "unlabeled-1275",
+      "type": "proof",
+      "title": "Combine Lemmas {prf:ref}`lem-sasaki-aggregator-value` and {prf:ref}`lem-sasaki-aggregator-structural` with the dispersion metric identity [math] to obtain the stated Lipschitz functions and exponents."
+    },
+    {
+      "label": "unlabeled-1389",
+      "type": "proof",
+      "title": "Step 1: Algebraic Decomposition."
+    },
+    {
+      "label": "unlabeled-1434",
+      "type": "proof",
+      "title": "The proof is a direct application of the definition of [math] and the uniform lower bound on the regularized standard deviation."
+    },
+    {
+      "label": "unlabeled-1484",
+      "type": "proof",
+      "title": "The proof combines the definition of the mean shift component with the axiomatic continuity of the mean aggregator."
+    },
+    {
+      "label": "unlabeled-1537",
+      "type": "proof",
+      "title": "The proof bounds the squared norm by bounding its three constituent parts: the norm of the standardized vector, the change in the regularized standard deviation, and the inverse of the standard deviat"
+    },
+    {
+      "label": "unlabeled-1588",
+      "type": "proof",
+      "title": "The proof establishes the final bound by assembling the deterministic bounds for each of the three error components derived in the preceding sub-lemmas."
+    },
+    {
+      "label": "unlabeled-1719",
+      "type": "proof",
+      "title": "The proof follows from partitioning the sum of squared errors over the N walker indices. Let the full set of indices be [math]."
+    },
+    {
+      "label": "unlabeled-1762",
+      "type": "proof",
+      "title": "The proof bounds the squared error for each unstable walker and sums the results."
+    },
+    {
+      "label": "unlabeled-1818",
+      "type": "proof",
+      "title": "The proof decomposes the error for each stable walker into a mean-shift and a denominator-shift component and then bounds the sum of their squares."
+    },
+    {
+      "label": "unlabeled-2052",
+      "type": "proof",
+      "title": "The inequality is precisely the statement of Theorem {prf:ref}`thm-sasaki-standardization-composite-sq`; no additional work is required."
+    },
+    {
+      "label": "unlabeled-2266",
+      "type": "proof",
+      "title": "Write the single-step operator as the composition of the cemetery check (Stage 1), the measurement and potential pipeline (Stage 2), the Clone/Persist gate (Stage 3), and the kinetic-plus-status updat"
+    }
+  ],
+  "metadata": {
+    "source_extraction": "docs/source/1_euclidean_gas/02_euclidean_gas/data/deep_dependency_analysis.json",
+    "total_lines": 2434
+  }
+}

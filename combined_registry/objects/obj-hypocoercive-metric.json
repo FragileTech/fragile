@@ -1,0 +1,12 @@
+{
+  "label": "obj-hypocoercive-metric",
+  "name": "Hypocoercive Metric and Modified Dirichlet Form",
+  "mathematical_expression": "A := \\nabla_v",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

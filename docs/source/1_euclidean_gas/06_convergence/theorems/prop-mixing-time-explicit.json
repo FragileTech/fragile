@@ -1,0 +1,31 @@
+{
+  "label": "attr-mixing-time-explicit",
+  "name": "Mixing Time (Parameter-Explicit)",
+  "statement_type": "proposition",
+  "source": null,
+  "input_objects": [
+    "obj-swarm-update-procedure"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-epsilon"
+  ],
+  "attributes_required": {
+    "obj-swarm-update-procedure": [
+      "attr-total-rate-explicit",
+      "attr-total-equilibrium-constant"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-mixing-time",
+      "expression": "T_mix(\u03b5) = (1/\u03ba_total) \u00b7 ln( V_total^{init} \u03ba_total/(\u03b5 C_total) ) \u224d ln(1/\u03b5)/\u03ba_total",
+      "object_label": "obj-swarm-update-procedure"
+    }
+  ],
+  "relations_established": []
+}

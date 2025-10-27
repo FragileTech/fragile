@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-qsd-strict-positivity-2-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-qsd",
+  "target_object": "obj-cloning-operator",
+  "established_by": "lem-qsd-strict-positivity",
+  "expression": "inf_{x ∈ X_valid} π_QSD(x) ≥ c_π > 0",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+}

@@ -1,0 +1,16 @@
+{
+  "label": "obj-adaptive-tuning",
+  "name": "Adaptive Parameter Tuning",
+  "mathematical_expression": "\\mathbf{P}_0",
+  "object_type": "operator",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "swarm",
+    "convergence",
+    "variance"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence"
+}

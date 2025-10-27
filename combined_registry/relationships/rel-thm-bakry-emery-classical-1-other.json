@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-bakry-emery-classical-1-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-diffusion-generator",
+  "target_object": "obj-dirichlet-form",
+  "established_by": "thm-bakry-emery-classical",
+  "expression": "Provides context for why convexity-based LSI fails for kinetic operator",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

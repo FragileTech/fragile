@@ -1,0 +1,44 @@
+{
+  "label": "thm-nonconvex-informal",
+  "name": "Exponential KL Convergence for Non-Convex Fitness (Informal)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-total-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {
+    "non-log-concave": [
+      "Target not necessarily log-concave"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-nonconvex-informal-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-total-operator",
+      "target_object": "obj-total-operator",
+      "established_by": "thm-nonconvex-informal",
+      "expression": "Extension beyond log-concavity (heuristic)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

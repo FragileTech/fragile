@@ -6,13 +6,13 @@
   },
   "execution_order": [
     "lem-greedy-ideal-equivalence",
-    "prop-complete-gradient-bounds",
+    "attr-complete-gradient-bounds",
     "lem-macro-transport",
     "thm-data-processing",
     "thm-c2-established-cinf",
     "thm-stage0-complete",
     "thm-c4-established-cinf",
-    "prop-rate-metric-ellipticity",
+    "attr-rate-metric-ellipticity",
     "thm-fitness-third-deriv-proven",
     "thm-exponential-tails",
     "lem-wasserstein-revival",
@@ -29,7 +29,7 @@
     "cor-exp-convergence",
     "cor-instantaneous-smoothing-cinf",
     "thm-optimal-parameter-scaling",
-    "prop-limiting-regimes",
+    "attr-limiting-regimes",
     "thm-c3-established-cinf",
     "thm-c1-established-cinf",
     "lem-variance-to-gap-adaptive",
@@ -44,13 +44,13 @@
     "lem-telescoping-all-orders-cinf",
     "lem-raw-to-rescaled-gap-rho",
     "lem-variance-cinf-inductive",
-    "prop-gevrey-regularization-cinf",
+    "attr-gevrey-regularization-cinf",
     "lem-weight-derivatives",
     "thm-main-convergence",
     "lem-kinetic-energy-bound",
     "thm-exponential-convergence-local",
     "lem-micro-reg",
-    "prop-bakry-emery-gamma2-cinf",
+    "attr-bakry-emery-gamma2-cinf",
     "lem-fisher-bound",
     "thm-joint-not-contractive",
     "lem-drift-condition-corrected",
@@ -62,7 +62,7 @@
     "thm-qsd-smoothness",
     "thm-qsd-positivity",
     "lem-irreducibility",
-    "prop-velocity-gradient-uniform",
+    "attr-velocity-gradient-uniform",
     "lem-mean-cinf-inductive",
     "lem-log-gap-bounds-adaptive",
     "lem-mean-first-derivative",
@@ -70,11 +70,11 @@
     "lem-qsd-density-bound-with-cloning-full",
     "lem-strong-max-principle",
     "lem-z-score-cinf-inductive",
-    "prop-diversity-signal-rho",
+    "attr-diversity-signal-rho",
     "lem-mean-second-derivative",
     "thm-c1-regularity",
     "thm-inductive-step-cinf",
-    "prop-reward-bias-rho",
+    "attr-reward-bias-rho",
     "lem-variance-gradient",
     "thm-lsi-adaptive-gas",
     "thm-c2-regularity",
@@ -89,15 +89,15 @@
     "thm-gevrey-1-cinf",
     "thm-essential-self-adjoint-cinf",
     "thm-hypoellipticity-cinf",
-    "prop-gaussian-tail-bounds-cinf",
-    "prop-talagrand-cinf",
+    "attr-gaussian-tail-bounds-cinf",
+    "attr-talagrand-cinf",
     "thm-keystone-adaptive",
     "cor-wasserstein-convergence-cinf",
-    "prop-brascamp-lieb-cinf"
+    "attr-brascamp-lieb-cinf"
   ],
   "dependency_graph": [
     {
-      "label": "prop-limiting-regimes",
+      "label": "attr-limiting-regimes",
       "document": "11_geometric_gas.md",
       "line": 310,
       "type": "Proposition",
@@ -608,7 +608,7 @@
       "truly_missing_deps": []
     },
     {
-      "label": "prop-diversity-signal-rho",
+      "label": "attr-diversity-signal-rho",
       "document": "11_geometric_gas.md",
       "line": 3291,
       "type": "Proposition",
@@ -651,7 +651,7 @@
       "truly_missing_deps": []
     },
     {
-      "label": "prop-reward-bias-rho",
+      "label": "attr-reward-bias-rho",
       "document": "11_geometric_gas.md",
       "line": 3351,
       "type": "Proposition",
@@ -659,7 +659,7 @@
       "status": "needs_proof",
       "dependencies": [
         {
-          "label": "prop-diversity-signal-rho",
+          "label": "attr-diversity-signal-rho",
           "status": "in_current_pipeline",
           "source": "11_geometric_gas.md",
           "line": "3291",
@@ -686,7 +686,7 @@
           "current_status": "needs_proof"
         },
         {
-          "label": "prop-reward-bias-rho",
+          "label": "attr-reward-bias-rho",
           "status": "in_current_pipeline",
           "source": "11_geometric_gas.md",
           "line": "3351",
@@ -694,7 +694,7 @@
           "current_status": "needs_proof"
         },
         {
-          "label": "prop-diversity-signal-rho",
+          "label": "attr-diversity-signal-rho",
           "status": "in_current_pipeline",
           "source": "11_geometric_gas.md",
           "line": "3291",
@@ -1025,7 +1025,7 @@
       "truly_missing_deps": []
     },
     {
-      "label": "prop-velocity-gradient-uniform",
+      "label": "attr-velocity-gradient-uniform",
       "document": "16_convergence_mean_field.md",
       "line": 1539,
       "type": "Proposition",
@@ -1044,7 +1044,7 @@
       "truly_missing_deps": []
     },
     {
-      "label": "prop-complete-gradient-bounds",
+      "label": "attr-complete-gradient-bounds",
       "document": "16_convergence_mean_field.md",
       "line": 1881,
       "type": "Proposition",
@@ -1227,7 +1227,7 @@
       "truly_missing_deps": []
     },
     {
-      "label": "prop-rate-metric-ellipticity",
+      "label": "attr-rate-metric-ellipticity",
       "document": "18_emergent_geometry.md",
       "line": 2631,
       "type": "Proposition",
@@ -1525,7 +1525,7 @@
       "truly_missing_deps": []
     },
     {
-      "label": "prop-gevrey-regularization-cinf",
+      "label": "attr-gevrey-regularization-cinf",
       "document": "19_geometric_gas_cinf_regularity_simplified.md",
       "line": 807,
       "type": "Proposition",
@@ -1597,7 +1597,7 @@
       "truly_missing_deps": []
     },
     {
-      "label": "prop-gaussian-tail-bounds-cinf",
+      "label": "attr-gaussian-tail-bounds-cinf",
       "document": "19_geometric_gas_cinf_regularity_simplified.md",
       "line": 893,
       "type": "Proposition",
@@ -1616,7 +1616,7 @@
       "truly_missing_deps": []
     },
     {
-      "label": "prop-talagrand-cinf",
+      "label": "attr-talagrand-cinf",
       "document": "19_geometric_gas_cinf_regularity_simplified.md",
       "line": 915,
       "type": "Proposition",
@@ -1651,7 +1651,7 @@
           "current_status": "needs_proof"
         },
         {
-          "label": "prop-talagrand-cinf",
+          "label": "attr-talagrand-cinf",
           "status": "in_current_pipeline",
           "source": "19_geometric_gas_cinf_regularity_simplified.md",
           "line": "915",
@@ -1662,7 +1662,7 @@
       "truly_missing_deps": []
     },
     {
-      "label": "prop-brascamp-lieb-cinf",
+      "label": "attr-brascamp-lieb-cinf",
       "document": "19_geometric_gas_cinf_regularity_simplified.md",
       "line": 946,
       "type": "Proposition",
@@ -1678,7 +1678,7 @@
           "current_status": "needs_proof"
         },
         {
-          "label": "prop-talagrand-cinf",
+          "label": "attr-talagrand-cinf",
           "status": "in_current_pipeline",
           "source": "19_geometric_gas_cinf_regularity_simplified.md",
           "line": "915",
@@ -1689,7 +1689,7 @@
       "truly_missing_deps": []
     },
     {
-      "label": "prop-bakry-emery-gamma2-cinf",
+      "label": "attr-bakry-emery-gamma2-cinf",
       "document": "19_geometric_gas_cinf_regularity_simplified.md",
       "line": 964,
       "type": "Proposition",

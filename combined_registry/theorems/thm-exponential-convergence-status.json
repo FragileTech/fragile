@@ -1,0 +1,46 @@
+{
+  "label": "thm-exponential-convergence-status",
+  "name": "Exponential Convergence in $d_{\\text{status}}$ Metric",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-total-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {
+    "main-result": [
+      "Main convergence result established"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-main-kl-convergence"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-exponential-convergence-status-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-total-operator",
+      "target_object": "obj-total-operator",
+      "established_by": "thm-exponential-convergence-status",
+      "expression": "Reference to main theorem",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

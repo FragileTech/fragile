@@ -1,0 +1,40 @@
+{
+  "label": "lem-cloning-probability-lipschitz",
+  "name": "Lipschitz Continuity of the Conditional Cloning Probability Function (case split)",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-cloning-probability-function",
+    "obj-asymmetric-rescale-function"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-rescale-function"
+  ],
+  "input_parameters": [],
+  "properties_required": {
+    "obj-asymmetric-rescale-function": [
+      "prop-lipschitz-continuous"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-lipschitz-continuous",
+      "expression": "|\\pi(v_{c1}, v_{i1}) - \\pi(v_{c2}, v_{i2})| \\leq L \\sqrt{(v_{c1} - v_{c2})^2 + (v_{i1} - v_{i2})^2}",
+      "object_label": "obj-cloning-probability-function",
+      "established_by": "lem-cloning-probability-lipschitz",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-velocity-variance-bounded-expansion-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-cloning-operator-formal",
+  "target_object": "obj-inelastic-collision-update",
+  "established_by": "thm-velocity-variance-bounded-expansion",
+  "expression": "rel-cloning-expands-velocity-variance-bounded",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

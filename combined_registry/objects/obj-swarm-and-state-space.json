@@ -1,0 +1,15 @@
+{
+  "label": "obj-swarm-and-state-space",
+  "name": "Swarm and Swarm State Space",
+  "mathematical_expression": "\\mathcal{S} := (w_1, w_2, \\dots, w_N)",
+  "object_type": "space",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

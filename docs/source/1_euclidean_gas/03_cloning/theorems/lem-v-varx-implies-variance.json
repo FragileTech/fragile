@@ -1,0 +1,29 @@
+{
+  "label": "lem-v-varx-implies-variance",
+  "name": "Large $V_{\\text{Var},x}$ Implies Large Single-Swarm Positional Variance",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "section": "6.2",
+    "line_start": 2312,
+    "line_end": 2350
+  },
+  "input_objects": [
+    "obj-barycentres-and-centered-vectors"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "R_total_var_x"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "single_swarm_variance"
+  ],
+  "relations_established": [
+    "V_Var,x large implies at least one swarm has large variance"
+  ]
+}

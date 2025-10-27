@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-hormander-bracket-1-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-kinetic-operator",
+  "target_object": "obj-langevin-dynamics",
+  "established_by": "lem-hormander-bracket",
+  "expression": "First-order brackets generate ∂_x from ∂_v via drift",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+}

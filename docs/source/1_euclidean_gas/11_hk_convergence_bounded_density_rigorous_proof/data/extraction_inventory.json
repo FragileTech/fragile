@@ -1,0 +1,185 @@
+{
+  "source_file": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+  "total_directives": 12,
+  "counts_by_type": {
+    "axiom": 1,
+    "lemma": 6,
+    "theorem": 4,
+    "corollary": 1
+  },
+  "directives": [
+    {
+      "type": "axiom",
+      "label": "ax-bounded-density-ratio-rigorous",
+      "title": "Bounded Density Ratio (To Be Proven)",
+      "content": "There exists $M < \\infty$ such that for all $t \\geq 0$ and all $x \\in \\mathcal{X}_{\\text{valid}}$:\n\n$$\n\\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M\n$$\n\nwhere $\\tilde{\\mu}_t = \\mu_t / \\|\\...",
+      "math_expression_count": 6,
+      "first_math": "\\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M",
+      "cross_refs": [],
+      "line_range": [
+        39,
+        50
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-hormander-bracket",
+      "title": "H\u00f6rmander's Bracket Condition",
+      "content": "**Reference**: `06_convergence.md` Section 4.4.1, lines 892-950\n\nThe kinetic generator $\\mathcal{L}_{\\text{kin}}$ has the form:\n\n$$\n\\mathcal{L}_{\\text{kin}} = v \\cdot \\nabla_x + A(x, v) \\cdot \\nabla_v...",
+      "math_expression_count": 12,
+      "first_math": "\\mathcal{L}_{\\text{kin}} = v \\cdot \\nabla_x + A(x, v) \\cdot \\nabla_v + \\frac{\\sigma_v^2}{2} \\Delta_v",
+      "cross_refs": [],
+      "line_range": [
+        106,
+        133
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-parabolic-harnack",
+      "title": "Parabolic Harnack Inequality for Kinetic Operators",
+      "content": "**References**:\n- Kusuoka & Stroock (1985, *J. Fac. Sci. Univ. Tokyo Sect. IA Math.* 32:1-76)\n- H\u00e9rau & Nier (2004, *Comm. Math. Phys.* 253:741-754)\n\nLet $u(t, z)$ be a non-negative solution to the ki...",
+      "math_expression_count": 13,
+      "first_math": "\\frac{\\partial u}{\\partial t} = \\mathcal{L}_{\\text{kin}}^* u + h(t, z)",
+      "cross_refs": [],
+      "line_range": [
+        140,
+        176
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-linfty-full-operator",
+      "title": "$L^\\infty$ Bound for the Full Operator",
+      "content": "Consider the full McKean-Vlasov-Fokker-Planck equation:\n\n$$\n\\frac{\\partial f}{\\partial t} = \\mathcal{L}_{\\text{kin}}^* f + \\mathcal{L}_{\\text{clone}}^* f - c(z) f + r_{\\text{revival}} f\n$$\n\nwith initi...",
+      "math_expression_count": 69,
+      "first_math": "\\frac{\\partial f}{\\partial t} = \\mathcal{L}_{\\text{kin}}^* f + \\mathcal{L}_{\\text{clone}}^* f - c(z) f + r_{\\text{revival}} f",
+      "cross_refs": [
+        "thm-parabolic-harnack",
+        "thm-mass-concentration"
+      ],
+      "line_range": [
+        181,
+        373
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-gaussian-kernel-lower-bound",
+      "title": "Gaussian Kernel Lower Bound",
+      "content": "Let $G_{\\sigma_x}(y) = (2\\pi\\sigma_x^2)^{-d/2} \\exp(-\\|y\\|^2 / (2\\sigma_x^2))$ be the Gaussian kernel with variance $\\sigma_x^2 > 0$.\n\nFor any $x_1, x_2 \\in B_R(0) \\subset \\mathbb{R}^d$:\n\n$$\n\\frac{G_{...",
+      "math_expression_count": 16,
+      "first_math": "\\frac{G_{\\sigma_x}(x_1)}{G_{\\sigma_x}(x_2)} \\leq \\exp\\left( \\frac{(2R)^2}{2\\sigma_x^2} \\right)",
+      "cross_refs": [],
+      "line_range": [
+        384,
+        429
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-strict-positivity-cloning",
+      "title": "Strict Positivity After Cloning",
+      "content": "After applying the cloning operator with Gaussian position jitter $\\sigma_x > 0$, the density satisfies:\n\n$$\n\\inf_{x \\in \\mathcal{X}_{\\text{valid}}} \\rho_{\\text{post-clone}}(x) \\geq c_{\\sigma_x, R} \\|...",
+      "math_expression_count": 11,
+      "first_math": "\\inf_{x \\in \\mathcal{X}_{\\text{valid}}} \\rho_{\\text{post-clone}}(x) \\geq c_{\\sigma_x, R} \\|\\rho_{\\text{pre-clone}}\\|_{L^1}",
+      "cross_refs": [
+        "lem-gaussian-kernel-lower-bound",
+        "lem-gaussian-kernel-lower-bound"
+      ],
+      "line_range": [
+        432,
+        469
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-qsd-strict-positivity",
+      "title": "QSD Strict Positivity",
+      "content": "The quasi-stationary distribution $\\pi_{\\text{QSD}}$ has a smooth density with respect to Lebesgue measure that satisfies:\n\n$$\n\\inf_{x \\in \\mathcal{X}_{\\text{valid}}} \\pi_{\\text{QSD}}(x) \\geq c_\\pi > ...",
+      "math_expression_count": 14,
+      "first_math": "\\inf_{x \\in \\mathcal{X}_{\\text{valid}}} \\pi_{\\text{QSD}}(x) \\geq c_\\pi > 0",
+      "cross_refs": [
+        "thm-phi-irreducibility",
+        "lem-linfty-full-operator"
+      ],
+      "line_range": [
+        472,
+        512
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-exponential-survival",
+      "title": "Exponential Survival Time (QSD Theory)",
+      "content": "**References**:\n- Champagnat & Villemonais (2016, *Ann. Appl. Probab.* 26:3547-3569)\n- `06_convergence.md` Theorem 4.5 (lines 906-947)\n\nFor the Euclidean Gas initialized from the quasi-stationary dist...",
+      "math_expression_count": 17,
+      "first_math": "\\mathbb{E}_{\\pi_{\\text{QSD}}}[\\tau_\\dagger] = e^{\\Theta(N)}",
+      "cross_refs": [],
+      "line_range": [
+        582,
+        625
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-mass-lower-bound-high-prob",
+      "title": "High-Probability Alive Mass Lower Bound",
+      "content": "For the Euclidean Gas with $N$ walkers, there exist constants $c_{\\text{mass}}, C, \\delta > 0$ (depending on $\\gamma, \\sigma_v, \\sigma_x, U, R$) such that for any $t \\geq t_{\\text{eq}}$ (equilibration...",
+      "math_expression_count": 21,
+      "first_math": "\\mathbb{P}\\left( \\|\\rho_t\\|_{L^1} \\geq c_{\\text{mass}} \\right) \\geq 1 - e^{-\\delta N}",
+      "cross_refs": [
+        "thm-exponential-survival"
+      ],
+      "line_range": [
+        628,
+        685
+      ]
+    },
+    {
+      "type": "corollary",
+      "label": "cor-conditional-density-ratio",
+      "title": "Conditional Density Ratio Bound",
+      "content": "On the survival event $\\{\\tau_\\dagger > t\\}$, the density ratio bound holds deterministically:\n\n$$\n\\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M < ...",
+      "math_expression_count": 3,
+      "first_math": "\\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M < \\infty",
+      "cross_refs": [
+        "thm-bounded-density-ratio-main"
+      ],
+      "line_range": [
+        694,
+        705
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-bounded-density-ratio-main",
+      "title": "Bounded Density Ratio for the Euclidean Gas (RIGOROUS)",
+      "content": "**Status**: Complete rigorous proof\n\n**Assumptions**:\n- Euclidean Gas dynamics with parameters $(\\gamma, \\sigma_v, \\sigma_x, U, R)$ from `02_euclidean_gas.md`\n- Cloning position jitter $\\sigma_x > 0$ ...",
+      "math_expression_count": 16,
+      "first_math": "\\sup_{t \\geq 0} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M",
+      "cross_refs": [
+        "lem-linfty-full-operator",
+        "lem-gaussian-kernel-lower-bound",
+        "lem-mass-lower-bound-high-prob"
+      ],
+      "line_range": [
+        714,
+        747
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-hk-convergence-unconditional",
+      "title": "Exponential HK-Convergence of the Fragile Gas (UNCONDITIONAL)",
+      "content": "Under the foundational axioms of the Euclidean Gas (`01_fragile_gas_framework.md`, `02_euclidean_gas.md`, `03_cloning.md`), the empirical measure $\\mu_t$ converges exponentially to the quasi-stationar...",
+      "math_expression_count": 4,
+      "first_math": "\\text{HK}(\\mu_t, \\pi_{\\text{QSD}}) \\leq C_{\\text{HK}} e^{-\\kappa_{\\text{HK}} t}",
+      "cross_refs": [],
+      "line_range": [
+        935,
+        948
+      ]
+    }
+  ]
+}

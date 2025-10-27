@@ -1,0 +1,39 @@
+{
+  "label": "thm-distance-operator-mean-square-continuity",
+  "name": "Mean-Square Continuity of the Distance Operator",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-distance-to-companion-measurement",
+    "obj-swarm-and-state-space",
+    "obj-alive-dead-sets"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity"
+  ],
+  "input_parameters": [
+    "param-n"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-mean-square-continuous",
+      "expression": "\\mathbb{E}[\\|d(\\mathcal{S}_1) - d(\\mathcal{S}_2)\\|^2] \\text{ is bounded}",
+      "object_label": "obj-distance-to-companion-measurement",
+      "established_by": "thm-distance-operator-mean-square-continuity",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

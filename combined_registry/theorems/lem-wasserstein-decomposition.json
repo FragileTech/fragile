@@ -1,0 +1,45 @@
+{
+  "label": "lem-wasserstein-decomposition",
+  "name": "Decomposition of the Hypocoercive Wasserstein Distance",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-barycentres-and-centered-vectors",
+    "obj-location-error-component",
+    "obj-structural-error-component"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "b",
+    "lambda_v"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-wasserstein-decomposition-0-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-barycentres-and-centered-vectors",
+      "target_object": "obj-location-error-component",
+      "established_by": "lem-wasserstein-decomposition",
+      "expression": "W_h^2 = V_loc + V_struct",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

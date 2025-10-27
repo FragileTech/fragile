@@ -1,0 +1,44 @@
+{
+  "label": "thm-discrete-lsi-hybrid",
+  "name": "Discrete-Time LSI",
+  "statement_type": "theorem",
+  "source": {
+    "file": "09_kl_convergence.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-total-operator"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf",
+    "kappa_W",
+    "delta",
+    "tau"
+  ],
+  "attributes_required": {
+    "discrete-time": [
+      "Discrete-time formulation"
+    ],
+    "hybrid-approach": [
+      "Combines continuous LSI + discretization"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-kinetic-lsi",
+    "thm-composition-standalone"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "Discrete-time LSI for \u03a8_total"
+  ],
+  "relations_established": [
+    "Discrete LSI constant accounts for time step \u03c4"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-hk-summary-3-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-fragile-gas",
+  "target_object": "obj-qsd",
+  "established_by": "thm-hk-summary",
+  "expression": "rel-algorithmic-convergence-guarantee",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence"
+}

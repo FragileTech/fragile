@@ -1,0 +1,178 @@
+{
+  "label": "lem-sasaki-denom-shift-bound-sq",
+  "name": "Bounding the Squared Denominator Shift Component",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "02_euclidean_gas",
+    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+    "section": "§2.3.4.4",
+    "directive_label": "lem-sasaki-denom-shift-bound-sq",
+    "line_range": [1526, 1585]
+  },
+  "input_objects": [
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-standardization-operator",
+    "obj-patched-std-dev-function",
+    "obj-raw-value-vector",
+    "obj-regularized-standard-deviation"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-N",
+    "param-k-alive-count",
+    "param-epsilon-std",
+    "param-kappa-var-min",
+    "param-V-max-R"
+  ],
+  "attributes_required": {
+    "obj-swarm-aggregation-operator-axiomatic": [
+      "attr-value-lipschitz-continuity",
+      "attr-structural-continuity"
+    ],
+    "obj-patched-std-dev-function": [
+      "attr-globally-lipschitz",
+      "attr-strictly-positive",
+      "attr-uniformly-bounded-below"
+    ],
+    "obj-standardization-operator": [
+      "attr-depends-on-aggregator",
+      "attr-produces-z-scores"
+    ],
+    "obj-raw-value-vector": [
+      "prop-components-bounded-by-V-max-R"
+    ],
+    "obj-regularized-standard-deviation": [
+      "attr-lipschitz-continuous"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-stats-value-continuity"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    ["lem-stats-value-continuity", "lem-sasaki-denom-shift-bound-sq"]
+  ],
+  "output_type": "Relation",
+  "attributes_added": [
+    {
+      "label": "attr-denom-shift-squared-bound",
+      "expression": "\\|\\Delta_{\\text{denom}}\\|_2^2 \\le k \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2 \\left( \\frac{L_{\\sigma',M}^{\\mathrm{Sasaki}}(k)}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2 \\cdot \\|\\mathbf r_1 - \\mathbf r_2\\|_2^2",
+      "object_label": "obj-standardization-operator",
+      "established_by": "lem-sasaki-denom-shift-bound-sq",
+      "can_be_refined": true,
+      "refinements": []
+    }
+  ],
+  "relations_established": [
+    {
+      "label": "rel-denom-shift-raw-value-difference-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-raw-value-vector",
+      "target_object": "obj-standardization-operator",
+      "established_by": "lem-sasaki-denom-shift-bound-sq",
+      "expression": "\\|\\Delta_{\\text{denom}}\\|_2^2 \\le C_{V,\\mathrm{denom}}^{\\mathrm{sq}}(k) \\cdot \\|\\mathbf r_1 - \\mathbf r_2\\|_2^2",
+      "properties": [
+        {
+          "label": "error-coefficient",
+          "expression": "C_{V,\\mathrm{denom}}^{\\mathrm{sq}}(k) = k \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2 \\left( \\frac{L_{\\sigma',M}^{\\mathrm{Sasaki}}(k)}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2",
+          "description": "Squared error coefficient for denominator shift component in standardization operator"
+        },
+        {
+          "label": "dependence-on-k",
+          "expression": "\\text{Linear in } k",
+          "description": "Error grows linearly with number of alive walkers"
+        },
+        {
+          "label": "dependence-on-sigma-min",
+          "expression": "\\text{Inverse quartic in } \\sigma_{\\min,\\mathrm{patch}}",
+          "description": "Error grows rapidly as minimum standard deviation decreases"
+        }
+      ],
+      "tags": [
+        "standardization",
+        "continuity",
+        "sasaki-geometry",
+        "value-error"
+      ]
+    }
+  ],
+  "theorem_statement": "Let $\\mathcal S$ be a fixed swarm state with alive set $\\mathcal A$ of size $k \\ge 1$. Let $\\mathbf r_1$ and $\\mathbf r_2$ be two raw value vectors with components bounded by $V_{\\max}^{(R)}$. The squared Euclidean norm of the denominator shift error component, $\\Delta_{\\text{denom}} = \\mathbf z_2 \\cdot ((\\sigma'_2 - \\sigma'_1) / \\sigma'_1)$, is bounded as follows:\n\n$$\n\\|\\Delta_{\\text{denom}}\\|_2^2 \\le k \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2 \\left( \\frac{L_{\\sigma',M}^{\\mathrm{Sasaki}}(k)}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2 \\cdot \\|\\mathbf r_1 - \\mathbf r_2\\|_2^2\n$$\n\nwhere $L_{\\sigma',M}^{\\mathrm{Sasaki}}(k)$ is the derived Lipschitz constant for the regularized standard deviation.",
+  "proof_sketch": {
+    "strategy": "Decompose the squared norm into three factors (standardized vector norm, standard deviation change, inverse standard deviation), bound each separately using object properties, then combine multiplicatively.",
+    "key_steps": [
+      {
+        "step_number": 1,
+        "description": "Start with definition of squared L2-norm of denominator shift component",
+        "expression": "\\|\\Delta_{\\text{denom}}\\|_2^2 = \\left\\| \\mathbf z_2 \\cdot \\frac{\\sigma'_2 - \\sigma'_1}{\\sigma'_1} \\right\\|_2^2"
+      },
+      {
+        "step_number": 2,
+        "description": "Factor out scalar term involving standard deviations",
+        "expression": "\\|\\Delta_{\\text{denom}}\\|_2^2 = \\|\\mathbf z_2\\|_2^2 \\cdot \\frac{(\\sigma'_2 - \\sigma'_1)^2}{(\\sigma'_1)^2}"
+      },
+      {
+        "step_number": 3,
+        "description": "Bound each of the three factors separately",
+        "sub_steps": [
+          {
+            "factor": "\\|\\mathbf z_2\\|_2^2",
+            "bound": "k \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2",
+            "justification": "Standardized values have bounded components; use algebraic bound on sum of squares"
+          },
+          {
+            "factor": "(\\sigma'_2 - \\sigma'_1)^2",
+            "bound": "\\left(L_{\\sigma',M}^{\\mathrm{Sasaki}}(k)\\right)^2 \\cdot \\|\\mathbf r_1 - \\mathbf r_2\\|_2^2",
+            "justification": "Use Lipschitz continuity of regularized standard deviation from lem-stats-value-continuity"
+          },
+          {
+            "factor": "1/(\\sigma'_1)^2",
+            "bound": "1/\\sigma_{\\min,\\mathrm{patch}}^2",
+            "justification": "Use uniform lower bound from prop-uniformly-bounded-below of patched standard deviation"
+          }
+        ]
+      },
+      {
+        "step_number": 4,
+        "description": "Combine all three bounds multiplicatively",
+        "expression": "\\|\\Delta_{\\text{denom}}\\|_2^2 \\le \\left( k \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2 \\right) \\cdot \\left( \\left(L_{\\sigma',M}^{\\mathrm{Sasaki}}(k)\\right)^2 \\cdot \\|\\mathbf r_1 - \\mathbf r_2\\|_2^2 \\right) \\cdot \\left( \\frac{1}{\\sigma_{\\min,\\mathrm{patch}}^2} \\right)",
+        "simplification": "Rearrange terms to obtain stated result"
+      }
+    ],
+    "dependencies": {
+      "lemmas_used": [
+        "lem-stats-value-continuity"
+      ],
+      "properties_invoked": [
+        "attr-uniformly-bounded-below",
+        "attr-lipschitz-continuous",
+        "prop-components-bounded-by-V-max-R"
+      ],
+      "techniques": [
+        "Multiplicative decomposition",
+        "Lipschitz continuity",
+        "Uniform lower bound exploitation",
+        "Algebraic bound on sum of squares"
+      ]
+    }
+  },
+  "mathematical_context": {
+    "role_in_framework": "Third component in three-part decomposition of standardization error (alongside direct shift and mean shift). Quantifies how changes in raw values affect standardization through changes in the standard deviation denominator.",
+    "key_insight": "The denominator shift error has the worst scaling (quartic inverse in sigma_min, quadratic in V_max) among all three components, making it the dominant error source when variance is small.",
+    "applications": [
+      "Sasaki metric continuity proof",
+      "Standardization operator stability analysis",
+      "Error propagation in cloning operator"
+    ]
+  },
+  "tags": [
+    "euclidean-gas",
+    "standardization",
+    "continuity",
+    "sasaki-geometry",
+    "value-error",
+    "denominator-shift",
+    "lipschitz",
+    "error-bound"
+  ]
+}

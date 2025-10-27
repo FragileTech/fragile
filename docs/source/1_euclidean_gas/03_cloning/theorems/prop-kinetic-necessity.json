@@ -1,0 +1,24 @@
+{
+  "label": "attr-kinetic-necessity",
+  "name": "Necessity of the Kinetic Operator",
+  "statement_type": "proposition",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-cloning-operator-formal",
+    "obj-full-synergistic-lyapunov-function",
+    "obj-update-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": []
+}

@@ -1,0 +1,13 @@
+{
+  "label": "obj-cloning-companion-operator",
+  "name": "Companion Selection Operator for Cloning",
+  "mathematical_expression": "P(c_i=j \\mid i \\in \\mathcal{A}_k) := \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\epsilon_c^2}\\right)}{\\sum_{l \\in \\mathcal{A}_k \\setminus \\{i\\}} \\exp\\left(-\\frac{d_{\\text{alg}}(i, l)^2}{2\\epsilon_c^2}\\right)}",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

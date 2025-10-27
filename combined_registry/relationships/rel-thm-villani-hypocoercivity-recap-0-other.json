@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-villani-hypocoercivity-recap-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-kinetic-operator",
+  "target_object": "obj-kinetic-operator",
+  "established_by": "thm-villani-hypocoercivity-recap",
+  "expression": "Reference to thm-villani-hypocoercivity",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

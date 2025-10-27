@@ -1,0 +1,17 @@
+{
+  "label": "rel-prop-adversarial-signal-bound-naive-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-unified-high-low-error-sets",
+  "target_object": "obj-logistic-rescale",
+  "established_by": "prop-adversarial-signal-bound-naive",
+  "expression": "E[ln(r')|L_k] - E[ln(r')|H_k] <= ln(1 + g_A_max/eta)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

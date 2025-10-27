@@ -1,0 +1,40 @@
+{
+  "label": "attr-boundary-rate-explicit",
+  "name": "Boundary Contraction Rate (Parameter-Explicit)",
+  "statement_type": "proposition",
+  "source": null,
+  "input_objects": [
+    "obj-cloning-measure",
+    "obj-kinetic-operator-stratonovich",
+    "obj-boundary-potential-recall"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-lambda",
+    "param-kappa-wall",
+    "param-gamma",
+    "param-sigma-v",
+    "param-tau",
+    "param-d-safe",
+    "param-f-typical",
+    "param-delta-f-boundary"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-boundary-contraction-rate",
+      "expression": "\u03ba_b = min( \u03bb\u00b7\u0394 f_{boundary}/f_{typical}, \u03ba_{wall} + \u03b3 )",
+      "object_label": "obj-boundary-potential-recall"
+    },
+    {
+      "label": "attr-boundary-equilibrium-constant",
+      "expression": "C_b = O(\u03c3_v^2 \u03c4 / d_{safe}^2) + O(\u03c4^2)",
+      "object_label": "obj-boundary-potential-recall"
+    }
+  ],
+  "relations_established": []
+}

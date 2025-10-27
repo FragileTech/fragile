@@ -1,0 +1,50 @@
+{
+  "label": "prop-psi-markov-kernel",
+  "name": "The Swarm Update defines a Markov kernel",
+  "statement_type": "proposition",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm-update-procedure",
+    "obj-cloning-measure",
+    "obj-perturbation-operator",
+    "obj-status-update-operator",
+    "obj-valid-state-space"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {
+    "obj-cloning-measure": [
+      "prop-is-measurable"
+    ],
+    "obj-perturbation-operator": [
+      "prop-is-measurable"
+    ],
+    "obj-status-update-operator": [
+      "prop-is-measurable"
+    ],
+    "obj-valid-state-space": [
+      "prop-is-measurable-space"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-is-markov-kernel",
+      "expression": "The operator K is a Markov kernel if, for any measurable set A, the function x -> K(x, A) is measurable, and for any state x, the function A -> K(x, A) is a probability measure.",
+      "object_label": "obj-swarm-update-procedure",
+      "established_by": "prop-psi-markov-kernel",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

@@ -1,0 +1,14 @@
+{
+  "label": "obj-cemetery-state-measure",
+  "name": "Cemetery State Measure",
+  "mathematical_expression": "\\mathcal{S}",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

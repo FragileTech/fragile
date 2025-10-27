@@ -1,0 +1,78 @@
+{
+  "label": "thm-boundary-potential-contraction",
+  "name": "Boundary Potential Contraction Under Cloning",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-boundary-potential-recall",
+    "obj-cloning-operator-formal",
+    "obj-swarm-and-state-space",
+    "obj-boundary-exposed-set"
+  ],
+  "input_axioms": [
+    "axiom-ax-safe-harbor"
+  ],
+  "input_parameters": [
+    "kappa_b",
+    "C_b",
+    "phi_thresh"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [
+    "lem-boundary-enhanced-cloning",
+    "lem-barrier-reduction-cloning"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-boundary-enhanced-cloning",
+      "thm-boundary-potential-contraction"
+    ],
+    [
+      "lem-barrier-reduction-cloning",
+      "thm-boundary-potential-contraction"
+    ]
+  ],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-boundary-potential-contraction-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-boundary-potential-recall",
+      "target_object": "obj-cloning-operator-formal",
+      "established_by": "thm-boundary-potential-contraction",
+      "expression": "cloning_contracts_boundary_potential",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    },
+    {
+      "label": "rel-thm-boundary-potential-contraction-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-boundary-potential-recall",
+      "target_object": "obj-cloning-operator-formal",
+      "established_by": "thm-boundary-potential-contraction",
+      "expression": "safe_harbor_mechanism",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

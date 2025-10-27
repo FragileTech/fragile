@@ -1,0 +1,70 @@
+{
+  "label": "lem-lipschitz-observable-error",
+  "type": "lemma",
+  "name": "Empirical Measure Observable Error",
+  "line_range": [
+    440,
+    579
+  ],
+  "status": "complete",
+  "input_objects": [
+    "obj-empirical-measure",
+    "obj-rho-0",
+    "obj-nu-n-qsd"
+  ],
+  "input_axioms": [],
+  "input_theorems": [
+    "lem-quantitative-kl-bound"
+  ],
+  "input_parameters": [
+    "L_phi",
+    "C_W",
+    "C_int",
+    "lambda_lsi"
+  ],
+  "attributes_required": {
+    "obj-observable-phi": [
+      "attr-lipschitz-continuous"
+    ],
+    "obj-nu-n-qsd": [
+      "attr-exchangeable"
+    ],
+    "obj-rho-0": [
+      "attr-finite-second-moment"
+    ]
+  },
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-observable-error-o-1-over-sqrt-n"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-empirical-measure",
+      "to": "obj-rho-0",
+      "type": "wasserstein_distance_bound",
+      "bound": "E[W_1(bar_mu_N, rho_0)] <= C_W / sqrt(N)",
+      "order": "O(1/sqrt(N))"
+    },
+    {
+      "from": "obj-observable-phi",
+      "to": "obj-mean-field-limit",
+      "type": "observable_error_bound",
+      "bound": "|E[phi(bar_mu_N)] - E_rho_0[phi]| <= L_phi * C_W / sqrt(N)",
+      "order": "O(1/sqrt(N))"
+    }
+  ],
+  "internal_lemmas": [
+    "attr-empirical-wasserstein-concentration",
+    "attr-finite-second-moment-meanfield"
+  ],
+  "proof_strategy": "Kantorovich-Rubinstein duality + Fournier-Guillin bound for exchangeable particles",
+  "notes": [
+    "Converts KL bound to Wasserstein bound for empirical measure",
+    "Uses Fournier-Guillin (2015) for exchangeable (non-i.i.d.) particles",
+    "Key bridge between Part I lemmas and main theorem"
+  ],
+  "external_references": [
+    "Villani (2009) - Kantorovich-Rubinstein theorem",
+    "Fournier & Guillin (2015) - Theorem 2"
+  ]
+}

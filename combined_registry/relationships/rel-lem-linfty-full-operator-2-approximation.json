@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-linfty-full-operator-2-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-cloning-operator",
+  "target_object": "obj-kinetic-operator",
+  "established_by": "lem-linfty-full-operator",
+  "expression": "||f(T)||_∞ ≤ C_kin(T) M_0 + ∫_0^T C_kin(T−s)[||f(s)||_∞ + C_revival] ds",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+}

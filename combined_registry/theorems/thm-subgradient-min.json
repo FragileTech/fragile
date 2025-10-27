@@ -1,0 +1,33 @@
+{
+  "label": "thm-subgradient-min",
+  "name": "Subgradient of min() Function",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-subgradient-min",
+      "expression": "∂ κ_total(P) = conv{ ∇κ_i(P) : κ_i(P) = κ_total(P) }",
+      "object_label": "obj-param-selection",
+      "established_by": "thm-subgradient-min",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

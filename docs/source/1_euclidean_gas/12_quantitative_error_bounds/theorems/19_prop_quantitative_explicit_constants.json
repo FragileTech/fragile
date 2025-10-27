@@ -1,0 +1,57 @@
+{
+  "label": "attr-quantitative-explicit-constants",
+  "type": "proposition",
+  "name": "Explicit Constant Formulas",
+  "line_range": [
+    2804,
+    2894
+  ],
+  "status": "complete",
+  "input_objects": [
+    "obj-error-constants"
+  ],
+  "input_axioms": [],
+  "input_theorems": [
+    "thm-quantitative-propagation-chaos",
+    "thm-quantitative-error-propagation",
+    "lem-quantitative-kl-bound"
+  ],
+  "input_parameters": [
+    "all_system_parameters"
+  ],
+  "attributes_required": {},
+  "output_type": "Property",
+  "attributes_added": [
+    "attr-explicit-formulas",
+    "attr-parameter-dependencies"
+  ],
+  "relations_established": [],
+  "internal_lemmas": [],
+  "explicit_formulas": {
+    "C_MF": "sqrt(C_var + C' * C_int)",
+    "C_int": "lambda * L_log_rho_0 * diam(Omega)",
+    "C_discrete": "(C_split * C_poisson) / kappa_mix",
+    "C_split": "(1/2) * lambda * beta * C_chaos * max(C_F, sigma^2, ||nabla^2 U||_infty)",
+    "kappa_mix": "min(kappa_hypo, lambda)"
+  },
+  "typical_parameter_values": {
+    "gamma": "0.1 to 1.0",
+    "sigma": "0.1 to 1.0",
+    "lambda": "0.01 to 0.1",
+    "delta": "0.1 to 0.3",
+    "beta": "1 to 10"
+  },
+  "order_of_magnitude_estimates": {
+    "C_MF": "O(10) for typical problems",
+    "C_discrete": "O(1) to O(10) depending on mixing rate"
+  },
+  "notes": [
+    "Provides implementation-ready constant formulas",
+    "All constants traceable to system parameters",
+    "Enables a priori error prediction",
+    "Useful for parameter tuning and adaptive schemes",
+    "C^4 norm dependency arises from Poisson equation regularity"
+  ],
+  "why_c4_not_lipschitz": "Poisson equation regularity requires C^4 for error propagation through Markov chain dynamics",
+  "external_references": []
+}

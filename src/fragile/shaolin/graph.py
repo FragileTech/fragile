@@ -11,7 +11,7 @@ import panel as pn
 import param
 
 # import torch
-from shaolin.dimension_mapper import (
+from fragile.shaolin.dimension_mapper import (
     AlphaDim,
     ColorDim,
     Dimensions,

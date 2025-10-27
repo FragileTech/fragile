@@ -1,0 +1,103 @@
+{
+  "label": "thm-hk-convergence-main-assembly",
+  "name": "Conditional Exponential HK-Convergence of the Fragile Gas",
+  "statement_type": "theorem",
+  "source": {
+    "file": "docs/source/1_euclidean_gas/11_hk_convergence.md",
+    "line_start": 2457,
+    "line_end": 2502
+  },
+  "input_objects": [
+    "obj-empirical-measure",
+    "obj-qsd",
+    "obj-hk-metric",
+    "obj-hellinger-distance",
+    "obj-wasserstein-distance",
+    "obj-fragile-gas-dynamics",
+    "obj-kinetic-operator",
+    "obj-cloning-operator",
+    "obj-normalized-measure",
+    "obj-alive-walkers",
+    "obj-density-ratio"
+  ],
+  "input_axioms": [
+    "ax-uniform-density-bound-hk",
+    "def-axiom-guaranteed-revival",
+    "def-axiom-local-perturbation",
+    "ax-confining-potential",
+    "ax-bounded-displacement"
+  ],
+  "axiom_status": {
+    "ax-uniform-density-bound-hk": {
+      "status": "PROVEN",
+      "proof_document": "docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+      "proof_theorem": "thm-bounded-density-ratio-main",
+      "note": "Originally a conditional assumption, now rigorously proven using parabolic Harnack inequalities and QSD mass concentration theory. Pending manual verification before removing axiom label.",
+      "proof_methods": [
+        "Parabolic Harnack inequality for hypoelliptic operators",
+        "Gaussian mollification from cloning noise",
+        "Stochastic mass conservation via QSD theory",
+        "High-probability bounds with exponential concentration"
+      ]
+    }
+  },
+  "input_parameters": [
+    "param-time-step",
+    "param-cloning-noise-variance",
+    "param-friction-coefficient",
+    "param-convergence-rate-hk",
+    "param-convergence-rate-kinetic",
+    "param-convergence-rate-structural",
+    "param-wasserstein-contraction-rate",
+    "param-revival-rate",
+    "param-death-rate",
+    "param-mass-contraction-rate",
+    "param-shape-contraction-rate",
+    "param-noise-constant",
+    "param-hypocoercive-coupling",
+    "param-density-bound-M"
+  ],
+  "attributes_required": {
+    "obj-empirical-measure": ["attr-sub-probability-measure"],
+    "obj-qsd": ["attr-quasi-stationary", "attr-gibbs-structure", "attr-smooth-density"],
+    "obj-kinetic-operator": ["attr-langevin-dynamics", "attr-hypocoercive"],
+    "obj-cloning-operator": ["attr-gaussian-regularization", "attr-fitness-weighted"],
+    "obj-normalized-measure": ["attr-probability-measure"],
+    "obj-density-ratio": ["attr-uniformly-bounded"]
+  },
+  "internal_lemmas": [
+    "lem-mass-contraction-revival-death",
+    "lem-structural-variance-contraction",
+    "lem-kinetic-hellinger-contraction"
+  ],
+  "internal_propositions": [
+    "attr-killing-rate-continuous"
+  ],
+  "lemma_dag_edges": [
+    ["lem-mass-contraction-revival-death", "thm-hk-convergence-main-assembly"],
+    ["lem-structural-variance-contraction", "thm-hk-convergence-main-assembly"],
+    ["lem-kinetic-hellinger-contraction", "thm-hk-convergence-main-assembly"],
+    ["attr-killing-rate-continuous", "lem-mass-contraction-revival-death"]
+  ],
+  "output_type": "Convergence",
+  "attributes_added": [
+    "attr-exponential-hk-convergence",
+    "attr-hk-rate-formula",
+    "attr-hellinger-wasserstein-coupling",
+    "attr-mass-shape-equilibration",
+    "attr-conditional-convergence",
+    "attr-hybrid-dynamics-stability"
+  ],
+  "relations_established": [
+    "rel-hk-exponential-bound",
+    "rel-hellinger-contraction-coupling",
+    "rel-wasserstein-contraction-coupling",
+    "rel-mass-shape-convergence",
+    "rel-error-accumulation",
+    "rel-rate-bottleneck-analysis"
+  ],
+  "external_theorems_used": [
+    "thm-main-contraction-full",
+    "thm-foster-lyapunov-main"
+  ]
+}

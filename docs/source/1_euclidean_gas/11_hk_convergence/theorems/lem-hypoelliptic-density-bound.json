@@ -1,0 +1,107 @@
+{
+  "label": "lem-hypoelliptic-density-bound",
+  "name": "Hypoelliptic Regularity Provides Density Bounds",
+  "statement_type": "lemma",
+  "source": {
+    "file": "docs/source/1_euclidean_gas/11_hk_convergence.md",
+    "line_start": 1940,
+    "line_end": 2028
+  },
+  "input_objects": [
+    "obj-kinetic-operator",
+    "obj-mckean-vlasov-generator",
+    "obj-empirical-measure",
+    "obj-qsd"
+  ],
+  "input_axioms": [
+    "def-axiom-local-perturbation",
+    "ax-confining-potential"
+  ],
+  "input_parameters": [
+    "M_0",
+    "t",
+    "T",
+    "gamma",
+    "sigma",
+    "sigma_x",
+    "U",
+    "R",
+    "d",
+    "tau",
+    "c_revival"
+  ],
+  "attributes_required": {
+    "obj-kinetic-operator": [
+      "attr-hypoelliptic",
+      "attr-hormander-bracket-condition"
+    ],
+    "obj-mckean-vlasov-generator": [
+      "attr-smoothing",
+      "attr-gaussian-bounds"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-smooth-density",
+    "attr-linf-bound",
+    "attr-gaussian-kernel-bounds"
+  ],
+  "relations_established": [
+    {
+      "type": "upper_bound",
+      "from": "obj-evolved-density",
+      "to": "constant-C-hypo",
+      "description": "L^infty bound: ||rho_t||_infty <= C_hypo(M_0, t, gamma, sigma, U, R)"
+    },
+    {
+      "type": "smoothness",
+      "from": "obj-evolved-density",
+      "to": "C-infinity",
+      "description": "Hypoelliptic smoothing: rho(t, ·) in C^infty(Omega) for t > 0"
+    },
+    {
+      "type": "kernel_bound",
+      "from": "obj-transition-kernel",
+      "to": "gaussian-bounds",
+      "description": "Transition kernel satisfies Gaussian bounds with Carnot-Carathéodory distance"
+    }
+  ],
+  "dependencies_summary": {
+    "from_chapter_06": [
+      "Section 4.4.1: Hypoellipticity and Gaussian Accessibility",
+      "Theorem 4.5: Geometric Ergodicity and Convergence to QSD"
+    ],
+    "from_chapter_09": [
+      "Section 2: The Hypoelliptic Kinetic Operator",
+      "Hypocoercive entropy dissipation"
+    ],
+    "mathematical_references": [
+      "Hörmander 1967 (Acta Math. 119:147-171): Hörmander's theorem",
+      "Villani 2009 (Hypocoercivity)",
+      "Hérau & Nier 2004 (Theorem 1.1): L^infty bounds for hypoelliptic kinetic equations"
+    ],
+    "proof_structure": {
+      "kinetic_evolution": "Gaussian kernel bounds O(t^{-d/alpha})",
+      "cloning_step": "Gaussian convolution preserves L^infty",
+      "killing_term": "Mass removal cannot increase supremum",
+      "revival_term": "Bounded source C_revival",
+      "combined_bound": "C_hypo(M_0, T, gamma, sigma, U, R) := C_kin(T) M_0 + C_revival T"
+    },
+    "parameters": {
+      "M_0": "initial density bound",
+      "t": "current time",
+      "T": "terminal time",
+      "gamma": "friction coefficient",
+      "sigma": "perturbation noise scale",
+      "sigma_x": "cloning position jitter scale",
+      "U": "confining potential",
+      "R": "domain radius",
+      "d": "spatial dimension",
+      "tau": "time step size",
+      "c_revival": "revival rate constant"
+    }
+  }
+}

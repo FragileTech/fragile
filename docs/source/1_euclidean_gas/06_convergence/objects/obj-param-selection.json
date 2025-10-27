@@ -1,0 +1,14 @@
+{
+  "label": "obj-param-selection",
+  "name": "Parameter Selection for Optimal Convergence",
+  "mathematical_expression": "\\gamma = \\lambda = \\sqrt{\\lambda_{\\min}}",
+  "object_type": "operator",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "swarm",
+    "stability",
+    "variance"
+  ],
+  "source": null
+}

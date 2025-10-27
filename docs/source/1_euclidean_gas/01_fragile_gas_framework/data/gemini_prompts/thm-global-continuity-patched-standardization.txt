@@ -1,0 +1,145 @@
+Analyze this mathematical theorem and extract detailed dependency information.
+
+**Theorem**: thm-global-continuity-patched-standardization
+**Title**: Global Continuity of the Patched Standardization Operator
+
+**Full Content**:
+Let $z(\mathcal{S}, v, M)$ be the N-Dimensional Standardization Operator using the **Regularized Standard Deviation Function** ([](#def-statistical-properties-measurement)). Let $\mathcal{S}_1$ and $\...
+
+**Available Objects** (definitions you can reference):
+[
+  "obj-algorithmic-space-generic",
+  "obj-total-expected-cloning-action",
+  "obj-alg-distance",
+  "obj-swarm-aggregation-operator-axiomatic",
+  "obj-n-particle-displacement-metric",
+  "obj-reward-measurement",
+  "obj-perturbation-operator",
+  "obj-cloning-probability-function",
+  "obj-alive-dead-sets",
+  "obj-swarm-potential-assembly-operator",
+  "obj-metric-quotient",
+  "obj-cloning-score-function",
+  "obj-reference-measures",
+  "obj-raw-value-operator",
+  "obj-swarm-update-procedure",
+  "obj-w2-output-metric",
+  "obj-smoothed-gaussian-measure",
+  "obj-valid-state-space",
+  "obj-expected-cloning-action",
+  "obj-perturbation-measure",
+  "obj-cloning-measure",
+  "obj-displacement-components",
+  "obj-distance-to-companion-measurement",
+  "obj-canonical-logistic-rescale-function-example",
+  "obj-perturbation-fluctuation-bounds-reproof",
+  "obj-valid-noise-measure",
+  "obj-distance-to-cemetery-state",
+  "obj-swarm-and-state-space",
+  "obj-cemetery-state-measure",
+  "obj-components-mean-square-standardization-error",
+  "obj-status-update-operator",
+  "obj-lipschitz-value-error-coefficients",
+  "obj-walker",
+  "obj-companion-selection-measure",
+  "obj-fragile-gas-algorithm",
+  "obj-alive-set-potential-operator",
+  "obj-statistical-properties-measurement",
+  "obj-fragile-swarm-instantiation",
+  "obj-distance-positional-measures",
+  "obj-lipschitz-structural-error-coefficients",
+  "obj-standardization-operator-n-dimensional",
+  "obj-algorithmic-cemetery-extension",
+  "obj-asymmetric-rescale-function"
+]
+
+**Available Axioms** (axioms you can reference):
+[
+  "axiom-raw-value-mean-square-continuity",
+  "axiom-def-assumption-instep-independence",
+  "axiom-def-axiom-reward-regularity",
+  "axiom-def-axiom-bounded-variance-production",
+  "axiom-def-axiom-rescale-function",
+  "axiom-def-axiom-sufficient-amplification",
+  "axiom-def-axiom-bounded-second-moment-perturbation",
+  "axiom-def-axiom-environmental-richness",
+  "axiom-def-axiom-bounded-deviation-variance",
+  "axiom-def-axiom-guaranteed-revival",
+  "axiom-def-axiom-bounded-algorithmic-diameter",
+  "axiom-def-axiom-margin-stability",
+  "axiom-bounded-measurement-variance",
+  "axiom-def-axiom-geometric-consistency",
+  "axiom-def-axiom-bounded-relative-collapse",
+  "axiom-def-axiom-non-degenerate-noise",
+  "axiom-def-axiom-boundary-smoothness",
+  "axiom-def-axiom-boundary-regularity",
+  "axiom-def-axiom-range-respecting-mean"
+]
+
+**Your Task**: Extract the following information in JSON format:
+
+1. **input_objects**: List of object labels (obj-*) that this theorem USES or ASSUMES in its statement or proof
+   - Look for references to definitions, operators, functions, spaces, measures
+   - Example: If theorem mentions "using the perturbation operator", include "obj-perturbation-operator"
+
+2. **input_axioms**: List of axiom labels (axiom-*) that this theorem ASSUMES
+   - Look for phrases like "by axiom", "assuming", "under the regularity condition"
+   - Example: "axiom-def-axiom-bounded-variance-production"
+
+3. **input_parameters**: List of mathematical parameters with pattern param-*
+   - N (swarm size), d (dimension), τ (time step), σ (noise scale), etc.
+   - Create labels like: param-N, param-d, param-tau, param-sigma, param-alpha-reward
+   - Extract from symbols in mathematical expressions
+
+4. **properties_required**: Dictionary mapping object labels to list of required property labels
+   - Example: {"obj-perturbation-operator": ["prop-lipschitz-continuous"]}
+   - Look for statements like "assuming X is continuous", "if Y is bounded"
+
+5. **output_type**: ONE of these enum values:
+   - "Property" - establishes property of an object
+   - "Relation" - relates two objects
+   - "Existence" - proves something exists
+   - "Construction" - builds new object
+   - "Uniqueness" - proves uniqueness
+   - "Bound" - establishes inequality
+   - "Convergence" - proves convergence
+   - "Classification" - classifies objects
+
+6. **properties_added**: List of Property objects this theorem establishes
+   Format: list of dicts with fields: label, expression, object_label
+   - Example: {"label": "prop-lipschitz-bound", "expression": "L \\leq C", "object_label": "obj-distance-operator"}
+
+7. **relations_established**: List of Relationship objects (if theorem relates objects)
+   Format: [{"source": "obj-A", "target": "obj-B", "type": "approximation|embedding|equivalence"}]
+
+**Output Format** (JSON only, no explanation):
+```json
+{
+  "input_objects": ["obj-...", ...],
+  "input_axioms": ["axiom-...", ...],
+  "input_parameters": ["param-...", ...],
+  "properties_required": {"obj-...": ["prop-..."]},
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-...",
+      "expression": "LaTeX expression",
+      "object_label": "obj-..."
+    }
+  ],
+  "relations_established": [
+    {
+      "source": "obj-...",
+      "target": "obj-...",
+      "type": "approximation"
+    }
+  ]
+}
+```
+
+IMPORTANT:
+- Only reference objects/axioms from the provided lists
+- Use exact label format: obj-*, axiom-*, param-*, prop-*
+- Be conservative - only include dependencies explicitly mentioned
+- output_type must be exactly one of the enum values listed
+- All labels must be lowercase with hyphens

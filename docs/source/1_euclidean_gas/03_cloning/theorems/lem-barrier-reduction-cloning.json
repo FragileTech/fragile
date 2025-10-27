@@ -1,0 +1,41 @@
+{
+  "label": "lem-barrier-reduction-cloning",
+  "name": "Expected Barrier Reduction for Cloned Walker",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 7313,
+    "line_end": 7368
+  },
+  "input_objects": [
+    "obj-boundary-exposed-set",
+    "obj-boundary-potential-recall",
+    "obj-walker"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-delta-safe",
+    "param-dimension",
+    "param-sigma",
+    "param-sigma-x",
+    "param-swarm-size"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-barrier-reduction-cloning",
+      "expression": "\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid i \\text{ clones}] \\leq \\mathbb{E}[\\varphi_{\\text{barrier}}(x_{c_i})] + C_{\\text{jitter}}",
+      "object_label": "obj-boundary-potential-recall",
+      "established_by": "lem-barrier-reduction-cloning",
+      "source": {
+        "file": "03_cloning.md",
+        "section": "lem-barrier-reduction-cloning"
+      }
+    }
+  ],
+  "relations_established": []
+}

@@ -1,0 +1,34 @@
+{
+  "label": "thm-svd-rate-matrix",
+  "name": "SVD of Rate Sensitivity Matrix",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {
+    "obj-param-selection": [
+      "attr-rate-sensitivity-matrix"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Decomposition",
+  "attributes_added": [
+    {
+      "label": "attr-svd-decomposition-mkappa",
+      "expression": "M_\u03ba = U \u03a3 V^T,  \u03c3 \u2248 (1.58, 1.12, 0.76, 0.29)",
+      "object_label": "obj-param-selection"
+    }
+  ],
+  "relations_established": [
+    {
+      "source": "obj-param-selection",
+      "target": "obj-param-selection",
+      "type": "decomposition"
+    }
+  ]
+}

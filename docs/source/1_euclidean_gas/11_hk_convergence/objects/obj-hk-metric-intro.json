@@ -1,0 +1,13 @@
+{
+  "label": "obj-hk-metric-intro",
+  "name": "Additive Hellinger-Kantorovich Metric for the Fragile Gas",
+  "mathematical_expression": "d_{HK}^2(\\mu_1, \\mu_2) := d_H^2(\\mu_1, \\mu_2) + W_2^2(\\tilde{\\mu}_1, \\tilde{\\mu}_2)",
+  "object_type": "measure",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "convergence"
+  ],
+  "source": null
+}

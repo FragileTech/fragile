@@ -1,0 +1,12 @@
+{
+  "label": "obj-transport-operator",
+  "name": "Transport Operator and Probability Flux",
+  "mathematical_expression": "L^\\dagger f = -\\nabla \\cdot J[f] = -\\nabla_x \\cdot J_x[f] - \\nabla_v \\cdot J_v[f]",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "07_mean_field"
+}

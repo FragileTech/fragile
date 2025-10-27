@@ -1,0 +1,37 @@
+{
+  "label": "thm-explicit-rate-sensitivity",
+  "name": "Explicit Rate Sensitivity Matrix",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-lambda",
+    "param-sigma-x",
+    "param-alpha-rest",
+    "param-lambda-alg",
+    "param-epsilon-c",
+    "param-epsilon-d",
+    "param-gamma",
+    "param-sigma-v",
+    "param-tau",
+    "param-N",
+    "param-kappa-wall",
+    "param-d-safe"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "StructuralTheorem",
+  "attributes_added": [
+    {
+      "label": "attr-rate-sensitivity-matrix",
+      "expression": "M_\u03ba \u2248 [[1,0,0,0.3,-0.3,0,0,0,-0.1,0,0,0],[0,0,0,0,0,0,1,0,-0.1,0,0,0],[0,0,0,0,0,0,0.5,0,0,0,0,0],[0.5,0,0,0,0,0,0.3,0,0,0,0.4,0]] @ P",
+      "object_label": "obj-param-selection"
+    }
+  ],
+  "relations_established": []
+}

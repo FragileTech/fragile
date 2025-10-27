@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-lsi-implies-kl-convergence-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-discrete-lsi",
+  "target_object": "obj-markov-kernel",
+  "established_by": "thm-lsi-implies-kl-convergence",
+  "expression": "D_KL(μ_t||π) ≤ e^{-t/C_LSI} D_KL(μ_0||π)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

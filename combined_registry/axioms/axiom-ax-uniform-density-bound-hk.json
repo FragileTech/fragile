@@ -1,0 +1,8 @@
+{
+  "label": "axiom-ax-uniform-density-bound-hk",
+  "statement": "Uniform Boundedness of Density Ratio",
+  "mathematical_expression": "\\sup_{t \\geq 0} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence"
+}

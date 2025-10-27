@@ -1,0 +1,55 @@
+{
+  "label": "thm-svd-rate-matrix",
+  "name": "SVD of Rate Sensitivity Matrix",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {
+    "obj-param-selection": [
+      "prop-rate-sensitivity-matrix"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Decomposition",
+  "properties_added": [
+    {
+      "label": "prop-svd-decomposition-mkappa",
+      "expression": "M_κ = U Σ V^T,  σ ≈ (1.58, 1.12, 0.76, 0.29)",
+      "object_label": "obj-param-selection",
+      "established_by": "thm-svd-rate-matrix",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": [
+    {
+      "label": "rel-param-selection-param-selection-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-param-selection",
+      "target_object": "obj-param-selection",
+      "established_by": "thm-svd-rate-matrix",
+      "expression": "{'source': 'obj-param-selection', 'target': 'obj-param-selection', 'type': 'decomposition'}",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "06_convergence"
+    }
+  ]
+}

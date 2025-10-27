@@ -1,0 +1,66 @@
+{
+  "label": "thm-hwi-inequality",
+  "name": "The HWI Inequality (Otto-Villani)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-wasserstein-distance",
+    "def-relative-entropy",
+    "def-fisher-information"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "C_HWI"
+  ],
+  "properties_required": {
+    "log-concavity": [
+      "π log-concave (NOW PROVEN THEOREM via 15_geometric_gas_lsi_proof)",
+      "Smoothness to define Fisher information I(μ|π)"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-hwi-inequality-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-wasserstein-distance",
+      "target_object": "obj-relative-entropy",
+      "established_by": "thm-hwi-inequality",
+      "expression": "H(μ|π) ≤ W₂(μ,π) √I(μ|π)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    },
+    {
+      "label": "rel-thm-hwi-inequality-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-wasserstein-distance",
+      "target_object": "obj-relative-entropy",
+      "established_by": "thm-hwi-inequality",
+      "expression": "Foundation for displacement convexity approach to LSI",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

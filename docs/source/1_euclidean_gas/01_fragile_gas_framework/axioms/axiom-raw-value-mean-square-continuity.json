@@ -1,0 +1,6 @@
+{
+  "label": "axiom-raw-value-mean-square-continuity",
+  "statement": "Axiom of Mean-Square Continuity for Raw Values",
+  "mathematical_expression": "\\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+  "foundational_framework": "Euclidean Gas"
+}

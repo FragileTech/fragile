@@ -1,0 +1,33 @@
+{
+  "label": "lem-sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+  "name": "Probabilistic Bound on Total Perturbation-Induced Displacement",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-perturbation-operator",
+    "obj-n-particle-displacement-metric"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-bounded-second-moment-perturbation"
+  ],
+  "input_parameters": [
+    "param-failure-probability-delta"
+  ],
+  "attributes_required": {
+    "obj-perturbation-operator": [
+      "attr-bounded-second-moment"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-probabilistic-bound-on-total-displacement",
+      "expression": "\\exists B(\\delta) > 0 \\text{ s.t. } P(D_{total} > B(\\delta)) \\le \\delta",
+      "object_label": "obj-n-particle-displacement-metric"
+    }
+  ],
+  "relations_established": []
+}

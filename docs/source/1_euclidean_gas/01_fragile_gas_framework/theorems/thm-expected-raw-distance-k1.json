@@ -1,0 +1,26 @@
+{
+  "label": "thm-expected-raw-distance-k1",
+  "name": "Deterministic Behavior of the Expected Raw Distance Vector at $k=1$",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-raw-value-operator",
+    "obj-distance-to-cemetery-state",
+    "obj-alive-dead-sets"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-k1-distance-bound",
+      "expression": "\\mathbb{E}[d_{raw}] = D_{cemetery} \\text{ for } k=1",
+      "object_label": "obj-raw-value-operator"
+    }
+  ],
+  "relations_established": []
+}

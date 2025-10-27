@@ -1,0 +1,15 @@
+{
+  "label": "obj-swarm-potential-assembly-operator",
+  "name": "Swarm Potential Assembly Operator",
+  "mathematical_expression": "A_{\\text{pot}}",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

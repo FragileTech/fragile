@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-variance-concentration-hk-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-unified-high-low-error-sets",
+  "target_object": "obj-barycentres-and-centered-vectors",
+  "established_by": "lem-variance-concentration-hk",
+  "expression": "sum_{i in H_k} ||delta_x,k,i||^2 >= c_H * sum_{i in A_k} ||delta_x,k,i||^2",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

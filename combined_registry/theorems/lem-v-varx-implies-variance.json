@@ -1,0 +1,42 @@
+{
+  "label": "lem-v-varx-implies-variance",
+  "name": "Large $V_{\\text{Var},x}$ Implies Large Single-Swarm Positional Variance",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-barycentres-and-centered-vectors"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "R_total_var_x"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-v-varx-implies-variance-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-barycentres-and-centered-vectors",
+      "target_object": "obj-barycentres-and-centered-vectors",
+      "established_by": "lem-v-varx-implies-variance",
+      "expression": "V_Var,x large implies at least one swarm has large variance",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

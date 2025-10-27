@@ -1,0 +1,65 @@
+{
+  "label": "thm-tensorization",
+  "name": "Tensorization of LSI",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-discrete-lsi",
+    "def-product-kernel"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "N",
+    "C_i"
+  ],
+  "properties_required": {
+    "component-lsi": [
+      "Each K_i satisfies LSI with constant C_i"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-tensorization-0-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-discrete-lsi",
+      "target_object": "obj-product-kernel",
+      "established_by": "thm-tensorization",
+      "expression": "For K = ⊗ K_i: C_LSI(K) = max{C_1, C_2, ..., C_N}",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    },
+    {
+      "label": "rel-thm-tensorization-1-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-discrete-lsi",
+      "target_object": "obj-product-kernel",
+      "established_by": "thm-tensorization",
+      "expression": "Ent_π(f²) ≤ C 𝔈_product(f,f)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

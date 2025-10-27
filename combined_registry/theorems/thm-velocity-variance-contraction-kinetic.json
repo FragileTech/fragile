@@ -1,0 +1,75 @@
+{
+  "label": "thm-velocity-variance-contraction-kinetic",
+  "name": "Velocity Variance Contraction Under Kinetic Operator",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-velocity-variance-recall"
+  ],
+  "input_axioms": [
+    "axiom-diffusion-tensor",
+    "axiom-friction-timestep"
+  ],
+  "input_parameters": [
+    "V_Var_v",
+    "gamma",
+    "sigma_max",
+    "d",
+    "tau"
+  ],
+  "properties_required": {
+    "langevin-sde": [
+      "friction-term",
+      "noise-term-bounded"
+    ]
+  },
+  "internal_lemmas": [
+    "ito-lemma-for-velocity-norm-squared",
+    "parallel-axis-theorem",
+    "barycenter-velocity-dynamics"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-velocity-variance-contraction-kinetic-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-velocity-variance-recall",
+      "target_object": "obj-velocity-variance-recall",
+      "established_by": "thm-velocity-variance-contraction-kinetic",
+      "expression": "friction-provides-direct-linear-contraction",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "05_kinetic_contraction"
+    },
+    {
+      "label": "rel-thm-velocity-variance-contraction-kinetic-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-velocity-variance-recall",
+      "target_object": "obj-velocity-variance-recall",
+      "established_by": "thm-velocity-variance-contraction-kinetic",
+      "expression": "balances-cloning-velocity-expansion",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "05_kinetic_contraction"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "label": "thm-entropy-bound-debruijn",
+  "name": "Entropy Bound via De Bruijn Identity",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-fisher-information",
+    "def-entropy"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {
+    "gaussian-perturbation": [
+      "Gaussian convolution"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-entropy-bound-debruijn-0-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-fisher-information",
+      "target_object": "obj-entropy",
+      "established_by": "thm-entropy-bound-debruijn",
+      "expression": "dH/dt = -I (Fisher information)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

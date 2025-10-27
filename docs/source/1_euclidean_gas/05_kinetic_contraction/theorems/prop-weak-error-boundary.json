@@ -1,0 +1,41 @@
+{
+  "label": "attr-weak-error-boundary",
+  "name": "BAOAB Weak Error for Boundary Lyapunov Function",
+  "statement_type": "proposition",
+  "source": {
+    "file": "05_kinetic_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-baoab-integrator",
+    "def-boundary-potential-recall",
+    "def-barrier-function"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "W_b",
+    "kappa_total",
+    "C_total",
+    "tau"
+  ],
+  "attributes_required": {
+    "V_total": [
+      "foster-lyapunov-drift"
+    ]
+  },
+  "internal_lemmas": [
+    "probability-truncation-via-foster-lyapunov",
+    "markov-inequality-for-barrier",
+    "thm-foster-lyapunov-main"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "self-referential-weak-error-bound"
+  ],
+  "relations_established": [
+    "probability-truncation-controls-unbounded-derivatives"
+  ]
+}

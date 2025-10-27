@@ -1,0 +1,15 @@
+{
+  "label": "obj-displacement-components",
+  "name": "Components of Swarm Displacement",
+  "mathematical_expression": "\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\sum_{i=1}^N d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2",
+  "object_type": "space",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

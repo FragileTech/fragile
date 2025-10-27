@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-dobrushin-established-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-total-operator",
+  "target_object": "obj-total-operator",
+  "established_by": "thm-dobrushin-established",
+  "expression": "Reference to classical Dobrushin theory",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

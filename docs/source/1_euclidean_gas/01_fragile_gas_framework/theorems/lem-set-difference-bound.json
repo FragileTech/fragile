@@ -1,0 +1,34 @@
+{
+  "label": "lem-set-difference-bound",
+  "name": "Bound on the Error from Companion Set Change",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-alive-dead-sets",
+    "obj-reward-measurement"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-m-f"
+  ],
+  "attributes_required": {
+    "obj-reward-measurement": [
+      "attr-bounded-real-valued"
+    ],
+    "obj-alive-dead-sets": [
+      "attr-non-empty"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-set-difference-error-bound",
+      "expression": "|\\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j| \\le M_f \\frac{|S_1 \\Delta S_2|}{|S_1|}",
+      "object_label": "obj-statistical-properties-measurement"
+    }
+  ],
+  "relations_established": []
+}

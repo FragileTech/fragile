@@ -1,0 +1,49 @@
+{
+  "label": "lem-meanfield-cloning-dissipation-hybrid",
+  "name": "Mean-Field Cloning Entropy Dissipation",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-mean-field-cloning"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa_W",
+    "delta"
+  ],
+  "properties_required": {
+    "mean-field-limit": [
+      "Mean-field regime"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-mean-field-cloning-sketch"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-meanfield-cloning-dissipation-hybrid-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-mean-field-cloning",
+      "target_object": "obj-mean-field-cloning",
+      "established_by": "lem-meanfield-cloning-dissipation-hybrid",
+      "expression": "Mean-field KL dissipation rate",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "label": "obj-raw-value-operators",
+  "name": "Raw Value Operators",
+  "mathematical_expression": "r_i := R(x_i, v_i) = R_{\\text{pos}}(x_i) - c_{v\\_reg} \\|v_i\\|^2",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle"
+  ],
+  "source": null
+}

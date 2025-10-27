@@ -1,0 +1,22 @@
+{
+  "label": "rel-discrete-continuous-equivalence",
+  "relationship_type": "equivalence",
+  "bidirectional": true,
+  "source_object": "obj-euclidean-gas-discrete",
+  "target_object": "obj-euclidean-gas-continuous",
+  "established_by": "thm-mean-field-limit",
+  "expression": "S_N ≡ μ_t + O(N^{-1/d}) as N → ∞",
+  "properties": [
+    {
+      "label": "convergence-rate",
+      "expression": "O(N^{-1/d})",
+      "description": "Wasserstein distance convergence rate"
+    }
+  ],
+  "tags": [
+    "mean-field",
+    "convergence",
+    "fundamental"
+  ],
+  "timestamp": null
+}

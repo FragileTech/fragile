@@ -1,0 +1,32 @@
+{
+  "label": "thm-geometric-generalization",
+  "name": "Geometric Gas Generalization",
+  "input_objects": [
+    "obj-euclidean-gas-discrete"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Construction",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-euclidean-geometric-generalization",
+      "relationship_type": "generalization",
+      "bidirectional": false,
+      "source_object": "obj-euclidean-gas-discrete",
+      "target_object": "obj-geometric-gas",
+      "established_by": "thm-geometric-generalization",
+      "expression": "Euclidean Gas → Geometric Gas (M = ℝ^d, g = I)",
+      "properties": [],
+      "tags": [
+        "framework-extension",
+        "geometric"
+      ],
+      "timestamp": null
+    }
+  ]
+}

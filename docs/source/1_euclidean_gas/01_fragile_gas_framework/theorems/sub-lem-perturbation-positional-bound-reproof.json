@@ -1,0 +1,29 @@
+{
+  "label": "lem-sub-lem-perturbation-positional-bound-reproof",
+  "name": "Bounding the Output Positional Displacement",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-perturbation-operator",
+    "obj-alg-distance",
+    "obj-fragile-swarm-instantiation",
+    "obj-n-particle-displacement-metric"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-bounded-second-moment-perturbation"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-output-positional-displacement-bounded",
+      "expression": "D^2(O_{pert}(\\mathcal{S}_1), O_{pert}(\\mathcal{S}_2)) \\le C \\cdot d_{alg}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "object_label": "obj-perturbation-operator"
+    }
+  ],
+  "relations_established": []
+}

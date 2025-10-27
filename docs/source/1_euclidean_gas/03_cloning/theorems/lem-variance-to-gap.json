@@ -1,0 +1,27 @@
+{
+  "label": "lem-variance-to-gap",
+  "name": "From Bounded Variance to a Guaranteed Gap",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "section": "7.3.1",
+    "line_start": 3569,
+    "line_end": 3616
+  },
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "gap_lower_bound"
+  ],
+  "relations_established": [
+    "max|v_i - v_j| >= sqrt(2*kappa)"
+  ]
+}

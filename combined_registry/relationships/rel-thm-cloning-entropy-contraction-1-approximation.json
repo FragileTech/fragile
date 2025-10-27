@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-cloning-entropy-contraction-1-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-cloning-operator",
+  "target_object": "obj-hwi-inequality",
+  "established_by": "thm-cloning-entropy-contraction",
+  "expression": "KL contracts via W₂ contraction × Fisher bound",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

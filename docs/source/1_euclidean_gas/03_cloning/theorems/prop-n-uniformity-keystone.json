@@ -1,0 +1,29 @@
+{
+  "label": "attr-n-uniformity-keystone",
+  "name": "N-Uniformity of Keystone Constants",
+  "statement_type": "proposition",
+  "source": {
+    "file": "docs/source/1_euclidean_gas/03_cloning.md",
+    "line_start": 5495,
+    "line_end": 5960
+  },
+  "input_objects": [
+    "obj-keystone-constants"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-epsilon",
+    "param-swarm-size",
+    "param-r-spread"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lem-outlier-fraction-lower-bound",
+    "lem-variance-concentration-Hk"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": []
+}

@@ -1,0 +1,65 @@
+{
+  "label": "thm-synergistic-rate-derivation",
+  "name": "Synergistic Rate Derivation from Component Drifts",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm-update-procedure",
+    "obj-w2-output-metric",
+    "obj-positional-variance-recall",
+    "obj-velocity-variance-recall",
+    "obj-boundary-potential-recall"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-lambda",
+    "param-gamma",
+    "param-sigma-v",
+    "param-tau"
+  ],
+  "properties_required": {
+    "obj-w2-output-metric": [
+      "prop-wasserstein-contraction-rate"
+    ],
+    "obj-positional-variance-recall": [
+      "prop-positional-contraction-rate"
+    ],
+    "obj-velocity-variance-recall": [
+      "prop-velocity-dissipation-rate"
+    ],
+    "obj-boundary-potential-recall": [
+      "prop-boundary-contraction-rate"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-total-drift-inequality",
+      "expression": "E[Δ V_total] ≤ -κ_total V_total + C_total after weight balancing",
+      "object_label": "obj-swarm-update-procedure",
+      "established_by": "thm-synergistic-rate-derivation",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-total-rate-structure",
+      "expression": "κ_total = min(κ_x, α_v κ_v, α_W κ_W, α_b κ_b) · (1-ε_{coupling})",
+      "object_label": "obj-swarm-update-procedure",
+      "established_by": "thm-synergistic-rate-derivation",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

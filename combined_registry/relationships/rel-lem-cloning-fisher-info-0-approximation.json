@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-cloning-fisher-info-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-cloning-operator",
+  "target_object": "obj-fisher-information",
+  "established_by": "lem-cloning-fisher-info",
+  "expression": "I(Ψ_clone μ | π) ≤ C_I D_KL(μ | π)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

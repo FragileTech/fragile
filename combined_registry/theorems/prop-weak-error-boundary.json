@@ -1,0 +1,55 @@
+{
+  "label": "prop-weak-error-boundary",
+  "name": "BAOAB Weak Error for Boundary Lyapunov Function",
+  "statement_type": "proposition",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-baoab-integrator",
+    "def-boundary-potential-recall",
+    "def-barrier-function"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "W_b",
+    "kappa_total",
+    "C_total",
+    "tau"
+  ],
+  "properties_required": {
+    "V_total": [
+      "foster-lyapunov-drift"
+    ]
+  },
+  "internal_lemmas": [
+    "probability-truncation-via-foster-lyapunov",
+    "markov-inequality-for-barrier",
+    "thm-foster-lyapunov-main"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-prop-weak-error-boundary-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-baoab-integrator",
+      "target_object": "obj-boundary-potential-recall",
+      "established_by": "prop-weak-error-boundary",
+      "expression": "probability-truncation-controls-unbounded-derivatives",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "05_kinetic_contraction"
+    }
+  ]
+}

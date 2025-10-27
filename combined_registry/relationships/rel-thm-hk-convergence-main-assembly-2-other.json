@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-hk-convergence-main-assembly-2-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-empirical-measure",
+  "target_object": "obj-qsd",
+  "established_by": "thm-hk-convergence-main-assembly",
+  "expression": "rel-wasserstein-contraction-coupling",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence"
+}

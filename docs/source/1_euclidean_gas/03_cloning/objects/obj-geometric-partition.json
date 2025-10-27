@@ -1,0 +1,14 @@
+{
+  "label": "obj-geometric-partition",
+  "name": "Geometric Partitioning of High-Variance Swarms",
+  "mathematical_expression": "\\varepsilon",
+  "object_type": "space",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm",
+    "variance"
+  ],
+  "source": null
+}

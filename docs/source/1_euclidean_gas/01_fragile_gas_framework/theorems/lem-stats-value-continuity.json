@@ -1,0 +1,35 @@
+{
+  "label": "lem-stats-value-continuity",
+  "name": "Value Continuity of Statistical Properties",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-alive-dead-sets",
+    "obj-raw-value-operator",
+    "obj-statistical-properties-measurement"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-v-max"
+  ],
+  "attributes_required": {
+    "obj-raw-value-operator": [
+      "attr-bounded-components"
+    ],
+    "obj-alive-dead-sets": [
+      "attr-non-empty"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-lipschitz-continuity-value",
+      "expression": "|\\text{mean}(\\mathbf{v}_1) - \\text{mean}(\\mathbf{v}_2)| \\leq L_1 \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|",
+      "object_label": "obj-statistical-properties-measurement"
+    }
+  ],
+  "relations_established": []
+}

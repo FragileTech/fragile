@@ -1,0 +1,14 @@
+{
+  "label": "obj-perturbation-fluctuation-bounds-reproof",
+  "name": "Perturbation Fluctuation Bounds",
+  "mathematical_expression": "B_M(N) := N \\cdot M_{\\text{pert}}^2",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

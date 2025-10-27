@@ -1,0 +1,34 @@
+{
+  "label": "thm-dobrushin-established",
+  "name": "Dobrushin Contraction (Established)",
+  "statement_type": "theorem",
+  "source": {
+    "file": "09_kl_convergence.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-total-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa_W"
+  ],
+  "attributes_required": {
+    "dobrushin": [
+      "Dobrushin coefficient < 1"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-dobrushin-contraction"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "Established Dobrushin contraction"
+  ],
+  "relations_established": [
+    "Reference to classical Dobrushin theory"
+  ]
+}

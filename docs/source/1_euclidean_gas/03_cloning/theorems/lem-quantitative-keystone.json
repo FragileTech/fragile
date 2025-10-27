@@ -1,0 +1,40 @@
+{
+  "label": "lem-quantitative-keystone",
+  "name": "The N-Uniform Quantitative Keystone Lemma",
+  "statement_type": "lemma",
+  "source": {
+    "document": "03_cloning.md",
+    "section": "Chapter 8: The Quantitative Keystone Lemma",
+    "line_number": 4659,
+    "path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md#lem-quantitative-keystone"
+  },
+  "input_objects": [
+    "obj-cloning-probability",
+    "obj-structural-error-component",
+    "obj-unified-high-low-error-sets"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-bounded-relative-collapse",
+    "axiom-def-axiom-sufficient-amplification"
+  ],
+  "input_parameters": [
+    "epsilon",
+    "R_spread",
+    "chi",
+    "g_max"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Estimate",
+  "attributes_added": [
+    {
+      "property_label": "attr-keystone-corrective-action",
+      "property_name": "Corrective action proportional to structural error",
+      "property_type": "inequality",
+      "statement": "sum_{i in I_11} (p_{1,i} + p_{2,i})||Delta delta_x,i||^2 >= chi(eps) V_struct - g_max(eps)"
+    }
+  ],
+  "relations_established": []
+}

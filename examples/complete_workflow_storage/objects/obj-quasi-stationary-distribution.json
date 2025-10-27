@@ -1,0 +1,13 @@
+{
+  "label": "obj-quasi-stationary-distribution",
+  "name": "Quasi-Stationary Distribution",
+  "mathematical_expression": "QSD: μ_∞ = lim_{t→∞} μ_t",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "euclidean-gas",
+    "convergence",
+    "equilibrium"
+  ]
+}

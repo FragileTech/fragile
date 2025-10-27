@@ -1,0 +1,49 @@
+{
+  "label": "lem-strict-positivity-cloning",
+  "name": "Strict Positivity After Cloning",
+  "statement_type": "lemma",
+  "source": {
+    "file": "11_hk_convergence_bounded_density_rigorous_proof.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-cloning-operator",
+    "def-state-space"
+  ],
+  "input_axioms": [
+    "def-axiom-rescale-function",
+    "ax-domain-regularity"
+  ],
+  "input_parameters": [
+    "sigma_x",
+    "R",
+    "eta",
+    "d"
+  ],
+  "attributes_required": {
+    "gaussian-convolution": [
+      "\u03c1_post = \u222b G_\u03c3_x(x\u2212y) w(y) \u03c1_pre(y) dy"
+    ],
+    "positivity-floor": [
+      "w(y) \u2265 \u03b7"
+    ],
+    "local-lower-bound": [
+      "G_\u03c3_x(x\u2212y) \u2265 c_\u03c3_x,R for x, y \u2208 B_R"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-gaussian-kernel-lower-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "lem-gaussian-kernel-lower-bound"
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Strict positive lower bound after cloning: inf_x \u03c1_post(x) \u2265 \u03b7 c_\u03c3_x,R ||\u03c1_pre||_{L^1}"
+  ],
+  "relations_established": [
+    "\u03c1_post(x) \u2265 \u03b7 \u222b G_\u03c3_x(x\u2212y) \u03c1_pre(y) dy \u2265 \u03b7 c_\u03c3_x,R ||\u03c1_pre||_{L^1}"
+  ]
+}

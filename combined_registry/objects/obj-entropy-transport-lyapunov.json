@@ -1,0 +1,12 @@
+{
+  "label": "obj-entropy-transport-lyapunov",
+  "name": "Entropy-Transport Lyapunov Function",
+  "mathematical_expression": "V(\\mu) := D_{\\text{KL}}(\\mu \\| \\pi) + c \\cdot W_2^2(\\mu, \\pi)",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

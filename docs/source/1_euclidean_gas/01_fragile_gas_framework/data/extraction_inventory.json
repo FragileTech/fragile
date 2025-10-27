@@ -1,0 +1,1496 @@
+{
+  "source_file": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+  "total_directives": 114,
+  "counts_by_type": {
+    "definition": 43,
+    "assumption": 1,
+    "lemma": 24,
+    "axiom": 19,
+    "theorem": 24,
+    "proposition": 3
+  },
+  "directives": [
+    {
+      "type": "definition",
+      "label": "def-walker",
+      "title": "Walker",
+      "content": "A **walker**, denoted $w$, is a tuple consisting of a position and a status:\n\n$$\nw := (x, s)\n$$\n\nwhere:\n1.  $x \\in \\mathcal{X}$ is the walker's **position** in a state space $\\mathcal{X}$.\n2.  $s \\in ...",
+      "math_expression_count": 7,
+      "first_math": "w := (x, s)",
+      "cross_refs": [],
+      "line_range": [
+        155,
+        168
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-swarm-and-state-space",
+      "title": "Swarm and Swarm State Space",
+      "content": "A **swarm**, denoted $\\mathcal{S}$, is an N-tuple of walkers:\n\n$$\n\\mathcal{S} := (w_1, w_2, \\dots, w_N)\n$$\n\nThe **Swarm State Space**, denoted $\\Sigma_N$, is the set of all possible swarms of size N. ...",
+      "math_expression_count": 4,
+      "first_math": "\\mathcal{S} := (w_1, w_2, \\dots, w_N)",
+      "cross_refs": [],
+      "line_range": [
+        182,
+        198
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-alive-dead-sets",
+      "title": "Alive and Dead Sets",
+      "content": "For any swarm state $\\mathcal{S} = ((x_1, s_1), \\dots, (x_N, s_N)) \\in \\Sigma_N$:\n\n1.  The **alive set**, $\\mathcal{A}(\\mathcal{S})$, is the set of indices of all walkers with a survival status of 1.\n...",
+      "math_expression_count": 5,
+      "first_math": "\\mathcal{A}(\\mathcal{S}) := \\{i \\in \\{1, \\dots, N\\} \\mid s_i = 1\\}",
+      "cross_refs": [],
+      "line_range": [
+        201,
+        220
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-valid-state-space",
+      "title": "Valid State Space",
+      "content": "A **Valid State Space** is a tuple $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu_{\\mathcal{X}})$ with the following properties:\n\n1.  **Topological Structure:** The space $(\\mathcal{X}, d_{\\mathcal{X}})$ must be...",
+      "math_expression_count": 9,
+      "first_math": "(\\mathcal{X}, d_{\\mathcal{X}}, \\mu_{\\mathcal{X}})",
+      "cross_refs": [],
+      "line_range": [
+        258,
+        275
+      ]
+    },
+    {
+      "type": "assumption",
+      "label": "def-ambient-euclidean",
+      "title": "Ambient Euclidean Structure and Reference Measures",
+      "content": "- The spaces $\\mathcal{X} \\subset \\mathbb{R}^d$ and $\\mathcal{Y} \\subset \\mathbb{R}^m$ are finite-dimensional Euclidean domains with Lebesgue reference measures $\\lambda_d$ and $\\lambda_m$.\n- All line...",
+      "math_expression_count": 7,
+      "first_math": "\\mathcal{X} \\subset \\mathbb{R}^d",
+      "cross_refs": [],
+      "line_range": [
+        316,
+        323
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-reference-measures",
+      "title": "Reference Noise and Kernel Families",
+      "content": "- **Perturbation kernels on $\\mathcal{X}$ (dimension $d$):**\n  - Gaussian: $\\xi \\sim \\mathcal{N}(0, \\sigma^2 I_d)$ so that $\\mathbb{E}[\\|\\xi\\|_2^2] = d\\,\\sigma^2$.\n  - Uniform ball: $\\xi$ uniform on $...",
+      "math_expression_count": 17,
+      "first_math": "\\mathcal{X}",
+      "cross_refs": [],
+      "line_range": [
+        324,
+        335
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-n-particle-displacement-metric",
+      "title": "N-Particle Displacement Pseudometric ($d_{\\text{Disp},\\mathcal{Y}}$)",
+      "content": "For any two swarms, $\\mathcal{S}_1$ and $\\mathcal{S}_2$, define the (pseudo)metric by\n\n$$\nd_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)\n:= \\Bigg( \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}\\!...",
+      "math_expression_count": 9,
+      "first_math": "d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)\n:= \\Bigg( \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}\\!\\big(\\varphi(x_{1,i}), \\varphi(x_{2,i})\\big)^2\n\\;+\n\\; \\frac{\\lambda_{\\mathrm{status}}}{N} \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2 \\Bigg)^{\\!1/2}.",
+      "cross_refs": [],
+      "line_range": [
+        416,
+        446
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-metric-quotient",
+      "title": "Metric quotient of $(\\Sigma_N, d_{\\text{Disp},\\mathcal{Y}})$",
+      "content": "Define the equivalence relation $\\mathcal{S}_1\\sim\\mathcal{S}_2$ iff $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)=0$. The **metric identification** (Kolmogorov quotient) is $\\overline{\\Si...",
+      "math_expression_count": 4,
+      "first_math": "\\overline d_{\\text{Disp},\\mathcal{Y}}\\big([\\mathcal{S}_1],[\\mathcal{S}_2]\\big):= d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),",
+      "cross_refs": [],
+      "line_range": [
+        449,
+        459
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-polishness-and-w2",
+      "title": "Polishness of the quotient state space and $W_2$",
+      "content": "If $(\\mathcal{Y}, d_{\\mathcal{Y}})$ is Polish and $N<\\infty$, then the Kolmogorov quotient $(\\overline{\\Sigma}_N, \\overline d_{\\text{Disp},\\mathcal{Y}})$ induced by the displacement pseudometric is Po...",
+      "math_expression_count": 5,
+      "first_math": "(\\mathcal{Y}, d_{\\mathcal{Y}})",
+      "cross_refs": [],
+      "line_range": [
+        487,
+        492
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-displacement-components",
+      "title": "Components of Swarm Displacement",
+      "content": "For any two swarms, $\\mathcal{S}_1$ and $\\mathcal{S}_2$, their total displacement is decomposed into two fundamental components:\n\n1.  **The Squared Positional Displacement ($\\Delta_{\\text{pos}}^2$):**...",
+      "math_expression_count": 4,
+      "first_math": "\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\sum_{i=1}^N d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2",
+      "cross_refs": [],
+      "line_range": [
+        506,
+        520
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-assumption-instep-independence",
+      "title": "Conditional product structure within a step",
+      "content": "Fix a time $t$ and swarm state $\\mathcal S_t$. For each walker $i\\in\\{1,\\dots,N\\}$, let\n\n$$\nX_i \\;:=\\;\\big(U_i^{\\mathrm{comp}},\\,U_i^{\\mathrm{pert}},\\,U_i^{\\mathrm{status}},\\,U_i^{\\mathrm{clone}}\\big)...",
+      "math_expression_count": 8,
+      "first_math": "X_i \\;:=\\;\\big(U_i^{\\mathrm{comp}},\\,U_i^{\\mathrm{pert}},\\,U_i^{\\mathrm{status}},\\,U_i^{\\mathrm{clone}}\\big)",
+      "cross_refs": [],
+      "line_range": [
+        553,
+        564
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-guaranteed-revival",
+      "title": "Axiom of Guaranteed Revival",
+      "content": "*   **Core Assumption:** The cloning score generated by a dead walker must be guaranteed to exceed the maximum possible random threshold, $p_{\\max}$.\n*   **Axiomatic Parameter ($\\kappa_{\\text{revival}...",
+      "math_expression_count": 8,
+      "first_math": "\\kappa_{\\text{revival}} := \\frac{\\eta^{\\alpha+\\beta}}{\\varepsilon_{\\text{clone}} \\cdot p_{\\max}}",
+      "cross_refs": [],
+      "line_range": [
+        602,
+        617
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-revival-guarantee",
+      "title": "Almost\u2011sure revival under the global constraint",
+      "content": "Assume the global constraint $\\varepsilon_{\\text{clone}}\\,p_{\\max} < \\eta^{\\alpha+\\beta}$. Let $\\mathcal S$ be any swarm with at least one alive walker ($|\\mathcal A(\\mathcal S)|\\ge 1$) and let $i\\in\\...",
+      "math_expression_count": 11,
+      "first_math": "\\mathbb P\\big[\\text{$i$ is revived in the cloning stage}\\big] \\;=\\;1.",
+      "cross_refs": [],
+      "line_range": [
+        618,
+        627
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-boundary-regularity",
+      "title": "Axiom of Boundary Regularity",
+      "content": "*   **Core Assumption:** The marginal probability of a single walker becoming invalid after the perturbation and status update stages must be a smooth (H\u00f6lder continuous) function of the initial N-par...",
+      "math_expression_count": 18,
+      "first_math": "|P(s_{\\text{out},i}=0 | \\mathcal{S}_1) - P(s_{\\text{out},i}=0 | \\mathcal{S}_2)| \\le L_{\\text{death}} \\cdot d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^{\\alpha_B}",
+      "cross_refs": [],
+      "line_range": [
+        666,
+        692
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-boundary-smoothness",
+      "title": "Axiom of Boundary Smoothness",
+      "content": "*   **Core Assumption:** The boundary of the valid domain, $\\partial \\mathcal{X}_{\\mathrm{valid}}$, must be a $(d-1)$\u2011dimensional continuously differentiable ($C^1$) submanifold of the $d$\u2011dimensional...",
+      "math_expression_count": 7,
+      "first_math": "\\partial \\mathcal{X}_{\\mathrm{valid}}",
+      "cross_refs": [],
+      "line_range": [
+        704,
+        716
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-environmental-richness",
+      "title": "Axiom of Environmental Richness",
+      "content": "*   **Core Assumption:** The reward function $R$ must not be pathologically flat at a user-defined minimum length scale. The algorithm requires a guaranteed level of reward variation to learn.\n*   **A...",
+      "math_expression_count": 13,
+      "first_math": "\\kappa_{\\text{richness}} \\le \\inf_{y \\in \\varphi(\\mathcal{X}_{\\mathrm{valid}}), r \\ge r_{\\min}} \\left( \\text{Var}_{y' \\in B(y,r) \\cap \\varphi(\\mathcal{X}_{\\mathrm{valid}})} [R_{\\mathcal{Y}}(y')] \\right)",
+      "cross_refs": [],
+      "line_range": [
+        741,
+        760
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-reward-regularity",
+      "title": "Axiom of Reward Regularity",
+      "content": "*   **Core Assumption:** The reward function, when viewed in the algorithmic space, must be H\u00f6lder continuous.\n\n*   **Axiomatic Parameters:** The user must provide the constants that bound the reward ...",
+      "math_expression_count": 6,
+      "first_math": "|R_{\\mathcal{Y}}(y_1) - R_{\\mathcal{Y}}(y_2)| \\le L_{R,\\mathcal{Y}} \\cdot d_{\\mathcal{Y}}(y_1, y_2)^{\\alpha_R}.",
+      "cross_refs": [],
+      "line_range": [
+        767,
+        785
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-bounded-algorithmic-diameter",
+      "title": "Axiom of Bounded Algorithmic Diameter",
+      "content": "- The algorithmic space $(\\mathcal{Y}, d_{\\mathcal{Y}})$ is Polish (complete, separable metric space).\n- Its diameter is finite: $D_{\\mathcal{Y}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\mathcal{Y}) ...",
+      "math_expression_count": 5,
+      "first_math": "(\\mathcal{Y}, d_{\\mathcal{Y}})",
+      "cross_refs": [],
+      "line_range": [
+        801,
+        809
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-range-respecting-mean",
+      "title": "Range\u2011Respecting Mean",
+      "content": "For any finite collection of inputs $\\{v_i\\}$, the aggregator\u2019s mean output $\\mu$ satisfies\n\n$$\n\\min_i v_i \\;\\le\\; \\mu \\;\\le\\; \\max_i v_i.\n$$\n\nThis property holds for empirical means and is assumed fo...",
+      "math_expression_count": 3,
+      "first_math": "\\min_i v_i \\;\\le\\; \\mu \\;\\le\\; \\max_i v_i.",
+      "cross_refs": [],
+      "line_range": [
+        812,
+        822
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-valid-noise-measure",
+      "title": "Valid Noise Measure",
+      "content": "A kernel $\\mathcal P_\\sigma$ (and analogously $\\mathcal Q_\\delta$) is valid if it is Feller and satisfies:\n- Bounded second moment in $\\mathcal Y$ with constant $M_{\\mathrm{pert}}^2$ (as used in the p...",
+      "math_expression_count": 4,
+      "first_math": "\\mathcal P_\\sigma",
+      "cross_refs": [],
+      "line_range": [
+        825,
+        833
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-sufficient-amplification",
+      "title": "Axiom of Sufficient Amplification",
+      "content": "*   **Core Assumption:** The dynamics weights must be configured to actively process measurement signals.\n*   **Axiomatic Parameter ($\\kappa_{\\text{amplification}}$ - The Amplification Strength):** Th...",
+      "math_expression_count": 11,
+      "first_math": "\\kappa_{\\text{amplification}} := \\alpha + \\beta",
+      "cross_refs": [],
+      "line_range": [
+        840,
+        855
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-non-degenerate-noise",
+      "title": "Axiom of Non-Degenerate Noise",
+      "content": "*   **Core Assumption:** The **Perturbation** and **Cloning** measures must not be the Dirac delta measure.\n*   **Axiomatic Parameters ($\\sigma$, $\\delta$ - The Noise Scales):** The user provides thes...",
+      "math_expression_count": 6,
+      "first_math": "\\sigma",
+      "cross_refs": [],
+      "line_range": [
+        860,
+        868
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-components-mean-square-standardization-error",
+      "title": "Components of Mean-Square Standardization Error",
+      "content": "The total expected squared error of the standardization operator, $\\mathbb{E}[\\|\\mathbf{z}(\\mathcal{S}_1, V, M) - \\mathbf{z}(\\mathcal{S}_2, V, M)\\|_2^2]$, is bounded by the sum of two components:\n\n1. ...",
+      "math_expression_count": 9,
+      "first_math": "\\mathbb{E}[\\|\\mathbf{z}(\\mathcal{S}_1, V, M) - \\mathbf{z}(\\mathcal{S}_2, V, M)\\|_2^2]",
+      "cross_refs": [],
+      "line_range": [
+        875,
+        884
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-mean-square-standardization-error",
+      "title": "Asymptotic Behavior of the Mean-Square Standardization Error",
+      "content": "The continuity of the **N-Dimensional Standardization Operator** $z(\\mathcal{S})$ depends on the coupled effects of two distinct error sources whose expected growth rates are summed.\n\n*   **Core Princ...",
+      "math_expression_count": 12,
+      "first_math": "\\boxed{\n    \\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2] \\in O(E_{V,ms}^2(k_1)) + O(E_{S,ms}^2(k_1))\n    }",
+      "cross_refs": [],
+      "line_range": [
+        887,
+        908
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-bounded-relative-collapse",
+      "title": "Axiom of Bounded Relative Collapse",
+      "content": "*   **Core Assumption:** The scaling analysis for structural error is valid only for transitions that are not catastrophically large relative to the initial swarm size.\n*   **Axiomatic Parameter ($c_{...",
+      "math_expression_count": 5,
+      "first_math": "\\frac{|\\mathcal{A}(\\mathcal{S}_2)|}{|\\mathcal{A}(\\mathcal{S}_1)|} \\ge c_{\\min}",
+      "cross_refs": [],
+      "line_range": [
+        913,
+        926
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-bounded-deviation-variance",
+      "title": "Axiom of Bounded Deviation from Aggregated Variance",
+      "content": "*   **Core Assumption:** The sum of squared deviations of the raw input values from the aggregator's computed mean must be controllably related to the variance computed by the aggregator itself. This ...",
+      "math_expression_count": 8,
+      "first_math": "\\sum_{i \\in \\mathcal{A}} (v_i - \\mu(\\mathcal{S}, \\mathbf{v}_{\\mathcal{A}}))^2 \\le \\kappa_{\\text{var}} \\cdot |\\mathcal{A}| \\cdot \\text{Var}[M(\\mathcal{S}, \\mathbf{v}_{\\mathcal{A}})]",
+      "cross_refs": [],
+      "line_range": [
+        927,
+        942
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-bounded-variance-production",
+      "title": "Axiom of Bounded Variance Production",
+      "content": "*   **Core Assumption:** The variance of the measure produced by the aggregation operator must itself be bounded by a function of the input value range. This prevents an aggregator from creating arbit...",
+      "math_expression_count": 7,
+      "first_math": "\\text{Var}[M(\\mathcal{S}, \\mathbf{v})] \\le \\kappa_{\\text{range}} \\cdot V_{\\max}^2",
+      "cross_refs": [],
+      "line_range": [
+        943,
+        956
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-geometric-consistency",
+      "title": "Axiom of Geometric Consistency",
+      "content": "*   **Core Assumption:** The algorithmic noise should be unbiased and isotropic, unless intentionally designed otherwise.\n*   **Axiomatic Parameters (Practical Proxies):**\n    1.  **$\\kappa_{\\text{dri...",
+      "math_expression_count": 8,
+      "first_math": "\\kappa_{\\text{drift}} := \\sup_{x \\in \\mathcal{X}} \\|\\mathbb{E}_{x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)}[x' - x]\\|",
+      "cross_refs": [],
+      "line_range": [
+        963,
+        987
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-forced-activity",
+      "title": "Theorem of Forced Activity",
+      "content": ":::{admonition} The \"No Stagnation\" Guarantee\n:class: important\n:open:\nThis theorem is beautiful because it guarantees the swarm can never get completely stuck! Here's the intuition:\n\n**The Setup**: I...",
+      "math_expression_count": 0,
+      "first_math": null,
+      "cross_refs": [],
+      "line_range": [
+        992,
+        1012
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-margin-stability",
+      "title": "Axiom of Position\u2011Only Status Margin",
+      "content": "There exists a uniform margin $r_{\\mathrm{pos}}>0$ such that for any two swarms $\\mathcal{S}_1,\\mathcal{S}_2\\in\\Sigma_N$ with\n\n$$\n\\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal Y}\\!\\big(\\varphi(x_{1,i}),\\varphi(...",
+      "math_expression_count": 4,
+      "first_math": "\\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal Y}\\!\\big(\\varphi(x_{1,i}),\\varphi(x_{2,i})\\big)^2\\;\\le\\; r_{\\mathrm{pos}},",
+      "cross_refs": [],
+      "line_range": [
+        1066,
+        1082
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-reward-measurement",
+      "title": "Reward Measurement",
+      "content": "The reward value $r_i$ for walker $i$ at position $x_i$ is the result of integrating the global Reward Function $R$ against the walker's **positional measure**, which is the Dirac delta measure $\\delt...",
+      "math_expression_count": 7,
+      "first_math": "r_i := \\mathbb{E}_{\\delta_{x_i}}[R] = \\int_{\\mathcal{X}} R(x) \\, d\\delta_{x_i}(x) = R(x_i)",
+      "cross_refs": [],
+      "line_range": [
+        1102,
+        1111
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-perturbation-measure",
+      "title": "Perturbation Measure",
+      "content": "For a given noise scale $\\sigma > 0$, the **Perturbation Measure**, $\\mathcal{P}_\\sigma(x, \\cdot)$, is a **Valid Noise Measure** according to Definition 2.3. It governs the random walks during the per...",
+      "math_expression_count": 2,
+      "first_math": "\\sigma > 0",
+      "cross_refs": [],
+      "line_range": [
+        1116,
+        1119
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-cloning-measure",
+      "title": "Cloning Measure",
+      "content": "For a given cloning noise scale $\\delta > 0$, the **Cloning Measure**, $\\mathcal{Q}_\\delta(x, \\cdot)$, is a **Valid Noise Measure** according to Definition 2.3. It governs the displacement for newly c...",
+      "math_expression_count": 2,
+      "first_math": "\\delta > 0",
+      "cross_refs": [],
+      "line_range": [
+        1120,
+        1123
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-boundary-uniform-ball",
+      "title": "Uniform\u2011ball death probability is Lipschitz under finite perimeter",
+      "content": "Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter (BV boundary) and let $\\mathcal P_\\sigma(x,\\cdot)$ be the uniform law on $B(x,\\sigma)$. Define\n$$\n\nP_\\sigma(x)\\;:=\\;\\mathc...",
+      "math_expression_count": 10,
+      "first_math": "P_\\sigma(x)\\;:=\\;\\mathcal P_\\sigma(x, E)\\;=\\;\\frac{1}{\\mathrm{Vol}(B_\\sigma)}\\int \\mathbb 1_E(y)\\,\\mathbb 1_{B_\\sigma}(y-x)\\,\\mathrm dy.",
+      "cross_refs": [],
+      "line_range": [
+        1173,
+        1188
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-boundary-heat-kernel",
+      "title": "Heat\u2011kernel death probability is Lipschitz with constant $\\lesssim 1/\\sigma$",
+      "content": "Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter and let $p_{\\sigma^2}$ be the heat kernel at scale $\\sigma$. Define $P_\\sigma(x)=\\int \\chi_E(y)\\,p_{\\sigma^2}(x,\\mathrm dy...",
+      "math_expression_count": 7,
+      "first_math": "|P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d'\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y),",
+      "cross_refs": [],
+      "line_range": [
+        1197,
+        1206
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-algorithmic-space-generic",
+      "title": "Algorithmic Space",
+      "content": "An **algorithmic space** is a pair $(\\mathcal{Y}, d_{\\mathcal{Y}})$ consisting of a real vector space $\\mathcal{Y}$ and a true metric $d_{\\mathcal{Y}}$ on $\\mathcal{Y}$.",
+      "math_expression_count": 4,
+      "first_math": "(\\mathcal{Y}, d_{\\mathcal{Y}})",
+      "cross_refs": [],
+      "line_range": [
+        1214,
+        1217
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-distance-positional-measures",
+      "title": "Distance Between Positional Measures",
+      "content": "Let two walkers, $i$ and $j$, have their positions represented by the Dirac positional measures $\\delta_{x_i}$ and $\\delta_{x_j}$. The distance between them in the algorithmic space is the **1-Wassers...",
+      "math_expression_count": 9,
+      "first_math": "d(\\varphi_* \\delta_{x_i}, \\varphi_* \\delta_{x_j}) := W_1(\\delta_{\\varphi(x_i)}, \\delta_{\\varphi(x_j)})",
+      "cross_refs": [],
+      "line_range": [
+        1220,
+        1230
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-alg-distance",
+      "title": "Algorithmic Distance",
+      "content": "The **algorithmic distance** $d_{\\text{alg}}\\colon\\mathcal{X}\\times\\mathcal{X}\\to\\mathbb{R}_{\\ge0}$ is the distance between the projected positional measures of two walkers. In practice, this is the d...",
+      "math_expression_count": 3,
+      "first_math": "\\boxed{d_{\\text{alg}}(x_1, x_2) := d_{\\mathcal{Y}}(\\varphi(x_1), \\varphi(x_2))}",
+      "cross_refs": [],
+      "line_range": [
+        1232,
+        1241
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-swarm-aggregation-operator-axiomatic",
+      "title": "Swarm Aggregation Operator",
+      "content": "A **Swarm Aggregation Operator**, denoted $M$, is a function that maps a swarm state $\\mathcal{S}$ and a raw value vector $\\mathbf{v}$ (defined on the alive set $\\mathcal{A}(\\mathcal{S})$) to a probab...",
+      "math_expression_count": 22,
+      "first_math": "|\\mu(\\mathcal{S}, \\mathbf{v}_1) - \\mu(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\mu,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2",
+      "cross_refs": [],
+      "line_range": [
+        1273,
+        1300
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-empirical-aggregator-properties",
+      "title": "Axiomatic Properties of the Empirical Measure Aggregator",
+      "content": "Let the aggregation operator $M$ be defined such that for any swarm state $\\mathcal{S}$ with alive set $\\mathcal{A}(\\mathcal{S})$ of size $k = |\\mathcal{A}(\\mathcal{S})| \\ge 1$, and any raw value vect...",
+      "math_expression_count": 10,
+      "first_math": "M(\\mathcal{S}, \\mathbf{v}) = \\frac{1}{k} \\sum_{i \\in \\mathcal{A}(\\mathcal{S})} \\delta_{v_i}",
+      "cross_refs": [],
+      "line_range": [
+        1340,
+        1355
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-smoothed-gaussian-measure",
+      "title": "Smoothed Gaussian Measure",
+      "content": "The creation of a smoothed measure requires a key analytical parameter:\n*   **Smoothed Measure Kernel Scale ($\\ell$):** The length scale (standard deviation), $\\ell > 0$, of the Gaussian kernel used f...",
+      "math_expression_count": 8,
+      "first_math": "\\tilde{\\rho}_{\\mathcal{S}, \\ell}(y) := \\frac{1}{|\\mathcal{A}(\\mathcal{S})|} \\sum_{i \\in \\mathcal{A}(\\mathcal{S})} K_\\ell(y, \\varphi(x_i))",
+      "cross_refs": [],
+      "line_range": [
+        1428,
+        1439
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-algorithmic-cemetery-extension",
+      "title": "Algorithmic space with cemetery point",
+      "content": "Define $\\mathcal{Y}^{\\dagger}:=\\mathcal{Y}\\cup\\{\\dagger\\}$ with metric $d_\\dagger$ given by\n$$\n\nd_\\dagger(y_1,y_2)=d_{\\mathcal{Y}}(y_1,y_2),\\quad d_\\dagger(y,\\dagger)=D_{\\mathrm{valid}}\\quad \\text{for...",
+      "math_expression_count": 7,
+      "first_math": "d_\\dagger(y_1,y_2)=d_{\\mathcal{Y}}(y_1,y_2),\\quad d_\\dagger(y,\\dagger)=D_{\\mathrm{valid}}\\quad \\text{for all }y\\in\\mathcal{Y}.",
+      "cross_refs": [],
+      "line_range": [
+        1442,
+        1451
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-cemetery-state-measure",
+      "title": "Cemetery State Measure",
+      "content": "Let $\\mathcal{S}$ be a swarm. Its distributional representation, denoted $\\mu_{\\mathcal{S}}$, is defined as:\n1.  If $|\\mathcal{A}(\\mathcal{S})| > 0$, $\\mu_{\\mathcal{S}}$ is the empirical or smoothed m...",
+      "math_expression_count": 10,
+      "first_math": "\\mathcal{S}",
+      "cross_refs": [],
+      "line_range": [
+        1455,
+        1461
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-distance-to-cemetery-state",
+      "title": "Distance to the Cemetery State",
+      "content": "The distance between any valid probability measure $\\nu$ (representing a living swarm) and the Cemetery State Measure $\\nu_{\\emptyset}$ is defined to be a maximal constant, ensuring that entering the ...",
+      "math_expression_count": 14,
+      "first_math": "W_p(\\nu, \\nu_{\\emptyset}) := D_{\\mathrm{valid}} \\quad \\text{and} \\quad W_p(\\nu_{\\emptyset}, \\nu_{\\emptyset}) := 0",
+      "cross_refs": [],
+      "line_range": [
+        1462,
+        1480
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-companion-selection-measure",
+      "title": "Companion Selection Measure",
+      "content": "For each walker $i \\in \\{1, \\dots, N\\}$ in a swarm $\\mathcal{S}$ with alive set $\\mathcal{A}$, the **Companion Selection Measure**, $\\mathbb{C}_i(\\mathcal{S})$, is a **uniform discrete probability mea...",
+      "math_expression_count": 24,
+      "first_math": "i \\in \\{1, \\dots, N\\}",
+      "cross_refs": [],
+      "line_range": [
+        1497,
+        1505
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-set-difference-bound",
+      "title": "Bound on the Error from Companion Set Change",
+      "content": "Let $S_1$ and $S_2$ be two companion support sets, with $|S_1| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$ such that $|f_j| \\le M_f$ for all $j$.\nThe absolute differ...",
+      "math_expression_count": 10,
+      "first_math": "\\left| \\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2|",
+      "cross_refs": [],
+      "line_range": [
+        1522,
+        1531
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-normalization-difference-bound",
+      "title": "Bound on the Error from Normalization Change",
+      "content": "Let $S_1$ and $S_2$ be two companion support sets, with $|S_1|, |S_2| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$.\nThe absolute difference between two sums over the ...",
+      "math_expression_count": 7,
+      "first_math": "\\left| \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big|",
+      "cross_refs": [],
+      "line_range": [
+        1560,
+        1569
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-total-error-status-bound",
+      "title": "Total Error Bound in Terms of Status Changes",
+      "content": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, and for a given walker $i$, let $S_1$ and $S_2$ be its companion support sets, with $|S_1| > 0$. Let the status of each potential companion...",
+      "math_expression_count": 14,
+      "first_math": "E \\le \\frac{2 M_f}{|S_1|} \\cdot n_c",
+      "cross_refs": [],
+      "line_range": [
+        1584,
+        1593
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-rescale-function",
+      "title": "Axiom of a Well-Behaved Rescale Function",
+      "content": "Any function $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ chosen for the rescale transformation must satisfy the following properties to be considered valid within the Fragile framework. The user is responsi...",
+      "math_expression_count": 12,
+      "first_math": "g'_A(z) \\ge 0 \\quad \\forall z \\in \\mathbb{R}",
+      "cross_refs": [],
+      "line_range": [
+        1641,
+        1663
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-asymmetric-rescale-function",
+      "title": "Smooth Piecewise Rescale Function",
+      "content": "The rescale function is parameterized by the **Rescale Saturation Threshold ($z_{\\max}$)**, which defines the upper saturation limit. For the function to be well-posed with distinct segments, this par...",
+      "math_expression_count": 12,
+      "first_math": "g_A(z) :=\n\\begin{cases}\n\\exp(z), & z \\le 0 \\\\\n\\log(1 + z) + 1, & 0 < z < z_{\\max} - 1 \\\\\nP(z), & z_{\\max} - 1 \\le z \\le z_{\\max} \\\\\n\\log(1 + z_{\\max}) + 1, & z > z_{\\max}\n\\end{cases}",
+      "cross_refs": [],
+      "line_range": [
+        1675,
+        1696
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-cubic-patch-uniqueness",
+      "title": "Existence and Uniqueness of the Smooth Rescale Patch",
+      "content": "For any $z_max > 1$, there exists a unique cubic polynomial $P(z)$ that satisfies the four $C\u00b9$ boundary conditions specified in [](#def-asymmetric-rescale-function).",
+      "math_expression_count": 3,
+      "first_math": "z_max > 1",
+      "cross_refs": [],
+      "line_range": [
+        1701,
+        1704
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-cubic-patch-coefficients",
+      "title": "Explicit Coefficients of the Smooth Rescale Patch",
+      "content": "Let the cubic polynomial patch $P(z)$ be defined on the interval $[z_{\\max}-1, z_{\\max}]$. Let this interval be normalized by the variable $s = z - (z_{\\max}-1)$, such that $z \\in [z_{\\max}-1, z_{\\max...",
+      "math_expression_count": 12,
+      "first_math": "P(z(s)) = Q(s) = As^3 + Bs^2 + Cs + D",
+      "cross_refs": [],
+      "line_range": [
+        1750,
+        1763
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-cubic-patch-derivative",
+      "title": "Explicit Form of the Polynomial Patch Derivative",
+      "content": "Let $P(z)$ be the cubic polynomial patch on the interval $[z_{\\max}-1, z_{\\max}]$, and let $s = z - (z_{\\max}-1)$ be the normalized coordinate on $[0, 1]$. The first derivative of the polynomial, $P'(...",
+      "math_expression_count": 7,
+      "first_math": "P'(z(s)) = 3\\left(\\frac{1}{z_{\\max}} - 2\\log\\left(1 + \\frac{1}{z_{\\max}}\\right)\\right)s^2 + 2\\left(3\\log\\left(1 + \\frac{1}{z_{\\max}}\\right) - \\frac{2}{z_{\\max}}\\right)s + \\frac{1}{z_{\\max}}",
+      "cross_refs": [],
+      "line_range": [
+        1804,
+        1812
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-polynomial-patch-monotonicity",
+      "title": "Monotonicity of the Polynomial Patch",
+      "content": "Let $z_0=z_{\\max}-1$, $z_1=z_{\\max}$, $y_0=\\log(z_{\\max})+1$, $y_1=\\log(1+z_{\\max})+1$, and endpoint slopes $m_0=P'(z_0)=1/z_{\\max}$, $m_1=P'(z_1)=0$. Set the secant $\\Delta:=(y_1-y_0)/(z_1-z_0)=\\log(...",
+      "math_expression_count": 10,
+      "first_math": "z_0=z_{\\max}-1",
+      "cross_refs": [],
+      "line_range": [
+        1841,
+        1844
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-cubic-patch-derivative-bounds",
+      "title": "Bounds on the Polynomial Patch Derivative",
+      "content": "Let $P'(z(s))$ be the derivative of the cubic patch on the interval $s \\in [0, 1]$, as defined in [](#lem-cubic-patch-derivative). This derivative is uniformly bounded on its domain for any choice of ...",
+      "math_expression_count": 6,
+      "first_math": "0 \\le P'(z(s)) \\le L_P",
+      "cross_refs": [],
+      "line_range": [
+        1853,
+        1867
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-rescale-monotonicity",
+      "title": "Monotonicity of the Smooth Rescale Function",
+      "content": "The $Smooth Piecewise Rescale Function$ $g_A(z)$ is monotonically non-decreasing on $\u211d$.",
+      "math_expression_count": 3,
+      "first_math": "Smooth Piecewise Rescale Function",
+      "cross_refs": [],
+      "line_range": [
+        1930,
+        1933
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-rescale-function-lipschitz",
+      "title": "Global Lipschitz Continuity of the Smooth Rescale Function",
+      "content": "The **Smooth Piecewise Rescale Function** $g_A(z)$ is globally Lipschitz continuous on $\\mathbb{R}$. Its Lipschitz constant, $L_{g_A}$, is the supremum of the absolute value of its first derivative, a...",
+      "math_expression_count": 5,
+      "first_math": "\\boxed{\nL_{g_A} = \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054\n}",
+      "cross_refs": [],
+      "line_range": [
+        1971,
+        1982
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-sigma-patch-derivative-bound",
+      "title": "Derivative bound for \\sigma\\'_{\\text{reg}}",
+      "content": "Let $\\sigma\\'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}$ be the regularized standard deviation from [](#def-statistical-properties-measurement), where $\\sigma'_{\\min} = \\sqrt{\\kappa_{\\text{var,min...",
+      "math_expression_count": 3,
+      "first_math": "L_{\\sigma\\'_{\\text{reg}}}=\\sup_{V\\ge 0}\\big|\\,(\\sigma\\'_{\\text{reg}})'(V)\\,\\big|= \\frac{1}{2\\sigma'_{\\min}} = \\frac{1}{2\\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}}",
+      "cross_refs": [],
+      "line_range": [
+        2005,
+        2014
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-canonical-logistic-rescale-function-example",
+      "title": "Canonical Logistic Rescale Function",
+      "content": "The **Canonical Logistic Rescale Function** $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ is defined as:\n$$\n\ng_A(z) := \\frac{2}{1 + e^{-z}}\n\n$$",
+      "math_expression_count": 2,
+      "first_math": "g_A(z) := \\frac{2}{1 + e^{-z}}",
+      "cross_refs": [],
+      "line_range": [
+        2070,
+        2078
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-canonical-logistic-validity",
+      "title": "The Canonical Logistic Function is a Valid Rescale Function",
+      "content": "The **Canonical Logistic Rescale Function** defined in [](#def-canonical-logistic-rescale-function-example) satisfies all four conditions of the **Axiom of a Well-Behaved Rescale Function** ([](#def-a...",
+      "math_expression_count": 0,
+      "first_math": null,
+      "cross_refs": [],
+      "line_range": [
+        2080,
+        2083
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-raw-value-operator",
+      "title": "Raw Value Operator",
+      "content": "A **Raw Value Operator**, denoted $V$, is a function that maps a swarm state $S \\in \\Sigma_N$ to a **probability distribution** over N-dimensional real-valued vectors, $P(\\mathbb{R}^N)$.\n**Signature:*...",
+      "math_expression_count": 12,
+      "first_math": "V",
+      "cross_refs": [],
+      "line_range": [
+        2100,
+        2108
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "axiom-raw-value-mean-square-continuity",
+      "title": "Axiom of Mean-Square Continuity for Raw Values",
+      "content": "Let $V$ be a Raw Value Operator. Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, and let $\\mathbf{v}_1 \\sim V(\\mathcal{S}_1)$ and $\\mathbf{v}_2 \\sim V(\\mathcal{S}_2)$ be independently sam...",
+      "math_expression_count": 8,
+      "first_math": "\\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "cross_refs": [],
+      "line_range": [
+        2111,
+        2123
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "axiom-bounded-measurement-variance",
+      "title": "Axiom of Bounded Measurement Variance",
+      "content": "*   **Core Assumption:** The variance of the raw value measurement process, summed over all N walkers, must be uniformly bounded across all possible swarm states. This axiom prevents the stochastic no...",
+      "math_expression_count": 6,
+      "first_math": "\\mathbb{E}[\\|\\mathbf{v} - \\mathbb{E}[\\mathbf{v}]\\|_2^2] \\le \\kappa^2_{\\text{variance}}",
+      "cross_refs": [],
+      "line_range": [
+        2126,
+        2139
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-distance-to-companion-measurement",
+      "title": "Distance-to-Companion Measurement",
+      "content": "The distance value $d_i$ for walker $i$ is the result of a two-stage sampling process. First, a **potential companion** index, denoted $c_{\\text{pot}}(i)$, is sampled from the **Companion Selection Me...",
+      "math_expression_count": 10,
+      "first_math": "d_i := d_{\\text{alg}}(x_i, x_{c_{\\text{pot}}(i)}) \\quad \\text{where} \\quad c_{\\text{pot}}(i) \\sim \\mathbb{C}_i(\\cdot)",
+      "cross_refs": [],
+      "line_range": [
+        2143,
+        2153
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-single-walker-positional-error",
+      "title": "Bound on Single-Walker Error from Positional Change",
+      "content": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. For a given walker $i$ that is alive in swarm $\\mathcal{S}_1$ ($s_{1,i}=1$), let $\\mathbb{C}_i(\\mathcal{S}_1)$ be its companion selection m...",
+      "math_expression_count": 8,
+      "first_math": "\\left| \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{1,i}, x_{1,c}) \\right] - \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{2,i}, x_{2,c}) \\right] \\right| \\le d_{\\text{alg}}(x_{1,i}, x_{2,i}) + \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{1,c}, x_{2,c}) \\right]",
+      "cross_refs": [],
+      "line_range": [
+        2164,
+        2173
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-single-walker-structural-error",
+      "title": "Bound on Single-Walker Error from Structural Change",
+      "content": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with alive sets $\\mathcal{A}_1$ and $\\mathcal{A}_2$. Let walker $i$ be alive in both swarms ($i \\in \\mathcal{A}_1 \\cap \\mathcal{A}_2$), and ...",
+      "math_expression_count": 12,
+      "first_math": "\\left| \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{2,i}, x_{2,c}) \\right] - \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_2)} \\left[ d_{\\text{alg}}(x_{2,i}, x_{2,c}) \\right] \\right| \\le \\frac{2 D_{\\mathcal{Y}}}{k_1 - 1} \\cdot n_c",
+      "cross_refs": [],
+      "line_range": [
+        2206,
+        2216
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-single-walker-own-status-error",
+      "title": "Bound on Single-Walker Error from Own Status Change",
+      "content": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. For any walker $i$ whose survival status changes ($s_{1,i} \\neq s_{2,i}$), the absolute difference in its expected raw distance measurement...",
+      "math_expression_count": 6,
+      "first_math": "\\left| \\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)] \\right| \\le D_{\\mathcal{Y}}",
+      "cross_refs": [],
+      "line_range": [
+        2237,
+        2245
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-total-squared-error-unstable",
+      "title": "Bound on the Total Squared Error for Unstable Walkers",
+      "content": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. The total squared error in the expected raw distance from the set of unstable walkers, $\\mathcal{A}_{\\text{unstable}}$, is bounded by the t...",
+      "math_expression_count": 5,
+      "first_math": "\\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} \\big|\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]\\big|^2 \\le D_{\\mathcal{Y}}^2 \\sum_{j=1}^N (s_{1,j} - s_{2,j})^2,",
+      "cross_refs": [],
+      "line_range": [
+        2269,
+        2278
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-total-squared-error-stable",
+      "title": "Bound on the Total Squared Error for Stable Walkers",
+      "content": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with $|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2$. The total squared error in the expected raw distance from the set of stable walkers, $\\mathca...",
+      "math_expression_count": 5,
+      "first_math": "\\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]|^2 \\le 12 \\cdot \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + \\frac{8 k_1 D_{\\mathcal{Y}}^2}{(k_1 - 1)^2} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2",
+      "cross_refs": [],
+      "line_range": [
+        2287,
+        2295
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-expected-raw-distance-bound",
+      "title": "Bound on the Expected Raw Distance Vector Change",
+      "content": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, with $|\\mathcal{A}(\\mathcal{S}_1)| = k_1 \\ge 2$. Let $\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$ be the $N$-dimensional vector of expected raw di...",
+      "math_expression_count": 9,
+      "first_math": "\\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] - \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_2)] \\|_2^2 \\le C_{\\text{pos},d} \\cdot \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + C_{\\text{status},d}^{(1)} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{\\text{status},d}^{(2)}(k_1) \\cdot n_c^2(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "cross_refs": [],
+      "line_range": [
+        2583,
+        2596
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-expected-raw-distance-k1",
+      "title": "Deterministic Behavior of the Expected Raw Distance Vector at $k=1$",
+      "content": "Let $\\mathcal{S}$ be a swarm state with exactly one alive walker, $|\\mathcal{A}(\\mathcal{S})| = 1$. The N-dimensional vector of expected raw distances, $\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$, is determ...",
+      "math_expression_count": 11,
+      "first_math": "|\\mathcal{A}(\\mathcal{S})| = 1 \\implies \\mathbb{E}[\\mathbf{d}(\\mathcal{S})] = \\mathbf{0}",
+      "cross_refs": [],
+      "line_range": [
+        2609,
+        2624
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-distance-operator-satisfies-bounded-variance-axiom",
+      "title": "The Distance Operator Satisfies the Bounded Variance Axiom",
+      "content": "The **Distance-to-Companion Measurement** operator ($V=d$) satisfies the **Axiom of Bounded Measurement Variance ([](#axiom-bounded-measurement-variance))**. Its maximum measurement variance is determ...",
+      "math_expression_count": 4,
+      "first_math": "\\kappa^2_{\\text{variance}} = N \\cdot D_{\\mathcal{Y}}^2",
+      "cross_refs": [],
+      "line_range": [
+        2650,
+        2659
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-distance-operator-mean-square-continuity",
+      "title": "Mean-Square Continuity of the Distance Operator",
+      "content": "The **Distance-to-Companion Measurement** operator ($V=d$) is mean-square continuous for transitions in the $k \\geq 2$ regime. For any two swarm states $\\mathcal{S}_1$ and $\\mathcal{S}_2$ with $|\\math...",
+      "math_expression_count": 9,
+      "first_math": "\\mathbb{E}[\\|\\mathbf{d}(\\mathcal{S}_1) - \\mathbf{d}(\\mathcal{S}_2)\\|_2^2] \\le F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "cross_refs": [],
+      "line_range": [
+        2688,
+        2706
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-standardization-operator-n-dimensional",
+      "title": "N-Dimensional Standardization Operator",
+      "content": "The **N-Dimensional Standardization Operator**, denoted $z$, is a function that maps a swarm state $S$ to an N-dimensional vector, parameterized by a choice of a raw value operator and an aggregation ...",
+      "math_expression_count": 26,
+      "first_math": "z",
+      "cross_refs": [],
+      "line_range": [
+        2763,
+        2786
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-statistical-properties-measurement",
+      "title": "Statistical Properties Measurement",
+      "content": "Let $\\mathbf{v}_{\\mathcal{A}}$ be the vector of raw scalar values for the alive set $\\mathcal{A}_t$. Let $\\mu_{\\mathbf{v}} = M(\\mathcal{S}_t; \\mathbf{v}_{\\mathcal{A}})$ be the **Swarm Aggregation Meas...",
+      "math_expression_count": 26,
+      "first_math": "\\sigma'_{\\text{reg}}(V) := \\sqrt{V + \\sigma'^2_{\\min}}",
+      "cross_refs": [],
+      "line_range": [
+        2789,
+        2832
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-stats-value-continuity",
+      "title": "Value Continuity of Statistical Properties",
+      "content": "Let $\\mathcal{S}$ be a fixed swarm state with alive set $\\mathcal{A}$ of size $k = |\\mathcal{A}| \\geq 1$. Let $\\mathbf{v}_1$ and $\\mathbf{v}_2$ be two raw value vectors, with components bounded by $V_...",
+      "math_expression_count": 15,
+      "first_math": "|\\mu(\\mathcal{S}, \\mathbf{v}_1) - \\mu(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\mu,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2",
+      "cross_refs": [],
+      "line_range": [
+        2853,
+        2873
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-stats-structural-continuity",
+      "title": "Structural Continuity of Statistical Properties",
+      "content": "Let $\\mathbf{v}$ be a fixed raw value vector. Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. The mean $\\mu(\\mathcal{S}, \\mathbf{v})$ and regularized standard deviation $\\sigma'(\\mathcal{...",
+      "math_expression_count": 10,
+      "first_math": "|\\mu(\\mathcal{S}_1, \\mathbf{v}) - \\mu(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2",
+      "cross_refs": [],
+      "line_range": [
+        2885,
+        2904
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-z-score-norm-bound",
+      "title": "General Bound on the Norm of the Standardized Vector",
+      "content": "Let $\\mathbf{v} = (v_i)_{i \\in \\mathcal{A}}$ be a $k$-dimensional vector of raw values from an alive set $\\mathcal{A}$ of size $k=|\\mathcal{A}| \\ge 1$. The raw values are bounded such that $|v_i| \\le ...",
+      "math_expression_count": 15,
+      "first_math": "\\|\\mathbf{z}\\|_2^2 \\le k \\left( \\frac{2V_{\\max}}{\\varepsilon_{\\mathrm{std}}} \\right)^2",
+      "cross_refs": [],
+      "line_range": [
+        2912,
+        2922
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-asymptotic-std-dev-structural-continuity",
+      "title": "Asymptotic Behavior of the Structural Continuity for the Regularized Standard Deviation",
+      "content": "Let the chosen swarm aggregation operator $M$ have structural growth exponents $p_{\\mu,S}$ and $p_{m_2,S}$ for its mean and second moment, respectively, as defined in [](#def-swarm-aggregation-operato...",
+      "math_expression_count": 8,
+      "first_math": "p_{\\text{worst-case}} := \\max(p_{\\mu,S}, p_{m_2,S})",
+      "cross_refs": [],
+      "line_range": [
+        2971,
+        2986
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-standardization-value-error-mean-square",
+      "title": "Bounding the Expected Squared Value Error",
+      "content": "Let $S_1$ be a fixed swarm state. Let $V$ be a raw value operator that is mean-square continuous, such that $\\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)$...",
+      "math_expression_count": 6,
+      "first_math": "E_{V,ms}^2(\\mathcal{S}_1, \\mathcal{S}_2) \\le C_{V,\\text{total}}(\\mathcal{S}_1) \\cdot F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "cross_refs": [],
+      "line_range": [
+        3076,
+        3086
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-standardization-structural-error-mean-square",
+      "title": "Bounding the Expected Squared Structural Error",
+      "content": "The expected squared structural error is bounded deterministically by a function of the number of status changes, $n_c$.\n\n$$\nE_{S,ms}^2(\\mathcal{S}_1, \\mathcal{S}_2) \\le C_{S,\\text{direct}} \\cdot n_c(...",
+      "math_expression_count": 4,
+      "first_math": "E_{S,ms}^2(\\mathcal{S}_1, \\mathcal{S}_2) \\le C_{S,\\text{direct}} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2",
+      "cross_refs": [],
+      "line_range": [
+        3264,
+        3273
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-deterministic-error-decomposition",
+      "title": "Decomposition of the Total Standardization Error",
+      "content": "Let $z(S, v, M)$ be the N-Dimensional Standardization Operator. Let $S_1$ and $S_2$ be two swarm states, and let $v_1$ and $v_2$ be two corresponding N-dimensional raw value vectors. Let the output st...",
+      "math_expression_count": 18,
+      "first_math": "\\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2 \\le 2 \\cdot E_{V}^2(\\mathcal{S}_1; \\mathbf{v}_1, \\mathbf{v}_2) + 2 \\cdot E_{S}^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}_2)",
+      "cross_refs": [],
+      "line_range": [
+        3388,
+        3410
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "sub-lem-lipschitz-value-error-decomposition",
+      "title": "Algebraic Decomposition of the Value Error",
+      "content": "Let **S** be a fixed swarm state with alive set **A** of size **k**. Let $v_1$ and $v_2$ be two raw value vectors for the alive set. Let $(\\mu_1, \\sigma'_1)$ and $(\\mu_2, \\sigma'_2)$ be the correspond...",
+      "math_expression_count": 16,
+      "first_math": "\\Delta\\mathbf{z} = \\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + \\Delta_{\\text{denom}}",
+      "cross_refs": [],
+      "line_range": [
+        3426,
+        3464
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-lipschitz-value-error-bound",
+      "title": "Bounding the Squared Value Error",
+      "content": "Let **S** be a fixed swarm state. Let $v_1$ and $v_2$ be two raw value vectors. The squared value error, $E_V^2(S; v_1, v_2) = \\|z(S, v_1, M) - z(S, v_2, M)\\|_2^2$, is deterministically bounded as fol...",
+      "math_expression_count": 5,
+      "first_math": "E_{V}^2(\\mathcal{S}; \\mathbf{v}_1, \\mathbf{v}_2) \\le C_{V,\\text{total}}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2",
+      "cross_refs": [],
+      "line_range": [
+        3495,
+        3504
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-lipschitz-value-error-coefficients",
+      "title": "Value Error Coefficients",
+      "content": "Let **S** be a fixed swarm state with alive set **A** of size **k**, and let **M** be the chosen **Swarm Aggregation Operator**. Let\n$$\n\n\\sigma'_{\\min\\,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} +...",
+      "math_expression_count": 11,
+      "first_math": "\\sigma'_{\\min\\,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}",
+      "cross_refs": [],
+      "line_range": [
+        3536,
+        3574
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-lipschitz-structural-error-bound",
+      "title": "Bounding the Squared Structural Error",
+      "content": "Let **v** be a fixed raw value vector. Let $S_1$ and $S_2$ be two swarm states. The squared structural error, $E_S^2(S_1, S_2; v) = \\|z(S_1, v, M) - z(S_2, v, M)\\|_2^2$, is deterministically bounded a...",
+      "math_expression_count": 7,
+      "first_math": "E_{S}^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}) \\le C_{S,\\text{direct}} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2",
+      "cross_refs": [],
+      "line_range": [
+        3577,
+        3586
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-lipschitz-structural-error-coefficients",
+      "title": "Structural Error Coefficients",
+      "content": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with alive sets $\\mathcal{A}_1$ and $\\mathcal{A}_2$, of sizes $k_1:=|\\mathcal{A}_1|$ and $k_2:=|\\mathcal{A}_2|$. Let $k_{\\text{stable}}:=|\\m...",
+      "math_expression_count": 16,
+      "first_math": "\\sigma'_{\\min\\,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}",
+      "cross_refs": [],
+      "line_range": [
+        3618,
+        3642
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-global-continuity-patched-standardization",
+      "title": "Global Continuity of the Patched Standardization Operator",
+      "content": "Let $z(\\mathcal{S}, v, M)$ be the N-Dimensional Standardization Operator using the **Regularized Standard Deviation Function** ([](#def-statistical-properties-measurement)). Let $\\mathcal{S}_1$ and $\\...",
+      "math_expression_count": 10,
+      "first_math": "\\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2 \\le 2 C_{V,\\text{total}}(\\mathcal{S}_1) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2 + 2 C_{S,\\text{direct}} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + 2 C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2",
+      "cross_refs": [],
+      "line_range": [
+        3645,
+        3655
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-alive-set-potential-operator",
+      "title": "Rescaled Potential Operator for the Alive Set",
+      "content": "The **Rescaled Potential Operator for the Alive Set**, denoted $V_{\\text{op},\\mathcal{A}}$, is a deterministic function that maps the raw reward and distance vectors of an alive set of size $k=|\\mathc...",
+      "math_expression_count": 21,
+      "first_math": "V_i := (d'_i)^{\\beta} \\cdot (r'_i)^{\\alpha} \\quad \\text{for } i \\in \\mathcal{A}_t",
+      "cross_refs": [],
+      "line_range": [
+        3686,
+        3712
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-swarm-potential-assembly-operator",
+      "title": "Swarm Potential Assembly Operator",
+      "content": "The **Swarm Potential Assembly Operator**, denoted $A_{\\text{pot}}$, is a deterministic function that maps the potential vector of the alive set to the full N-dimensional fitness potential vector for ...",
+      "math_expression_count": 12,
+      "first_math": "A_{\\text{pot}}",
+      "cross_refs": [],
+      "line_range": [
+        3713,
+        3727
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-perturbation-operator",
+      "title": "Perturbation Operator",
+      "content": "The **Perturbation Operator**, denoted $\\Psi_{\\text{pert}}: \\Sigma_N \\to \\mathcal{P}(\\Sigma_N)$, maps an input swarm $\\mathcal{S}_{\\text{in}}$ to a distribution over swarms where only the positions ha...",
+      "math_expression_count": 6,
+      "first_math": "x_{\\text{out},i} \\sim \\mathcal{P}_\\sigma(x_{\\text{in},i}, \\cdot)",
+      "cross_refs": [],
+      "line_range": [
+        3940,
+        3953
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "def-axiom-bounded-second-moment-perturbation",
+      "title": "Axiom of Bounded Second Moment of Perturbation",
+      "content": "*   **Core Assumption:** The expectation of the squared displacement caused by the **Perturbation Measure**, after being projected into the **Algorithmic Space**, is uniformly bounded across all possi...",
+      "math_expression_count": 7,
+      "first_math": "M_{\\text{pert}}^2 \\ge \\sup_{x_{\\text{in}} \\in \\mathcal{X}} \\mathbb{E}[Y]",
+      "cross_refs": [],
+      "line_range": [
+        3962,
+        3975
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "sub-lem-perturbation-positional-bound-reproof",
+      "title": "Bounding the Output Positional Displacement",
+      "content": "Let $\\mathcal{S}_1, \\mathcal{S}_2$ be two input swarms, and let $\\mathcal{S}'_1, \\mathcal{S}'_2$ be the corresponding output swarms after applying the Perturbation Operator. The total squared position...",
+      "math_expression_count": 5,
+      "first_math": "\\Delta_{\\text{pos}}^2(\\mathcal{S}'_1, \\mathcal{S}'_2) \\le 3\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + 3\\Delta_{\\text{pert}}^2(\\mathcal{S}_1) + 3\\Delta_{\\text{pert}}^2(\\mathcal{S}_2)",
+      "cross_refs": [],
+      "line_range": [
+        3978,
+        3987
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-mcdiarmids-inequality",
+      "title": "McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron\u2013Lugosi\u2013Massart)",
+      "content": "Let $X_1, X_2, \\dots, X_N$ be a set of independent random variables. Let $f$ be a function of these variables, $f(X_1, \\dots, X_N)$, that satisfies the **bounded differences property**. This means tha...",
+      "math_expression_count": 11,
+      "first_math": "\\sup_{x_1, \\dots, x_N, x'_i} |f(x_1, \\dots, x_i, \\dots, x_N) - f(x_1, \\dots, x'_i, \\dots, x_N)| \\le c_i",
+      "cross_refs": [],
+      "line_range": [
+        4014,
+        4028
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+      "title": "Probabilistic Bound on Total Perturbation-Induced Displacement",
+      "content": "Let $\\mathcal{S}_{\\text{in}}$ be an input swarm. Assume the **Axiom of Bounded Second Moment of Perturbation** ([](#def-axiom-bounded-second-moment-perturbation)) holds. Then for any probability of fa...",
+      "math_expression_count": 6,
+      "first_math": "\\Delta_{\\text{pert}}^2(\\mathcal{S}_{\\text{in}}) \\le B_M(N) + B_S(N, \\delta')",
+      "cross_refs": [],
+      "line_range": [
+        4030,
+        4039
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-perturbation-fluctuation-bounds-reproof",
+      "title": "Perturbation Fluctuation Bounds",
+      "content": "The total random displacement introduced by the Perturbation Operator is bounded by the sum of two components: a deterministic bound on its mean and a probabilistic bound on its fluctuations.\n1.  **Th...",
+      "math_expression_count": 6,
+      "first_math": "B_M(N) := N \\cdot M_{\\text{pert}}^2",
+      "cross_refs": [],
+      "line_range": [
+        4064,
+        4082
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-perturbation-operator-continuity-reproof",
+      "title": "Probabilistic Continuity of the Perturbation Operator",
+      "content": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two input swarms. Let the output swarms be generated by independent applications of the Perturbation Operator: $\\mathcal{S}'_1 \\sim \\Psi_{\\text{pert}}(\\mathc...",
+      "math_expression_count": 7,
+      "first_math": "d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}'_1, \\mathcal{S}'_2)^2 \\le 3 \\frac{\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2)}{N} + \\lambda_{\\mathrm{status}} \\frac{n_c(\\mathcal{S}_1, \\mathcal{S}_2)}{N} + \\frac{6}{N} \\left( B_M(N) + B_S(N, \\delta/2) \\right)",
+      "cross_refs": [],
+      "line_range": [
+        4085,
+        4095
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-status-update-operator",
+      "title": "Status Update Operator",
+      "content": "The **Status Update Operator**, denoted $\\Psi_{\\text{status}}: \\Sigma_N \\to \\Sigma_N$, is a deterministic function that maps an input swarm to an output swarm where only the aliveness statuses have be...",
+      "math_expression_count": 5,
+      "first_math": "s_{\\text{out},i} = \\mathbb{1}_{\\text{valid}}(\\varphi(x_{\\text{in},i}))",
+      "cross_refs": [],
+      "line_range": [
+        4122,
+        4135
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-post-perturbation-status-update-continuity",
+      "title": "Probabilistic Continuity of the Post-Perturbation Status Update",
+      "content": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two input swarms. Let the output swarms be generated by the independent application of the composed operator: $\\mathcal{S}'_1 \\sim (\\Psi_{\\text{status}} \\cir...",
+      "math_expression_count": 8,
+      "first_math": "\\mathbb{E}[n_c(\\mathcal{S}'_1, \\mathcal{S}'_2)] \\le \\frac{N}{2} + N L_{\\text{death}}^2 \\left( d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2) \\right)^{2\\alpha_B}",
+      "cross_refs": [],
+      "line_range": [
+        4145,
+        4156
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-cloning-score-function",
+      "title": "Cloning Score Function",
+      "content": "The **Cloning Score Function**, $S: \\mathbb{R}_{\\ge 0} \\times \\mathbb{R}_{\\ge 0} \\to \\mathbb{R}$, takes the fitness potential of a companion walker ($v_c$) and a primary walker ($v_i$) and computes a ...",
+      "math_expression_count": 30,
+      "first_math": "S(v_c, v_i) := \\frac{v_c - v_i}{v_i + \\varepsilon}",
+      "cross_refs": [],
+      "line_range": [
+        4219,
+        4268
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-total-expected-cloning-action",
+      "title": "Total Expected Cloning Action",
+      "content": "The **Total Expected Cloning Action** for a walker $i$, denoted $\\overline{P}_{\\text{clone}}(\\mathcal{S})_i$, is the probability that walker $i$ will be assigned the \"Clone\" action, given the swarm st...",
+      "math_expression_count": 10,
+      "first_math": "\\overline{P}_{\\text{clone}}(\\mathcal{S})_i := \\mathbb{E}_{\\mathbf{d} \\sim \\mathbf{d}(\\mathcal{S})} \\left[ P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V}(\\mathbf{r}(\\mathcal{S}), \\mathbf{d}))_i \\right]",
+      "cross_refs": [],
+      "line_range": [
+        4284,
+        4294
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-cloning-probability-function",
+      "title": "The Conditional Cloning Probability Function",
+      "content": "The **Conditional Cloning Probability Function**, denoted $\\pi: \\mathbb{R}_{\\ge 0} \\times \\mathbb{R}_{\\ge 0} \\to [0, 1]$, maps the fitness potential of a companion ($v_c$) and a primary walker ($v_i$)...",
+      "math_expression_count": 7,
+      "first_math": "\\pi(v_c, v_i) := P(S(v_c, v_i) > T_{\\text{clone}}) = \\min\\left(1, \\max\\left(0, \\frac{S(v_c, v_i)}{p_{\\max}}\\right)\\right)",
+      "cross_refs": [],
+      "line_range": [
+        4297,
+        4307
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-cloning-probability-lipschitz",
+      "title": "Lipschitz Continuity of the Conditional Cloning Probability Function (case split)",
+      "content": "The **Conditional Cloning Probability Function** $\\pi(v_c, v_i)$ is Lipschitz continuous with respect to its two inputs. For any two pairs of potentials $(v_{c1}, v_{i1})$ and $(v_{c2}, v_{i2})$:\n$$\n\n...",
+      "math_expression_count": 8,
+      "first_math": "|\\pi(v_{c1}, v_{i1}) - \\pi(v_{c2}, v_{i2})| \\le L_{\\pi,c}|v_{c1} - v_{c2}| + L_{\\pi,i}|v_{i1} - v_{i2}|",
+      "cross_refs": [],
+      "line_range": [
+        4308,
+        4329
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-expected-cloning-action",
+      "title": "Conditional Expected Cloning Action",
+      "content": "The **Conditional Expected Cloning Action** for a walker $i$, denoted $P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i$, is the probability that walker $i$ will be assigned the \"Clone\" action, given the s...",
+      "math_expression_count": 6,
+      "first_math": "P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i := \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S})} [\\pi(V_c, V_i)]",
+      "cross_refs": [],
+      "line_range": [
+        4340,
+        4348
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-expected-cloning-action-continuity",
+      "title": "Continuity of the Conditional Expected Cloning Action",
+      "content": "The **Conditional Expected Cloning Action** is continuous with respect to changes in both the swarm structure and the fitness potential vector. For any two states $(\\mathcal{S}_1, \\mathbf{V}_1)$ and $...",
+      "math_expression_count": 7,
+      "first_math": "|P_{\\text{clone}}(\\mathcal{S}_1, \\mathbf{V}_1)_i - P_{\\text{clone}}(\\mathcal{S}_2, \\mathbf{V}_2)_i| \\le C_{\\text{struct}}^{(\\pi)}(k_1) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{\\text{val}}^{(\\pi)} \\cdot \\left( \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)}[|V_{1,c} - V_{2,c}|] + |V_{1,i} - V_{2,i}| \\right)",
+      "cross_refs": [],
+      "line_range": [
+        4349,
+        4360
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-total-expected-cloning-action-continuity",
+      "title": "Continuity of the Total Expected Cloning Action",
+      "content": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, with $k_1 = |\\mathcal{A}(\\mathcal{S}_1)| > 0$. The **Total Expected Cloning Action** is continuous with respect to the N-Particle Displacem...",
+      "math_expression_count": 5,
+      "first_math": "|\\overline{P}_{\\text{clone}}(\\mathcal{S}_1)_i - \\overline{P}_{\\text{clone}}(\\mathcal{S}_2)_i| \\le E_{\\text{struct}}^{(\\overline{P})}(\\mathcal{S}_1, \\mathcal{S}_2) + E_{\\text{val}}^{(\\overline{P})}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "cross_refs": [],
+      "line_range": [
+        4372,
+        4381
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-k1-revival-state",
+      "title": "Theorem of Guaranteed Revival from a Single Survivor",
+      "content": ":::{admonition} The Phoenix Theorem Intuition\n:class: note\n:open:\n**The Setup**: Only one walker remains alive - the \"last one standing\" scenario.\n**The Magic**: This theorem proves that the one survi...",
+      "math_expression_count": 0,
+      "first_math": null,
+      "cross_refs": [],
+      "line_range": [
+        4565,
+        4576
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-swarm-update-procedure",
+      "title": "Swarm Update Procedure",
+      "content": "The **swarm update operator** $\\Psi: \\Sigma_N \\to \\mathcal{P}(\\Sigma_N)$ defines the one-step transition measure of the Markov process, evolving a swarm state $\\mathcal{S}_t$ to a probability distribu...",
+      "math_expression_count": 39,
+      "first_math": "\\mathbf{V}_{\\mathcal{A}} \\leftarrow V_{\\text{op},\\mathcal{A}}(\\mathcal{S}_t, \\mathbf{r}_{\\mathcal{A}}, \\mathbf{d}_{\\mathcal{A}})",
+      "cross_refs": [],
+      "line_range": [
+        4629,
+        4687
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-w2-output-metric",
+      "title": "Wasserstein-2 on the output space (quotient)",
+      "content": "Let $(\\overline{\\Sigma}_N, \\overline d_{\\text{Disp},\\mathcal{Y}})$ denote the $N$-particle quotient state space with the displacement metric. For two probability measures $\\mu,\\nu$ on $\\overline{\\Sigm...",
+      "math_expression_count": 8,
+      "first_math": "W_2^2(\\mu,\\nu) := \\inf_{\\pi\\in\\Pi(\\mu,\\nu)} \\int \\overline d_{\\text{Disp},\\mathcal{Y}}(s',\\tilde s')^2\\,\\mathrm{d}\\pi(s',\\tilde s'),",
+      "cross_refs": [],
+      "line_range": [
+        4982,
+        4991
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-w2-bound-no-offset",
+      "title": "W2 continuity bound without offset (for $k\\ge 2$)",
+      "content": "Let $\\mathcal{S}_1,\\mathcal{S}_2\\in\\overline{\\Sigma}_N$ with $k_1=|\\mathcal A(\\mathcal S_1)|\\ge 2$ and let $\\Psi$ be the Swarm Update Operator. Then\n$$\n\nW_2^2\\big(\\Psi(\\mathcal{S}_1,\\cdot),\\,\\Psi(\\mat...",
+      "math_expression_count": 5,
+      "first_math": "W_2^2\\big(\\Psi(\\mathcal{S}_1,\\cdot),\\,\\Psi(\\mathcal{S}_2,\\cdot)\\big)\n\\;\\le\\; C_{\\Psi,L}(\\mathcal{S}_1,\\mathcal{S}_2)\\, \\overline d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2\n\\;+\\; C_{\\Psi,H}(\\mathcal{S}_1,\\mathcal{S}_2)\\, \\big(\\overline d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2\\big)^{\\alpha_H^{\\mathrm{global}}}.",
+      "cross_refs": [],
+      "line_range": [
+        4992,
+        5003
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-psi-markov-kernel",
+      "title": "The Swarm Update defines a Markov kernel",
+      "content": "Let $(\\Sigma_N,\\mathcal{B}(\\Sigma_N))$ be the measurable state space. Assume each stage of the update\u2014cloning, perturbation, and status update\u2014is defined by a measurable map with respect to its inputs...",
+      "math_expression_count": 8,
+      "first_math": "(\\Sigma_N,\\mathcal{B}(\\Sigma_N))",
+      "cross_refs": [],
+      "line_range": [
+        5026,
+        5029
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-coefficient-regularity",
+      "title": "Boundedness and continuity of composite coefficients",
+      "content": "Let $\\mathcal{K}_R\\subset \\Sigma_N\\times\\Sigma_N$ be any set where (i) the number of alive walkers is bounded between 1 and $N$ for both inputs, (ii) positions lie in a common compact subset of $\\math...",
+      "math_expression_count": 7,
+      "first_math": "(\\mathcal{S}_1,\\mathcal{S}_2)\\mapsto C_{\\text{clone},L/H},\\ K_{\\text{clone}},\\ C_{\\Psi,L/H},\\ K_{\\Psi},\\ C_{S,\\text{direct}},\\ C_{S,\\text{indirect}},\\ C_{V,\\text{total}}",
+      "cross_refs": [],
+      "line_range": [
+        5040,
+        5049
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-fragile-swarm-instantiation",
+      "title": "Fragile Swarm Instantiation",
+      "content": "A **Fragile Swarm**, denoted $\\mathcal{F}$, is a tuple that encapsulates a complete and fixed configuration of the algorithm. It contains:\n1.  **The Foundational & Environmental Parameters:** The full...",
+      "math_expression_count": 14,
+      "first_math": "\\mathcal{F}",
+      "cross_refs": [],
+      "line_range": [
+        5091,
+        5099
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-fragile-gas-algorithm",
+      "title": "The Fragile Gas Algorithm",
+      "content": "The **Fragile Gas Algorithm** generates a sequence of swarm states (a trajectory) by evolving an initial swarm over a discrete number of timesteps.\n**Inputs:**\n*   A **Fragile Swarm Instantiation**, $...",
+      "math_expression_count": 14,
+      "first_math": "\\mathcal{S}_{t+1} \\sim \\Psi_{\\mathcal{F}}(\\mathcal{S}_t, \\cdot)",
+      "cross_refs": [],
+      "line_range": [
+        5102,
+        5120
+      ]
+    }
+  ]
+}

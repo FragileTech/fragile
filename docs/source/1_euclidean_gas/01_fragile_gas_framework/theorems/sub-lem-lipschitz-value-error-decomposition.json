@@ -1,0 +1,32 @@
+{
+  "label": "lem-sub-lem-lipschitz-value-error-decomposition",
+  "name": "Algebraic Decomposition of the Value Error",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-raw-value-operator",
+    "obj-standardization-operator-n-dimensional",
+    "obj-components-mean-square-standardization-error"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Relation",
+  "attributes_added": [
+    {
+      "label": "attr-explicit-lipschitz-coefficients",
+      "expression": "L_\\mu, L_\\sigma",
+      "object_label": "obj-lipschitz-value-error-coefficients"
+    }
+  ],
+  "relations_established": [
+    {
+      "source": "obj-standardization-operator-n-dimensional",
+      "target": "obj-components-mean-square-standardization-error",
+      "type": "equivalence"
+    }
+  ]
+}

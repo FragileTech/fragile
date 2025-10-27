@@ -1,0 +1,57 @@
+{
+  "label": "lem-quantitative-kl-bound",
+  "name": "Quantitative KL Bound",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-nu-n-qsd",
+    "obj-rho-0-product",
+    "obj-diversity-companion-prob"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "lambda",
+    "lambda_lsi",
+    "lambda_eff",
+    "C_int"
+  ],
+  "properties_required": {
+    "obj-nu-n-qsd": [
+      "prop-n-uniform-lsi",
+      "prop-exchangeability"
+    ],
+    "obj-diversity-companion-prob": [
+      "prop-fitness-dependent-selection"
+    ]
+  },
+  "internal_lemmas": [
+    "prop-interaction-complexity-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-nu-n-qsd-rho-0-product-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-nu-n-qsd",
+      "target_object": "obj-rho-0-product",
+      "established_by": "lem-quantitative-kl-bound",
+      "expression": "bound: D_KL(nu_N^QSD || rho_0^otimes_N) <= C_int / N",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    }
+  ]
+}

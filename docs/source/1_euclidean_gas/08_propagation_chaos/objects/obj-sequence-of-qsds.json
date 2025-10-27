@@ -1,0 +1,15 @@
+{
+  "label": "obj-sequence-of-qsds",
+  "name": "Sequence of N-Particle QSDs and their Marginals",
+  "mathematical_expression": "\\mu_N(A) := \\nu_N^{QSD}(\\{ S \\in \\Sigma_N \\mid (x_1, v_1) \\in A \\})",
+  "object_type": "measure",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "euclidean-gas",
+    "particle",
+    "swarm",
+    "convergence"
+  ],
+  "source": null
+}

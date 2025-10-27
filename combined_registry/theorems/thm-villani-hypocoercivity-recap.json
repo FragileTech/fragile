@@ -1,0 +1,51 @@
+{
+  "label": "thm-villani-hypocoercivity-recap",
+  "name": "Villani's Hypocoercivity (Informal)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-kinetic-operator"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf"
+  ],
+  "properties_required": {
+    "hypoelliptic": [
+      "Hypoelliptic structure"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-villani-hypocoercivity"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-villani-hypocoercivity-recap-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-kinetic-operator",
+      "target_object": "obj-kinetic-operator",
+      "established_by": "thm-villani-hypocoercivity-recap",
+      "expression": "Reference to thm-villani-hypocoercivity",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

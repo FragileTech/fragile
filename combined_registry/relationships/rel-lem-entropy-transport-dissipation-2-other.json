@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-entropy-transport-dissipation-2-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-cloning-operator",
+  "target_object": "obj-wasserstein-distance",
+  "established_by": "lem-entropy-transport-dissipation",
+  "expression": "Gaussian noise produces O(δ²) remainder terms",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

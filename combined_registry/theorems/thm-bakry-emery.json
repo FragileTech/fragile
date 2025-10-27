@@ -1,0 +1,48 @@
+{
+  "label": "thm-bakry-emery",
+  "name": "Bakry-Émery Criterion for LSI",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-bakry-emery-criterion"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "kappa_conf"
+  ],
+  "properties_required": {
+    "curvature-bound": [
+      "Hess(V) ≥ κ_conf I"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-bakry-emery-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-bakry-emery-criterion",
+      "target_object": "obj-bakry-emery-criterion",
+      "established_by": "thm-bakry-emery",
+      "expression": "Curvature bound implies LSI",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

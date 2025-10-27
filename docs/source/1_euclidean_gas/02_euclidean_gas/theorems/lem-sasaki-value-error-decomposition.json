@@ -1,0 +1,83 @@
+{
+  "label": "lem-sasaki-value-error-decomposition",
+  "name": "Decomposition of the Value Error",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "02_euclidean_gas",
+    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+    "directive_label": "lem-sasaki-value-error-decomposition",
+    "section": "§2.3.4.1"
+  },
+  "input_objects": [
+    "obj-swarm-state",
+    "obj-alive-set",
+    "obj-raw-value-vector",
+    "obj-empirical-mean",
+    "obj-regularized-std"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-k",
+    "param-V-max-R",
+    "param-sigma-min-patch"
+  ],
+  "attributes_required": {
+    "obj-swarm-state": [
+      "attr-has-alive-set"
+    ],
+    "obj-raw-value-vector": [
+      "attr-k-dimensional",
+      "prop-bounded-by-V-max"
+    ],
+    "obj-empirical-mean": [
+      "attr-real-valued",
+      "attr-computed-from-raw-values"
+    ],
+    "obj-regularized-std": [
+      "attr-strictly-positive",
+      "attr-uniformly-bounded-below"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Decomposition",
+  "attributes_added": [
+    {
+      "label": "attr-value-error-decomposition",
+      "expression": "\\Delta\\mathbf{z} = \\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + \\Delta_{\\text{denom}}",
+      "object_label": "obj-standardized-value-vector",
+      "established_by": "lem-sasaki-value-error-decomposition",
+      "can_be_refined": false
+    },
+    {
+      "label": "attr-direct-shift-component",
+      "expression": "\\Delta_{\\text{direct}} := \\frac{\\mathbf r_1 - \\mathbf r_2}{\\sigma'_1}",
+      "object_label": "obj-standardized-value-vector",
+      "established_by": "lem-sasaki-value-error-decomposition",
+      "can_be_refined": false
+    },
+    {
+      "label": "attr-mean-shift-component",
+      "expression": "\\Delta_{\\text{mean}} := \\frac{\\mu_2 - \\mu_1}{\\sigma'_1} \\cdot \\mathbf{1}",
+      "object_label": "obj-standardized-value-vector",
+      "established_by": "lem-sasaki-value-error-decomposition",
+      "can_be_refined": false
+    },
+    {
+      "label": "attr-denom-shift-component",
+      "expression": "\\Delta_{\\text{denom}} := \\mathbf z_2 \\cdot \\frac{\\sigma'_2 - \\sigma'_1}{\\sigma'_1}",
+      "object_label": "obj-standardized-value-vector",
+      "established_by": "lem-sasaki-value-error-decomposition",
+      "can_be_refined": false
+    },
+    {
+      "label": "attr-squared-error-bound",
+      "expression": "\\|\\Delta\\mathbf{z}\\|_2^2 \\le 3\\left( \\|\\Delta_{\\text{direct}}\\|_2^2 + \\|\\Delta_{\\text{mean}}\\|_2^2 + \\|\\Delta_{\\text{denom}}\\|_2^2 \\right)",
+      "object_label": "obj-standardized-value-vector",
+      "established_by": "lem-sasaki-value-error-decomposition",
+      "can_be_refined": false
+    }
+  ],
+  "relations_established": []
+}

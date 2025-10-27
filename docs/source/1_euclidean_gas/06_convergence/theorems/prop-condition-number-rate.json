@@ -1,0 +1,28 @@
+{
+  "label": "attr-condition-number-rate",
+  "name": "Condition Number of Rate Sensitivity",
+  "statement_type": "proposition",
+  "source": null,
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {
+    "obj-param-selection": [
+      "attr-svd-decomposition-mkappa"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-condition-number-mkappa",
+      "expression": "\u03ba(M_\u03ba) = \u03c3_1/\u03c3_4 \u2248 1.58/0.29 \u2248 5.4",
+      "object_label": "obj-param-selection"
+    }
+  ],
+  "relations_established": []
+}

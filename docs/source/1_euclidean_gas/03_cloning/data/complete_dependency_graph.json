@@ -1,0 +1,174 @@
+{
+  "metadata": {
+    "source_document": "docs/source/1_euclidean_gas/03_cloning.md",
+    "chapter_title": "The Keystone Principle and the Contractive Nature of Cloning",
+    "total_objects": 101,
+    "extraction_timestamp": "2025-10-26T09:58:31",
+    "analysis_timestamp": "2025-10-26T10:15:00"
+  },
+  "summary": {
+    "object_counts": {
+      "definitions": 36,
+      "axioms": 6,
+      "theorems": 15,
+      "lemmas": 32,
+      "propositions": 12,
+      "corollaries": 6,
+      "remarks": 12
+    },
+    "dependency_structure": {
+      "total_relationships": 247,
+      "explicit_cross_refs": 0,
+      "implicit_dependencies": 247,
+      "framework_dependencies": 45,
+      "proof_dependencies": 89
+    },
+    "key_results": [
+      "lem-quantitative-keystone",
+      "thm-positional-variance-contraction",
+      "thm-boundary-potential-contraction",
+      "thm-complete-cloning-drift",
+      "thm-synergistic-foster-lyapunov-preview"
+    ]
+  },
+  "chapter_organization": {
+    "part_1_foundations": {
+      "chapters": [2, 3, 4],
+      "description": "Mathematical foundations for coupled state space, Lyapunov function, and foundational axioms"
+    },
+    "part_2_keystone_lemma": {
+      "chapters": [5, 6, 7, 8],
+      "description": "Multi-chapter proof of the Keystone Lemma establishing error-to-signal conversion"
+    },
+    "part_3_drift_analysis": {
+      "chapters": [9, 10, 11, 12],
+      "description": "Application of Keystone Lemma to prove Foster-Lyapunov drift conditions"
+    }
+  },
+  "dependency_graph": {
+    "description": "Complete dependency graph showing all mathematical object relationships",
+    "key_dependency_chains": [
+      {
+        "name": "Keystone Causal Chain",
+        "path": [
+          "def-full-synergistic-lyapunov-function",
+          "lem-V_Varx-implies-variance",
+          "cor-vvarx-to-high-error-fraction",
+          "thm-geometry-guarantees-variance",
+          "thm-stability-condition-final-corrected",
+          "thm-unfit-high-error-overlap-fraction",
+          "lem-quantitative-keystone"
+        ],
+        "description": "V_Var,x → Geometric structure → Fitness signal → Corrective targeting → Keystone bound"
+      },
+      {
+        "name": "Variance Contraction Chain",
+        "path": [
+          "lem-quantitative-keystone",
+          "lem-keystone-contraction-alive",
+          "lem-variance-change-decomposition",
+          "thm-positional-variance-contraction",
+          "thm-complete-variance-drift"
+        ],
+        "description": "Keystone → Alive walker contraction → Complete variance drift"
+      },
+      {
+        "name": "Boundary Safety Chain",
+        "path": [
+          "ax:safe-harbor",
+          "lem-fitness-gradient-boundary",
+          "lem-boundary-enhanced-cloning",
+          "thm-boundary-potential-contraction",
+          "thm-complete-boundary-drift"
+        ],
+        "description": "Safe Harbor axiom → Boundary fitness gradient → Potential contraction"
+      },
+      {
+        "name": "Complete Drift Chain",
+        "path": [
+          "thm-complete-variance-drift",
+          "thm-complete-boundary-drift",
+          "thm-inter-swarm-bounded-expansion",
+          "thm-complete-cloning-drift",
+          "thm-synergistic-foster-lyapunov-preview"
+        ],
+        "description": "Component drifts → Complete cloning drift → Synergistic condition"
+      }
+    ],
+    "axiomatic_dependencies": {
+      "ax:domain-regularity": {
+        "used_by": ["attr-barrier-existence"],
+        "enables": "Construction of smooth barrier function for boundary analysis"
+      },
+      "ax:lipschitz-fields": {
+        "used_by": ["attr-bounded-velocity-expansion"],
+        "enables": "Bounded velocity perturbations from environmental fields"
+      },
+      "ax:safe-harbor": {
+        "used_by": ["thm-boundary-potential-contraction"],
+        "enables": "Exponential contraction of boundary potential"
+      },
+      "ax:non-deceptive-landscape": {
+        "used_by": ["thm-derivation-of-stability-condition"],
+        "enables": "Reward signal correctly identifies high-error walkers"
+      },
+      "ax:velocity-regularization": {
+        "used_by": ["def-raw-value-operators", "attr-bounded-velocity-expansion"],
+        "enables": "Control of kinetic energy through reward function"
+      },
+      "ax:active-diversity": {
+        "used_by": ["def-fitness-potential-operator"],
+        "enables": "Diversity-based fitness signal generation"
+      }
+    }
+  },
+  "n_uniformity_constants": {
+    "description": "All contraction rates and bounds are independent of swarm size N",
+    "keystone_constants": {
+      "chi_epsilon": {
+        "name": "Feedback coefficient",
+        "description": "Proportional response of cloning to variance error",
+        "depends_on": ["p_u", "c_err"],
+        "n_uniform": true
+      },
+      "g_max_epsilon": {
+        "name": "Offset constant",
+        "description": "Additive bound on error-weighted cloning activity",
+        "depends_on": ["g_err"],
+        "n_uniform": true
+      }
+    },
+    "drift_constants": {
+      "kappa_x": {
+        "name": "Positional variance contraction rate",
+        "value": "chi(epsilon) / (2C_x^prime)",
+        "n_uniform": true
+      },
+      "kappa_b": {
+        "name": "Boundary potential contraction rate",
+        "value": "p_boundary * eta_barrier",
+        "n_uniform": true
+      },
+      "C_x": {
+        "name": "Positional variance expansion bound",
+        "value": "g_max(epsilon) / (2C_x^prime) + C_dead",
+        "n_uniform": true
+      },
+      "C_v": {
+        "name": "Velocity variance expansion bound",
+        "value": "function of (V_max, alpha_rest, L_F, L_phi)",
+        "n_uniform": true
+      },
+      "C_b": {
+        "name": "Boundary potential expansion bound",
+        "value": "phi_max / N",
+        "n_uniform": true
+      },
+      "C_W": {
+        "name": "Wasserstein distance expansion bound",
+        "value": "function of (delta, N, domain_diam)",
+        "n_uniform": true
+      }
+    }
+  }
+}

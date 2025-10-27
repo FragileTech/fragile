@@ -1,0 +1,51 @@
+{
+  "label": "lem-variance-wasserstein-link",
+  "name": "Structural Variance and Wasserstein Distance Relationship",
+  "statement_type": "lemma",
+  "source": {
+    "file": "04_wasserstein_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-target-complement",
+    "def-structural-variance",
+    "def-wasserstein-distance"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "epsilon",
+    "D_min",
+    "c_sep",
+    "f_UH",
+    "lambda_v"
+  ],
+  "attributes_required": {
+    "swarm-separation": [
+      "L = ||x\u0304_1 - x\u0304_2|| > D_min(\u03b5)",
+      "High-error regime: V_struct > R\u00b2_spread"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-variance-decomposition",
+    "cor-between-group-dominance",
+    "lem-phase-space-packing",
+    "thm-unfit-high-error-overlap",
+    "thm-n-uniformity-constants"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "lem-variance-decomposition",
+    "cor-between-group-dominance"
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Two-sided comparability of V_struct and W_2\u00b2",
+    "N-uniform link constants c_link\u207b and c_link\u207a"
+  ],
+  "relations_established": [
+    "c_link\u207b W_2\u00b2(\u03bc_1, \u03bc_2) \u2264 V_struct \u2264 c_link\u207a W_2\u00b2(\u03bc_1, \u03bc_2)",
+    "c_link\u207b = f_UH\u00b2 / c_sep(\u03b5) (N-uniform)",
+    "c_link\u207a = 2 (N-uniform)"
+  ]
+}

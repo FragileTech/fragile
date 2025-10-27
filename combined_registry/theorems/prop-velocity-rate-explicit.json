@@ -1,0 +1,49 @@
+{
+  "label": "prop-velocity-rate-explicit",
+  "name": "Velocity Dissipation Rate (Parameter-Explicit)",
+  "statement_type": "proposition",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-kinetic-operator-stratonovich",
+    "obj-velocity-variance-recall"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-gamma",
+    "param-tau",
+    "param-sigma-v",
+    "param-d"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-velocity-dissipation-rate",
+      "expression": "κ_v = 2γ - O(τ)",
+      "object_label": "obj-velocity-variance-recall",
+      "established_by": "prop-velocity-rate-explicit",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-velocity-equilibrium-constant",
+      "expression": "C_v' = d σ_v^2/γ + O(τ σ_v^2),  V_{Var,v}^{eq} = C_v'/κ_v = (d σ_v^2/γ)(1+O(τ))",
+      "object_label": "obj-velocity-variance-recall",
+      "established_by": "prop-velocity-rate-explicit",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

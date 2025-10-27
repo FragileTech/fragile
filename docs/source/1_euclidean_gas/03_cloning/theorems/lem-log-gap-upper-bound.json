@@ -1,0 +1,32 @@
+{
+  "label": "lem-log-gap-upper-bound",
+  "name": "Upper Bound on Logarithmic Mean Gap",
+  "statement_type": "lemma",
+  "source": {
+    "document": "03_cloning.md",
+    "section": "Chapter 8: Keystone Lemma Proof",
+    "line_number": 4137,
+    "path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md#lem-log-gap-upper-bound"
+  },
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [
+    "V_min",
+    "V_max",
+    "kappa"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "property_label": "attr-log-gap-upper-bound",
+      "property_name": "Upper bound on logarithmic mean gap",
+      "property_type": "inequality",
+      "statement": "|E[ln(X)] - E[ln(Y)]| <= ln(1 + kappa/V_min)"
+    }
+  ],
+  "relations_established": []
+}

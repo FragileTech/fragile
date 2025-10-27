@@ -1,0 +1,49 @@
+{
+  "label": "lem-total-squared-error-stable",
+  "name": "Bound on the Total Squared Error for Stable Walkers",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm-and-state-space",
+    "obj-alive-dead-sets",
+    "obj-raw-value-operator",
+    "obj-walker",
+    "obj-distance-positional-measures",
+    "obj-lipschitz-structural-error-coefficients",
+    "obj-components-mean-square-standardization-error"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity",
+    "axiom-def-axiom-margin-stability"
+  ],
+  "input_parameters": [],
+  "properties_required": {
+    "obj-swarm-and-state-space": [
+      "prop-has-at-least-two-walkers"
+    ],
+    "obj-walker": [
+      "prop-is-stable"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-total-squared-error-bound-for-stable-walkers",
+      "expression": "E_{d \\sim D_{raw}}[d^2] \\le C_{pos} \\cdot \\Delta_{pos}^2 + C_{struct} \\cdot \\Delta_{struct}^2",
+      "object_label": "obj-components-mean-square-standardization-error",
+      "established_by": "lem-total-squared-error-stable",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

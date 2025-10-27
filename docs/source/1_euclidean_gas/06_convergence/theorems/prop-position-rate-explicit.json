@@ -1,0 +1,36 @@
+{
+  "label": "attr-position-rate-explicit",
+  "name": "Positional Contraction Rate (Parameter-Explicit)",
+  "statement_type": "proposition",
+  "source": null,
+  "input_objects": [
+    "obj-cloning-measure",
+    "obj-kinetic-operator-stratonovich",
+    "obj-positional-variance-recall"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-lambda",
+    "param-tau",
+    "param-sigma-v",
+    "param-gamma"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-positional-contraction-rate",
+      "expression": "\u03ba_x = \u03bb \u00b7 E[ Cov(f_i, \u2225x_i-\\bar x\u2225^2) / E[\u2225x_i-\\bar x\u2225^2] ] + O(\u03c4)",
+      "object_label": "obj-positional-variance-recall"
+    },
+    {
+      "label": "attr-positional-equilibrium-constant",
+      "expression": "C_x = O(\u03c3_v^2 \u03c4^3/\u03b3) + O(\u03c4 \u03c3_x^2), with \u03c3_x^2 ~ \u03c3_v^2 \u03c4^2",
+      "object_label": "obj-positional-variance-recall"
+    }
+  ],
+  "relations_established": []
+}

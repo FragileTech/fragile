@@ -1,0 +1,51 @@
+{
+  "label": "thm-hk-convergence-unconditional",
+  "name": "Exponential HK-Convergence of the Fragile Gas (UNCONDITIONAL)",
+  "statement_type": "theorem",
+  "source": {
+    "file": "11_hk_convergence_bounded_density_rigorous_proof.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-qsd",
+    "def-hellinger-kantorovich-metric"
+  ],
+  "input_axioms": [
+    "ax-domain-regularity",
+    "ax-lipschitz-fields",
+    "ax-velocity-regularization",
+    "def-axiom-rescale-function",
+    "ax-guaranteed-revival"
+  ],
+  "input_parameters": [
+    "gamma",
+    "sigma_v",
+    "sigma_x",
+    "U",
+    "R",
+    "N"
+  ],
+  "attributes_required": {
+    "bounded-density-ratio": [
+      "thm-bounded-density-ratio-main provides finite M"
+    ],
+    "contraction-pipeline": [
+      "Lemmas A/B/C (mass/structural/shape) from 11_hk_convergence.md usable unconditionally with M < \u221e"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-bounded-density-ratio-main"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "thm-bounded-density-ratio-main"
+  ],
+  "output_type": "Convergence",
+  "attributes_added": [
+    "Unconditional exponential convergence in HK metric"
+  ],
+  "relations_established": [
+    "HK(\u03bc_t, \u03c0_QSD) \u2264 C_HK e^{\u2212\u03ba_HK t} with \u03ba_HK > 0 explicit in (\u03b3, \u03c3_v, \u03c3_x, U, R, N)"
+  ]
+}

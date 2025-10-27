@@ -1,0 +1,15 @@
+{
+  "label": "obj-components-mean-square-standardization-error",
+  "name": "Components of Mean-Square Standardization Error",
+  "mathematical_expression": "\\mathbb{E}[\\|\\mathbf{z}(\\mathcal{S}_1, V, M) - \\mathbf{z}(\\mathcal{S}_2, V, M)\\|_2^2]",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

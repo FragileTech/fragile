@@ -1,0 +1,52 @@
+{
+  "label": "thm-parabolic-harnack",
+  "name": "Parabolic Harnack Inequality for Kinetic Operators",
+  "statement_type": "theorem",
+  "source": {
+    "file": "11_hk_convergence_bounded_density_rigorous_proof.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-kinetic-operator",
+    "def-langevin-dynamics"
+  ],
+  "input_axioms": [
+    "ax-lipschitz-fields",
+    "ax-velocity-regularization",
+    "ax-domain-regularity"
+  ],
+  "input_parameters": [
+    "gamma",
+    "sigma_v",
+    "R",
+    "d",
+    "C_h"
+  ],
+  "attributes_required": {
+    "hypoellipticity": [
+      "H\u00f6rmander bracket condition holds (lem-hormander-bracket)"
+    ],
+    "bounded-source": [
+      "||h||_\u221e \u2264 C_h"
+    ],
+    "nonnegativity": [
+      "u \u2265 0"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-hormander-bracket"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "lem-hormander-bracket"
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Harnack-type sup/inf control on hypoelliptic cylinders for kinetic FP"
+  ],
+  "relations_established": [
+    "sup_{Q_{R/2}^\u2212} u \u2264 C_H (inf_{Q_{R/2}^+} u + R\u00b2 C_h)",
+    "Constants depend on (\u03b3, \u03c3_v, ||F||_Lip, d)"
+  ]
+}

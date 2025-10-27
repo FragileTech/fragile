@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-exponential-survival-0-equivalence",
+  "relationship_type": "equivalence",
+  "bidirectional": true,
+  "source_object": "obj-qsd",
+  "target_object": "obj-alive-mass",
+  "established_by": "thm-exponential-survival",
+  "expression": "E_{π_QSD}[τ_†] = e^{Θ(N)}",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+}

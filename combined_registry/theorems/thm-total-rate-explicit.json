@@ -1,0 +1,57 @@
+{
+  "label": "thm-total-rate-explicit",
+  "name": "Total Convergence Rate (Parameter-Explicit)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm-update-procedure"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-lambda",
+    "param-gamma",
+    "param-lambda-min",
+    "param-sigma-v",
+    "param-tau",
+    "param-N",
+    "param-d",
+    "param-kappa-wall",
+    "param-d-safe"
+  ],
+  "properties_required": {
+    "obj-swarm-update-procedure": [
+      "prop-total-drift-inequality"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-total-rate-explicit",
+      "expression": "κ_total = min( λ, 2γ, c_{hypo}^2 γ/(1+γ/λ_{min}), λ·Δ f_{boundary}/f_{typical}) · (1 - O(τ))",
+      "object_label": "obj-swarm-update-procedure",
+      "established_by": "thm-total-rate-explicit",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-total-equilibrium-constant",
+      "expression": "C_total ≍ (σ_v^2 τ^2/(γ λ) + dσ_v^2/γ + σ_v^2 τ/N^{1/d} + σ_v^2 τ/d_{safe}^2)/κ_{total}",
+      "object_label": "obj-swarm-update-procedure",
+      "established_by": "thm-total-rate-explicit",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

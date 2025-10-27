@@ -1,0 +1,6 @@
+{
+  "label": "axiom-ax-active-diversity",
+  "statement": "**(Axiom EG-5): Active Diversity Signal**",
+  "mathematical_expression": "\\beta > 0",
+  "foundational_framework": "Euclidean Gas"
+}

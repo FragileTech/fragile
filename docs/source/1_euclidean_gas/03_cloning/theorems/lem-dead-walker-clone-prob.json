@@ -1,0 +1,44 @@
+{
+  "label": "lem-dead-walker-clone-prob",
+  "name": "Total Cloning Probability for Dead Walkers",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 5963,
+    "line_end": 5988
+  },
+  "input_objects": [
+    "obj-cloning-probability",
+    "obj-cloning-score",
+    "obj-fitness-operator",
+    "obj-fitness-potential-operator",
+    "obj-walker"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-alpha",
+    "param-beta",
+    "param-dimension",
+    "param-epsilon",
+    "param-epsilon-clone",
+    "param-p-max"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-dead-walker-clone-prob",
+      "expression": "i \\in \\mathcal{D}(S) \\implies p_i = 1",
+      "object_label": "obj-cloning-probability",
+      "established_by": "lem-dead-walker-clone-prob",
+      "source": {
+        "file": "03_cloning.md",
+        "section": "lem-dead-walker-clone-prob"
+      }
+    }
+  ],
+  "relations_established": []
+}

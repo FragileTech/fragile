@@ -1,0 +1,56 @@
+{
+  "label": "thm-geometry-guarantees-variance",
+  "name": "Geometric Structure Guarantees Measurement Variance",
+  "statement_type": "theorem",
+  "source": {
+    "file": "03_cloning.md:3307-3450",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-greedy-pairing-algorithm",
+    "obj-swarm-and-state-space",
+    "obj-unified-high-low-error-sets",
+    "obj-distance-to-companion-measurement"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "R_var",
+    "kappa_meas",
+    "epsilon",
+    "D_H",
+    "R_L",
+    "f_H",
+    "f_L"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lem-greedy-preserves-signal",
+    "lem-outlier-fraction-lower-bound",
+    "lem-geometric-separation-of-partition"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-greedy-preserves-signal",
+      "thm-geometry-guarantees-variance"
+    ],
+    [
+      "lem-outlier-fraction-lower-bound",
+      "thm-geometry-guarantees-variance"
+    ],
+    [
+      "lem-geometric-separation-of-partition",
+      "thm-geometry-guarantees-variance"
+    ]
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "guaranteed_measurement_variance",
+    "geometry_to_signal_transduction"
+  ],
+  "relations_established": [
+    "high_variance_implies_measurement_signal",
+    "law_of_total_variance_application"
+  ]
+}

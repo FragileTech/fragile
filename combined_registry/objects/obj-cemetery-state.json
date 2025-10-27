@@ -1,0 +1,16 @@
+{
+  "label": "obj-cemetery-state",
+  "name": "The Cemetery State",
+  "mathematical_expression": "\\dagger := \\{(x_i, v_i, 0) : i = 1, \\ldots, N\\}",
+  "object_type": "space",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "euclidean-gas",
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence"
+}

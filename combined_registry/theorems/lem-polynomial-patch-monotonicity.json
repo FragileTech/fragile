@@ -1,0 +1,35 @@
+{
+  "label": "lem-polynomial-patch-monotonicity",
+  "name": "Monotonicity of the Polynomial Patch",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-asymmetric-rescale-function"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-z-max"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-monotonicity",
+      "expression": "P'(z) \\ge 0 \\quad \\forall z \\in [z_{\\max}-1, z_{\\max}]",
+      "object_label": "obj-polynomial-patch",
+      "established_by": "lem-polynomial-patch-monotonicity",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

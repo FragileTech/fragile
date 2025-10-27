@@ -1,0 +1,38 @@
+{
+  "label": "prop-phase-space-pairing",
+  "name": "Phase-Space Pairing Quality",
+  "statement_type": "proposition",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-lambda-alg",
+    "param-epsilon-c",
+    "param-sigma-x",
+    "param-sigma-v"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-pairing-correlation-estimate",
+      "expression": "c_fit(λ_alg, ε_c) ≈ c_0 (1 + λ_alg σ_v^2/σ_x^2)^{-1/2} (1 + ε_c^2/σ_x^2)^{-1}",
+      "object_label": "obj-param-selection",
+      "established_by": "prop-phase-space-pairing",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

@@ -1,0 +1,138 @@
+{
+  "label": "lem-sasaki-indirect-structural-error-sq",
+  "name": "Bound on the Squared Indirect Structural Error",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "02_euclidean_gas",
+    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+    "section": "2.3.6.3",
+    "directive_label": "lem-sasaki-indirect-structural-error-sq",
+    "line_range": [1805, 1891]
+  },
+  "input_objects": [
+    "obj-swarm-state",
+    "obj-raw-value-vector",
+    "obj-alive-set",
+    "obj-stable-set",
+    "obj-status-change-count"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-N",
+    "param-k-min",
+    "param-sigma-min-patch",
+    "param-V-max-R"
+  ],
+  "attributes_required": {
+    "obj-swarm-state": [
+      "attr-has-alive-set",
+      "attr-has-status-vector"
+    ],
+    "obj-raw-value-vector": [
+      "attr-fixed",
+      "attr-bounded"
+    ],
+    "obj-alive-set": [
+      "attr-nonempty"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-sasaki-aggregator-structural",
+    "lem-stats-structural-continuity",
+    "thm-z-score-norm-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    ["lem-sasaki-aggregator-structural", "lem-sasaki-indirect-structural-error-sq"],
+    ["lem-stats-structural-continuity", "lem-sasaki-indirect-structural-error-sq"],
+    ["thm-z-score-norm-bound", "lem-sasaki-indirect-structural-error-sq"]
+  ],
+  "output_type": "Relation",
+  "attributes_added": [
+    {
+      "label": "attr-indirect-structural-error-bounded-quadratic",
+      "expression": "\\|\\Delta_{\\text{indirect}}\\|_2^2 \\le C_{S,\\mathrm{indirect}}^{\\mathrm{sq}}(\\mathcal S_1, \\mathcal S_2) \\cdot n_c(\\mathcal S_1, \\mathcal S_2)^2",
+      "object_label": "obj-standardization-operator",
+      "established_by": "lem-sasaki-indirect-structural-error-sq",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.6.3",
+        "directive_label": "lem-sasaki-indirect-structural-error-sq",
+        "line_range": [1810, 1813]
+      }
+    },
+    {
+      "label": "attr-mean-shift-error-bounded",
+      "expression": "(\\mu_2 - \\mu_1)^2 \\le \\left(L_{\\mu,S}^{\\mathrm{Sasaki}}(k_{\\min}) \\cdot n_c\\right)^2",
+      "object_label": "obj-empirical-mean",
+      "established_by": "lem-sasaki-indirect-structural-error-sq",
+      "timestamp": null,
+      "can_be_refined": false,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.6.3",
+        "directive_label": "lem-sasaki-indirect-structural-error-sq",
+        "line_range": [1858, 1860]
+      }
+    },
+    {
+      "label": "attr-denominator-shift-error-bounded",
+      "expression": "\\sum_{i \\in \\mathcal A_{\\mathrm{stable}}} (z_{2,i})^2 \\le \\|\\mathbf z_2\\|_2^2 \\le k_2 \\left(\\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}}\\right)^2",
+      "object_label": "obj-z-score-vector",
+      "established_by": "lem-sasaki-indirect-structural-error-sq",
+      "timestamp": null,
+      "can_be_refined": false,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.6.3",
+        "directive_label": "lem-sasaki-indirect-structural-error-sq",
+        "line_range": [1866, 1870]
+      }
+    }
+  ],
+  "relations_established": [
+    {
+      "label": "rel-indirect-error-quadratic-nc-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-standardization-operator",
+      "target_object": "obj-status-change-count",
+      "established_by": "lem-sasaki-indirect-structural-error-sq",
+      "expression": "\\|\\Delta_{\\text{indirect}}\\|_2^2 \\le C_{S,\\mathrm{indirect}}^{\\mathrm{sq}}(\\mathcal S_1, \\mathcal S_2) \\cdot n_c(\\mathcal S_1, \\mathcal S_2)^2",
+      "properties": [
+        {
+          "label": "error-order",
+          "expression": "O(n_c^2)",
+          "description": "Quadratic dependence on status changes"
+        },
+        {
+          "label": "coefficient-dependency",
+          "expression": "C_{S,\\mathrm{indirect}}^{\\mathrm{sq}}(\\mathcal S_1, \\mathcal S_2) = 2 k_{\\mathrm{stable}} \\frac{(L_{\\mu,S}^{\\mathrm{Sasaki}})^2}{\\sigma_{\\min,\\mathrm{patch}}^{2}} + 2 k_2 \\left(\\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}}\\right)^2 \\frac{(L_{\\sigma',S}^{\\mathrm{Sasaki}})^2}{\\sigma_{\\min,\\mathrm{patch}}^{2}}",
+          "description": "Coefficient defined in def-sasaki-structural-coeffs-sq"
+        }
+      ],
+      "tags": [
+        "structural-error",
+        "indirect-error",
+        "quadratic-bound",
+        "standardization"
+      ],
+      "timestamp": null,
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.6.3",
+        "directive_label": "lem-sasaki-indirect-structural-error-sq",
+        "line_range": [1805, 1891]
+      }
+    }
+  ]
+}

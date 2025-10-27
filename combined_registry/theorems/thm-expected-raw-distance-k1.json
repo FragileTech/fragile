@@ -1,0 +1,35 @@
+{
+  "label": "thm-expected-raw-distance-k1",
+  "name": "Deterministic Behavior of the Expected Raw Distance Vector at $k=1$",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-raw-value-operator",
+    "obj-distance-to-cemetery-state",
+    "obj-alive-dead-sets"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-k1-distance-bound",
+      "expression": "\\mathbb{E}[d_{raw}] = D_{cemetery} \\text{ for } k=1",
+      "object_label": "obj-raw-value-operator",
+      "established_by": "thm-expected-raw-distance-k1",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

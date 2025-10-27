@@ -1,0 +1,27 @@
+{
+  "label": "thm-distance-operator-satisfies-bounded-variance-axiom",
+  "name": "The Distance Operator Satisfies the Bounded Variance Axiom",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-distance-to-companion-measurement"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-n",
+    "param-d-y"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-satisfies-bounded-variance",
+      "expression": "\\text{Var}[d] \\le C",
+      "object_label": "obj-distance-to-companion-measurement"
+    }
+  ],
+  "relations_established": []
+}

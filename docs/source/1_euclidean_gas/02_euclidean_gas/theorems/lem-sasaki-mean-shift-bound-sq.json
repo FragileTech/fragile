@@ -1,0 +1,93 @@
+{
+  "label": "lem-sasaki-mean-shift-bound-sq",
+  "name": "Bound on the Squared Mean Shift Component",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-swarm-state",
+    "obj-raw-value-vector",
+    "obj-empirical-mean-aggregator",
+    "obj-regularized-standard-deviation"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-N",
+    "param-k",
+    "param-epsilon-std",
+    "param-kappa-var-min",
+    "param-sigma-min-patch"
+  ],
+  "attributes_required": {
+    "obj-swarm-state": [
+      "attr-has-alive-set",
+      "attr-alive-set-size-k"
+    ],
+    "obj-raw-value-vector": [
+      "attr-defined-on-alive-set"
+    ],
+    "obj-empirical-mean-aggregator": [
+      "attr-lipschitz-continuous-value"
+    ],
+    "obj-regularized-standard-deviation": [
+      "attr-has-uniform-lower-bound"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-sasaki-aggregator-lipschitz",
+    "lem-sasaki-aggregator-value"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    ["lem-sasaki-aggregator-lipschitz", "lem-sasaki-mean-shift-bound-sq"],
+    ["lem-sasaki-aggregator-value", "lem-sasaki-mean-shift-bound-sq"]
+  ],
+  "output_type": "Relation",
+  "attributes_added": [
+    {
+      "label": "attr-mean-shift-component-bounded-squared",
+      "expression": "\\|\\Delta_{\\text{mean}}\\|_2^2 \\le \\frac{k \\cdot (L_{\\mu,M}^{\\mathrm{Sasaki}}(k))^2}{\\sigma_{\\min,\\mathrm{patch}}^2} \\cdot \\|\\mathbf r_1 - \\mathbf r_2\\|_2^2",
+      "object_label": "obj-standardized-value-vector",
+      "established_by": "lem-sasaki-mean-shift-bound-sq",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": [
+    {
+      "label": "rel-mean-shift-raw-value-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-mean-shift-error-component",
+      "target_object": "obj-raw-value-difference",
+      "established_by": "lem-sasaki-mean-shift-bound-sq",
+      "expression": "\\|\\Delta_{\\text{mean}}\\|_2^2 \\le C_{V,\\mathrm{mean}}^{\\mathrm{sq}}(\\mathcal S) \\cdot \\|\\mathbf r_1 - \\mathbf r_2\\|_2^2",
+      "properties": [
+        {
+          "label": "lipschitz-constant-value-mean",
+          "expression": "L_{\\mu,M}^{\\mathrm{Sasaki}}(k) = 1/\\sqrt{k}",
+          "description": "Lipschitz constant for empirical mean aggregator with respect to raw value vectors"
+        },
+        {
+          "label": "coefficient-mean-shift-squared",
+          "expression": "C_{V,\\mathrm{mean}}^{\\mathrm{sq}}(\\mathcal S) = \\frac{k \\cdot (L_{\\mu,M}^{\\mathrm{Sasaki}}(k))^2}{\\sigma_{\\min,\\mathrm{patch}}^2}",
+          "description": "Squared mean shift error coefficient depending on alive set size k and regularized standard deviation lower bound"
+        },
+        {
+          "label": "sigma-min-patch-bound",
+          "expression": "\\sigma_{\\min,\\mathrm{patch}} := \\sqrt{\\kappa_{\\mathrm{var,min}}+\\varepsilon_{\\mathrm{std}}^2}",
+          "description": "Uniform lower bound on regularized standard deviation"
+        }
+      ],
+      "tags": [
+        "standardization",
+        "value-continuity",
+        "sasaki-metric",
+        "mean-shift"
+      ],
+      "timestamp": null,
+      "source": null
+    }
+  ]
+}

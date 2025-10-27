@@ -1,0 +1,46 @@
+{
+  "label": "thm-complete-variance-drift",
+  "name": "Complete Variance Drift Characterization for Cloning",
+  "statement_type": "theorem",
+  "source": {
+    "file": "03_cloning.md:6813-6841",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-cloning-operator-formal",
+    "obj-full-synergistic-lyapunov-function",
+    "obj-swarm-and-state-space"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-sufficient-amplification"
+  ],
+  "input_parameters": [
+    "kappa_x",
+    "C_x",
+    "C_v"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "thm-positional-variance-contraction",
+      "thm-complete-variance-drift"
+    ],
+    [
+      "thm-bounded-velocity-expansion-cloning",
+      "thm-complete-variance-drift"
+    ]
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "variance_drift_characterization",
+    "positional_variance_strong_contraction",
+    "velocity_variance_bounded_expansion"
+  ],
+  "relations_established": [
+    "net_variance_contraction_when_large",
+    "synergistic_role_of_cloning"
+  ]
+}

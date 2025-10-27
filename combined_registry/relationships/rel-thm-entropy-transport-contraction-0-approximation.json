@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-entropy-transport-contraction-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-lyapunov-function",
+  "target_object": "obj-total-operator",
+  "established_by": "thm-entropy-transport-contraction",
+  "expression": "V_{t+1} ≤ λ V_t + C_steady",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

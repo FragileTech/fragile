@@ -1,0 +1,15 @@
+{
+  "label": "obj-fitness-operator",
+  "name": "The Fitness Evaluation Operator",
+  "mathematical_expression": "r_i = g_A(x_i) = \\varphi_{\\text{barrier}}(x_i)",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

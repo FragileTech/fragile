@@ -1,0 +1,6 @@
+{
+  "label": "axiom-def-axiom-rescale-function",
+  "statement": "Axiom of a Well-Behaved Rescale Function",
+  "mathematical_expression": "g'_A(z) \\ge 0 \\quad \\forall z \\in \\mathbb{R}",
+  "foundational_framework": "Euclidean Gas"
+}

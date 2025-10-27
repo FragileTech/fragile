@@ -1,0 +1,53 @@
+{
+  "label": "attr-interaction-complexity-bound",
+  "type": "proposition",
+  "name": "Boundedness of Interaction Complexity Constant",
+  "line_range": [
+    288,
+    434
+  ],
+  "status": "complete",
+  "input_objects": [
+    "obj-diversity-companion-prob",
+    "obj-rho-0",
+    "obj-state-space-omega"
+  ],
+  "input_axioms": [],
+  "input_theorems": [],
+  "input_parameters": [
+    "lambda",
+    "L_log_rho_0",
+    "diam_omega"
+  ],
+  "attributes_required": {
+    "obj-rho-0": [
+      "attr-lipschitz-log-density",
+      "attr-lsi-regularity"
+    ]
+  },
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-finite-n-independent"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-interaction-complexity",
+      "to": "obj-system-parameters",
+      "type": "explicit_bound",
+      "bound": "C_int <= lambda * L_log_rho_0 * diam(Omega)",
+      "order": "O(1)"
+    }
+  ],
+  "internal_lemmas": [],
+  "proof_strategy": "Mean-field scaling analysis + Lipschitz continuity + exchangeability cancellation",
+  "notes": [
+    "Completes proof of lem-quantitative-kl-bound",
+    "Shows C_int is finite and N-independent",
+    "Key: Mean-field scaling gives 1/N in interaction term",
+    "Lipschitz constant L_log_rho_0 can be bounded via LSI"
+  ],
+  "explicit_formula": "C_int = lambda * L_log_rho_0 * diam(Omega)",
+  "external_references": [
+    "Jabin & Wang (2016) - Lemma 3.2"
+  ]
+}

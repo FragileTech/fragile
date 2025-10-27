@@ -1,0 +1,48 @@
+{
+  "label": "lem-stats-structural-continuity",
+  "name": "Structural Continuity of Statistical Properties",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-statistical-properties-measurement",
+    "obj-raw-value-operator",
+    "obj-fragile-swarm-instantiation",
+    "obj-lipschitz-structural-error-coefficients"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity"
+  ],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-mean-structural-lipschitz",
+      "expression": "|\\mu(\\mathcal{S}_1, \\mathbf{v}) - \\mu(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\mu} \\cdot d_{struct}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "object_label": "obj-statistical-properties-measurement",
+      "established_by": "lem-stats-structural-continuity",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-std-dev-structural-lipschitz",
+      "expression": "|\\sigma'(\\mathcal{S}_1, \\mathbf{v}) - \\sigma'(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\sigma'} \\cdot d_{struct}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "object_label": "obj-statistical-properties-measurement",
+      "established_by": "lem-stats-structural-continuity",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

@@ -1,0 +1,17 @@
+{
+  "label": "rel-prop-fourth-moment-baoab-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-baoab-chain",
+  "target_object": "obj-baoab-chain",
+  "established_by": "prop-fourth-moment-baoab",
+  "expression": "fourth-moments-uniform-in-dt",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds"
+}

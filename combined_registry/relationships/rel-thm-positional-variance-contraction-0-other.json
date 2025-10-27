@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-positional-variance-contraction-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-cloning-operator-formal",
+  "target_object": "obj-variance-conversions",
+  "established_by": "thm-positional-variance-contraction",
+  "expression": "rel-cloning-contracts-positional-variance",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

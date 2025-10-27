@@ -1,0 +1,6 @@
+{
+  "label": "axiom-def-axiom-bounded-algorithmic-diameter",
+  "statement": "Axiom of Bounded Algorithmic Diameter",
+  "mathematical_expression": "(\\mathcal{Y}, d_{\\mathcal{Y}})",
+  "foundational_framework": "Euclidean Gas"
+}

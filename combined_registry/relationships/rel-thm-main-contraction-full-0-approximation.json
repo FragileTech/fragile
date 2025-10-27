@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-main-contraction-full-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-cloning-operator",
+  "target_object": "obj-target-complement",
+  "established_by": "thm-main-contraction-full",
+  "expression": "W_2²(Ψ_clone(μ_1), Ψ_clone(μ_2)) ≤ (1 - κ_W) W_2²(μ_1, μ_2) + C_W",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction"
+}

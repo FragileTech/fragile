@@ -1,0 +1,8 @@
+{
+  "label": "axiom-ax-qsd-log-concave",
+  "statement": "Log-Concavity of the Quasi-Stationary Distribution (Historical - Now Proven)",
+  "mathematical_expression": "\\pi_{\\text{QSD}}(\\lambda S_1 + (1-\\lambda) S_2) \\geq \\pi_{\\text{QSD}}(S_1)^\\lambda \\cdot \\pi_{\\text{QSD}}(S_2)^{1-\\lambda}",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

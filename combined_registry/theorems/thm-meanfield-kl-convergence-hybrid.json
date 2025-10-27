@@ -1,0 +1,55 @@
+{
+  "label": "thm-meanfield-kl-convergence-hybrid",
+  "name": "Exponential KL-Convergence via Mean-Field Analysis",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-mean-field-operator",
+    "def-qsd"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf",
+    "kappa_W",
+    "delta"
+  ],
+  "properties_required": {
+    "mean-field-lsi": [
+      "Mean-field LSI established"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-meanfield-lsi-standalone",
+    "lem-meanfield-cloning-dissipation-hybrid"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-meanfield-kl-convergence-hybrid-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-mean-field-operator",
+      "target_object": "obj-qsd",
+      "established_by": "thm-meanfield-kl-convergence-hybrid",
+      "expression": "Mean-field KL convergence rate",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

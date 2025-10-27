@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-parabolic-harnack-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-kinetic-operator",
+  "target_object": "obj-langevin-dynamics",
+  "established_by": "thm-parabolic-harnack",
+  "expression": "sup_{Q_{R/2}^−} u ≤ C_H (inf_{Q_{R/2}^+} u + R² C_h)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+}

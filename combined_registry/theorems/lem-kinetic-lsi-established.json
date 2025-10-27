@@ -1,0 +1,51 @@
+{
+  "label": "lem-kinetic-lsi-established",
+  "name": "Hypocoercive LSI for Ψ_kin (Established)",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-kinetic-operator"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf"
+  ],
+  "properties_required": {
+    "bakry-emery": [
+      "Bakry-Émery criterion satisfied"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-bakry-emery-classical"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-kinetic-lsi-established-0-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-kinetic-operator",
+      "target_object": "obj-kinetic-operator",
+      "established_by": "lem-kinetic-lsi-established",
+      "expression": "C_kin = O(1/(γ κ_conf))",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

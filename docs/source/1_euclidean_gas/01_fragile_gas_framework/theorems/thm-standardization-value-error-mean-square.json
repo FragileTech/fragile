@@ -1,0 +1,28 @@
+{
+  "label": "thm-standardization-value-error-mean-square",
+  "name": "Bounding the Expected Squared Value Error",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-components-mean-square-standardization-error",
+    "obj-lipschitz-value-error-coefficients",
+    "obj-raw-value-operator"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-value-error-bound",
+      "expression": "\\mathbb{E}[\\|VE(\\mathcal{S}_1, \\mathcal{S}_2)\\|^2] \\le C_v \\cdot d_{val}(\\mathcal{S}_1, \\mathcal{S}_2)^2",
+      "object_label": "obj-components-mean-square-standardization-error"
+    }
+  ],
+  "relations_established": []
+}

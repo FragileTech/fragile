@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-nonconvex-informal-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-total-operator",
+  "target_object": "obj-total-operator",
+  "established_by": "thm-nonconvex-informal",
+  "expression": "Extension beyond log-concavity (heuristic)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

@@ -1,0 +1,8 @@
+{
+  "label": "axiom-def-axiom-boundary-regularity",
+  "statement": "Axiom of Boundary Regularity",
+  "mathematical_expression": "|P(s_{\\text{out},i}=0 | \\mathcal{S}_1) - P(s_{\\text{out},i}=0 | \\mathcal{S}_2)| \\le L_{\\text{death}} \\cdot d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^{\\alpha_B}",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

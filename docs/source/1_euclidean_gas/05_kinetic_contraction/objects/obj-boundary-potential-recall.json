@@ -1,0 +1,10 @@
+{
+  "label": "obj-boundary-potential-recall",
+  "name": "Boundary Potential (Recall)",
+  "mathematical_expression": "W_b(S_1, S_2) = \\frac{1}{N}\\sum_{k=1,2} \\sum_{i \\in \\mathcal{A}(S_k)} \\varphi_{\\text{barrier}}(x_{k,i})",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [],
+  "source": null
+}

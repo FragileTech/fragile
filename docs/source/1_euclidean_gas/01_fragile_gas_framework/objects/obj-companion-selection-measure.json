@@ -1,0 +1,14 @@
+{
+  "label": "obj-companion-selection-measure",
+  "name": "Companion Selection Measure",
+  "mathematical_expression": "i \\in \\{1, \\dots, N\\}",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "discrete",
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

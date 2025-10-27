@@ -1,0 +1,49 @@
+{
+  "label": "lem-potential-bounds",
+  "name": "Uniform Bounds of the Fitness Potential",
+  "statement_type": "lemma",
+  "source": {
+    "document": "03_cloning.md",
+    "section": "Section 5.6: Fitness Potential Operator",
+    "line_number": 1880,
+    "path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md#lem-potential-bounds"
+  },
+  "input_objects": [
+    "obj-fitness-potential-operator",
+    "obj-logistic-rescale"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "eta",
+    "alpha",
+    "beta",
+    "g_A_max"
+  ],
+  "attributes_required": {
+    "obj-logistic-rescale": [
+      "attr-logistic-bounded-range"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "property_label": "attr-fitness-potential-lower-bound",
+      "property_name": "V_pot,min = eta^(alpha+beta)",
+      "property_type": "inequality"
+    },
+    {
+      "property_label": "attr-fitness-potential-upper-bound",
+      "property_name": "V_pot,max = (g_A,max + eta)^(alpha+beta)",
+      "property_type": "inequality"
+    },
+    {
+      "property_label": "attr-fitness-potential-uniform-bounds",
+      "property_name": "Uniform bounds independent of N and state",
+      "property_type": "uniformity"
+    }
+  ],
+  "relations_established": []
+}

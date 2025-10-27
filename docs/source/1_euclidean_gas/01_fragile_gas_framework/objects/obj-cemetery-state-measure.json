@@ -1,0 +1,12 @@
+{
+  "label": "obj-cemetery-state-measure",
+  "name": "Cemetery State Measure",
+  "mathematical_expression": "\\mathcal{S}",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "swarm"
+  ],
+  "source": null
+}

@@ -1,0 +1,285 @@
+{
+  "source_file": "/home/guillem/fragile/docs/source/1_euclidean_gas/07_mean_field.md",
+  "total_directives": 21,
+  "counts_by_type": {
+    "definition": 12,
+    "lemma": 1,
+    "theorem": 4,
+    "assumption": 4
+  },
+  "directives": [
+    {
+      "type": "definition",
+      "label": "def-mean-field-phase-space",
+      "title": "Phase Space",
+      "content": "Let $X_{\\text{valid}} \\subset \\mathbb{R}^d$ be the bounded, convex domain with a $C^2$ boundary, and let $V_{\\text{alg}} := \\{v \\in \\mathbb{R}^d : \\|v\\| \\le V_{\\text{alg}}\\}$ be the closed ball of all...",
+      "math_expression_count": 5,
+      "first_math": "\\Omega := X_{\\text{valid}} \\times V_{\\text{alg}}",
+      "cross_refs": [],
+      "line_range": [
+        40,
+        51
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-phase-space-density",
+      "title": "Phase-Space Density",
+      "content": "The state of the swarm's **alive population** at time $t \\ge 0$ is described by the **phase-space sub-probability density** $f: [0, \\infty) \\times \\Omega \\to [0, \\infty)$. For any time $t$, $f(t, \\cdo...",
+      "math_expression_count": 16,
+      "first_math": "\\text{Alive mass in } A = \\int_A f(t, z) dz.",
+      "cross_refs": [],
+      "line_range": [
+        61,
+        82
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-mean-field-moments",
+      "title": "Mean-Field Statistical Moments",
+      "content": "Let $f(t, \\cdot)$ be the phase-space density at time $t$, with total alive mass $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. The statistical moments required for the standardization pipeline are define...",
+      "math_expression_count": 13,
+      "first_math": "\\mu_R[f](t) := \\int_{\\Omega} R(z) \\frac{f(t,z)}{m_a(t)}\\,\\mathrm dz",
+      "cross_refs": [],
+      "line_range": [
+        115,
+        142
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-mean-field-patched-std",
+      "title": "Mean-Field Regularized Standard Deviation",
+      "content": "The **Mean-Field Regularized Standard Deviations** are functionals of the density $f$, obtained by applying the `Regularized Standard Deviation` function from the abstract framework (*Chapter 1, Def. ...",
+      "math_expression_count": 2,
+      "first_math": "\\widehat{\\sigma}_R[f](t) := \\sigma\\'_{\\text{reg}}(\\sigma_R^2[f](t)), \\qquad \\widehat{\\sigma}_D[f](t) := \\sigma\\'_{\\text{reg}}(\\sigma_D^2[f](t))",
+      "cross_refs": [],
+      "line_range": [
+        174,
+        184
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-mean-field-z-scores",
+      "title": "Mean-Field Z-Scores",
+      "content": "For a particle at state $z$ and a potential companion at state $z_c$, the mean-field Z-scores at time $t$ are defined using the density-dependent functionals derived in Section 1.2:\n\n$$\n\\widetilde{r}[...",
+      "math_expression_count": 4,
+      "first_math": "\\widetilde{r}[f](z,t) := \\frac{R(z) - \\mu_R[f](t)}{\\widehat{\\sigma}_R[f](t)}, \\qquad \\widetilde{d}[f](z,z_c,t) := \\frac{d_{\\mathcal{Y}}(\\varphi(z),\\varphi(z_c)) - \\mu_D[f](t)}{\\widehat{\\sigma}_D[f](t)}",
+      "cross_refs": [],
+      "line_range": [
+        191,
+        201
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-mean-field-fitness-potential",
+      "title": "Mean-Field Fitness Potential",
+      "content": "The **Mean-Field Fitness Potential**, denoted $V[f](z, z_c, t)$, is a functional of the density $f$ that determines the fitness of a particle at state $z$ relative to a companion at $z_c$. It is const...",
+      "math_expression_count": 6,
+      "first_math": "V[f](z,z_c,t) := \\left(g_A(\\widetilde{d}[f](z,z_c,t)) + \\eta\\right)^{\\beta} \\cdot \\left(g_A(\\widetilde{r}[f](z,t)) + \\eta\\right)^{\\alpha}",
+      "cross_refs": [],
+      "line_range": [
+        204,
+        214
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-baoab-update-rule",
+      "title": "The BAOAB Update Rule",
+      "content": "For a single particle with state $(x_n, v_n)$ at time $t_n$, the state $(x_{n+1}, v_{n+1})$ at time $t_{n+1} = t_n + \\tau$ is computed via the following five steps:\n\n1.  **B-Step (Force Kick):** The v...",
+      "math_expression_count": 15,
+      "first_math": "v_{n+1/2}^{(1)} = v_n + \\frac{\\tau}{2m} F(x_n)",
+      "cross_refs": [],
+      "line_range": [
+        251,
+        284
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-kinetic-generator",
+      "title": "Kinetic Transport Operator",
+      "content": "The kinetic evolution of a single alive walker $i$ is governed by the underdamped Langevin SDE on the phase space $\\Omega$:\n\n$$\n\\mathrm d x_i = v_i\\,\\mathrm dt,\\qquad\n\\mathrm d v_i = \\left(\\frac{1}{m}...",
+      "math_expression_count": 13,
+      "first_math": "\\mathrm d x_i = v_i\\,\\mathrm dt,\\qquad\n\\mathrm d v_i = \\left(\\frac{1}{m}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\,\\mathrm dt \\;+\\; \\sigma_v\\,\\mathrm dW_t",
+      "cross_refs": [],
+      "line_range": [
+        301,
+        326
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-killing-operator",
+      "title": "Interior Killing Operator",
+      "content": "Death is modeled by an **interior killing rate** $c: \\Omega \\to [0, \\infty)$, a smooth, non-negative function with the following properties:\n\n1.  **Safety in the interior**: $c(z) = 0$ for all $z$ in ...",
+      "math_expression_count": 11,
+      "first_math": "k_{\\text{killed}}[f](t) := \\int_{\\Omega} c(z) f(t,z) \\, \\mathrm{d}z",
+      "cross_refs": [],
+      "line_range": [
+        348,
+        365
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-revival-operator",
+      "title": "Revival Operator",
+      "content": "Revival is modeled as a source term that re-injects mass from the dead population back into the alive population. The dead population acts as a reservoir from which revival occurs at a constant rate. ...",
+      "math_expression_count": 6,
+      "first_math": "B[f, m_d](t, z) := \\lambda_{\\text{revive}} \\cdot m_d(t) \\cdot \\frac{f(t,z)}{m_a(t)}",
+      "cross_refs": [],
+      "line_range": [
+        366,
+        392
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-cloning-generator",
+      "title": "Internal Cloning Operator (Derived Form)",
+      "content": "The **Internal Cloning Operator**, $S[f]$, is the mean-field limit of the discrete cloning mechanism. It is a mass-neutral, non-local operator that decomposes into sink and source terms:\n\n$$\nS[f](t, z...",
+      "math_expression_count": 16,
+      "first_math": "S[f](t, z) = S_{\\text{src}}[f](t, z) - S_{\\text{sink}}[f](t, z)",
+      "cross_refs": [],
+      "line_range": [
+        485,
+        531
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-transport-operator",
+      "title": "Transport Operator and Probability Flux",
+      "content": "Let $L$ be the backward kinetic generator from Section 2.2. The **Transport Operator**, denoted $L^\\dagger$, is its formal $L^2$-adjoint, which acts on the density $f$. It can be written in conservati...",
+      "math_expression_count": 11,
+      "first_math": "L^\\dagger f = -\\nabla \\cdot J[f] = -\\nabla_x \\cdot J_x[f] - \\nabla_v \\cdot J_v[f]",
+      "cross_refs": [],
+      "line_range": [
+        542,
+        557
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-mass-conservation-transport",
+      "title": "Mass Conservation of Transport",
+      "content": "The integral of the transport operator over the domain $\\Omega$ vanishes due to the reflecting boundary conditions on both position and velocity boundaries:\n\n$$\n\\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d...",
+      "math_expression_count": 2,
+      "first_math": "\\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0",
+      "cross_refs": [],
+      "line_range": [
+        560,
+        569
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-mean-field-equation",
+      "title": "The Mean-Field Equations for the Euclidean Gas",
+      "content": "The evolution of the Euclidean Gas in the mean-field limit is governed by a coupled system of equations for the alive density $f(t,z)$ and the dead mass $m_d(t)$:\n\n**Equation for the Alive Density:**\n...",
+      "math_expression_count": 18,
+      "first_math": "\\boxed{\n\\partial_t f = L^\\dagger f - c(z)f + B[f, m_d] + S[f]\n}",
+      "cross_refs": [],
+      "line_range": [
+        601,
+        639
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-mass-conservation",
+      "title": "Total Mass Conservation and Population Dynamics",
+      "content": "Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations satisfies the following properties:\n\n**1. Total Mass Conservation:** The total population is conserved for all time $t>...",
+      "math_expression_count": 9,
+      "first_math": "\\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0",
+      "cross_refs": [],
+      "line_range": [
+        642,
+        663
+      ]
+    },
+    {
+      "type": "assumption",
+      "label": "asmp-regularity-summary",
+      "title": "Summary of Regularity Assumptions",
+      "content": "The well-posedness of the coupled mean-field system relies on the following assumptions, which are satisfied by the Canonical Euclidean Gas:\n*   **(H1)** The domains $X_{\\text{valid}}$ and $V_{\\text{a...",
+      "math_expression_count": 14,
+      "first_math": "X_{\\text{valid}}",
+      "cross_refs": [],
+      "line_range": [
+        726,
+        737
+      ]
+    },
+    {
+      "type": "assumption",
+      "label": "asmp-domain-regularity",
+      "title": "Regularity of the Valid Domain",
+      "content": "The valid position domain $X_{\\text{valid}} \\subset \\mathbb{R}^d$ satisfies:\n\n1. **Smoothness**: $X_{\\text{valid}}$ is an open, bounded domain with $C^3$ boundary $\\partial X_{\\text{valid}}$.\n2. **Dis...",
+      "math_expression_count": 13,
+      "first_math": "X_{\\text{valid}} \\subset \\mathbb{R}^d",
+      "cross_refs": [],
+      "line_range": [
+        768,
+        778
+      ]
+    },
+    {
+      "type": "assumption",
+      "label": "asmp-integrator-regularity",
+      "title": "Regularity of the Discrete Integrator",
+      "content": "The discrete kinetic integrator (BAOAB) produces position updates of the form:\n\n$$\nx^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)\n$$\n\nwhere the remainder satisfies $\\|R...",
+      "math_expression_count": 5,
+      "first_math": "x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)",
+      "cross_refs": [],
+      "line_range": [
+        779,
+        790
+      ]
+    },
+    {
+      "type": "assumption",
+      "label": "asmp-density-regularity-killing",
+      "title": "Density Regularity",
+      "content": "The phase-space density $f^\\tau(x,v)$ at the start of a discrete timestep satisfies:\n\n1. **Boundedness**: $\\|f^\\tau\\|_{L^\\infty(\\Omega)} \\le M_f$ for some $M_f > 0$.\n2. **Spatial Regularity**: $f^\\tau...",
+      "math_expression_count": 9,
+      "first_math": "f^\\tau(x,v)",
+      "cross_refs": [],
+      "line_range": [
+        791,
+        800
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-killing-rate-consistency",
+      "title": "Consistency of the Interior Killing Rate Approximation",
+      "content": "Under Assumptions [](#asmp-domain-regularity), [](#asmp-integrator-regularity), and [](#asmp-density-regularity-killing), there exists a smooth killing rate function $c \\in C^\\infty_c(\\Omega)$ with co...",
+      "math_expression_count": 14,
+      "first_math": "p_{\\text{exit}}(x,v,\\tau) := \\mathbb{P}\\left(x^+(\\tau; x,v) \\notin X_{\\text{valid}}\\right)",
+      "cross_refs": [],
+      "line_range": [
+        803,
+        861
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-mean-field-limit-informal",
+      "title": "Mean-Field Limit (Informal Statement)",
+      "content": "Let $(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N$ be the $N$-particle discrete Fragile Gas dynamics with timestep $\\tau$, and let:\n\n$$\nf_N^\\tau(t, x, v) := \\frac{1}{N} \\sum_{i=1}^N \\delta(x - X_i^\\tau(t), v - ...",
+      "math_expression_count": 9,
+      "first_math": "f_N^\\tau(t, x, v) := \\frac{1}{N} \\sum_{i=1}^N \\delta(x - X_i^\\tau(t), v - V_i^\\tau(t))",
+      "cross_refs": [],
+      "line_range": [
+        1309,
+        1326
+      ]
+    }
+  ]
+}

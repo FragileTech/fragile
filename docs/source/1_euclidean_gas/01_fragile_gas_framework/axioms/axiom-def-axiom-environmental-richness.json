@@ -1,0 +1,6 @@
+{
+  "label": "axiom-def-axiom-environmental-richness",
+  "statement": "Axiom of Environmental Richness",
+  "mathematical_expression": "\\kappa_{\\text{richness}} \\le \\inf_{y \\in \\varphi(\\mathcal{X}_{\\mathrm{valid}}), r \\ge r_{\\min}} \\left( \\text{Var}_{y' \\in B(y,r) \\cap \\varphi(\\mathcal{X}_{\\mathrm{valid}})} [R_{\\mathcal{Y}}(y')] \\right)",
+  "foundational_framework": "Euclidean Gas"
+}

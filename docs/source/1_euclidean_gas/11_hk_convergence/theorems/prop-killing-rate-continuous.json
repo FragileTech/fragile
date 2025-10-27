@@ -1,0 +1,42 @@
+{
+  "label": "attr-killing-rate-continuous",
+  "name": "Continuous-Time Killing Rate from BAOAB",
+  "statement_type": "proposition",
+  "source": {
+    "file": "docs/source/1_euclidean_gas/11_hk_convergence.md",
+    "line_start": 1310,
+    "line_end": 1332
+  },
+  "input_objects": [
+    "obj-walker-state",
+    "obj-position-state-space",
+    "obj-velocity-state-space",
+    "obj-valid-domain",
+    "obj-boundary"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-time-step",
+    "param-distance-to-boundary",
+    "param-velocity",
+    "param-outward-normal"
+  ],
+  "attributes_required": {
+    "obj-baoab-integrator": ["attr-weak-error-order-2"],
+    "obj-valid-domain": ["attr-has-boundary"]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Formula",
+  "attributes_added": [
+    "attr-continuous-killing-rate-formula",
+    "attr-discrete-exit-probability-approximation",
+    "attr-ballistic-crossing-time"
+  ],
+  "relations_established": [
+    "rel-discrete-to-continuous-limit",
+    "rel-exit-probability-killing-rate",
+    "rel-baoab-ballistic-approximation"
+  ]
+}

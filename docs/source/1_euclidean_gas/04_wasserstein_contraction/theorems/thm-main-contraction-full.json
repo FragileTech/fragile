@@ -1,0 +1,77 @@
+{
+  "label": "thm-main-contraction-full",
+  "name": "Wasserstein-2 Contraction (Cluster-Based)",
+  "statement_type": "theorem",
+  "source": {
+    "file": "04_wasserstein_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-cloning-operator",
+    "def-target-complement",
+    "def-wasserstein-distance",
+    "def-cluster-coupling"
+  ],
+  "input_axioms": [
+    "axiom-confining-potential",
+    "axiom-environmental-richness"
+  ],
+  "input_parameters": [
+    "epsilon",
+    "delta",
+    "d",
+    "N",
+    "f_UH",
+    "p_u",
+    "c_align",
+    "c_geom",
+    "c_sep"
+  ],
+  "attributes_required": {
+    "swarms": [
+      "Separation regime: L > D_min(\u03b5)",
+      "High structural error: V_struct > R\u00b2_spread",
+      "All conditions from preceding lemmas apply"
+    ],
+    "constants": [
+      "f_UH(\u03b5) > 0 from Theorem 7.6.1",
+      "p_u(\u03b5) > 0 from Lemma 8.3.2",
+      "All constants N-uniform by Theorem 8.7.1"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-expected-distance-change",
+    "cor-average-cloning",
+    "cor-between-group-dominance",
+    "lem-variance-wasserstein-link",
+    "lem-cluster-alignment",
+    "lem-target-cloning-pressure",
+    "lem-wasserstein-population-bound",
+    "def-unified-high-low-error-sets",
+    "lem-phase-space-packing",
+    "thm-unfit-high-error-overlap",
+    "lem-cloning-pressure-unfit",
+    "thm-n-uniformity-constants"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "lem-expected-distance-change",
+    "cor-average-cloning",
+    "cor-between-group-dominance",
+    "lem-variance-wasserstein-link"
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Wasserstein-2 contraction for cloning operator",
+    "Explicit N-uniform contraction constant \u03ba_W",
+    "Explicit noise constant C_W = 4d\u03b4\u00b2"
+  ],
+  "relations_established": [
+    "W_2\u00b2(\u03a8_clone(\u03bc_1), \u03a8_clone(\u03bc_2)) \u2264 (1 - \u03ba_W) W_2\u00b2(\u03bc_1, \u03bc_2) + C_W",
+    "\u03ba_W = (1/2) \u00b7 f_UH(\u03b5) \u00b7 p_u(\u03b5) \u00b7 c_align(\u03b5) \u00b7 c_geom",
+    "Alternate form: \u03ba_W = (1/2) \u00b7 f_UH(\u03b5) \u00b7 p_u(\u03b5) \u00b7 c_geom \u00b7 c_sep(\u03b5)",
+    "All constants N-uniform and explicitly computable",
+    "Foundation for mean-field limit and propagation of chaos"
+  ]
+}

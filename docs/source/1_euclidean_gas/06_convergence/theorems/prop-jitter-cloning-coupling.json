@@ -1,0 +1,31 @@
+{
+  "label": "attr-jitter-cloning-coupling",
+  "name": "Position Jitter - Cloning Rate Coupling",
+  "statement_type": "proposition",
+  "source": null,
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-sigma-x",
+    "param-lambda",
+    "param-sigma-v",
+    "param-tau",
+    "param-gamma",
+    "param-Vx-target"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-iso-variance-curve",
+      "expression": "\u03bb*(\u03c3_x) = (\u03c3_x^2 + \u03c3_v^2 \u03c4^2/\u03b3)/V_{Var,x}^{target},  crossover \u03c3_x^* = \u03c3_v \u03c4/\u221a\u03b3",
+      "object_label": "obj-param-selection"
+    }
+  ],
+  "relations_established": []
+}

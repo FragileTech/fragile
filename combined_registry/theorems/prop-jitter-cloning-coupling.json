@@ -1,0 +1,40 @@
+{
+  "label": "prop-jitter-cloning-coupling",
+  "name": "Position Jitter - Cloning Rate Coupling",
+  "statement_type": "proposition",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-sigma-x",
+    "param-lambda",
+    "param-sigma-v",
+    "param-tau",
+    "param-gamma",
+    "param-Vx-target"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-iso-variance-curve",
+      "expression": "λ*(σ_x) = (σ_x^2 + σ_v^2 τ^2/γ)/V_{Var,x}^{target},  crossover σ_x^* = σ_v τ/√γ",
+      "object_label": "obj-param-selection",
+      "established_by": "prop-jitter-cloning-coupling",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

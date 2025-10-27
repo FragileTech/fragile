@@ -1,0 +1,16 @@
+{
+  "label": "thm-sasaki-standardization-structural-sq",
+  "name": "Structural Continuity of Patched Standardization (Sasaki)",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": []
+}

@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-composition-reference-0-equivalence",
+  "relationship_type": "equivalence",
+  "bidirectional": true,
+  "source_object": "obj-total-operator",
+  "target_object": "obj-total-operator",
+  "established_by": "thm-composition-reference",
+  "expression": "Ψ_total = Ψ_clone ∘ Ψ_kin",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

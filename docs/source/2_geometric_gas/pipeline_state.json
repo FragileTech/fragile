@@ -21,7 +21,7 @@
     "batch_number": 1,
     "theorems": [
       "lem-greedy-ideal-equivalence",
-      "prop-complete-gradient-bounds",
+      "attr-complete-gradient-bounds",
       "lem-macro-transport",
       "thm-data-processing"
     ],

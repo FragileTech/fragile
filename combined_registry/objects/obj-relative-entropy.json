@@ -1,0 +1,12 @@
+{
+  "label": "obj-relative-entropy",
+  "name": "Relative Entropy and Fisher Information",
+  "mathematical_expression": "D_{\\text{KL}}(\\mu \\| \\pi) := \\int \\frac{d\\mu}{d\\pi} \\log \\frac{d\\mu}{d\\pi} \\, d\\pi = \\int \\log \\frac{d\\mu}{d\\pi} \\, d\\mu",
+  "object_type": "measure",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

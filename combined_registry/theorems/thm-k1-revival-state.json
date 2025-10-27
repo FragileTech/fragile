@@ -1,0 +1,36 @@
+{
+  "label": "thm-k1-revival-state",
+  "name": "Theorem of Guaranteed Revival from a Single Survivor",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-status-update-operator",
+    "obj-alive-dead-sets"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-guaranteed-revival"
+  ],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-k1-guarantees-revival",
+      "expression": "k=1 \\text{ states guarantee revival}",
+      "object_label": "obj-status-update-operator",
+      "established_by": "thm-k1-revival-state",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

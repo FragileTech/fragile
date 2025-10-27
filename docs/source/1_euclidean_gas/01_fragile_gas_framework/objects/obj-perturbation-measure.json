@@ -1,0 +1,10 @@
+{
+  "label": "obj-perturbation-measure",
+  "name": "Perturbation Measure",
+  "mathematical_expression": "\\sigma > 0",
+  "object_type": "measure",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [],
+  "source": null
+}

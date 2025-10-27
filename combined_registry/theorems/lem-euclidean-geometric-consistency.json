@@ -1,0 +1,20 @@
+{
+  "label": "lem-euclidean-geometric-consistency",
+  "name": "Geometric consistency under the capped kinetic kernel",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "root",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Equivalence",
+  "properties_added": [],
+  "relations_established": []
+}

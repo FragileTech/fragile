@@ -1,0 +1,85 @@
+{
+  "label": "thm-hk-summary",
+  "name": "Exponential HK-Convergence (Summary)",
+  "statement_type": "theorem",
+  "source": {
+    "file": "docs/source/1_euclidean_gas/11_hk_convergence.md",
+    "line_start": 3123,
+    "line_end": 3145
+  },
+  "input_objects": [
+    "obj-fragile-gas",
+    "obj-qsd",
+    "obj-hk-metric",
+    "obj-empirical-measure"
+  ],
+  "input_axioms": [
+    "ax-uniform-density-bound-hk",
+    "def-axiom-guaranteed-revival",
+    "def-axiom-local-perturbation"
+  ],
+  "axiom_status": {
+    "ax-uniform-density-bound-hk": {
+      "status": "PROVEN",
+      "proof_document": "docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+      "proof_theorem": "thm-bounded-density-ratio-main",
+      "note": "Originally a conditional assumption, now rigorously proven using parabolic Harnack inequalities and QSD mass concentration theory. Pending manual verification before removing axiom label.",
+      "proof_methods": [
+        "Parabolic Harnack inequality for hypoelliptic operators",
+        "Gaussian mollification from cloning noise",
+        "Stochastic mass conservation via QSD theory",
+        "High-probability bounds with exponential concentration"
+      ]
+    }
+  },
+  "input_parameters": [
+    "param-convergence-rate-hk",
+    "param-convergence-rate-kinetic",
+    "param-convergence-rate-structural",
+    "param-wasserstein-contraction-rate",
+    "param-revival-rate",
+    "param-death-rate",
+    "param-effective-entropy-dissipation-rate",
+    "param-time-step",
+    "param-reversibility-constant",
+    "param-density-bound-M"
+  ],
+  "attributes_required": {
+    "obj-fragile-gas": ["attr-hybrid-dynamics", "attr-exponential-stability"],
+    "obj-qsd": ["attr-quasi-stationary", "attr-unique"],
+    "obj-hk-metric": ["attr-additive-decomposition"]
+  },
+  "internal_lemmas": [
+    "lem-mass-contraction-revival-death",
+    "lem-structural-variance-contraction",
+    "lem-kinetic-hellinger-contraction"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    ["lem-mass-contraction-revival-death", "thm-hk-convergence-main-assembly"],
+    ["lem-structural-variance-contraction", "thm-hk-convergence-main-assembly"],
+    ["lem-kinetic-hellinger-contraction", "thm-hk-convergence-main-assembly"],
+    ["thm-hk-convergence-main-assembly", "thm-hk-summary"]
+  ],
+  "output_type": "Classification",
+  "attributes_added": [
+    "attr-explicit-rate-formula",
+    "attr-bottleneck-characterization",
+    "attr-parameter-dependence",
+    "attr-rigorously-convergent-hybrid-system",
+    "attr-exponential-stability-certificate"
+  ],
+  "relations_established": [
+    "rel-rate-minimum-formula",
+    "rel-hellinger-wasserstein-bottleneck",
+    "rel-parameter-to-convergence",
+    "rel-algorithmic-convergence-guarantee"
+  ],
+  "internal_theorems": [
+    "thm-hk-convergence-main-assembly"
+  ],
+  "external_theorems_used": [
+    "thm-main-contraction-full",
+    "thm-foster-lyapunov-main"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-cloning-entropy-contraction-2-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-cloning-operator",
+  "target_object": "obj-hwi-inequality",
+  "established_by": "thm-cloning-entropy-contraction",
+  "expression": "Cloning alone insufficient → needs kinetic operator composition",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

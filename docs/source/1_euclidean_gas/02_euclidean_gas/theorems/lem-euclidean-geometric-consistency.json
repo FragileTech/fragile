@@ -1,0 +1,184 @@
+{
+  "label": "lem-euclidean-geometric-consistency",
+  "name": "Geometric consistency under the capped kinetic kernel",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "02_euclidean_gas",
+    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+    "section": "2.3.2 Lipschitz and Feller properties of the Sasaki kinetic kernel",
+    "directive_label": "lem-euclidean-geometric-consistency"
+  },
+  "input_objects": [
+    "obj-kinetic-kernel",
+    "obj-valid-domain",
+    "obj-force-field",
+    "obj-anisotropy-field"
+  ],
+  "input_axioms": [
+    "axiom-geometric-consistency"
+  ],
+  "input_parameters": [
+    "param-tau",
+    "param-v-alg",
+    "param-gamma-fric",
+    "param-sigma-v",
+    "param-sigma-x",
+    "param-lambda-v",
+    "param-m"
+  ],
+  "attributes_required": {
+    "obj-valid-domain": [
+      "attr-compact"
+    ],
+    "obj-force-field": [
+      "attr-continuous"
+    ],
+    "obj-anisotropy-field": [
+      "attr-continuous"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-geometric-consistency",
+      "expression": "The capped kinetic kernel satisfies the Axiom of Geometric Consistency with drift constant $\\kappa_{\\mathrm{drift}}^{\\mathrm{Sasaki}}(C) := \\sqrt{\\tau^2\\big(\\tau C_{\\mathrm{force}}(C)+\\varepsilon_{\\mathrm{cap}}^{\\max}(C)+V_{\\mathrm{alg}}\\big)^2+\\lambda_v\\big(\\tau C_{\\mathrm{force}}(C)+\\varepsilon_{\\mathrm{cap}}^{\\max}(C)\\big)^2}$ and anisotropy constant $\\kappa_{\\mathrm{anisotropy}}^{\\mathrm{Sasaki}}(C) := [(1-\\rho_*(C))c_d(C)]^{-1}$ on any compact subset $C \\subset \\mathcal{X}_{\\mathrm{valid}}$.",
+      "object_label": "obj-kinetic-kernel",
+      "established_by": "lem-euclidean-geometric-consistency",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.2 Lipschitz and Feller properties of the Sasaki kinetic kernel",
+        "directive_label": "lem-euclidean-geometric-consistency"
+      }
+    },
+    {
+      "label": "attr-drift-bound-sasaki",
+      "expression": "The mean displacement satisfies $\\|\\mathbb{E}[x^+ - x]\\| \\le \\tau\\big(\\tau C_{\\mathrm{force}}(C)+\\varepsilon_{\\mathrm{cap}}^{\\max}(C)+V_{\\mathrm{alg}}\\big)$ where $C_{\\mathrm{force}}(C) := \\frac{F_C}{m}+\\gamma_{\\mathrm{fric}}\\big(V_{\\mathrm{alg}}+u_C\\big)$ and $\\varepsilon_{\\mathrm{cap}}^{\\max}(C) := \\frac{(V_{\\mathrm{alg}}+\\tau C_{\\mathrm{force}}(C))^2+\\sigma_v^2\\tau d-V_{\\mathrm{alg}}^2}{V_{\\mathrm{alg}}}$.",
+      "object_label": "obj-kinetic-kernel",
+      "established_by": "lem-euclidean-geometric-consistency",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.2 Lipschitz and Feller properties of the Sasaki kinetic kernel",
+        "directive_label": "lem-euclidean-geometric-consistency"
+      }
+    },
+    {
+      "label": "attr-capping-probability-bound",
+      "expression": "The probability of velocity capping satisfies $\\rho_*(C) := \\mathbb{P}(\\|\\tilde{v}\\| > V_{\\mathrm{alg}}) \\le \\frac{(V_{\\mathrm{alg}}+\\tau C_{\\mathrm{force}}(C))^2+\\sigma_v^2\\tau d}{V_{\\mathrm{alg}}^2}$ for any compact $C \\subset \\mathcal{X}_{\\mathrm{valid}}$.",
+      "object_label": "obj-kinetic-kernel",
+      "established_by": "lem-euclidean-geometric-consistency",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.2 Lipschitz and Feller properties of the Sasaki kinetic kernel",
+        "directive_label": "lem-euclidean-geometric-consistency"
+      }
+    },
+    {
+      "label": "attr-directional-density-lower-bound",
+      "expression": "For every direction $u \\in S^{d-1}$ and cone $K(u) := \\{ru : 0 \\le r \\le V_{\\mathrm{alg}}/2\\}$, the uncapped velocity distribution satisfies $\\mathbb{P}(\\tilde{v} \\in K(u)) \\ge c_d(C)$ where $c_d(C) := c_{d,0}(C)\\int_0^{V_{\\mathrm{alg}}/2} r^{d-1}\\,dr$ and $c_{d,0}(C) := \\frac{1}{(2\\pi\\sigma_v^2\\tau)^{d/2}}\\exp\\big(-\\frac{(V_{\\mathrm{alg}}/2+M_{\\mathrm{kin}}(C))^2}{2\\sigma_v^2\\tau}\\big)$.",
+      "object_label": "obj-kinetic-kernel",
+      "established_by": "lem-euclidean-geometric-consistency",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.2 Lipschitz and Feller properties of the Sasaki kinetic kernel",
+        "directive_label": "lem-euclidean-geometric-consistency"
+      }
+    },
+    {
+      "label": "attr-anisotropy-bound-sasaki",
+      "expression": "The capped velocity direction satisfies $\\mathbb{P}(v^+ \\in A) \\ge (1-\\rho_*(C))c_d(C)\\,\\sigma_{d-1}(A)$ for every measurable $A \\subseteq S^{d-1}$, yielding anisotropy constant $\\kappa_{\\mathrm{anisotropy}}^{\\mathrm{Sasaki}}(C) = [(1-\\rho_*(C))c_d(C)]^{-1}$.",
+      "object_label": "obj-kinetic-kernel",
+      "established_by": "lem-euclidean-geometric-consistency",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.2 Lipschitz and Feller properties of the Sasaki kinetic kernel",
+        "directive_label": "lem-euclidean-geometric-consistency"
+      }
+    }
+  ],
+  "relations_established": [],
+  "mathematical_statement": "Because $\\mathcal{X}_{\\mathrm{valid}}$ is compact and $F$ and $u$ are continuous, the drift and anisotropy envelopes appearing in the Axiom of Geometric Consistency admit finite global bounds. For any compact subset $C \\subset \\mathcal{X}_{\\mathrm{valid}}$, the capped kinetic kernel satisfies geometric consistency with explicit drift and anisotropy constants.",
+  "proof_strategy": "The proof proceeds in four steps: (1) establish drift bound on mean displacement using velocity cap analysis, (2) bound probability of capping event using second moment estimate, (3) prove lower bound on uncapped Gaussian density via polar integration, (4) push forward through velocity cap to obtain directional lower bound.",
+  "dependencies": {
+    "definitions": [
+      "def-axiom-geometric-consistency",
+      "def-kinetic-kernel",
+      "def-sasaki-metric"
+    ],
+    "theorems": [],
+    "lemmas": []
+  },
+  "constants_derived": [
+    {
+      "symbol": "\\kappa_{\\mathrm{drift}}^{\\mathrm{Sasaki}}(C)",
+      "expression": "\\sqrt{\\tau^2\\big(\\tau C_{\\mathrm{force}}(C)+\\varepsilon_{\\mathrm{cap}}^{\\max}(C)+V_{\\mathrm{alg}}\\big)^2+\\lambda_v\\big(\\tau C_{\\mathrm{force}}(C)+\\varepsilon_{\\mathrm{cap}}^{\\max}(C)\\big)^2}",
+      "description": "Sasaki drift constant (combines position and velocity components)"
+    },
+    {
+      "symbol": "\\kappa_{\\mathrm{anisotropy}}^{\\mathrm{Sasaki}}(C)",
+      "expression": "[(1-\\rho_*(C))c_d(C)]^{-1}",
+      "description": "Sasaki anisotropy constant (reciprocal of directional density lower bound)"
+    },
+    {
+      "symbol": "C_{\\mathrm{force}}(C)",
+      "expression": "\\frac{F_C}{m}+\\gamma_{\\mathrm{fric}}\\big(V_{\\mathrm{alg}}+u_C\\big)",
+      "description": "Local force envelope on compact set C"
+    },
+    {
+      "symbol": "M_{\\mathrm{kin}}(C)",
+      "expression": "V_{\\mathrm{alg}}+\\frac{\\tau}{m}F_C+\\gamma_{\\mathrm{fric}}\\tau\\big(V_{\\mathrm{alg}}+u_C\\big)",
+      "description": "Kinetic mean envelope on compact set C"
+    },
+    {
+      "symbol": "\\varepsilon_{\\mathrm{cap}}^{\\max}(C)",
+      "expression": "\\frac{(V_{\\mathrm{alg}}+\\tau C_{\\mathrm{force}}(C))^2+\\sigma_v^2\\tau d-V_{\\mathrm{alg}}^2}{V_{\\mathrm{alg}}}",
+      "description": "Maximum expected capping error"
+    },
+    {
+      "symbol": "\\rho_*(C)",
+      "expression": "\\frac{(V_{\\mathrm{alg}}+\\tau C_{\\mathrm{force}}(C))^2+\\sigma_v^2\\tau d}{V_{\\mathrm{alg}}^2}",
+      "description": "Upper bound on capping probability"
+    },
+    {
+      "symbol": "c_d(C)",
+      "expression": "c_{d,0}(C)\\int_0^{V_{\\mathrm{alg}}/2} r^{d-1}\\,dr",
+      "description": "Directional density lower bound for uncapped velocities"
+    },
+    {
+      "symbol": "c_{d,0}(C)",
+      "expression": "\\frac{1}{(2\\pi\\sigma_v^2\\tau)^{d/2}}\\exp\\big(-\\frac{(V_{\\mathrm{alg}}/2+M_{\\mathrm{kin}}(C))^2}{2\\sigma_v^2\\tau}\\big)",
+      "description": "Base Gaussian density lower bound"
+    }
+  ],
+  "tags": [
+    "euclidean-gas",
+    "sasaki-geometry",
+    "geometric-consistency",
+    "kinetic-kernel",
+    "velocity-capping",
+    "drift-bound",
+    "anisotropy-bound"
+  ]
+}

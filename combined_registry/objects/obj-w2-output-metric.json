@@ -1,0 +1,14 @@
+{
+  "label": "obj-w2-output-metric",
+  "name": "Wasserstein-2 on the output space (quotient)",
+  "mathematical_expression": "W_2^2(\\mu,\\nu) := \\inf_{\\pi\\in\\Pi(\\mu,\\nu)} \\int \\overline d_{\\text{Disp},\\mathcal{Y}}(s',\\tilde s')^2\\,\\mathrm{d}\\pi(s',\\tilde s'),",
+  "object_type": "measure",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

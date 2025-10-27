@@ -1,0 +1,27 @@
+{
+  "label": "thm-total-error-status-bound",
+  "name": "Total Error Bound in Terms of Status Changes",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-alive-dead-sets",
+    "obj-distance-to-cemetery-state",
+    "obj-components-mean-square-standardization-error",
+    "obj-alg-distance"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-status-error-bound",
+      "expression": "\\mathbb{E}[\\|\\text{status error}\\|^2] \\le C_{cemetery} \\cdot d_{alg}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "object_label": "obj-alive-dead-sets"
+    }
+  ],
+  "relations_established": []
+}

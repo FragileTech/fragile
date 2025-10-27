@@ -1,0 +1,101 @@
+{
+  "label": "lem-entropy-transport-dissipation",
+  "name": "Entropy-Transport Dissipation Inequality",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-cloning-operator",
+    "def-wasserstein-distance"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "alpha",
+    "tau_conv",
+    "kappa_W",
+    "kappa_conf",
+    "kappa_x",
+    "delta",
+    "C_clone"
+  ],
+  "properties_required": {
+    "displacement-convexity": [
+      "Log-concavity of π enables CAT(0) W₂ geometry",
+      "Law of cosines in W₂ space"
+    ],
+    "keystone-principle": [
+      "Position variance contraction κ_x > 0 from 03_cloning",
+      "Wasserstein contraction κ_W > 0 from 04_wasserstein_contraction"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-cloning-wasserstein-contraction"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-cloning-wasserstein-contraction",
+      "lem-entropy-transport-dissipation"
+    ]
+  ],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-entropy-transport-dissipation-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-wasserstein-distance",
+      "established_by": "lem-entropy-transport-dissipation",
+      "expression": "D_KL(μ'||π) ≤ D_KL(μ||π) − α W₂²(μ,π) + C_clone",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    },
+    {
+      "label": "rel-lem-entropy-transport-dissipation-1-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-wasserstein-distance",
+      "established_by": "lem-entropy-transport-dissipation",
+      "expression": "α = (τ_conv κ_W)/2 ≍ κ_conf κ_x",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    },
+    {
+      "label": "rel-lem-entropy-transport-dissipation-2-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-wasserstein-distance",
+      "established_by": "lem-entropy-transport-dissipation",
+      "expression": "Gaussian noise produces O(δ²) remainder terms",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

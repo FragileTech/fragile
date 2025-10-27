@@ -1,0 +1,37 @@
+{
+  "label": "thm-expected-raw-distance-bound",
+  "name": "Bound on the Expected Raw Distance Vector Change",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-raw-value-operator",
+    "obj-alg-distance",
+    "obj-alive-dead-sets"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-bounded-algorithmic-diameter"
+  ],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-expected-distance-bound",
+      "expression": "\\mathbb{E}[d_{raw}] \\le C \\cdot d_{alg}",
+      "object_label": "obj-raw-value-operator",
+      "established_by": "thm-expected-raw-distance-bound",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

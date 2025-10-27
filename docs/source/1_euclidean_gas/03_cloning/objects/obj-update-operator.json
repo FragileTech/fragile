@@ -1,0 +1,13 @@
+{
+  "label": "obj-update-operator",
+  "name": "The State Update Operator",
+  "mathematical_expression": "I_j := \\{i \\in \\{1, \\ldots, N\\} : a_i = \\text{clone} \\text{ and } c_i = j\\}",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

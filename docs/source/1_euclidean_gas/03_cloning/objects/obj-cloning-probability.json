@@ -1,0 +1,12 @@
+{
+  "label": "obj-cloning-probability",
+  "name": "Total Cloning Probability",
+  "mathematical_expression": "p_i := \\mathbb{E}_{c_i \\sim \\mathcal{C}_i(S)} \\left[ \\mathbb{P}_{T_i \\sim U(0,p_{\\max})} \\left( S_i(c_i) > T_i \\right) \\right]",
+  "object_type": "measure",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle"
+  ],
+  "source": null
+}

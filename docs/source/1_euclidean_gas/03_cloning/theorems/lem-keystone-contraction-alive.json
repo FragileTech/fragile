@@ -1,0 +1,41 @@
+{
+  "label": "lem-keystone-contraction-alive",
+  "name": "Keystone-Driven Contraction for Stably Alive Walkers",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 6384,
+    "line_end": 6480
+  },
+  "input_objects": [
+    "obj-alive-dead-sets",
+    "obj-cloning-probability",
+    "obj-swarm-and-state-space",
+    "obj-walker"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-dimension",
+    "param-sigma",
+    "param-sigma-x",
+    "param-swarm-size"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-keystone-contraction-alive",
+      "expression": "\\mathbb{E}_{\\text{clone}}\\left[\\sum_{i \\in I_{11}} \\sum_{k=1,2} \\left(\\|\\delta'_{x,k,i}\\|^2 - \\|\\delta_{x,k,i}\\|^2\\right)\\right] \\leq -\\frac{\\chi(\\epsilon)}{2N} \\cdot V_{\\text{struct}} + \\frac{g_{\\max}(\\epsilon)}{N} + C_{\\text{pers}}",
+      "object_label": "obj-coupled-state-space",
+      "established_by": "lem-keystone-contraction-alive",
+      "source": {
+        "file": "03_cloning.md",
+        "section": "lem-keystone-contraction-alive"
+      }
+    }
+  ],
+  "relations_established": []
+}

@@ -1,0 +1,46 @@
+{
+  "label": "thm-fl-recap",
+  "name": "Foster-Lyapunov Drift (Unconditional)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-foster-lyapunov"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {
+    "fl-established": [
+      "Foster-Lyapunov from 06_convergence"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-fl-established"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-fl-recap-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-foster-lyapunov",
+      "target_object": "obj-foster-lyapunov",
+      "established_by": "thm-fl-recap",
+      "expression": "Reference to 06_convergence",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

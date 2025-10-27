@@ -1,0 +1,13 @@
+{
+  "label": "obj-fragile-gas-algorithm",
+  "name": "The Fragile Gas Algorithm",
+  "mathematical_expression": "\\mathcal{S}_{t+1} \\sim \\Psi_{\\mathcal{F}}(\\mathcal{S}_t, \\cdot)",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "discrete",
+    "swarm"
+  ],
+  "source": null
+}

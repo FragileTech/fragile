@@ -1,0 +1,15 @@
+{
+  "label": "obj-max-patched-std",
+  "name": "Maximum Patched Standard Deviation",
+  "mathematical_expression": "\\sigma'_{\\max} := \\sup_{0 \\le V \\le V_{\\max}^2} \\sigma'_{\\mathrm{patch}}(V)",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "continuous",
+    "variance"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

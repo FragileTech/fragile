@@ -1,0 +1,25 @@
+{
+  "label": "thm-lipschitz-structural-error-bound",
+  "name": "Bounding the Squared Structural Error",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-lipschitz-structural-error-coefficients",
+    "obj-components-mean-square-standardization-error"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-structural-error-lipschitz",
+      "expression": "\\|E_{struct}\\| \\le L_{struct} \\cdot \\|\\Delta_{struct}\\|",
+      "object_label": "obj-lipschitz-structural-error-coefficients"
+    }
+  ],
+  "relations_established": []
+}

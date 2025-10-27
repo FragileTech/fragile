@@ -1,0 +1,15 @@
+{
+  "label": "obj-euclidean-gas-continuous",
+  "name": "Euclidean Gas (Continuous)",
+  "mathematical_expression": "∂_t μ = L_kin μ + L_clone μ",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "euclidean-gas",
+    "continuous",
+    "pde",
+    "mean-field",
+    "core"
+  ]
+}

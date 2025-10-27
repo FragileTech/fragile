@@ -1,0 +1,15 @@
+{
+  "label": "obj-perturbation-operator",
+  "name": "Perturbation Operator",
+  "mathematical_expression": "x_{\\text{out},i} \\sim \\mathcal{P}_\\sigma(x_{\\text{in},i}, \\cdot)",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

@@ -1,0 +1,55 @@
+{
+  "label": "lem-mass-lower-bound-high-prob",
+  "name": "High-Probability Alive Mass Lower Bound",
+  "statement_type": "lemma",
+  "source": {
+    "file": "11_hk_convergence_bounded_density_rigorous_proof.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-qsd",
+    "def-alive-mass"
+  ],
+  "input_axioms": [
+    "ax-guaranteed-revival",
+    "ax-domain-regularity"
+  ],
+  "input_parameters": [
+    "N",
+    "kappa_QSD",
+    "m_eq",
+    "C_death",
+    "C_revival",
+    "t_eq",
+    "delta"
+  ],
+  "attributes_required": {
+    "equilibration": [
+      "t \u2265 t_eq = O(\u03ba_QSD^{-1} log N) \u21d2 TV distance \u2264 1/N\u00b2"
+    ],
+    "bounded-counts": [
+      "0 \u2264 k_t \u2264 N",
+      "Var(k) = O(N) (Lyapunov bounds)"
+    ],
+    "survival-tail": [
+      "P(\u03c4_\u2020 > t) \u2265 1 \u2212 t e^{\u2212\u0398(N)}"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-exponential-survival"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "thm-exponential-survival"
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    "High-probability lower bound on alive mass: ||\u03c1_t||_{L^1} \u2265 c_mass = m_eq/2 with prob \u2265 1 \u2212 e^{\u2212\u03b4N}"
+  ],
+  "relations_established": [
+    "P(k_t \u2265 k_*/2 and \u03c4_\u2020 > t) \u2265 1 \u2212 e^{\u2212\u03b4N}",
+    "||\u03c1_t||_{L^1} = k_t/N \u2265 m_eq/2 on high-probability event",
+    "c_mass := m_eq/2"
+  ]
+}

@@ -1,0 +1,882 @@
+{
+  "lem-set-difference-bound": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-standardization-structural-error-mean-square": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-single-walker-own-status-error": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-distance-operator-satisfies-bounded-variance-axiom": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [
+        "axiom-bounded-measurement-variance"
+      ],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-distance-operator-mean-square-continuity": {
+    "inputs": {
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-normalization-difference-bound": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-sigma-patch-derivative-bound": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-perturbation-noise",
+        "param-epsilon-std"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-cubic-patch-derivative": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-cubic-patch-derivative-bounds": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "attr-coefficient-regularity": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-perturbation-operator-continuity-reproof": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [
+        "axiom-def-axiom-bounded-second-moment-perturbation"
+      ],
+      "input_parameters": [
+        "param-cloning-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-expected-cloning-action-continuity": {
+    "inputs": {
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-total-error-status-bound": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-empirical-aggregator-properties": {
+    "inputs": {
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-cloning-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-sub-lem-lipschitz-value-error-decomposition": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-mcdiarmids-inequality": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-cubic-patch-uniqueness": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-total-expected-cloning-action-continuity": {
+    "inputs": {
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-canonical-logistic-validity": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [
+        "axiom-def-axiom-rescale-function"
+      ],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-single-walker-structural-error": {
+    "inputs": {
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-polishness-and-w2": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-cubic-patch-coefficients": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-forced-activity": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-sub-lem-probabilistic-bound-perturbation-displacement-reproof": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-stats-value-continuity": {
+    "inputs": {
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-perturbation-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [
+        {
+          "label": "attr-obj-alive-dead-sets-lipschitz",
+          "expression": "Lipschitz continuous",
+          "object_label": "obj-alive-dead-sets",
+          "established_by": "lem-stats-value-continuity",
+          "can_be_refined": true
+        }
+      ],
+      "relations_established": []
+    }
+  },
+  "lem-total-squared-error-stable": {
+    "inputs": {
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-stats-structural-continuity": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-perturbation-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-boundary-heat-kernel": {
+    "inputs": {
+      "input_objects": [
+        "obj-perturbation-measure",
+        "obj-valid-state-space"
+      ],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-perturbation-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-lipschitz-value-error-bound": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-lipschitz-structural-error-bound": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-expected-raw-distance-bound": {
+    "inputs": {
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-deterministic-error-decomposition": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-revival-guarantee": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-alpha-reward",
+        "param-epsilon-clone",
+        "param-beta-diversity",
+        "param-rescale-floor"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-k1-revival-state": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-rescale-monotonicity": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [
+        "axiom-def-axiom-rescale-function"
+      ],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "attr-w2-bound-no-offset": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-alpha-reward"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-post-perturbation-status-update-continuity": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [
+        "axiom-def-axiom-boundary-regularity"
+      ],
+      "input_parameters": [
+        "param-alpha-reward"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-cloning-probability-lipschitz": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-epsilon-clone"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-total-squared-error-unstable": {
+    "inputs": {
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-mean-square-standardization-error": {
+    "inputs": {
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-epsilon-std"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-z-score-norm-bound": {
+    "inputs": {
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-perturbation-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-asymptotic-std-dev-structural-continuity": {
+    "inputs": {
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-perturbation-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [
+        {
+          "label": "attr-obj-alive-dead-sets-lipschitz",
+          "expression": "Lipschitz continuous",
+          "object_label": "obj-alive-dead-sets",
+          "established_by": "thm-asymptotic-std-dev-structural-continuity",
+          "can_be_refined": true
+        }
+      ],
+      "relations_established": []
+    }
+  },
+  "lem-single-walker-positional-error": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-rescale-function-lipschitz": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [
+        "axiom-def-axiom-rescale-function"
+      ],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-sub-lem-perturbation-positional-bound-reproof": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-expected-raw-distance-k1": {
+    "inputs": {
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [
+        {
+          "label": "attr-obj-alive-dead-sets-lipschitz",
+          "expression": "Lipschitz continuous",
+          "object_label": "obj-alive-dead-sets",
+          "established_by": "thm-expected-raw-distance-k1",
+          "can_be_refined": true
+        }
+      ],
+      "relations_established": []
+    }
+  },
+  "attr-psi-markov-kernel": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-boundary-uniform-ball": {
+    "inputs": {
+      "input_objects": [
+        "obj-perturbation-measure",
+        "obj-valid-state-space"
+      ],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-perturbation-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [
+        {
+          "label": "attr-obj-valid-state-space-lipschitz",
+          "expression": "Lipschitz continuous",
+          "object_label": "obj-valid-state-space",
+          "established_by": "lem-boundary-uniform-ball",
+          "can_be_refined": true
+        },
+        {
+          "label": "attr-obj-perturbation-measure-lipschitz",
+          "expression": "Lipschitz continuous",
+          "object_label": "obj-perturbation-measure",
+          "established_by": "lem-boundary-uniform-ball",
+          "can_be_refined": true
+        }
+      ],
+      "relations_established": []
+    }
+  },
+  "thm-global-continuity-patched-standardization": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "lem-polynomial-patch-monotonicity": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  },
+  "thm-standardization-value-error-mean-square": {
+    "inputs": {
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "lemma_dag_edges": []
+    },
+    "outputs": {
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  }
+}

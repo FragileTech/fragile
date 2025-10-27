@@ -1,0 +1,24 @@
+{
+  "label": "thm-subgradient-min",
+  "name": "Subgradient of min() Function",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "StructuralTheorem",
+  "attributes_added": [
+    {
+      "label": "attr-subgradient-min",
+      "expression": "\u2202 \u03ba_total(P) = conv{ \u2207\u03ba_i(P) : \u03ba_i(P) = \u03ba_total(P) }",
+      "object_label": "obj-param-selection"
+    }
+  ],
+  "relations_established": []
+}

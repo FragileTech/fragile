@@ -1,0 +1,14 @@
+{
+  "label": "obj-adaptive-gas",
+  "name": "Adaptive Gas",
+  "mathematical_expression": "S_adaptive = {(x_i, v_i, F_i)}",
+  "object_type": "set",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "adaptive-gas",
+    "discrete",
+    "particle-system",
+    "extended"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "label": "obj-valid-noise-measure",
+  "name": "Valid Noise Measure",
+  "mathematical_expression": "\\mathcal P_\\sigma",
+  "object_type": "measure",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

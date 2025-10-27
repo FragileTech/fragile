@@ -1,0 +1,27 @@
+{
+  "document": "docs/source/2_geometric_gas/16_convergence_mean_field.md",
+  "extraction_mode": "pipeline-schema-compliant",
+  "schema_version": "2.0.0",
+  "framework": "Fragile Gas Framework",
+  "statistics": {
+    "total_directives": 0,
+    "mathematical_objects": 0,
+    "axioms": 0,
+    "theorems": 0,
+    "lemmas": 0,
+    "propositions": 0,
+    "algorithms": 0,
+    "other": 0
+  },
+  "mathematical_objects": [],
+  "axioms": [],
+  "theorems": [],
+  "lemmas": [],
+  "propositions": [],
+  "algorithms": [],
+  "other_directives": [],
+  "metadata": {
+    "source_extraction": "docs/source/2_geometric_gas/16_convergence_mean_field/data/deep_dependency_analysis.json",
+    "total_lines": 0
+  }
+}

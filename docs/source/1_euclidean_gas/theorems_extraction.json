@@ -191,7 +191,7 @@
       "theorems_needed": 18,
       "theorems": [
         {
-          "label": "prop-velocity-rate-explicit",
+          "label": "attr-velocity-rate-explicit",
           "type": "proposition",
           "title": "Velocity Dissipation Rate (Parameter-Explicit)",
           "line": 1233,
@@ -199,7 +199,7 @@
           "has_proof": false
         },
         {
-          "label": "prop-position-rate-explicit",
+          "label": "attr-position-rate-explicit",
           "type": "proposition",
           "title": "Positional Contraction Rate (Parameter-Explicit)",
           "line": 1321,
@@ -207,7 +207,7 @@
           "has_proof": false
         },
         {
-          "label": "prop-wasserstein-rate-explicit",
+          "label": "attr-wasserstein-rate-explicit",
           "type": "proposition",
           "title": "Wasserstein Contraction Rate (Parameter-Explicit)",
           "line": 1419,
@@ -215,7 +215,7 @@
           "has_proof": false
         },
         {
-          "label": "prop-boundary-rate-explicit",
+          "label": "attr-boundary-rate-explicit",
           "type": "proposition",
           "title": "Boundary Contraction Rate (Parameter-Explicit)",
           "line": 1518,
@@ -239,7 +239,7 @@
           "has_proof": false
         },
         {
-          "label": "prop-mixing-time-explicit",
+          "label": "attr-mixing-time-explicit",
           "type": "proposition",
           "title": "Mixing Time (Parameter-Explicit)",
           "line": 1821,
@@ -247,7 +247,7 @@
           "has_proof": false
         },
         {
-          "label": "prop-parameter-classification",
+          "label": "attr-parameter-classification",
           "type": "proposition",
           "title": "Parameter Classification",
           "line": 2200,
@@ -271,7 +271,7 @@
           "has_proof": false
         },
         {
-          "label": "prop-condition-number-rate",
+          "label": "attr-condition-number-rate",
           "type": "proposition",
           "title": "Condition Number of Rate Sensitivity",
           "line": 2580,
@@ -295,7 +295,7 @@
           "has_proof": false
         },
         {
-          "label": "prop-restitution-friction-coupling",
+          "label": "attr-restitution-friction-coupling",
           "type": "proposition",
           "title": "Restitution-Friction Coupling",
           "line": 2774,
@@ -303,7 +303,7 @@
           "has_proof": false
         },
         {
-          "label": "prop-jitter-cloning-coupling",
+          "label": "attr-jitter-cloning-coupling",
           "type": "proposition",
           "title": "Position Jitter - Cloning Rate Coupling",
           "line": 2829,
@@ -311,7 +311,7 @@
           "has_proof": false
         },
         {
-          "label": "prop-phase-space-pairing",
+          "label": "attr-phase-space-pairing",
           "type": "proposition",
           "title": "Phase-Space Pairing Quality",
           "line": 2878,
@@ -429,7 +429,7 @@
           "has_proof": false
         },
         {
-          "label": "prop-coupling-constant-existence",
+          "label": "attr-coupling-constant-existence",
           "type": "proposition",
           "title": "Existence of Valid Coupling Constants",
           "line": 8230,
@@ -522,7 +522,7 @@
       "theorems_needed": 3,
       "theorems": [
         {
-          "label": "prop-explicit-constants",
+          "label": "attr-explicit-constants",
           "type": "proposition",
           "title": "Explicit Discretization Constants",
           "line": 1043,
@@ -553,7 +553,7 @@
       "theorems_needed": 4,
       "theorems": [
         {
-          "label": "prop-killing-rate-continuous",
+          "label": "attr-killing-rate-continuous",
           "type": "proposition",
           "title": "Continuous-Time Killing Rate from BAOAB",
           "line": 1310,
@@ -795,7 +795,7 @@
       "has_proof": false
     },
     {
-      "label": "prop-velocity-rate-explicit",
+      "label": "attr-velocity-rate-explicit",
       "type": "proposition",
       "title": "Velocity Dissipation Rate (Parameter-Explicit)",
       "line": 1233,
@@ -803,7 +803,7 @@
       "has_proof": false
     },
     {
-      "label": "prop-position-rate-explicit",
+      "label": "attr-position-rate-explicit",
       "type": "proposition",
       "title": "Positional Contraction Rate (Parameter-Explicit)",
       "line": 1321,
@@ -811,7 +811,7 @@
       "has_proof": false
     },
     {
-      "label": "prop-wasserstein-rate-explicit",
+      "label": "attr-wasserstein-rate-explicit",
       "type": "proposition",
       "title": "Wasserstein Contraction Rate (Parameter-Explicit)",
       "line": 1419,
@@ -819,7 +819,7 @@
       "has_proof": false
     },
     {
-      "label": "prop-boundary-rate-explicit",
+      "label": "attr-boundary-rate-explicit",
       "type": "proposition",
       "title": "Boundary Contraction Rate (Parameter-Explicit)",
       "line": 1518,
@@ -843,7 +843,7 @@
       "has_proof": false
     },
     {
-      "label": "prop-mixing-time-explicit",
+      "label": "attr-mixing-time-explicit",
       "type": "proposition",
       "title": "Mixing Time (Parameter-Explicit)",
       "line": 1821,
@@ -851,7 +851,7 @@
       "has_proof": false
     },
     {
-      "label": "prop-parameter-classification",
+      "label": "attr-parameter-classification",
       "type": "proposition",
       "title": "Parameter Classification",
       "line": 2200,
@@ -875,7 +875,7 @@
       "has_proof": false
     },
     {
-      "label": "prop-condition-number-rate",
+      "label": "attr-condition-number-rate",
       "type": "proposition",
       "title": "Condition Number of Rate Sensitivity",
       "line": 2580,
@@ -899,7 +899,7 @@
       "has_proof": false
     },
     {
-      "label": "prop-restitution-friction-coupling",
+      "label": "attr-restitution-friction-coupling",
       "type": "proposition",
       "title": "Restitution-Friction Coupling",
       "line": 2774,
@@ -907,7 +907,7 @@
       "has_proof": false
     },
     {
-      "label": "prop-jitter-cloning-coupling",
+      "label": "attr-jitter-cloning-coupling",
       "type": "proposition",
       "title": "Position Jitter - Cloning Rate Coupling",
       "line": 2829,
@@ -915,7 +915,7 @@
       "has_proof": false
     },
     {
-      "label": "prop-phase-space-pairing",
+      "label": "attr-phase-space-pairing",
       "type": "proposition",
       "title": "Phase-Space Pairing Quality",
       "line": 2878,
@@ -1019,7 +1019,7 @@
       "has_proof": false
     },
     {
-      "label": "prop-coupling-constant-existence",
+      "label": "attr-coupling-constant-existence",
       "type": "proposition",
       "title": "Existence of Valid Coupling Constants",
       "line": 8230,
@@ -1091,7 +1091,7 @@
       "has_proof": false
     },
     {
-      "label": "prop-explicit-constants",
+      "label": "attr-explicit-constants",
       "type": "proposition",
       "title": "Explicit Discretization Constants",
       "line": 1043,
@@ -1115,7 +1115,7 @@
       "has_proof": false
     },
     {
-      "label": "prop-killing-rate-continuous",
+      "label": "attr-killing-rate-continuous",
       "type": "proposition",
       "title": "Continuous-Time Killing Rate from BAOAB",
       "line": 1310,

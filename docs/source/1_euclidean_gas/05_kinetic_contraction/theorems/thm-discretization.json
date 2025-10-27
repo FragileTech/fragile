@@ -1,0 +1,52 @@
+{
+  "label": "thm-discretization",
+  "name": "Discrete-Time Inheritance of Generator Drift",
+  "statement_type": "theorem",
+  "source": {
+    "file": "05_kinetic_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-baoab-integrator",
+    "def-generator"
+  ],
+  "input_axioms": [
+    "axiom-diffusion-tensor",
+    "axiom-friction-timestep"
+  ],
+  "input_parameters": [
+    "V",
+    "kappa",
+    "C",
+    "tau",
+    "K_V",
+    "gamma",
+    "sigma_v",
+    "F",
+    "d",
+    "N"
+  ],
+  "attributes_required": {
+    "V": [
+      "C3-smooth",
+      "bounded-second-third-derivatives"
+    ],
+    "generator": [
+      "global-drift-bound"
+    ]
+  },
+  "internal_lemmas": [
+    "remainder-term-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "discrete-time-drift-inheritance",
+    "effective-contraction-rate"
+  ],
+  "relations_established": [
+    "continuous-generator-to-discrete-expectation"
+  ]
+}

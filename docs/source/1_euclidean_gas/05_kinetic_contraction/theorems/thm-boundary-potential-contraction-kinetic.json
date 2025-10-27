@@ -1,0 +1,58 @@
+{
+  "label": "thm-boundary-potential-contraction-kinetic",
+  "name": "Boundary Potential Contraction Under Kinetic Operator",
+  "statement_type": "theorem",
+  "source": {
+    "file": "05_kinetic_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-boundary-potential-recall",
+    "def-barrier-function"
+  ],
+  "input_axioms": [
+    "axiom-confining-potential-boundary-compatibility"
+  ],
+  "input_parameters": [
+    "W_b",
+    "kappa_pot",
+    "C_pot",
+    "alpha_boundary",
+    "delta_boundary",
+    "c",
+    "delta",
+    "gamma",
+    "sigma_max",
+    "tau"
+  ],
+  "attributes_required": {
+    "confining-force": [
+      "boundary-compatibility",
+      "inward-pointing"
+    ],
+    "boundary-geometry": [
+      "bounded-principal-curvatures"
+    ],
+    "barrier": [
+      "gradient-alignment-with-normal"
+    ]
+  },
+  "internal_lemmas": [
+    "barrier-function-construction",
+    "gradient-alignment",
+    "velocity-weighted-lyapunov",
+    "generator-calculation-corrected-signs"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "independent-boundary-protection",
+    "layered-safety-with-cloning"
+  ],
+  "relations_established": [
+    "confining-potential-provides-independent-boundary-safety",
+    "dual-mechanism-with-safe-harbor"
+  ]
+}

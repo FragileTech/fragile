@@ -1,0 +1,107 @@
+{
+  "label": "thm-main-kl-convergence",
+  "name": "Exponential KL-Convergence for the Euclidean Gas",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-total-operator",
+    "def-qsd",
+    "def-hwi-inequality"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "delta",
+    "delta_star",
+    "gamma",
+    "kappa_conf",
+    "kappa_W",
+    "tau",
+    "C_0",
+    "alpha",
+    "C_HWI"
+  ],
+  "properties_required": {
+    "noise-condition": [
+      "δ > δ* = e^{-ατ/(2C_0)} · C_HWI √(2(1−κ_W)/κ_conf)"
+    ],
+    "foster-lyapunov": [
+      "Foster-Lyapunov conditions from 06_convergence satisfied"
+    ],
+    "wasserstein-contraction": [
+      "κ_W > 0 from 04_wasserstein_contraction"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-kinetic-lsi",
+    "thm-entropy-transport-contraction",
+    "thm-hwi-inequality"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "thm-entropy-transport-contraction",
+      "thm-main-kl-convergence"
+    ]
+  ],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-main-kl-convergence-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-total-operator",
+      "target_object": "obj-qsd",
+      "established_by": "thm-main-kl-convergence",
+      "expression": "D_KL(μ_t || π_QSD) ≤ e^{-t/C_LSI} · D_KL(μ_0 || π_QSD)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    },
+    {
+      "label": "rel-thm-main-kl-convergence-1-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-total-operator",
+      "target_object": "obj-qsd",
+      "established_by": "thm-main-kl-convergence",
+      "expression": "C_LSI = O(1/(γ κ_conf κ_W δ²))",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    },
+    {
+      "label": "rel-thm-main-kl-convergence-2-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-total-operator",
+      "target_object": "obj-qsd",
+      "established_by": "thm-main-kl-convergence",
+      "expression": "Seesaw mechanism: kinetic dissipates entropy, cloning contracts W₂",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

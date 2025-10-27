@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-linfty-full-operator-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-cloning-operator",
+  "target_object": "obj-kinetic-operator",
+  "established_by": "lem-linfty-full-operator",
+  "expression": "||L_clone^* f||_∞ ≤ 2 V_max ||f||_∞",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+}

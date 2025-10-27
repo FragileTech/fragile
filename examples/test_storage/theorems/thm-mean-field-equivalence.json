@@ -1,0 +1,39 @@
+{
+  "label": "thm-mean-field-equivalence",
+  "name": "Mean Field Equivalence Theorem",
+  "input_objects": [
+    "obj-discrete-particle-system",
+    "obj-continuous-pde"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Equivalence",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-discrete-continuous-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-discrete-particle-system",
+      "target_object": "obj-continuous-pde",
+      "established_by": "thm-mean-field-equivalence",
+      "expression": "S_N ≡ μ_t + O(N^{-1/d})",
+      "properties": [
+        {
+          "label": "approx-error-N",
+          "expression": "O(N^{-1/d})",
+          "description": "Approximation error scales as N^{-1/d}"
+        }
+      ],
+      "tags": [
+        "mean-field",
+        "discrete-continuous"
+      ],
+      "timestamp": null
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "label": "lem-linfty-full-operator",
+  "name": "$L^\\infty$ Bound for the Full Operator",
+  "statement_type": "lemma",
+  "source": {
+    "file": "11_hk_convergence_bounded_density_rigorous_proof.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-cloning-operator",
+    "def-kinetic-operator",
+    "def-qsd"
+  ],
+  "input_axioms": [
+    "ax-lipschitz-fields",
+    "ax-velocity-regularization",
+    "ax-domain-regularity",
+    "def-axiom-rescale-function",
+    "ax-safe-harbor"
+  ],
+  "input_parameters": [
+    "M_0",
+    "T",
+    "gamma",
+    "sigma_v",
+    "sigma_x",
+    "U",
+    "R",
+    "eta",
+    "tau",
+    "lambda_rev",
+    "d"
+  ],
+  "attributes_required": {
+    "harnack-hypoelliptic": [
+      "H\u00f6rmander condition holds (lem-hormander-bracket)",
+      "Harnack constants depend on (\u03b3, \u03c3_v, ||F||_Lip, d)"
+    ],
+    "clone-boundedness": [
+      "V[f] \u2264 V_max = max(1, 1/\u03b7)",
+      "\u222b K_clone = 1",
+      "||K*f||_\u221e \u2264 ||f||_\u221e"
+    ],
+    "revival-conditioning": [
+      "m_a(t) \u2265 c_mass > 0 to control r_rev (resolved in Section 4)"
+    ],
+    "gronwall-applicability": [
+      "Duhamel decomposition + integrable source bound"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-parabolic-harnack"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "thm-parabolic-harnack"
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Finite-time L^\u221e bound for full McKean-Vlasov-Fokker-Planck evolution",
+    "Quantitative constant C_hypo with explicit parameter dependence"
+  ],
+  "relations_established": [
+    "||L_clone^* f||_\u221e \u2264 2 V_max ||f||_\u221e",
+    "||r_rev||_\u221e \u2264 (\u03bb_rev ||c||_\u221e / c_mass) ||f||_\u221e (conditional)",
+    "||f(T)||_\u221e \u2264 C_kin(T) M_0 + \u222b_0^T C_kin(T\u2212s)[||f(s)||_\u221e + C_revival] ds",
+    "sup_{t\u2208[0,T]} ||f(t,\u00b7)||_\u221e \u2264 C_hypo(M_0, T, \u03b3, \u03c3_v, \u03c3_x, U, R) < \u221e"
+  ]
+}

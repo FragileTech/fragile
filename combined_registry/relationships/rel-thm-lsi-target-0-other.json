@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-lsi-target-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-qsd",
+  "target_object": "obj-qsd",
+  "established_by": "thm-lsi-target",
+  "expression": "LSI constant for π_QSD is O(1/κ_conf)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

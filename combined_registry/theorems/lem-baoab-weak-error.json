@@ -1,0 +1,53 @@
+{
+  "label": "lem-baoab-weak-error",
+  "name": "BAOAB Second-Order Weak Convergence",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-continuous-langevin-sde",
+    "obj-baoab-chain"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "delta_t",
+    "C_weak",
+    "M_4"
+  ],
+  "properties_required": {
+    "obj-test-function-phi": [
+      "prop-c4-regularity",
+      "prop-bounded-derivatives-order-4"
+    ],
+    "obj-potential-u": [
+      "prop-lipschitz-gradient"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-baoab-discrete-langevin-continuous-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-baoab-discrete",
+      "target_object": "obj-langevin-continuous",
+      "established_by": "lem-baoab-weak-error",
+      "expression": "bound: |E[phi(Z_k)] - E[phi(Z(k*dt))]| <= C_weak * ||phi||_C4 * (dt)^2 * T",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    }
+  ]
+}

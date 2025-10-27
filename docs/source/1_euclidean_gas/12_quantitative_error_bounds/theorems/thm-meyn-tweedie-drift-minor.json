@@ -1,0 +1,26 @@
+{
+  "label": "thm-meyn-tweedie-drift-minor",
+  "name": "Meyn & Tweedie: Drift + Minorization \u2192 Geometric Ergodicity",
+  "statement_type": "theorem",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [],
+  "input_theorems": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [
+    "drift-plus-minorization-gives-geometric-ergodicity"
+  ],
+  "external_reference": "Meyn & Tweedie (2009) Theorem 15.0.1",
+  "status": "NOT PROVED (standard reference)",
+  "purpose": "Used in proof of lem-uniform-geometric-ergodicity"
+}

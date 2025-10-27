@@ -1,0 +1,14 @@
+{
+  "label": "obj-critical-target-set",
+  "name": "The Critical Target Set",
+  "mathematical_expression": "I_{\\text{target}} := I_{11} \\cap U_k \\cap H_k(\\epsilon)",
+  "object_type": "set",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm",
+    "variance"
+  ],
+  "source": null
+}

@@ -1,0 +1,48 @@
+{
+  "label": "lem-lipschitz-observable-error",
+  "name": "Lipschitz Observable Error via Kantorovich-Rubinstein",
+  "statement_type": "lemma",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-empirical-measure",
+    "obj-nu-n-qsd",
+    "obj-rho-0"
+  ],
+  "input_theorems": [
+    "lem-quantitative-kl-bound"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "L_phi",
+    "C_W",
+    "N"
+  ],
+  "attributes_required": {
+    "obj-nu-n-qsd": [
+      "attr-exchangeable"
+    ],
+    "obj-rho-0": [
+      "attr-finite-second-moment"
+    ]
+  },
+  "internal_lemmas": [
+    "attr-empirical-wasserstein-concentration",
+    "attr-finite-second-moment-meanfield"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-observable-error-o-1-over-sqrt-n"
+  ],
+  "relations_established": [
+    "kantorovich-rubinstein-duality",
+    "observable-error-via-w1-distance"
+  ],
+  "proof_technique": "Kantorovich-Rubinstein + Fournier-Guillin",
+  "bound": "|E[phi(bar_mu_N)] - E_rho_0[phi]| <= L_phi * C_W / sqrt(N)"
+}

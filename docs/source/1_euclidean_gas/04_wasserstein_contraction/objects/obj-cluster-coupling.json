@@ -1,0 +1,13 @@
+{
+  "label": "obj-cluster-coupling",
+  "name": "Cluster-Preserving Coupling",
+  "mathematical_expression": "x'_{k,i} = \\begin{cases}\nx_{k, \\pi(i)} + \\zeta & \\text{if } T < p_{k,i} \\text{ (clone)} \\\\\nx_{k,i} & \\text{if } T \\geq p_{k,i} \\text{ (persist)}\n\\end{cases}",
+  "object_type": "distribution",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

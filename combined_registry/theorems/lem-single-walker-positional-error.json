@@ -1,0 +1,40 @@
+{
+  "label": "lem-single-walker-positional-error",
+  "name": "Bound on Single-Walker Error from Positional Change",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-fragile-swarm-instantiation",
+    "obj-walker",
+    "obj-alive-dead-sets",
+    "obj-companion-selection-measure",
+    "obj-distance-positional-measures",
+    "obj-raw-value-operator"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity"
+  ],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-single-walker-positional-error-bound",
+      "expression": "|\\mathbb{E}[d(x_{2,i}, \\mathbb{C}_i(\\mathcal{S}_2))] - \\mathbb{E}[d(x_{1,i}, \\mathbb{C}_i(\\mathcal{S}_1))]| \\le K",
+      "object_label": "obj-distance-positional-measures",
+      "established_by": "lem-single-walker-positional-error",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

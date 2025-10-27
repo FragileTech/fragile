@@ -1,0 +1,6 @@
+{
+  "label": "axiom-def-axiom-bounded-second-moment-perturbation",
+  "statement": "Axiom of Bounded Second Moment of Perturbation",
+  "mathematical_expression": "M_{\\text{pert}}^2 \\ge \\sup_{x_{\\text{in}} \\in \\mathcal{X}} \\mathbb{E}[Y]",
+  "foundational_framework": "Euclidean Gas"
+}

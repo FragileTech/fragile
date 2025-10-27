@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-mean-field-cloning-sketch-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-mean-field-cloning",
+  "target_object": "obj-mean-field-cloning",
+  "established_by": "lem-mean-field-cloning-sketch",
+  "expression": "Mean-field cloning operator as N → ∞",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

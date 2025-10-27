@@ -1,0 +1,98 @@
+{
+  "label": "lem-qsd-lower-bound",
+  "name": "QSD Density Has Uniform Lower Bound",
+  "statement_type": "lemma",
+  "source": {
+    "file": "docs/source/1_euclidean_gas/11_hk_convergence.md",
+    "line_start": 2080,
+    "line_end": 2143
+  },
+  "input_objects": [],
+  "input_axioms": [
+    "def-axiom-local-perturbation"
+  ],
+  "input_parameters": [
+    "sigma_x",
+    "R",
+    "d",
+    "m_eq",
+    "B_R"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lem-gaussian-lower-bound",
+    "lem-hypoelliptic-density-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "thm-phi-irreducibility"
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "qsd-uniform-lower-bound",
+    "qsd-full-support",
+    "qsd-strictly-positive-density"
+  ],
+  "relations_established": [
+    {
+      "type": "bound",
+      "object": "pi_QSD",
+      "property": "uniform-lower-bound",
+      "value": "c_pi = c_sigma_x_R * m_eq"
+    }
+  ],
+  "parameters_detailed": {
+    "sigma_x": "Position jitter scale parameter for cloning Gaussian perturbations",
+    "R": "Radius of valid domain B_R (compact ball)",
+    "d": "Dimension of state space",
+    "m_eq": "Equilibrium mass ||pi_QSD||_L1",
+    "B_R": "Valid domain (compact ball of radius R)",
+    "c_sigma_x_R": "(2*pi*sigma_x^2)^(-d/2) * exp(-(2*R)^2 / (2*sigma_x^2))",
+    "c_pi": "Explicit uniform lower bound constant = c_sigma_x_R * m_eq"
+  },
+  "cross_chapter_dependencies": [
+    {
+      "chapter": "06_convergence",
+      "references": ["thm-phi-irreducibility", "thm-geometric-ergodicity-qsd"],
+      "description": "φ-irreducibility via kinetic exploration + cloning teleportation, and existence/uniqueness of QSD"
+    },
+    {
+      "chapter": "01_fragile_gas_framework",
+      "references": ["def-axiom-local-perturbation"],
+      "description": "Gaussian position jitter with variance sigma_x^2 in cloning"
+    },
+    {
+      "chapter": "03_cloning",
+      "references": ["cloning-state-update", "gaussian-mollification"],
+      "description": "Cloning position update x'_i = x_j + sigma_x * zeta_i^x where zeta ~ N(0, I_d)"
+    }
+  ],
+  "proof_structure": {
+    "strategy": "Combine φ-irreducibility + Gaussian accessibility + invariant measure theory + mollification",
+    "steps": [
+      "Step 1: φ-Irreducibility - Euclidean Gas can reach any neighborhood from any state (thm-phi-irreducibility)",
+      "Step 2: Gaussian Accessibility - Cloning with Gaussian jitter provides global teleportation",
+      "Step 3: Support of Invariant Measure - Irreducible process has QSD with full support on B_R",
+      "Step 4: Smooth Density Implies Positive Infimum - C^∞ function on compact set with full support is strictly positive",
+      "Step 5: Explicit Lower Bound via Gaussian Mollification - Apply lem-gaussian-lower-bound to get c_pi"
+    ],
+    "key_mechanisms": {
+      "phi_irreducibility": "From thm-phi-irreducibility in 06_convergence (two-stage construction: kinetic + cloning)",
+      "gaussian_teleportation": "Cloning with sigma_x > 0 allows jumps to any neighborhood",
+      "hypoelliptic_regularity": "From lem-hypoelliptic-density-bound: pi_QSD ∈ C^∞(B_R)",
+      "gaussian_mollification": "From lem-gaussian-lower-bound: convolution with Gaussian kernel"
+    }
+  },
+  "mathematical_foundation": {
+    "irreducibility_theory": "Meyn & Tweedie 2009, Markov Chains and Stochastic Stability, Theorem 4.2.2",
+    "mollification_theory": "Evans, Partial Differential Equations, Section 5.3.3",
+    "invariant_measure_support": "Invariant measure of irreducible process has full support on accessible state space"
+  },
+  "result": {
+    "uniform_lower_bound": "pi_QSD(x) ≥ c_pi > 0 for all x ∈ B_R",
+    "explicit_constant": "c_pi = (2*pi*sigma_x^2)^(-d/2) * exp(-(2*R)^2 / (2*sigma_x^2)) * m_eq",
+    "dependence": "c_pi depends on cloning jitter scale sigma_x and equilibrium mass m_eq"
+  },
+  "physical_interpretation": "Gaussian jitter in cloning ensures QSD has strictly positive density everywhere in valid domain. Smaller sigma_x gives tighter lower bound. This prevents density ratio from diverging.",
+  "usage_in_chapter": "Critical for proving bounded density ratio assumption (ax-uniform-density-bound-hk) needed for Hellinger contraction (Lemma C)"
+}

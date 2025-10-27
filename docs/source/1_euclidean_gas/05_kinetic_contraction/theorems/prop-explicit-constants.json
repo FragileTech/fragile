@@ -1,0 +1,48 @@
+{
+  "label": "attr-explicit-constants",
+  "name": "Explicit Discretization Constants",
+  "statement_type": "proposition",
+  "source": {
+    "file": "05_kinetic_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [
+    "L_F",
+    "C_F",
+    "sigma_min",
+    "sigma_max",
+    "K_V",
+    "kappa",
+    "gamma",
+    "tau",
+    "d"
+  ],
+  "attributes_required": {
+    "force": [
+      "lipschitz",
+      "bounded-growth"
+    ],
+    "diffusion": [
+      "eigenvalue-bounds"
+    ],
+    "lyapunov": [
+      "bounded-regularity"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-discretization"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "explicit-integrator-constant",
+    "practical-timestep-restriction"
+  ],
+  "relations_established": [
+    "explicit-timestep-restrictions-for-discrete-inheritance"
+  ]
+}

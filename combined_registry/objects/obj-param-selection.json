@@ -1,0 +1,16 @@
+{
+  "label": "obj-param-selection",
+  "name": "Parameter Selection for Optimal Convergence",
+  "mathematical_expression": "\\gamma = \\lambda = \\sqrt{\\lambda_{\\min}}",
+  "object_type": "operator",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "swarm",
+    "stability",
+    "variance"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence"
+}

@@ -1,0 +1,73 @@
+{
+  "label": "lem-lipschitz-observable-error",
+  "name": "Lipschitz Observable Error via Kantorovich-Rubinstein",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-empirical-measure",
+    "obj-nu-n-qsd",
+    "obj-rho-0"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "L_phi",
+    "C_W",
+    "N"
+  ],
+  "properties_required": {
+    "obj-nu-n-qsd": [
+      "prop-exchangeable"
+    ],
+    "obj-rho-0": [
+      "prop-finite-second-moment"
+    ]
+  },
+  "internal_lemmas": [
+    "prop-empirical-wasserstein-concentration",
+    "prop-finite-second-moment-meanfield"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-lipschitz-observable-error-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-empirical-measure",
+      "target_object": "obj-nu-n-qsd",
+      "established_by": "lem-lipschitz-observable-error",
+      "expression": "kantorovich-rubinstein-duality",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    },
+    {
+      "label": "rel-lem-lipschitz-observable-error-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-empirical-measure",
+      "target_object": "obj-nu-n-qsd",
+      "established_by": "lem-lipschitz-observable-error",
+      "expression": "observable-error-via-w1-distance",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    }
+  ]
+}

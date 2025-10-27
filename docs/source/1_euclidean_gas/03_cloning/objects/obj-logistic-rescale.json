@@ -1,0 +1,10 @@
+{
+  "label": "obj-logistic-rescale",
+  "name": "Canonical Logistic Rescale Function",
+  "mathematical_expression": "g_A(z) := \\frac{2}{1 + e^{-z}}",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [],
+  "source": null
+}

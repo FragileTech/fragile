@@ -1,0 +1,15 @@
+{
+  "label": "obj-mean-field-moments",
+  "name": "Mean-Field Statistical Moments",
+  "mathematical_expression": "\\mu_R[f](t) := \\int_{\\Omega} R(z) \\frac{f(t,z)}{m_a(t)}\\,\\mathrm dz",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "mean-field"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "07_mean_field"
+}

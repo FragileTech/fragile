@@ -1,0 +1,33 @@
+{
+  "label": "lem-phase-space-packing",
+  "name": "The Phase-Space Packing Lemma",
+  "statement_type": "lemma",
+  "source": {
+    "document": "03_cloning.md",
+    "section": "Chapter 6: Phase Space Packing",
+    "line_number": 2420,
+    "path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md#lem-phase-space-packing"
+  },
+  "input_objects": [
+    "obj-swarm-and-state-space",
+    "obj-algorithmic-distance-metric"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "d",
+    "R_max"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "property_label": "attr-phase-space-packing-bound",
+      "property_name": "Packing bound on phase space",
+      "property_type": "inequality"
+    }
+  ],
+  "relations_established": []
+}

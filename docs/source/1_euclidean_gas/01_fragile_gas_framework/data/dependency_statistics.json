@@ -1,0 +1,97 @@
+{
+  "document": "01_fragile_gas_framework.md",
+  "analysis_type": "ULTRATHINK_deep_dependency_extraction",
+  "timestamp": "2025-10-26",
+
+  "entity_counts": {
+    "total": 114,
+    "by_type": {
+      "definition": 43,
+      "axiom": 19,
+      "theorem": 24,
+      "lemma": 24,
+      "proposition": 3,
+      "assumption": 1
+    }
+  },
+
+  "dependency_counts": {
+    "total_edges": 103,
+    "by_type": {
+      "explicit": 43,
+      "notation": 57,
+      "axiom": 3
+    }
+  },
+
+  "graph_topology": {
+    "root_nodes": 67,
+    "leaf_nodes": 78,
+    "max_dependency_depth": 6,
+    "avg_dependency_depth": 2.5,
+    "density": 0.90
+  },
+
+  "critical_nodes": {
+    "most_depended_on": [
+      {"label": "def-swarm-update-procedure", "dependents": 24, "role": "algorithmic_hub"},
+      {"label": "def-alive-set-potential-operator", "dependents": 10, "role": "fitness_potential"},
+      {"label": "def-statistical-properties-measurement", "dependents": 6, "role": "aggregation"},
+      {"label": "def-swarm-aggregation-operator-axiomatic", "dependents": 4, "role": "axiomatic_framework"},
+      {"label": "def-axiom-bounded-second-moment-perturbation", "dependents": 4, "role": "axiom"}
+    ]
+  },
+
+  "axiom_usage": {
+    "total_axioms": 19,
+    "used_axioms": 7,
+    "unused_axioms": 12,
+    "most_used": [
+      {"label": "def-axiom-bounded-second-moment-perturbation", "dependents": 4},
+      {"label": "def-axiom-boundary-regularity", "dependents": 3},
+      {"label": "def-axiom-bounded-algorithmic-diameter", "dependents": 1}
+    ]
+  },
+
+  "critical_paths": {
+    "longest_length": 6,
+    "count": 10,
+    "primary_origin": "def-cloning-measure",
+    "primary_targets": [
+      "thm-standardization-value-error-mean-square",
+      "thm-global-continuity-patched-standardization",
+      "thm-asymptotic-std-dev-structural-continuity"
+    ]
+  },
+
+  "notation_analysis": {
+    "total_notation_symbols": 147,
+    "most_pervasive": [
+      {"symbol": "\\mathcal{S}", "used_by": 23, "meaning": "swarm_state"},
+      {"symbol": "\\mathcal{A}", "used_by": 9, "meaning": "alive_set"},
+      {"symbol": "\\mathbf{v}", "used_by": 4, "meaning": "statistical_values"},
+      {"symbol": "\\mathcal{X}", "used_by": 3, "meaning": "state_space"},
+      {"symbol": "\\mathbb{E}", "used_by": 3, "meaning": "expectation"}
+    ]
+  },
+
+  "quality_metrics": {
+    "missing_references": 0,
+    "informal_references": 0,
+    "cross_reference_coverage": "100%",
+    "validation_errors": 0,
+    "validation_warnings": 0
+  },
+
+  "framework_role": {
+    "document_type": "foundation",
+    "primary_purpose": "operator_continuity_bounds",
+    "exports_to_downstream": [
+      "def-cloning-measure",
+      "def-alive-set-potential-operator",
+      "def-swarm-update-procedure",
+      "axiom foundations"
+    ],
+    "convergence_analysis": "delegated_to_03_cloning.md"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "label": "thm-mcdiarmids-inequality",
+  "name": "McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron\u2013Lugosi\u2013Massart)",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": ["obj-walker"],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-n"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-concentration-inequality",
+      "expression": "P(f(X_1, \\dots, X_N) - \\mathbb{E}[f(X_1, \\dots, X_N)] \\ge t) \\le \\exp\\left(-\\frac{2t^2}{\\sum_{i=1}^N c_i^2}\\right)",
+      "object_label": "obj-fragile-gas-algorithm"
+    }
+  ],
+  "relations_established": []
+}

@@ -1,0 +1,85 @@
+{
+  "label": "thm-parabolic-harnack",
+  "name": "Parabolic Harnack Inequality for Kinetic Operators",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-kinetic-operator",
+    "def-langevin-dynamics"
+  ],
+  "input_axioms": [
+    "ax-lipschitz-fields",
+    "ax-velocity-regularization",
+    "ax-domain-regularity"
+  ],
+  "input_parameters": [
+    "gamma",
+    "sigma_v",
+    "R",
+    "d",
+    "C_h"
+  ],
+  "properties_required": {
+    "hypoellipticity": [
+      "Hörmander bracket condition holds (lem-hormander-bracket)"
+    ],
+    "bounded-source": [
+      "||h||_∞ ≤ C_h"
+    ],
+    "nonnegativity": [
+      "u ≥ 0"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-hormander-bracket"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-hormander-bracket",
+      "thm-parabolic-harnack"
+    ]
+  ],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-parabolic-harnack-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-kinetic-operator",
+      "target_object": "obj-langevin-dynamics",
+      "established_by": "thm-parabolic-harnack",
+      "expression": "sup_{Q_{R/2}^−} u ≤ C_H (inf_{Q_{R/2}^+} u + R² C_h)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    },
+    {
+      "label": "rel-thm-parabolic-harnack-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-kinetic-operator",
+      "target_object": "obj-langevin-dynamics",
+      "established_by": "thm-parabolic-harnack",
+      "expression": "Constants depend on (γ, σ_v, ||F||_Lip, d)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "label": "thm-complete-boundary-drift",
+  "name": "Complete Boundary Potential Drift Characterization",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-boundary-potential-recall",
+    "obj-cloning-operator-formal",
+    "obj-swarm-and-state-space"
+  ],
+  "input_axioms": [
+    "axiom-ax-safe-harbor"
+  ],
+  "input_parameters": [
+    "kappa_b",
+    "C_b",
+    "phi_thresh",
+    "sigma_x",
+    "N"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [
+    "lem-boundary-enhanced-cloning",
+    "lem-barrier-reduction-cloning"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-boundary-enhanced-cloning",
+      "thm-complete-boundary-drift"
+    ],
+    [
+      "lem-barrier-reduction-cloning",
+      "thm-complete-boundary-drift"
+    ],
+    [
+      "thm-boundary-potential-contraction",
+      "thm-complete-boundary-drift"
+    ]
+  ],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-complete-boundary-drift-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-boundary-potential-recall",
+      "target_object": "obj-cloning-operator-formal",
+      "established_by": "thm-complete-boundary-drift",
+      "expression": "unconditional_boundary_contraction",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    },
+    {
+      "label": "rel-thm-complete-boundary-drift-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-boundary-potential-recall",
+      "target_object": "obj-cloning-operator-formal",
+      "established_by": "thm-complete-boundary-drift",
+      "expression": "n_uniform_contraction_rate",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    },
+    {
+      "label": "rel-thm-complete-boundary-drift-2-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-boundary-potential-recall",
+      "target_object": "obj-cloning-operator-formal",
+      "established_by": "thm-complete-boundary-drift",
+      "expression": "complementary_to_variance_contraction",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

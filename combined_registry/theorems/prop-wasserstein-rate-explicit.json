@@ -1,0 +1,52 @@
+{
+  "label": "prop-wasserstein-rate-explicit",
+  "name": "Wasserstein Contraction Rate (Parameter-Explicit)",
+  "statement_type": "proposition",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-kinetic-operator-stratonovich",
+    "obj-w2-output-metric"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-gamma",
+    "param-lambda-min",
+    "param-sigma-v",
+    "param-tau",
+    "param-N",
+    "param-d",
+    "param-c-hypo"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-wasserstein-contraction-rate",
+      "expression": "κ_W = c_{hypo}^2 · γ/(1 + γ/λ_{min}) = c_{hypo}^2 · (γ λ_{min})/(γ+λ_{min})",
+      "object_label": "obj-w2-output-metric",
+      "established_by": "prop-wasserstein-rate-explicit",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-wasserstein-equilibrium-constant",
+      "expression": "C_W' = O(σ_v^2 τ/(γ N^{1/d})) + O(τ^2)",
+      "object_label": "obj-w2-output-metric",
+      "established_by": "prop-wasserstein-rate-explicit",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

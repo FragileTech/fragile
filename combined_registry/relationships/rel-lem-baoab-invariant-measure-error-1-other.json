@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-baoab-invariant-measure-error-1-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-nu-continuous",
+  "target_object": "obj-nu-dt-baoab",
+  "established_by": "lem-baoab-invariant-measure-error",
+  "expression": "talay-cancellation-for-symmetric-schemes",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds"
+}

@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-boundary-potential-contraction-kinetic-1-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-boundary-potential-recall",
+  "target_object": "obj-barrier-function",
+  "established_by": "thm-boundary-potential-contraction-kinetic",
+  "expression": "dual-mechanism-with-safe-harbor",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction"
+}

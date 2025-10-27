@@ -498,6 +498,130 @@ Follow these conventions from the framework documents:
 - ψ (psi): Squashing map
 - Ψ (Psi): Operator (e.g., Ψ_clone, Ψ_kin)
 
+### Theorem-Proof Workflow: Organic High-to-Low Level Integration
+
+**NEW**: TheoremBox now contains an optional `proof` field that organically bridges high-level theorem validation with low-level proof development. This enables a natural workflow from theorem statement → proof sketch → proof expansion → verification.
+
+#### Key Features
+
+1. **TheoremBox.proof** (Optional[ProofBox]): Attach proof directly to theorem
+2. **TheoremBox.proof_status**: Track progress (unproven/sketched/expanded/verified)
+3. **Bidirectional navigation**: Theorem ↔ Proof references
+4. **Auto-validation**: Proof validated against theorem when attached
+5. **Workflow functions**:
+   - `create_proof_sketch_from_theorem()`: Auto-generates proof structure
+   - `attach_proof_to_theorem()`: Attaches with validation
+   - `theorem.validate_proof()`: Comprehensive validation
+
+#### Complete Workflow Example
+
+```python
+from fragile.proofs import (
+    create_simple_theorem,
+    create_proof_sketch_from_theorem,
+    attach_proof_to_theorem,
+)
+
+# 1. Create theorem (high-level specification)
+theorem = create_simple_theorem(
+    label="thm-kl-convergence",
+    name="KL Convergence Rate",
+    output_type=TheoremOutputType.PROPERTY,
+    input_objects=["obj-discrete-system"],
+)
+
+# Add property requirements
+theorem = theorem.model_copy(update={
+    'properties_required': {
+        'obj-discrete-system': ['prop-lipschitz', 'prop-bounded']
+    }
+})
+
+# 2. Generate proof sketch (auto-creates structure from theorem)
+proof = create_proof_sketch_from_theorem(
+    theorem=theorem,
+    objects=objects,  # Dictionary of MathematicalObject instances
+    strategy="LSI → Grönwall → exponential rate",
+    num_steps=5
+)
+
+# 3. Attach & validate proof
+theorem = attach_proof_to_theorem(
+    theorem=theorem,
+    proof=proof,
+    objects=objects,
+    validate=True  # Auto-validates against theorem spec
+)
+
+# 4. Check status
+print(theorem.proof_status)  # "sketched"
+print(theorem.has_proof())   # True
+print(theorem.is_proven())   # False (steps not fully expanded)
+
+# 5. Validate proof comprehensively
+validation = theorem.validate_proof(objects)
+print_validation_result(validation)
+
+# 6. Expand proof steps (with LLM)
+for step in theorem.proof.get_sketched_steps():
+    # LLM expands step with full mathematical derivation...
+    expanded_step = expand_step_with_llm(step)
+
+# 7. Check completion
+print(theorem.is_proven())   # True (all steps expanded)
+print(theorem.proof_status)  # "expanded" or "verified"
+```
+
+#### Convenience Methods
+
+```python
+# Check proof status
+theorem.has_proof()      # → bool: Does theorem have attached proof?
+theorem.is_proven()      # → bool: Are all proof steps fully expanded?
+
+# Attach proof directly (alternative to attach_proof_to_theorem)
+theorem_with_proof = theorem.attach_proof(proof)
+
+# Validate proof
+validation_result = theorem.validate_proof(objects)
+# Returns ProofValidationResult with:
+#   - is_valid: bool
+#   - mismatches: List[ProofTheoremMismatch]
+#   - warnings: List[str]
+```
+
+#### Bidirectional Navigation
+
+```python
+# Theorem → Proof
+proof_id = theorem.proof.proof_id
+
+# Proof → Theorem (back-reference)
+theorem_label = proof.theorem.label
+
+# Full navigation
+assert theorem.proof.theorem.label == theorem.label  # ✓
+```
+
+#### Status Progression
+
+Proof status updates automatically based on step completion:
+
+1. **unproven**: No proof attached (theorem.proof is None)
+2. **sketched**: Proof attached, some/all steps in SKETCHED status
+3. **expanded**: All steps expanded, not yet verified
+4. **verified**: All steps verified after dual review
+
+#### Complete Example
+
+See `examples/theorem_proof_workflow.py` for a comprehensive demonstration including:
+- Creating mathematical objects with properties
+- Defining theorems with property requirements
+- Auto-generating proof sketches from theorems
+- Attaching proofs with validation
+- Checking proof status and completion
+- Comprehensive dataflow validation
+
 ### Common Mathematical Tasks
 
 **Adding a New Theorem:**

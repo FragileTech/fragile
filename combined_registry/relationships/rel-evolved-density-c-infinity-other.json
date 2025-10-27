@@ -1,0 +1,17 @@
+{
+  "label": "rel-evolved-density-c-infinity-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-evolved-density",
+  "target_object": "obj-c-infinity",
+  "established_by": "lem-hypoelliptic-density-bound",
+  "expression": "{'type': 'smoothness', 'from': 'obj-evolved-density', 'to': 'C-infinity', 'description': 'Hypoelliptic smoothing: rho(t, ·) in C^infty(Omega) for t > 0'}",
+  "properties": [],
+  "tags": [
+    "inferred-from-dict"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence"
+}

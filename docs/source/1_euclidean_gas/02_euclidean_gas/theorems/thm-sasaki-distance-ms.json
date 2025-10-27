@@ -1,0 +1,423 @@
+{
+  "label": "thm-sasaki-distance-ms",
+  "name": "Mean-square continuity of the distance measurement (Sasaki)",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "02_euclidean_gas",
+    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+    "section": "§2.3.3 Continuity of the Expected Raw Distance Vector (k >= 2 Regime)",
+    "directive_label": "thm-sasaki-distance-ms",
+    "line_range": [1188, 1210]
+  },
+  "input_objects": [
+    "obj-swarm-state-1",
+    "obj-swarm-state-2",
+    "obj-measurement-operator",
+    "obj-sasaki-metric",
+    "obj-alive-set",
+    "obj-expected-distance-vector",
+    "obj-algorithmic-space"
+  ],
+  "input_axioms": [
+    "axiom-bounded-algorithmic-diameter"
+  ],
+  "input_parameters": [
+    "param-N",
+    "param-k1",
+    "param-k2",
+    "param-k-min",
+    "param-k-stable",
+    "param-D-Y",
+    "param-lambda-v"
+  ],
+  "attributes_required": {
+    "obj-swarm-state-1": [
+      "attr-has-alive-set",
+      "attr-alive-count-k1",
+      "attr-has-status-vector"
+    ],
+    "obj-swarm-state-2": [
+      "attr-has-alive-set",
+      "attr-alive-count-k2",
+      "attr-has-status-vector"
+    ],
+    "obj-measurement-operator": [
+      "attr-produces-expected-distance-vector"
+    ],
+    "obj-sasaki-metric": [
+      "attr-is-metric",
+      "attr-defined-on-algorithmic-space",
+      "attr-couples-position-velocity"
+    ],
+    "obj-alive-set": [
+      "attr-defined-as-status-one-indices"
+    ],
+    "obj-algorithmic-space": [
+      "attr-compact",
+      "attr-finite-diameter"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-sasaki-total-squared-error-stable",
+    "lem-sasaki-single-walker-structural-error"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-sasaki-total-squared-error-stable",
+      "thm-sasaki-distance-ms"
+    ],
+    [
+      "lem-sasaki-single-walker-structural-error",
+      "thm-sasaki-distance-ms"
+    ]
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-mean-square-continuous-sasaki",
+      "expression": "\\big\\|\\mathbf d^{(1)}-\\mathbf d^{(2)}\\big\\|_2^2\\le F_{d,ms}^{\\mathrm{Sasaki}}\\big(\\Delta_{\\mathrm{pos,Sasaki}}^2(\\mathcal S_1,\\mathcal S_2),n_c(\\mathcal S_1,\\mathcal S_2)\\big)",
+      "object_label": "obj-measurement-operator",
+      "established_by": "thm-sasaki-distance-ms",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "§2.3.3",
+        "line_range": [1198, 1203]
+      }
+    },
+    {
+      "label": "attr-mean-square-continuity-function-defined",
+      "expression": "F_{d,ms}^{\\mathrm{Sasaki}}(\\Delta_{\\mathrm{pos}}^2,n_c):=C_{\\mathrm{pos}}^{\\mathrm{Sasaki}}(k_1,k_{\\mathrm{stable}})\\,\\Delta_{\\mathrm{pos}}^2+4k_{\\mathrm{stable}}\\frac{D_{\\mathcal Y}^2}{\\max\\{1,k_1-1\\}^2}\\,n_c^2+4D_{\\mathcal Y}^2 n_c",
+      "object_label": "obj-measurement-operator",
+      "established_by": "thm-sasaki-distance-ms",
+      "timestamp": null,
+      "can_be_refined": false,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "§2.3.3",
+        "line_range": [1193, 1196]
+      }
+    },
+    {
+      "label": "attr-composite-lipschitz-holder-structure",
+      "expression": "F_{d,ms}^{\\mathrm{Sasaki}} \\text{ contains both } \\Delta_{\\mathrm{pos}}^2 \\text{ and } n_c^2 \\text{ terms (composite Lipschitz–Hölder)}",
+      "object_label": "obj-measurement-operator",
+      "established_by": "thm-sasaki-distance-ms",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "§2.3.3",
+        "line_range": [1191, 1196]
+      }
+    }
+  ],
+  "relations_established": [
+    {
+      "label": "rel-distance-vectors-mean-square-continuous-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-expected-distance-vector-1",
+      "target_object": "obj-expected-distance-vector-2",
+      "established_by": "thm-sasaki-distance-ms",
+      "expression": "\\|\\mathbf{d}^{(1)} - \\mathbf{d}^{(2)}\\|_2^2 \\le F_{d,ms}^{\\mathrm{Sasaki}}(\\Delta_{\\mathrm{pos}}^2, n_c)",
+      "properties": [
+        {
+          "label": "approx-error-positional-contribution",
+          "expression": "C_{\\mathrm{pos}}^{\\mathrm{Sasaki}}(k_1,k_{\\mathrm{stable}})\\,\\Delta_{\\mathrm{pos}}^2",
+          "description": "Positional displacement contribution to mean-square error"
+        },
+        {
+          "label": "approx-error-structural-quadratic",
+          "expression": "4k_{\\mathrm{stable}}\\frac{D_{\\mathcal Y}^2}{\\max\\{1,k_1-1\\}^2}\\,n_c^2",
+          "description": "Quadratic structural error from companion distribution perturbation for stable walkers"
+        },
+        {
+          "label": "approx-error-status-change-linear",
+          "expression": "4D_{\\mathcal Y}^2 n_c",
+          "description": "Linear status change contribution from walkers whose status differs between swarms"
+        },
+        {
+          "label": "composite-lipschitz-holder",
+          "expression": "\\text{Contains both } \\Delta_{\\mathrm{pos}}^2 \\text{ and } n_c^2 \\text{ terms}",
+          "description": "Bound is composite Lipschitz–Hölder function of dispersion distance, not purely Lipschitz"
+        }
+      ],
+      "tags": [
+        "sasaki-metric",
+        "measurement-operator",
+        "mean-square-continuity",
+        "composite-lipschitz-holder",
+        "positional-displacement",
+        "status-changes"
+      ],
+      "timestamp": null,
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "§2.3.3",
+        "directive_label": "thm-sasaki-distance-ms",
+        "line_range": [1188, 1210]
+      }
+    }
+  ],
+  "statement": "Let $\\mathbf d^{(r)}$ be the expected raw distance vectors of swarms $\\mathcal S_r$. With $k_{\\min}:=\\max\\{1,\\min(k_1,k_2)\\}$, $k_{\\mathrm{stable}}:=|\\mathcal A_{\\mathrm{stable}}|$, and alive-difference count $n_c:=\\sum_{i=1}^N(s_{1,i}-s_{2,i})^2$, define\n\n$$\nF_{d,ms}^{\\mathrm{Sasaki}}(\\Delta_{\\mathrm{pos}}^2,n_c):=C_{\\mathrm{pos}}^{\\mathrm{Sasaki}}(k_1,k_{\\mathrm{stable}})\\,\\Delta_{\\mathrm{pos}}^2+4k_{\\mathrm{stable}}\\frac{D_{\\mathcal Y}^2}{\\max\\{1,k_1-1\\}^2}\\,n_c^2+4D_{\\mathcal Y}^2 n_c.\n$$\n\nThen\n\n$$\n\\big\\|\\mathbf d^{(1)}-\\mathbf d^{(2)}\\big\\|_2^2\\le F_{d,ms}^{\\mathrm{Sasaki}}\\big(\\Delta_{\\mathrm{pos,Sasaki}}^2(\\mathcal S_1,\\mathcal S_2),n_c(\\mathcal S_1,\\mathcal S_2)\\big).\n$$",
+  "proof_strategy": "Decompose the index set into stable walkers $\\mathcal A_{\\mathrm{stable}}$ and the complement. For stable walkers apply Lemma lem-sasaki-total-squared-error-stable. For walkers whose status changes use diameter bound $|d^{(1)}_i-d^{(2)}_i|\\le D_{\\mathcal Y}$. Control structural perturbation via Lemma lem-sasaki-single-walker-structural-error. Sum three contributions to obtain complete bound.",
+  "proof_techniques": [
+    "index-set-decomposition",
+    "stable-walker-analysis",
+    "diameter-bound",
+    "structural-error-control",
+    "error-component-summation"
+  ],
+  "key_dependencies": [
+    "lem-sasaki-total-squared-error-stable",
+    "lem-sasaki-single-walker-structural-error"
+  ],
+  "parameters_detailed": [
+    {
+      "label": "param-N",
+      "name": "Number of walkers",
+      "symbol": "N",
+      "parameter_type": "natural",
+      "constraints": "N \\ge 1",
+      "default_value": null
+    },
+    {
+      "label": "param-k1",
+      "name": "Number of alive walkers in swarm 1",
+      "symbol": "k_1",
+      "parameter_type": "natural",
+      "constraints": "k_1 := |\\mathcal A_1|, k_1 \\ge 1",
+      "default_value": null
+    },
+    {
+      "label": "param-k2",
+      "name": "Number of alive walkers in swarm 2",
+      "symbol": "k_2",
+      "parameter_type": "natural",
+      "constraints": "k_2 := |\\mathcal A_2|, k_2 \\ge 1",
+      "default_value": null
+    },
+    {
+      "label": "param-k-min",
+      "name": "Minimum alive count",
+      "symbol": "k_{\\min}",
+      "parameter_type": "natural",
+      "constraints": "k_{\\min} := \\max\\{1,\\min(k_1,k_2)\\}",
+      "default_value": null
+    },
+    {
+      "label": "param-k-stable",
+      "name": "Number of stable alive walkers",
+      "symbol": "k_{\\mathrm{stable}}",
+      "parameter_type": "natural",
+      "constraints": "k_{\\mathrm{stable}} := |\\mathcal A_{\\mathrm{stable}}|, \\mathcal A_{\\mathrm{stable}} := \\mathcal A_1 \\cap \\mathcal A_2",
+      "default_value": null
+    },
+    {
+      "label": "param-D-Y",
+      "name": "Algorithmic space diameter in Sasaki metric",
+      "symbol": "D_{\\mathcal Y}",
+      "parameter_type": "real",
+      "constraints": "D_{\\mathcal Y} > 0, \\text{ finite}",
+      "default_value": null
+    },
+    {
+      "label": "param-lambda-v",
+      "name": "Velocity coupling weight in Sasaki metric",
+      "symbol": "\\lambda_v",
+      "parameter_type": "real",
+      "constraints": "\\lambda_v > 0",
+      "default_value": null
+    }
+  ],
+  "objects_detailed": [
+    {
+      "label": "obj-swarm-state-1",
+      "name": "First swarm state",
+      "mathematical_expression": "\\mathcal S_1 = ((x_{1,i}, v_{1,i}, s_{1,i}))_{i=1}^N",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "swarm",
+        "euclidean-gas",
+        "state-space"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-swarm-state-2",
+      "name": "Second swarm state",
+      "mathematical_expression": "\\mathcal S_2 = ((x_{2,i}, v_{2,i}, s_{2,i}))_{i=1}^N",
+      "object_type": "structure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "swarm",
+        "euclidean-gas",
+        "state-space"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-measurement-operator",
+      "name": "Distance measurement operator",
+      "mathematical_expression": "\\mathcal M: \\Sigma_N \\to \\mathbb{R}^N, \\mathcal S \\mapsto \\mathbf{d}",
+      "object_type": "operator",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "measurement",
+        "euclidean-gas",
+        "operator",
+        "distance"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-sasaki-metric",
+      "name": "Sasaki metric on algorithmic space",
+      "mathematical_expression": "d_{\\mathcal Y}^{\\mathrm{Sasaki}}((x_1, v_1), (x_2, v_2)) = \\sqrt{\\|x_1 - x_2\\|^2 + \\lambda_v \\|v_1 - v_2\\|^2}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "metric",
+        "sasaki",
+        "algorithmic-space",
+        "position-velocity-coupling"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-alive-set",
+      "name": "Alive walker set",
+      "mathematical_expression": "\\mathcal A(\\mathcal S) = \\{i \\in [N] : s_i = 1\\}",
+      "object_type": "set",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "swarm",
+        "alive-set",
+        "index-set"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-expected-distance-vector",
+      "name": "Expected raw distance vector",
+      "mathematical_expression": "\\mathbf{d}^{(r)} = (d_i^{(r)})_{i=1}^N, d_i^{(r)} := \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal S_r)}[d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{r,i}), \\varphi(w_{r,c}))]",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "measurement",
+        "distance",
+        "expected-value",
+        "companion-selection"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-expected-distance-vector-1",
+      "name": "Expected distance vector for swarm 1",
+      "mathematical_expression": "\\mathbf{d}^{(1)} = (d_i^{(1)})_{i \\in \\mathcal A_1}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "measurement",
+        "distance",
+        "swarm-1"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-expected-distance-vector-2",
+      "name": "Expected distance vector for swarm 2",
+      "mathematical_expression": "\\mathbf{d}^{(2)} = (d_i^{(2)})_{i \\in \\mathcal A_2}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "measurement",
+        "distance",
+        "swarm-2"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-algorithmic-space",
+      "name": "Algorithmic space with Sasaki metric",
+      "mathematical_expression": "\\mathcal{Y} = \\overline{B(0,R_x)} \\times \\overline{B(0,V_{\\text{alg}})}, \\text{ equipped with } d_{\\mathcal Y}^{\\mathrm{Sasaki}}",
+      "object_type": "space",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "algorithmic-space",
+        "sasaki-metric",
+        "product-space",
+        "compact"
+      ],
+      "source": null
+    }
+  ],
+  "tags": [
+    "euclidean-gas",
+    "sasaki-metric",
+    "measurement-operator",
+    "mean-square-continuity",
+    "composite-lipschitz-holder",
+    "positional-displacement",
+    "status-changes",
+    "stable-walkers",
+    "structural-error"
+  ],
+  "related_theorems": [
+    "lem-sasaki-total-squared-error-stable",
+    "lem-sasaki-single-walker-structural-error",
+    "lem-sasaki-single-walker-positional-error",
+    "thm-total-error-status-bound"
+  ],
+  "mathematical_context": {
+    "preconditions": [
+      "Both swarms $\\mathcal S_1, \\mathcal S_2$ have at least one alive walker",
+      "Alive sets $\\mathcal A_r = \\{i : s_{r,i} = 1\\}$ are defined for $r \\in \\{1,2\\}$",
+      "Stable alive set $\\mathcal A_{\\mathrm{stable}} = \\mathcal A_1 \\cap \\mathcal A_2$ may be empty",
+      "Expected distance vectors $\\mathbf d^{(r)}$ computed via companion selection measure $\\mathbb{C}_i$",
+      "Algorithmic space equipped with Sasaki metric with finite diameter $D_{\\mathcal Y}$"
+    ],
+    "key_parameters": {
+      "k_1": "Number of alive walkers in swarm 1: k_1 = |\\mathcal A_1|",
+      "k_2": "Number of alive walkers in swarm 2: k_2 = |\\mathcal A_2|",
+      "k_min": "Minimum alive count: k_{\\min} = \\max\\{1, \\min(k_1, k_2)\\}",
+      "k_stable": "Number of stable alive walkers: k_{\\mathrm{stable}} = |\\mathcal A_{\\mathrm{stable}}|",
+      "n_c": "Status change count: n_c = \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2",
+      "D_Y": "Diameter of algorithmic space in Sasaki metric",
+      "Delta_pos": "Positional displacement in Sasaki metric: \\Delta_{\\mathrm{pos,Sasaki}}(\\mathcal S_1, \\mathcal S_2)",
+      "C_pos": "Positional error coefficient: C_{\\mathrm{pos}}^{\\mathrm{Sasaki}}(k_1,k_{\\mathrm{stable}}) = 2(1 + k_{\\mathrm{stable}}/\\max\\{1,k_1-1\\})"
+    },
+    "proof_strategy": "Three-component decomposition",
+    "proof_steps": [
+      "Decompose walker indices into stable set $\\mathcal A_{\\mathrm{stable}}$ and status-change set",
+      "Apply Lemma lem-sasaki-total-squared-error-stable to bound error on stable walkers: $\\sum_{i\\in\\mathcal A_{\\mathrm{stable}}}|d^{(1)}_i-d^{(2)}_i|^2 \\le C_{\\mathrm{pos}}^{\\mathrm{Sasaki}}\\Delta_{\\mathrm{pos}}^2$",
+      "Bound status-change walker contribution using diameter: at most $2n_c$ walkers, each with error $\\le D_{\\mathcal Y}$, contributing $4D_{\\mathcal Y}^2 n_c$",
+      "Apply Lemma lem-sasaki-single-walker-structural-error to control companion distribution perturbation on stable walkers",
+      "Square structural error bound and sum over $k_{\\mathrm{stable}}$ indices to obtain middle term: $4k_{\\mathrm{stable}}\\frac{D_{\\mathcal Y}^2}{\\max\\{1,k_1-1\\}^2}n_c^2$",
+      "Add three error contributions: positional + status-change + structural to obtain final bound"
+    ]
+  },
+  "geometric_interpretation": "This theorem establishes mean-square continuity of the distance measurement operator in the Sasaki metric geometry. The bound has composite Lipschitz–Hölder structure with three physically interpretable components: (1) Positional displacement term $C_{\\mathrm{pos}}\\Delta_{\\mathrm{pos}}^2$ capturing direct walker position/velocity changes (Lipschitz contribution); (2) Linear status-change term $4D_{\\mathcal Y}^2 n_c$ from walkers whose alive/dead status differs between swarms, bounded by diameter; (3) Quadratic structural term $4k_{\\mathrm{stable}}\\frac{D_{\\mathcal Y}^2}{(k_1-1)^2}n_c^2$ from perturbation of the companion selection distribution due to status changes (Hölder contribution). The composite structure (both $n_c$ and $n_c^2$ terms) reflects that status changes affect both which walkers contribute to the distance vector (direct effect) and the companion sampling distribution (indirect effect). The bound scales with $1/(k_1-1)$ for stable walker structural errors, making the measurement more robust for larger alive sets.",
+  "framework_connection": "This theorem is a key component of the Euclidean Gas Feller property verification. It provides the explicit mean-square continuity bound $F_{d,ms}^{\\mathrm{Sasaki}}$ for the distance measurement operator required by the framework's composition theorem (Framework Sec. 17). The bound combines (i) stable walker analysis via positional error decomposition (Lemmas lem-sasaki-single-walker-positional-error and lem-sasaki-total-squared-error-stable), (ii) status-change counting via diameter bounds, and (iii) structural error control via the framework's general status-change theorem (thm-total-error-status-bound) specialized to Sasaki geometry (lem-sasaki-single-walker-structural-error). The composite Lipschitz–Hölder structure ensures the measurement operator is Feller-compatible, contributing to the full Euclidean Gas Markov chain continuity in the dispersion metric.",
+  "algorithmic_significance": "For the Euclidean Gas implementation, this theorem guarantees that small perturbations in swarm state (measured by Sasaki dispersion distance and status change count) produce small perturbations in the measured distance vectors used for companion selection and fitness evaluation. The explicit bound $F_{d,ms}^{\\mathrm{Sasaki}}$ enables quantitative analysis of measurement stability and provides testable inequalities for numerical verification. The three-term structure suggests implementation strategies: (1) minimize positional displacement via smooth dynamics, (2) minimize status changes via bounded domain design, (3) maintain large alive sets to reduce structural error amplification factor $1/(k_1-1)$."
+}

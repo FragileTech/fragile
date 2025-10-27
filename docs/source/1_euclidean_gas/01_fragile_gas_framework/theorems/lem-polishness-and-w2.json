@@ -1,0 +1,33 @@
+{
+  "label": "lem-polishness-and-w2",
+  "name": "Polishness of the quotient state space and $W_2$",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-metric-quotient",
+    "obj-n-particle-displacement-metric",
+    "obj-swarm-and-state-space",
+    "obj-w2-output-metric"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-n"
+  ],
+  "attributes_required": {
+    "obj-swarm-and-state-space": [
+      "attr-is-polish"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-is-polish",
+      "expression": "The space (\\overline{\\Sigma}_N, \\overline d_{\\text{Disp},\\mathcal{Y}}) is Polish.",
+      "object_label": "obj-metric-quotient"
+    }
+  ],
+  "relations_established": []
+}

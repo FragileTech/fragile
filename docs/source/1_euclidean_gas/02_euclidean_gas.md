@@ -1891,7 +1891,6 @@ The term in the brackets is precisely the definition of the **Squared Indirect S
 :::
 
 ##### 2.3.6.4. Proof of Theorem 2.3.6
-:label: proof-thm-sasaki-standardization-structural-sq
 
 :::{prf:proof} **Proof**
 The proof establishes the final bound by assembling the deterministic bounds for the two orthogonal error components derived in the preceding sub-lemmas.
@@ -1931,7 +1930,9 @@ This completes the proof, establishing a deterministic, worst-case bound on the 
 
 **Q.E.D.**
 
-##### 2.3.7. Definition: Structural Error Coefficients (Squared Form)
+##### 2.3.7. Structural Error Coefficients (Squared Form)
+
+:::{prf:definition} Structural Error Coefficients (Squared Form)
 :label: def-sasaki-structural-coeffs-sq
 
 Let $\mathcal S_1$ and $\mathcal S_2$ be two swarm states with alive sets $\mathcal A_1$ and $\mathcal A_2$, of sizes $k_1:=|\mathcal A_1|$ and $k_2:=|\mathcal A_2|$. Let $k_{\mathrm{stable}}:=|\mathcal A_1\cap\mathcal A_2|$. The coefficients for the bounds on the squared structural error are defined as follows:
@@ -1947,6 +1948,7 @@ Let $\mathcal S_1$ and $\mathcal S_2$ be two swarm states with alive sets $\math
     $$
     C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) := 2 k_{\mathrm{stable}} \frac{(L_{\mu,S}^{\mathrm{Sasaki}})^2}{\sigma_{\min,\mathrm{patch}}^{2}} + 2 k_2 \left(\frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}}\right)^2 \frac{(L_{\sigma',S}^{\mathrm{Sasaki}})^2}{\sigma_{\min,\mathrm{patch}}^{2}}
     $$
+:::
 
 where $L_{\mu,S}^{\mathrm{Sasaki}}$ and $L_{\sigma',S}^{\mathrm{Sasaki}}$ are the structural continuity functions for the aggregator's mean and regularized standard deviation, respectively, which depend on the swarm states.
 
@@ -2080,7 +2082,7 @@ These constants feed the composition bound in Section 4.4 and the axiom checklis
 For the geometric ergodicity proof in `convergence.md` to hold, the Euclidean Gas must satisfy an additional environmental axiom that strengthens the Axiom of Environmental Richness. This axiom prevents pathological scenarios where positional diversity and reward signals become decoupled.
 
 :::{prf:axiom} Axiom of Non-Deceptive Landscapes
-:label: def-axiom-non-deceptive
+:label: axiom-non-deceptive
 
 The environment $(X_{\mathrm{valid}}, R_{\mathrm{pos}})$ is **non-deceptive** if there exist constants $\kappa_{\mathrm{grad}} > 0$ and $L_{\mathrm{grad}} > 0$ such that for any two points $x, y \in X_{\mathrm{valid}}$ with $\|x - y\| \ge L_{\mathrm{grad}}$, the average squared norm of the reward gradient along the line segment connecting them is bounded below:
 

@@ -1,0 +1,29 @@
+{
+  "label": "thm-mean-square-standardization-error",
+  "name": "Asymptotic Behavior of the Mean-Square Standardization Error",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-standardization-operator-n-dimensional",
+    "obj-components-mean-square-standardization-error",
+    "obj-lipschitz-structural-error-coefficients",
+    "obj-lipschitz-value-error-coefficients"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-mean-square-standardization-error-bound",
+      "expression": "\\mathbb{E}[\\|z(\\mathcal{S}_1) - z(\\mathcal{S}_2)\\|^2] \\text{ bounded by structural and value error sum}",
+      "object_label": "obj-standardization-operator-n-dimensional"
+    }
+  ],
+  "relations_established": []
+}

@@ -1,0 +1,26 @@
+{
+  "label": "lem-sigma-patch-derivative-bound",
+  "name": "Derivative bound for \\sigma\\'_{\\text{reg}}",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-statistical-properties-measurement"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-kappa-var-min"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-derivative-bound-regularized-std-dev",
+      "expression": "|\\sigma'_{\\text{reg}}'(V)| \\leq \\frac{1}{2\\sigma'_{\\min}}",
+      "object_label": "obj-statistical-properties-measurement"
+    }
+  ],
+  "relations_established": []
+}

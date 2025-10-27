@@ -1,0 +1,15 @@
+{
+  "label": "obj-complete-parameter-space",
+  "name": "Complete Parameter Space",
+  "mathematical_expression": "\\mathbf{P} = (\\lambda, \\sigma_x, \\alpha_{\\text{rest}}, \\lambda_{\\text{alg}}, \\epsilon_c, \\epsilon_d, \\gamma, \\sigma_v, \\tau, N, \\kappa_{\\text{wall}}, d_{\\text{safe}}) \\in \\mathbb{R}_{+}^{12}",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "euclidean-gas",
+    "particle",
+    "swarm",
+    "variance"
+  ],
+  "source": null
+}

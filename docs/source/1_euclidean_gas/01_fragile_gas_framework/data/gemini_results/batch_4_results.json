@@ -1,0 +1,152 @@
+{
+  "thm-distance-operator-mean-square-continuity": {
+    "input_objects": ["obj-distance-to-companion-measurement", "obj-swarm-and-state-space", "obj-alive-dead-sets"],
+    "input_axioms": ["axiom-raw-value-mean-square-continuity"],
+    "input_parameters": ["param-n"],
+    "attributes_required": {},
+    "output_type": "Property",
+    "attributes_added": [
+      {
+        "label": "attr-mean-square-continuous",
+        "expression": "\\mathbb{E}[\\|d(\\mathcal{S}_1) - d(\\mathcal{S}_2)\\|^2] \\text{ is bounded}",
+        "object_label": "obj-distance-to-companion-measurement"
+      }
+    ],
+    "relations_established": []
+  },
+  "thm-distance-operator-satisfies-bounded-variance-axiom": {
+    "input_objects": ["obj-distance-to-companion-measurement"],
+    "input_axioms": [],
+    "input_parameters": ["param-n", "param-d-y"],
+    "attributes_required": {},
+    "output_type": "Property",
+    "attributes_added": [
+      {
+        "label": "attr-satisfies-bounded-variance",
+        "expression": "\\text{Var}[d] \\le C",
+        "object_label": "obj-distance-to-companion-measurement"
+      }
+    ],
+    "relations_established": []
+  },
+  "thm-expected-cloning-action-continuity": {
+    "input_objects": ["obj-expected-cloning-action", "obj-alg-distance"],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Property",
+    "attributes_added": [
+      {
+        "label": "attr-lipschitz-continuous",
+        "expression": "|\\mathbb{E}[A(\\mathcal{S}_1)] - \\mathbb{E}[A(\\mathcal{S}_2)]| \\le L \\cdot d_{alg}(\\mathcal{S}_1, \\mathcal{S}_2)",
+        "object_label": "obj-expected-cloning-action"
+      }
+    ],
+    "relations_established": []
+  },
+  "thm-expected-raw-distance-bound": {
+    "input_objects": ["obj-raw-value-operator", "obj-alg-distance", "obj-alive-dead-sets"],
+    "input_axioms": ["axiom-def-axiom-bounded-algorithmic-diameter"],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-expected-distance-bound",
+        "expression": "\\mathbb{E}[d_{raw}] \\le C \\cdot d_{alg}",
+        "object_label": "obj-raw-value-operator"
+      }
+    ],
+    "relations_established": []
+  },
+  "thm-expected-raw-distance-k1": {
+    "input_objects": ["obj-raw-value-operator", "obj-distance-to-cemetery-state", "obj-alive-dead-sets"],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-k1-distance-bound",
+        "expression": "\\mathbb{E}[d_{raw}] = D_{cemetery} \\text{ for } k=1",
+        "object_label": "obj-raw-value-operator"
+      }
+    ],
+    "relations_established": []
+  },
+  "thm-forced-activity": {
+    "input_objects": ["obj-fragile-gas-algorithm", "obj-alive-dead-sets", "obj-status-update-operator"],
+    "input_axioms": ["axiom-def-axiom-guaranteed-revival"],
+    "input_parameters": ["param-n"],
+    "attributes_required": {},
+    "output_type": "Property",
+    "attributes_added": [
+      {
+        "label": "attr-forced-activity",
+        "expression": "\\text{swarm maintains alive walkers under revival axiom}",
+        "object_label": "obj-fragile-gas-algorithm"
+      }
+    ],
+    "relations_established": []
+  },
+  "thm-global-continuity-patched-standardization": {
+    "input_objects": ["obj-standardization-operator-n-dimensional", "obj-statistical-properties-measurement"],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Property",
+    "attributes_added": [
+      {
+        "label": "attr-globally-continuous",
+        "expression": "z(\\mathcal{S}, v, M) \\text{ is continuous on entire state space}",
+        "object_label": "obj-standardization-operator-n-dimensional"
+      }
+    ],
+    "relations_established": []
+  },
+  "thm-k1-revival-state": {
+    "input_objects": ["obj-status-update-operator", "obj-alive-dead-sets"],
+    "input_axioms": ["axiom-def-axiom-guaranteed-revival"],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Property",
+    "attributes_added": [
+      {
+        "label": "attr-k1-guarantees-revival",
+        "expression": "k=1 \\text{ states guarantee revival}",
+        "object_label": "obj-status-update-operator"
+      }
+    ],
+    "relations_established": []
+  },
+  "thm-lipschitz-structural-error-bound": {
+    "input_objects": ["obj-lipschitz-structural-error-coefficients", "obj-components-mean-square-standardization-error"],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-structural-error-lipschitz",
+        "expression": "\\|E_{struct}\\| \\le L_{struct} \\cdot \\|\\Delta_{struct}\\|",
+        "object_label": "obj-lipschitz-structural-error-coefficients"
+      }
+    ],
+    "relations_established": []
+  },
+  "thm-lipschitz-value-error-bound": {
+    "input_objects": ["obj-lipschitz-value-error-coefficients", "obj-components-mean-square-standardization-error"],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-value-error-lipschitz",
+        "expression": "\\|E_{value}\\| \\le L_{value} \\cdot \\|\\Delta_{value}\\|",
+        "object_label": "obj-lipschitz-value-error-coefficients"
+      }
+    ],
+    "relations_established": []
+  }
+}

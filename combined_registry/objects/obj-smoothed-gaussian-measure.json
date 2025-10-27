@@ -1,0 +1,14 @@
+{
+  "label": "obj-smoothed-gaussian-measure",
+  "name": "Smoothed Gaussian Measure",
+  "mathematical_expression": "\\tilde{\\rho}_{\\mathcal{S}, \\ell}(y) := \\frac{1}{|\\mathcal{A}(\\mathcal{S})|} \\sum_{i \\in \\mathcal{A}(\\mathcal{S})} K_\\ell(y, \\varphi(x_i))",
+  "object_type": "measure",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

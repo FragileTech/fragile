@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-structural-error-drift-kinetic-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-unknown",
+  "target_object": "obj-unknown",
+  "established_by": "lem-structural-error-drift-kinetic",
+  "expression": "empirical-measure-wasserstein-contraction",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction"
+}

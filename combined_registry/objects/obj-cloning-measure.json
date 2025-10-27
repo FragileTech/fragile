@@ -1,0 +1,14 @@
+{
+  "label": "obj-cloning-measure",
+  "name": "Cloning Measure",
+  "mathematical_expression": "\\delta > 0",
+  "object_type": "measure",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

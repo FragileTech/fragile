@@ -1,0 +1,63 @@
+{
+  "label": "thm-complete-cloning-drift",
+  "name": "Complete Drift Inequality for the Cloning Operator",
+  "statement_type": "theorem",
+  "source": {
+    "file": "03_cloning.md:7980-8014",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-cloning-operator-formal",
+    "obj-full-synergistic-lyapunov-function",
+    "obj-swarm-and-state-space",
+    "obj-w2-output-metric"
+  ],
+  "input_axioms": [
+    "axiom-ax-safe-harbor",
+    "axiom-def-axiom-sufficient-amplification"
+  ],
+  "input_parameters": [
+    "c_V",
+    "c_B",
+    "kappa_x",
+    "kappa_b",
+    "C_W",
+    "C_x",
+    "C_v",
+    "C_b"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lem-boundary-enhanced-cloning",
+    "lem-barrier-reduction-cloning"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "thm-positional-variance-contraction",
+      "thm-complete-cloning-drift"
+    ],
+    [
+      "thm-bounded-velocity-expansion-cloning",
+      "thm-complete-cloning-drift"
+    ],
+    [
+      "thm-boundary-potential-contraction",
+      "thm-complete-cloning-drift"
+    ],
+    [
+      "thm-inter-swarm-bounded-expansion",
+      "thm-complete-cloning-drift"
+    ]
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "complete_lyapunov_drift_cloning",
+    "partial_contraction_property"
+  ],
+  "relations_established": [
+    "synergistic_dissipation_framework",
+    "cloning_dual_role"
+  ]
+}

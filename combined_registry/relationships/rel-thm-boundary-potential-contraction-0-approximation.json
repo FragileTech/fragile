@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-boundary-potential-contraction-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-boundary-potential-recall",
+  "target_object": "obj-cloning-operator-formal",
+  "established_by": "thm-boundary-potential-contraction",
+  "expression": "cloning_contracts_boundary_potential",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

@@ -1,0 +1,244 @@
+{
+  "lem-total-squared-error-unstable": {
+    "input_objects": [
+      "obj-walker",
+      "obj-alive-dead-sets",
+      "obj-raw-value-operator",
+      "obj-distance-to-cemetery-state",
+      "obj-fragile-swarm-instantiation",
+      "obj-alg-distance"
+    ],
+    "input_axioms": ["axiom-raw-value-mean-square-continuity"],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-total-squared-error-unstable-bound",
+        "expression": "\\sum_{i \\in \\text{unstable}} \\mathbb{E}[d_{\\text{raw}}(s_i)]^2 \\le |\\text{unstable}| \\cdot d_{\\text{cemetery}}^2",
+        "object_label": "obj-fragile-swarm-instantiation"
+      }
+    ],
+    "relations_established": []
+  },
+  "attr-coefficient-regularity": {
+    "input_objects": [
+      "obj-lipschitz-value-error-coefficients",
+      "obj-lipschitz-structural-error-coefficients",
+      "obj-cloning-probability-function",
+      "obj-reward-measurement",
+      "obj-perturbation-operator",
+      "obj-alive-dead-sets",
+      "obj-valid-state-space",
+      "obj-walker"
+    ],
+    "input_axioms": [
+      "axiom-raw-value-mean-square-continuity",
+      "axiom-def-axiom-reward-regularity",
+      "axiom-def-axiom-rescale-function",
+      "axiom-def-axiom-bounded-second-moment-perturbation",
+      "axiom-def-axiom-bounded-algorithmic-diameter"
+    ],
+    "input_parameters": ["param-n-walkers"],
+    "attributes_required": {
+      "obj-reward-measurement": ["attr-reward-is-continuous"],
+      "obj-cloning-probability-function": ["attr-cloning-prob-is-continuous"]
+    },
+    "output_type": "Property",
+    "attributes_added": [
+      {
+        "label": "attr-coefficient-regularity",
+        "expression": "C(x) \\text{ is uniformly bounded and continuous for } x \\in K \\text{ compact}",
+        "object_label": "obj-lipschitz-value-error-coefficients"
+      },
+      {
+        "label": "attr-coefficient-regularity",
+        "expression": "C(x) \\text{ is uniformly bounded and continuous for } x \\in K \\text{ compact}",
+        "object_label": "obj-lipschitz-structural-error-coefficients"
+      }
+    ],
+    "relations_established": []
+  },
+  "attr-psi-markov-kernel": {
+    "input_objects": [
+      "obj-swarm-update-procedure",
+      "obj-cloning-measure",
+      "obj-perturbation-operator",
+      "obj-status-update-operator",
+      "obj-valid-state-space"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {
+      "obj-cloning-measure": ["attr-is-measurable"],
+      "obj-perturbation-operator": ["attr-is-measurable"],
+      "obj-status-update-operator": ["attr-is-measurable"],
+      "obj-valid-state-space": ["attr-is-measurable-space"]
+    },
+    "output_type": "Property",
+    "attributes_added": [
+      {
+        "label": "attr-is-markov-kernel",
+        "expression": "The operator K is a Markov kernel if, for any measurable set A, the function x -> K(x, A) is measurable, and for any state x, the function A -> K(x, A) is a probability measure.",
+        "object_label": "obj-swarm-update-procedure"
+      }
+    ],
+    "relations_established": []
+  },
+  "attr-w2-bound-no-offset": {
+    "input_objects": [
+      "obj-swarm-update-procedure",
+      "obj-w2-output-metric",
+      "obj-alg-distance",
+      "obj-alive-dead-sets"
+    ],
+    "input_axioms": [
+      "axiom-raw-value-mean-square-continuity",
+      "axiom-def-axiom-bounded-second-moment-perturbation",
+      "axiom-def-axiom-reward-regularity",
+      "axiom-def-axiom-rescale-function"
+    ],
+    "input_parameters": ["param-min-alive-walkers"],
+    "attributes_required": {},
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-w2-bound-no-offset",
+        "expression": "d_{W_2}(U(s_1), U(s_2)) \\le L \\cdot d_{alg}(s_1, s_2) \\text{ for } |A(s_1)|, |A(s_2)| \\ge 2",
+        "object_label": "obj-swarm-update-procedure"
+      }
+    ],
+    "relations_established": []
+  },
+  "sub-lem-lipschitz-value-error-decomposition": {
+    "input_objects": [
+      "obj-raw-value-operator",
+      "obj-standardization-operator-n-dimensional",
+      "obj-components-mean-square-standardization-error"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Relation",
+    "attributes_added": [
+      {
+        "label": "attr-explicit-lipschitz-coefficients",
+        "expression": "L_\\mu, L_\\sigma",
+        "object_label": "obj-lipschitz-value-error-coefficients"
+      }
+    ],
+    "relations_established": [
+      {
+        "source": "obj-standardization-operator-n-dimensional",
+        "target": "obj-components-mean-square-standardization-error",
+        "type": "equivalence"
+      }
+    ]
+  },
+  "sub-lem-perturbation-positional-bound-reproof": {
+    "input_objects": [
+      "obj-perturbation-operator",
+      "obj-alg-distance",
+      "obj-fragile-swarm-instantiation",
+      "obj-n-particle-displacement-metric"
+    ],
+    "input_axioms": ["axiom-def-axiom-bounded-second-moment-perturbation"],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-output-positional-displacement-bounded",
+        "expression": "D^2(O_{pert}(\\mathcal{S}_1), O_{pert}(\\mathcal{S}_2)) \\le C \\cdot d_{alg}(\\mathcal{S}_1, \\mathcal{S}_2)",
+        "object_label": "obj-perturbation-operator"
+      }
+    ],
+    "relations_established": []
+  },
+  "sub-lem-probabilistic-bound-perturbation-displacement-reproof": {
+    "input_objects": [
+      "obj-perturbation-operator",
+      "obj-n-particle-displacement-metric"
+    ],
+    "input_axioms": ["axiom-def-axiom-bounded-second-moment-perturbation"],
+    "input_parameters": ["param-failure-probability-delta"],
+    "attributes_required": {
+      "obj-perturbation-operator": ["attr-bounded-second-moment"]
+    },
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-probabilistic-bound-on-total-displacement",
+        "expression": "\\exists B(\\delta) > 0 \\text{ s.t. } P(D_{total} > B(\\delta)) \\le \\delta",
+        "object_label": "obj-n-particle-displacement-metric"
+      }
+    ],
+    "relations_established": []
+  },
+  "thm-asymptotic-std-dev-structural-continuity": {
+    "input_objects": [
+      "obj-statistical-properties-measurement",
+      "obj-swarm-aggregation-operator-axiomatic",
+      "obj-lipschitz-structural-error-coefficients"
+    ],
+    "input_axioms": [
+      "axiom-raw-value-mean-square-continuity",
+      "axiom-def-axiom-bounded-variance-production",
+      "axiom-def-axiom-bounded-deviation-variance",
+      "axiom-bounded-measurement-variance"
+    ],
+    "input_parameters": [],
+    "attributes_required": {
+      "obj-swarm-aggregation-operator-axiomatic": ["attr-structural-growth-exponents"]
+    },
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-asymptotic-std-dev-structural-continuity",
+        "expression": "The structural continuity bound for the regularized standard deviation has an asymptotic behavior determined by the structural growth exponents of the swarm aggregation operator.",
+        "object_label": "obj-statistical-properties-measurement"
+      }
+    ],
+    "relations_established": []
+  },
+  "thm-canonical-logistic-validity": {
+    "input_objects": ["obj-canonical-logistic-rescale-function-example"],
+    "input_axioms": ["axiom-def-axiom-rescale-function"],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Property",
+    "attributes_added": [
+      {
+        "label": "attr-is-valid-rescale-function",
+        "expression": "The object satisfies the Axiom of a Well-Behaved Rescale Function.",
+        "object_label": "obj-canonical-logistic-rescale-function-example"
+      }
+    ],
+    "relations_established": []
+  },
+  "thm-deterministic-error-decomposition": {
+    "input_objects": [
+      "obj-components-mean-square-standardization-error",
+      "obj-raw-value-operator",
+      "obj-swarm-and-state-space",
+      "obj-alg-distance"
+    ],
+    "input_axioms": ["axiom-raw-value-mean-square-continuity"],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-structural-error-lipschitz-bound",
+        "expression": "E[SE(s, s')^2] \\leq L_s^2 \\cdot d_{alg}(s, s')^2",
+        "object_label": "obj-lipschitz-structural-error-coefficients"
+      },
+      {
+        "label": "attr-value-error-lipschitz-bound",
+        "expression": "E[VE(v, v')^2] \\leq L_v^2 \\cdot d_{val}(v, v')^2",
+        "object_label": "obj-lipschitz-value-error-coefficients"
+      }
+    ],
+    "relations_established": []
+  }
+}

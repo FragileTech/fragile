@@ -1,0 +1,40 @@
+{
+  "label": "lem-mean-companion-fitness-gap",
+  "name": "Lower Bound on Mean Companion Fitness Gap",
+  "statement_type": "lemma",
+  "source": {
+    "document": "03_cloning.md",
+    "section": "Section 8.3.1: Mean Companion Fitness Gap",
+    "line_number": 4728,
+    "path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md#lem-mean-companion-fitness-gap"
+  },
+  "input_objects": [
+    "obj-fitness-potential-operator",
+    "obj-unfit-set"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "k",
+    "f_U",
+    "f_F",
+    "kappa_V_gap"
+  ],
+  "attributes_required": {
+    "obj-fitness-potential-operator": [
+      "attr-non-degenerate-range"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "property_label": "attr-companion-fitness-gap-lower-bound",
+      "property_name": "Lower bound on companion fitness gap for unfit walkers",
+      "property_type": "inequality",
+      "statement": "mu_comp,i - V_k,i >= Delta_min(epsilon, f_U, f_F, k) > 0"
+    }
+  ],
+  "relations_established": []
+}

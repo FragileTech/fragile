@@ -1,0 +1,36 @@
+{
+  "label": "lem-boundary-uniform-ball",
+  "name": "Uniform\u2011ball death probability is Lipschitz under finite perimeter",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-valid-state-space",
+    "obj-alive-dead-sets",
+    "obj-perturbation-measure",
+    "obj-cloning-probability-function"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-boundary-regularity"
+  ],
+  "input_parameters": [
+    "param-sigma",
+    "param-d"
+  ],
+  "attributes_required": {
+    "obj-alive-dead-sets": [
+      "attr-finite-perimeter"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-lipschitz-continuous",
+      "expression": "|P_\\sigma(x) - P_\\sigma(y)| \\le L \\|x-y\\|",
+      "object_label": "obj-cloning-probability-function"
+    }
+  ],
+  "relations_established": []
+}

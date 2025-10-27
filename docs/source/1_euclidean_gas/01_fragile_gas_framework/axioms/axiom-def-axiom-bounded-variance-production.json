@@ -1,0 +1,6 @@
+{
+  "label": "axiom-def-axiom-bounded-variance-production",
+  "statement": "Axiom of Bounded Variance Production",
+  "mathematical_expression": "\\text{Var}[M(\\mathcal{S}, \\mathbf{v})] \\le \\kappa_{\\text{range}} \\cdot V_{\\max}^2",
+  "foundational_framework": "Euclidean Gas"
+}

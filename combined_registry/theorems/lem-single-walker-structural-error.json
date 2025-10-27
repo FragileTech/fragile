@@ -1,0 +1,37 @@
+{
+  "label": "lem-single-walker-structural-error",
+  "name": "Bound on Single-Walker Error from Structural Change",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-fragile-swarm-instantiation",
+    "obj-alive-dead-sets",
+    "obj-walker",
+    "obj-companion-selection-measure",
+    "obj-lipschitz-structural-error-coefficients"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-single-walker-structural-error-bound",
+      "expression": "d_{err}(w_i, \\mathcal{S}_1, \\mathcal{S}_2) \\le C_{struct} \\cdot d_{struct}(\\mu_{i,1}, \\mu_{i,2})",
+      "object_label": "obj-walker",
+      "established_by": "lem-single-walker-structural-error",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

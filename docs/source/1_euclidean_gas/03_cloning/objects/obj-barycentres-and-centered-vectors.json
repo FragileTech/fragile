@@ -1,0 +1,14 @@
+{
+  "label": "obj-barycentres-and-centered-vectors",
+  "name": "Barycentres and Centered Vectors (Alive Walkers Only)",
+  "mathematical_expression": "\\mu_{x,k} := \\frac{1}{k_{\\text{alive}}}\\sum_{i \\in \\mathcal{A}(S_k)} x_{k,i}",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm",
+    "variance"
+  ],
+  "source": null
+}

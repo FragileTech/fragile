@@ -1,0 +1,47 @@
+{
+  "label": "thm-dobrushin-contraction",
+  "name": "Dobrushin Contraction for Euclidean Gas",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-total-operator",
+    "def-dobrushin-coefficient"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa_W"
+  ],
+  "properties_required": {
+    "coupling": [
+      "Markov kernel admits coupling"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-dobrushin-contraction-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-total-operator",
+      "target_object": "obj-dobrushin-coefficient",
+      "established_by": "thm-dobrushin-contraction",
+      "expression": "Total variation contraction via Dobrushin coefficient",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

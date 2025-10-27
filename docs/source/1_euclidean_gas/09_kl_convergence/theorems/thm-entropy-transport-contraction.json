@@ -1,0 +1,56 @@
+{
+  "label": "thm-entropy-transport-contraction",
+  "name": "Linear Contraction of the Entropy-Transport Lyapunov Function",
+  "statement_type": "theorem",
+  "source": {
+    "file": "09_kl_convergence.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-lyapunov-function",
+    "def-total-operator"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "alpha",
+    "beta",
+    "kappa_W",
+    "c",
+    "rho_k",
+    "lambda",
+    "C_steady"
+  ],
+  "attributes_required": {
+    "seesaw-condition": [
+      "\u03ba_W > \u03b2/(1+\u03b2) (Wasserstein contraction dominates kinetic expansion)"
+    ],
+    "displacement-convexity": [
+      "Log-concavity of \u03c0 (now PROVEN theorem)"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-entropy-transport-dissipation",
+    "lem-cloning-wasserstein-contraction",
+    "lem-kinetic-evolution-bounds"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "lem-entropy-transport-dissipation",
+    "lem-kinetic-evolution-bounds"
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Linear contraction V_{t+1} \u2264 \u03bb V_t + C_steady",
+    "Lyapunov function V = KL + c W\u2082\u00b2",
+    "Explicit \u03bb formula from seesaw mechanism"
+  ],
+  "relations_established": [
+    "V_{t+1} \u2264 \u03bb V_t + C_steady",
+    "c = \u03b1 e^{-\u03c1_k}/(1\u2212K_W)",
+    "K_W = (1+\u03b2)(1\u2212\u03ba_W)",
+    "Seesaw: cloning dissipates D_KL \u2212 \u03b1 W\u2082\u00b2, kinetic expands W\u2082 but dissipates KL"
+  ]
+}

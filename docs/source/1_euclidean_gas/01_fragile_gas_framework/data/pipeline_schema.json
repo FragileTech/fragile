@@ -1,0 +1,27 @@
+{
+  "document": "",
+  "extraction_mode": "pipeline-schema-compliant",
+  "schema_version": "2.0.0",
+  "framework": "Fragile Gas Framework",
+  "statistics": {
+    "total_directives": 0,
+    "mathematical_objects": 0,
+    "axioms": 0,
+    "theorems": 0,
+    "lemmas": 0,
+    "propositions": 0,
+    "algorithms": 0,
+    "other": 0
+  },
+  "mathematical_objects": [],
+  "axioms": [],
+  "theorems": [],
+  "lemmas": [],
+  "propositions": [],
+  "algorithms": [],
+  "other_directives": [],
+  "metadata": {
+    "source_extraction": "docs/source/1_euclidean_gas/01_fragile_gas_framework/data/deep_dependency_analysis.json",
+    "total_lines": 0
+  }
+}

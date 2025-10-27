@@ -1,0 +1,36 @@
+{
+  "label": "thm-lsi-target",
+  "name": "Logarithmic Sobolev Inequality (Target)",
+  "statement_type": "theorem",
+  "source": {
+    "file": "09_kl_convergence.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-qsd"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "kappa_conf"
+  ],
+  "attributes_required": {
+    "log-concave": [
+      "\u03c0_QSD is log-concave"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-bakry-emery-classical"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "Target measure \u03c0_QSD satisfies LSI"
+  ],
+  "relations_established": [
+    "LSI constant for \u03c0_QSD is O(1/\u03ba_conf)"
+  ]
+}

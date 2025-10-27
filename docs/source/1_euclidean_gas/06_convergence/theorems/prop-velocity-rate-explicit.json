@@ -1,0 +1,35 @@
+{
+  "label": "attr-velocity-rate-explicit",
+  "name": "Velocity Dissipation Rate (Parameter-Explicit)",
+  "statement_type": "proposition",
+  "source": null,
+  "input_objects": [
+    "obj-kinetic-operator-stratonovich",
+    "obj-velocity-variance-recall"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-gamma",
+    "param-tau",
+    "param-sigma-v",
+    "param-d"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-velocity-dissipation-rate",
+      "expression": "\u03ba_v = 2\u03b3 - O(\u03c4)",
+      "object_label": "obj-velocity-variance-recall"
+    },
+    {
+      "label": "attr-velocity-equilibrium-constant",
+      "expression": "C_v' = d \u03c3_v^2/\u03b3 + O(\u03c4 \u03c3_v^2),  V_{Var,v}^{eq} = C_v'/\u03ba_v = (d \u03c3_v^2/\u03b3)(1+O(\u03c4))",
+      "object_label": "obj-velocity-variance-recall"
+    }
+  ],
+  "relations_established": []
+}

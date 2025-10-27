@@ -1,0 +1,13 @@
+{
+  "label": "obj-status-update-operator",
+  "name": "Status Update Operator",
+  "mathematical_expression": "s_{\\text{out},i} = \\mathbb{1}_{\\text{valid}}(\\varphi(x_{\\text{in},i}))",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

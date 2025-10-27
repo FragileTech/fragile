@@ -1,0 +1,48 @@
+{
+  "label": "lem-kinetic-evolution-bounds",
+  "name": "Kinetic Evolution Bounds",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-kinetic-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "gamma",
+    "sigma",
+    "tau"
+  ],
+  "properties_required": {
+    "baoab-integrator": [
+      "BAOAB discretization"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-kinetic-evolution-bounds-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-kinetic-operator",
+      "target_object": "obj-kinetic-operator",
+      "established_by": "lem-kinetic-evolution-bounds",
+      "expression": "Moment bounds and stability estimates",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

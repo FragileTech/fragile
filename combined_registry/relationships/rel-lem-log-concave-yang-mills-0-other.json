@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-log-concave-yang-mills-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-qsd",
+  "target_object": "obj-qsd",
+  "established_by": "lem-log-concave-yang-mills",
+  "expression": "Gradient estimates under log-concavity",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

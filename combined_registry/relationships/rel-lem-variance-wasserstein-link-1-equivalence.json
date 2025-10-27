@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-variance-wasserstein-link-1-equivalence",
+  "relationship_type": "equivalence",
+  "bidirectional": true,
+  "source_object": "obj-target-complement",
+  "target_object": "obj-structural-variance",
+  "established_by": "lem-variance-wasserstein-link",
+  "expression": "c_link⁻ = f_UH² / c_sep(ε) (N-uniform)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction"
+}

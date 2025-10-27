@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-complete-boundary-drift-2-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-boundary-potential-recall",
+  "target_object": "obj-cloning-operator-formal",
+  "established_by": "thm-complete-boundary-drift",
+  "expression": "complementary_to_variance_contraction",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

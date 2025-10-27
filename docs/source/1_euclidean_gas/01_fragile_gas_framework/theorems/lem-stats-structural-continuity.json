@@ -1,0 +1,34 @@
+{
+  "label": "lem-stats-structural-continuity",
+  "name": "Structural Continuity of Statistical Properties",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-statistical-properties-measurement",
+    "obj-raw-value-operator",
+    "obj-fragile-swarm-instantiation",
+    "obj-lipschitz-structural-error-coefficients"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-mean-structural-lipschitz",
+      "expression": "|\\mu(\\mathcal{S}_1, \\mathbf{v}) - \\mu(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\mu} \\cdot d_{struct}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "object_label": "obj-statistical-properties-measurement"
+    },
+    {
+      "label": "attr-std-dev-structural-lipschitz",
+      "expression": "|\\sigma'(\\mathcal{S}_1, \\mathbf{v}) - \\sigma'(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\sigma'} \\cdot d_{struct}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "object_label": "obj-statistical-properties-measurement"
+    }
+  ],
+  "relations_established": []
+}

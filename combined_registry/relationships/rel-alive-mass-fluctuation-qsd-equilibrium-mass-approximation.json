@@ -1,0 +1,17 @@
+{
+  "label": "rel-alive-mass-fluctuation-qsd-equilibrium-mass-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-alive-mass-fluctuation",
+  "target_object": "obj-qsd-equilibrium-mass",
+  "established_by": "lem-mass-contraction-revival-death",
+  "expression": "rate: kappa_mass",
+  "properties": [],
+  "tags": [
+    "inferred-from-dict"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence"
+}

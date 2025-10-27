@@ -1,0 +1,59 @@
+{
+  "label": "thm-full-system-discretization-error",
+  "name": "Full System (Langevin + Cloning) O(Δt) Discretization Error",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [
+    "C_total",
+    "phi_C4",
+    "Delta_t"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-full-system-discretization-error-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-unknown",
+      "target_object": "obj-unknown",
+      "established_by": "thm-full-system-discretization-error",
+      "expression": "order-drop-from-non-commutativity",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    },
+    {
+      "label": "rel-thm-full-system-discretization-error-1-reduction",
+      "relationship_type": "reduction",
+      "bidirectional": false,
+      "source_object": "obj-unknown",
+      "target_object": "obj-unknown",
+      "established_by": "thm-full-system-discretization-error",
+      "expression": "cloning-langevin-interaction-reduces-order",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    }
+  ]
+}

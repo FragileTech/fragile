@@ -1,0 +1,40 @@
+{
+  "label": "thm-aperiodicity",
+  "name": "Aperiodicity of the Euclidean Gas",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm-update-procedure",
+    "obj-kinetic-operator-stratonovich"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-non-degenerate-noise"
+  ],
+  "input_parameters": [
+    "param-gamma",
+    "param-sigma-v",
+    "param-tau"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-aperiodic",
+      "expression": "Chain has no deterministic period: ∃ m,n with gcd(m,n)=1 and P^m(S,U), P^n(S,U) > 0 for any neighborhood U of S",
+      "object_label": "obj-swarm-update-procedure",
+      "established_by": "thm-aperiodicity",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

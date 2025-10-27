@@ -1,0 +1,35 @@
+{
+  "label": "thm-asymptotic-std-dev-structural-continuity",
+  "name": "Asymptotic Behavior of the Structural Continuity for the Regularized Standard Deviation",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-statistical-properties-measurement",
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-lipschitz-structural-error-coefficients"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity",
+    "axiom-def-axiom-bounded-variance-production",
+    "axiom-def-axiom-bounded-deviation-variance",
+    "axiom-bounded-measurement-variance"
+  ],
+  "input_parameters": [],
+  "attributes_required": {
+    "obj-swarm-aggregation-operator-axiomatic": [
+      "attr-structural-growth-exponents"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-asymptotic-std-dev-structural-continuity",
+      "expression": "The structural continuity bound for the regularized standard deviation has an asymptotic behavior determined by the structural growth exponents of the swarm aggregation operator.",
+      "object_label": "obj-statistical-properties-measurement"
+    }
+  ],
+  "relations_established": []
+}

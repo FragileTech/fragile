@@ -1,0 +1,13 @@
+{
+  "label": "obj-alive-set-potential-operator",
+  "name": "Rescaled Potential Operator for the Alive Set",
+  "mathematical_expression": "V_i := (d'_i)^{\\beta} \\cdot (r'_i)^{\\alpha} \\quad \\text{for } i \\in \\mathcal{A}_t",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

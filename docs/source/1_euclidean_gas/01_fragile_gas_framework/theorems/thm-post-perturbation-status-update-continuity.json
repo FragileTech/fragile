@@ -1,0 +1,30 @@
+{
+  "label": "thm-post-perturbation-status-update-continuity",
+  "name": "Probabilistic Continuity of the Post-Perturbation Status Update",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-perturbation-operator",
+    "obj-status-update-operator",
+    "obj-alg-distance",
+    "obj-alive-dead-sets"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-guaranteed-revival",
+    "axiom-raw-value-mean-square-continuity"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-composition-continuity",
+      "expression": "\\text{The composition } \\Psi_{status} \\circ \\Psi_{pert} \\text{ is continuous}",
+      "object_label": "obj-status-update-operator"
+    }
+  ],
+  "relations_established": []
+}

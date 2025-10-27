@@ -1,0 +1,43 @@
+{
+  "label": "thm-n-uniform-lsi-exchangeable",
+  "name": "N-Uniform LSI via Hypocoercivity",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "10_qsd_exchangeability_theory",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-qsd",
+    "obj-kinetic-operator-stratonovich",
+    "obj-cloning-measure"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-N",
+    "param-gamma",
+    "param-sigma-v"
+  ],
+  "properties_required": {
+    "obj-qsd": [
+      "prop-conditional-gaussian-velocities"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-lsi-n-uniform",
+      "expression": "D_KL(ν || π_N) ≤ C_LSI · I(ν || π_N) with C_LSI independent of N ≥ 2",
+      "object_label": "obj-qsd",
+      "established_by": "thm-n-uniform-lsi-exchangeable",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

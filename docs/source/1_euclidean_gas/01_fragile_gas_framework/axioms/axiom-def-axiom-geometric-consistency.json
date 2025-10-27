@@ -1,0 +1,6 @@
+{
+  "label": "axiom-def-axiom-geometric-consistency",
+  "statement": "Axiom of Geometric Consistency",
+  "mathematical_expression": "\\kappa_{\\text{drift}} := \\sup_{x \\in \\mathcal{X}} \\|\\mathbb{E}_{x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)}[x' - x]\\|",
+  "foundational_framework": "Euclidean Gas"
+}

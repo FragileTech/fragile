@@ -1,0 +1,71 @@
+{
+  "label": "lem-mass-contraction-revival-death",
+  "name": "Mass Contraction via Revival and Death",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [
+    "def-axiom-guaranteed-revival",
+    "def-axiom-local-perturbation"
+  ],
+  "input_parameters": [
+    "N",
+    "k_t",
+    "k_*",
+    "lambda_clone",
+    "bar_p_kill",
+    "L_lambda",
+    "L_p",
+    "tau",
+    "delta",
+    "C_var",
+    "lambda_max",
+    "bar_p_max"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-alive-mass-fluctuation-qsd-equilibrium-mass-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-alive-mass-fluctuation",
+      "target_object": "obj-qsd-equilibrium-mass",
+      "established_by": "lem-mass-contraction-revival-death",
+      "expression": "rate: kappa_mass",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    },
+    {
+      "label": "rel-revival-births-boundary-deaths-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-revival-births",
+      "target_object": "obj-boundary-deaths",
+      "established_by": "lem-mass-contraction-revival-death",
+      "expression": "{'type': 'balance', 'from': 'revival-births', 'to': 'boundary-deaths', 'equilibrium': 'k_*'}",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    }
+  ]
+}

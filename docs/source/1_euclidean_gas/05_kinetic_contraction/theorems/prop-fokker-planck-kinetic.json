@@ -1,0 +1,30 @@
+{
+  "label": "attr-fokker-planck-kinetic",
+  "name": "Fokker-Planck Equation for the Kinetic Operator",
+  "statement_type": "proposition",
+  "source": {
+    "file": "05_kinetic_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-kinetic-operator-stratonovich"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "rho",
+    "v",
+    "F",
+    "gamma",
+    "Sigma"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Relation",
+  "attributes_added": [],
+  "relations_established": [
+    "kinetic-sde-to-fokker-planck-pde"
+  ]
+}

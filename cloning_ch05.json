@@ -1,0 +1,315 @@
+{
+  "$schema": "./math_schema.json",
+  "metadata": {
+    "title": "The Keystone Principle and the Contractive Nature of Cloning - Chapter 5",
+    "document_id": "cloning_ch05",
+    "version": "1.0.0",
+    "date_created": "2025-10-25",
+    "source_document": "docs/source/1_euclidean_gas/03_cloning.md",
+    "source_lines": "1335-1541",
+    "chapters_covered": ["5. The Measurement and Interaction Pipeline"],
+    "authors": ["Guillem Duran Ballester"],
+    "tags": ["measurement-pipeline", "companion-pairing", "algorithmic-distance", "fitness-potential"],
+    "description": "Defines the complete measurement pipeline transforming swarm state into fitness potential, including algorithmic distance metric and spatially-aware pairing operators.",
+    "dependencies": {
+      "requires": ["cloning_ch01_ch02.json", "cloning_ch04.json"],
+      "builds_on": ["State space definitions", "Diversity signal axiom"]
+    },
+    "peer_review_status": {
+      "status": "in_progress",
+      "notes": "Core definitions extracted"
+    }
+  },
+  "directives": [
+    {
+      "type": "definition",
+      "label": "def-algorithmic-distance-metric",
+      "title": "Algorithmic Distance for Companion Selection",
+      "content": "For any two walkers with states $(x_i, v_i)$ and $(x_j, v_j)$, the **algorithmic distance** between them is defined as: $$d_{\\text{alg}}(i, j)^2 := \\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2$$ where $\\lambda_{\\text{alg}} \\geq 0$ is a fixed algorithmic parameter that controls the relative importance of velocity similarity in the pairing and selection processes.",
+      "defined_objects": [
+        {
+          "symbol": "d_{\\text{alg}}(i, j)",
+          "name": "Algorithmic Distance",
+          "description": "Phase-space distance metric used for intra-swarm companion selection and diversity measurement",
+          "properties": [
+            "Symmetric: $d_{\\text{alg}}(i,j) = d_{\\text{alg}}(j,i)$",
+            "Positive definite: $d_{\\text{alg}}(i,j) \\geq 0$ with equality iff $i=j$",
+            "Couples position and velocity based on $\\lambda_{\\text{alg}}$",
+            "Distinct from hypocoercive Lyapunov distance (inter-swarm)"
+          ]
+        }
+      ],
+      "rationale": "This metric quantifies proximity between walkers for the algorithm's internal operations. The parameter $\\lambda_{\\text{alg}}$ determines the algorithmic geometry:\n\n- **Position-Only ($\\lambda_{\\text{alg}} = 0$)**: $d_{\\text{alg}}(i,j) = \\|x_i - x_j\\|$. Appropriate when velocity is unreliable.\n- **Fluid Dynamics ($\\lambda_{\\text{alg}} > 0$)**: Sensitive to kinematic similarity. Walkers moving in opposite directions are not companions.\n- **Balanced Phase-Space ($\\lambda_{\\text{alg}} = 1$)**: Democratic treatment of position and velocity.",
+      "prerequisites": [],
+      "tags": ["algorithmic-distance", "companion-selection", "phase-space-metric", "intra-swarm"],
+      "notation_introduced": [
+        {"symbol": "d_{\\text{alg}}(i,j)", "description": "Algorithmic distance between walkers $i$ and $j$", "type": "distance-metric"},
+        {"symbol": "\\lambda_{\\text{alg}}", "description": "Velocity weight in algorithmic distance", "type": "parameter"}
+      ],
+      "related_concepts": [
+        {
+          "label": "hypocoercive-distance",
+          "description": "DISTINCT from algorithmic distance - used for inter-swarm analysis in Lyapunov function",
+          "relationship": "contrast"
+        }
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-spatial-pairing-operator-diversity",
+      "title": "Spatially-Aware Pairing Operator (Idealized Model)",
+      "content": "The idealized **Spatially-Aware Pairing Operator** $\\mathbb{P}_{\\text{pair}}$ maps the alive set to a probability distribution over all possible perfect matchings, favoring pairings between close walkers.",
+      "defined_objects": [
+        {
+          "symbol": "\\mathbb{P}_{\\text{pair}}",
+          "name": "Spatially-Aware Pairing Operator",
+          "description": "Stochastic operator that creates companion pairings based on phase-space proximity",
+          "properties": [
+            "Input: Alive set $\\mathcal{A}_t$ of size $k$",
+            "Output: Probability distribution over perfect matchings $\\mathcal{M}_k$",
+            "Favors spatially close pairings via Gaussian weights",
+            "Partition function ensures proper normalization"
+          ]
+        },
+        {
+          "symbol": "w_{ij}",
+          "name": "Edge Weight",
+          "description": "Weight assigned to pairing $(i,j)$ based on proximity: $$w_{ij} := \\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\epsilon_d^2}\\right)$$",
+          "properties": [
+            "Gaussian kernel with scale $\\epsilon_d$",
+            "Larger for closer walkers",
+            "Determines matching probability"
+          ]
+        },
+        {
+          "symbol": "W(M)",
+          "name": "Matching Quality",
+          "description": "Quality of a specific matching $M$: $$W(M) := \\prod_{(i,j) \\in M} w_{ij}$$",
+          "properties": [
+            "Product of edge weights in matching",
+            "Higher for matchings between close walkers",
+            "Used in Boltzmann distribution over matchings"
+          ]
+        },
+        {
+          "symbol": "P(M)",
+          "name": "Matching Probability",
+          "description": "Probability of selecting matching $M$: $$P(M) = \\frac{W(M)}{\\sum_{M' \\in \\mathcal{M}_k} W(M')}$$",
+          "properties": [
+            "Normalized by partition function",
+            "Favors high-quality matchings",
+            "Defines Boltzmann distribution"
+          ]
+        }
+      ],
+      "rationale": "The idealized model provides analytical clarity by separating stochastic pairing from deterministic distance measurement. It captures the physical intent: strongly favor pairings between algorithmically close walkers.",
+      "prerequisites": [
+        {
+          "label": "def-algorithmic-distance-metric",
+          "type": "definition",
+          "role": "requires",
+          "description": "Uses algorithmic distance to compute edge weights"
+        }
+      ],
+      "tags": ["pairing-operator", "idealized-model", "matching-theory", "boltzmann-distribution"],
+      "notation_introduced": [
+        {"symbol": "\\mathbb{P}_{\\text{pair}}", "description": "Pairing operator", "type": "operator"},
+        {"symbol": "\\mathcal{M}_k", "description": "Set of all perfect matchings of $k$ elements", "type": "set"},
+        {"symbol": "\\epsilon_d", "description": "Interaction range for diversity measurement", "type": "parameter"},
+        {"symbol": "w_{ij}", "description": "Edge weight for pair $(i,j)$", "type": "scalar"},
+        {"symbol": "W(M)", "description": "Quality of matching $M$", "type": "scalar"},
+        {"symbol": "P(M)", "description": "Probability of matching $M$", "type": "probability"}
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-greedy-pairing-algorithm",
+      "title": "Sequential Stochastic Greedy Pairing Operator",
+      "content": "The practical **Sequential Stochastic Greedy Pairing Operator** builds matchings iteratively, achieving $O(k^2)$ complexity instead of factorial.",
+      "defined_objects": [
+        {
+          "symbol": "c: \\mathcal{A}_t \\to \\mathcal{A}_t",
+          "name": "Companion Map",
+          "description": "Perfect matching (if $k$ even) or maximal matching (if $k$ odd) generated by greedy algorithm",
+          "properties": [
+            "Symmetric: $c(c(i)) = i$ for paired walkers",
+            "Generated by sequential stochastic selection",
+            "$O(k^2)$ computational complexity"
+          ]
+        }
+      ],
+      "rationale": "The idealized model requires summing over $(k-1)!!$ matchings, which is computationally intractable. This greedy algorithm approximates the idealized distribution while remaining practical for large swarms.",
+      "algorithm_specification": {
+        "inputs": [
+          {"name": "alive_walkers", "type": "set", "description": "Set of $k$ alive walkers"},
+          {"name": "epsilon_d", "type": "scalar", "description": "Interaction range for diversity"}
+        ],
+        "outputs": [
+          {"name": "companion_map", "type": "map", "description": "Pairing function $c: \\mathcal{A}_t \\to \\mathcal{A}_t$"}
+        ],
+        "steps": [
+          "Initialize unpaired set $U \\leftarrow \\mathcal{A}_t$",
+          "While $|U| > 1$:",
+          "  Select walker $i$ from $U$",
+          "  For each $j \\in U \\setminus \\{i\\}$: compute $w_{ij} = \\exp(-d_{\\text{alg}}(i,j)^2 / 2\\epsilon_d^2)$",
+          "  Sample companion $c_i$ from distribution $P(j) = w_{ij} / \\sum_{l \\in U} w_{il}$",
+          "  Remove $i, c_i$ from $U$; set $c(i) = c_i$, $c(c_i) = i$",
+          "Return companion_map $c$"
+        ],
+        "complexity": {
+          "time": "O(k^2)",
+          "space": "O(k)",
+          "description": "Outer loop runs $k/2$ times, inner loop processes up to $k$ walkers"
+        }
+      },
+      "prerequisites": [
+        {
+          "label": "def-algorithmic-distance-metric",
+          "type": "definition",
+          "role": "uses"
+        },
+        {
+          "label": "def-spatial-pairing-operator-diversity",
+          "type": "definition",
+          "role": "approximates",
+          "description": "Practical approximation of idealized model"
+        }
+      ],
+      "tags": ["pairing-algorithm", "greedy-matching", "computational-efficiency", "implementation"],
+      "notation_introduced": [
+        {"symbol": "c", "description": "Companion map (pairing function)", "type": "function"},
+        {"symbol": "U", "description": "Set of unpaired walkers during algorithm", "type": "set"}
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-geometric-partition",
+      "title": "Geometric Partitioning of High-Variance Swarms",
+      "content": "For a given interaction range $\\varepsilon$, any swarm with sufficiently high variance can be partitioned into two non-empty, N-uniform sets based on kinematic isolation.",
+      "defined_objects": [
+        {
+          "symbol": "H_k",
+          "name": "High-Error Set",
+          "description": "Walkers that are **kinematically isolated** in phase space: for any $i \\in H_k$, all other walkers $j$ satisfy $d_{\\text{alg}}(i, j) > D_H(\\varepsilon)$ for some $D_H(\\varepsilon) > 0$",
+          "properties": [
+            "Non-empty in high-variance states",
+            "N-uniform fraction of alive walkers",
+            "Large distances to all other walkers"
+          ]
+        },
+        {
+          "symbol": "L_k",
+          "name": "Low-Error Set",
+          "description": "Walkers that are part of dense clusters: for any $j \\in L_k$, there exists a non-empty subset $C_j \\subset L_k$ of size $|C_j| \\geq f_c k$ (for N-uniform $f_c > 0$) within algorithmic radius $R_L(\\varepsilon) < D_H(\\varepsilon)$",
+          "properties": [
+            "Complement of high-error set",
+            "Forms dense clusters in phase space",
+            "Small distances to nearby companions"
+          ]
+        }
+      ],
+      "rationale": "This partition formalizes the geometric structure guaranteed to exist in high-variance states. The existence and N-uniformity of these sets are proven in Corollary 6.4.4. This structure enables the Keystone Principle by ensuring that high-error walkers can be reliably detected via diversity measurements.",
+      "prerequisites": [
+        {
+          "label": "def-algorithmic-distance-metric",
+          "type": "definition",
+          "role": "uses",
+          "description": "Partition defined using algorithmic distance"
+        }
+      ],
+      "tags": ["geometric-partition", "high-variance", "kinematic-isolation", "keystone-foundation"],
+      "notation_introduced": [
+        {"symbol": "H_k", "description": "High-error set (kinematically isolated walkers)", "type": "set"},
+        {"symbol": "L_k", "description": "Low-error set (clustered walkers)", "type": "set"},
+        {"symbol": "D_H(\\varepsilon)", "description": "Minimum distance for high-error walkers", "type": "function"},
+        {"symbol": "R_L(\\varepsilon)", "description": "Cluster radius for low-error walkers", "type": "function"},
+        {"symbol": "f_c", "description": "N-uniform cluster size fraction", "type": "constant"}
+      ],
+      "related_concepts": [
+        {
+          "label": "corollary-6.4.4",
+          "description": "Proves existence and N-uniformity of this partition (Chapter 6)",
+          "relationship": "proven-in"
+        }
+      ]
+    }
+  ],
+  "dependency_graph": {
+    "nodes": [
+      {"label": "def-algorithmic-distance-metric", "type": "definition", "level": 0},
+      {"label": "def-spatial-pairing-operator-diversity", "type": "definition", "level": 1},
+      {"label": "def-greedy-pairing-algorithm", "type": "definition", "level": 1},
+      {"label": "def-geometric-partition", "type": "definition", "level": 1}
+    ],
+    "edges": [
+      {
+        "from": "def-spatial-pairing-operator-diversity",
+        "to": "def-algorithmic-distance-metric",
+        "relationship": "requires",
+        "critical": true,
+        "description": "Uses algorithmic distance for edge weights"
+      },
+      {
+        "from": "def-greedy-pairing-algorithm",
+        "to": "def-algorithmic-distance-metric",
+        "relationship": "uses",
+        "critical": true
+      },
+      {
+        "from": "def-greedy-pairing-algorithm",
+        "to": "def-spatial-pairing-operator-diversity",
+        "relationship": "approximates",
+        "critical": false,
+        "description": "Practical implementation of idealized model"
+      },
+      {
+        "from": "def-geometric-partition",
+        "to": "def-algorithmic-distance-metric",
+        "relationship": "uses",
+        "critical": true,
+        "description": "Partition defined using algorithmic distance"
+      }
+    ]
+  },
+  "constants_glossary": {
+    "lambda_alg": {
+      "symbol": "\\lambda_{\\text{alg}}",
+      "value": "non-negative parameter (0, 1, or custom)",
+      "description": "Velocity weight in algorithmic distance metric",
+      "units": "dimensionless",
+      "defined_in": "def-algorithmic-distance-metric",
+      "used_in": ["def-algorithmic-distance-metric", "def-spatial-pairing-operator-diversity", "def-greedy-pairing-algorithm", "def-geometric-partition"]
+    },
+    "epsilon_d": {
+      "symbol": "\\epsilon_d",
+      "value": "positive parameter (tunable)",
+      "description": "Interaction range for diversity measurement (scale of Gaussian kernel)",
+      "units": "length (phase-space distance)",
+      "defined_in": "def-spatial-pairing-operator-diversity",
+      "used_in": ["def-spatial-pairing-operator-diversity", "def-greedy-pairing-algorithm"]
+    },
+    "f_c": {
+      "symbol": "f_c",
+      "value": "N-uniform positive constant",
+      "description": "Minimum cluster size fraction for low-error walkers",
+      "units": "dimensionless (fraction)",
+      "defined_in": "def-geometric-partition",
+      "used_in": ["def-geometric-partition"]
+    }
+  },
+  "notation_index": {
+    "d_{\\text{alg}}(i,j)": "Algorithmic distance between walkers $i$ and $j$",
+    "\\lambda_{\\text{alg}}": "Velocity weight in algorithmic distance",
+    "\\mathbb{P}_{\\text{pair}}": "Spatially-aware pairing operator",
+    "\\mathcal{M}_k": "Set of all perfect matchings of $k$ elements",
+    "\\epsilon_d": "Interaction range for diversity",
+    "w_{ij}": "Edge weight for pair $(i,j)$",
+    "W(M)": "Quality of matching $M$",
+    "P(M)": "Probability of matching $M$",
+    "c": "Companion map (pairing function)",
+    "H_k": "High-error set (isolated walkers)",
+    "L_k": "Low-error set (clustered walkers)",
+    "D_H(\\varepsilon)": "Minimum distance for high-error walkers",
+    "R_L(\\varepsilon)": "Cluster radius for low-error walkers"
+  }
+}

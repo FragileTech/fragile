@@ -1,0 +1,44 @@
+{
+  "label": "lem-baoab-invariant-measure-error",
+  "name": "BAOAB Invariant Measure O((\u0394t)\u00b2) Error",
+  "statement_type": "lemma",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-nu-continuous",
+    "obj-nu-dt-baoab"
+  ],
+  "input_theorems": [
+    "lem-baoab-weak-error",
+    "attr-fourth-moment-baoab"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "C_inv",
+    "phi_C4",
+    "Delta_t",
+    "C_poisson",
+    "kappa_mix"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "poisson-equation",
+    "symmetric-integrator-cancellation"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-o-dt-squared-error"
+  ],
+  "relations_established": [
+    "poisson-equation-technique",
+    "talay-cancellation-for-symmetric-schemes"
+  ],
+  "bound": "|E_nu^Delta_t[phi] - E_nu^cont[phi]| <= C_inv * ||phi||_C4 * (Delta_t)^2",
+  "poisson_equation": "L * psi = -phi_c, with ||psi||_C6 <= C_poisson / kappa_mix * ||phi||_C4",
+  "key_insight": "O((Delta_t)^2) not O(Delta_t) due to Talay cancellation"
+}

@@ -1,0 +1,15 @@
+{
+  "label": "obj-spatial-pairing-operator-diversity",
+  "name": "Spatially-Aware Pairing Operator (Idealized Model)",
+  "mathematical_expression": "w_{ij} := \\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\epsilon_d^2}\\right)",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

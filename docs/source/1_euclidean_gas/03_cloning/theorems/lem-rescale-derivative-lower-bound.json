@@ -1,0 +1,36 @@
+{
+  "label": "lem-rescale-derivative-lower-bound",
+  "name": "Positive Derivative Bound for the Rescale Function",
+  "statement_type": "lemma",
+  "source": {
+    "document": "03_cloning.md",
+    "section": "Chapter 8: Keystone Lemma Proof",
+    "line_number": 3645,
+    "path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md#lem-rescale-derivative-lower-bound"
+  },
+  "input_objects": [
+    "obj-logistic-rescale"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "z_min",
+    "z_max"
+  ],
+  "attributes_required": {
+    "obj-logistic-rescale": [
+      "attr-logistic-c-infinity"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "property_label": "attr-rescale-derivative-lower-bound",
+      "property_name": "Positive lower bound on rescale function derivative",
+      "property_type": "inequality"
+    }
+  ],
+  "relations_established": []
+}

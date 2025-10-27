@@ -1,0 +1,51 @@
+{
+  "label": "attr-coefficient-regularity",
+  "name": "Boundedness and continuity of composite coefficients",
+  "statement_type": "proposition",
+  "source": null,
+  "input_objects": [
+    "obj-lipschitz-value-error-coefficients",
+    "obj-lipschitz-structural-error-coefficients",
+    "obj-cloning-probability-function",
+    "obj-reward-measurement",
+    "obj-perturbation-operator",
+    "obj-alive-dead-sets",
+    "obj-valid-state-space",
+    "obj-walker"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity",
+    "axiom-def-axiom-reward-regularity",
+    "axiom-def-axiom-rescale-function",
+    "axiom-def-axiom-bounded-second-moment-perturbation",
+    "axiom-def-axiom-bounded-algorithmic-diameter"
+  ],
+  "input_parameters": [
+    "param-n-walkers"
+  ],
+  "attributes_required": {
+    "obj-reward-measurement": [
+      "attr-reward-is-continuous"
+    ],
+    "obj-cloning-probability-function": [
+      "attr-cloning-prob-is-continuous"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-coefficient-regularity",
+      "expression": "C(x) \\text{ is uniformly bounded and continuous for } x \\in K \\text{ compact}",
+      "object_label": "obj-lipschitz-value-error-coefficients"
+    },
+    {
+      "label": "attr-coefficient-regularity",
+      "expression": "C(x) \\text{ is uniformly bounded and continuous for } x \\in K \\text{ compact}",
+      "object_label": "obj-lipschitz-structural-error-coefficients"
+    }
+  ],
+  "relations_established": []
+}

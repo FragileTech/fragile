@@ -1,0 +1,37 @@
+{
+  "label": "thm-z-score-norm-bound",
+  "name": "General Bound on the Norm of the Standardized Vector",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-standardization-operator-n-dimensional",
+    "obj-statistical-properties-measurement",
+    "obj-alive-dead-sets"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-min-alive-walkers"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-bounded-norm",
+      "expression": "\\|z(\\mathcal{S})\\| \\le C_z",
+      "object_label": "obj-standardization-operator-n-dimensional",
+      "established_by": "thm-z-score-norm-bound",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

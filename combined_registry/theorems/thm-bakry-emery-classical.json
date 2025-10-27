@@ -1,0 +1,66 @@
+{
+  "label": "thm-bakry-emery-classical",
+  "name": "Classical Bakry-Émery Criterion",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-diffusion-generator",
+    "def-dirichlet-form",
+    "def-gamma-calculus"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "rho"
+  ],
+  "properties_required": {
+    "curvature": [
+      "Γ₂ ≥ ρ Γ (carré du champ itéré bound)",
+      "Equivalently: Hess(V) ≽ ρ I (potential convexity)"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-bakry-emery-classical-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-diffusion-generator",
+      "target_object": "obj-dirichlet-form",
+      "established_by": "thm-bakry-emery-classical",
+      "expression": "Γ₂(f) ≥ ρ Γ(f) implies LSI with C_LSI ≤ 2/ρ",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    },
+    {
+      "label": "rel-thm-bakry-emery-classical-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-diffusion-generator",
+      "target_object": "obj-dirichlet-form",
+      "established_by": "thm-bakry-emery-classical",
+      "expression": "Provides context for why convexity-based LSI fails for kinetic operator",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "label": "lem-geometric-separation-of-partition",
+  "name": "Geometric Separation of the Partition",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 2871,
+    "line_end": 3138
+  },
+  "input_objects": [
+    "obj-alive-dead-sets",
+    "obj-swarm-and-state-space",
+    "obj-walker"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-dimension",
+    "param-epsilon",
+    "param-lambda-v",
+    "param-swarm-size"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-geometric-separation-of-partition",
+      "expression": "d_{\\text{alg}}(i, j) \\ge D_H(\\epsilon)",
+      "object_label": "obj-alive-dead-sets",
+      "established_by": "lem-geometric-separation-of-partition",
+      "source": {
+        "file": "03_cloning.md",
+        "section": "lem-geometric-separation-of-partition"
+      }
+    }
+  ],
+  "relations_established": []
+}

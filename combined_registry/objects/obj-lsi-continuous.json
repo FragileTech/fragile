@@ -1,0 +1,12 @@
+{
+  "label": "obj-lsi-continuous",
+  "name": "Logarithmic Sobolev Inequality (LSI)",
+  "mathematical_expression": "\\text{Ent}_\\pi(f^2) \\le 2C_{\\text{LSI}} \\cdot \\mathcal{E}(f, f)",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

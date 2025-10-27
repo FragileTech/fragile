@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-complete-variance-drift-1-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-cloning-operator-formal",
+  "target_object": "obj-full-synergistic-lyapunov-function",
+  "established_by": "thm-complete-variance-drift",
+  "expression": "synergistic_role_of_cloning",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

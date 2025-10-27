@@ -1,0 +1,36 @@
+{
+  "label": "lem-variance-concentration-hk",
+  "name": "**(Variance Concentration in the High-Error Set)**",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "section": "8.4",
+    "line_start": 4971,
+    "line_end": 5070
+  },
+  "input_objects": [
+    "obj-unified-high-low-error-sets",
+    "obj-barycentres-and-centered-vectors"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "R_var",
+    "epsilon_O",
+    "c_H"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lem-outlier-cluster-fraction-lower-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "lem-outlier-cluster-fraction-lower-bound"
+  ],
+  "output_type": "Existence",
+  "attributes_added": [
+    "variance_concentration"
+  ],
+  "relations_established": [
+    "sum_{i in H_k} ||delta_x,k,i||^2 >= c_H * sum_{i in A_k} ||delta_x,k,i||^2"
+  ]
+}

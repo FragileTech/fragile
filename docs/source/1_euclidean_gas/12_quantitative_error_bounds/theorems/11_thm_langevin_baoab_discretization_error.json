@@ -1,0 +1,60 @@
+{
+  "label": "thm-langevin-baoab-discretization-error",
+  "type": "theorem",
+  "name": "Langevin-BAOAB Time Discretization Error",
+  "line_range": [
+    1489,
+    1584
+  ],
+  "status": "complete",
+  "input_objects": [
+    "obj-nu-n-langevin",
+    "obj-nu-n-baoab"
+  ],
+  "input_axioms": [
+    "axiom-confined-potential"
+  ],
+  "input_theorems": [
+    "lem-baoab-invariant-measure-error"
+  ],
+  "input_parameters": [
+    "C_BAOAB",
+    "delta_t",
+    "gamma",
+    "sigma",
+    "M_4",
+    "kappa_mix"
+  ],
+  "attributes_required": {
+    "obj-test-function-phi": [
+      "attr-c4-regularity"
+    ]
+  },
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-o-dt-squared-invariant-error",
+    "attr-n-uniform-discretization"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-nu-n-baoab",
+      "to": "obj-nu-n-langevin",
+      "type": "invariant_measure_error",
+      "bound": "|E_nu_N_BAOAB[phi] - E_nu_N_Langevin[phi]| <= C_BAOAB * ||phi||_C4 * (dt)^2",
+      "order": "O((dt)^2)",
+      "n_uniformity": true
+    }
+  ],
+  "internal_lemmas": [],
+  "proof_strategy": "Apply lem-baoab-invariant-measure-error + verify N-uniformity for external potentials",
+  "n_uniformity_key": "BAOAB acts independently on each particle for external potentials (Euclidean Gas)",
+  "notes": [
+    "Analyzes LANGEVIN DYNAMICS ALONE (no cloning)",
+    "N-uniform: constants independent of N",
+    "O((dt)^2) rate from BAOAB symmetry",
+    "Scope: External potentials only (Euclidean Gas)",
+    "Mean-field interactions require separate treatment",
+    "In full Fragile Gas, cloning error O(dt) will dominate this O((dt)^2) term"
+  ],
+  "external_references": []
+}

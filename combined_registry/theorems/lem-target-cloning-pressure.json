@@ -1,0 +1,93 @@
+{
+  "label": "lem-target-cloning-pressure",
+  "name": "Cloning Pressure on Target Set",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-target-complement",
+    "def-unfit-set",
+    "def-cloning-probability"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "epsilon",
+    "p_max",
+    "V_pot_max",
+    "epsilon_clone",
+    "f_F",
+    "f_U",
+    "kappa_V_gap",
+    "k"
+  ],
+  "properties_required": {
+    "target-set": [
+      "I_k ⊆ U_k (target set is subset of unfit set)",
+      "Lemma 8.3.2 applies to U_k"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-cloning-pressure-unfit",
+    "thm-n-uniformity-constants"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-target-cloning-pressure-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-target-complement",
+      "target_object": "obj-unfit-set",
+      "established_by": "lem-target-cloning-pressure",
+      "expression": "For all i ∈ I_k: p_{k,i} ≥ p_u(ε) > 0",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    },
+    {
+      "label": "rel-lem-target-cloning-pressure-1-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-target-complement",
+      "target_object": "obj-unfit-set",
+      "established_by": "lem-target-cloning-pressure",
+      "expression": "p_u(ε) = min(1, [f_F f_U κ_{V,gap}(ε)] / [p_max(V_{pot,max}+ε_clone)(k-1)(f_F + f_U²/f_F)])",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    },
+    {
+      "label": "rel-lem-target-cloning-pressure-2-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-target-complement",
+      "target_object": "obj-unfit-set",
+      "established_by": "lem-target-cloning-pressure",
+      "expression": "N-uniformity established by Theorem 8.7.1",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    }
+  ]
+}

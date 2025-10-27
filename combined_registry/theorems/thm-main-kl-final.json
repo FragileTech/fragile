@@ -1,0 +1,55 @@
+{
+  "label": "thm-main-kl-final",
+  "name": "KL-Convergence of the Euclidean Gas (Main Result)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-total-operator",
+    "def-qsd"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf",
+    "kappa_W",
+    "delta",
+    "C_LSI"
+  ],
+  "properties_required": {
+    "all-conditions": [
+      "All main theorem conditions satisfied"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-main-kl-convergence"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-main-kl-final-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-total-operator",
+      "target_object": "obj-qsd",
+      "established_by": "thm-main-kl-final",
+      "expression": "Complete exponential convergence with explicit rate",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

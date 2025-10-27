@@ -1,0 +1,32 @@
+{
+  "label": "prop-corrective-signal-bound",
+  "name": "**(Lower Bound on the Corrective Diversity Signal)**",
+  "statement_type": "proposition",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-fitness-potential-operator"
+  ],
+  "input_axioms": [
+    "axiom-ax-non-deceptive-landscape",
+    "axiom-def-axiom-non-deceptive",
+    "axiom-def-axiom-non-degenerate-noise",
+    "axiom-def-axiom-reward-regularity",
+    "axiom-non-deceptive"
+  ],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [
+    "lem-log-gap-lower-bound",
+    "lem-log-gap-upper-bound",
+    "lem-variance-to-mean-separation"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": []
+}

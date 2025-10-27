@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-kinetic-lsi-hypocoercive-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-kinetic-operator",
+  "target_object": "obj-kinetic-operator",
+  "established_by": "lem-kinetic-lsi-hypocoercive",
+  "expression": "Alternative proof using Villani's method",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

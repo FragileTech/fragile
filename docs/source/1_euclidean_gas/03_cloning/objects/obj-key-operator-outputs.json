@@ -1,0 +1,13 @@
+{
+  "label": "obj-key-operator-outputs",
+  "name": "Key Operator Outputs",
+  "mathematical_expression": "p_i = P(\\text{walker } i \\text{ clones} \\mid S)",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

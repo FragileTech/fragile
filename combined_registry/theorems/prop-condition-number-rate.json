@@ -1,0 +1,37 @@
+{
+  "label": "prop-condition-number-rate",
+  "name": "Condition Number of Rate Sensitivity",
+  "statement_type": "proposition",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {
+    "obj-param-selection": [
+      "prop-svd-decomposition-mkappa"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-condition-number-mkappa",
+      "expression": "κ(M_κ) = σ_1/σ_4 ≈ 1.58/0.29 ≈ 5.4",
+      "object_label": "obj-param-selection",
+      "established_by": "prop-condition-number-rate",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

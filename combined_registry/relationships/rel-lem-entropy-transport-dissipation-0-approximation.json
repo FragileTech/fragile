@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-entropy-transport-dissipation-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-cloning-operator",
+  "target_object": "obj-wasserstein-distance",
+  "established_by": "lem-entropy-transport-dissipation",
+  "expression": "D_KL(μ'||π) ≤ D_KL(μ||π) − α W₂²(μ,π) + C_clone",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

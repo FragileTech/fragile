@@ -1,0 +1,8 @@
+{
+  "label": "axiom-bounded-measurement-variance",
+  "statement": "Axiom of Bounded Measurement Variance",
+  "mathematical_expression": "\\mathbb{E}[\\|\\mathbf{v} - \\mathbb{E}[\\mathbf{v}]\\|_2^2] \\le \\kappa^2_{\\text{variance}}",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

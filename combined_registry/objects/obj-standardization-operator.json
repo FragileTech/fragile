@@ -1,0 +1,15 @@
+{
+  "label": "obj-standardization-operator",
+  "name": "N-Dimensional Standardization Operator",
+  "mathematical_expression": "z",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

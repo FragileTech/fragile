@@ -1,0 +1,31 @@
+{
+  "label": "thm-entropy-bound-debruijn",
+  "name": "Entropy Bound via De Bruijn Identity",
+  "statement_type": "theorem",
+  "source": {
+    "file": "09_kl_convergence.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-fisher-information",
+    "def-entropy"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {
+    "gaussian-perturbation": [
+      "Gaussian convolution"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Entropy bound via de Bruijn's identity"
+  ],
+  "relations_established": [
+    "dH/dt = -I (Fisher information)"
+  ]
+}

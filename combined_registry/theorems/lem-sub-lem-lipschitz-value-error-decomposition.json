@@ -1,0 +1,53 @@
+{
+  "label": "lem-sub-lem-lipschitz-value-error-decomposition",
+  "name": "Algebraic Decomposition of the Value Error",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-raw-value-operator",
+    "obj-standardization-operator-n-dimensional",
+    "obj-components-mean-square-standardization-error"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Relation",
+  "properties_added": [
+    {
+      "label": "prop-explicit-lipschitz-coefficients",
+      "expression": "L_\\mu, L_\\sigma",
+      "object_label": "obj-lipschitz-value-error-coefficients",
+      "established_by": "lem-sub-lem-lipschitz-value-error-decomposition",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": [
+    {
+      "label": "rel-standardization-operator-n-dimensional-components-mean-square-standardization-error-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-standardization-operator-n-dimensional",
+      "target_object": "obj-components-mean-square-standardization-error",
+      "established_by": "lem-sub-lem-lipschitz-value-error-decomposition",
+      "expression": "{'source': 'obj-standardization-operator-n-dimensional', 'target': 'obj-components-mean-square-standardization-error', 'type': 'equivalence'}",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "01_fragile_gas_framework"
+    }
+  ]
+}

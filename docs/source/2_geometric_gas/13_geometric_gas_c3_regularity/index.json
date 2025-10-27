@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "statistics": {
+    "total_objects": 14,
+    "counts_by_type": {
+      "MathematicalObject": 1,
+      "Axiom": 0,
+      "Parameter": 0,
+      "Property": 0,
+      "Relationship": 0,
+      "TheoremBox": 13
+    },
+    "total_tags": 2,
+    "all_tags": [
+      "stability",
+      "variance"
+    ]
+  },
+  "all_ids": [
+    "obj-reg-std-implementation",
+    "thm-c3-regularity",
+    "thm-continuity-third-derivatives",
+    "lem-telescoping-derivatives",
+    "lem-weight-third-derivative",
+    "lem-mean-third-derivative",
+    "lem-variance-third-derivative",
+    "lem-patch-chain-rule",
+    "lem-patch-third-derivative",
+    "lem-zscore-third-derivative",
+    "attr-scaling-kv3",
+    "attr-scaling-k-v-3",
+    "attr-timestep-constraint",
+    "attr-explicit-k-v-3"
+  ],
+  "all_tags": [
+    "variance",
+    "stability"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "label": "obj-logistic-rescale",
+  "name": "Canonical Logistic Rescale Function",
+  "mathematical_expression": "g_A(z) := \\frac{2}{1 + e^{-z}}",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

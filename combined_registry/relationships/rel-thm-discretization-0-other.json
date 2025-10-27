@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-discretization-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-baoab-integrator",
+  "target_object": "obj-generator",
+  "established_by": "thm-discretization",
+  "expression": "continuous-generator-to-discrete-expectation",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction"
+}

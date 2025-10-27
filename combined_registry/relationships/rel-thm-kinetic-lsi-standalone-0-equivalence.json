@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-kinetic-lsi-standalone-0-equivalence",
+  "relationship_type": "equivalence",
+  "bidirectional": true,
+  "source_object": "obj-kinetic-operator",
+  "target_object": "obj-qsd",
+  "established_by": "thm-kinetic-lsi-standalone",
+  "expression": "LSI constant C_kin = O(1/(γ κ_conf))",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

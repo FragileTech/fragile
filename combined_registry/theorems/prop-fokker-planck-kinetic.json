@@ -1,0 +1,46 @@
+{
+  "label": "prop-fokker-planck-kinetic",
+  "name": "Fokker-Planck Equation for the Kinetic Operator",
+  "statement_type": "proposition",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-kinetic-operator-stratonovich"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "rho",
+    "v",
+    "F",
+    "gamma",
+    "Sigma"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Relation",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-prop-fokker-planck-kinetic-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-kinetic-operator-stratonovich",
+      "target_object": "obj-kinetic-operator-stratonovich",
+      "established_by": "prop-fokker-planck-kinetic",
+      "expression": "kinetic-sde-to-fokker-planck-pde",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "05_kinetic_contraction"
+    }
+  ]
+}

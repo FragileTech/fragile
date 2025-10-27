@@ -1,0 +1,43 @@
+{
+  "label": "lem-fitness-gradient-boundary",
+  "name": "Fitness Gradient from Boundary Proximity",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-boundary-potential-recall",
+    "obj-fitness-operator",
+    "obj-fitness-potential-operator",
+    "obj-measurement-operator",
+    "obj-walker"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-alpha",
+    "param-beta",
+    "param-dimension",
+    "param-sigma",
+    "param-swarm-size"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-fitness-gradient-boundary",
+      "expression": "\\varphi_{\\text{barrier}}(x_i) - \\varphi_{\\text{barrier}}(x_j) = \\Delta_{\\text{barrier}} > 0",
+      "object_label": "obj-fitness-potential-operator",
+      "established_by": "lem-fitness-gradient-boundary",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

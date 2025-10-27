@@ -1,0 +1,46 @@
+{
+  "label": "thm-fl-established",
+  "name": "Synergistic Foster-Lyapunov (Established)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-foster-lyapunov"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa_conf"
+  ],
+  "properties_required": {
+    "drift-condition": [
+      "Drift toward confinement region"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-fl-established-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-foster-lyapunov",
+      "target_object": "obj-foster-lyapunov",
+      "established_by": "thm-fl-established",
+      "expression": "QSD existence via Foster-Lyapunov",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

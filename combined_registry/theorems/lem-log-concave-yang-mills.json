@@ -1,0 +1,46 @@
+{
+  "label": "lem-log-concave-yang-mills",
+  "name": "Log-Concavity for Pure Yang-Mills Vacuum",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-qsd"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [],
+  "properties_required": {
+    "log-concave": [
+      "π_QSD is log-concave"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-log-concave-yang-mills-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-qsd",
+      "target_object": "obj-qsd",
+      "established_by": "lem-log-concave-yang-mills",
+      "expression": "Gradient estimates under log-concavity",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

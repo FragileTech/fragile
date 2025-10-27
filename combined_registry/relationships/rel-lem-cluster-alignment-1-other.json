@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-cluster-alignment-1-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-target-complement",
+  "target_object": "obj-fitness-landscape",
+  "established_by": "lem-cluster-alignment",
+  "expression": "Target set I_1 clusters away from other swarm (far-side property)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction"
+}

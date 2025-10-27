@@ -1,0 +1,13 @@
+{
+  "label": "obj-valid-state-space",
+  "name": "Valid State Space",
+  "mathematical_expression": "(\\mathcal{X}, d_{\\mathcal{X}}, \\mu_{\\mathcal{X}})",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "euclidean-gas",
+    "convergence"
+  ],
+  "source": null
+}

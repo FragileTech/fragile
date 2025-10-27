@@ -1,0 +1,12 @@
+{
+  "label": "obj-baoab-integrator",
+  "name": "BAOAB Integrator for Stratonovich Langevin",
+  "mathematical_expression": "v^{(1)} = v^{(0)} + \\frac{\\tau}{2} F(x^{(0)})",
+  "object_type": "space",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction"
+}

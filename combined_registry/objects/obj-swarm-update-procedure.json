@@ -1,0 +1,15 @@
+{
+  "label": "obj-swarm-update-procedure",
+  "name": "Swarm Update Procedure",
+  "mathematical_expression": "\\mathbf{V}_{\\mathcal{A}} \\leftarrow V_{\\text{op},\\mathcal{A}}(\\mathcal{S}_t, \\mathbf{r}_{\\mathcal{A}}, \\mathbf{d}_{\\mathcal{A}})",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

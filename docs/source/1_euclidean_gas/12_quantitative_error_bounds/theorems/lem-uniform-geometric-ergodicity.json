@@ -1,0 +1,48 @@
+{
+  "label": "lem-uniform-geometric-ergodicity",
+  "name": "\u0394t-Uniform Geometric Ergodicity for Discrete Chain",
+  "statement_type": "lemma",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-discrete-chain-t-dt"
+  ],
+  "input_theorems": [
+    "thm-meyn-tweedie-drift-minor",
+    "attr-fourth-moment-baoab"
+  ],
+  "input_axioms": [
+    "axiom-confined-potential"
+  ],
+  "input_parameters": [
+    "C_erg",
+    "kappa_mix",
+    "Delta_t",
+    "kappa_E",
+    "C_4",
+    "delta_minor"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "drift-condition",
+    "minorization-condition"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "attr-geometric-ergodicity",
+    "attr-dt-uniform-mixing-rate"
+  ],
+  "relations_established": [
+    "geometric-mixing-uniform-in-dt",
+    "gaussian-cloning-provides-full-support"
+  ],
+  "bound": "||P_k - nu_discrete||_TV <= C_erg * exp(-kappa_mix * k * Delta_t)",
+  "drift": "E[V(T^Delta_t(S)) | S] <= (1 - kappa_E * Delta_t) * V(S) + C_4 * Delta_t",
+  "minorization": "Gaussian cloning noise provides full support",
+  "key_insight": "Constants kappa_E, C_4, delta_minor all independent of Delta_t"
+}

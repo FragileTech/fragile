@@ -1,0 +1,107 @@
+{
+  "label": "lem-cluster-alignment",
+  "name": "Cluster-Level Outlier Alignment",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-target-complement",
+    "def-fitness-landscape",
+    "def-unified-high-low-error-sets"
+  ],
+  "input_axioms": [
+    "axiom-confining-potential",
+    "axiom-environmental-richness"
+  ],
+  "input_parameters": [
+    "epsilon",
+    "L",
+    "D_min",
+    "c_sep",
+    "D_diam",
+    "c_d",
+    "lambda_v",
+    "c_geom"
+  ],
+  "properties_required": {
+    "swarms": [
+      "Structural error: V_struct > R²_spread",
+      "Separation: L = ||x̄_1 - x̄_2|| > D_min(ε)",
+      "D_min(ε) ≥ c_geom · R_spread(ε) with c_geom >> 1"
+    ],
+    "stability": [
+      "Stability Condition holds (Theorem 7.5.2.4)"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-stability-condition",
+    "lem-phase-space-packing",
+    "def-unified-high-low-error-sets",
+    "cor-between-group-dominance"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "cor-between-group-dominance",
+      "lem-cluster-alignment"
+    ]
+  ],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-cluster-alignment-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-target-complement",
+      "target_object": "obj-fitness-landscape",
+      "established_by": "lem-cluster-alignment",
+      "expression": "⟨μ_x(I_1) - μ_x(J_1), x̄_1 - x̄_2⟩ ≥ c_align(ε) ||μ_x(I_1) - μ_x(J_1)|| · L",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    },
+    {
+      "label": "rel-lem-cluster-alignment-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-target-complement",
+      "target_object": "obj-fitness-landscape",
+      "established_by": "lem-cluster-alignment",
+      "expression": "Target set I_1 clusters away from other swarm (far-side property)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    },
+    {
+      "label": "rel-lem-cluster-alignment-2-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-target-complement",
+      "target_object": "obj-fitness-landscape",
+      "established_by": "lem-cluster-alignment",
+      "expression": "c_align(ε) > 0 (N-uniform, depends on c_sep and D_diam)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    }
+  ]
+}

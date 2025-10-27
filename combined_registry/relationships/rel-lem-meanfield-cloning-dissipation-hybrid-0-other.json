@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-meanfield-cloning-dissipation-hybrid-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-mean-field-cloning",
+  "target_object": "obj-mean-field-cloning",
+  "established_by": "lem-meanfield-cloning-dissipation-hybrid",
+  "expression": "Mean-field KL dissipation rate",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

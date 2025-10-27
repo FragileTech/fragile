@@ -1,0 +1,8 @@
+{
+  "label": "axiom-ax-non-deceptive-landscape",
+  "statement": "**(Axiom EG-3): Non-Deceptive Landscape**",
+  "mathematical_expression": "L_{\\text{grad}} > 0",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

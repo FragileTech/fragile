@@ -1,0 +1,8 @@
+{
+  "label": "axiom-ax-confining-complete",
+  "statement": "Confining Potential (Complete Statement)",
+  "mathematical_expression": "U(x) \\geq C_U (|x| - R_{\\text{safe}})^p",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

@@ -1,0 +1,17 @@
+{
+  "label": "rel-density-ratio-constant-m-gaussian-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-density-ratio",
+  "target_object": "obj-constant-m-gaussian",
+  "established_by": "lem-gaussian-lower-bound",
+  "expression": "{'type': 'upper_bound', 'from': 'density-ratio', 'to': 'constant-M-gaussian', 'description': 'Density ratio bounded by M_Gaussian(sigma_x, R) = exp((2R)^2/sigma_x^2)'}",
+  "properties": [],
+  "tags": [
+    "inferred-from-dict"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence"
+}

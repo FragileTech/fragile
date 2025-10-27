@@ -1,0 +1,13 @@
+{
+  "label": "obj-projected-gradient-ascent",
+  "name": "Projected Gradient Ascent for Parameter Optimization",
+  "mathematical_expression": "(\\lambda_{\\min}, \\lambda_{\\max}, d)",
+  "object_type": "operator",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "convergence",
+    "stability"
+  ],
+  "source": null
+}

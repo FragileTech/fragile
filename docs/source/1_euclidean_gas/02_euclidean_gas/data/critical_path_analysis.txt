@@ -1,0 +1,13 @@
+CRITICAL PATH ANALYSIS
+================================================================================
+
+
+thm-sasaki-standardization-structural-sq
+  For general swarms [math] with alive counts [math], the squared L2-norm of the output error of the standardization operator is bounded by a function of the number of status changes, [math].
+  Lines 1680-1691
+--------------------------------------------------------------------------------
+  Direct dependencies (1):
+    → def-sasaki-structural-coeffs-sq (prf:ref (definition-use))
+       $$
+\|z(\mathcal S_1)-z(\mathcal S_2)\|_2^2 \le C_{S,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) \cdot n_c...
+

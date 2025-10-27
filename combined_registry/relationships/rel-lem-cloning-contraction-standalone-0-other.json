@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-cloning-contraction-standalone-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-cloning-operator",
+  "target_object": "obj-cloning-operator",
+  "established_by": "lem-cloning-contraction-standalone",
+  "expression": "W₂ contraction via cloning measurement",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

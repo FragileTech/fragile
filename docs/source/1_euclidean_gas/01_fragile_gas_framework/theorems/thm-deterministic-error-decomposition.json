@@ -1,0 +1,34 @@
+{
+  "label": "thm-deterministic-error-decomposition",
+  "name": "Decomposition of the Total Standardization Error",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-components-mean-square-standardization-error",
+    "obj-raw-value-operator",
+    "obj-swarm-and-state-space",
+    "obj-alg-distance"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-structural-error-lipschitz-bound",
+      "expression": "E[SE(s, s')^2] \\leq L_s^2 \\cdot d_{alg}(s, s')^2",
+      "object_label": "obj-lipschitz-structural-error-coefficients"
+    },
+    {
+      "label": "attr-value-error-lipschitz-bound",
+      "expression": "E[VE(v, v')^2] \\leq L_v^2 \\cdot d_{val}(v, v')^2",
+      "object_label": "obj-lipschitz-value-error-coefficients"
+    }
+  ],
+  "relations_established": []
+}

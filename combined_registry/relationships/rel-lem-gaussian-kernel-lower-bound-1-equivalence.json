@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-gaussian-kernel-lower-bound-1-equivalence",
+  "relationship_type": "equivalence",
+  "bidirectional": true,
+  "source_object": "obj-cloning-operator",
+  "target_object": "obj-state-space",
+  "established_by": "lem-gaussian-kernel-lower-bound",
+  "expression": "c_σ_x,R = (2πσ_x²)^{−d/2} · exp(−(2R)²/(2σ_x²))",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+}

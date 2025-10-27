@@ -1,0 +1,43 @@
+{
+  "label": "thm-kinetic-lsi",
+  "name": "Hypocoercive LSI for the Kinetic Flow Map",
+  "statement_type": "theorem",
+  "source": {
+    "file": "09_kl_convergence.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-kinetic-operator",
+    "def-qsd"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf",
+    "sigma",
+    "tau"
+  ],
+  "attributes_required": {
+    "log-concave-target": [
+      "\u03c0_QSD is log-concave (from ax-qsd-log-concave)"
+    ],
+    "foster-lyapunov": [
+      "Foster-Lyapunov conditions satisfied"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-bakry-emery-classical"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "Kinetic operator satisfies LSI with constant C_kin = O(1/(\u03b3 \u03ba_conf))"
+  ],
+  "relations_established": [
+    "Ent(\u03a8_kin \u03bc | \u03c0) \u2264 (1 - \u03c4/C_kin) Ent(\u03bc | \u03c0) + o(\u03c4)"
+  ]
+}

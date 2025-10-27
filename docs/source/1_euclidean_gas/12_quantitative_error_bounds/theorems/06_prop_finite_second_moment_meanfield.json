@@ -1,0 +1,54 @@
+{
+  "label": "attr-finite-second-moment-meanfield",
+  "type": "proposition",
+  "name": "Finite Second Moment of Mean-Field QSD",
+  "line_range": [
+    591,
+    703
+  ],
+  "status": "complete",
+  "input_objects": [
+    "obj-rho-0",
+    "obj-mckean-vlasov-pde"
+  ],
+  "input_axioms": [
+    "axiom-confined-potential"
+  ],
+  "input_theorems": [],
+  "input_parameters": [
+    "kappa_conf",
+    "R_0"
+  ],
+  "attributes_required": {
+    "obj-potential-u": [
+      "attr-confinement",
+      "attr-superlinear-growth"
+    ]
+  },
+  "output_type": "Property",
+  "attributes_added": [
+    "attr-finite-second-moment",
+    "attr-finite-variance"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-rho-0",
+      "to": "obj-variance-constant",
+      "type": "finite_bound",
+      "bound": "C_var(rho_0) = int |z - bar_z|^2 rho_0(z) dz < infinity",
+      "order": "O(1)"
+    }
+  ],
+  "internal_lemmas": [],
+  "proof_strategy": "Energy functional bounds + confinement axiom",
+  "notes": [
+    "Required hypothesis for Fournier-Guillin bound",
+    "Completes chain leading to thm-quantitative-propagation-chaos",
+    "Uses energy dissipation for McKean-Vlasov PDE"
+  ],
+  "explicit_estimate": "For quadratic potential U(x) = (1/2)k|x|^2, have C_var ~ sigma^2/k",
+  "external_references": [
+    "Carrillo et al (2003) - Kinetic equilibration rates",
+    "Pavliotis (2014) - Stochastic Processes and Applications"
+  ]
+}

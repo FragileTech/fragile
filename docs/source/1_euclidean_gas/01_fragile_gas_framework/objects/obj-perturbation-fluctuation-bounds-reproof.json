@@ -1,0 +1,12 @@
+{
+  "label": "obj-perturbation-fluctuation-bounds-reproof",
+  "name": "Perturbation Fluctuation Bounds",
+  "mathematical_expression": "B_M(N) := N \\cdot M_{\\text{pert}}^2",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "swarm"
+  ],
+  "source": null
+}

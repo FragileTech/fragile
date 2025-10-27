@@ -1,0 +1,40 @@
+{
+  "label": "thm-propagation-chaos-qsd",
+  "name": "Propagation of Chaos",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-qsd",
+    "obj-single-particle-marginal",
+    "obj-mean-field-phase-space"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-N"
+  ],
+  "attributes_required": {
+    "obj-qsd": [
+      "attr-qsd-exists-unique"
+    ],
+    "obj-single-particle-marginal": [
+      "attr-marginal-mixture-average"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Convergence",
+  "attributes_added": [
+    {
+      "label": "attr-weak-convergence-marginal",
+      "expression": "\u03bc_N \u21d2 \u03bc_\u221e as N \u2192 \u221e",
+      "object_label": "obj-single-particle-marginal"
+    },
+    {
+      "label": "attr-mean-field-stationary-uniqueness",
+      "expression": "\u03bc_\u221e is the unique stationary solution of \u2202_t \u03c1 = \ud835\udcdb[\u03c1] \u03c1",
+      "object_label": "obj-mean-field-phase-space"
+    }
+  ],
+  "relations_established": []
+}

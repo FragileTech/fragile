@@ -1,0 +1,17 @@
+{
+  "label": "rel-swarm-update-procedure-cloning-measure-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-swarm-update-procedure",
+  "target_object": "obj-cloning-measure",
+  "established_by": "thm-foster-lyapunov-main",
+  "expression": "{'source': 'obj-swarm-update-procedure', 'target': 'obj-cloning-measure', 'type': 'decomposition'}",
+  "properties": [],
+  "tags": [
+    "inferred-from-dict"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence"
+}

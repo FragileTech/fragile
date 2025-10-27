@@ -1,0 +1,36 @@
+{
+  "label": "thm-distance-operator-satisfies-bounded-variance-axiom",
+  "name": "The Distance Operator Satisfies the Bounded Variance Axiom",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-distance-to-companion-measurement"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-n",
+    "param-d-y"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-satisfies-bounded-variance",
+      "expression": "\\text{Var}[d] \\le C",
+      "object_label": "obj-distance-to-companion-measurement",
+      "established_by": "thm-distance-operator-satisfies-bounded-variance-axiom",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

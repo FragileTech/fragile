@@ -1,0 +1,59 @@
+{
+  "version": "1.0.0",
+  "statistics": {
+    "total_objects": 30,
+    "counts_by_type": {
+      "MathematicalObject": 4,
+      "Axiom": 1,
+      "Parameter": 0,
+      "Property": 0,
+      "Relationship": 0,
+      "TheoremBox": 25
+    },
+    "total_tags": 4,
+    "all_tags": [
+      "euclidean-gas",
+      "particle",
+      "stability",
+      "swarm"
+    ]
+  },
+  "all_ids": [
+    "obj-sasaki-standardization-constants",
+    "obj-sasaki-standardization-constants-sq",
+    "obj-sasaki-structural-coeffs-sq",
+    "obj-euclidean-gas",
+    "axiom-non-deceptive",
+    "thm-sasaki-distance-ms",
+    "thm-sasaki-standardization-structural-sq",
+    "thm-sasaki-standardization-composite-sq",
+    "thm-euclidean-feller",
+    "lem-squashing-properties-generic",
+    "lem-projection-lipschitz",
+    "lem-sasaki-kinetic-lipschitz",
+    "lem-euclidean-boundary-holder",
+    "lem-euclidean-reward-regularity",
+    "lem-euclidean-richness",
+    "lem-euclidean-perturb-moment",
+    "lem-euclidean-geometric-consistency",
+    "lem-sasaki-single-walker-positional-error",
+    "lem-sasaki-single-walker-structural-error",
+    "lem-sasaki-total-squared-error-stable",
+    "lem-sasaki-aggregator-value",
+    "lem-sasaki-aggregator-structural",
+    "lem-sasaki-aggregator-lipschitz",
+    "lem-sasaki-value-error-decomposition",
+    "lem-sasaki-direct-shift-bound-sq",
+    "lem-sasaki-mean-shift-bound-sq",
+    "lem-sasaki-denom-shift-bound-sq",
+    "lem-sasaki-structural-error-decomposition",
+    "lem-sasaki-direct-structural-error-sq",
+    "lem-sasaki-indirect-structural-error-sq"
+  ],
+  "all_tags": [
+    "particle",
+    "stability",
+    "swarm",
+    "euclidean-gas"
+  ]
+}

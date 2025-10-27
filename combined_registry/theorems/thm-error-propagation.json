@@ -1,0 +1,41 @@
+{
+  "label": "thm-error-propagation",
+  "name": "Parameter Error Propagation Bound",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-epsilon-max"
+  ],
+  "properties_required": {
+    "obj-param-selection": [
+      "prop-rate-sensitivity-matrix",
+      "prop-svd-decomposition-mkappa",
+      "prop-condition-number-mkappa"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-parameter-error-propagation",
+      "expression": "|δ κ_total|/κ_total ≤ κ(M_κ) · ||M_κ||_2 · ε_max / √12  (≈ 0.25 for ε_max=0.1)",
+      "object_label": "obj-param-selection",
+      "established_by": "thm-error-propagation",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

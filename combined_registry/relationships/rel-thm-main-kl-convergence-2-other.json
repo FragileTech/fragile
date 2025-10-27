@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-main-kl-convergence-2-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-total-operator",
+  "target_object": "obj-qsd",
+  "established_by": "thm-main-kl-convergence",
+  "expression": "Seesaw mechanism: kinetic dissipates entropy, cloning contracts W₂",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

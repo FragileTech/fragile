@@ -1,0 +1,32 @@
+{
+  "label": "lem-variance-change-decomposition",
+  "name": "Variance Change Decomposition",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "section": "10.3.3",
+    "line_start": 6318,
+    "line_end": 6378
+  },
+  "input_objects": [
+    "obj-barycentres-and-centered-vectors",
+    "obj-alive-dead-sets"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "N"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "def-variance-conversions"
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "variance_decomposition"
+  ],
+  "relations_established": [
+    "Delta V_Var,x = sum_k [Delta_alive + Delta_status]"
+  ]
+}

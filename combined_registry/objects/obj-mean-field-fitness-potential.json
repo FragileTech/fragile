@@ -1,0 +1,15 @@
+{
+  "label": "obj-mean-field-fitness-potential",
+  "name": "Mean-Field Fitness Potential",
+  "mathematical_expression": "V[f](z,z_c,t) := \\left(g_A(\\widetilde{d}[f](z,z_c,t)) + \\eta\\right)^{\\beta} \\cdot \\left(g_A(\\widetilde{r}[f](z,t)) + \\eta\\right)^{\\alpha}",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "mean-field"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "07_mean_field"
+}

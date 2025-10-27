@@ -1,0 +1,15 @@
+{
+  "label": "obj-kinetic-operator-stratonovich",
+  "name": "The Kinetic Operator (Stratonovich Form)",
+  "mathematical_expression": "\\begin{aligned}\ndx_t &= v_t \\, dt \\\\\ndv_t &= F(x_t) \\, dt - \\gamma(v_t - u(x_t)) \\, dt + \\Sigma(x_t, v_t) \\circ dW_t\n\\end{aligned}",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction"
+}

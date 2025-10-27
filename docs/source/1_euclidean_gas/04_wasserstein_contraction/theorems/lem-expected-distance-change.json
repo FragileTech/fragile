@@ -1,0 +1,54 @@
+{
+  "label": "lem-expected-distance-change",
+  "name": "Expected Cross-Distance Change",
+  "statement_type": "lemma",
+  "source": {
+    "file": "04_wasserstein_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-cluster-coupling",
+    "def-target-complement"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "epsilon",
+    "delta",
+    "d",
+    "c_align",
+    "c_sep",
+    "c_geom",
+    "p_bar_I"
+  ],
+  "attributes_required": {
+    "coupling": [
+      "Cluster-preserving coupling applies",
+      "Shared cloning randomness",
+      "Independent jitter noise \u03b6 ~ N(0, \u03b4\u00b2 I_d)"
+    ],
+    "geometry": [
+      "Separated regime holds",
+      "Alignment inequality from lem-cluster-alignment",
+      "Finite second moments"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-cluster-alignment",
+    "cor-between-group-dominance"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "lem-cluster-alignment",
+    "cor-between-group-dominance"
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Expected decrease in cross-distance D_IJ under cloning",
+    "Geometric contraction constant c_geom = 2c_align/\u221ac_sep"
+  ],
+  "relations_established": [
+    "E[\u0394 D_IJ] \u2264 -p\u0304_I \u00b7 c_geom ||\u03bc_x(I_1) - \u03bc_x(J_1)||\u00b2 + O(\u03b4\u00b2)",
+    "Quadratic identity: ||a - c||\u00b2 - ||b - c||\u00b2 = ||a - b||\u00b2 + 2\u27e8a - b, b - c\u27e9"
+  ]
+}

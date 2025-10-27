@@ -1,0 +1,277 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Mathematical Object Schema for Fragile Framework",
+  "description": "Comprehensive schema for representing mathematical objects with precise input/output tracking and relationship mapping",
+  "version": "2.0",
+  "definitions": {
+    "MathematicalType": {
+      "type": "string",
+      "enum": [
+        "Scalar",
+        "Vector",
+        "Matrix",
+        "Tensor",
+        "Function",
+        "Operator",
+        "Measure",
+        "Distribution",
+        "Process",
+        "Space",
+        "Set",
+        "Metric",
+        "Norm",
+        "InnerProduct",
+        "Property",
+        "Bound",
+        "Rate",
+        "Constant",
+        "Map",
+        "Kernel",
+        "Potential",
+        "Field"
+      ]
+    },
+    "MathematicalQuantity": {
+      "type": "object",
+      "required": ["name", "symbol", "type"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Human-readable name of the quantity"
+        },
+        "symbol": {
+          "type": "string",
+          "description": "LaTeX mathematical symbol"
+        },
+        "type": {
+          "$ref": "#/definitions/MathematicalType"
+        },
+        "domain": {
+          "type": "string",
+          "description": "Mathematical domain (e.g., R^d, [0,1], Sigma_N)"
+        },
+        "codomain": {
+          "type": "string",
+          "description": "Mathematical codomain for functions/operators"
+        },
+        "properties": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Mathematical properties (smooth, bounded, convex, etc.)"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Other quantities this depends on"
+        }
+      }
+    },
+    "MathematicalProperty": {
+      "type": "object",
+      "required": ["name", "statement"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "statement": {
+          "type": "string",
+          "description": "Mathematical statement of the property"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["inequality", "equality", "bound", "convergence", "regularity", "structural"]
+        },
+        "requires": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Prerequisites for this property to hold"
+        }
+      }
+    },
+    "RelationshipType": {
+      "type": "string",
+      "enum": [
+        "proves_using",
+        "defined_using",
+        "assumes",
+        "generalizes",
+        "specializes",
+        "implies",
+        "equivalent_to",
+        "contradicts",
+        "refines",
+        "extends",
+        "applies_to",
+        "constructed_from",
+        "bounded_by",
+        "converges_to",
+        "depends_on"
+      ]
+    },
+    "Relationship": {
+      "type": "object",
+      "required": ["source", "target", "type"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "Label of source object"
+        },
+        "target": {
+          "type": "string",
+          "description": "Label of target object"
+        },
+        "type": {
+          "$ref": "#/definitions/RelationshipType"
+        },
+        "context": {
+          "type": "string",
+          "description": "Context or explanation of the relationship"
+        },
+        "strength": {
+          "type": "string",
+          "enum": ["essential", "important", "supporting", "optional"],
+          "description": "Strength of the dependency"
+        }
+      }
+    },
+    "ProofStructure": {
+      "type": "object",
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "description": "High-level proof strategy"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "number": {"type": "integer"},
+              "description": {"type": "string"},
+              "uses": {
+                "type": "array",
+                "items": {"type": "string"}
+              },
+              "establishes": {"type": "string"}
+            }
+          }
+        },
+        "key_techniques": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": ["trivial", "elementary", "moderate", "advanced", "research-level"]
+        }
+      }
+    }
+  },
+  "type": "object",
+  "required": ["object_id", "type", "label", "title"],
+  "properties": {
+    "object_id": {
+      "type": "string",
+      "description": "Unique identifier (obj-{label})"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["definition", "axiom", "theorem", "lemma", "proposition", "corollary", "remark", "example"]
+    },
+    "label": {
+      "type": "string",
+      "description": "MyST cross-reference label"
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable title"
+    },
+    "chapter_section": {
+      "type": "string",
+      "description": "Chapter and section number"
+    },
+    "content": {
+      "type": "string",
+      "description": "Full mathematical content"
+    },
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "definitions": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Required definition labels"
+        },
+        "axioms": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Required axiom labels"
+        },
+        "theorems": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Required theorem/lemma labels"
+        },
+        "quantities": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/MathematicalQuantity"},
+          "description": "Input mathematical quantities with types"
+        },
+        "properties": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/MathematicalProperty"},
+          "description": "Required properties/assumptions"
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "properties": {
+        "quantities": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/MathematicalQuantity"},
+          "description": "Defined/established quantities with types"
+        },
+        "properties": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/MathematicalProperty"},
+          "description": "Established properties"
+        }
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/Relationship"},
+      "description": "All relationships to other objects"
+    },
+    "proof_structure": {
+      "$ref": "#/definitions/ProofStructure",
+      "description": "Structure of the proof (for theorems/lemmas)"
+    },
+    "tags": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Semantic tags (keystone, variance, boundary, etc.)"
+    },
+    "n_uniform": {
+      "type": "boolean",
+      "description": "Whether all bounds/constants are N-uniform"
+    },
+    "constants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "symbol": {"type": "string"},
+          "name": {"type": "string"},
+          "value": {"type": "string"},
+          "dependencies": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        }
+      },
+      "description": "Mathematical constants defined or used"
+    }
+  }
+}

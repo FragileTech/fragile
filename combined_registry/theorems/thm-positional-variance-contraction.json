@@ -1,0 +1,79 @@
+{
+  "label": "thm-positional-variance-contraction",
+  "name": "Positional Variance Contraction Under Cloning",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-cloning-operator-formal",
+    "obj-variance-conversions",
+    "obj-barycentres-and-centered-vectors",
+    "obj-state-difference-vectors"
+  ],
+  "input_axioms": [
+    "axiom-ax-domain-regularity",
+    "axiom-ax-lipschitz-fields",
+    "axiom-ax-safe-harbor",
+    "axiom-ax-non-deceptive-landscape",
+    "axiom-ax-velocity-regularization"
+  ],
+  "input_parameters": [
+    "kappa_x",
+    "C_x",
+    "R_spread_sq"
+  ],
+  "properties_required": {
+    "obj-cloning-operator-formal": [
+      "prop-keystone-principle"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-variance-change-decomposition",
+    "lem-keystone-contraction-alive",
+    "lem-status-change-bound",
+    "lem-expansion-status-changes"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-variance-change-decomposition",
+      "lem-keystone-contraction-alive"
+    ],
+    [
+      "lem-variance-change-decomposition",
+      "lem-status-change-bound"
+    ],
+    [
+      "lem-keystone-contraction-alive",
+      "lem-quantitative-keystone"
+    ],
+    [
+      "lem-status-change-bound",
+      "lem-expansion-status-changes"
+    ]
+  ],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-positional-variance-contraction-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator-formal",
+      "target_object": "obj-variance-conversions",
+      "established_by": "thm-positional-variance-contraction",
+      "expression": "rel-cloning-contracts-positional-variance",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

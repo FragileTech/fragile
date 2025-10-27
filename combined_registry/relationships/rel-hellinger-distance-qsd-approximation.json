@@ -1,0 +1,17 @@
+{
+  "label": "rel-hellinger-distance-qsd-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-hellinger-distance",
+  "target_object": "obj-qsd",
+  "established_by": "lem-kinetic-hellinger-contraction",
+  "expression": "{'type': 'contraction', 'from': 'obj-hellinger-distance', 'to': 'obj-qsd', 'description': 'E[d_H^2(mu_{t+1}, pi_QSD) | mu_t] <= (1 - kappa_kin(M) tau) d_H^2(mu_t, pi_QSD) + C_kin tau^2'}",
+  "properties": [],
+  "tags": [
+    "inferred-from-dict"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence"
+}

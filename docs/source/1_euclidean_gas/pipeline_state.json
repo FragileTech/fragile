@@ -25,23 +25,23 @@
   },
   "execution_order": [
     "thm-complete-boundary-drift",
-    "prop-coupling-constant-existence",
+    "attr-coupling-constant-existence",
     "thm-main-results-summary",
-    "prop-explicit-constants",
+    "attr-explicit-constants",
     "cor-net-velocity-contraction",
     "cor-total-boundary-safety",
     "thm-synergistic-rate-derivation",
     "thm-total-rate-explicit",
-    "prop-mixing-time-explicit",
-    "prop-parameter-classification",
+    "attr-mixing-time-explicit",
+    "attr-parameter-classification",
     "thm-explicit-rate-sensitivity",
     "thm-svd-rate-matrix",
-    "prop-condition-number-rate",
+    "attr-condition-number-rate",
     "thm-subgradient-min",
     "thm-balanced-optimality",
-    "prop-restitution-friction-coupling",
-    "prop-jitter-cloning-coupling",
-    "prop-phase-space-pairing",
+    "attr-restitution-friction-coupling",
+    "attr-jitter-cloning-coupling",
+    "attr-phase-space-pairing",
     "thm-error-propagation",
     "thm-closed-form-optimum",
     "thm-mean-field-limit-informal",
@@ -61,7 +61,7 @@
     "thm-villani-hypocoercivity-recap",
     "thm-unconditional-lsi",
     "cor-mean-field-lsi",
-    "prop-killing-rate-continuous",
+    "attr-killing-rate-continuous",
     "lem-gaussian-lower-bound",
     "thm-hk-summary",
     "lem-hormander-bracket",
@@ -74,10 +74,10 @@
     "lem-variance-wasserstein-link",
     "lem-expected-distance-change",
     "lem-target-cloning-pressure",
-    "prop-velocity-rate-explicit",
-    "prop-position-rate-explicit",
-    "prop-wasserstein-rate-explicit",
-    "prop-boundary-rate-explicit",
+    "attr-velocity-rate-explicit",
+    "attr-position-rate-explicit",
+    "attr-wasserstein-rate-explicit",
+    "attr-boundary-rate-explicit",
     "thm-main-kl-convergence",
     "cor-n-particle-kinetic-lsi",
     "lem-meanfield-cloning-dissipation-hybrid",
@@ -115,8 +115,8 @@
       },
       "notes": "Fitness sign reversal, unbounded Hessian claim, invalid O(N^-1) derivation"
     },
-    "prop-coupling-constant-existence": {
-      "label": "prop-coupling-constant-existence",
+    "attr-coupling-constant-existence": {
+      "label": "attr-coupling-constant-existence",
       "type": "proposition",
       "document": "03_cloning.md",
       "line": 8230,
@@ -157,8 +157,8 @@
       },
       "notes": "Meta-proof consolidation, excellent structure, publication-ready"
     },
-    "prop-explicit-constants": {
-      "label": "prop-explicit-constants",
+    "attr-explicit-constants": {
+      "label": "attr-explicit-constants",
       "type": "proposition",
       "document": "05_kinetic_contraction.md",
       "line": 1043,
@@ -240,8 +240,8 @@
       "rigor_score": null,
       "integration_status": null
     },
-    "prop-mixing-time-explicit": {
-      "label": "prop-mixing-time-explicit",
+    "attr-mixing-time-explicit": {
+      "label": "attr-mixing-time-explicit",
       "type": "proposition",
       "document": "06_convergence.md",
       "line": 1821,
@@ -255,17 +255,17 @@
       "rigor_score": null,
       "integration_status": null
     },
-    "prop-parameter-classification": {
-      "label": "prop-parameter-classification",
+    "attr-parameter-classification": {
+      "label": "attr-parameter-classification",
       "type": "proposition",
       "document": "06_convergence.md",
       "line": 2200,
       "title": "Parameter Classification",
       "status": "pending",
       "dependencies": [
-        "prop-position-rate-explicit",
-        "prop-wasserstein-rate-explicit",
-        "prop-velocity-rate-explicit"
+        "attr-position-rate-explicit",
+        "attr-wasserstein-rate-explicit",
+        "attr-velocity-rate-explicit"
       ],
       "attempts": 0,
       "sketch_file": null,
@@ -282,8 +282,8 @@
       "title": "Explicit Rate Sensitivity Matrix",
       "status": "pending",
       "dependencies": [
-        "prop-boundary-rate-explicit",
-        "prop-wasserstein-rate-explicit"
+        "attr-boundary-rate-explicit",
+        "attr-wasserstein-rate-explicit"
       ],
       "attempts": 0,
       "sketch_file": null,
@@ -307,8 +307,8 @@
       "rigor_score": null,
       "integration_status": null
     },
-    "prop-condition-number-rate": {
-      "label": "prop-condition-number-rate",
+    "attr-condition-number-rate": {
+      "label": "attr-condition-number-rate",
       "type": "proposition",
       "document": "06_convergence.md",
       "line": 2580,
@@ -352,8 +352,8 @@
       "rigor_score": null,
       "integration_status": null
     },
-    "prop-restitution-friction-coupling": {
-      "label": "prop-restitution-friction-coupling",
+    "attr-restitution-friction-coupling": {
+      "label": "attr-restitution-friction-coupling",
       "type": "proposition",
       "document": "06_convergence.md",
       "line": 2774,
@@ -367,8 +367,8 @@
       "rigor_score": null,
       "integration_status": null
     },
-    "prop-jitter-cloning-coupling": {
-      "label": "prop-jitter-cloning-coupling",
+    "attr-jitter-cloning-coupling": {
+      "label": "attr-jitter-cloning-coupling",
       "type": "proposition",
       "document": "06_convergence.md",
       "line": 2829,
@@ -382,8 +382,8 @@
       "rigor_score": null,
       "integration_status": null
     },
-    "prop-phase-space-pairing": {
-      "label": "prop-phase-space-pairing",
+    "attr-phase-space-pairing": {
+      "label": "attr-phase-space-pairing",
       "type": "proposition",
       "document": "06_convergence.md",
       "line": 2878,
@@ -699,8 +699,8 @@
       "rigor_score": null,
       "integration_status": null
     },
-    "prop-killing-rate-continuous": {
-      "label": "prop-killing-rate-continuous",
+    "attr-killing-rate-continuous": {
+      "label": "attr-killing-rate-continuous",
       "type": "proposition",
       "document": "11_hk_convergence.md",
       "line": 1310,
@@ -918,8 +918,8 @@
       "rigor_score": null,
       "integration_status": null
     },
-    "prop-velocity-rate-explicit": {
-      "label": "prop-velocity-rate-explicit",
+    "attr-velocity-rate-explicit": {
+      "label": "attr-velocity-rate-explicit",
       "type": "proposition",
       "document": "06_convergence.md",
       "line": 1233,
@@ -933,8 +933,8 @@
       "rigor_score": null,
       "integration_status": null
     },
-    "prop-position-rate-explicit": {
-      "label": "prop-position-rate-explicit",
+    "attr-position-rate-explicit": {
+      "label": "attr-position-rate-explicit",
       "type": "proposition",
       "document": "06_convergence.md",
       "line": 1321,
@@ -948,8 +948,8 @@
       "rigor_score": null,
       "integration_status": null
     },
-    "prop-wasserstein-rate-explicit": {
-      "label": "prop-wasserstein-rate-explicit",
+    "attr-wasserstein-rate-explicit": {
+      "label": "attr-wasserstein-rate-explicit",
       "type": "proposition",
       "document": "06_convergence.md",
       "line": 1419,
@@ -963,8 +963,8 @@
       "rigor_score": null,
       "integration_status": null
     },
-    "prop-boundary-rate-explicit": {
-      "label": "prop-boundary-rate-explicit",
+    "attr-boundary-rate-explicit": {
+      "label": "attr-boundary-rate-explicit",
       "type": "proposition",
       "document": "06_convergence.md",
       "line": 1518,

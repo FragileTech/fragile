@@ -1,0 +1,77 @@
+{
+  "label": "thm-quantitative-propagation-chaos",
+  "type": "theorem",
+  "name": "Quantitative Propagation of Chaos",
+  "line_range": [
+    710,
+    795
+  ],
+  "status": "complete",
+  "main_result": true,
+  "part": "I",
+  "input_objects": [
+    "obj-nu-n-qsd",
+    "obj-rho-0",
+    "obj-empirical-measure"
+  ],
+  "input_axioms": [],
+  "input_theorems": [
+    "thm-kl-convergence-euclidean",
+    "lem-lipschitz-observable-error",
+    "lem-quantitative-kl-bound",
+    "attr-finite-second-moment-meanfield"
+  ],
+  "input_parameters": [
+    "C_obs",
+    "C_var",
+    "C_prime",
+    "C_int",
+    "L_phi"
+  ],
+  "attributes_required": {
+    "obj-nu-n-qsd": [
+      "attr-n-uniform-lsi",
+      "attr-exchangeable"
+    ],
+    "obj-observable-phi": [
+      "attr-lipschitz-continuous"
+    ],
+    "obj-rho-0": [
+      "attr-finite-second-moment"
+    ]
+  },
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-mean-field-convergence-o-1-over-sqrt-n"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-n-particle-system",
+      "to": "obj-mean-field-limit",
+      "type": "quantitative_convergence",
+      "bound": "|E_nu_N[phi_N] - E_rho_0[phi]| <= C_obs * L_phi / sqrt(N)",
+      "order": "O(1/sqrt(N))"
+    }
+  ],
+  "internal_lemmas": [],
+  "proof_chain": [
+    "lem-quantitative-kl-bound: D_KL = O(1/N)",
+    "prop-empirical-wasserstein-concentration: E[W_2^2] <= O(1/N)",
+    "lem-lipschitz-observable-error: E[W_1] <= O(1/sqrt(N))",
+    "Kantorovich-Rubinstein: observable error <= L_phi * W_1"
+  ],
+  "notes": [
+    "MAIN RESULT of Part I",
+    "Optimal O(1/sqrt(N)) rate matches CLT",
+    "Explicit constant C_obs (up to C_int computation)",
+    "Works for all Lipschitz observables",
+    "N-uniform bound - no blow-up as N \u2192 infinity"
+  ],
+  "remaining_work": [
+    "Compute explicit C_int (Phase 3, Challenge 1)",
+    "Numerical validation of theoretical bounds"
+  ],
+  "external_references": [
+    "Sznitman (1991) - Topics in propagation of chaos"
+  ]
+}

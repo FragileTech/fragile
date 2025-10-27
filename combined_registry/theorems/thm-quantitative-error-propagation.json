@@ -1,0 +1,52 @@
+{
+  "label": "thm-quantitative-error-propagation",
+  "name": "Error Propagation for Ergodic Chains",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-nu-n-discrete",
+    "obj-nu-n-continuous"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "C_split",
+    "kappa_mix",
+    "C_poisson"
+  ],
+  "properties_required": {
+    "obj-discrete-chain": [
+      "prop-geometric-ergodicity"
+    ],
+    "obj-test-function-phi": [
+      "prop-c4-regularity"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-nu-n-discrete-nu-n-continuous-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-nu-n-discrete",
+      "target_object": "obj-nu-n-continuous",
+      "established_by": "thm-quantitative-error-propagation",
+      "expression": "bound: |E_nu_discrete[phi] - E_nu_cont[phi]| <= (C_split / kappa_mix) * ||phi||_C4 * dt",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    }
+  ]
+}

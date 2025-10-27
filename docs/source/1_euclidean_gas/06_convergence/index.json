@@ -1,0 +1,69 @@
+{
+  "version": "1.0.0",
+  "statistics": {
+    "total_objects": 36,
+    "counts_by_type": {
+      "MathematicalObject": 11,
+      "Axiom": 0,
+      "Parameter": 0,
+      "Property": 0,
+      "Relationship": 0,
+      "TheoremBox": 25
+    },
+    "total_tags": 6,
+    "all_tags": [
+      "convergence",
+      "euclidean-gas",
+      "particle",
+      "stability",
+      "swarm",
+      "variance"
+    ]
+  },
+  "all_ids": [
+    "obj-full-lyapunov-recall",
+    "obj-cemetery-state",
+    "obj-qsd",
+    "obj-complete-parameter-space",
+    "obj-rate-sensitivity-matrix",
+    "obj-equilibrium-sensitivity-matrix",
+    "obj-parameter-optimization",
+    "obj-pareto-optimality",
+    "obj-param-selection",
+    "obj-projected-gradient-ascent",
+    "obj-adaptive-tuning",
+    "thm-foster-lyapunov-main",
+    "thm-phi-irreducibility",
+    "thm-aperiodicity",
+    "thm-main-convergence",
+    "thm-equilibrium-variance-bounds",
+    "thm-synergistic-rate-derivation",
+    "thm-total-rate-explicit",
+    "thm-explicit-rate-sensitivity",
+    "thm-svd-rate-matrix",
+    "thm-subgradient-min",
+    "thm-balanced-optimality",
+    "thm-error-propagation",
+    "thm-closed-form-optimum",
+    "attr-complete-drift-summary",
+    "attr-qsd-properties",
+    "attr-velocity-rate-explicit",
+    "attr-position-rate-explicit",
+    "attr-wasserstein-rate-explicit",
+    "attr-boundary-rate-explicit",
+    "attr-mixing-time-explicit",
+    "attr-parameter-classification",
+    "attr-condition-number-rate",
+    "attr-restitution-friction-coupling",
+    "attr-jitter-cloning-coupling",
+    "attr-phase-space-pairing"
+  ],
+  "all_tags": [
+    "euclidean-gas",
+    "convergence",
+    "particle",
+    "variance",
+    "stability",
+    "swarm"
+  ]
+}

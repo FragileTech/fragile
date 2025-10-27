@@ -1,0 +1,14 @@
+{
+  "label": "obj-generator",
+  "name": "Infinitesimal Generator of the Kinetic SDE",
+  "mathematical_expression": "\\mathcal{L}V(S) = \\lim_{\\tau \\to 0^+} \\frac{\\mathbb{E}[V(S_\\tau) | S_0 = S] - V(S)}{\\tau}",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction"
+}

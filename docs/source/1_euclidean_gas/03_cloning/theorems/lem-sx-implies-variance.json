@@ -1,0 +1,32 @@
+{
+  "label": "lem-sx-implies-variance",
+  "name": "Structural Positional Error and Internal Variance",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "section": "3.2.4",
+    "line_start": 621,
+    "line_end": 720
+  },
+  "input_objects": [
+    "obj-structural-error-component",
+    "obj-barycentres-and-centered-vectors"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "R_spread"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "lem-wasserstein-decomposition"
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "variance_bound"
+  ],
+  "relations_established": [
+    "V_x,struct <= 2(Var_1(x) + Var_2(x))"
+  ]
+}

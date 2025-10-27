@@ -1,0 +1,58 @@
+{
+  "label": "lem-qsd-strict-positivity",
+  "name": "QSD Strict Positivity",
+  "statement_type": "lemma",
+  "source": {
+    "file": "11_hk_convergence_bounded_density_rigorous_proof.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-qsd",
+    "def-cloning-operator"
+  ],
+  "input_axioms": [
+    "ax-domain-regularity",
+    "def-axiom-rescale-function",
+    "ax-lipschitz-fields",
+    "ax-velocity-regularization"
+  ],
+  "input_parameters": [
+    "sigma_x",
+    "R",
+    "eta",
+    "d",
+    "m_eq"
+  ],
+  "attributes_required": {
+    "small-set-minorization": [
+      "K_clone \u2265 \u03b7 G_\u03c3_x(x'\u2212x) \u21d2 P(z, \u00b7) \u2265 \u03b4 \u03bd(\u00b7) with \u03b4 = \u03b7 c_\u03c3_x,R"
+    ],
+    "support": [
+      "\u03c6-irreducible \u21d2 supp(\u03c0_QSD) = X_valid"
+    ],
+    "smoothing": [
+      "Invariant density is C^\u221e by hypoellipticity of full operator"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-gaussian-kernel-lower-bound",
+    "lem-strict-positivity-cloning",
+    "lem-linfty-full-operator"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "lem-gaussian-kernel-lower-bound",
+    "lem-strict-positivity-cloning",
+    "lem-linfty-full-operator"
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "Uniform positive lower bound on QSD density: inf_x \u03c0_QSD(x) \u2265 c_\u03c0 > 0"
+  ],
+  "relations_established": [
+    "P(z, dx) \u2265 \u03b7 c_\u03c3_x,R dx \u21d2 \u03c0_QSD(dx) \u2265 \u03b7 c_\u03c3_x,R ||\u03c0_QSD||_{L^1} dx",
+    "c_\u03c0 = \u03b7 c_\u03c3_x,R m_eq",
+    "inf_{x \u2208 X_valid} \u03c0_QSD(x) \u2265 c_\u03c0 > 0"
+  ]
+}

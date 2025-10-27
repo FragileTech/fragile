@@ -1,0 +1,68 @@
+{
+  "label": "thm-bounded-density-ratio-main",
+  "name": "Bounded Density Ratio for the Euclidean Gas (RIGOROUS)",
+  "statement_type": "theorem",
+  "source": {
+    "file": "11_hk_convergence_bounded_density_rigorous_proof.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-qsd",
+    "def-cloning-operator",
+    "def-kinetic-operator"
+  ],
+  "input_axioms": [
+    "ax-domain-regularity",
+    "ax-lipschitz-fields",
+    "ax-velocity-regularization",
+    "def-axiom-rescale-function",
+    "ax-guaranteed-revival"
+  ],
+  "input_parameters": [
+    "gamma",
+    "sigma_v",
+    "sigma_x",
+    "U",
+    "R",
+    "M_0",
+    "N",
+    "eta",
+    "kappa_QSD",
+    "delta",
+    "d"
+  ],
+  "attributes_required": {
+    "early-time-linfty": [
+      "lem-linfty-full-operator yields C_hypo(M_0, T_0, \u2026)"
+    ],
+    "qsd-lower-bound": [
+      "lem-qsd-strict-positivity \u21d2 inf_x \u03c0_QSD \u2265 c_\u03c0 = \u03b7 c_\u03c3_x,R m_eq"
+    ],
+    "mass-lower-prob": [
+      "lem-mass-lower-bound-high-prob \u21d2 ||\u03c1_t||_{L^1} \u2265 c_mass = m_eq/2 with high prob"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-linfty-full-operator",
+    "lem-qsd-strict-positivity",
+    "lem-mass-lower-bound-high-prob",
+    "lem-gaussian-kernel-lower-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "lem-linfty-full-operator",
+    "lem-qsd-strict-positivity",
+    "lem-mass-lower-bound-high-prob",
+    "lem-gaussian-kernel-lower-bound"
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Existence of finite M bounding sup_x d\u03bc\u0303_t/d\u03c0\u0303_QSD uniformly in t with high probability"
+  ],
+  "relations_established": [
+    "M = C_hypo(M_0, T_0, \u2026)/(c_\u03c3_x,R c_mass) with T_0 = O(\u03ba_QSD^{-1})",
+    "sup_x \u03bc\u0303_t/\u03c0\u0303_QSD \u2264 (||\u03c1_t||_\u221e / inf_x \u03c0_QSD) \u00b7 (m_eq/||\u03c1_t||_{L^1}) \u2264 C_hypo/(c_\u03c3_x,R c_mass)",
+    "sup_{t\u22650} sup_{x\u2208X_valid} d\u03bc\u0303_t/d\u03c0\u0303_QSD(x) \u2264 M < \u221e"
+  ]
+}

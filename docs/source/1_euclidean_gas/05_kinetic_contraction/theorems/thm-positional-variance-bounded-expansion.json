@@ -1,0 +1,51 @@
+{
+  "label": "thm-positional-variance-bounded-expansion",
+  "name": "Bounded Positional Variance Expansion Under Kinetics",
+  "statement_type": "theorem",
+  "source": {
+    "file": "05_kinetic_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-positional-variance-recall"
+  ],
+  "input_axioms": [
+    "axiom-bounded-displacement",
+    "axiom-friction-timestep"
+  ],
+  "input_parameters": [
+    "V_Var_x",
+    "C_kin_x",
+    "M_x",
+    "M_v",
+    "gamma",
+    "sigma_max",
+    "tau"
+  ],
+  "attributes_required": {
+    "variance-bounds": [
+      "uniform-from-synergistic-framework"
+    ],
+    "velocity-covariance": [
+      "exponential-decay"
+    ]
+  },
+  "internal_lemmas": [
+    "integral-representation-position",
+    "position-velocity-coupling-cauchy-schwarz",
+    "velocity-accumulation-ou-covariance",
+    "thm-velocity-variance-contraction-kinetic",
+    "thm-positional-variance-contraction"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "state-independent-bounded-expansion"
+  ],
+  "relations_established": [
+    "thermal-noise-causes-bounded-diffusion",
+    "overcome-by-cloning-contraction"
+  ]
+}

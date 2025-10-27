@@ -1,0 +1,12 @@
+{
+  "label": "obj-qsd",
+  "name": "Quasi-Stationary Distribution (QSD)",
+  "mathematical_expression": "P(S_{t+1} \\in A \\mid S_t \\sim \\nu_{\\text{QSD}}, \\text{not absorbed}) = \\nu_{\\text{QSD}}(A)",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "swarm"
+  ],
+  "source": null
+}

@@ -1,0 +1,37 @@
+{
+  "label": "thm-bakry-emery-classical",
+  "name": "Classical Bakry-\u00c9mery Criterion",
+  "statement_type": "theorem",
+  "source": {
+    "file": "09_kl_convergence.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-diffusion-generator",
+    "def-dirichlet-form",
+    "def-gamma-calculus"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "rho"
+  ],
+  "attributes_required": {
+    "curvature": [
+      "\u0393\u2082 \u2265 \u03c1 \u0393 (carr\u00e9 du champ it\u00e9r\u00e9 bound)",
+      "Equivalently: Hess(V) \u227d \u03c1 I (potential convexity)"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "LSI constant C_LSI \u2264 2/\u03c1 under curvature condition",
+    "Classical criterion for LSI via \u0393-\u0393\u2082 calculus"
+  ],
+  "relations_established": [
+    "\u0393\u2082(f) \u2265 \u03c1 \u0393(f) implies LSI with C_LSI \u2264 2/\u03c1",
+    "Provides context for why convexity-based LSI fails for kinetic operator"
+  ]
+}

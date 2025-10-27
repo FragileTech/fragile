@@ -1,0 +1,14 @@
+{
+  "label": "obj-discrete-particle-system",
+  "name": "Discrete Particle System",
+  "mathematical_expression": "S_N = {x_i(t)}_{i=1}^N ⊂ ℝ^d",
+  "object_type": "set",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "euclidean-gas",
+    "discrete",
+    "particle",
+    "finite"
+  ]
+}

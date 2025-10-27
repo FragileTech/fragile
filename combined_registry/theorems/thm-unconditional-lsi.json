@@ -1,0 +1,51 @@
+{
+  "label": "thm-unconditional-lsi",
+  "name": "Unconditional LSI for Euclidean Gas (TARGET)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-total-operator"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf"
+  ],
+  "properties_required": {
+    "no-cloning-assumption": [
+      "LSI without cloning noise assumption"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-kinetic-lsi"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-unconditional-lsi-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-total-operator",
+      "target_object": "obj-total-operator",
+      "established_by": "thm-unconditional-lsi",
+      "expression": "Kinetic LSI holds without cloning",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

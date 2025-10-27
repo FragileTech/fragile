@@ -1,0 +1,270 @@
+{
+  "label": "thm-euclidean-feller",
+  "name": "Feller continuity of $\\Psi_{\\mathcal F_{\\mathrm{EG}}}$",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "02_euclidean_gas",
+    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+    "section": "Appendix A. Proof of the Feller Property for the Euclidean Gas Kernel",
+    "directive_label": "thm-euclidean-feller",
+    "line_range": [2262, 2279]
+  },
+  "input_objects": [
+    "obj-euclidean-gas-operator",
+    "obj-swarm-state-space",
+    "obj-sasaki-dispersion-metric",
+    "obj-measurement-pipeline",
+    "obj-cloning-operator",
+    "obj-kinetic-operator-baoab",
+    "obj-companion-selection-measure"
+  ],
+  "input_axioms": [
+    "axiom-valid-domain-boundary-c1"
+  ],
+  "input_parameters": [
+    "param-N",
+    "param-d",
+    "param-tau",
+    "param-sigma-v",
+    "param-sigma-x",
+    "param-gamma-friction",
+    "param-alpha-restitution"
+  ],
+  "attributes_required": {
+    "obj-swarm-state-space": [
+      "attr-metric-space-structure",
+      "attr-complete-separable-metric-space"
+    ],
+    "obj-sasaki-dispersion-metric": [
+      "attr-metric-space-structure",
+      "attr-couples-position-velocity"
+    ],
+    "obj-measurement-pipeline": [
+      "attr-continuous-in-dispersion-metric"
+    ],
+    "obj-cloning-operator": [
+      "attr-gaussian-jitter-fixed-covariance",
+      "attr-momentum-conserving"
+    ],
+    "obj-kinetic-operator-baoab": [
+      "attr-feller-continuous",
+      "attr-second-moment-quadratic-growth"
+    ],
+    "obj-companion-selection-measure": [
+      "attr-depends-continuously-on-swarm"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-sasaki-single-walker-positional-error",
+    "lem-sasaki-aggregator-lipschitz",
+    "lem-squashing-properties-generic",
+    "lem-euclidean-perturb-moment",
+    "lem-euclidean-boundary-holder"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    ["lem-sasaki-single-walker-positional-error", "thm-sasaki-distance-ms"],
+    ["thm-sasaki-distance-ms", "lem-sasaki-aggregator-lipschitz"],
+    ["lem-sasaki-aggregator-lipschitz", "thm-sasaki-standardization-value"],
+    ["lem-sasaki-aggregator-lipschitz", "thm-sasaki-standardization-structural"],
+    ["lem-squashing-properties-generic", "thm-euclidean-feller"],
+    ["lem-euclidean-perturb-moment", "thm-euclidean-feller"],
+    ["lem-euclidean-boundary-holder", "thm-euclidean-feller"]
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-feller-continuous",
+      "expression": "\\Psi_{\\mathcal F_{\\mathrm{EG}}} : \\Sigma_N \\times \\mathcal{B}(\\Sigma_N) \\to [0,1] \\text{ is a Feller Markov kernel with respect to } d_{\\mathrm{Disp},\\mathcal Y}^{\\mathrm{Sasaki}}",
+      "object_label": "obj-euclidean-gas-operator",
+      "established_by": "thm-euclidean-feller",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "Appendix A. Proof of the Feller Property for the Euclidean Gas Kernel",
+        "directive_label": "thm-euclidean-feller",
+        "line_range": [2262, 2279]
+      }
+    },
+    {
+      "label": "attr-time-homogeneous-markov-chain",
+      "expression": "\\Psi_{\\mathcal F_{\\mathrm{EG}}} \\text{ defines a time-homogeneous Feller Markov chain on } (\\Sigma_N, d_{\\mathrm{Disp},\\mathcal Y}^{\\mathrm{Sasaki}})",
+      "object_label": "obj-euclidean-gas-operator",
+      "established_by": "thm-euclidean-feller",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "Appendix A. Proof of the Feller Property for the Euclidean Gas Kernel",
+        "directive_label": "thm-euclidean-feller",
+        "line_range": [2262, 2279]
+      }
+    }
+  ],
+  "relations_established": [
+    {
+      "label": "rel-composition-feller-kernels-extension",
+      "relationship_type": "extension",
+      "bidirectional": false,
+      "source_object": "obj-stage-kernels",
+      "target_object": "obj-euclidean-gas-operator",
+      "established_by": "thm-euclidean-feller",
+      "expression": "\\text{Stage 1} \\circ \\text{Stage 2} \\circ \\text{Stage 3} \\circ \\text{Stage 4} = \\Psi_{\\mathcal F_{\\mathrm{EG}}}",
+      "properties": [
+        {
+          "label": "closure-under-composition",
+          "expression": "\\text{Feller kernels closed under composition}",
+          "description": "Each stage is Feller, composition preserves Feller property (Ethier & Kurtz 86, Prop. 4.2.2)"
+        }
+      ],
+      "tags": [
+        "euclidean-gas",
+        "feller-property",
+        "composition",
+        "markov-kernel"
+      ],
+      "timestamp": null,
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "Appendix A. Proof of the Feller Property for the Euclidean Gas Kernel",
+        "directive_label": "thm-euclidean-feller",
+        "line_range": [2262, 2279]
+      }
+    }
+  ],
+  "proof_structure": {
+    "strategy": "Prove each stage (cemetery check, measurement, cloning, kinetic) is Feller with respect to Sasaki dispersion metric, then apply closure under composition",
+    "steps": [
+      {
+        "step_number": 1,
+        "description": "Prove Stage 1 (cemetery absorption) is Feller",
+        "input_properties": [
+          "attr-delta-measure-continuous"
+        ],
+        "output_properties": [
+          "attr-stage1-feller"
+        ],
+        "technique": "Identity map continuity and closed set condition",
+        "expression": "\\mathcal S \\mapsto \\delta_{\\mathcal S} \\text{ is continuous; } \\mathcal A(\\mathcal S) = \\varnothing \\text{ is closed}",
+        "references": []
+      },
+      {
+        "step_number": 2,
+        "description": "Prove Stage 2 (measurement and potential pipeline) is Feller",
+        "input_properties": [
+          "attr-companion-coupling-continuous",
+          "attr-standardization-continuous",
+          "attr-rescale-continuous"
+        ],
+        "output_properties": [
+          "attr-stage2-feller"
+        ],
+        "technique": "Composition of continuous operations in dispersion metric",
+        "expression": "\\text{Kernel outputting } (\\mathbf r, \\mathbf d, \\mathbf V_{\\text{fit}}) \\text{ is Feller}",
+        "references": [
+          "lem-sasaki-single-walker-positional-error",
+          "thm-sasaki-distance-ms",
+          "lem-sasaki-aggregator-lipschitz",
+          "thm-sasaki-standardization-value",
+          "thm-sasaki-standardization-structural"
+        ]
+      },
+      {
+        "step_number": 3,
+        "description": "Prove Stage 3 (Clone/Persist gate) is Feller",
+        "input_properties": [
+          "attr-bernoulli-probabilities-continuous",
+          "attr-gaussian-jitter-fixed-covariance",
+          "attr-squashing-map-1-lipschitz"
+        ],
+        "output_properties": [
+          "attr-stage3-feller"
+        ],
+        "technique": "Finite mixture of Feller kernels with continuous weights",
+        "expression": "p_i(\\mathcal S) \\text{ continuous; pushforward through } \\psi_v \\text{ is Feller}",
+        "references": [
+          "lem-squashing-properties-generic"
+        ]
+      },
+      {
+        "step_number": 4,
+        "description": "Prove Stage 4 (kinetic step and boundary check) is Feller",
+        "input_properties": [
+          "attr-kinetic-update-feller",
+          "attr-second-moment-quadratic-growth",
+          "attr-death-probability-continuous",
+          "attr-boundary-zero-measure"
+        ],
+        "output_properties": [
+          "attr-stage4-feller"
+        ],
+        "technique": "Feller kinetic operator plus dominated convergence for boundary indicator",
+        "expression": "(x,v) \\mapsto (x^+, v^+) \\text{ is Feller; } \\mathbb P(x^+ \\in \\partial \\mathcal X_{\\mathrm{valid}}) = 0 \\text{ under } C^1 \\text{ boundary}",
+        "references": [
+          "lem-euclidean-perturb-moment",
+          "lem-euclidean-boundary-holder"
+        ]
+      },
+      {
+        "step_number": 5,
+        "description": "Apply composition closure to conclude full operator is Feller",
+        "input_properties": [
+          "attr-stage1-feller",
+          "attr-stage2-feller",
+          "attr-stage3-feller",
+          "attr-stage4-feller"
+        ],
+        "output_properties": [
+          "attr-feller-continuous",
+          "attr-time-homogeneous-markov-chain"
+        ],
+        "technique": "Closure of Feller kernels under composition (Ethier & Kurtz 86, Prop. 4.2.2)",
+        "expression": "\\Psi_{\\mathcal F_{\\mathrm{EG}}} = \\text{Stage}_1 \\circ \\text{Stage}_2 \\circ \\text{Stage}_3 \\circ \\text{Stage}_4 \\text{ is Feller on } (\\Sigma_N, d_{\\mathrm{Disp},\\mathcal Y}^{\\mathrm{Sasaki}})",
+        "references": [
+          "def-fragile-gas-algorithm"
+        ]
+      }
+    ],
+    "dependencies": [
+      "lem-sasaki-single-walker-positional-error",
+      "thm-sasaki-distance-ms",
+      "lem-sasaki-aggregator-lipschitz",
+      "thm-sasaki-standardization-value",
+      "thm-sasaki-standardization-structural",
+      "lem-squashing-properties-generic",
+      "lem-euclidean-perturb-moment",
+      "lem-euclidean-boundary-holder"
+    ],
+    "assumptions": [
+      "Valid domain boundary is C^1 (ensures P(x^+ in boundary) = 0)",
+      "Companion selection measure C(S) is well-defined and continuous",
+      "Patched standardization and logistic rescale operators are continuous",
+      "BAOAB kinetic operator is Feller with quadratic moment growth",
+      "Gaussian jitter has fixed covariance (no state dependence)",
+      "Squashing maps psi_x, psi_v are 1-Lipschitz",
+      "Sasaki dispersion metric d_Disp^Sasaki couples position and velocity"
+    ]
+  },
+  "mathematical_context": {
+    "role": "Establishes that the Euclidean Gas one-step operator is a well-defined Feller Markov kernel, enabling ergodic theory and convergence analysis",
+    "used_by": [
+      "thm-euclidean-gas-ergodicity",
+      "thm-qsd-convergence",
+      "thm-mean-field-limit"
+    ],
+    "tags": [
+      "euclidean-gas",
+      "feller-property",
+      "markov-kernel",
+      "sasaki-metric",
+      "composition",
+      "convergence-foundations"
+    ]
+  }
+}

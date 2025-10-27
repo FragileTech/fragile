@@ -1,0 +1,51 @@
+{
+  "label": "lem-variance-decomposition",
+  "name": "Variance Decomposition by Clusters",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-target-complement",
+    "def-unified-high-low-error-sets",
+    "def-unfit-set"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "k",
+    "f_I",
+    "f_J"
+  ],
+  "properties_required": {
+    "def-target-complement": [
+      "I_k and J_k form a partition of alive set",
+      "Finite second moments"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-variance-decomposition-0-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-target-complement",
+      "target_object": "obj-unified-high-low-error-sets",
+      "established_by": "lem-variance-decomposition",
+      "expression": "Var_x(S_k) = f_I Var_x(I_k) + f_J Var_x(J_k) + f_I f_J ||μ_x(I_k) - μ_x(J_k)||²",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    }
+  ]
+}

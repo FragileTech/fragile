@@ -1,0 +1,39 @@
+{
+  "label": "attr-interaction-complexity-bound",
+  "name": "Interaction Complexity Constant C_int",
+  "statement_type": "proposition",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-diversity-companion-prob",
+    "obj-rho-0"
+  ],
+  "input_theorems": [],
+  "input_axioms": [],
+  "input_parameters": [
+    "lambda",
+    "L_log_rho_0",
+    "diam_Omega"
+  ],
+  "attributes_required": {
+    "obj-rho-0": [
+      "attr-lipschitz-log-density"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Constant",
+  "attributes_added": [
+    "attr-finite-n-independent"
+  ],
+  "relations_established": [
+    "c-int-equals-lambda-lipschitz-diameter",
+    "mean-field-scaling-1-over-n",
+    "used-throughout-chapter"
+  ],
+  "explicit_formula": "C_int = lambda * L_log(rho_0) * diam(Omega)"
+}

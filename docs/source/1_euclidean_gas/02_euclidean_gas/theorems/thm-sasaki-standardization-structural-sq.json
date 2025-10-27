@@ -1,0 +1,194 @@
+{
+  "label": "thm-sasaki-standardization-structural-sq",
+  "name": "Structural Continuity of Patched Standardization (Sasaki)",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "02_euclidean_gas",
+    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+    "section": "2.3.6",
+    "directive_label": "thm-sasaki-standardization-structural-sq",
+    "line_range": [1680, 1691]
+  },
+  "input_objects": [
+    "obj-swarm-state",
+    "obj-standardization-operator",
+    "obj-alive-set",
+    "obj-status-change-count",
+    "obj-structural-error-coefficients"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-N",
+    "param-k-alive-min",
+    "param-V-max-R",
+    "param-sigma-min-patch"
+  ],
+  "attributes_required": {
+    "obj-swarm-state": [
+      "attr-has-alive-set",
+      "attr-has-status-vector",
+      "attr-alive-count-positive"
+    ],
+    "obj-standardization-operator": [
+      "prop-N-dimensional",
+      "attr-preserves-dead-zero",
+      "attr-depends-on-structure"
+    ],
+    "obj-alive-set": [
+      "attr-defined-for-swarm",
+      "attr-cardinality-bounded"
+    ],
+    "obj-status-change-count": [
+      "attr-symmetric",
+      "prop-bounded-by-N"
+    ],
+    "obj-structural-error-coefficients": [
+      "attr-well-defined",
+      "attr-depends-on-swarm-states"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-sasaki-structural-error-decomposition",
+    "lem-sasaki-direct-structural-error-sq",
+    "lem-sasaki-indirect-structural-error-sq"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    ["lem-sasaki-structural-error-decomposition", "thm-sasaki-standardization-structural-sq"],
+    ["lem-sasaki-direct-structural-error-sq", "thm-sasaki-standardization-structural-sq"],
+    ["lem-sasaki-indirect-structural-error-sq", "thm-sasaki-standardization-structural-sq"]
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-structural-continuity-squared",
+      "expression": "\\|z(\\mathcal S_1)-z(\\mathcal S_2)\\|_2^2 \\le C_{S,\\mathrm{direct}}^{\\mathrm{sq}}(\\mathcal S_1, \\mathcal S_2) \\cdot n_c(\\mathcal S_1, \\mathcal S_2) + C_{S,\\mathrm{indirect}}^{\\mathrm{sq}}(\\mathcal S_1, \\mathcal S_2) \\cdot n_c(\\mathcal S_1, \\mathcal S_2)^2",
+      "object_label": "obj-standardization-operator",
+      "established_by": "thm-sasaki-standardization-structural-sq",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.6",
+        "directive_label": "thm-sasaki-standardization-structural-sq",
+        "line_range": [1685, 1688]
+      }
+    },
+    {
+      "label": "attr-error-polynomial-in-status-changes",
+      "expression": "\\text{Squared L2 error is polynomial (degree 2) in } n_c(\\mathcal S_1, \\mathcal S_2)",
+      "object_label": "obj-standardization-operator",
+      "established_by": "thm-sasaki-standardization-structural-sq",
+      "timestamp": null,
+      "can_be_refined": false,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.6",
+        "directive_label": "thm-sasaki-standardization-structural-sq",
+        "line_range": [1683, 1688]
+      }
+    },
+    {
+      "label": "attr-structural-bound-deterministic",
+      "expression": "\\text{The structural continuity bound is deterministic (worst-case)}",
+      "object_label": "obj-standardization-operator",
+      "established_by": "thm-sasaki-standardization-structural-sq",
+      "timestamp": null,
+      "can_be_refined": false,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.6.4",
+        "directive_label": "proof-thm-sasaki-standardization-structural-sq",
+        "line_range": [1929, 1929]
+      }
+    }
+  ],
+  "relations_established": [
+    {
+      "label": "rel-standardization-status-changes-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-standardization-operator",
+      "target_object": "obj-status-change-count",
+      "established_by": "thm-sasaki-standardization-structural-sq",
+      "expression": "\\|z(\\mathcal S_1)-z(\\mathcal S_2)\\|_2^2 = O(n_c) + O(n_c^2)",
+      "properties": [
+        {
+          "label": "error-linear-term",
+          "expression": "C_{S,\\mathrm{direct}}^{\\mathrm{sq}} = \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2",
+          "description": "Linear coefficient in status change count"
+        },
+        {
+          "label": "error-quadratic-term",
+          "expression": "C_{S,\\mathrm{indirect}}^{\\mathrm{sq}}(\\mathcal S_1, \\mathcal S_2) = 2 k_{\\mathrm{stable}} \\frac{(L_{\\mu,S}^{\\mathrm{Sasaki}})^2}{\\sigma_{\\min,\\mathrm{patch}}^{2}} + 2 k_2 \\left(\\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}}\\right)^2 \\frac{(L_{\\sigma',S}^{\\mathrm{Sasaki}})^2}{\\sigma_{\\min,\\mathrm{patch}}^{2}}",
+          "description": "Quadratic coefficient in status change count (state-dependent)"
+        },
+        {
+          "label": "bound-type",
+          "expression": "\\text{upper bound}",
+          "description": "Inequality provides upper bound on squared error"
+        }
+      ],
+      "tags": [
+        "structural-continuity",
+        "status-changes",
+        "sasaki-geometry",
+        "standardization",
+        "polynomial-bound"
+      ],
+      "timestamp": null,
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.6",
+        "directive_label": "thm-sasaki-standardization-structural-sq",
+        "line_range": [1680, 1691]
+      }
+    },
+    {
+      "label": "rel-structural-error-decomposition-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-standardization-operator",
+      "target_object": "obj-structural-error-vector",
+      "established_by": "thm-sasaki-standardization-structural-sq",
+      "expression": "\\|z(\\mathcal S_1)-z(\\mathcal S_2)\\|_2^2 = \\|\\Delta_{\\text{direct}}\\|_2^2 + \\|\\Delta_{\\text{indirect}}\\|_2^2",
+      "properties": [
+        {
+          "label": "orthogonal-decomposition",
+          "expression": "\\Delta\\mathbf{z} = \\Delta_{\\text{direct}} + \\Delta_{\\text{indirect}}",
+          "description": "Total error decomposes into direct and indirect components"
+        },
+        {
+          "label": "direct-error-linear",
+          "expression": "\\|\\Delta_{\\text{direct}}\\|_2^2 = O(n_c)",
+          "description": "Direct error scales linearly with status changes"
+        },
+        {
+          "label": "indirect-error-quadratic",
+          "expression": "\\|\\Delta_{\\text{indirect}}\\|_2^2 = O(n_c^2)",
+          "description": "Indirect error scales quadratically with status changes"
+        }
+      ],
+      "tags": [
+        "error-decomposition",
+        "orthogonal-components",
+        "structural-continuity"
+      ],
+      "timestamp": null,
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.6.4",
+        "directive_label": "proof-thm-sasaki-standardization-structural-sq",
+        "line_range": [1893, 1932]
+      }
+    }
+  ]
+}

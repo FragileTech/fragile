@@ -1,0 +1,17 @@
+{
+  "label": "rel-unknown-unknown-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-unknown",
+  "target_object": "obj-unknown",
+  "established_by": "lem-qsd-lower-bound",
+  "expression": "{'type': 'bound', 'object': 'pi_QSD', 'property': 'uniform-lower-bound', 'value': 'c_pi = c_sigma_x_R * m_eq'}",
+  "properties": [],
+  "tags": [
+    "inferred-from-dict"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence"
+}

@@ -1,0 +1,41 @@
+{
+  "label": "thm-mixing-variance-corrected",
+  "name": "Variance of Mixing Measure",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "10_qsd_exchangeability_theory",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-qsd"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-N",
+    "param-C-int",
+    "param-B"
+  ],
+  "properties_required": {
+    "obj-qsd": [
+      "prop-de-finetti-mixture"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-mixing-variance-bound",
+      "expression": "Var_{𝒬_N}(E_μ[g]) ≤ (2 e^{C_int/N} B^2)/N  (and ≤ 3 B^2/N for large N)",
+      "object_label": "obj-qsd",
+      "established_by": "thm-mixing-variance-corrected",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

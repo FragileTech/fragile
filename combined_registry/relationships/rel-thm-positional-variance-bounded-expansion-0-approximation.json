@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-positional-variance-bounded-expansion-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-positional-variance-recall",
+  "target_object": "obj-positional-variance-recall",
+  "established_by": "thm-positional-variance-bounded-expansion",
+  "expression": "thermal-noise-causes-bounded-diffusion",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction"
+}

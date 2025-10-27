@@ -1,0 +1,14 @@
+{
+  "label": "obj-alg-distance",
+  "name": "Algorithmic Distance",
+  "mathematical_expression": "\\boxed{d_{\\text{alg}}(x_1, x_2) := d_{\\mathcal{Y}}(\\varphi(x_1), \\varphi(x_2))}",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

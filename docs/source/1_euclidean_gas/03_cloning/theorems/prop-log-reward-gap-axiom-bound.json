@@ -1,0 +1,35 @@
+{
+  "label": "attr-log-reward-gap-axiom-bound",
+  "name": "**(Axiom-Based Bound on the Logarithmic Reward Gap)**",
+  "statement_type": "proposition",
+  "source": {
+    "file": "docs/source/1_euclidean_gas/03_cloning.md",
+    "line_start": 4396,
+    "line_end": 4460
+  },
+  "input_objects": [
+    "obj-rescale-function",
+    "obj-reward-function"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-reward-regularity"
+  ],
+  "input_parameters": [
+    "param-kappa-rescaled",
+    "param-l-r",
+    "param-d-valid",
+    "param-eta"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lem-log-gap-upper-bound",
+    "lem-potential-bounds"
+  ],
+  "internal_propositions": [
+    "attr-raw-reward-mean-gap-bound"
+  ],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": []
+}

@@ -1,0 +1,49 @@
+{
+  "label": "lem-structural-error-drift-kinetic",
+  "name": "Drift of Structural Error Under Kinetics",
+  "statement_type": "lemma",
+  "source": {
+    "file": "05_kinetic_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [],
+  "input_axioms": [
+    "axiom-confining-potential",
+    "axiom-diffusion-tensor"
+  ],
+  "input_parameters": [
+    "V_struct",
+    "kappa_struct",
+    "C_struct_prime",
+    "N",
+    "gamma",
+    "sigma_min",
+    "sigma_max"
+  ],
+  "attributes_required": {
+    "coupling": [
+      "synchronous"
+    ]
+  },
+  "internal_lemmas": [
+    "single-pair-drift-from-lem-4-5",
+    "aggregation-over-N-particles",
+    "optimal-transport-index-matching",
+    "lem-location-error-drift-kinetic"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-location-error-drift-kinetic",
+      "lem-structural-error-drift-kinetic"
+    ]
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    "structural-error-drift-inequality"
+  ],
+  "relations_established": [
+    "empirical-measure-wasserstein-contraction"
+  ]
+}

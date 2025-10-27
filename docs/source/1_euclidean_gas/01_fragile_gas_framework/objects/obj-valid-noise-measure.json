@@ -1,0 +1,10 @@
+{
+  "label": "obj-valid-noise-measure",
+  "name": "Valid Noise Measure",
+  "mathematical_expression": "\\mathcal P_\\sigma",
+  "object_type": "measure",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [],
+  "source": null
+}

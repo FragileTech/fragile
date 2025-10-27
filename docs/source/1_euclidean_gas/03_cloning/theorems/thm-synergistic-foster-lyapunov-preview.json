@@ -1,0 +1,83 @@
+{
+  "label": "thm-synergistic-foster-lyapunov-preview",
+  "name": "Synergistic Foster-Lyapunov Condition (Preview)",
+  "statement_type": "theorem",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-cloning-operator-formal",
+    "obj-full-synergistic-lyapunov-function",
+    "obj-euclidean-gas"
+  ],
+  "input_axioms": [
+    "axiom-ax-domain-regularity",
+    "axiom-ax-lipschitz-fields",
+    "axiom-ax-safe-harbor",
+    "axiom-ax-non-deceptive-landscape",
+    "axiom-ax-velocity-regularization",
+    "axiom-ax-active-diversity"
+  ],
+  "input_parameters": [
+    "c_V",
+    "c_B",
+    "kappa_total",
+    "C_total"
+  ],
+  "attributes_required": {
+    "obj-cloning-operator-formal": [
+      "attr-positional-variance-contraction",
+      "attr-velocity-variance-bounded-expansion",
+      "attr-boundary-potential-contraction",
+      "attr-inter-swarm-bounded-expansion"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-cloning-stage-drift",
+    "lem-kinetic-stage-drift",
+    "lem-coupling-constants-balance",
+    "lem-total-drift-composition"
+  ],
+  "internal_propositions": [
+    "attr-coupling-constant-existence",
+    "attr-kinetic-necessity"
+  ],
+  "lemma_dag_edges": [
+    [
+      "lem-cloning-stage-drift",
+      "thm-positional-variance-contraction"
+    ],
+    [
+      "lem-cloning-stage-drift",
+      "thm-velocity-variance-bounded-expansion"
+    ],
+    [
+      "lem-cloning-stage-drift",
+      "thm-inter-swarm-bounded-expansion"
+    ],
+    [
+      "lem-kinetic-stage-drift",
+      "lem-coupling-constants-balance"
+    ],
+    [
+      "lem-coupling-constants-balance",
+      "lem-total-drift-composition"
+    ],
+    [
+      "lem-cloning-stage-drift",
+      "lem-total-drift-composition"
+    ]
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "attr-synergistic-foster-lyapunov",
+    "attr-geometric-ergodicity",
+    "attr-exponential-convergence-qsd"
+  ],
+  "relations_established": [
+    "rel-synergistic-dissipation",
+    "rel-operator-complementarity"
+  ]
+}

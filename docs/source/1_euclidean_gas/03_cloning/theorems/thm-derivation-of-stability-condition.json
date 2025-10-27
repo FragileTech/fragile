@@ -1,0 +1,58 @@
+{
+  "label": "thm-derivation-of-stability-condition",
+  "name": "Derivation of the Stability Condition for Intelligent Adaptation",
+  "statement_type": "theorem",
+  "source": {
+    "file": "03_cloning.md:3883-3980",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-fitness-operator",
+    "obj-fitness-potential-operator",
+    "obj-swarm-and-state-space",
+    "obj-unified-high-low-error-sets"
+  ],
+  "input_axioms": [
+    "axiom-ax-non-deceptive-landscape",
+    "axiom-def-axiom-sufficient-amplification"
+  ],
+  "input_parameters": [
+    "alpha",
+    "beta",
+    "epsilon",
+    "kappa_mean_d",
+    "kappa_mean_r",
+    "g_A_max",
+    "eta"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lem-variance-to-mean-separation",
+    "lem-log-gap-lower-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "thm-geometry-guarantees-variance",
+      "thm-derivation-of-stability-condition"
+    ],
+    [
+      "lem-variance-to-mean-separation",
+      "thm-derivation-of-stability-condition"
+    ],
+    [
+      "lem-log-gap-lower-bound",
+      "thm-derivation-of-stability-condition"
+    ]
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "stability_condition",
+    "intelligent_targeting"
+  ],
+  "relations_established": [
+    "diversity_signal_overcomes_reward_deception",
+    "necessary_sufficient_condition_for_intelligence"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "label": "lem-polynomial-patch-monotonicity",
+  "name": "Monotonicity of the Polynomial Patch",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": ["obj-asymmetric-rescale-function"],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-z-max"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-monotonicity",
+      "expression": "P'(z) \\ge 0 \\quad \\forall z \\in [z_{\\max}-1, z_{\\max}]",
+      "object_label": "obj-polynomial-patch"
+    }
+  ],
+  "relations_established": []
+}

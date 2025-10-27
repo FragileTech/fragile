@@ -1,0 +1,48 @@
+================================================================================
+DEEP DEPENDENCY ANALYSIS REPORT
+Document: 11_geometric_gas.md
+================================================================================
+
+SUMMARY STATISTICS
+--------------------------------------------------------------------------------
+total_directives: 61
+
+by_type:
+  definition: 12
+  proposition: 5
+  axiom: 4
+  theorem: 12
+  lemma: 19
+  corollary: 6
+  remark: 2
+  conjecture: 1
+total_dependencies: 456
+
+by_dependency_type:
+  implicit_notation: 415
+  explicit_ref: 41
+
+by_strength:
+  supporting: 416
+  important: 38
+  critical: 2
+missing_references: 0
+standard_prereqs: 10
+
+
+CRITICAL PATHS (Top 5)
+--------------------------------------------------------------------------------
+
+
+STANDARD MATHEMATICAL PREREQUISITES
+--------------------------------------------------------------------------------
+  - calculus
+  - differential_equations
+  - functional_analysis
+  - geometry
+  - linear_algebra
+  - measure_theory
+  - metric_space
+  - probability
+  - stochastic_processes
+  - topology

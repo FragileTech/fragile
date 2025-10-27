@@ -1,0 +1,12 @@
+{
+  "label": "obj-reference-measures",
+  "name": "Reference Noise and Kernel Families",
+  "mathematical_expression": "\\mathcal{X}",
+  "object_type": "set",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

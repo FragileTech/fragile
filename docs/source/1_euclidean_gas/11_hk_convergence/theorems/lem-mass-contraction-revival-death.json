@@ -1,0 +1,115 @@
+{
+  "label": "lem-mass-contraction-revival-death",
+  "name": "Mass Contraction via Revival and Death",
+  "statement_type": "lemma",
+  "source": {
+    "file": "docs/source/1_euclidean_gas/11_hk_convergence.md",
+    "line_start": 186,
+    "line_end": 226
+  },
+  "input_objects": [],
+  "input_axioms": [
+    "def-axiom-guaranteed-revival",
+    "def-axiom-local-perturbation"
+  ],
+  "input_parameters": [
+    "N",
+    "k_t",
+    "k_*",
+    "lambda_clone",
+    "bar_p_kill",
+    "L_lambda",
+    "L_p",
+    "tau",
+    "delta",
+    "C_var",
+    "lambda_max",
+    "bar_p_max"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "mass-contraction-exponential",
+    "qsd-equilibrium-stability"
+  ],
+  "relations_established": [
+    {
+      "type": "contraction",
+      "from": "alive-mass-fluctuation",
+      "to": "qsd-equilibrium-mass",
+      "rate": "kappa_mass"
+    },
+    {
+      "type": "balance",
+      "from": "revival-births",
+      "to": "boundary-deaths",
+      "equilibrium": "k_*"
+    }
+  ],
+  "parameters_detailed": {
+    "N": "Total number of walkers (alive + dead)",
+    "k_t": "Number of alive walkers at time t (total mass of empirical measure)",
+    "k_*": "Equilibrium alive count under QSD",
+    "lambda_clone": "Per-walker cloning rate (function of k_t)",
+    "bar_p_kill": "Average per-walker killing probability (function of population size)",
+    "L_lambda": "Lipschitz constant of cloning rate",
+    "L_p": "Lipschitz constant of killing rate",
+    "tau": "Time step size",
+    "delta": "Cloning noise scale (Gaussian perturbation)",
+    "C_var": "Variance constant from binomial death process",
+    "lambda_max": "Upper bound on cloning rate",
+    "bar_p_max": "Upper bound on killing probability"
+  },
+  "contraction_rates": {
+    "kappa_mass": {
+      "formula": "(1 - epsilon - epsilon^2) / 2",
+      "epsilon": "(1 + 2*L_p*N + bar_p_kill_*)*(L_lambda*N + lambda_clone_*)",
+      "condition": "epsilon^2 + epsilon < 1 (requires epsilon < (sqrt(5)-1)/2 ≈ 0.618)"
+    },
+    "C_mass": {
+      "formula": "C_N * N",
+      "C_N": "C_var + O(1/N)"
+    }
+  },
+  "assumptions": [
+    "Lipschitz continuity of lambda_clone(k) with constant L_lambda",
+    "Lipschitz continuity of bar_p_kill(k) with constant L_p",
+    "epsilon^2 + epsilon < 1 (achieved when L_p*L_lambda = O(1/N^2) for large N)",
+    "bar_p_kill(k') is twice continuously differentiable with L_g^(2) = O(N^-1)"
+  ],
+  "cross_chapter_dependencies": [
+    {
+      "chapter": "03_cloning",
+      "references": ["def-axiom-guaranteed-revival", "cloning-mechanism"],
+      "description": "Revival mechanism that guarantees all dead walkers are revived"
+    },
+    {
+      "chapter": "01_fragile_gas_framework",
+      "references": ["def-axiom-local-perturbation"],
+      "description": "Gaussian perturbations in cloning with variance delta^2"
+    },
+    {
+      "chapter": "07_mean_field",
+      "references": ["mean-field-rates", "BAOAB-discretization"],
+      "description": "Mean-field limit and continuous-time analysis"
+    }
+  ],
+  "proof_structure": {
+    "two_stage_process": {
+      "stage_1": "Births (cloning + guaranteed revival)",
+      "stage_2": "Deaths (kinetic operator + boundary killing)"
+    },
+    "key_insight": "Deaths D_t are drawn from intermediate population k'_t = N + C_t, NOT from initial population k_t",
+    "steps": [
+      "Expected deaths via two-stage expectation",
+      "Expected cloning events with Lipschitz continuity",
+      "Define QSD equilibrium condition",
+      "Drift calculation for mass deviation",
+      "Foster-Lyapunov analysis with variance bounds",
+      "Exponential contraction conclusion"
+    ]
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "label": "lem-uniform-geometric-ergodicity",
+  "name": "Δt-Uniform Geometric Ergodicity for Discrete Chain",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-discrete-chain-t-dt"
+  ],
+  "input_axioms": [
+    "axiom-confined-potential"
+  ],
+  "input_parameters": [
+    "C_erg",
+    "kappa_mix",
+    "Delta_t",
+    "kappa_E",
+    "C_4",
+    "delta_minor"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [
+    "drift-condition",
+    "minorization-condition"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-uniform-geometric-ergodicity-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-discrete-chain-t-dt",
+      "target_object": "obj-discrete-chain-t-dt",
+      "established_by": "lem-uniform-geometric-ergodicity",
+      "expression": "geometric-mixing-uniform-in-dt",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    },
+    {
+      "label": "rel-lem-uniform-geometric-ergodicity-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-discrete-chain-t-dt",
+      "target_object": "obj-discrete-chain-t-dt",
+      "established_by": "lem-uniform-geometric-ergodicity",
+      "expression": "gaussian-cloning-provides-full-support",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    }
+  ]
+}

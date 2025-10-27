@@ -1,0 +1,12 @@
+{
+  "label": "obj-swarm-aggregation-operator",
+  "name": "Swarm Aggregation Operator",
+  "mathematical_expression": "M",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "swarm"
+  ],
+  "source": null
+}

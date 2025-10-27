@@ -1,0 +1,6 @@
+{
+  "label": "axiom-ax-safe-harbor",
+  "statement": "**(Axiom EG-2): Existence of a Safe Harbor**",
+  "mathematical_expression": "C_{\\mathrm{safe}} \\subset \\mathcal X_{\\mathrm{valid}}",
+  "foundational_framework": "Euclidean Gas"
+}

@@ -1,0 +1,14 @@
+{
+  "label": "obj-continuous-pde",
+  "name": "Continuous PDE",
+  "mathematical_expression": "∂_t μ = ∆μ - ∇·(μ ∇U)",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "euclidean-gas",
+    "continuous",
+    "pde",
+    "mean-field"
+  ]
+}

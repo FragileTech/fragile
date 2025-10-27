@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-kinetic-evolution-bounds-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-kinetic-operator",
+  "target_object": "obj-kinetic-operator",
+  "established_by": "lem-kinetic-evolution-bounds",
+  "expression": "Moment bounds and stability estimates",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

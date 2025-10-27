@@ -1,0 +1,67 @@
+{
+  "label": "prop-qsd-properties",
+  "name": "Properties of the Quasi-Stationary Distribution",
+  "statement_type": "proposition",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-qsd",
+    "obj-swarm-and-state-space"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-gamma",
+    "param-sigma-v"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-qsd-position-structure",
+      "expression": "ρ_pos(x) ∝ exp(−U(x) − φ_barrier(x)) on X_valid",
+      "object_label": "obj-qsd",
+      "established_by": "prop-qsd-properties",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-qsd-velocity-gibbs",
+      "expression": "ρ_vel(v) ∝ exp( −∥v∥^2 / (2 σ_v^2/γ) )",
+      "object_label": "obj-qsd",
+      "established_by": "prop-qsd-properties",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-qsd-correlation-decay",
+      "expression": "E_{ν_QSD}[⟨x-\\bar x, v-\\bar v⟩] = O(e^{−γ Δt})",
+      "object_label": "obj-qsd",
+      "established_by": "prop-qsd-properties",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-qsd-internal-variance-bounds",
+      "expression": "V_{Var,x}^{QSD} = O(C_x/κ_x), V_{Var,v}^{QSD} = O(σ_v^2/γ)",
+      "object_label": "obj-qsd",
+      "established_by": "prop-qsd-properties",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

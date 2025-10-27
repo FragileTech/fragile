@@ -1,0 +1,34 @@
+{
+  "label": "thm-global-continuity-patched-standardization",
+  "name": "Global Continuity of the Patched Standardization Operator",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-standardization-operator-n-dimensional",
+    "obj-statistical-properties-measurement"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-globally-continuous",
+      "expression": "z(\\mathcal{S}, v, M) \\text{ is continuous on entire state space}",
+      "object_label": "obj-standardization-operator-n-dimensional",
+      "established_by": "thm-global-continuity-patched-standardization",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

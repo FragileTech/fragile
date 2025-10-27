@@ -1,0 +1,48 @@
+{
+  "label": "lem-sx-implies-variance",
+  "name": "Structural Positional Error and Internal Variance",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-structural-error-component",
+    "obj-barycentres-and-centered-vectors"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "R_spread"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-wasserstein-decomposition",
+      "lem-sx-implies-variance"
+    ]
+  ],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-sx-implies-variance-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-structural-error-component",
+      "target_object": "obj-barycentres-and-centered-vectors",
+      "established_by": "lem-sx-implies-variance",
+      "expression": "V_x,struct <= 2(Var_1(x) + Var_2(x))",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

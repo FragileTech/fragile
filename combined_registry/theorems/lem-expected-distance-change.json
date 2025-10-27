@@ -1,0 +1,89 @@
+{
+  "label": "lem-expected-distance-change",
+  "name": "Expected Cross-Distance Change",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-cluster-coupling",
+    "def-target-complement"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "epsilon",
+    "delta",
+    "d",
+    "c_align",
+    "c_sep",
+    "c_geom",
+    "p_bar_I"
+  ],
+  "properties_required": {
+    "coupling": [
+      "Cluster-preserving coupling applies",
+      "Shared cloning randomness",
+      "Independent jitter noise ζ ~ N(0, δ² I_d)"
+    ],
+    "geometry": [
+      "Separated regime holds",
+      "Alignment inequality from lem-cluster-alignment",
+      "Finite second moments"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-cluster-alignment",
+    "cor-between-group-dominance"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-cluster-alignment",
+      "lem-expected-distance-change"
+    ],
+    [
+      "cor-between-group-dominance",
+      "lem-expected-distance-change"
+    ]
+  ],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-expected-distance-change-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-cluster-coupling",
+      "target_object": "obj-target-complement",
+      "established_by": "lem-expected-distance-change",
+      "expression": "E[Δ D_IJ] ≤ -p̄_I · c_geom ||μ_x(I_1) - μ_x(J_1)||² + O(δ²)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    },
+    {
+      "label": "rel-lem-expected-distance-change-1-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-cluster-coupling",
+      "target_object": "obj-target-complement",
+      "established_by": "lem-expected-distance-change",
+      "expression": "Quadratic identity: ||a - c||² - ||b - c||² = ||a - b||² + 2⟨a - b, b - c⟩",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    }
+  ]
+}

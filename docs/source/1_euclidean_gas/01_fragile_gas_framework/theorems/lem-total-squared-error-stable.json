@@ -1,0 +1,40 @@
+{
+  "label": "lem-total-squared-error-stable",
+  "name": "Bound on the Total Squared Error for Stable Walkers",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-swarm-and-state-space",
+    "obj-alive-dead-sets",
+    "obj-raw-value-operator",
+    "obj-walker",
+    "obj-distance-positional-measures",
+    "obj-lipschitz-structural-error-coefficients",
+    "obj-components-mean-square-standardization-error"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity",
+    "axiom-def-axiom-margin-stability"
+  ],
+  "input_parameters": [],
+  "attributes_required": {
+    "obj-swarm-and-state-space": [
+      "attr-has-at-least-two-walkers"
+    ],
+    "obj-walker": [
+      "attr-is-stable"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-total-squared-error-bound-for-stable-walkers",
+      "expression": "E_{d \\sim D_{raw}}[d^2] \\le C_{pos} \\cdot \\Delta_{pos}^2 + C_{struct} \\cdot \\Delta_{struct}^2",
+      "object_label": "obj-components-mean-square-standardization-error"
+    }
+  ],
+  "relations_established": []
+}

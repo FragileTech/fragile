@@ -1924,8 +1924,8 @@ By completing this program, we will not only have proven the existence and uniqu
 
 The foundation of our constructive proof is the sequence of well-behaved equilibria that exist for any finite number of walkers, $N$. We begin by formally defining these measures, which are the primary objects of our analysis.
 
-:::{prf:definition} Sequence of N-Particle QSDs and their Marginals
-:label: def-sequence-of-qsds
+:::{prf:definition} Sequence of N-Particle QSDs and their Marginals (Summary)
+:label: def-sequence-of-qsds-summary
 
 1.  **The N-Particle Quasi-Stationary Distribution.** For each integer $N \ge 2$, let $\nu_N^{QSD} \in \mathcal{P}(\Sigma_N)$ be the **unique Quasi-Stationary Distribution** for the N-particle Euclidean Gas, whose existence and uniqueness were established in `06_convergence.md`. This is a probability measure on the full N-particle state space $\Sigma_N = (\Omega \times \{0,1\})^N$, describing the long-term statistical behavior of surviving swarm trajectories.
 
@@ -1941,8 +1941,8 @@ A cornerstone of the mean-field approach is the property of **exchangeability**.
 
 The first step in proving convergence is to show that the sequence of measures $\{\mu_N\}$ is pre-compact in the space of probability measures on $\Omega$. This property, known as **tightness**, guarantees the existence of at least one convergent subsequence, ensuring that probability mass does not "escape to infinity" in the limit.
 
-:::{prf:theorem} The Sequence of Marginals $\{\mu_N\}$ is Tight
-:label: thm-qsd-marginals-are-tight
+:::{prf:theorem} The Sequence of Marginals $\{\mu_N\}$ is Tight (Summary)
+:label: thm-qsd-marginals-are-tight-summary
 
 The sequence of single-particle marginal measures $\{\mu_N\}_{N=2}^\infty$ is tight in the space of probability measures on $\Omega$, $\mathcal{P}(\Omega)$.
 :::
@@ -1985,8 +1985,8 @@ The proof proceeds by verifying the conditions of **Prokhorov's theorem**. On th
 
 Tightness guarantees that at least one convergent subsequence exists. This section proves that any such limit point must be a weak solution to the stationary mean-field PDE. This is the core of the propagation of chaos argument, where we demonstrate that the discrete, empirical interactions of the N-particle system converge to the continuous, integral-based functionals of the mean-field model.
 
-:::{prf:theorem} Limit Points are Weak Solutions to the Stationary Mean-Field PDE
-:label: thm-limit-is-weak-solution
+:::{prf:theorem} Limit Points are Weak Solutions to the Stationary Mean-Field PDE (Summary)
+:label: thm-limit-is-weak-solution-summary
 
 Let $\{\mu_{N_k}\}$ be any subsequence of the marginal measures that converges weakly to a limit point $\mu_\infty$. Then $\mu_\infty$ is a weak solution to the stationary mean-field equation $L^\dagger \rho_0 + S[\rho_0] + B[\rho_0] = 0$, where $\rho_0$ is the density of $\mu_\infty$.
 :::

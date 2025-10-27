@@ -1,0 +1,80 @@
+{
+  "label": "thm-main-convergence",
+  "name": "Geometric Ergodicity and Convergence to QSD",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm-update-procedure",
+    "obj-swarm-and-state-space",
+    "obj-qsd",
+    "obj-w2-output-metric"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-non-degenerate-noise",
+    "axiom-def-axiom-boundary-regularity"
+  ],
+  "input_parameters": [
+    "param-N",
+    "param-gamma",
+    "param-sigma-v",
+    "param-tau"
+  ],
+  "properties_required": {
+    "obj-swarm-update-procedure": [
+      "prop-foster-lyapunov-drift",
+      "prop-phi-irreducible",
+      "prop-aperiodic"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Convergence",
+  "properties_added": [
+    {
+      "label": "prop-qsd-exists-unique",
+      "expression": "∃! ν_QSD on Σ_N^{alive}",
+      "object_label": "obj-qsd",
+      "established_by": "thm-main-convergence",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-exp-convergence-tv",
+      "expression": "∥μ_t − ν_QSD∥_{TV} ≤ C_conv e^{-κ_QSD t},  κ_QSD = Θ(κ_total τ)",
+      "object_label": "obj-swarm-update-procedure",
+      "established_by": "thm-main-convergence",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-exponential-survival-time",
+      "expression": "E_{ν_QSD}[τ_†] = e^{Θ(N)}",
+      "object_label": "obj-qsd",
+      "established_by": "thm-main-convergence",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-qsd-concentration",
+      "expression": "P(V_total(S_t) > (1+ε) V_total^{QSD} | survive) ≤ e^{-Θ(N)}",
+      "object_label": "obj-qsd",
+      "established_by": "thm-main-convergence",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

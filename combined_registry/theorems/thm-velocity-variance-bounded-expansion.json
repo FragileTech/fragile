@@ -1,0 +1,66 @@
+{
+  "label": "thm-velocity-variance-bounded-expansion",
+  "name": "Bounded Velocity Variance Expansion from Cloning",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-cloning-operator-formal",
+    "obj-inelastic-collision-update",
+    "obj-variance-conversions"
+  ],
+  "input_axioms": [
+    "axiom-ax-velocity-regularization"
+  ],
+  "input_parameters": [
+    "V_max",
+    "alpha_restitution",
+    "N"
+  ],
+  "properties_required": {
+    "obj-inelastic-collision-update": [
+      "prop-momentum-conservation",
+      "prop-bounded-velocity-change"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-velocity-domain-boundedness",
+    "lem-per-walker-velocity-change",
+    "lem-variance-change-decomposition-velocity"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-velocity-domain-boundedness",
+      "lem-per-walker-velocity-change"
+    ],
+    [
+      "lem-per-walker-velocity-change",
+      "lem-variance-change-decomposition-velocity"
+    ]
+  ],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-velocity-variance-bounded-expansion-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator-formal",
+      "target_object": "obj-inelastic-collision-update",
+      "established_by": "thm-velocity-variance-bounded-expansion",
+      "expression": "rel-cloning-expands-velocity-variance-bounded",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

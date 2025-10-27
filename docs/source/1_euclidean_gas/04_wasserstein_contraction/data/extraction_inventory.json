@@ -1,0 +1,247 @@
+{
+  "source_file": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+  "total_directives": 17,
+  "counts_by_type": {
+    "definition": 2,
+    "remark": 5,
+    "lemma": 7,
+    "corollary": 2,
+    "theorem": 1
+  },
+  "directives": [
+    {
+      "type": "definition",
+      "label": "def-target-complement",
+      "title": "Target Set and Complement",
+      "content": "For a swarm $S_k$ with alive set $\\mathcal{A}_k$, define:\n\n**Target Set** (from [03_cloning](03_cloning), Section 8.2):\n\n$$\nI_k(\\varepsilon) := U_k \\cap H_k(\\varepsilon)\n\n$$\nwhere:\n- $U_k$ is the unfi...",
+      "math_expression_count": 9,
+      "first_math": "I_k(\\varepsilon) := U_k \\cap H_k(\\varepsilon)",
+      "cross_refs": [],
+      "line_range": [
+        146,
+        182
+      ]
+    },
+    {
+      "type": "remark",
+      "label": "rem-why-target-sets",
+      "title": "Why These Sets?",
+      "content": "The target set $I_k$ represents the walkers that are:\n1. **Unfit** ($U_k$): Lower than average fitness \u2192 high cloning probability\n2. **High-error** ($H_k$): Geometrically outliers \u2192 contribute to stru...",
+      "math_expression_count": 3,
+      "first_math": "I_k",
+      "cross_refs": [],
+      "line_range": [
+        183,
+        196
+      ]
+    },
+    {
+      "type": "remark",
+      "label": "rem-empirical-measures",
+      "title": "Empirical Measures and Framework Properties",
+      "content": "**Notational Precision**: This document analyzes the $N$-particle empirical measures $\\mu_1, \\mu_2$, which are discrete probability measures supported on $N$ walkers. The clustering algorithm, fitness...",
+      "math_expression_count": 18,
+      "first_math": "N",
+      "cross_refs": [],
+      "line_range": [
+        197,
+        215
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-cluster-coupling",
+      "title": "Cluster-Preserving Coupling",
+      "content": "For two swarms $(S_1, S_2)$ with partitions $(I_1, J_1)$ and $(I_2, J_2)$, the **cluster-preserving coupling** evolves them to $(S_1', S_2')$ using the following procedure:\n\n**Step 1: Independent Clus...",
+      "math_expression_count": 19,
+      "first_math": "x'_{k,i} = \\begin{cases}\nx_{k, \\pi(i)} + \\zeta & \\text{if } T < p_{k,i} \\text{ (clone)} \\\\\nx_{k,i} & \\text{if } T \\geq p_{k,i} \\text{ (persist)}\n\\end{cases}",
+      "cross_refs": [],
+      "line_range": [
+        220,
+        255
+      ]
+    },
+    {
+      "type": "remark",
+      "label": "rem-coupling-advantages",
+      "title": "Why This Coupling Works",
+      "content": "**Advantages over single-walker coupling**:\n\n1. **No $q_{\\min}$ dependence**: We average over all possible matchings within each population. The population-level expectation is well-defined even thoug...",
+      "math_expression_count": 3,
+      "first_math": "q_{\\min}",
+      "cross_refs": [],
+      "line_range": [
+        256,
+        269
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-variance-decomposition",
+      "title": "Variance Decomposition by Clusters",
+      "content": "For a swarm $S_k$ partitioned into $I_k$ (target) and $J_k$ (complement) with population fractions $f_I = |I_k|/k$ and $f_J = |J_k|/k$:\n\n$$\n\\text{Var}_x(S_k) = f_I \\text{Var}_x(I_k) + f_J \\text{Var}_x...",
+      "math_expression_count": 23,
+      "first_math": "\\text{Var}_x(S_k) = f_I \\text{Var}_x(I_k) + f_J \\text{Var}_x(J_k) + f_I f_J \\|\\mu_x(I_k) - \\mu_x(J_k)\\|^2",
+      "cross_refs": [],
+      "line_range": [
+        278,
+        349
+      ]
+    },
+    {
+      "type": "corollary",
+      "label": "cor-between-group-dominance",
+      "title": "Between-Group Variance Dominance",
+      "content": "For a high-error swarm satisfying $V_{\\text{struct}} > R^2_{\\text{spread}}$, the between-group variance term dominates:\n\n$$\nf_I f_J \\|\\mu_x(I_k) - \\mu_x(J_k)\\|^2 \\geq c_{\\text{sep}}(\\varepsilon) V_{\\t...",
+      "math_expression_count": 17,
+      "first_math": "f_I f_J \\|\\mu_x(I_k) - \\mu_x(J_k)\\|^2 \\geq c_{\\text{sep}}(\\varepsilon) V_{\\text{struct}}",
+      "cross_refs": [],
+      "line_range": [
+        354,
+        392
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-cross-swarm-distance",
+      "title": "Cross-Swarm Distance Decomposition",
+      "content": "For two swarms $S_1, S_2$ with partitions $(I_1, J_1)$ and $(I_2, J_2)$, and separation $L = \\|\\bar{x}_1 - \\bar{x}_2\\|$, define the **population-level cross-distances**:\n\n$$\n\\begin{aligned}\nD_{II} &:=...",
+      "math_expression_count": 24,
+      "first_math": "\\begin{aligned}\nD_{II} &:= \\frac{1}{|I_1||I_2|} \\sum_{i \\in I_1} \\sum_{j \\in I_2} \\|x_i - x_j\\|^2 \\\\\nD_{IJ} &:= \\frac{1}{|I_1||J_2|} \\sum_{i \\in I_1} \\sum_{j \\in J_2} \\|x_i - x_j\\|^2 \\\\\nD_{JI} &:= \\frac{1}{|J_1||I_2|} \\sum_{i \\in J_1} \\sum_{j \\in I_2} \\|x_i - x_j\\|^2 \\\\\nD_{JJ} &:= \\frac{1}{|J_1||J_2|} \\sum_{i \\in J_1} \\sum_{j \\in J_2} \\|x_i - x_j\\|^2\n\\end{aligned}",
+      "cross_refs": [],
+      "line_range": [
+        401,
+        446
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-variance-wasserstein-link",
+      "title": "Structural Variance and Wasserstein Distance Relationship",
+      "content": "For two swarms $S_1, S_2$ with partitions $(I_1, J_1)$ and $(I_2, J_2)$ satisfying the separation condition $L = \\|\\bar{x}_1 - \\bar{x}_2\\| > D_{\\min}(\\varepsilon)$, the structural variance $V_{\\text{s...",
+      "math_expression_count": 30,
+      "first_math": "c_{\\text{link}}^{-} W_2^2(\\mu_1, \\mu_2) \\leq V_{\\text{struct}} \\leq c_{\\text{link}}^{+} W_2^2(\\mu_1, \\mu_2)",
+      "cross_refs": [
+        "lem-variance-decomposition",
+        "cor-between-group-dominance"
+      ],
+      "line_range": [
+        447,
+        510
+      ]
+    },
+    {
+      "type": "remark",
+      "label": "rem-variance-wasserstein-interpretation",
+      "title": "Interpretation of the Link",
+      "content": "This lemma establishes that for separated swarms, the structural variance (internal swarm spread) and the Wasserstein distance (between-swarm measure distance) are of the same order. Both quantify the...",
+      "math_expression_count": 2,
+      "first_math": "V_{\\text{struct}}",
+      "cross_refs": [],
+      "line_range": [
+        511,
+        521
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-cluster-alignment",
+      "title": "Cluster-Level Outlier Alignment",
+      "content": "For two swarms $S_1, S_2$ satisfying:\n1. Structural error: $V_{\\text{struct}} > R^2_{\\text{spread}}$\n2. Stability Condition holds (Theorem 7.5.2.4 in [03_cloning](03_cloning))\n3. Separation: $L = \\|\\b...",
+      "math_expression_count": 7,
+      "first_math": "\\langle \\mu_x(I_1) - \\mu_x(J_1), \\bar{x}_1 - \\bar{x}_2 \\rangle \\geq c_{\\text{align}}(\\varepsilon) \\|\\mu_x(I_1) - \\mu_x(J_1)\\| \\cdot L",
+      "cross_refs": [],
+      "line_range": [
+        530,
+        549
+      ]
+    },
+    {
+      "type": "remark",
+      "label": "rem-static-robust",
+      "title": "Why This Proof is Static and Robust",
+      "content": "This proof uses **only**:\n1. Fitness valley (geometric property of landscape)\n2. Stability Condition (proven axiom from framework)\n3. Phase-Space Packing (geometric bound on clustering)\n\n**No dynamics...",
+      "math_expression_count": 0,
+      "first_math": null,
+      "cross_refs": [],
+      "line_range": [
+        693,
+        705
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-expected-distance-change",
+      "title": "Expected Cross-Distance Change",
+      "content": "Under the cluster-preserving coupling {prf:ref}`def-cluster-coupling`, the expected change in population-level cross-distance $D_{IJ}$ after cloning in swarm 1 is:\n\n$$\n\\mathbb{E}[\\Delta D_{IJ}] \\leq -...",
+      "math_expression_count": 18,
+      "first_math": "\\mathbb{E}[\\Delta D_{IJ}] \\leq -\\bar{p}_I \\cdot c_{\\text{geom}} \\|\\mu_x(I_1) - \\mu_x(J_1)\\|^2 + O(\\delta^2)",
+      "cross_refs": [
+        "def-cluster-coupling"
+      ],
+      "line_range": [
+        712,
+        766
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-target-cloning-pressure",
+      "title": "Cloning Pressure on Target Set",
+      "content": "For any walker $i \\in I_k$ (target set), the cloning probability satisfies:\n\n$$\np_{k,i} \\geq p_u(\\varepsilon) > 0\n\n$$\n\nwhere $p_u(\\varepsilon)$ is the N-uniform constant from Lemma 8.3.2 in [03_clonin...",
+      "math_expression_count": 12,
+      "first_math": "p_{k,i} \\geq p_u(\\varepsilon) > 0",
+      "cross_refs": [],
+      "line_range": [
+        804,
+        835
+      ]
+    },
+    {
+      "type": "corollary",
+      "label": "cor-average-cloning",
+      "title": "Average Cloning Pressure Bound",
+      "content": "The average cloning probability in the target set satisfies:\n\n$$\n\\bar{p}_I = \\frac{1}{|I_1|} \\sum_{i \\in I_1} p_{1,i} \\geq p_u(\\varepsilon)\n\n$$\n\n**Proof**: Immediate from Lemma {prf:ref}`lem-target-cl...",
+      "math_expression_count": 1,
+      "first_math": "\\bar{p}_I = \\frac{1}{|I_1|} \\sum_{i \\in I_1} p_{1,i} \\geq p_u(\\varepsilon)",
+      "cross_refs": [
+        "lem-target-cloning-pressure"
+      ],
+      "line_range": [
+        836,
+        848
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-wasserstein-population-bound",
+      "title": "Wasserstein Distance and Population Cross-Distances",
+      "content": "For two swarms with partitions $(I_1, J_1)$ and $(I_2, J_2)$, the Wasserstein-2 squared distance satisfies:\n\n$$\nW_2^2(\\mu_1, \\mu_2) \\leq f_{I,1} f_{I,2} D_{II} + f_{I,1} f_{J,2} D_{IJ} + f_{J,1} f_{I,...",
+      "math_expression_count": 10,
+      "first_math": "W_2^2(\\mu_1, \\mu_2) \\leq f_{I,1} f_{I,2} D_{II} + f_{I,1} f_{J,2} D_{IJ} + f_{J,1} f_{I,2} D_{JI} + f_{J,1} f_{J,2} D_{JJ}",
+      "cross_refs": [
+        "lem-cross-swarm-distance"
+      ],
+      "line_range": [
+        855,
+        889
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-main-contraction-full",
+      "title": "Wasserstein-2 Contraction (Cluster-Based)",
+      "content": "Under the conditions of Theorem {prf:ref}`thm-main-contraction-cluster`, the cloning operator satisfies:\n\n$$\nW_2^2(\\Psi_{\\text{clone}}(\\mu_1), \\Psi_{\\text{clone}}(\\mu_2)) \\leq (1 - \\kappa_W) W_2^2(\\mu...",
+      "math_expression_count": 7,
+      "first_math": "W_2^2(\\Psi_{\\text{clone}}(\\mu_1), \\Psi_{\\text{clone}}(\\mu_2)) \\leq (1 - \\kappa_W) W_2^2(\\mu_1, \\mu_2) + C_W",
+      "cross_refs": [
+        "thm-main-contraction-cluster",
+        "lem-cluster-alignment",
+        "lem-expected-distance-change"
+      ],
+      "line_range": [
+        892,
+        924
+      ]
+    }
+  ]
+}

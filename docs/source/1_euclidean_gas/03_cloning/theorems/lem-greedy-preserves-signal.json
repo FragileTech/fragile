@@ -1,0 +1,41 @@
+{
+  "label": "lem-greedy-preserves-signal",
+  "name": "Greedy Pairing Guarantees Signal Separation",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 1522,
+    "line_end": 1728
+  },
+  "input_objects": [
+    "obj-geometric-partition",
+    "obj-greedy-pairing-algorithm",
+    "obj-measurement-operator",
+    "obj-swarm-and-state-space",
+    "obj-walker"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-dimension",
+    "param-epsilon",
+    "param-swarm-size"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-greedy-preserves-signal",
+      "expression": "\\mathbb{E}[d_i \\mid S_t, i \\in H_k] \\ge D_H(\\epsilon)",
+      "object_label": "obj-greedy-pairing-algorithm",
+      "established_by": "lem-greedy-preserves-signal",
+      "source": {
+        "file": "03_cloning.md",
+        "section": "lem-greedy-preserves-signal"
+      }
+    }
+  ],
+  "relations_established": []
+}

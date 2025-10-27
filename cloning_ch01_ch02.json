@@ -1,0 +1,507 @@
+{
+  "$schema": "./math_schema.json",
+  "metadata": {
+    "title": "The Keystone Principle and the Contractive Nature of Cloning - Chapters 1-2",
+    "document_id": "cloning_ch01_ch02",
+    "version": "1.0.0",
+    "date_created": "2025-10-25",
+    "source_document": "docs/source/1_euclidean_gas/03_cloning.md",
+    "source_lines": "0-352",
+    "chapters_covered": ["1. Introduction", "2. The Coupled State Space and State Differences"],
+    "authors": ["Guillem Duran Ballester"],
+    "tags": ["cloning", "keystone-principle", "coupled-state-space", "barrier-function", "convergence"],
+    "description": "Foundational definitions for the cloning operator analysis, including the coupled state space formulation and the construction of a smooth barrier function for boundary control.",
+    "dependencies": {
+      "requires": ["docs/source/1_euclidean_gas/01_fragile_gas_framework.md"],
+      "builds_on": ["Fragile Gas axioms", "Hypocoercive Lyapunov framework"]
+    },
+    "peer_review_status": {
+      "status": "in_progress",
+      "notes": "Initial extraction from source document"
+    }
+  },
+  "directives": [
+    {
+      "type": "remark",
+      "label": "remark-extinction-possibility",
+      "title": "A Note on the Possibility of Extinction and Quasi-Stationary Distributions",
+      "content": "A critical feature of the Euclidean Gas, and any Fragile Gas instantiation employing unbounded noise kernels, is the existence of an absorbing \"cemetery state.\" While the axioms and dynamics are designed to make the swarm robust, the use of unbounded Gaussian noise in the kinetic stage means there remains a strictly positive, albeit potentially infinitesimal, probability of total swarm extinction in a single step from any state. Even a swarm located centrally in the valid domain can, through a sufficiently large and coherent random fluctuation, have all $N$ of its walkers displaced beyond the boundary of $\\mathcal{X}_{\\mathrm{valid}}$.\n\nConsequently, the process is an absorbed Markov chain, and it cannot converge to a true stationary distribution over the space of living swarms. The correct framework for analyzing such a process is the theory of **Quasi-Stationary Distributions (QSDs)**. A QSD describes the long-term statistical behavior of the process *conditioned on its survival*.\n\nTherefore, the convergence analysis in this document is dedicated to proving that the Euclidean Gas converges exponentially fast to a unique QSD. The practical implication of the stability proven herein is that the mean time to extinction, while finite, can be made exponentially long with appropriate parameter choices. This allows the swarm to converge to and operate within this quasi-stationary regime for all relevant timescales, making the QSD the correct and meaningful description of the system's long-term behavior.",
+      "context": "Introduction to the cloning operator analysis. Relies on the Fragile Gas framework axioms and the concept of unbounded noise kernels.",
+      "significance": "Establishes the theoretical framework (QSD theory) required for analyzing convergence in the presence of an absorbing state",
+      "prerequisites": [],
+      "tags": ["qsd", "extinction", "markov-chain", "absorbing-state", "convergence-framework"]
+    },
+    {
+      "type": "definition",
+      "label": "def-single-swarm-space",
+      "title": "Single-Walker and Swarm State Spaces",
+      "content": "We define the fundamental state spaces for walkers and swarms in the Euclidean Gas framework.",
+      "defined_objects": [
+        {
+          "symbol": "(x, v, s)",
+          "name": "Walker State",
+          "description": "A walker is a tuple $(x, v, s)$, where $x \\in \\mathcal{X}$ is its position in the state space, $v \\in \\mathbb{R}^d$ is its velocity, and $s \\in \\{0, 1\\}$ is its survival status. We refer to $(x,v)$ as the **kinematic state**.",
+          "properties": [
+            "Position $x$ lies in a state space $\\mathcal{X}$",
+            "Velocity $v$ is a $d$-dimensional vector",
+            "Survival status $s = 1$ indicates alive, $s = 0$ indicates dead"
+          ],
+          "examples": [
+            {
+              "description": "For the Euclidean Gas, $\\mathcal{X} = \\mathcal{X}_{\\text{valid}} \\subset \\mathbb{R}^d$",
+              "verification": null
+            }
+          ]
+        },
+        {
+          "symbol": "S",
+          "name": "Swarm Configuration",
+          "description": "A **swarm configuration** $S$ is an N-tuple of walker states: $$S := \\left( (x_1, v_1, s_1), (x_2, v_2, s_2), \\dots, (x_N, v_N, s_N) \\right)$$",
+          "properties": [
+            "Contains $N$ walkers",
+            "Each walker has position, velocity, and survival status",
+            "Order matters (walker indices are fixed)"
+          ]
+        },
+        {
+          "symbol": "\\Sigma_N",
+          "name": "Single-Swarm State Space",
+          "description": "The **single-swarm state space** is the Cartesian product: $$\\Sigma_N := \\left( \\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0, 1\\} \\right)^N$$",
+          "properties": [
+            "Product space of $N$ walker state spaces",
+            "Dimension: $2dN$ continuous dimensions plus $N$ discrete dimensions",
+            "Natural space for Markov chain analysis of a single swarm trajectory"
+          ]
+        }
+      ],
+      "prerequisites": [],
+      "tags": ["state-space", "walker", "swarm", "fundamental-definitions"],
+      "notation_introduced": [
+        {
+          "symbol": "x",
+          "description": "Position of a walker",
+          "type": "vector",
+          "domain": "\\mathcal{X} \\subset \\mathbb{R}^d"
+        },
+        {
+          "symbol": "v",
+          "description": "Velocity of a walker",
+          "type": "vector",
+          "domain": "\\mathbb{R}^d"
+        },
+        {
+          "symbol": "s",
+          "description": "Survival status of a walker",
+          "type": "discrete",
+          "domain": "\\{0, 1\\}"
+        },
+        {
+          "symbol": "S",
+          "description": "Swarm configuration (N-tuple of walker states)",
+          "type": "tuple"
+        },
+        {
+          "symbol": "\\Sigma_N",
+          "description": "Single-swarm state space",
+          "type": "space"
+        },
+        {
+          "symbol": "N",
+          "description": "Total number of walkers in the swarm",
+          "type": "integer"
+        }
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-coupled-state-space",
+      "title": "The Coupled State Space",
+      "content": "For the convergence analysis, we consider two copies of the Markov process evolving on a coupled state space.",
+      "defined_objects": [
+        {
+          "symbol": "\\Sigma_N \\times \\Sigma_N",
+          "name": "Coupled State Space",
+          "description": "The **coupled state space** for the Euclidean Gas is the Cartesian product $\\Sigma_N \\times \\Sigma_N$. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where: $$S_1 = \\left( (x_{1,1}, v_{1,1}, s_{1,1}), \\dots, (x_{1,N}, v_{1,N}, s_{1,N}) \\right) \\in \\Sigma_N,$$ $$S_2 = \\left( (x_{2,1}, v_{2,1}, s_{2,1}), \\dots, (x_{2,N}, v_{2,N}, s_{2,N}) \\right) \\in \\Sigma_N.$$",
+          "properties": [
+            "Product of two single-swarm state spaces",
+            "Used for coupling argument in convergence proof",
+            "Natural space for Lyapunov function analysis"
+          ],
+          "examples": [
+            {
+              "description": "The convergence analysis proceeds by tracking the evolution of a Lyapunov function $V(S_1, S_2)$ across this coupled space",
+              "verification": null
+            }
+          ]
+        }
+      ],
+      "rationale": "The coupled state space is essential for proving geometric ergodicity: we show that the distance between two copies of the process, as measured by our Lyapunov function, decreases over time in expectation.",
+      "prerequisites": [
+        {
+          "label": "def-single-swarm-space",
+          "type": "definition",
+          "role": "builds-on",
+          "description": "Requires the definition of the single-swarm state space $\\Sigma_N$"
+        }
+      ],
+      "tags": ["state-space", "coupling", "convergence-analysis", "lyapunov"],
+      "notation_introduced": [
+        {
+          "symbol": "S_1, S_2",
+          "description": "Two swarm configurations being compared",
+          "type": "tuple"
+        },
+        {
+          "symbol": "x_{k,i}",
+          "description": "Position of walker $i$ in swarm $k$",
+          "type": "vector"
+        },
+        {
+          "symbol": "v_{k,i}",
+          "description": "Velocity of walker $i$ in swarm $k$",
+          "type": "vector"
+        },
+        {
+          "symbol": "s_{k,i}",
+          "description": "Survival status of walker $i$ in swarm $k$",
+          "type": "discrete"
+        }
+      ],
+      "related_concepts": [
+        {
+          "label": "synchronous-coupling",
+          "description": "A synchronous coupling is used where the same underlying random variables drive both processes",
+          "relationship": "implementation-detail"
+        }
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-state-difference-vectors",
+      "title": "State Difference Vectors",
+      "content": "The core of the hypocoercive analysis is the *difference* between the two swarms, not their absolute states. We define the vectors that capture this relative configuration.",
+      "defined_objects": [
+        {
+          "symbol": "\\Delta x_i",
+          "name": "Position Difference Vector",
+          "description": "For any element $(S_1, S_2) \\in \\Sigma_N \\times \\Sigma_N$ and walker index $i \\in \\{1, \\ldots, N\\}$, the **position difference vector** is: $$\\Delta x_i := x_{1,i} - x_{2,i} \\in \\mathbb{R}^d$$",
+          "properties": [
+            "Measures the position offset between corresponding walkers in the two swarms",
+            "Zero when the two walkers are at the same position",
+            "Used in all inter-swarm distance calculations"
+          ]
+        },
+        {
+          "symbol": "\\Delta v_i",
+          "name": "Velocity Difference Vector",
+          "description": "The **velocity difference vector** for walker $i$ is: $$\\Delta v_i := v_{1,i} - v_{2,i} \\in \\mathbb{R}^d$$",
+          "properties": [
+            "Measures the velocity offset between corresponding walkers",
+            "Essential for hypocoercive analysis (coupling position and velocity)",
+            "Captures the kinematic dissimilarity"
+          ]
+        }
+      ],
+      "rationale": "The entire drift analysis is formulated in terms of the norms and inner products of these $2N$ difference vectors. The objective is to show that, in expectation, the magnitudes of these vectors decrease over time, driving the two swarm trajectories together.",
+      "prerequisites": [
+        {
+          "label": "def-coupled-state-space",
+          "type": "definition",
+          "role": "builds-on",
+          "description": "Requires the coupled state space to define differences between two swarms"
+        }
+      ],
+      "tags": ["state-difference", "coupling", "hypocoercivity"],
+      "notation_introduced": [
+        {
+          "symbol": "\\Delta x_i",
+          "description": "Position difference for walker $i$",
+          "type": "vector",
+          "domain": "\\mathbb{R}^d"
+        },
+        {
+          "symbol": "\\Delta v_i",
+          "description": "Velocity difference for walker $i$",
+          "type": "vector",
+          "domain": "\\mathbb{R}^d"
+        }
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "ax:domain-regularity",
+      "title": "(Axiom EG-0): Regularity of the Domain",
+      "statement": "The valid domain for a single walker's position, $\\mathcal{X}_{\\text{valid}}$, is an open, bounded, and connected subset of $\\mathbb{R}^d$. Its boundary, $\\partial \\mathcal{X}_{\\text{valid}}$, is a $C^{\\infty}$-smooth compact manifold without boundary.",
+      "category": "regularity",
+      "axiomatic_parameters": [
+        {
+          "symbol": "\\mathcal{X}_{\\text{valid}}",
+          "description": "Valid domain for walker positions",
+          "conditions": "Open, bounded, connected subset of $\\mathbb{R}^d$",
+          "typical_values": "Bounded domain with smooth boundary"
+        },
+        {
+          "symbol": "\\partial \\mathcal{X}_{\\text{valid}}",
+          "description": "Boundary of the valid domain",
+          "conditions": "$C^{\\infty}$-smooth compact manifold without boundary",
+          "sensitivity": "Smoothness is essential for barrier function construction"
+        }
+      ],
+      "rationale": "Boundedness is necessary for many of the compactness arguments used throughout the proof. $C^{\\infty}$ smoothness of the boundary is a standard technical condition that guarantees the existence of a well-behaved signed distance function in a neighborhood of the boundary, which is the essential ingredient for the barrier function construction.",
+      "failure_modes": [
+        {
+          "condition": "Boundary is not smooth (e.g., has corners or cusps)",
+          "consequence": "The signed distance function may not be smooth near the boundary, breaking the construction of the barrier function $\\varphi(x)$",
+          "diagnostic": "Tubular Neighborhood Theorem fails; cannot construct $C^{\\infty}$ barrier"
+        },
+        {
+          "condition": "Domain is unbounded",
+          "consequence": "Compactness arguments fail; convergence guarantees may not hold globally",
+          "diagnostic": "Cannot establish uniform bounds on walker trajectories"
+        }
+      ],
+      "prerequisites": [],
+      "tags": ["axiom", "domain", "regularity", "smoothness", "boundary"],
+      "related_concepts": [
+        {
+          "label": "attr-barrier-existence",
+          "description": "This axiom is the essential prerequisite for constructing the barrier function",
+          "relationship": "enables"
+        }
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-barrier-existence",
+      "title": "Existence of a Global Smooth Barrier Function",
+      "statement": "Let $\\mathcal{X}_{\\text{valid}}$ satisfy the conditions of Axiom EG-0. Then there exists a function $\\varphi: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}$ with the following properties:\n1. **Smoothness:** $\\varphi(x)$ is $C^{\\infty}$-smooth on $\\mathcal{X}_{\\text{valid}}$.\n2. **Positivity:** $\\varphi(x)$ is strictly positive for all $x \\in \\mathcal{X}_{\\text{valid}}$.\n3. **Boundary Divergence:** $\\varphi(x) \\to \\infty$ as $x \\to \\partial \\mathcal{X}_{\\text{valid}}$.",
+      "hypotheses": [
+        {
+          "statement": "$\\mathcal{X}_{\\text{valid}}$ satisfies Axiom EG-0",
+          "type": "structural",
+          "references": [
+            {
+              "label": "ax:domain-regularity",
+              "type": "axiom",
+              "role": "assumption"
+            }
+          ]
+        }
+      ],
+      "conclusion": {
+        "statement": "There exists a barrier function $\\varphi: \\mathcal{X}_{\\text{valid}} \\to (0, \\infty)$ that is $C^{\\infty}$-smooth and diverges at the boundary",
+        "properties_established": [
+          "$\\varphi \\in C^{\\infty}(\\mathcal{X}_{\\text{valid}})$",
+          "$\\varphi(x) > 0$ for all $x \\in \\mathcal{X}_{\\text{valid}}$",
+          "$\\lim_{x \\to \\partial \\mathcal{X}_{\\text{valid}}} \\varphi(x) = \\infty$"
+        ],
+        "quantitative_bounds": {
+          "explicit_construction": "$$\\varphi(x) := \\frac{1}{\\delta} + \\psi\\left(\\frac{\\rho(x)}{\\delta}\\right)\\left( \\frac{1}{\\rho(x)} - \\frac{1}{\\delta} \\right)$$",
+          "description": "Explicit formula using signed distance function $\\rho(x)$ and smooth cutoff $\\psi$",
+          "dependencies": ["Tubular neighborhood width $\\delta_0$", "Cutoff parameter $\\delta \\in (0, \\delta_0/3)$"]
+        }
+      },
+      "importance": "foundational",
+      "proof_reference": {
+        "label": "proof-barrier-existence",
+        "type": "labeled-proof"
+      },
+      "computational_verification": null,
+      "prerequisites": [
+        {
+          "label": "ax:domain-regularity",
+          "type": "axiom",
+          "role": "required",
+          "description": "Domain regularity is essential for the construction"
+        }
+      ],
+      "tags": ["barrier-function", "boundary-control", "smooth-analysis", "constructive-proof"],
+      "related_concepts": [
+        {
+          "label": "tubular-neighborhood-theorem",
+          "description": "Key tool from differential geometry enabling the construction",
+          "relationship": "uses"
+        }
+      ]
+    },
+    {
+      "type": "proof",
+      "label": "proof-barrier-existence",
+      "proves": {
+        "label": "attr-barrier-existence",
+        "type": "proposition"
+      },
+      "proof_type": "construction",
+      "strategy": "The proof is constructive. We build the function $\\varphi(x)$ using two primary tools: the signed distance function to the boundary and a smooth cutoff function. The construction proceeds in three steps: (1) Establish the signed distance function using the Tubular Neighborhood Theorem, (2) Construct a smooth cutoff function, (3) Combine them to build $\\varphi$ and verify all required properties rigorously.",
+      "key_insights": [
+        "The $C^{\\infty}$ smoothness of $\\partial \\mathcal{X}_{\\text{valid}}$ guarantees a smooth tubular neighborhood via differential geometry",
+        "The barrier function is explicitly constructed as $1/\\rho(x)$ near the boundary (where it diverges) and transitions smoothly to a constant in the interior via a mollified cutoff",
+        "All three properties (smoothness, positivity, divergence) are verified by rigorous case analysis"
+      ],
+      "steps": [
+        {
+          "id": "Step 1",
+          "title": "The Signed Distance Function",
+          "content": "Since $\\partial \\mathcal{X}_{\\text{valid}}$ is a $C^{\\infty}$ compact manifold without boundary embedded in $\\mathbb{R}^d$, the **Tubular Neighborhood Theorem** (Lee, 2013, Theorem 6.24) guarantees the existence of an open tubular neighborhood $U \\supset \\partial \\mathcal{X}_{\\text{valid}}$ and a smooth retraction $\\pi: U \\to \\partial \\mathcal{X}_{\\text{valid}}$ such that the signed distance function $$\\rho(x) := \\begin{cases} d(x, \\partial \\mathcal{X}_{\\text{valid}}) & \\text{if } x \\in \\mathcal{X}_{\\text{valid}} \\\\ -d(x, \\partial \\mathcal{X}_{\\text{valid}}) & \\text{if } x \\notin \\mathcal{X}_{\\text{valid}} \\end{cases}$$ is $C^{\\infty}$-smooth on $U$. Here $d(\\cdot, \\cdot)$ denotes the Euclidean distance. By compactness of $\\partial \\mathcal{X}_{\\text{valid}}$ and smoothness, there exists $\\delta_0 > 0$ such that $U := \\{x \\in \\mathbb{R}^d : d(x, \\partial \\mathcal{X}_{\\text{valid}}) < \\delta_0\\}$ is a smooth tubular neighborhood. We will use $\\delta < \\delta_0/3$ in the sequel.",
+          "type": "construction",
+          "techniques": ["differential-geometry", "tubular-neighborhood-theorem"],
+          "justification": "Standard result from differential topology for smooth compact manifolds",
+          "intermediate_result": "Signed distance function $\\rho(x)$ is $C^{\\infty}$ on tubular neighborhood $U$",
+          "references": [
+            {
+              "citation": "Lee, J. M. (2013). Introduction to Smooth Manifolds (2nd ed.). Springer.",
+              "theorem": "Theorem 6.24 (Tubular Neighborhood Theorem)"
+            }
+          ]
+        },
+        {
+          "id": "Step 2",
+          "title": "Construction of a Smooth Cutoff Function",
+          "content": "We require a smooth cutoff function $\\psi: \\mathbb{R} \\to [0, 1]$ with properties: (1) $\\psi \\in C^{\\infty}(\\mathbb{R})$, (2) $\\psi(t) = 1$ for all $t \\leq 1$, (3) $\\psi(t) = 0$ for all $t \\geq 2$, (4) $\\psi$ is non-increasing, (5) $\\psi'(t) < 0$ for all $t \\in (1, 2)$.\n\n**Explicit construction:** Define the mollifier function $$\\eta(t) := \\begin{cases} \\exp\\left(-\\frac{1}{1-t^2}\\right) & \\text{if } |t| < 1 \\\\ 0 & \\text{if } |t| \\geq 1 \\end{cases}$$ which is $C^{\\infty}$ on $\\mathbb{R}$ (Rudin, 1987, Theorem 1.46). Then set $$\\psi(t) := \\frac{\\int_{t}^{\\infty} \\eta(2s - 3) \\, ds}{\\int_{-\\infty}^{\\infty} \\eta(2s - 3) \\, ds}$$ This gives a smooth non-increasing function with $\\psi(t) = 1$ for $t \\leq 1$ and $\\psi(t) = 0$ for $t \\geq 2$.",
+          "type": "construction",
+          "techniques": ["mollification", "smooth-cutoff-functions"],
+          "justification": "Standard mollifier construction from real analysis",
+          "intermediate_result": "Smooth cutoff function $\\psi$ with desired support properties",
+          "references": [
+            {
+              "citation": "Rudin, W. (1987). Real and Complex Analysis (3rd ed.). McGraw-Hill.",
+              "theorem": "Theorem 1.46 (Smoothness of mollifiers)"
+            }
+          ]
+        },
+        {
+          "id": "Step 3",
+          "title": "Construction of the Barrier Function",
+          "content": "Fix $\\delta \\in (0, \\delta_0/3)$ where $\\delta_0$ is the tubular neighborhood width from Step 1. We define $\\varphi: \\mathcal{X}_{\\text{valid}} \\to (0, \\infty)$ by $$\\varphi(x) := \\frac{1}{\\delta} + \\psi\\left(\\frac{\\rho(x)}{\\delta}\\right)\\left( \\frac{1}{\\rho(x)} - \\frac{1}{\\delta} \\right)$$",
+          "type": "construction",
+          "techniques": ["composition", "smooth-analysis"],
+          "intermediate_result": "Explicit barrier function $\\varphi(x)$ combining distance and cutoff",
+          "substeps": [
+            {
+              "id": "Step 3.1",
+              "title": "Verification: Smoothness",
+              "content": "We verify $\\varphi \\in C^{\\infty}(\\mathcal{X}_{\\text{valid}})$ by analyzing the composition structure.\n\nFor any $x \\in \\mathcal{X}_{\\text{valid}}$ with $\\rho(x) < 3\\delta < \\delta_0$, we have $x \\in U$, so $\\rho(x)$ is $C^{\\infty}$ near $x$. Since $\\rho(x) > 0$ for all $x \\in \\mathcal{X}_{\\text{valid}}$, the function $1/\\rho(x)$ is $C^{\\infty}$ on all of $\\mathcal{X}_{\\text{valid}}$. The composition $\\psi(\\rho(x)/\\delta)$ is $C^{\\infty}$ since both $\\psi$ and $\\rho$ are $C^{\\infty}$.\n\nFor $x$ with $\\rho(x) \\geq 3\\delta$, we have $\\rho(x)/\\delta \\geq 3 > 2$, so $\\psi(\\rho(x)/\\delta) = 0$ identically in a neighborhood of $x$. Thus $\\varphi(x) = 1/\\delta$ (constant) in this region, which is trivially $C^{\\infty}$.\n\nThe matching at $\\rho(x) = 3\\delta$ is smooth because $\\psi$ and all its derivatives vanish for arguments $\\geq 2$.\n\nTherefore, $\\varphi \\in C^{\\infty}(\\mathcal{X}_{\\text{valid}})$.",
+              "type": "verification",
+              "techniques": ["composition-of-smooth-functions", "case-analysis"],
+              "justification": "Smoothness is preserved under composition; constant functions are smooth"
+            },
+            {
+              "id": "Step 3.2",
+              "title": "Verification: Boundary Divergence",
+              "content": "We must show that for any sequence $(x_n) \\subset \\mathcal{X}_{\\text{valid}}$ with $x_n \\to x_{\\infty} \\in \\partial \\mathcal{X}_{\\text{valid}}$, we have $\\varphi(x_n) \\to \\infty$.\n\nSince $x_n \\to x_{\\infty} \\in \\partial \\mathcal{X}_{\\text{valid}}$ and $x_n \\in \\mathcal{X}_{\\text{valid}}$, by continuity of the distance function, $\\rho(x_n) = d(x_n, \\partial \\mathcal{X}_{\\text{valid}}) \\to 0^{+}$.\n\nFor sufficiently large $n$, we have $\\rho(x_n) < \\delta$, which implies $\\rho(x_n)/\\delta < 1$, hence $\\psi(\\rho(x_n)/\\delta) = 1$. In this regime: $$\\varphi(x_n) = \\frac{1}{\\delta} + 1 \\cdot \\left( \\frac{1}{\\rho(x_n)} - \\frac{1}{\\delta} \\right) = \\frac{1}{\\rho(x_n)}$$\n\nSince $\\rho(x_n) \\to 0^{+}$, we have $\\varphi(x_n) = 1/\\rho(x_n) \\to +\\infty$.",
+              "type": "verification",
+              "techniques": ["limit-analysis", "continuity-of-distance-function"],
+              "justification": "Continuity of distance function and limit properties"
+            },
+            {
+              "id": "Step 3.3",
+              "title": "Verification: Strict Positivity",
+              "content": "We prove $\\varphi(x) > 0$ for all $x \\in \\mathcal{X}_{\\text{valid}}$ by case analysis.\n\n**Case 1:** $0 < \\rho(x) \\leq \\delta$. Here $\\rho(x)/\\delta \\leq 1$, so $\\psi(\\rho(x)/\\delta) = 1$. Thus: $$\\varphi(x) = \\frac{1}{\\delta} + 1 \\cdot \\left( \\frac{1}{\\rho(x)} - \\frac{1}{\\delta} \\right) = \\frac{1}{\\rho(x)} > 0$$ since $\\rho(x) > 0$.\n\n**Case 2:** $\\rho(x) \\geq 2\\delta$. Here $\\rho(x)/\\delta \\geq 2$, so $\\psi(\\rho(x)/\\delta) = 0$. Thus: $$\\varphi(x) = \\frac{1}{\\delta} + 0 \\cdot \\left( \\frac{1}{\\rho(x)} - \\frac{1}{\\delta} \\right) = \\frac{1}{\\delta} > 0$$\n\n**Case 3:** $\\delta < \\rho(x) < 2\\delta$. This is the transition region. We have $1 < \\rho(x)/\\delta < 2$, so $\\psi(\\rho(x)/\\delta) \\in (0, 1)$. Rewrite: $$\\varphi(x) = \\frac{1}{\\delta}\\left(1 - \\psi\\left(\\frac{\\rho(x)}{\\delta}\\right)\\right) + \\frac{1}{\\rho(x)} \\psi\\left(\\frac{\\rho(x)}{\\delta}\\right)$$\n\nSince $\\psi(\\rho(x)/\\delta) \\in (0,1)$, we have $1 - \\psi(\\rho(x)/\\delta) \\in (0, 1)$. Thus both terms are strictly positive: $$\\varphi(x) = \\underbrace{\\frac{1}{\\delta}(1 - \\psi)}_{> 0} + \\underbrace{\\frac{1}{\\rho(x)} \\psi}_{> 0} > 0$$",
+              "type": "verification",
+              "techniques": ["case-analysis", "algebraic-manipulation"],
+              "justification": "Exhaustive case analysis covering all regions"
+            }
+          ]
+        }
+      ],
+      "conclusion": "We have constructed a function $\\varphi: \\mathcal{X}_{\\text{valid}} \\to (0, \\infty)$ satisfying all three properties: $\\varphi \\in C^{\\infty}(\\mathcal{X}_{\\text{valid}})$, $\\varphi(x) > 0$ everywhere, and $\\varphi(x) \\to \\infty$ as $x \\to \\partial \\mathcal{X}_{\\text{valid}}$.",
+      "difficulty": "technical",
+      "rigor_level": 9,
+      "tags": ["constructive-proof", "differential-geometry", "barrier-function", "smooth-analysis"],
+      "pedagogical_notes": [
+        "The proof showcases the power of smooth manifold theory in applied analysis",
+        "The explicit construction provides computable bounds for numerical implementations",
+        "The three-step verification (smoothness, divergence, positivity) is a model for rigor in function construction"
+      ]
+    }
+  ],
+  "dependency_graph": {
+    "nodes": [
+      {"label": "remark-extinction-possibility", "type": "remark", "level": 0},
+      {"label": "def-single-swarm-space", "type": "definition", "level": 0},
+      {"label": "def-coupled-state-space", "type": "definition", "level": 1},
+      {"label": "def-state-difference-vectors", "type": "definition", "level": 2},
+      {"label": "ax:domain-regularity", "type": "axiom", "level": 0},
+      {"label": "attr-barrier-existence", "type": "proposition", "level": 1},
+      {"label": "proof-barrier-existence", "type": "proof", "level": 1}
+    ],
+    "edges": [
+      {
+        "from": "def-coupled-state-space",
+        "to": "def-single-swarm-space",
+        "relationship": "builds-on",
+        "critical": true,
+        "description": "Coupled space is product of single-swarm spaces"
+      },
+      {
+        "from": "def-state-difference-vectors",
+        "to": "def-coupled-state-space",
+        "relationship": "builds-on",
+        "critical": true,
+        "description": "Differences defined on coupled space"
+      },
+      {
+        "from": "attr-barrier-existence",
+        "to": "ax:domain-regularity",
+        "relationship": "requires",
+        "critical": true,
+        "description": "Regularity axiom enables barrier construction"
+      },
+      {
+        "from": "proof-barrier-existence",
+        "to": "attr-barrier-existence",
+        "relationship": "proves",
+        "critical": true,
+        "description": "Constructive proof of barrier existence"
+      }
+    ]
+  },
+  "constants_glossary": {
+    "N": {
+      "symbol": "N",
+      "value": "variable (swarm size parameter)",
+      "description": "Total number of walkers in the swarm",
+      "units": "dimensionless (count)",
+      "defined_in": "def-single-swarm-space",
+      "used_in": ["def-single-swarm-space", "def-coupled-state-space", "def-state-difference-vectors"]
+    },
+    "d": {
+      "symbol": "d",
+      "value": "variable (spatial dimension)",
+      "description": "Dimension of the position and velocity spaces",
+      "units": "dimensionless (dimension count)",
+      "defined_in": "def-single-swarm-space",
+      "used_in": ["def-single-swarm-space", "def-coupled-state-space", "def-state-difference-vectors"]
+    },
+    "delta_0": {
+      "symbol": "\\delta_0",
+      "value": "determined by manifold geometry",
+      "description": "Tubular neighborhood width for smooth boundary",
+      "units": "length",
+      "defined_in": "proof-barrier-existence",
+      "used_in": ["proof-barrier-existence"]
+    },
+    "delta": {
+      "symbol": "\\delta",
+      "value": "\\in (0, \\delta_0/3)",
+      "description": "Cutoff parameter for barrier function construction",
+      "units": "length",
+      "defined_in": "proof-barrier-existence",
+      "used_in": ["proof-barrier-existence"]
+    }
+  },
+  "notation_index": {
+    "x": "Position of a walker in $\\mathbb{R}^d$",
+    "v": "Velocity of a walker in $\\mathbb{R}^d$",
+    "s": "Survival status (0 = dead, 1 = alive)",
+    "S": "Swarm configuration (N-tuple of walker states)",
+    "\\Sigma_N": "Single-swarm state space",
+    "\\mathcal{X}_{\\text{valid}}": "Valid domain for walker positions",
+    "\\partial \\mathcal{X}_{\\text{valid}}": "Boundary of the valid domain",
+    "\\Delta x_i": "Position difference vector for walker $i$",
+    "\\Delta v_i": "Velocity difference vector for walker $i$",
+    "\\varphi": "Barrier function (diverges at boundary)",
+    "\\rho": "Signed distance function to boundary",
+    "\\psi": "Smooth cutoff function"
+  }
+}

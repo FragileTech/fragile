@@ -1,0 +1,105 @@
+{
+  "label": "thm-main-results-summary",
+  "name": "Main Results of the Cloning Analysis (Summary)",
+  "statement_type": "theorem",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-cloning-operator-formal",
+    "obj-full-synergistic-lyapunov-function",
+    "obj-variance-conversions",
+    "obj-boundary-potential-recall"
+  ],
+  "input_axioms": [
+    "axiom-ax-domain-regularity",
+    "axiom-ax-lipschitz-fields",
+    "axiom-ax-safe-harbor",
+    "axiom-ax-non-deceptive-landscape",
+    "axiom-ax-velocity-regularization",
+    "axiom-ax-active-diversity"
+  ],
+  "input_parameters": [
+    "kappa_x",
+    "C_x",
+    "C_v",
+    "kappa_b",
+    "C_b",
+    "C_W",
+    "chi_epsilon",
+    "g_max"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "attr-keystone-principle-complete",
+    "attr-positional-variance-contraction-summary",
+    "attr-velocity-variance-bounded-expansion-summary",
+    "attr-boundary-potential-contraction-summary",
+    "attr-complete-characterization-summary"
+  ],
+  "relations_established": [
+    "rel-keystone-complete",
+    "rel-partial-contraction-structure",
+    "rel-n-uniformity-all-constants",
+    "rel-synergy-foundation"
+  ],
+  "synthesis_of_theorems": [
+    "thm-positional-variance-contraction",
+    "thm-velocity-variance-bounded-expansion",
+    "thm-inter-swarm-bounded-expansion",
+    "lem-quantitative-keystone",
+    "thm-unfit-high-error-overlap-fraction",
+    "thm-stability-condition-final-corrected"
+  ],
+  "summary_items": [
+    {
+      "item": "Keystone Principle",
+      "description": "Large internal positional variance \u2192 detectable geometric structure \u2192 reliable fitness signal \u2192 corrective cloning pressure",
+      "key_result": "N-uniform feedback coefficient chi(epsilon) > 0",
+      "chapters": [
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "item": "Positional Variance Contraction",
+      "description": "Keystone Principle translates to rigorous drift inequality",
+      "key_result": "kappa_x > 0 is N-uniform contraction rate",
+      "chapters": [
+        10
+      ]
+    },
+    {
+      "item": "Velocity Variance Bounded Expansion",
+      "description": "Inelastic collisions cause state-independent perturbation",
+      "key_result": "Expansion bounded by C_v, not growing with system state",
+      "chapters": [
+        10
+      ]
+    },
+    {
+      "item": "Boundary Potential Contraction",
+      "description": "Safe Harbor mechanism removes boundary-proximate walkers",
+      "key_result": "Exponentially suppressed extinction probability",
+      "chapters": [
+        11
+      ]
+    },
+    {
+      "item": "Complete Characterization",
+      "description": "All drift constants N-independent, partial contraction structure",
+      "key_result": "Foundation for synergistic Foster-Lyapunov condition",
+      "chapters": [
+        12
+      ]
+    }
+  ]
+}

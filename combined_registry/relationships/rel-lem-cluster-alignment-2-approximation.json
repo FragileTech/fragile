@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-cluster-alignment-2-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-target-complement",
+  "target_object": "obj-fitness-landscape",
+  "established_by": "lem-cluster-alignment",
+  "expression": "c_align(ε) > 0 (N-uniform, depends on c_sep and D_diam)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction"
+}

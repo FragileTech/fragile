@@ -1,0 +1,472 @@
+{
+  "$schema": "./math_schema.json",
+  "metadata": {
+    "title": "The Keystone Principle - Chapters 9-12: Drift Analysis and Synergistic Dissipation",
+    "document_id": "cloning_ch09_ch12_drift",
+    "version": "1.0.0",
+    "date_created": "2025-10-25",
+    "source_document": "docs/source/1_euclidean_gas/03_cloning.md",
+    "source_lines": "5718-8355",
+    "chapters_covered": [
+      "9. Formal Definition of the Cloning Operator",
+      "10. Positional and Velocity Variance Drift",
+      "11. Boundary Potential Contraction",
+      "12. Complete Lyapunov Drift and Synergistic Framework"
+    ],
+    "authors": ["Guillem Duran Ballester"],
+    "tags": ["drift-analysis", "foster-lyapunov", "synergistic-dissipation", "geometric-ergodicity", "convergence"],
+    "description": "Complete drift analysis establishing Foster-Lyapunov conditions for the cloning operator. Proves positional variance contraction, velocity variance bounded expansion, boundary potential contraction, and synergistic dissipation framework combining cloning and kinetic operators.",
+    "dependencies": {
+      "requires": ["cloning_ch01_ch02.json", "cloning_ch03.json", "cloning_ch04.json", "cloning_ch06_ch08_keystone.json"],
+      "builds_on": ["Keystone Lemma", "Lyapunov function", "Foundational axioms"]
+    },
+    "peer_review_status": {
+      "status": "in_progress",
+      "notes": "Core drift theorems extracted"
+    }
+  },
+  "directives": [
+    {
+      "type": "theorem",
+      "label": "thm-positional-variance-contraction",
+      "title": "Positional Variance Contraction Under Cloning",
+      "statement": "Under the foundational axioms (Chapter 4), there exist constants $\\kappa_x > 0$, $C_x < \\infty$, and a structural error threshold $R^2_{\\text{spread}} > 0$, all independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n\n$$\\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_x) V_{\\text{Var},x}(S_1, S_2) + C_x$$\n\nFurthermore, when $V_{\\text{Var},x}(S_1, S_2) > \\tilde{C}_x$ for a sufficiently large threshold $\\tilde{C}_x$, the contraction becomes strict:\n\n$$\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] := \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) - V_{\\text{Var},x}(S_1, S_2)] < 0$$",
+      "hypotheses": [
+        {
+          "statement": "Foundational axioms from Chapter 4 satisfied",
+          "type": "axiomatic"
+        },
+        {
+          "statement": "Pair of swarms $(S_1, S_2)$ in coupled state space",
+          "type": "structural"
+        }
+      ],
+      "conclusion": {
+        "statement": "Cloning operator provides geometric contraction of positional variance",
+        "properties_established": [
+          "Foster-Lyapunov drift condition for $V_{\\text{Var},x}$",
+          "Contraction rate $\\kappa_x > 0$ is N-uniform",
+          "Offset constant $C_x < \\infty$ is state-independent",
+          "Strict contraction when variance exceeds threshold"
+        ],
+        "quantitative_bounds": {
+          "contraction_rate": "$\\kappa_x := \\frac{\\chi(\\epsilon)}{4N} \\cdot \\frac{1}{\\text{(typical variance)}}$",
+          "offset": "$C_x$ includes barycenter shifts, jitter, dead walker revival",
+          "description": "Explicit bounds derived from Keystone Lemma",
+          "dependencies": ["Keystone coefficient $\\chi(\\epsilon)$", "Domain diameter $D_{\\text{valid}}$"]
+        }
+      },
+      "importance": "main-result",
+      "proof_reference": {
+        "type": "deferred",
+        "deferred": true,
+        "reason": "Multi-step proof using variance decomposition + Keystone Lemma + bounding edge cases",
+        "summary": "Proof strategy: (1) Decompose variance change into alive walkers + status changes, (2) Apply Keystone Lemma to bound contraction from stably alive set, (3) Bound expansion from dead walker revival, (4) Balance contraction vs expansion to prove drift inequality"
+      },
+      "prerequisites": [],
+      "tags": ["drift-theorem", "positional-variance", "contraction", "foster-lyapunov", "main-result"],
+      "related_concepts": [
+        {
+          "label": "synergistic-dissipation",
+          "description": "Cloning contracts position while kinetic contracts velocity",
+          "relationship": "component-of"
+        }
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-velocity-variance-bounded-expansion",
+      "title": "Bounded Velocity Variance Expansion from Cloning",
+      "statement": "There exists a state-independent constant $C_v < \\infty$ such that for any swarm $S$:\n\n$$\\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v$$\n\nEquivalently, the one-step drift satisfies:\n\n$$\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v$$",
+      "hypotheses": [
+        {
+          "statement": "Swarm $S$ in valid state space",
+          "type": "structural"
+        }
+      ],
+      "conclusion": {
+        "statement": "Velocity variance expansion from cloning is uniformly bounded",
+        "properties_established": [
+          "Bounded drift: expansion is state-independent",
+          "Constant $C_v < \\infty$ independent of $N$",
+          "Expansion comes from inelastic collisions and velocity resets",
+          "Manageable by kinetic operator's Langevin friction"
+        ],
+        "quantitative_bounds": {
+          "expansion_bound": "$C_v = O(\\delta^2)$ where $\\delta$ is velocity jitter scale",
+          "description": "Bounded expansion per step, independent of current state",
+          "dependencies": ["Velocity jitter parameter $\\delta$", "Maximum velocity bound"]
+        }
+      },
+      "importance": "main-result",
+      "proof_reference": {
+        "type": "inline",
+        "inline": true,
+        "summary": "Velocity reset mechanism adds bounded jitter $\\delta \\zeta$ per cloned walker. Maximum expansion occurs when all walkers clone, yielding $C_v = N \\cdot \\delta^2 / N = \\delta^2$ (N-normalized)"
+      },
+      "prerequisites": [],
+      "tags": ["drift-theorem", "velocity-variance", "bounded-expansion"],
+      "related_concepts": [
+        {
+          "label": "ax:velocity-regularization",
+          "description": "Velocity regularization axiom ensures high-velocity walkers are preferentially cloned",
+          "relationship": "mitigates"
+        }
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-boundary-potential-contraction",
+      "title": "Boundary Potential Contraction Under Cloning",
+      "statement": "Under the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3), there exist constants $\\kappa_b > 0$ and $C_b < \\infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n\n$$\\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b$$\n\nFurthermore, when $W_b(S_1, S_2) > \\tilde{C}_b$ for a sufficiently large threshold $\\tilde{C}_b$, the contraction becomes strict:\n\n$$\\mathbb{E}_{\\text{clone}}[\\Delta W_b] := \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0$$",
+      "hypotheses": [
+        {
+          "statement": "Foundational axioms satisfied, including Safe Harbor Axiom (existence of interior reward maximum with geometric separation from boundary)",
+          "type": "axiomatic"
+        },
+        {
+          "statement": "Smooth barrier function exists (constructed using differential geometry and tubular neighborhood theorem)",
+          "type": "regularity"
+        },
+        {
+          "statement": "Pair of swarms $(S_1, S_2)$ in coupled state space",
+          "type": "structural"
+        }
+      ],
+      "conclusion": {
+        "statement": "Cloning operator provides systematic safety correction via boundary potential contraction",
+        "properties_established": [
+          "Foster-Lyapunov drift condition for $W_b$",
+          "Contraction rate $\\kappa_b > 0$ is N-uniform",
+          "Long-term boundary exposure bounded: $\\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq C_b/\\kappa_b$",
+          "Walkers near boundary are preferentially cloned inward"
+        ],
+        "quantitative_bounds": {
+          "contraction_rate": "$\\kappa_b := p_{\\text{boundary}}(\\phi_{\\text{thresh}})$",
+          "offset": "$C_b = 2C_{\\text{total}}$ accounts for jitter and dead walker revival",
+          "equilibrium_bound": "$C_b/\\kappa_b$ bounds long-term boundary exposure",
+          "description": "Explicit bounds from Safe Harbor mechanism",
+          "dependencies": ["Barrier threshold $\\phi_{\\text{thresh}}$", "Safe region width $\\delta_{\\text{safe}}$"]
+        }
+      },
+      "importance": "main-result",
+      "proof_reference": {
+        "type": "deferred",
+        "deferred": true,
+        "reason": "Multi-lemma proof establishing enhanced cloning probability near boundary + barrier reduction mechanism",
+        "summary": "Proof: (1) Boundary-exposed walkers have low fitness (barrier penalty), (2) They have guaranteed cloning probability $p_{\\text{boundary}} > 0$, (3) When cloned, new position drawn from interior has lower barrier, (4) Combining yields geometric contraction"
+      },
+      "prerequisites": [],
+      "tags": ["drift-theorem", "boundary-potential", "contraction", "safety-mechanism", "main-result"],
+      "related_concepts": [
+        {
+          "label": "extinction-probability",
+          "description": "Bounded boundary exposure implies exponentially suppressed extinction",
+          "relationship": "implies"
+        }
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-complete-cloning-drift",
+      "title": "Complete Drift Inequality for the Cloning Operator",
+      "statement": "Under the foundational axioms (Chapter 4), the cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the synergistic Lyapunov function:\n\n$$V_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)$$\n\n**Individual Component Drifts:**\n\n$$\\begin{aligned}\n\\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq C_W \\quad &\\text{(bounded expansion)} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x \\quad &\\text{(strong contraction)} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] &\\leq C_v \\quad &\\text{(bounded expansion)} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b \\quad &\\text{(strong contraction)}\n\\end{aligned}$$\n\n**Combined Drift:**\n\n$$\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_v + C_x) + c_B(-\\kappa_b W_b + C_b)$$\n\n**Critical Property:** When $V_{\\text{Var},x}$ and $W_b$ are sufficiently large relative to expansion terms, drift becomes negative.",
+      "hypotheses": [
+        {
+          "statement": "Foundational axioms satisfied",
+          "type": "axiomatic"
+        },
+        {
+          "statement": "Coupling constants $c_V, c_B > 0$ appropriately chosen",
+          "type": "parametric"
+        }
+      ],
+      "conclusion": {
+        "statement": "Complete characterization of cloning operator's effect on all Lyapunov components",
+        "properties_established": [
+          "Cloning contracts position ($-\\kappa_x V_{\\text{Var},x}$) and boundary ($-\\kappa_b W_b$)",
+          "Cloning expands velocity ($+C_v$) and inter-swarm ($+C_W$) with bounded rates",
+          "Partial contraction: drift negative when variance/boundary sufficiently large",
+          "Sets up complementary dissipation with kinetic operator"
+        ],
+        "quantitative_bounds": {
+          "total_drift": "$-c_V \\kappa_x V_{\\text{Var},x} - c_B \\kappa_b W_b + (C_W + c_V C_x + c_V C_v + c_B C_b)$",
+          "negativity_condition": "$c_V V_{\\text{Var},x} + c_B W_b > \\frac{C_W + c_V(C_v + C_x) + c_B C_b}{\\min(\\kappa_x, \\kappa_b)}$",
+          "description": "Explicit formula showing when drift is negative"
+        }
+      },
+      "importance": "foundational",
+      "proof_reference": {
+        "type": "inline",
+        "inline": true,
+        "summary": "Sum component drifts from Theorems 10.3.1, 10.4.1, 11.3.1, 12.2.1 with respective weights $c_V$, $c_B$. Rearrange to identify contraction and expansion terms."
+      },
+      "prerequisites": [
+        {
+          "label": "thm-positional-variance-contraction",
+          "type": "theorem",
+          "role": "required"
+        },
+        {
+          "label": "thm-velocity-variance-bounded-expansion",
+          "type": "theorem",
+          "role": "required"
+        },
+        {
+          "label": "thm-boundary-potential-contraction",
+          "type": "theorem",
+          "role": "required"
+        }
+      ],
+      "tags": ["drift-theorem", "complete-analysis", "synergistic-lyapunov", "main-result"],
+      "related_concepts": [
+        {
+          "label": "thm-synergistic-foster-lyapunov",
+          "description": "Combined with kinetic drift to prove full convergence",
+          "relationship": "component-of"
+        }
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-synergistic-foster-lyapunov",
+      "title": "Synergistic Foster-Lyapunov Condition",
+      "statement": "When the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies a Foster-Lyapunov drift condition:\n\n$$\\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S')] \\leq (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S) + C_{\\text{total}}$$\n\nfor some $\\kappa_{\\text{total}} > 0$ and $C_{\\text{total}} < \\infty$, both independent of $N$.\n\n**Consequence:** This drift condition implies:\n1. **Geometric ergodicity** of the Markov chain on the alive state space\n2. **Exponential convergence** to the quasi-stationary distribution\n3. **Exponentially suppressed extinction probability** in the QSD regime",
+      "hypotheses": [
+        {
+          "statement": "Foundational axioms satisfied for both cloning and kinetic operators",
+          "type": "axiomatic"
+        },
+        {
+          "statement": "Coupling constants satisfy: $c_V \\kappa_x > C'_x/V_{\\text{Var},x}$, $c_V \\kappa_v > 1$, $\\kappa_W V_W > C_W + C'_W$",
+          "type": "parametric"
+        },
+        {
+          "statement": "Kinetic operator drift inequalities (from companion document)",
+          "type": "external-dependency"
+        }
+      ],
+      "conclusion": {
+        "statement": "Full Euclidean Gas (cloning + kinetic) satisfies Foster-Lyapunov drift condition with N-uniform constants",
+        "properties_established": [
+          "Geometric contraction of total Lyapunov function",
+          "Exponential convergence to quasi-stationary distribution (QSD)",
+          "Convergence rate $\\kappa_{\\text{total}}$ independent of $N$ (scalability)",
+          "Mean time to extinction exponentially large: $\\tau_{\\text{ext}} \\sim e^{\\Theta(N)}$"
+        ],
+        "quantitative_bounds": {
+          "contraction_rate": "$\\kappa_{\\text{total}} = \\min(\\kappa_W, c_V \\min(\\kappa_x, \\kappa_v - 1/c_V), c_B \\kappa_b)$",
+          "offset": "$C_{\\text{total}} = C_W + C'_W + c_V(C_x + C'_x + C_v + C'_v) + c_B(C_b + C'_b)$",
+          "description": "Explicit formula combining cloning and kinetic constants"
+        }
+      },
+      "importance": "foundational",
+      "proof_reference": {
+        "type": "deferred",
+        "deferred": true,
+        "reason": "Requires combining results from this document (cloning drift) with companion document (kinetic drift)",
+        "summary": "Proof strategy: (1) This document proves cloning drift inequalities, (2) Companion document proves kinetic drift inequalities, (3) Compose via tower property: E_total = E_kin[E_clone[·]], (4) Choose coupling constants to ensure net contraction of each component"
+      },
+      "prerequisites": [
+        {
+          "label": "thm-complete-cloning-drift",
+          "type": "theorem",
+          "role": "required",
+          "description": "Cloning drift from this document"
+        }
+      ],
+      "tags": ["main-theorem", "foster-lyapunov", "geometric-ergodicity", "qsd-convergence", "synergistic-dissipation"],
+      "related_concepts": [
+        {
+          "label": "geometric-ergodicity",
+          "description": "Foster-Lyapunov condition implies geometric convergence rate",
+          "relationship": "implies"
+        },
+        {
+          "label": "qsd-theory",
+          "description": "Convergence to quasi-stationary distribution (conditioned on survival)",
+          "relationship": "framework"
+        }
+      ]
+    },
+    {
+      "type": "proposition",
+      "label": "attr-kinetic-necessity",
+      "title": "Necessity of the Kinetic Operator",
+      "statement": "The cloning operator alone cannot guarantee convergence to a quasi-stationary distribution. Specifically:\n\n1. **Velocity variance accumulation:** The bounded expansion $+C_v$ per step can accumulate without bound over infinite time if not countered.\n\n2. **Inter-swarm divergence:** The bounded expansion $+C_W$ means the two coupled swarms can drift arbitrarily far apart without inter-swarm correction.\n\n3. **No velocity equilibrium:** Cloning has no mechanism to dissipate kinetic energy toward a target distribution.\n\nTherefore, the **kinetic operator is essential** to:\n- Contract $V_{\\text{Var},v}$ via Langevin friction (overcoming $C_v$)\n- Contract $V_W$ via hypocoercive drift and confining potential (overcoming $C_W$)\n- Establish velocity equilibrium with the Gibbs distribution",
+      "hypotheses": [
+        {
+          "statement": "Only cloning operator applied (no kinetic operator)",
+          "type": "hypothetical"
+        }
+      ],
+      "conclusion": {
+        "statement": "Cloning alone is insufficient for convergence - kinetic operator is essential",
+        "properties_established": [
+          "Velocity variance can accumulate unbounded",
+          "Inter-swarm distance can grow arbitrarily",
+          "No velocity equilibrium established",
+          "Synergistic framework requires both operators"
+        ]
+      },
+      "importance": "foundational",
+      "proof_reference": {
+        "type": "inline",
+        "inline": true,
+        "summary": "Direct from drift inequalities: Cloning has $\\Delta V_{\\text{Var},v} \\leq C_v$ and $\\Delta V_W \\leq C_W$ (bounded expansion). Over $T$ steps, these accumulate to $O(T)$, growing without bound. Only kinetic operator provides contraction."
+      },
+      "prerequisites": [
+        {
+          "label": "thm-complete-cloning-drift",
+          "type": "theorem",
+          "role": "uses"
+        }
+      ],
+      "tags": ["necessity-result", "synergistic-framework", "complementarity"],
+      "related_concepts": [
+        {
+          "label": "synergistic-dissipation",
+          "description": "Demonstrates why both operators are needed - they handle complementary error components",
+          "relationship": "justifies"
+        }
+      ]
+    }
+  ],
+  "dependency_graph": {
+    "nodes": [
+      {"label": "thm-positional-variance-contraction", "type": "theorem", "level": 1},
+      {"label": "thm-velocity-variance-bounded-expansion", "type": "theorem", "level": 1},
+      {"label": "thm-boundary-potential-contraction", "type": "theorem", "level": 1},
+      {"label": "thm-complete-cloning-drift", "type": "theorem", "level": 2},
+      {"label": "thm-synergistic-foster-lyapunov", "type": "theorem", "level": 3},
+      {"label": "attr-kinetic-necessity", "type": "proposition", "level": 2}
+    ],
+    "edges": [
+      {
+        "from": "thm-complete-cloning-drift",
+        "to": "thm-positional-variance-contraction",
+        "relationship": "requires",
+        "critical": true,
+        "description": "Combines positional variance drift"
+      },
+      {
+        "from": "thm-complete-cloning-drift",
+        "to": "thm-velocity-variance-bounded-expansion",
+        "relationship": "requires",
+        "critical": true,
+        "description": "Combines velocity variance drift"
+      },
+      {
+        "from": "thm-complete-cloning-drift",
+        "to": "thm-boundary-potential-contraction",
+        "relationship": "requires",
+        "critical": true,
+        "description": "Combines boundary potential drift"
+      },
+      {
+        "from": "thm-synergistic-foster-lyapunov",
+        "to": "thm-complete-cloning-drift",
+        "relationship": "requires",
+        "critical": true,
+        "description": "Combines cloning drift with kinetic drift"
+      },
+      {
+        "from": "attr-kinetic-necessity",
+        "to": "thm-complete-cloning-drift",
+        "relationship": "uses",
+        "critical": false,
+        "description": "Uses cloning drift bounds to show insufficiency"
+      }
+    ]
+  },
+  "constants_glossary": {
+    "kappa_x": {
+      "symbol": "\\kappa_x",
+      "value": "N-uniform positive constant",
+      "description": "Positional variance contraction rate under cloning",
+      "units": "dimensionless",
+      "defined_in": "thm-positional-variance-contraction",
+      "used_in": ["thm-positional-variance-contraction", "thm-complete-cloning-drift", "thm-synergistic-foster-lyapunov"]
+    },
+    "C_x": {
+      "symbol": "C_x",
+      "value": "State-independent finite constant",
+      "description": "Positional variance drift offset (from jitter, barycenter shifts, dead walkers)",
+      "units": "squared distance",
+      "defined_in": "thm-positional-variance-contraction",
+      "used_in": ["thm-positional-variance-contraction", "thm-complete-cloning-drift"]
+    },
+    "C_v": {
+      "symbol": "C_v",
+      "value": "State-independent finite constant ($O(\\delta^2)$)",
+      "description": "Velocity variance expansion bound per cloning step",
+      "units": "squared velocity",
+      "defined_in": "thm-velocity-variance-bounded-expansion",
+      "used_in": ["thm-velocity-variance-bounded-expansion", "thm-complete-cloning-drift"]
+    },
+    "kappa_b": {
+      "symbol": "\\kappa_b",
+      "value": "N-uniform positive constant ($p_{\\text{boundary}}$)",
+      "description": "Boundary potential contraction rate under cloning",
+      "units": "dimensionless",
+      "defined_in": "thm-boundary-potential-contraction",
+      "used_in": ["thm-boundary-potential-contraction", "thm-complete-cloning-drift", "thm-synergistic-foster-lyapunov"]
+    },
+    "C_b": {
+      "symbol": "C_b",
+      "value": "State-independent finite constant",
+      "description": "Boundary potential drift offset",
+      "units": "barrier units",
+      "defined_in": "thm-boundary-potential-contraction",
+      "used_in": ["thm-boundary-potential-contraction", "thm-complete-cloning-drift"]
+    },
+    "C_W": {
+      "symbol": "C_W",
+      "value": "State-independent finite constant",
+      "description": "Inter-swarm error expansion bound from cloning",
+      "units": "squared distance",
+      "defined_in": "thm-complete-cloning-drift",
+      "used_in": ["thm-complete-cloning-drift", "thm-synergistic-foster-lyapunov"]
+    },
+    "kappa_total": {
+      "symbol": "\\kappa_{\\text{total}}",
+      "value": "$\\min(\\kappa_W, c_V \\min(\\kappa_x, \\kappa_v - 1/c_V), c_B \\kappa_b)$",
+      "description": "Total contraction rate for full Euclidean Gas",
+      "units": "dimensionless",
+      "defined_in": "thm-synergistic-foster-lyapunov",
+      "used_in": ["thm-synergistic-foster-lyapunov"]
+    },
+    "c_V": {
+      "symbol": "c_V",
+      "value": "Tunable coupling constant ($\\approx \\kappa_W/(2\\kappa_x)$)",
+      "description": "Weight of variance component in synergistic Lyapunov function",
+      "units": "dimensionless",
+      "defined_in": "thm-complete-cloning-drift",
+      "used_in": ["thm-complete-cloning-drift", "thm-synergistic-foster-lyapunov"]
+    },
+    "c_B": {
+      "symbol": "c_B",
+      "value": "Tunable coupling constant ($\\approx \\kappa_W/(2\\kappa_b)$)",
+      "description": "Weight of boundary potential in synergistic Lyapunov function",
+      "units": "dimensionless",
+      "defined_in": "thm-complete-cloning-drift",
+      "used_in": ["thm-complete-cloning-drift", "thm-synergistic-foster-lyapunov"]
+    }
+  },
+  "notation_index": {
+    "V_{\\text{Var},x}": "Positional variance component (N-normalized)",
+    "V_{\\text{Var},v}": "Velocity variance component (N-normalized)",
+    "W_b": "Boundary potential (sum of barrier function over walkers)",
+    "V_W": "Inter-swarm error (Wasserstein distance between swarms)",
+    "V_{\\text{total}}": "Total synergistic Lyapunov function",
+    "\\Psi_{\\text{clone}}": "Cloning operator",
+    "\\Psi_{\\text{kin}}": "Kinetic operator",
+    "\\Psi_{\\text{total}}": "Composed operator (kinetic ∘ cloning)",
+    "\\mathbb{E}_{\\text{clone}}": "Expectation under cloning operator",
+    "\\Delta V": "One-step change in Lyapunov component",
+    "\\kappa_x, \\kappa_v, \\kappa_b, \\kappa_W": "Contraction rates for different components",
+    "C_x, C_v, C_b, C_W": "Offset constants (bounded expansion)",
+    "c_V, c_B": "Coupling constants (weights in synergistic Lyapunov)",
+    "D_{\\text{valid}}": "Diameter of valid domain"
+  }
+}

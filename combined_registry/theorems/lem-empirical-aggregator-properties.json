@@ -1,0 +1,60 @@
+{
+  "label": "lem-empirical-aggregator-properties",
+  "name": "Axiomatic Properties of the Empirical Measure Aggregator",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-alive-dead-sets",
+    "obj-raw-value-operator",
+    "obj-swarm-and-state-space"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-range-respecting-mean"
+  ],
+  "input_parameters": [
+    "param-k"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-normalization",
+      "expression": "\\sum_{i \\in \\mathcal{A}(\\mathcal{S})} M(\\mathcal{S})_i = 1",
+      "object_label": "obj-swarm-aggregation-operator-axiomatic",
+      "established_by": "lem-empirical-aggregator-properties",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-permutation-invariance",
+      "expression": "M(\\pi \\mathcal{S}) = \\pi M(\\mathcal{S})",
+      "object_label": "obj-swarm-aggregation-operator-axiomatic",
+      "established_by": "lem-empirical-aggregator-properties",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-linearity-values",
+      "expression": "M(\\mathcal{S}, \\alpha v + \\beta u) = \\alpha M(\\mathcal{S}, v) + \\beta M(\\mathcal{S}, u)",
+      "object_label": "obj-swarm-aggregation-operator-axiomatic",
+      "established_by": "lem-empirical-aggregator-properties",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

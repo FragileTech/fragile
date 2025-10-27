@@ -1,0 +1,31 @@
+{
+  "label": "lem-total-squared-error-unstable",
+  "name": "Bound on the Total Squared Error for Unstable Walkers",
+  "statement_type": "lemma",
+  "source": null,
+  "input_objects": [
+    "obj-walker",
+    "obj-alive-dead-sets",
+    "obj-raw-value-operator",
+    "obj-distance-to-cemetery-state",
+    "obj-fragile-swarm-instantiation",
+    "obj-alg-distance"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-total-squared-error-unstable-bound",
+      "expression": "\\sum_{i \\in \\text{unstable}} \\mathbb{E}[d_{\\text{raw}}(s_i)]^2 \\le |\\text{unstable}| \\cdot d_{\\text{cemetery}}^2",
+      "object_label": "obj-fragile-swarm-instantiation"
+    }
+  ],
+  "relations_established": []
+}

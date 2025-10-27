@@ -1,0 +1,30 @@
+{
+  "label": "attr-restitution-friction-coupling",
+  "name": "Restitution-Friction Coupling",
+  "statement_type": "proposition",
+  "source": null,
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-alpha-rest",
+    "param-gamma",
+    "param-sigma-v",
+    "param-d",
+    "param-V-eq-target"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-optimal-friction-restitution",
+      "expression": "\u03b3*(\u03b1_rest) = (d \u03c3_v^2 / V_{eq}^{target}) \u00b7 (2/(2 - \u03b1_{rest}^2))",
+      "object_label": "obj-param-selection"
+    }
+  ],
+  "relations_established": []
+}

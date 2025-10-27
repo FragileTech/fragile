@@ -1,0 +1,41 @@
+{
+  "label": "thm-qsd-exchangeability",
+  "name": "Exchangeability of the QSD",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "10_qsd_exchangeability_theory",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-qsd",
+    "obj-kinetic-operator-stratonovich",
+    "obj-cloning-measure"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-N"
+  ],
+  "properties_required": {
+    "obj-qsd": [
+      "prop-qsd-exists-unique"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-exchangeability",
+      "expression": "σ_* π_N = π_N for all σ ∈ S_N",
+      "object_label": "obj-qsd",
+      "established_by": "thm-qsd-exchangeability",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

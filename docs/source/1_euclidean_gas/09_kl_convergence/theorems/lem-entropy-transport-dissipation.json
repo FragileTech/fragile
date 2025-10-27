@@ -1,0 +1,53 @@
+{
+  "label": "lem-entropy-transport-dissipation",
+  "name": "Entropy-Transport Dissipation Inequality",
+  "statement_type": "lemma",
+  "source": {
+    "file": "09_kl_convergence.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-cloning-operator",
+    "def-wasserstein-distance"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "alpha",
+    "tau_conv",
+    "kappa_W",
+    "kappa_conf",
+    "kappa_x",
+    "delta",
+    "C_clone"
+  ],
+  "attributes_required": {
+    "displacement-convexity": [
+      "Log-concavity of \u03c0 enables CAT(0) W\u2082 geometry",
+      "Law of cosines in W\u2082 space"
+    ],
+    "keystone-principle": [
+      "Position variance contraction \u03ba_x > 0 from 03_cloning",
+      "Wasserstein contraction \u03ba_W > 0 from 04_wasserstein_contraction"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-cloning-wasserstein-contraction"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "lem-cloning-wasserstein-contraction"
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Cloning dissipates combined functional D_KL \u2212 \u03b1 W\u2082\u00b2",
+    "Dissipation constant \u03b1 = O(\u03ba_conf \u03ba_x)"
+  ],
+  "relations_established": [
+    "D_KL(\u03bc'||\u03c0) \u2264 D_KL(\u03bc||\u03c0) \u2212 \u03b1 W\u2082\u00b2(\u03bc,\u03c0) + C_clone",
+    "\u03b1 = (\u03c4_conv \u03ba_W)/2 \u224d \u03ba_conf \u03ba_x",
+    "Gaussian noise produces O(\u03b4\u00b2) remainder terms"
+  ]
+}

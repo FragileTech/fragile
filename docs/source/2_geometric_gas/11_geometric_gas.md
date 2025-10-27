@@ -41,6 +41,7 @@ By treating adaptive terms as bounded perturbations of the backbone, we transfor
 
 $$
 \kappa_{\text{total}}(\rho) = \kappa_{\text{backbone}} - \epsilon_F K_F(\rho) - C_{\text{diff,1}}(\rho) > 0
+
 $$
 
 This separation-of-concerns design has profound consequences: (1) **Modularity** — adaptive mechanisms can be analyzed independently, (2) **Design Guidance** — stability requires $\epsilon_F K_F(\rho) < \kappa_{\text{backbone}}$, (3) **Scalability** — N-uniform bounds from the backbone extend naturally to the adaptive system, and (4) **Tractability** — no need to re-prove hypocoercivity or construct specialized Lyapunov functions.
@@ -173,6 +174,7 @@ For a localization scale $\rho > 0$, the **localization kernel** $K_\rho: \mathc
 
 $$
 K_\rho(x, x') := \frac{1}{Z_\rho(x)} \exp\left(-\frac{\|x - x'\|^2}{2\rho^2}\right)
+
 $$
 
 where $Z_\rho(x) = \int_{\mathcal{X}} \exp(-\|x - x'\|^2/(2\rho^2)) \, dx'$ ensures normalization.
@@ -198,12 +200,14 @@ For a probability distribution $f \in \mathcal{P}(\mathcal{X} \times \mathbb{R}^
 
 $$
 \mu_\rho[f, d, x] := \int_{\mathcal{X} \times \mathbb{R}^d} K_\rho(x, x') \, d(x') \, f(x', v) \, dx' \, dv
+
 $$
 
 **Localized Variance:**
 
 $$
 \sigma^2_\rho[f, d, x] := \int_{\mathcal{X} \times \mathbb{R}^d} K_\rho(x, x') \, [d(x') - \mu_\rho[f, d, x]]^2 \, f(x', v) \, dx' \, dv
+
 $$
 
 **For the N-Particle System:** The full swarm state consists of N walkers, but only the **alive walker set** $A_k \subseteq \{1, \ldots, N\}$ with $|A_k| = k$ participates in the statistical measurements and adaptive dynamics. We define:
@@ -212,6 +216,7 @@ $$
 
 $$
 f_N := \frac{1}{N} \sum_{i=1}^N \delta_{(x_i, v_i)}
+
 $$
 
 This measure describes the complete N-particle state but is **not used** for computing adaptive statistics.
@@ -220,16 +225,19 @@ This measure describes the complete N-particle state but is **not used** for com
 
 $$
 f_k := \frac{1}{k} \sum_{i \in A_k} \delta_{(x_i, v_i)}
+
 $$
 
 This is the measure used for **all** statistical moments, fitness potentials, and adaptive forces. Substituting $f_k$ into the integral definitions above yields the discrete forms:
 
 $$
 \mu_\rho[f_k, d, x_i] = \sum_{j \in A_k} w_{ij}(\rho) \, d(x_j), \quad w_{ij}(\rho) := \frac{K_\rho(x_i, x_j)}{\sum_{\ell \in A_k} K_\rho(x_i, x_\ell)}
+
 $$
 
 $$
 \sigma^2_\rho[f_k, d, x_i] = \sum_{j \in A_k} w_{ij}(\rho) \, [d(x_j) - \mu_\rho[f_k, d, x_i]]^2
+
 $$
 
 where $w_{ij}(\rho)$ are the normalized localization weights. The normalization $\sum_{\ell \in A_k} K_\rho(x_i, x_\ell)$ ensures $\sum_{j \in A_k} w_{ij}(\rho) = 1$, making $\mu_\rho$ a convex combination over the alive swarm.
@@ -249,12 +257,14 @@ $$
 \sigma^2_\rho[f_k, d, x_i] &= \sum_{j \in A_k} w_{ij}(\rho) \, d(x_j)^2 - \left(\sum_{j \in A_k} w_{ij}(\rho) \, d(x_j)\right)^2 \\
 &= \sum_{j \in A_k} w_{ij}(\rho) \, d(x_j)^2 - \mu_\rho[f_k, d, x_i]^2
 \end{aligned}
+
 $$
 
 **Consistency with Backbone Model:** This definition is **mathematically consistent with the backbone model** from `03_cloning.md` and `04_convergence.md`, which uses the empirical measure $f_k$ with k-normalized statistics $\mu[f_k, d] = \frac{1}{k}\sum_{j \in A_k} d(x_j)$. In the global limit $\rho \to \infty$, the localization kernel becomes uniform over $A_k$, so $w_{ij}(\rho) \to 1/k$ for all $j \in A_k$, exactly recovering:
 
 $$
 \lim_{\rho \to \infty} \mu_\rho[f_k, d, x_i] = \frac{1}{k}\sum_{j \in A_k} d(x_j) = \mu[f_k, d]
+
 $$
 
 This establishes that the adaptive model (finite $\rho$) is a **continuous deformation** of the proven backbone model ($\rho \to \infty$), with both using the same statistical population $A_k$.
@@ -279,12 +289,14 @@ The **unified ρ-dependent Z-score** combines spatial localization with numerica
 
 $$
 \sigma_\rho[f, d, x] := \sqrt{\sigma^2_\rho[f, d, x]}
+
 $$
 
 **Step 2: Numerical Regularization (C¹ Smoothing)**
 
 $$
 \sigma'_\rho[f, d, x] := \sigma'_{\text{reg}}(\sigma^2_\rho[f, d, x])
+
 $$
 
 where $\sigma'_{\text{reg}}: \mathbb{R}_{\ge 0} \to \mathbb{R}_{>0}$ is the **C^∞ regularized standard deviation function** from `01_fractal_gas_framework.md` (Definition `def-statistical-properties-measurement`). This function is defined as $\sigma'_{\text{reg}}(V) = \sqrt{V + \sigma'^2_{\min}}$, ensuring:
@@ -296,6 +308,7 @@ where $\sigma'_{\text{reg}}: \mathbb{R}_{\ge 0} \to \mathbb{R}_{>0}$ is the **C^
 
 $$
 Z_\rho[f, d, x] := \frac{d(x) - \mu_\rho[f, d, x]}{\sigma'_\rho[f, d, x]}
+
 $$
 
 **Properties:**
@@ -318,14 +331,17 @@ For the N-particle system with alive walker set $A_k$:
 
 $$
 \lim_{\rho \to \infty} w_{ij}(\rho) = \frac{1}{k} \quad \text{for all } i, j \in A_k
+
 $$
 
 $$
 \lim_{\rho \to \infty} \mu_\rho[f_k, d, x_i] = \frac{1}{k}\sum_{j \in A_k} d(x_j) =: \mu[f_k, d]
+
 $$
 
 $$
 \lim_{\rho \to \infty} \sigma^2_\rho[f_k, d, x_i] = \frac{1}{k}\sum_{j \in A_k} [d(x_j) - \mu[f_k, d]]^2 =: \sigma^2[f_k, d]
+
 $$
 
 In this limit, all alive walkers use identical **k-normalized global statistics**, and the fitness potential becomes position-independent in its statistical weights. This **exactly recovers the backbone model** from `03_cloning.md` and `04_convergence.md`, which uses the empirical distribution over $A_k$ only.
@@ -334,6 +350,7 @@ In this limit, all alive walkers use identical **k-normalized global statistics*
 
 $$
 \lim_{\rho \to 0} K_\rho(x, x') = \delta(x - x')
+
 $$
 
 In this limit, the moments become point evaluations (up to the nearest neighbor in the discrete case), and the fitness potential responds purely to infinitesimal local structure. This is the regime required for Hessian-based geometric adaptation.
@@ -374,6 +391,7 @@ $$
 dx_i &= v_i \, dt \\
 dv_i &= \left[ \mathbf{F}_{\text{stable}}(x_i) + \mathbf{F}_{\text{adapt}}(x_i, S) + \mathbf{F}_{\text{viscous}}(x_i, S) - \gamma v_i \right] dt + \Sigma_{\text{reg}}(x_i, S) \circ dW_i
 \end{aligned}
+
 $$
 
 where `S` denotes the full N-particle swarm state. The five components of the dynamics are defined as follows.
@@ -383,6 +401,7 @@ The gradient of a static, globally confining potential `U(x)`.
 
 $$
 \mathbf{F}_{\text{stable}}(x_i) := -\nabla U(x_i)
+
 $$
 
 *   **Role:** The unconditional anchor for stability. It provides a global restoring force that prevents the swarm from drifting to the boundary, guaranteeing recurrence. Its properties are defined by the **Axiom of a Globally Confining Potential** (Axiom 3.1.1).
@@ -392,6 +411,7 @@ The gradient of the mean-field fitness potential `V_fit[f_k, ρ]`, scaled by a s
 
 $$
 \mathbf{F}_{\text{adapt}}(x_i, S) := \epsilon_F \nabla_{x_i} V_{\text{fit}}[f_k, \rho](x_i)
+
 $$
 
 where $V_{\text{fit}}[f_k, \rho]$ is the fitness potential computed using the **alive-walker empirical measure** $f_k$ and a **finite localization scale ρ > 0** (see Definition {prf:ref}`def-localized-mean-field-fitness`).
@@ -402,6 +422,7 @@ A non-local velocity-coupling term analogous to the viscosity term in the Navier
 
 $$
 \mathbf{F}_{\text{viscous}}(x_i, S) := \nu \sum_{j \neq i} \frac{K(x_i - x_j)}{\sum_{k \neq i} K(x_i - x_k)} (v_j - v_i)
+
 $$
 
 where the normalization factor $\deg(i) := \sum_{k \neq i} K(x_i - x_k)$ is the **local degree** of walker $i$ (total coupling weight to all neighbors).
@@ -419,6 +440,7 @@ The matrix square root of the regularized inverse Hessian of the **ρ-localized 
 
 $$
 \Sigma_{\text{reg}}(x_i, S) := \left( \nabla^2_{x_i} V_{\text{fit}}[f_k, \rho](x_i) + \epsilon_\Sigma I \right)^{-1/2}
+
 $$
 
 *   **Role:** Provides adaptive, anisotropic noise that responds to the **local geometric structure** of the fitness landscape. It encourages exploration along flat directions (large noise) and promotes exploitation along curved directions (small noise). The regularization `ε_Σ > 0` is the key to its mathematical well-posedness, as established by the **Axiom of Uniform Ellipticity by Construction** (Axiom 3.2.3).
@@ -437,6 +459,7 @@ The **Regularized Adaptive Diffusion Tensor** for walker `i` is defined as:
 
 $$
 \Sigma_{\text{reg}}(x_i, S) := \left( H_i(S) + \epsilon_\Sigma I \right)^{-1/2}
+
 $$
 
 where `ε_Σ > 0` is a fixed, small **regularization constant**.
@@ -445,6 +468,7 @@ The induced Riemannian metric for the kinetic dynamics is the inverse of the reg
 
 $$
 G_{\text{reg}}(x_i, S) := \Sigma_{\text{reg}}(x_i, S) \Sigma_{\text{reg}}(x_i, S)^T = \left( H_i(S) + \epsilon_\Sigma I \right)^{-1}
+
 $$
 
 :::
@@ -474,6 +498,7 @@ The **ρ-localized mean-field fitness potential** $V_{\text{fit}}[f, \rho]: \mat
 
 $$
 V_{\text{fit}}[f, \rho](x) := g_A\left( Z_\rho[f, d, x] \right)
+
 $$
 
 where:
@@ -512,12 +537,14 @@ The fitness potential $V_{\text{fit}}[f, \rho](x)$ serves as the *intelligent gu
 
 $$
 f_k := \frac{1}{k} \sum_{i \in A_k} \delta_{(x_i, v_i)}
+
 $$
 
 where $A_k$ is the set of alive walkers with $|A_k| = k$. This yields the N-particle fitness potential:
 
 $$
 V_{\text{fit}}[f_k, \rho](x_i) = g_A\left( Z_\rho[f_k, d, x_i] \right)
+
 $$
 
 where the Z-score uses the localized weights $w_{ij}(\rho) = K_\rho(x_i, x_j) / \sum_{\ell \in A_k} K_\rho(x_i, x_\ell)$ computed over the **alive walkers** only.
@@ -566,6 +593,7 @@ The adaptive force $\mathbf{F}_{\text{adapt}} = \epsilon_F \nabla V_{\text{fit}}
 
 $$
 \sup_{S \in \Sigma_N, i \in A_k} \|\mathbf{F}_{\text{adapt}}(x_i, S)\| \le F_{\text{adapt,max}}(\rho) < \infty
+
 $$
 
 **ρ-Dependence:** The bound $F_{\text{adapt,max}}(\rho)$ depends on the localization scale ρ through:
@@ -579,6 +607,7 @@ $$
 
 $$
 F_{\text{adapt,max}}(\rho) = L_{g_A} \cdot \left[ \frac{2d'_{\max}}{\sigma\'_{\min}} \left(1 + \frac{2d_{\max} C_{\nabla K}(\rho)}{\rho d'_{\max}}\right) + \frac{4d_{\max}^2 L_{\sigma\'_{\text{reg}}}}{\sigma'^2_{\min,\text{bound}}} \cdot C_{\mu,V}(\rho) \right]
+
 $$
 
     where $C_{\mu,V}(\rho) = O(1/\rho)$ is **independent of N** and bounds the derivatives of the localized moments.
@@ -604,6 +633,7 @@ The regularized diffusion tensor $\Sigma_{\text{reg}} = (H + \epsilon_\Sigma I)^
 
 $$
 c_{\min}(\rho) I \preceq G_{\text{reg}}(S) \preceq c_{\max}(\rho) I \quad \forall S \in \Sigma_N, \, \forall k, \, \forall N
+
 $$
 
 where $c_{\min}(\rho)$ and $c_{\max}(\rho)$ are **k-uniform** (and thus **N-uniform**) constants that depend only on ρ and the regularization parameter $\epsilon_\Sigma$.
@@ -626,24 +656,28 @@ For the Geometric Viscous Fluid Model with regularization parameter $\epsilon_\S
 
 $$
 \epsilon_\Sigma > H_{\max}(\rho)
+
 $$
 
 where $H_{\max}(\rho)$ is the **k-uniform** (and thus **N-uniform**) bound on $\|H(S)\|$ from Appendix A, Theorem {prf:ref}`thm-c2-regularity`, the regularized metric
 
 $$
 G_{\text{reg}}(S) = \left( H(S) + \epsilon_\Sigma I \right)^{-1}
+
 $$
 
 is uniformly elliptic with **k-uniform** (and thus **N-uniform**) ellipticity constants:
 
 $$
 c_{\min}(\rho) = \frac{1}{H_{\max}(\rho) + \epsilon_\Sigma}, \quad c_{\max}(\rho) = \frac{1}{\epsilon_\Sigma - H_{\max}(\rho)}
+
 $$
 
 such that:
 
 $$
 c_{\min}(\rho) I \preceq G_{\text{reg}}(S) \preceq c_{\max}(\rho) I
+
 $$
 
 for all $S \in \Sigma_N$, **all k** (alive walker counts), and **all N** (total swarm sizes).
@@ -652,6 +686,7 @@ Equivalently, the eigenvalues of $G_{\text{reg}}(S)$ satisfy:
 
 $$
 \lambda_i(G_{\text{reg}}(S)) \in [c_{\min}(\rho), c_{\max}(\rho)] \quad \forall i \in \{1, \ldots, d\}, \, \forall S \in \Sigma_N, \, \forall k, \, \forall N \in \mathbb{N}
+
 $$
 
 **Critical Property:** Since $H_{\max}(\rho)$ is independent of k (and thus of N) by Theorem {prf:ref}`thm-c2-regularity`, the ellipticity constants depend only on ρ and $\epsilon_\Sigma$, not on the alive walker count or swarm size. This ensures the adaptive diffusion remains well-conditioned for arbitrarily large swarms.
@@ -671,6 +706,7 @@ Under the axiomatic framework of Section 3, the unregularized Hessian $H(S) = \n
 
 $$
 \|H(S)\| \le H_{\max}(\rho) < \infty
+
 $$
 
 for all $S \in \Sigma_N$ and **all N**, where $H_{\max}(\rho)$ is the **N-uniform** bound from Appendix A, Theorem {prf:ref}`thm-c2-regularity`. This bound depends only on the pipeline parameters $(A, \sigma\'_{\min}, \rho)$ and the measurement function properties $(d_{\max}, d'_{\max}, d''_{\max})$, but is **independent of N**.
@@ -681,12 +717,14 @@ The fitness potential is constructed as:
 
 $$
 V_{\text{fit}}(x) = g_A(Z_{\text{reg}}(x))
+
 $$
 
 where $g_A: \mathbb{R} \to [0, A]$ is smooth and bounded, and:
 
 $$
 Z_{\text{reg}}(x) = \frac{d(x) - \mu}{\sigma\'_{\text{reg}}}
+
 $$
 
 with $\sigma\'_{\text{reg}} \ge \sigma\'_{\min} > 0$ by construction.
@@ -695,18 +733,21 @@ with $\sigma\'_{\text{reg}} \ge \sigma\'_{\min} > 0$ by construction.
 
 $$
 \nabla V_{\text{fit}}(x) = g'_A(Z) \cdot \nabla Z_{\text{reg}}(x)
+
 $$
 
 Since $g_A$ is bounded and smooth, $|g'_A(Z)| \le g'_{\max}$ for all $Z$. The gradient of the Z-score involves derivatives of $d(x)$ and the ρ-localized statistics, all of which are bounded by the pipeline construction (bounded measurement function, finite patch radius). Thus:
 
 $$
 \|\nabla V_{\text{fit}}(x)\| \le K_1 < \infty
+
 $$
 
 **Step 2: Hessian bounds.** Taking another derivative:
 
 $$
 H(x) = \nabla^2 V_{\text{fit}}(x) = g''_A(Z) \cdot (\nabla Z) \otimes (\nabla Z) + g'_A(Z) \cdot \nabla^2 Z
+
 $$
 
 Both terms are bounded:
@@ -718,6 +759,7 @@ Therefore:
 
 $$
 \|H(S)\| \le H_{\max} := g''_{\max} K_1^2 / (g'_{\max})^2 + g'_{\max} K_2
+
 $$
 
 where $K_2$ is the bound on $\|\nabla^2 Z\|$.
@@ -730,6 +772,7 @@ Under the fitness pipeline construction with regularized Z-score regularization,
 
 $$
 \|H(S)\| \le H_{\max} = \frac{4 A g'_{\max}^2 \|\nabla d\|^2_{\infty}}{\sigma'^2_{\min,\text{patch}}} + \frac{A g'_{\max} \|\nabla^2 d\|_{\infty}}{\sigma\'_{\min}} + \frac{4 A g''_{\max} \|\nabla d\|^4_{\infty}}{\sigma'^4_{\min,\text{patch}}}
+
 $$
 
 for all swarm states $S$, where:
@@ -743,6 +786,7 @@ We provide a complete derivation tracking all terms. Recall:
 
 $$
 V_{\text{fit}}(x_i) = g_A\left( Z_{\text{reg}}(x_i) \right), \quad Z_{\text{reg}}(x_i) = \frac{d(x_i) - \mu}{\sigma\'_{\text{reg}}}
+
 $$
 
 where $\sigma\'_{\text{reg}} = \max\{\sqrt{\sigma^2_{\rho}}, \sigma\'_{\min}\}$.
@@ -751,60 +795,70 @@ where $\sigma\'_{\text{reg}} = \max\{\sqrt{\sigma^2_{\rho}}, \sigma\'_{\min}\}$.
 
 $$
 \nabla_{x_i} V_{\text{fit}} = g'_A(Z) \nabla_{x_i} Z_{\text{reg}}
+
 $$
 
 For the Z-score:
 
 $$
 \nabla_{x_i} Z_{\text{reg}} = \frac{1}{\sigma\'_{\text{reg}}} \left( \nabla_{x_i} d - \nabla_{x_i} \mu \right)
+
 $$
 
 The localized mean $\mu$ depends on $x_i$ through both the indicator function $\mathbb{1}_{\{\|x_j - x_i\| \le \rho\}}$ and the measurement values. For a smooth mollified indicator, we have:
 
 $$
 \left\| \nabla_{x_i} \mu \right\| \le \frac{2\|d\|_{\infty}}{\rho} + \|\nabla d\|_{\infty}
+
 $$
 
 Since $\sigma\'_{\text{reg}} \ge \sigma\'_{\min}$ and $|g'_A(Z)| \le g'_{\max}$:
 
 $$
 \|\nabla_{x_i} V_{\text{fit}}\| \le \frac{g'_{\max}}{\sigma\'_{\min}} \left( \|\nabla d\|_{\infty} + \frac{2\|d\|_{\infty}}{\rho} + \|\nabla d\|_{\infty} \right) =: K_1
+
 $$
 
 **Step 2: Second derivative.** Taking another derivative:
 
 $$
 \nabla^2_{x_i} V_{\text{fit}} = g''_A(Z) (\nabla_{x_i} Z) \otimes (\nabla_{x_i} Z) + g'_A(Z) \nabla^2_{x_i} Z_{\text{reg}}
+
 $$
 
 **Term 1 (outer product):** Using the bounds from Step 1:
 
 $$
 \left\| g''_A(Z) (\nabla_{x_i} Z) \otimes (\nabla_{x_i} Z) \right\| \le g''_{\max} \|\nabla_{x_i} Z\|^2 \le \frac{g''_{\max} \cdot 4 \|\nabla d\|^2_{\infty}}{\sigma'^2_{\min,\text{patch}}}
+
 $$
 
 **Term 2 (Hessian of Z-score):** We need $\nabla^2_{x_i} Z_{\text{reg}}$. This involves:
 
 $$
 \nabla^2_{x_i} Z_{\text{reg}} = \frac{1}{\sigma\'_{\text{reg}}} \nabla^2_{x_i} (d - \mu) - \frac{1}{\sigma'^2_{\text{patch}}} (\nabla_{x_i} \sigma\'_{\text{reg}}) \otimes \nabla_{x_i}(d - \mu)
+
 $$
 
 The key observation is that **$\sigma\'_{\text{reg}}$ depends on $x_i$ only through the ρ-localized statistics**, and by the regularization:
 
 $$
 \left\| \nabla_{x_i} \sigma\'_{\text{reg}} \right\| \le \frac{\|\nabla d\|_{\infty}}{\sigma\'_{\min}}
+
 $$
 
 The second derivative of the localized mean satisfies:
 
 $$
 \left\| \nabla^2_{x_i} \mu \right\| \le \|\nabla^2 d\|_{\infty} + \frac{4 \|\nabla d\|_{\infty}}{\rho^2}
+
 $$
 
 Combining:
 
 $$
 \left\| \nabla^2_{x_i} Z_{\text{reg}} \right\| \le \frac{\|\nabla^2 d\|_{\infty} + C_{\text{patch}}}{\sigma\'_{\min}} + \frac{4 \|\nabla d\|^2_{\infty}}{\sigma'^3_{\min,\text{patch}}}
+
 $$
 
 where $C_{\text{patch}}$ depends on $\|d\|_{\infty}$, $\|\nabla d\|_{\infty}$, and $\rho$.
@@ -816,6 +870,7 @@ $$
 \|H(S)\| &\le \left\| g''_A (\nabla Z) \otimes (\nabla Z) \right\| + \left\| g'_A \nabla^2 Z \right\| \\
 &\le \frac{g''_{\max} \cdot 4 \|\nabla d\|^2_{\infty}}{\sigma'^2_{\min,\text{patch}}} + \frac{g'_{\max}}{\sigma\'_{\min}} \left( \|\nabla^2 d\|_{\infty} + C_{\text{patch}} + \frac{4 \|\nabla d\|^2_{\infty}}{\sigma'^2_{\min,\text{patch}}} \right)
 \end{aligned}
+
 $$
 
 Collecting terms and using the fact that all pipeline parameters $(A, g'_{\max}, g''_{\max}, \sigma\'_{\min}, \|\nabla d\|_{\infty}, \|\nabla^2 d\|_{\infty})$ are fixed constants independent of $S$ and $N$, we obtain the stated bound for $H_{\max}$.
@@ -828,6 +883,7 @@ If the regularization $\epsilon_\Sigma = 0$ and the swarm variance $\text{Var}_\
 
 $$
 \|H(\mu)\| \to \infty
+
 $$
 
 demonstrating that uniform ellipticity cannot be guaranteed without regularization.
@@ -838,18 +894,21 @@ Consider a swarm collapsing to a point where all walkers have nearly identical m
 
 $$
 \sigma_{\text{patch}}^2 = \mathbb{E}[(d - \mu)^2] \to 0
+
 $$
 
 **Without regularization** (i.e., if we used $\sigma_{\text{patch}}$ instead of $\sigma\'_{\text{reg}} = \max\{\sigma_{\text{patch}}, \sigma\'_{\min}\}$), the Z-score becomes:
 
 $$
 Z_{\text{reg}}(x) = \frac{d(x) - d_0}{\sigma_{\text{patch}}} \sim \frac{O(1)}{\sigma_{\text{patch}}} \to \infty
+
 $$
 
 From the proof of Lemma [](#lem-hessian-bounded-rigorous), the Hessian contains terms inversely proportional to powers of $\sigma_{\text{patch}}$:
 
 $$
 \|H\| \ge \frac{C}{\sigma_{\text{patch}}^2} \to \infty
+
 $$
 
 as $\sigma_{\text{patch}} \to 0$. This demonstrates that without the regularization $\sigma\'_{\min} > 0$, the inverse $H^{-1}$ would become ill-defined, and the diffusion tensor $\Sigma = H^{-1/2}$ would be unbounded.
@@ -866,6 +925,7 @@ The Hessian $H$ is symmetric, so it has real eigenvalues $\lambda_1(H), \ldots, 
 
 $$
 \lambda_{\min}(H) := \min_{i} \lambda_i(H), \quad \lambda_{\max}(H) := \max_{i} \lambda_i(H)
+
 $$
 
 By Lemma [](#lem-hessian-bounded-rigorous), $|\lambda_i(H)| \le \|H\| \le H_{\max}$ for all $i$.
@@ -874,18 +934,21 @@ The eigenvalues of $H_{\text{reg}} = H + \epsilon_\Sigma I$ are:
 
 $$
 \lambda_i(H_{\text{reg}}) = \lambda_i(H) + \epsilon_\Sigma
+
 $$
 
 Therefore:
 
 $$
 \lambda_i(H_{\text{reg}}) \in [\lambda_{\min}(H) + \epsilon_\Sigma, \, \lambda_{\max}(H) + \epsilon_\Sigma] \subseteq [\epsilon_\Sigma - H_{\max}, \, H_{\max} + \epsilon_\Sigma]
+
 $$
 
 **Step 2: Critical condition for strict positivity.** For $H_{\text{reg}}$ to be strictly positive definite for all $S$, we require:
 
 $$
 \epsilon_\Sigma - H_{\max} > 0 \quad \Longleftrightarrow \quad \epsilon_\Sigma > H_{\max}
+
 $$
 
 This is the **key design constraint**: the regularization parameter must exceed the uniform bound on the Hessian spectral norm.
@@ -896,18 +959,21 @@ Assuming $\epsilon_\Sigma > H_{\max}$, the eigenvalues of the inverse are:
 
 $$
 \lambda_i(G_{\text{reg}}) = \frac{1}{\lambda_i(H_{\text{reg}})} \in \left[ \frac{1}{H_{\max} + \epsilon_\Sigma}, \, \frac{1}{\epsilon_\Sigma - H_{\max}} \right]
+
 $$
 
 **Step 4: Define ellipticity constants.** Let:
 
 $$
 c_{\min} := \frac{1}{H_{\max} + \epsilon_\Sigma}, \quad c_{\max} := \frac{1}{\epsilon_\Sigma - H_{\max}}
+
 $$
 
 Then:
 
 $$
 c_{\min} I \preceq G_{\text{reg}}(S) \preceq c_{\max} I
+
 $$
 
 for all $S$, proving uniform ellipticity.
@@ -920,6 +986,7 @@ Our analysis reveals that for uniform ellipticity to be **guaranteed by construc
 
 $$
 \epsilon_\Sigma > H_{\max} = \frac{4 A g'_{\max}^2 \|\nabla d\|^2_{\infty}}{\sigma'^2_{\min,\text{patch}}} + \frac{A g'_{\max} \|\nabla^2 d\|_{\infty}}{\sigma\'_{\min}} + \frac{4 A g''_{\max} \|\nabla d\|^4_{\infty}}{\sigma'^4_{\min,\text{patch}}}
+
 $$
 
 This provides a **concrete, computable guideline** for parameter selection. While this bound may be conservative in practice (the actual maximum Hessian norm over reachable states could be smaller), it guarantees well-posedness under all conditions.
@@ -946,18 +1013,21 @@ Define the product metric:
 
 $$
 d_{\Sigma_N}(S, S') := \max_{i=1,\ldots,N} \left( \|x_i - x'_i\| + \|v_i - v'_i\| \right)
+
 $$
 
 **Adaptive Force:** By Theorem {prf:ref}`thm-c1-regularity` (Appendix A), the fitness potential satisfies:
 
 $$
 \|\nabla V_{\text{fit}}[f_k, \rho](x_i)\| \le F_{\text{adapt,max}}(\rho)
+
 $$
 
 Moreover, the proof in Appendix A establishes that $\nabla V_{\text{fit}}$ depends on $S$ through the localized moments $\mu_\rho$ and $\sigma'_\rho$, which are **continuous functions** of the alive walker positions $\{x_j : j \in A_k\}$ (via the localization weights $w_{ij}(\rho)$). Since these moments are weighted averages with smooth weights, they are Lipschitz in $S$:
 
 $$
 \|\nabla V_{\text{fit}}[f_k, \rho](x_i, S) - \nabla V_{\text{fit}}[f_k, \rho](x_i, S')\| \le L_{\text{fit}}(\rho) \cdot d_{\Sigma_N}(S, S')
+
 $$
 
 for some constant $L_{\text{fit}}(\rho)$ depending on the derivatives of the kernel $K_\rho$ and the measurement function.
@@ -966,6 +1036,7 @@ for some constant $L_{\text{fit}}(\rho)$ depending on the derivatives of the ker
 
 $$
 \mathbf{F}_{\text{viscous}}(x_i, S) = \nu \sum_{j \ne i} \frac{K(\|x_i - x_j\|)}{\sum_{k \ne i} K(\|x_i - x_k\|)} (v_j - v_i)
+
 $$
 
 where $K$ is a bounded, smooth kernel. The normalized weights $a_{ij} = K(\|x_i - x_j\|)/\deg(i)$ are Lipschitz in $(x_i, v_i)$ and in the other particles' positions $(x_j)$, with Lipschitz constant depending on $\nu$, the derivatives of $K$, and the lower bound $\kappa := \inf_i \deg(i) > 0$ (which follows from kernel positivity and spatial confinement).
@@ -974,6 +1045,7 @@ where $K$ is a bounded, smooth kernel. The normalized weights $a_{ij} = K(\|x_i 
 
 $$
 \|H_i(S)\| \le H_{\max}(\rho)
+
 $$
 
 and the proof establishes that $H_i(S)$ is a continuous (in fact, differentiable) function of $S$. Therefore, $\Sigma_{\text{reg}}(x_i, S) = (H_i(S) + \epsilon_\Sigma I)^{-1/2}$ is Lipschitz in $S$ by the implicit function theorem (the map $M \mapsto (M + \epsilon_\Sigma I)^{-1/2}$ is smooth for $M$ bounded).
@@ -1009,6 +1081,7 @@ The **backbone system** is obtained from the full Hybrid SDE ([](#def-hybrid-sde
 
 $$
 \epsilon_F = 0, \quad \nu = 0, \quad \Sigma_{\text{reg}}(x, S) = \sigma I
+
 $$
 
 This yields the simplified SDE:
@@ -1018,6 +1091,7 @@ $$
 dx_i &= v_i \, dt \\
 dv_i &= \left[ -\nabla U(x_i) - \gamma v_i \right] dt + \sigma \, dW_i
 \end{aligned}
+
 $$
 
 The backbone is a **static underdamped Langevin equation** with:
@@ -1039,12 +1113,14 @@ The backbone system, composed with the cloning operator $\Psi_{\text{clone}}$, s
 
 $$
 \mathbb{E}[V_{\text{total}}(S_{k+1}) \mid S_k] \le (1 - \kappa_{\text{backbone}}) V_{\text{total}}(S_k) + C_{\text{backbone}}
+
 $$
 
 for all $k \ge 0$, where $V_{\text{total}}$ is the composite Lyapunov function:
 
 $$
 V_{\text{total}}(S) = \alpha_x V_{\text{Var},x}(S) + \alpha_v V_{\text{Var},v}(S) + \alpha_D V_{\text{Mean},D}(S) + \alpha_R V_{\text{Mean},R}(S)
+
 $$
 
 Consequently, the backbone system is geometrically ergodic, converging exponentially fast to a unique Quasi-Stationary Distribution (QSD).
@@ -1081,16 +1157,19 @@ For reference in the perturbation analysis, we summarize the quantitative drift 
 
 $$
 \mathbb{E}[V_{\text{total}}(S_{k+1})] \le (1 - \kappa_{\text{backbone}}) V_{\text{total}}(S_k) + C_{\text{backbone}}
+
 $$
 
 with:
 
 $$
 \kappa_{\text{backbone}} = \min\left\{ \frac{\alpha_v \gamma \Delta t}{\alpha_x + \alpha_v}, \, \kappa_D, \, \ldots \right\} > 0
+
 $$
 
 $$
 C_{\text{backbone}} = \alpha_x C_x + \alpha_v C_v + \alpha_D C_D + \alpha_R C_R + O(\Delta t)
+
 $$
 
 This quantitative baseline is crucial for the perturbation analysis in the following chapter.
@@ -1117,6 +1196,7 @@ $$
 dx_i &= v_i \, dt \\
 dv_i &= b_i(S) \, dt + \Sigma_{\text{reg}}(x_i, S) \circ dW_i
 \end{aligned}
+
 $$
 
 where $b_i(S)$ is the total drift (including all forces and friction).
@@ -1125,12 +1205,14 @@ Then the evolution of $V(S_t)$ is governed by:
 
 $$
 dV = A(S_t) \, dt + B(S_t) \circ dW_t
+
 $$
 
 where the **Stratonovich drift** is:
 
 $$
 A(S_t) = \sum_{i=1}^N \left[ \langle \nabla_{x_i} V, v_i \rangle + \langle \nabla_{v_i} V, b_i(S) \rangle \right] + \frac{1}{2} \sum_{i=1}^N \sum_{j=1}^d \left( \sigma_{ij} \cdot \nabla_{v_i} \right) \left( \sigma_{ij} \cdot \nabla_{v_i} V \right)
+
 $$
 
 where $\sigma_{ij}$ is the $j$-th column of $\Sigma_{\text{reg}}(x_i, S)$, and the operator $(\sigma_{ij} \cdot \nabla_{v_i})$ denotes the directional derivative in the direction $\sigma_{ij}$.
@@ -1139,6 +1221,7 @@ The stochastic term is:
 
 $$
 B(S_t) \circ dW_t = \sum_{i=1}^N \sum_{j=1}^d \langle \nabla_{v_i} V, \sigma_{ij}(S) \rangle \circ dW_i^{(j)}
+
 $$
 
 :::
@@ -1156,6 +1239,7 @@ For the Hybrid SDE with drift:
 
 $$
 b_i(S) = -\nabla U(x_i) + \epsilon_F \nabla_{x_i} V_{\text{fit}}(S) + \mathbf{F}_{\text{viscous}}(x_i, S) - \gamma v_i
+
 $$
 
 we define:
@@ -1164,6 +1248,7 @@ we define:
 
 $$
 A_{\text{backbone}}(S) = \sum_{i=1}^N \left[ \langle \nabla_{x_i} V, v_i \rangle + \langle \nabla_{v_i} V, -\nabla U(x_i) - \gamma v_i \rangle \right] + \frac{1}{2} \sigma^2 \sum_{i=1}^N \|\nabla_{v_i} V\|^2
+
 $$
 
 (This corresponds to $\epsilon_F = 0$, $\nu = 0$, $\Sigma_{\text{reg}} = \sigma I$.)
@@ -1172,18 +1257,21 @@ $$
 
 $$
 A_{\text{perturb}}(S) = \sum_{i=1}^N \langle \nabla_{v_i} V, \epsilon_F \nabla_{x_i} V_{\text{fit}}(S) + \mathbf{F}_{\text{viscous}}(x_i, S) \rangle + A_{\text{diff}}(S)
+
 $$
 
 where $A_{\text{diff}}(S)$ is the additional drift from the state-dependent diffusion:
 
 $$
 A_{\text{diff}}(S) = \frac{1}{2} \sum_{i=1}^N \sum_{j=1}^d \left[ (\sigma_{ij}^{\text{reg}} \cdot \nabla_{v_i})(\sigma_{ij}^{\text{reg}} \cdot \nabla_{v_i} V) - \sigma^2 \|\nabla_{v_i} V\|^2 \right]
+
 $$
 
 The total Stratonovich drift is:
 
 $$
 A_{\text{full}}(S) = A_{\text{backbone}}(S) + A_{\text{perturb}}(S)
+
 $$
 
 :::
@@ -1195,12 +1283,14 @@ For a Markov process with Stratonovich dynamics, the expected rate of change of 
 
 $$
 \frac{d}{dt} \mathbb{E}[V(S_t)] = \mathbb{E}[A(S_t)]
+
 $$
 
 This is the continuous-time analog of the discrete Foster-Lyapunov condition. Our goal is to prove:
 
 $$
 A_{\text{full}}(S) \le -\kappa_{\text{total}} V(S) + C_{\text{total}}
+
 $$
 
 for the Lyapunov function $V = V_{\text{total}}$.
@@ -1216,6 +1306,7 @@ Our objective is to bound the **perturbative contribution** to the Stratonovich 
 
 $$
 A_{\text{perturb}}(S) = A_{\text{full}}(S) - A_{\text{backbone}}(S)
+
 $$
 
 where $A_{\text{full}}$ is the drift of the full adaptive system and $A_{\text{backbone}}$ is the drift of the backbone (as defined in Definition [](#def-strat-drift)).
@@ -1236,6 +1327,7 @@ The adaptive force $\mathbf{F}_{\text{adapt}} = \epsilon_F \nabla V_{\text{fit}}
 
 $$
 \left| \left\langle \nabla V_{\text{total}}(S), \, \mathbf{F}_{\text{adapt}}(S) \right\rangle \right| \le \epsilon_F K_F(\rho) (V_{\text{total}}(S) + 1)
+
 $$
 
 for all $S \in \Sigma_N$ and **all N**.
@@ -1246,12 +1338,14 @@ By the Cauchy-Schwarz inequality:
 
 $$
 \left| \left\langle \nabla V_{\text{total}}, \, \mathbf{F}_{\text{adapt}} \right\rangle \right| \le \|\nabla V_{\text{total}}\| \cdot \|\mathbf{F}_{\text{adapt}}\|
+
 $$
 
 **Step 1: N-Uniform Bound on $\|\mathbf{F}_{\text{adapt}}\|$.** By **Appendix A, Theorem A.1** (Theorem {prf:ref}`thm-c1-regularity`), the C¹ regularity of the ρ-localized fitness potential establishes that:
 
 $$
 \|\mathbf{F}_{\text{adapt}}(S)\| = \epsilon_F \|\nabla V_{\text{fit}}[f_k, \rho](S)\| \le \epsilon_F F_{\text{adapt,max}}(\rho)
+
 $$
 
 where $F_{\text{adapt,max}}(\rho) = O(1/\rho)$ is the **N-uniform** explicit bound derived in the appendix through rigorous chain rule analysis and the telescoping property of normalized localization weights.
@@ -1260,30 +1354,35 @@ where $F_{\text{adapt,max}}(\rho) = O(1/\rho)$ is the **N-uniform** explicit bou
 
 $$
 V_{\text{total}}(S) = \alpha_x V_{\text{Var},x} + \alpha_v V_{\text{Var},v} + \alpha_D V_{\text{Mean},D} + \alpha_R V_{\text{Mean},R}
+
 $$
 
 Each component is a quadratic or linear function of the particle positions and velocities. For example:
 
 $$
 V_{\text{Var},x} = \frac{1}{N} \sum_{i=1}^N \|x_i - \bar{x}\|^2
+
 $$
 
 Its gradient with respect to $x_i$ is:
 
 $$
 \nabla_{x_i} V_{\text{Var},x} = \frac{2}{N} (x_i - \bar{x})
+
 $$
 
 Thus:
 
 $$
 \|\nabla_{x_i} V_{\text{Var},x}\| \le \frac{2}{N} \|x_i - \bar{x}\| \le \frac{2}{\sqrt{N}} \sqrt{V_{\text{Var},x}}
+
 $$
 
 Summing over all particles and components:
 
 $$
 \|\nabla V_{\text{total}}\|^2 \le C_{\nabla} (V_{\text{total}} + 1)
+
 $$
 
 for some constant $C_{\nabla}$ depending on the weights $\alpha_x, \alpha_v, \alpha_D, \alpha_R$.
@@ -1292,6 +1391,7 @@ for some constant $C_{\nabla}$ depending on the weights $\alpha_x, \alpha_v, \al
 
 $$
 \left| \left\langle \nabla V_{\text{total}}, \, \mathbf{F}_{\text{adapt}} \right\rangle \right| \le \sqrt{C_{\nabla} (V_{\text{total}} + 1)} \cdot \epsilon_F F_{\text{adapt,max}}(\rho) \le \epsilon_F K_F(\rho) (V_{\text{total}} + 1)
+
 $$
 
 where $K_F(\rho) = F_{\text{adapt,max}}(\rho) \sqrt{C_{\nabla}}$.
@@ -1321,18 +1421,21 @@ The normalized viscous force
 
 $$
 \mathbf{F}_{\text{viscous}} = \nu \sum_{j \neq i} \frac{K(x_i - x_j)}{\deg(i)} (v_j - v_i)
+
 $$
 
 contributes a **negative** (dissipative) term to the Stratonovich drift of $V_{\text{Var},v}$:
 
 $$
 A_{\text{viscous}}(V_{\text{Var},v}) = -\nu \mathcal{D}_{\text{visc}}(S) \le 0
+
 $$
 
 where
 
 $$
 \mathcal{D}_{\text{visc}}(S) := \frac{1}{N} \sum_{i < j} K(x_i - x_j) \left[ \frac{1}{\deg(i)} + \frac{1}{\deg(j)} \right] \|v_i - v_j\|^2 \ge 0
+
 $$
 
 is the normalized viscous dissipation.
@@ -1343,12 +1446,14 @@ The velocity variance is:
 
 $$
 V_{\text{Var},v} = \frac{1}{N} \sum_{i=1}^N \|v_i - \bar{v}\|^2
+
 $$
 
 From the Stratonovich chain rule (Theorem [](#thm-strat-chain)), the contribution of the normalized viscous force to the drift is:
 
 $$
 A_{\text{viscous}}(V_{\text{Var},v}) = \sum_{i=1}^N \left\langle \nabla_{v_i} V_{\text{Var},v}, \, \nu \sum_{j \neq i} \frac{K(x_i - x_j)}{\deg(i)} (v_j - v_i) \right\rangle
+
 $$
 
 Since $\nabla_{v_i} V_{\text{Var},v} = \frac{2}{N}(v_i - \bar{v})$:
@@ -1357,6 +1462,7 @@ $$
 \begin{aligned}
 A_{\text{viscous}}(V_{\text{Var},v}) &= \frac{2\nu}{N} \sum_{i=1}^N \frac{1}{\deg(i)} \sum_{j \neq i} K(x_i - x_j) \langle v_i - \bar{v}, \, v_j - v_i \rangle
 \end{aligned}
+
 $$
 
 **Key observation:** We use the **antisymmetric pairing structure** of $(v_j - v_i)$.
@@ -1367,18 +1473,21 @@ $$
 \begin{aligned}
 A_{\text{viscous}}(V_{\text{Var},v}) &= \frac{\nu}{N} \sum_{i < j} W_{ij} \left[ \frac{\langle v_i - \bar{v}, v_j - v_i \rangle}{\deg(i)} + \frac{\langle v_j - \bar{v}, v_i - v_j \rangle}{\deg(j)} \right]
 \end{aligned}
+
 $$
 
 Using $\langle v_j - \bar{v}, v_i - v_j \rangle = -\langle v_j - \bar{v}, v_j - v_i \rangle$:
 
 $$
 = \frac{\nu}{N} \sum_{i < j} W_{ij} \left[ \frac{1}{\deg(i)} - \frac{1}{\deg(j)} \right] \langle v_i - \bar{v}, v_j - v_i \rangle
+
 $$
 
 Expanding $\langle v_i - \bar{v}, v_j - v_i \rangle = -\|v_i - \bar{v}\|^2 + \langle v_i - \bar{v}, v_j - \bar{v} \rangle$ and using the identity $\|v_i - v_j\|^2 = \|v_i - \bar{v}\|^2 + \|v_j - \bar{v}\|^2 - 2\langle v_i - \bar{v}, v_j - \bar{v} \rangle$, we obtain after algebraic manipulation:
 
 $$
 A_{\text{viscous}}(V_{\text{Var},v}) = -\frac{\nu}{N} \sum_{i < j} K(x_i - x_j) \left[ \frac{1}{\deg(i)} + \frac{1}{\deg(j)} \right] \|v_i - v_j\|^2 \le 0
+
 $$
 
 Since $K \ge 0$ by Axiom [](#ax:viscous-kernel) and $\deg(i) > 0$ (every walker has neighbors due to kernel support and confinement), this term is strictly non-positive. The normalization preserves the dissipative structure while making the operator norm N-independent.
@@ -1399,6 +1508,7 @@ Replacing the constant diffusion $\sigma I$ with the adaptive diffusion $\Sigma_
 
 $$
 |A_{\text{diff}}(S)| \le C_{\text{diff}} < \infty
+
 $$
 
 where $C_{\text{diff}}$ depends only on the ellipticity constants $c_{\min}, c_{\max}$, the dimension $d$, and the Hessian of $V_{\text{total}}$.
@@ -1409,6 +1519,7 @@ Recall from Definition [](#def-strat-drift):
 
 $$
 A_{\text{diff}}(S) = \frac{1}{2} \sum_{i=1}^N \sum_{j=1}^d \left[ (\sigma_{ij}^{\text{reg}} \cdot \nabla_{v_i})(\sigma_{ij}^{\text{reg}} \cdot \nabla_{v_i} V) - \sigma^2 \|\nabla_{v_i} V\|^2 \right]
+
 $$
 
 where $\sigma_{ij}^{\text{reg}}$ is the $j$-th column of $\Sigma_{\text{reg}}(x_i, S)$.
@@ -1417,12 +1528,14 @@ where $\sigma_{ij}^{\text{reg}}$ is the $j$-th column of $\Sigma_{\text{reg}}(x_
 
 $$
 (\sigma_{ij} \cdot \nabla_{v_i})(\sigma_{ij} \cdot \nabla_{v_i} V) = \langle \sigma_{ij}, \nabla^2_{v_i} V \sigma_{ij} \rangle + \langle \sigma_{ij} \cdot \nabla_{v_i} \sigma_{ij}, \nabla_{v_i} V \rangle
+
 $$
 
 The first term is bounded using the Hessian of $V$:
 
 $$
 \left| \langle \sigma_{ij}, \nabla^2_{v_i} V \sigma_{ij} \rangle \right| \le \|\sigma_{ij}\|^2 \|\nabla^2_{v_i} V\| \le c_{\max} \|\nabla^2 V\|
+
 $$
 
 by Theorem [](#thm-ueph).
@@ -1431,30 +1544,35 @@ The second term involves the derivative of the diffusion coefficient. Since $\Si
 
 $$
 \left| \langle \sigma_{ij} \cdot \nabla_{v_i} \sigma_{ij}, \nabla_{v_i} V \rangle \right| \le L_\Sigma \|\nabla V\|
+
 $$
 
 **Step 2: Bound the backbone term.** For the backbone diffusion $\sigma I$:
 
 $$
 \sigma^2 \|\nabla_{v_i} V\|^2 \le \sigma^2 \|\nabla V\|^2
+
 $$
 
 **Step 3: Combine.** Since $V_{\text{total}}$ is a quadratic-like function with bounded second derivatives:
 
 $$
 \|\nabla^2 V_{\text{total}}\| \le C_{\nabla\nabla}, \quad \|\nabla V_{\text{total}}\| \le C_{\nabla} (V_{\text{total}} + 1)^{1/2}
+
 $$
 
 Therefore:
 
 $$
 |A_{\text{diff}}(S)| \le \frac{N d}{2} \left( c_{\max} C_{\nabla\nabla} + L_\Sigma C_{\nabla} (V_{\text{total}} + 1)^{1/2} + \sigma^2 C_{\nabla}^2 (V_{\text{total}} + 1) \right)
+
 $$
 
 For the perturbation analysis, we can bound this by:
 
 $$
 |A_{\text{diff}}(S)| \le C_{\text{diff,0}} + C_{\text{diff,1}} V_{\text{total}}
+
 $$
 
 where $C_{\text{diff,0}}$ and $C_{\text{diff,1}}$ are computable constants.
@@ -1477,6 +1595,7 @@ The total perturbative contribution to the Stratonovich drift of $V_{\text{total
 
 $$
 A_{\text{perturb}}(S) \le \epsilon_F K_F(\rho) (V_{\text{total}}(S) + 1) + C_{\text{diff,0}}(\rho) + C_{\text{diff,1}}(\rho) V_{\text{total}}(S)
+
 $$
 
 where **all constants are ρ-dependent**:
@@ -1488,6 +1607,7 @@ Combining these and absorbing constants:
 
 $$
 A_{\text{perturb}}(S) \le (\epsilon_F K_F(\rho) + C_{\text{diff,1}}(\rho)) V_{\text{total}}(S) + (\epsilon_F K_F(\rho) + C_{\text{diff,0}}(\rho))
+
 $$
 
 **ρ-Dependence Interpretation:**
@@ -1512,22 +1632,26 @@ For the Geometric Viscous Fluid Model with localization scale ρ > 0, there exis
 
 $$
 \mathbb{E}[V_{\text{total}}(S_{k+1}) \mid S_k] \le (1 - \kappa_{\text{total}}(\rho)) V_{\text{total}}(S_k) + C_{\text{total}}(\rho)
+
 $$
 
 for all $k \ge 0$, where:
 
 $$
 \kappa_{\text{total}}(\rho) = \kappa_{\text{backbone}} - \epsilon_F K_F(\rho) > 0
+
 $$
 
 $$
 C_{\text{total}}(\rho) = C_{\text{backbone}} + C_{\text{diff}}(\rho) + \epsilon_F K_F(\rho) < \infty
+
 $$
 
 **Critical Stability Threshold:**
 
 $$
 \epsilon_F^*(\rho) := \frac{\kappa_{\text{backbone}} - C_{\text{diff,1}}(\rho)}{2 K_F(\rho)}
+
 $$
 
 where $C_{\text{diff,1}}(\rho)$ captures the ρ-dependent diffusion perturbation contribution to the drift coefficient.
@@ -1550,6 +1674,7 @@ The proof proceeds in six steps, working entirely in the continuous-time domain 
 
 $$
 A_{\text{full}}(S) = A_{\text{backbone}}(S) + A_{\text{perturb}}(S)
+
 $$
 
 where $A_{\text{backbone}}$ is the drift of the backbone system (Section 5) and $A_{\text{perturb}}$ is the perturbative contribution from the adaptive terms (Chapter 6).
@@ -1558,6 +1683,7 @@ where $A_{\text{backbone}}$ is the drift of the backbone system (Section 5) and 
 
 $$
 \mathbb{E}[A_{\text{backbone}}(S_t) \mid S_t] \le -\kappa_{\text{backbone}} V_{\text{total}}(S_t) + C_{\text{backbone}}
+
 $$
 
 for some $\kappa_{\text{backbone}} > 0$ and $C_{\text{backbone}} < \infty$.
@@ -1566,6 +1692,7 @@ for some $\kappa_{\text{backbone}} > 0$ and $C_{\text{backbone}} < \infty$.
 
 $$
 \frac{d}{dt} \mathbb{E}[V_{\text{total}}(S_t)] = \mathbb{E}[A_{\text{backbone}}(S_t)]
+
 $$
 
 The discrete-time bound $\mathbb{E}[V'] \le (1 - \kappa \Delta t) V + C \Delta t$ implies, in the limit $\Delta t \to 0$, the continuous-time inequality $\mathbb{E}[A] \le -\kappa V + C$.
@@ -1574,6 +1701,7 @@ The discrete-time bound $\mathbb{E}[V'] \le (1 - \kappa \Delta t) V + C \Delta t
 
 $$
 A_{\text{perturb}}(S) \le (\epsilon_F K_F(\rho) + C_{\text{diff,1}}(\rho)) V_{\text{total}}(S) + (\epsilon_F K_F(\rho) + C_{\text{diff,0}}(\rho))
+
 $$
 
 **Step 4: Combine the drift inequalities.** Adding Steps 2 and 3:
@@ -1586,12 +1714,14 @@ $$
 &= [- \kappa_{\text{backbone}} + \epsilon_F K_F(\rho) + C_{\text{diff,1}}(\rho)] V_{\text{total}}(S_t) \\
 &\quad + [C_{\text{backbone}} + \epsilon_F K_F(\rho) + C_{\text{diff,0}}(\rho)]
 \end{aligned}
+
 $$
 
 **Step 5: Choose $\epsilon_F$ to ensure negative drift (ρ-dependent threshold).** Define:
 
 $$
 \epsilon_F^*(\rho) := \frac{\kappa_{\text{backbone}} - C_{\text{diff,1}}(\rho)}{2 K_F(\rho)}
+
 $$
 
 (assuming $\kappa_{\text{backbone}} > C_{\text{diff,1}}(\rho)$, which holds for sufficiently strong backbone parameters and any finite ρ > 0).
@@ -1604,22 +1734,26 @@ $$
 &< -\kappa_{\text{backbone}} + \frac{\kappa_{\text{backbone}} - C_{\text{diff,1}}(\rho)}{2} + C_{\text{diff,1}}(\rho) \\
 &= -\frac{\kappa_{\text{backbone}} - C_{\text{diff,1}}(\rho)}{2} < 0
 \end{aligned}
+
 $$
 
 Define:
 
 $$
 \kappa_{\text{total}}(\rho) := \kappa_{\text{backbone}} - \epsilon_F K_F(\rho) - C_{\text{diff,1}}(\rho) > 0
+
 $$
 
 $$
 C_{\text{total}}(\rho) := C_{\text{backbone}} + \epsilon_F K_F(\rho) + C_{\text{diff,0}}(\rho) < \infty
+
 $$
 
 Then the continuous-time drift inequality for the full system is:
 
 $$
 \mathbb{E}[A_{\text{full}}(S_t) \mid S_t] \le -\kappa_{\text{total}}(\rho) V_{\text{total}}(S_t) + C_{\text{total}}(\rho)
+
 $$
 
 **Step 6: Discretization (Justification for Adaptive System).**
@@ -1650,12 +1784,14 @@ Therefore, the continuous-time drift inequality implies the discrete-time Foster
 
 $$
 \mathbb{E}[V_{\text{total}}(S_{k+1}) \mid S_k] \le (1 - \kappa_{\text{total}} \Delta t + O(\Delta t^2)) V_{\text{total}}(S_k) + (C_{\text{total}} \Delta t + O(\Delta t^2))
+
 $$
 
 For sufficiently small $\Delta t$, the $O(\Delta t^2)$ terms can be absorbed, yielding:
 
 $$
 \mathbb{E}[V_{\text{total}}(S_{k+1}) \mid S_k] \le (1 - \kappa_{\text{total}}) V_{\text{total}}(S_k) + C_{\text{total}}
+
 $$
 
 where we redefine $\kappa_{\text{total}} := \kappa_{\text{total}} \Delta t$ and $C_{\text{total}} := C_{\text{total}} \Delta t$ for the discrete-time version.
@@ -1688,6 +1824,7 @@ Under the conditions of Theorem [](#thm-fl-drift-adaptive), the empirical distri
 
 $$
 \mathbb{E}[V_{\text{total}}(\mu_N(t))] \le (1 - \kappa_{\text{total}})^t V_{\text{total}}(\mu_N(0)) + \frac{C_{\text{total}}}{\kappa_{\text{total}}}
+
 $$
 
 In particular, the expected distance from the QSD decays exponentially with rate $\lambda = 1 - \kappa_{\text{total}}$.
@@ -1748,6 +1885,7 @@ The infinitesimal generator $\mathcal{L}_N$ for the N-particle Geometric Viscous
 
 $$
 \mathcal{L}_N f = \mathcal{L}_{\text{kin},N} f + \mathcal{L}_{\text{clone},N} f
+
 $$
 
 where:
@@ -1756,18 +1894,21 @@ where:
 
 $$
 \mathcal{L}_{\text{kin},N} f = \sum_{i=1}^N \left[ v_i \cdot \nabla_{x_i} f + \mathbf{F}_{\text{total}}(x_i, S) \cdot \nabla_{v_i} f + \frac{1}{2} \text{Tr}\left( D_{\text{reg}}(x_i, S) \nabla^2_{v_i} f \right) \right]
+
 $$
 
 with total force:
 
 $$
 \mathbf{F}_{\text{total}}(x_i, S) = -\nabla U(x_i) + \epsilon_F \nabla V_{\text{fit}}(S) + \mathbf{F}_{\text{viscous}}(x_i, S) - \gamma v_i
+
 $$
 
 and regularized diffusion matrix:
 
 $$
 D_{\text{reg}}(x_i, S) = \Sigma_{\text{reg}}(x_i, S) \Sigma_{\text{reg}}(x_i, S)^T = (H_i(S) + \epsilon_\Sigma I)^{-1}
+
 $$
 
 **Cloning Part:** $\mathcal{L}_{\text{clone},N}$ is the jump operator defined in `03_cloning.md`, which implements the selection and boundary revival mechanisms.
@@ -1782,6 +1923,7 @@ Let $\mu$ and $\nu$ be probability measures on $(\mathcal{X} \times \mathbb{R}^d
 
 $$
 \text{Ent}_\nu(\mu) := \int h \log h \, d\nu = \int h \log h \, d\nu
+
 $$
 
 For a function $f$, we define $\text{Ent}_\nu(f^2) := \text{Ent}_\nu(\mu_f)$ where $d\mu_f = f^2/\int f^2 d\nu \, d\nu$.
@@ -1790,18 +1932,21 @@ For a function $f$, we define $\text{Ent}_\nu(f^2) := \text{Ent}_\nu(\mu_f)$ whe
 
 $$
 \Gamma_N(f) := \frac{1}{2} \left( \mathcal{L}_N(f^2) - 2f \mathcal{L}_N f \right)
+
 $$
 
 For the kinetic part with anisotropic diffusion $D_{\text{reg}}$:
 
 $$
 \Gamma_N(f) = \frac{1}{2} \sum_{i=1}^N \text{Tr}\left( D_{\text{reg}}(x_i, S) \nabla_{v_i} f \otimes \nabla_{v_i} f \right)
+
 $$
 
 This can be written more explicitly as:
 
 $$
 \Gamma_N(f) = \frac{1}{2} \sum_{i=1}^N \left\langle \nabla_{v_i} f, D_{\text{reg}}(x_i, S) \nabla_{v_i} f \right\rangle
+
 $$
 
 where the diffusion matrix $D_{\text{reg}} = (H_i + \epsilon_\Sigma I)^{-1}$ is symmetric and positive definite by construction.
@@ -1816,12 +1961,14 @@ A probability measure $\nu$ on $(\mathcal{X} \times \mathbb{R}^d)^N$ satisfies a
 
 $$
 \text{Ent}_\nu(f^2) \le C_{\text{LSI}} \int \Gamma_N(f) \, d\nu
+
 $$
 
 **Equivalent Formulation (Relative Entropy):** For probability measures $\mu \ll \nu$ with density $h$:
 
 $$
 \int h \log h \, d\nu \le C_{\text{LSI}} \int \frac{\langle \mathcal{A} h, \mathcal{A} h \rangle}{h} \, d\nu
+
 $$
 
 where $\mathcal{A} = (\nabla_{v_1}, \ldots, \nabla_{v_N})$ is the collection of velocity gradients.
@@ -1840,6 +1987,7 @@ There exists a constant $C_{\text{LSI}}(\rho) > 0$, **independent of the number 
 
 $$
 \text{Ent}_{\nu_N^{\text{QSD}}}(f^2) \le C_{\text{LSI}}(\rho) \int \Gamma_N(f) \, d\nu_N^{\text{QSD}}
+
 $$
 
 The constant $C_{\text{LSI}}(\rho)$ depends only on:
@@ -1913,6 +2061,7 @@ The diffusion acts only on velocity, providing direct dissipation in $v$-space. 
 
 $$
 \mathcal{L}_{\text{kin}}^* \mathcal{H}(f | \mu_{\text{kin}}) + \lambda_v \mathcal{I}_v(f | \mu_{\text{kin}}) \le 0
+
 $$
 
 where:
@@ -1928,12 +2077,14 @@ The deterministic coupling $dx = v dt$ transfers dissipation from velocity to po
 
 $$
 \mathcal{I}_{\text{hypo}}(f | \mu) := \mathcal{I}_v(f | \mu) + \beta \mathcal{I}_x(f | \mu) + \text{cross terms}
+
 $$
 
 where $\beta > 0$ is chosen to exploit the hypocoercive structure. The key inequality to establish is:
 
 $$
 \mathcal{L}_{\text{kin}}^* \mathcal{H}(f | \mu_{\text{kin}}) + \lambda_{\text{hypo}} \mathcal{I}_{\text{hypo}}(f | \mu_{\text{kin}}) \le 0
+
 $$
 
 **Key Challenge:** The confining potential $U(x)$ must be **uniformly convex** ($\nabla^2 U \succeq \kappa_{\text{conf}} I$) to ensure macroscopic transport. This is guaranteed by Axiom [](#ax:confining-potential-hybrid).
@@ -1944,12 +2095,14 @@ By relating the modified Fisher information $\mathcal{I}_{\text{hypo}}$ to the s
 
 $$
 \mathcal{H}(f | \mu_{\text{kin}}) \le C_{\text{hypo}} \mathcal{I}_v(f | \mu_{\text{kin}})
+
 $$
 
 with constant:
 
 $$
 C_{\text{hypo}} = O\left(\frac{c_{\max}(\rho)}{\gamma \kappa_{\text{conf}} c_{\min}(\rho)}\right)
+
 $$
 
 Since all these constants are N-uniform (Theorem {prf:ref}`thm-ueph`), $C_{\text{hypo}}$ is N-uniform.
@@ -1969,6 +2122,7 @@ The adaptive force modifies the drift. Using the **N-uniform boundedness** $\|\n
 
 $$
 C_{\text{LSI,adapt}} \le C_{\text{hypo}} \cdot \exp\left(O(\epsilon_F F_{\text{adapt,max}}(\rho))\right)
+
 $$
 
 For sufficiently small $\epsilon_F$, the LSI constant remains bounded and N-uniform.
@@ -2007,6 +2161,7 @@ By Theorem {prf:ref}`thm-lsi-adaptive-gas`, let $\mu_t$ denote the law of the N-
 
 $$
 \text{Ent}_{\nu_N^{\text{QSD}}}(\mu_t) \le \text{Ent}_{\nu_N^{\text{QSD}}}(\mu_0) \cdot \exp\left( -\frac{t}{C_{\text{LSI}}} \right)
+
 $$
 
 where $C_{\text{LSI}}$ is the LSI constant from Theorem `thm-lsi-adaptive-gas`.
@@ -2019,12 +2174,14 @@ The LSI, combined with the entropy dissipation identity:
 
 $$
 \frac{d}{dt} \text{Ent}_{\nu_N^{\text{QSD}}}(\mu_t) = -\mathcal{I}[\mu_t]
+
 $$
 
 where $\mathcal{I}[\mu] := \int \Gamma_N(\sqrt{h}) \, d\nu$ is the Fisher information and $h = d\mu/d\nu$, yields:
 
 $$
 \frac{d}{dt} \text{Ent} \le -\frac{1}{C_{\text{LSI}}} \text{Ent}
+
 $$
 
 Gronwall's lemma gives the exponential bound. See Villani, *Topics in Optimal Transportation*, Theorem 23.25 for details.
@@ -2037,12 +2194,14 @@ By Theorem {prf:ref}`thm-lsi-adaptive-gas`, exponential convergence in relative 
 
 $$
 \|\mu_t - \nu_N^{\text{QSD}}\|_{\text{TV}} \le \sqrt{2 \, \text{Ent}_{\nu_N^{\text{QSD}}}(\mu_t)}
+
 $$
 
 Combining with Corollary {prf:ref}`cor-entropy-convergence-lsi`:
 
 $$
 \|\mu_t - \nu_N^{\text{QSD}}\|_{\text{TV}} \le \sqrt{2 \, \text{Ent}_{\nu_N^{\text{QSD}}}(\mu_0)} \cdot \exp\left( -\frac{t}{2C_{\text{LSI}}} \right)
+
 $$
 
 This provides an **independent verification of geometric ergodicity**, distinct from the rigorous Foster-Lyapunov proof in Chapter 7.
@@ -2075,6 +2234,7 @@ An additional benefit of the LSI is that it implies strong concentration propert
 
 $$
 \nu_N^{\text{QSD}}\left( \left| \phi - \mathbb{E}_{\nu_N^{\text{QSD}}}[\phi] \right| \ge t \right) \le 2 \exp\left( -\frac{t^2}{2 C_{\text{LSI}} L_\phi^2} \right)
+
 $$
 
 This Gaussian concentration inequality (a consequence of the LSI via Herbst's argument) guarantees that observables under the QSD are tightly concentrated around their mean, with deviations occurring with exponentially small probability. This is a **much stronger statement** than what can be derived from the Foster-Lyapunov analysis alone.
@@ -2112,6 +2272,7 @@ Moreover, for any initial distribution $\mu_0$, the law of the swarm at time $t$
 
 $$
 \|\mu_t - \pi_{\text{QSD}}\|_{\text{TV}} \le C_{\text{TV}} (1 - \kappa_{\text{total}})^t
+
 $$
 
 for some constant $C_{\text{TV}}$ depending on $\mu_0$ and $V_{\text{total}}(\mu_0)$.
@@ -2137,6 +2298,7 @@ The composition of the kinetic evolution $\Psi_{\text{kin,adapt}}$ and the cloni
 
 $$
 \text{WFR}(\mu_t, \pi_{\text{QSD}}) \le C_{\text{WFR}} e^{-\lambda_{\text{WFR}} t}
+
 $$
 
 for some constants $C_{\text{WFR}} < \infty$ and $\lambda_{\text{WFR}} > 0$.
@@ -2221,6 +2383,7 @@ For the mean-field limit of the Geometric Viscous Fluid Model (as $N \to \infty$
 
 $$
 \text{Ent}_{\rho_{\text{QSD}}}(f) \le \frac{1}{2\lambda_{\text{LSI}}} D(f)
+
 $$
 
 where:
@@ -2275,6 +2438,7 @@ The total entropy dissipation can be decomposed as:
 
 $$
 D(f) = D_{\text{kin}}(f) + D_{\text{clone}}(f) + D_{\text{boundary}}(f)
+
 $$
 
 where:
@@ -2308,21 +2472,141 @@ There exists $\lambda_{\text{mic}} > 0$ such that:
 
 $$
 D_{\text{kin}}(h \cdot \rho_{\text{QSD}}) \ge \lambda_{\text{mic}} \|(I - \Pi) h\|^2_{L^2(\rho_{\text{QSD}})}
+
 $$
 
 This would follow from a Poincaré inequality for the velocity-only part of the kinetic operator for each fixed position $x$.
 :::
 
-:::{prf:lemma} Macroscopic Transport (Step B)
+:::{prf:lemma} Macroscopic Transport in Absorption Form (Step B)
 :label: lem-macro-transport
 
-There exists $C_1 > 0$ such that:
+**Assumption A1 (Uniform Convexity)**: The confining potential $U(x)$ satisfies:
 
 $$
-\|\Pi h\|^2_{L^2(\rho_{\text{QSD}})} \le C_1 \left| \langle (I - \Pi) h, v \cdot \nabla_x (\Pi h) \rangle_{L^2(\rho_{\text{QSD}})} \right|
+\nabla^2 U(x) \succeq \kappa_{\text{conf}} I \quad \text{for all } x \in \mathcal{X}
+
 $$
 
-This captures the hypocoercive coupling: macroscopic gradients are transported by the velocity field, creating correlations with microscopic fluctuations.
+for some constant $\kappa_{\text{conf}} > 0$.
+
+**Assumption A2 (Centered Velocities)**: The conditional velocity mean under the QSD vanishes:
+
+$$
+\int v \rho_{\text{QSD}}(v | x) \, dv = 0 \quad \text{for all } x \in \mathcal{X}
+
+$$
+
+**Assumption A3 (Bounded Perturbation)**: The position marginal $\rho_x(x) := \int \rho_{\text{QSD}}(x, v) \, dv$ satisfies:
+
+$$
+\left\| \log\left(\frac{\rho_x}{\mu_{\text{Gibbs}}}\right) \right\|_{L^\infty(\mathcal{X})} < \infty
+
+$$
+
+where $\mu_{\text{Gibbs}}(dx) \propto e^{-U(x)} dx$ is the Gibbs measure.
+
+Under these assumptions, there exist constants $C_1, C_{\text{aux}} > 0$ such that for all $h \in H^1(\rho_{\text{QSD}})$ with $\int h \rho_{\text{QSD}} = 1$:
+
+$$
+\|\Pi h - 1\|^2_{L^2(\rho_x)} \le C_1 \left| \langle (I - \Pi) h, v \cdot \nabla_x (\Pi h) \rangle_{L^2(\rho_{\text{QSD}})} \right| + C_{\text{aux}} \|(I - \Pi) h\|^2_{L^2(\rho_{\text{QSD}})}
+
+$$
+
+where:
+
+$$
+C_1 = \frac{2}{\sqrt{\kappa_x c_v}}, \quad C_{\text{aux}} = \frac{1}{\kappa_x c_v}
+
+$$
+
+with:
+- $\kappa_x \ge \kappa_{\text{conf}} e^{-2 C_{\text{pert}}}$ (position Poincaré constant)
+- $c_v = \frac{\sigma^2}{2\gamma}$ (velocity covariance lower bound)
+
+This captures the hypocoercive coupling: macroscopic gradients are transported by the velocity field, creating correlations with microscopic fluctuations. The auxiliary term $C_{\text{aux}} \|(I - \Pi) h\|^2$ is absorbed in the LSI assembly via Step A (Lemma {prf:ref}`lem-micro-coercivity`).
+:::
+
+:::{prf:proof}
+
+This proof follows the classical hypocoercivity approach of Villani (2009) adapted to the QSD setting. The key steps are:
+
+**Preliminary Lemmas**:
+
+*Lemma A (Position Poincaré)*: Under Assumptions A1 (uniform convexity) and A3 (bounded perturbation), the position marginal $\rho_x$ satisfies a Poincaré inequality:
+
+$$
+\|a\|^2_{L^2(\rho_x)} \le \frac{1}{\kappa_x} \|\nabla_x a\|^2_{L^2(\rho_x)}
+
+$$
+
+for all mean-zero $a \in H^1(\rho_x)$, where $\kappa_x \ge \kappa_{\text{conf}} e^{-2 C_{\text{pert}}}$ by the Holley-Stroock perturbation theorem.
+
+*Lemma B (Velocity Covariance)*: Under Assumption A2 (centered velocities), the conditional velocity covariance satisfies:
+
+$$
+\Sigma_v(x) := \int v v^\top \rho_{\text{QSD}}(v | x) \, dv \succeq c_v I
+
+$$
+
+where $c_v = \frac{\sigma^2}{2\gamma}$ (derived via Lyapunov equation for the Ornstein-Uhlenbeck velocity process).
+
+*Lemma C (Orthogonality)*: Under Assumption A2, for any function $a(x)$ depending only on position:
+
+$$
+\Pi[v \cdot \nabla_x a] = 0
+
+$$
+
+**Main Proof**:
+
+**Step 1**: Apply position Poincaré to the centered macroscopic part $a(x) := \Pi h(x) - 1$. By normalization $\int h \rho_{\text{QSD}} = 1$, we have $\int a \rho_x = 0$, so:
+
+$$
+\|\Pi h - 1\|^2_{L^2(\rho_x)} \le \frac{1}{\kappa_x} \|\nabla_x (\Pi h)\|^2_{L^2(\rho_x)}
+
+$$
+
+**Step 2**: Express position gradient via transport energy. Using the velocity covariance lower bound:
+
+$$
+\|\nabla_x (\Pi h)\|^2_{L^2(\rho_x)} \le \frac{1}{c_v} \|v \cdot \nabla_x (\Pi h)\|^2_{L^2(\rho_{\text{QSD}})}
+
+$$
+
+**Step 3**: Combine Steps 1-2 to obtain macroscopic coercivity:
+
+$$
+\|\Pi h - 1\|^2_{L^2(\rho_x)} \le \frac{1}{\kappa_x c_v} \|v \cdot \nabla_x (\Pi h)\|^2_{L^2(\rho_{\text{QSD}})}
+
+$$
+
+**Step 4**: Apply absorption technique. By Lemma C, $v \cdot \nabla_x (\Pi h)$ is purely microscopic ($\Pi[v \cdot \nabla_x (\Pi h)] = 0$), so by Cauchy-Schwarz:
+
+$$
+\|v \cdot \nabla_x (\Pi h)\|_{L^2} \ge \frac{|\langle (I - \Pi) h, v \cdot \nabla_x (\Pi h) \rangle_{L^2}|}{\|(I - \Pi) h\|_{L^2}}
+
+$$
+
+Using Young's inequality $ab \le \frac{a^2}{2\epsilon} + \frac{\epsilon b^2}{2}$ with optimal choice $\epsilon = 1$ yields the absorption form:
+
+$$
+\|\Pi h - 1\|^2_{L^2(\rho_x)} \le \frac{2}{\sqrt{\kappa_x c_v}} |\langle (I - \Pi) h, v \cdot \nabla_x (\Pi h) \rangle_{L^2}| + \frac{1}{\kappa_x c_v} \|(I - \Pi) h\|^2_{L^2}
+
+$$
+
+with $C_1 = \frac{2}{\sqrt{\kappa_x c_v}}$ and $C_{\text{aux}} = \frac{1}{\kappa_x c_v}$.
+
+**References**: Villani (2009, Memoirs AMS), Hérau-Nier (2004, ARMA), Bakry-Gentil-Ledoux (2014), Holley-Stroock (1987). ∎
+
+:::
+
+:::{admonition} Note on Absorption Form vs. Clean Form
+:class: important
+
+The **absorption form** (with the auxiliary term $C_{\text{aux}} \|(I - \Pi) h\|^2$) is necessary—the clean inequality $\|\Pi h\|^2 \le C_1 |\langle (I - \Pi) h, v \cdot \nabla_x (\Pi h) \rangle|$ without the auxiliary term cannot hold in general. The auxiliary term is absorbed in the LSI assembly via Step A (microscopic coercivity), which provides the bound $\|(I - \Pi) h\|^2 \le \frac{1}{\lambda_{\text{mic}}} D_{\text{kin}}$.
+
+This is standard practice in all rigorous hypocoercivity proofs (Villani 2009, Hérau-Nier 2004).
 :::
 
 :::{prf:lemma} Microscopic Regularization (Step C)
@@ -2332,6 +2616,7 @@ There exists $C_2 > 0$ such that:
 
 $$
 \left| \langle (I - \Pi) h, v \cdot \nabla_x (\Pi h) \rangle_{L^2(\rho_{\text{QSD}})} \right| \le C_2 \sqrt{D_{\text{kin}}(h \cdot \rho_{\text{QSD}})}
+
 $$
 
 This shows the cross-term is controlled by the kinetic dissipation.
@@ -2343,18 +2628,21 @@ Combining the three steps via the hypocoercive method yields:
 
 $$
 \|h - 1\|^2_{L^2(\rho_{\text{QSD}})} \le \left( \frac{1}{\lambda_{\text{mic}}} + C_1 C_2^2 \right) D_{\text{kin}}(h \cdot \rho_{\text{QSD}})
+
 $$
 
 For $f$ close to $\rho_{\text{QSD}}$, we have $\text{Ent}(f) \approx \frac{1}{2} \|h - 1\|^2$, yielding:
 
 $$
 \text{Ent}(f) \le C_{\text{kin}} D_{\text{kin}}(f)
+
 $$
 
 Since $D(f) \ge D_{\text{kin}}(f)$ by positivity of the other terms:
 
 $$
 \text{Ent}(f) \le C_{\text{kin}} D(f)
+
 $$
 
 establishing the LSI with $\lambda_{\text{LSI}} = 1 / (2 C_{\text{kin}})$.
@@ -2473,6 +2761,7 @@ Several important extensions and open problems remain:
 
 $$
 \partial_t f = -\nabla_v \cdot \left[ \left( -\nabla U(x) + \epsilon_F \nabla V_{\text{fit}}[f](x) + \mathbf{F}_{\text{viscous}}[f] - \gamma v \right) f \right] + \frac{1}{2} \nabla_v \cdot \left( \Sigma_{\text{reg}}[f] \Sigma_{\text{reg}}[f]^T \nabla_v f \right)
+
 $$
 
 This requires extending the propagation of chaos techniques from [06_propagation_chaos.md](../1_euclidean_gas/08_propagation_chaos.md) to handle the state-dependent diffusion tensor $\Sigma_{\text{reg}}[f]$.
@@ -2481,6 +2770,7 @@ This requires extending the propagation of chaos techniques from [06_propagation
 
 $$
 K(v | x, S) = \frac{1}{2} \langle v, G(x, S) v \rangle
+
 $$
 
 This would fully realize the vision of information-geometric exploration, where both the drift and the kinetic structure adapt to the landscape geometry.
@@ -2556,6 +2846,7 @@ The localization weights $w_{ij}(\rho)$ satisfy:
 
 $$
 \nabla_{x_i} w_{ij}(\rho) = \frac{1}{Z_i(\rho)} \left[ \nabla_{x_i} K_\rho(x_i, x_j) - w_{ij}(\rho) \sum_{\ell \in A_k} \nabla_{x_i} K_\rho(x_i, x_\ell) \right]
+
 $$
 
 where $Z_i(\rho) = \sum_{\ell \in A_k} K_\rho(x_i, x_\ell)$ is the normalization **over alive walkers only**.
@@ -2564,12 +2855,14 @@ where $Z_i(\rho) = \sum_{\ell \in A_k} K_\rho(x_i, x_\ell)$ is the normalization
 
 $$
 \|\nabla_{x_i} w_{ij}(\rho)\| \le \frac{2C_{\nabla K}(\rho)}{\rho}
+
 $$
 
 **Second Derivative:** The Hessian $\nabla^2_{x_i} w_{ij}(\rho)$ involves terms with $\nabla^2 K_\rho$, $(\nabla K_\rho) \otimes (\nabla K_\rho)$, and products of weights. It satisfies:
 
 $$
 \|\nabla^2_{x_i} w_{ij}(\rho)\| \le C_w(\rho) := \frac{C_{\nabla^2 K}(\rho)}{\rho^2} + \frac{4C_{\nabla K}(\rho)^2}{\rho^2}
+
 $$
 
 **Proof:**
@@ -2590,12 +2883,14 @@ The gradient of the localized mean satisfies:
 
 $$
 \nabla_{x_i} \mu_\rho^{(i)} = \nabla_{x_i} d(x_i) \cdot w_{ii}(\rho) + \sum_{j \in A_k} d(x_j) \nabla_{x_i} w_{ij}(\rho)
+
 $$
 
 **k-Uniform Bound:**
 
 $$
 \|\nabla_{x_i} \mu_\rho^{(i)}\| \le d'_{\max} + \frac{4 d_{\max} C_{\nabla K}(\rho)}{\rho}
+
 $$
 
 **Proof:**
@@ -2606,12 +2901,14 @@ Differentiate $\mu_\rho^{(i)} = \sum_{j \in A_k} w_{ij}(\rho) d(x_j)$ using the 
 
 $$
 \sum_{j \in A_k} \nabla_{x_i} w_{ij}(\rho) = 0
+
 $$
 
 This is the key telescoping property that enables k-uniformity. Using this identity, we can rewrite:
 
 $$
 \sum_{j \in A_k} d(x_j) \nabla_{x_i} w_{ij}(\rho) = \sum_{j \in A_k} [d(x_j) - d(x_i)] \nabla_{x_i} w_{ij}(\rho)
+
 $$
 
 **Why this matters:** The term $[d(x_j) - d(x_i)]$ is only non-zero when $j \ne i$, and crucially, it is **localized by the kernel's structure**, not by counting walkers.
@@ -2620,6 +2917,7 @@ $$
 
 $$
 |d(x_j) - d(x_i)| \le d'_{\max} \|x_j - x_i\| \le d'_{\max} \cdot C_K \rho
+
 $$
 
 where $C_K$ is a constant depending on the kernel's effective radius (e.g., $C_K \approx 3$ for a Gaussian kernel with 99.7% mass within 3σ).
@@ -2628,12 +2926,14 @@ where $C_K$ is a constant depending on the kernel's effective radius (e.g., $C_K
 
 $$
 \left\|\sum_{j \in A_k} [d(x_j) - d(x_i)] \nabla_{x_i} w_{ij}\right\| \le \sum_{j \in A_k} |d(x_j) - d(x_i)| \cdot \|\nabla_{x_i} w_{ij}\|
+
 $$
 
 Now, **the key insight**: While the sum is over all $k$ alive walkers, the terms are **non-zero only for j in the ρ-neighborhood** of $i$ (by kernel localization). For such $j$:
 
 $$
 |d(x_j) - d(x_i)| \cdot \|\nabla_{x_i} w_{ij}\| \le d'_{\max} C_K \rho \cdot \frac{2C_{\nabla K}(\rho)}{\rho} = 2d'_{\max} C_K C_{\nabla K}(\rho)
+
 $$
 
 For walkers outside the ρ-neighborhood, $K_\rho(x_i, x_j) \approx 0$, so $\nabla_{x_i} w_{ij} \approx 0$ (exponentially small for Gaussian kernels).
@@ -2642,6 +2942,7 @@ For walkers outside the ρ-neighborhood, $K_\rho(x_i, x_j) \approx 0$, so $\nabl
 
 $$
 \left\|\sum_{j \in A_k} [d(x_j) - d(x_i)] \nabla_{x_i} w_{ij}\right\| \le \underbrace{\left[\text{bound per term}\right]}_{2d'_{\max} C_K C_{\nabla K}(\rho)} \cdot \underbrace{\left[\text{sum of weights}\right]}_{\sum_{j \in A_k} w_{ij} = 1}
+
 $$
 
 The critical observation is that **the weighted sum collapses via telescoping**, not via counting effective walkers. The terms are automatically bounded by the normalization $\sum w_{ij} = 1$, independent of $k$.
@@ -2650,12 +2951,14 @@ The critical observation is that **the weighted sum collapses via telescoping**,
 
 $$
 \|\nabla_{x_i} \mu_\rho^{(i)}\| \le d'_{\max} + 2d'_{\max} C_K C_{\nabla K}(\rho)
+
 $$
 
 For a conservative bound, we absorb $C_K$ into a rescaled constant and use $|d(x_j)| \le d_{\max}$ directly (without telescoping for the outer triangle inequality):
 
 $$
 \|\nabla_{x_i} \mu_\rho^{(i)}\| \le d'_{\max} + \frac{4 d_{\max} C_{\nabla K}(\rho)}{\rho}
+
 $$
 
 This bound is **independent of k** (and thus independent of N), proving k-uniformity.
@@ -2668,12 +2971,14 @@ The Hessian of the localized mean satisfies:
 
 $$
 \nabla^2_{x_i} \mu_\rho^{(i)} = \nabla^2_{x_i} d(x_i) \cdot w_{ii}(\rho) + 2 \nabla_{x_i} d(x_i) \otimes \nabla_{x_i} w_{ii}(\rho) + \sum_{j \in A_k} d(x_j) \nabla^2_{x_i} w_{ij}(\rho)
+
 $$
 
 **k-Uniform Bound:**
 
 $$
 \|\nabla^2_{x_i} \mu_\rho^{(i)}\| \le d''_{\max} + \frac{4d'_{\max} C_{\nabla K}(\rho)}{\rho} + 2d_{\max} C_w(\rho)
+
 $$
 
 **Proof:**
@@ -2684,18 +2989,21 @@ Differentiate the expression from Lemma {prf:ref}`lem-mean-first-derivative`. Th
 
 $$
 \sum_{j \in A_k} \nabla^2_{x_i} w_{ij} = 0
+
 $$
 
 This telescoping identity allows us to rewrite:
 
 $$
 \sum_{j \in A_k} d(x_j) \nabla^2_{x_i} w_{ij} = \sum_{j \in A_k} [d(x_j) - d(x_i)] \nabla^2_{x_i} w_{ij}
+
 $$
 
 **Step 2: Bound Using Kernel Localization.** The Hessian $\nabla^2_{x_i} w_{ij}$ is significant only when $K_\rho(x_i, x_j)$ is non-negligible, requiring $\|x_i - x_j\| = O(\rho)$. For such $j$:
 
 $$
 |d(x_j) - d(x_i)| \le d'_{\max} C_K \rho
+
 $$
 
 where $C_K$ is the kernel's effective radius constant.
@@ -2704,36 +3012,42 @@ where $C_K$ is the kernel's effective radius constant.
 
 $$
 \left\|\sum_{j \in A_k} [d(x_j) - d(x_i)] \nabla^2_{x_i} w_{ij}\right\| \le \sum_{j \in A_k} |d(x_j) - d(x_i)| \cdot \|\nabla^2_{x_i} w_{ij}\|
+
 $$
 
 For walkers in the ρ-neighborhood (the only ones contributing significantly):
 
 $$
 |d(x_j) - d(x_i)| \cdot \|\nabla^2_{x_i} w_{ij}\| \le d'_{\max} C_K \rho \cdot C_w(\rho)
+
 $$
 
 **Step 4: Sum via Telescoping.** The weighted sum collapses using the normalization $\sum_{j \in A_k} w_{ij} = 1$:
 
 $$
 \left\|\sum_{j \in A_k} [d(x_j) - d(x_i)] \nabla^2_{x_i} w_{ij}\right\| \le d'_{\max} C_K \rho \cdot C_w(\rho) \cdot \underbrace{\left[\text{normalized weight sum}\right]}_{O(1)}
+
 $$
 
 **Step 5: Final Bound.** For the term $\nabla d(x_i) \otimes \nabla w_{ii}$:
 
 $$
 \|2 \nabla_{x_i} d(x_i) \otimes \nabla_{x_i} w_{ii}\| \le 2d'_{\max} \cdot \frac{2C_{\nabla K}(\rho)}{\rho} = \frac{4d'_{\max} C_{\nabla K}(\rho)}{\rho}
+
 $$
 
 Combining all terms (diagonal $\nabla^2 d(x_i)$, cross-term, and the sum):
 
 $$
 \|\nabla^2_{x_i} \mu_\rho^{(i)}\| \le d''_{\max} + \frac{4d'_{\max} C_{\nabla K}(\rho)}{\rho} + d'_{\max} C_K \rho C_w(\rho)
+
 $$
 
 For a conservative bound, we use $|d(x_j)| \le d_{\max}$ directly and absorb constants:
 
 $$
 \|\nabla^2_{x_i} \mu_\rho^{(i)}\| \le d''_{\max} + \frac{4d'_{\max} C_{\nabla K}(\rho)}{\rho} + 2d_{\max} C_w(\rho)
+
 $$
 
 This bound is **independent of k** (and thus independent of N), proving k-uniformity.
@@ -2746,12 +3060,14 @@ The gradient of the localized variance satisfies:
 
 $$
 \|\nabla_{x_i} V_\rho^{(i)}\| \le C_{V,\nabla}(\rho)
+
 $$
 
 where $C_{V,\nabla}(\rho)$ is a ρ-dependent but **k-uniform** constant:
 
 $$
 C_{V,\nabla}(\rho) = 4d_{\max} d'_{\max} + 4d_{\max}^2 \frac{C_{\nabla K}(\rho)}{\rho} + 2d_{\max} \left(d'_{\max} + \frac{4d_{\max} C_{\nabla K}(\rho)}{\rho}\right)
+
 $$
 
 **Proof:**
@@ -2760,18 +3076,21 @@ The variance is $V_\rho^{(i)} = \sum_{j \in A_k} w_{ij} d(x_j)^2 - (\mu_\rho^{(i
 
 $$
 \nabla_{x_i} V_\rho^{(i)} = \nabla_{x_i}\left(\sum_{j \in A_k} w_{ij} d(x_j)^2\right) - 2\mu_\rho^{(i)} \nabla_{x_i} \mu_\rho^{(i)}
+
 $$
 
 **Term 1:** For the first term, apply the telescoping property $\sum_j \nabla w_{ij} = 0$:
 
 $$
 \sum_{j \in A_k} d(x_j)^2 \nabla_{x_i} w_{ij} = \sum_{j \in A_k} [d(x_j)^2 - d(x_i)^2] \nabla_{x_i} w_{ij}
+
 $$
 
 Using $|d(x_j)^2 - d(x_i)^2| = |d(x_j) - d(x_i)| \cdot |d(x_j) + d(x_i)| \le |d(x_j) - d(x_i)| \cdot 2d_{\max}$ and the kernel localization $|d(x_j) - d(x_i)| \le d'_{\max} C_K \rho$:
 
 $$
 \left\|\sum_{j \in A_k} [d(x_j)^2 - d(x_i)^2] \nabla w_{ij}\right\| \le 2d_{\max} d'_{\max} C_K \rho \cdot \frac{2C_{\nabla K}(\rho)}{\rho} = 4d_{\max} d'_{\max} C_K C_{\nabla K}(\rho)
+
 $$
 
 The diagonal term contributes $2d(x_i) d'_{\max} w_{ii} \le 2d_{\max} d'_{\max}$.
@@ -2780,6 +3099,7 @@ The diagonal term contributes $2d(x_i) d'_{\max} w_{ii} \le 2d_{\max} d'_{\max}$
 
 $$
 \|2\mu_\rho^{(i)} \nabla_{x_i} \mu_\rho^{(i)}\| \le 2d_{\max} \left(d'_{\max} + \frac{4d_{\max} C_{\nabla K}(\rho)}{\rho}\right)
+
 $$
 
 Combining and absorbing constants yields the stated bound, which is **independent of k**.
@@ -2792,6 +3112,7 @@ The Hessian of the localized variance satisfies:
 
 $$
 \|\nabla^2_{x_i} V_\rho^{(i)}\| \le C_{V,\nabla^2}(\rho)
+
 $$
 
 where $C_{V,\nabla^2}(\rho)$ is a ρ-dependent but **k-uniform** constant involving $d''_{\max}$, $C_{\nabla K}(\rho)/\rho$, $C_w(\rho)$, and the first-order bounds.
@@ -2802,12 +3123,14 @@ Differentiate the expression from Lemma {prf:ref}`lem-variance-gradient`. Apply 
 
 $$
 \sum_{j \in A_k} d(x_j)^2 \nabla^2_{x_i} w_{ij} = \sum_{j \in A_k} [d(x_j)^2 - d(x_i)^2] \nabla^2_{x_i} w_{ij}
+
 $$
 
 Using kernel localization and the bound $\|\nabla^2 w_{ij}\| \le C_w(\rho)$, the sum collapses via the normalization constraint. The second derivative of the product $\mu_\rho^2$ involves:
 
 $$
 \nabla^2(\mu_\rho^2) = 2(\nabla \mu_\rho) \otimes (\nabla \mu_\rho) + 2\mu_\rho \nabla^2 \mu_\rho
+
 $$
 
 Both terms are bounded using Lemmas {prf:ref}`lem-mean-first-derivative` and {prf:ref}`lem-mean-second-derivative`. The final bound is **independent of k**.
@@ -2823,18 +3146,21 @@ The ρ-localized fitness potential $V_{\text{fit}}[f_k, \rho](x_i) = g_A(Z_\rho[
 
 $$
 \|\nabla_{x_i} V_{\text{fit}}[f_k, \rho](x_i)\| \le F_{\text{adapt,max}}(\rho)
+
 $$
 
 where:
 
 $$
 F_{\text{adapt,max}}(\rho) = L_{g_A} \cdot \left[ \frac{2d'_{\max}}{\sigma\'_{\min}} \left(1 + \frac{2d_{\max} C_{\nabla K}(\rho)}{\rho d'_{\max}}\right) + \frac{4d_{\max}^2 L_{\sigma\'_{\text{reg}}}}{\sigma'^2_{\min,\text{bound}}} \cdot C_{\mu,V}(\rho) \right]
+
 $$
 
 with the **N-uniform** bound on variance derivative:
 
 $$
 C_{\mu,V}(\rho) = 2d'_{\max} \left(d_{\max} + d'_{\max}\right) + 4d_{\max}^2 \frac{C_{\nabla K}(\rho)}{\rho}
+
 $$
 
 **Proof:**
@@ -2845,6 +3171,7 @@ By the chain rule:
 
 $$
 \nabla_{x_i} V_{\text{fit}}^{(i)} = g'_A(Z_\rho^{(i)}) \cdot \nabla_{x_i} Z_\rho^{(i)}
+
 $$
 
 **Step 2: Gradient of the Z-Score.**
@@ -2853,6 +3180,7 @@ The Z-score is $Z_\rho^{(i)} = (d(x_i) - \mu_\rho^{(i)}) / \sigma'_\rho^{(i)}$. 
 
 $$
 \nabla_{x_i} Z_\rho^{(i)} = \frac{1}{\sigma'_\rho^{(i)}} \left[ \nabla_{x_i} d(x_i) - \nabla_{x_i} \mu_\rho^{(i)} \right] - \frac{d(x_i) - \mu_\rho^{(i)}}{(\sigma'_\rho^{(i)})^2} \nabla_{x_i} \sigma'_\rho^{(i)}
+
 $$
 
 **Step 3: Gradient of the Regularized Standard Deviation.**
@@ -2861,6 +3189,7 @@ The regularized standard deviation is $\sigma'_\rho^{(i)} = \sigma\'_{\text{reg}
 
 $$
 \nabla_{x_i} \sigma'_\rho^{(i)} = (\sigma\'_{\text{reg}})'(V_\rho^{(i)}) \cdot \nabla_{x_i} V_\rho^{(i)}
+
 $$
 
 where $|(\sigma\'_{\text{reg}})'(V)| \le L_{\sigma\'_{\text{reg}}}$ is the global Lipschitz constant from `01_fractal_gas_framework.md`.
@@ -2871,24 +3200,28 @@ The variance is $V_\rho^{(i)} = \sum_{j \in A_k} w_{ij} d(x_j)^2 - (\mu_\rho^{(i
 
 $$
 \nabla_{x_i} V_\rho^{(i)} = 2d(x_i) \nabla_{x_i} d(x_i) \cdot w_{ii} + \sum_{j \in A_k} d(x_j)^2 \nabla_{x_i} w_{ij} - 2\mu_\rho^{(i)} \nabla_{x_i} \mu_\rho^{(i)}
+
 $$
 
 Applying the **telescoping property** $\sum_{j \in A_k} \nabla w_{ij} = 0$:
 
 $$
 \sum_{j \in A_k} d(x_j)^2 \nabla w_{ij} = \sum_{j \in A_k} [d(x_j)^2 - (\mu_\rho^{(i)})^2] \nabla w_{ij}
+
 $$
 
 For alive walkers in the ρ-neighborhood, $|d(x_j)| \le d_{\max}$, so $|d(x_j)^2 - (\mu_\rho^{(i)})^2| \le 2d_{\max}^2$. Using the **k-uniform bound** on $\|\nabla w_{ij}\|$ and only $k_{\text{eff}}(\rho) = O(1)$ contributing:
 
 $$
 \left\|\sum_{j \in A_k} [d(x_j)^2 - (\mu_\rho^{(i)})^2] \nabla w_{ij}\right\| \le 2d_{\max}^2 \cdot \frac{2C_{\nabla K}(\rho)}{\rho} \cdot k_{\text{eff}} \le \frac{4d_{\max}^2 C_{\nabla K}(\rho)}{\rho}
+
 $$
 
 Similarly, using Lemma {prf:ref}`lem-mean-first-derivative`:
 
 $$
 \|\nabla_{x_i} V_\rho^{(i)}\| \le 2d_{\max} d'_{\max} + \frac{4d_{\max}^2 C_{\nabla K}(\rho)}{\rho} + 2d_{\max} \left(d'_{\max} + \frac{4d_{\max} C_{\nabla K}}{\rho}\right) = C_{\mu,V}(\rho)
+
 $$
 
 which is **uniform in k** (and thus in N).
@@ -2899,12 +3232,14 @@ Substituting back into Step 2 using the k-uniform bounds from Lemma {prf:ref}`le
 
 $$
 \|\nabla_{x_i} Z_\rho^{(i)}\| \le \frac{1}{\sigma\'_{\min}} \left[ d'_{\max} + d'_{\max} + \frac{4d_{\max} C_{\nabla K}}{\rho} \right] + \frac{2d_{\max}}{\sigma'^2_{\min,\text{bound}}} L_{\sigma\'_{\text{reg}}} C_{\mu,V}(\rho)
+
 $$
 
 Finally, from Step 1:
 
 $$
 \|\nabla_{x_i} V_{\text{fit}}^{(i)}\| \le L_{g_A} \cdot \|\nabla Z_\rho\|
+
 $$
 
 Simplifying yields the stated $F_{\text{adapt,max}}(\rho)$, which is **uniform in k** (and thus in N).
@@ -2936,12 +3271,14 @@ The ρ-localized fitness potential $V_{\text{fit}}[f_k, \rho](x_i)$ is C² in $x
 
 $$
 \|\nabla^2_{x_i} V_{\text{fit}}[f_k, \rho](x_i)\| \le H_{\max}(\rho)
+
 $$
 
 where $H_{\max}(\rho)$ is a **k-uniform** (and thus **N-uniform**) ρ-dependent constant given by:
 
 $$
 H_{\max}(\rho) = L_{g''_A} \|\nabla Z_\rho\|^2_{\max}(\rho) + L_{g_A} \|\nabla^2 Z_\rho\|_{\max}(\rho)
+
 $$
 
 with:
@@ -2958,6 +3295,7 @@ Differentiating $\nabla V_{\text{fit}} = g'_A(Z_\rho) \nabla Z_\rho$ using the p
 
 $$
 \nabla^2 V_{\text{fit}} = g''_A(Z_\rho) (\nabla Z_\rho) \otimes (\nabla Z_\rho) + g'_A(Z_\rho) \nabla^2 Z_\rho
+
 $$
 
 **Step 2: Hessian of the Z-Score (The Technical Core).**
@@ -2971,12 +3309,14 @@ $$
 &\quad - \frac{d(x_i) - \mu_\rho}{(\sigma'_\rho)^2} \nabla^2 \sigma'_\rho \\
 &\quad + \frac{2(d(x_i) - \mu_\rho)}{(\sigma'_\rho)^3} \nabla \sigma'_\rho \otimes \nabla \sigma'_\rho
 \end{aligned}
+
 $$
 
 **Step 3: Hessian of the Regularized Standard Deviation.**
 
 $$
 \nabla^2 \sigma'_\rho = (\sigma\'_{\text{reg}})''(V_\rho) (\nabla V_\rho) \otimes (\nabla V_\rho) + (\sigma\'_{\text{reg}})'(V_\rho) \nabla^2 V_\rho
+
 $$
 
 where $|(\sigma\'_{\text{reg}})''(V)| \le L_{\sigma''_{\text{patch}}}$ (bounded by the properties of the cubic polynomial patch).
@@ -2990,24 +3330,28 @@ $$
 \nabla^2 V_\rho &= 2(\nabla d) \otimes (\nabla d) w_{ii} + 2d(x_i) \nabla^2 d(x_i) w_{ii} + 4d(x_i) (\nabla d) \otimes (\nabla w_{ii}) \\
 &\quad + \sum_{j \in A_k} d(x_j)^2 \nabla^2 w_{ij} - 2(\nabla \mu_\rho) \otimes (\nabla \mu_\rho) - 2\mu_\rho \nabla^2 \mu_\rho
 \end{aligned}
+
 $$
 
 **Key k-Uniformity Step:** Apply the **telescoping property** $\sum_{j \in A_k} \nabla^2 w_{ij} = 0$ to the sum:
 
 $$
 \sum_{j \in A_k} d(x_j)^2 \nabla^2 w_{ij} = \sum_{j \in A_k} [d(x_j)^2 - (\mu_\rho^{(i)})^2] \nabla^2 w_{ij}
+
 $$
 
 For alive walkers in the ρ-neighborhood, $|d(x_j)^2 - (\mu_\rho^{(i)})^2| \le 2d_{\max}^2$. Using $\|\nabla^2 w_{ij}\| \le C_w(\rho) = O(1/\rho^2)$ and only $k_{\text{eff}}(\rho) = O(1)$ alive walkers contributing:
 
 $$
 \left\|\sum_{j \in A_k} [d(x_j)^2 - (\mu_\rho^{(i)})^2] \nabla^2 w_{ij}\right\| \le 2d_{\max}^2 \cdot C_w(\rho) \cdot k_{\text{eff}} = O\left(\frac{d_{\max}^2}{\rho^2}\right)
+
 $$
 
 Applying the **k-uniform bounds** from Lemmas {prf:ref}`lem-mean-first-derivative` and {prf:ref}`lem-mean-second-derivative`:
 
 $$
 \|\nabla^2 V_\rho\| \le C_{\mu^2,V}(\rho) := 2d'^2_{\max} + 2d_{\max} d''_{\max} + \frac{8d_{\max} d'_{\max} C_{\nabla K}}{\rho} + \frac{2d^2_{\max} C_w(\rho)}{\rho^2} + C_{\text{product terms}}
+
 $$
 
 where $C_{\text{product terms}} = O(1/\rho)$ involves **k-uniform** products of $\nabla \mu_\rho$ and $\nabla^2 \mu_\rho$. The bound is **uniform in k** (and thus in N) with $C_{\mu^2,V}(\rho) = O(1/\rho^2)$.
@@ -3018,12 +3362,14 @@ Substituting the **k-uniform bounds** from Steps 3 and 4 into Step 2, and then i
 
 $$
 \|\nabla^2 V_{\text{fit}}\| \le L_{g''_A} \|\nabla Z_\rho\|^2 + L_{g_A} \|\nabla^2 Z_\rho\|
+
 $$
 
 Using the k-uniform bounds on $\nabla Z_\rho$ (Theorem {prf:ref}`thm-c1-regularity`) and the analysis above showing $\|\nabla^2 Z_\rho\| = O(1/\rho^2)$ uniformly in k and N:
 
 $$
 H_{\max}(\rho) \le C_H \left( \frac{1}{\sigma'^2_{\min} \rho^2} + \frac{1}{\sigma'_{\min} \rho^2} \right) = O\left(\frac{1}{\rho^2}\right)
+
 $$
 
 for some constant $C_H$ depending on $d_{\max}, d'_{\max}, d''_{\max}, L_{g_A}, L_{g''_A}, C_{\nabla K}, C_{\nabla^2 K}$ but **independent of k and N**.
@@ -3057,6 +3403,7 @@ The bound $H_{\max}(\rho)$ is **independent of k** (and thus of N) due to the te
 
 $$
 \|\mathbf{F}_{\text{adapt}}(x_i, S)\| \le \epsilon_F F_{\text{adapt,max}}(\rho) < \infty
+
 $$
 
 for all swarm states $S$ and all $i \in \{1, \ldots, N\}$. This bound is N-uniform and depends only on ρ and the problem parameters.
@@ -3065,12 +3412,14 @@ for all swarm states $S$ and all $i \in \{1, \ldots, N\}$. This bound is N-unifo
 
 $$
 \|H_i(S)\| \le H_{\max}(\rho) < \infty
+
 $$
 
 Therefore, the regularized metric $G_{\text{reg}} = (H + \epsilon_\Sigma I)^{-1}$ has eigenvalues bounded by:
 
 $$
 \frac{1}{H_{\max}(\rho) + \epsilon_\Sigma} \le \lambda_{\min}(G_{\text{reg}}) \le \lambda_{\max}(G_{\text{reg}}) \le \frac{1}{\epsilon_\Sigma}
+
 $$
 
 establishing uniform ellipticity with ρ-dependent lower bound $c_{\min}(\rho) = 1/(H_{\max}(\rho) + \epsilon_\Sigma)$.
@@ -3130,6 +3479,7 @@ For the adaptive model with ρ-localized measurements, the Signal Generation Hyp
 
 $$
 \mathbb{E}[\text{Var}(d)] > \kappa_{\text{meas}} > 0
+
 $$
 
 where $\kappa_{\text{meas}}$ is a positive constant independent of $N$, $\rho$, and the swarm state $S$.
@@ -3156,17 +3506,112 @@ For the ρ-localized model, we must re-derive the propagation constants using th
 
 #### B.3.1. The Variance-to-Gap Lemma (Universal)
 
-:::{prf:lemma} Variance-to-Gap (from 03_cloning.md, Lemma 7.3.1)
+:::{prf:lemma} Variance-to-Gap (Universal Statistical Inequality)
 :label: lem-variance-to-gap-adaptive
 
 For any random variable $X$ with mean $\mu$ and variance $\sigma^2 > 0$:
 
 $$
-\max_{x \in \text{supp}(X)} |x - \mu| \ge \sigma
+\sup_{x \in \text{supp}(X)} |x - \mu| \ge \sigma
+
 $$
 
-**Proof:** This is a general statistical inequality that holds for any probability distribution. See `03_cloning.md`, Lemma 7.3.1 for the proof.
+where $\text{supp}(X)$ denotes the topological support of the law of $X$. When the support is bounded, the supremum is attained and equals the maximum.
 :::
+
+:::{prf:proof}
+
+**Strategy**: We define the support radius $R := \sup_{x \in \text{supp}(X)} |x - \mu|$ and show that the variance definition implies $\sigma^2 \le R^2$, from which the result follows by taking square roots.
+
+**Step 1: Define the support radius**
+
+Let
+
+$$
+R := \sup_{x \in \text{supp}(X)} |x - \mu| \in [0, \infty]
+
+$$
+
+This supremum always exists in the extended real numbers. Since $\sigma^2 > 0$, the support must contain at least two distinct points (otherwise variance would be zero), so $R$ is well-defined.
+
+**Interpretation**: For bounded support ($R < \infty$), the continuous function $x \mapsto |x - \mu|$ attains its supremum on the compact support by the extreme value theorem, so $\max = \sup$. For unbounded support ($R = \infty$), the inequality $R \ge \sigma$ is trivially satisfied.
+
+**Step 2: Bound variance by squared radius**
+
+By definition of $R$ as the supremum over the support:
+
+$$
+|x - \mu| \le R \quad \text{for all } x \in \text{supp}(X)
+
+$$
+
+Since $X$ takes values only in its support (with probability 1), we have almost surely:
+
+$$
+|X - \mu| \le R
+
+$$
+
+Squaring both sides:
+
+$$
+(X - \mu)^2 \le R^2 \quad \text{almost surely}
+
+$$
+
+Taking expectations and using monotonicity of expectation:
+
+$$
+\mathbb{E}[(X - \mu)^2] \le \mathbb{E}[R^2] = R^2
+
+$$
+
+By definition of variance, $\sigma^2 = \mathbb{E}[(X - \mu)^2]$, so:
+
+$$
+\sigma^2 \le R^2
+
+$$
+
+If $R = \infty$, then $R^2 = \infty$ and the inequality holds trivially.
+
+**Step 3: Conclude $\sigma \le R$**
+
+From $\sigma^2 \le R^2$ with $\sigma, R \ge 0$, we apply the monotonicity of the square root function:
+
+$$
+\sigma \le R = \sup_{x \in \text{supp}(X)} |x - \mu|
+
+$$
+
+For bounded support, this supremum is attained by Step 1, yielding the statement of the lemma. ∎
+
+:::
+
+**Tightness**: The bound is **sharp** (cannot be improved), as demonstrated by the symmetric two-point distribution:
+
+$$
+P(X = \mu + \sigma) = \frac{1}{2}, \quad P(X = \mu - \sigma) = \frac{1}{2}
+
+$$
+
+This achieves equality: $\max_{x \in \text{supp}(X)} |x - \mu| = \sigma$.
+
+**Universality**: The proof uses only:
+1. Variance definition: $\sigma^2 = \mathbb{E}[(X - \mu)^2]$
+2. Monotonicity of expectation
+3. Extreme value theorem
+
+These apply to all probability distributions (discrete, continuous, or mixed) with finite variance.
+
+**Relationship to 03_cloning.md, Lemma 7.3.1**: This is a **probability-theoretic reformulation** of the empirical version in 03_cloning.md. The original lemma bounds $\max_{i,j} |v_i - v_j|$ (maximum pairwise difference) while this bounds $\max_i |v_i - \mu|$ (maximum deviation from mean). These are related by the inequality:
+
+$$
+\max_i |v_i - \bar{v}| \le \max_{i,j} |v_i - v_j| \le 2 \max_i |v_i - \bar{v}|
+
+$$
+
+The factor of $\sqrt{2}$ in the original lemma reflects the different quantities being bounded.
 
 This lemma is ρ-independent and applies universally.
 
@@ -3181,6 +3626,7 @@ For the ρ-localized rescaling pipeline with bounded measurements $d \in [0, d_{
 
 $$
 \sigma'_\rho[f, d, x] \le \sigma'_{\rho,\max} := d_{\max}
+
 $$
 
 for all $f, x, \rho$. This bound is **N-uniform** and **ρ-dependent** (it could be tighter for specific ρ, but this worst-case bound suffices).
@@ -3189,6 +3635,7 @@ for all $f, x, \rho$. This bound is **N-uniform** and **ρ-dependent** (it could
 
 $$
 g'_A(z) \ge g'_{\min} > 0
+
 $$
 
 for all $z \in \mathbb{R}$, where $g_A$ is the smooth, monotone rescale function. This bound is **ρ-independent**.
@@ -3199,6 +3646,7 @@ for all $z \in \mathbb{R}$, where $g_A$ is the smooth, monotone rescale function
 
 $$
 \sigma'_\rho[f, d, x] = \max\{\sigma_\rho[f, d, x], \kappa_{\text{var,min}}\} \le \max_{x \in \mathcal{X}} d(x) = d_{\max}
+
 $$
 
 This holds for all ρ because even in the hyper-local limit, the standard deviation of bounded measurements remains bounded.
@@ -3215,36 +3663,42 @@ If the raw measurements satisfy:
 
 $$
 \max_{i \in \{1, \ldots, N\}} |d_i - \mu_\rho[f_k, d, x_{\text{ref}}]| \ge \kappa_{\text{raw}}
+
 $$
 
 for some reference point $x_{\text{ref}}$ and raw gap $\kappa_{\text{raw}} > 0$, then the rescaled measurements satisfy:
 
 $$
 \max_{i \in \{1, \ldots, N\}} |d'_i - \mu[d']| \ge \kappa_{\text{rescaled}}(\kappa_{\text{raw}}, \rho)
+
 $$
 
 where:
 
 $$
 \kappa_{\text{rescaled}}(\kappa_{\text{raw}}, \rho) := g'_{\min} \cdot \frac{\kappa_{\text{raw}}}{\sigma'_{\rho,\max}}
+
 $$
 
 **Proof:** By the Mean Value Theorem applied to the composition $d'_i = g_A(Z_\rho[f_k, d, x_i])$:
 
 $$
 |d'_i - d'_j| \ge g'_{\min} \cdot |Z_\rho[f_k, d, x_i] - Z_\rho[f_k, d, x_j]|
+
 $$
 
 The Z-score difference satisfies:
 
 $$
 |Z_\rho[f_k, d, x_i] - Z_\rho[f_k, d, x_j]| \ge \frac{|d_i - d_j|}{\sigma'_{\rho,\max}}
+
 $$
 
 Combining these and using the raw gap:
 
 $$
 \max_{i,j} |d'_i - d'_j| \ge g'_{\min} \cdot \frac{\kappa_{\text{raw}}}{\sigma'_{\rho,\max}}
+
 $$
 
 Since the mean $\mu[d']$ is an average, at least one $d'_i$ must be at least this far from the mean, establishing the rescaled gap.
@@ -3273,12 +3727,14 @@ For any random variable $X \in [a, b]$ with mean $\mu$ and $a < \mu < b$:
 
 $$
 \mathbb{E}[\log X] \le \log \mu
+
 $$
 
 **Upper Bound (Gap to Extremal Point):**
 
 $$
 |\log b - \mathbb{E}[\log X]| \ge \log(b) - \log(\mu)
+
 $$
 
 **Proof:** See `03_cloning.md`, Lemma 7.5.1. These are general inequalities from convex analysis (Jensen's inequality) and do not depend on the measurement pipeline.
@@ -3295,12 +3751,14 @@ For a swarm satisfying $\text{Var}(x) > R^2$ and $\mathbb{E}[\text{Var}(d)] > \k
 
 $$
 \mathbb{E}[\log d'] \ge \kappa_{d',\text{mean}}(\epsilon, \rho)
+
 $$
 
 where:
 
 $$
 \kappa_{d',\text{mean}}(\epsilon, \rho) := \log g_A\left( \frac{\kappa_{\text{rescaled}}(\kappa_{\text{meas}}, \rho)}{2} \right) - \log(A)
+
 $$
 
 and $\kappa_{\text{rescaled}}(\kappa_{\text{meas}}, \rho)$ is from Lemma {prf:ref}`lem-raw-to-rescaled-gap-rho`.
@@ -3311,6 +3769,7 @@ and $\kappa_{\text{rescaled}}(\kappa_{\text{meas}}, \rho)$ is from Lemma {prf:re
 
 $$
 \mathbb{E}[\text{Var}(d)] > \kappa_{\text{meas}} > 0
+
 $$
 
 This is the raw variance in the pairwise distance measurements before any statistical processing.
@@ -3319,6 +3778,7 @@ This is the raw variance in the pairwise distance measurements before any statis
 
 $$
 \max_i |d_i - \mu[d]| \ge \sigma[d] \ge \sqrt{\kappa_{\text{meas}}}
+
 $$
 
 Therefore, $\kappa_{\text{raw}} := \sqrt{\kappa_{\text{meas}}}$ bounds the raw gap.
@@ -3327,6 +3787,7 @@ Therefore, $\kappa_{\text{raw}} := \sqrt{\kappa_{\text{meas}}}$ bounds the raw g
 
 $$
 \max_i |d'_i - \mu[d']| \ge \kappa_{\text{rescaled}}(\kappa_{\text{raw}}, \rho) = g'_{\min} \cdot \frac{\kappa_{\text{raw}}}{\sigma'_{\rho,\max}}
+
 $$
 
 where $g'_{\min}$ is the minimum derivative of the rescale function and $\sigma'_{\rho,\max} = d_{\max}$ is the worst-case bound on the localized standard deviation.
@@ -3335,12 +3796,14 @@ where $g'_{\min}$ is the minimum derivative of the rescale function and $\sigma'
 
 $$
 \mathbb{E}[\log d'] \ge \log(\mu[d'] - \kappa_{\text{rescaled}}/2)
+
 $$
 
 Since $\mu[d'] \le A$ and the gap is at least $\kappa_{\text{rescaled}}$, we have:
 
 $$
 \mathbb{E}[\log d'] \ge \log g_A\left( \frac{\kappa_{\text{rescaled}}(\kappa_{\text{meas}}, \rho)}{2} \right) - \log(A) =: \kappa_{d',\text{mean}}(\epsilon, \rho)
+
 $$
 
 **ρ-Dependence:** The bound is ρ-dependent through $\kappa_{\text{rescaled}}(\kappa_{\text{meas}}, \rho)$, which decreases as ρ decreases (due to $\sigma'_{\rho,\max}$ in the denominator), making the corrective signal potentially weaker for smaller ρ.
@@ -3355,6 +3818,7 @@ Under the foundational axioms (specifically, Axiom EG-5: Active Diversity Signal
 
 $$
 |\mathbb{E}[\log r'] - \log r'_{\text{high}}| \le \kappa_{r',\text{mean,adv}}(\rho)
+
 $$
 
 where $\kappa_{r',\text{mean,adv}}(\rho)$ is a ρ-dependent constant that can be bounded through the pipeline analysis.
@@ -3369,6 +3833,7 @@ where $\kappa_{r',\text{mean,adv}}(\rho)$ is a ρ-dependent constant that can be
 
 $$
 r'_i = g_A(Z_\rho[f_k, r, x_i])
+
 $$
 
 where the Z-score uses the ρ-localized moments for the reward function $r$ instead of distance $d$.
@@ -3377,6 +3842,7 @@ where the Z-score uses the ρ-localized moments for the reward function $r$ inst
 
 $$
 |r'_i - r'_j| \le L_{g_A} |Z_\rho^{(i)} - Z_\rho^{(j)}| \le L_{g_A} \cdot \frac{2r_{\max}}{\sigma'_{\rho,\min}}
+
 $$
 
 where $\sigma'_{\rho,\min}$ is a lower bound on the localized standard deviation for reward measurements (which exists because rewards have non-trivial variance by Axiom EG-5 and the regularization ensures $\sigma'_\rho \ge \sigma\'_{\min}$).
@@ -3385,12 +3851,14 @@ where $\sigma'_{\rho,\min}$ is a lower bound on the localized standard deviation
 
 $$
 |\mathbb{E}[\log r'] - \log r'_{\text{high}}| \le \log(A) - \log(A - L_{g_A} r_{\max} / \sigma'_{\rho,\min})
+
 $$
 
 Expanding for small perturbations and using worst-case bounds:
 
 $$
 \kappa_{r',\text{mean,adv}}(\rho) := \frac{L_{g_A} r_{\max}}{A \cdot \sigma'_{\rho,\min}} + O\left(\frac{r_{\max}^2}{\sigma'^2_{\rho,\min}}\right)
+
 $$
 
 **ρ-Dependence:** This bound grows as ρ decreases if the localized variance of rewards decreases. However, for any fixed ρ > 0 and active rewards (non-zero variance), $\sigma'_{\rho,\min}$ remains bounded away from zero, making $\kappa_{r',\text{mean,adv}}(\rho)$ finite.
@@ -3405,6 +3873,7 @@ For the adaptive model with localization scale ρ > 0, the Intelligent Targeting
 
 $$
 \kappa_{d',\text{mean}}(\epsilon, \rho) > \kappa_{r',\text{mean,adv}}(\rho)
+
 $$
 
 This condition ensures that the corrective diversity signal dominates the adversarial reward bias, guaranteeing that high-error walkers are reliably identified as low-fitness.
@@ -3413,6 +3882,7 @@ This condition ensures that the corrective diversity signal dominates the advers
 
 $$
 \log g_A\left( \frac{\kappa_{\text{rescaled}}(\kappa_{\text{meas}}, \rho)}{2} \right) > \kappa_{r',\text{mean,adv}}(\rho) + \log(A)
+
 $$
 
 **Interpretation:**
@@ -3433,6 +3903,7 @@ For the adaptive model with localization scale ρ > 0 satisfying the ρ-Dependen
 
 $$
 \frac{1}{N} \sum_{i \in I_{11}} (p_{1,i} + p_{2,i}) \|\Delta \delta_{x,i}\|^2 \ge \chi(\epsilon, \rho) \cdot V_{\text{struct}}(S) - g_{\max}(\epsilon, \rho)
+
 $$
 
 where:

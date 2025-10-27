@@ -1,0 +1,47 @@
+{
+  "label": "lem-mean-field-cloning-sketch",
+  "name": "Entropy Dissipation Under Cloning (Mean-Field Sketch)",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-mean-field-cloning"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa_W",
+    "delta"
+  ],
+  "properties_required": {
+    "mean-field-limit": [
+      "N → ∞ limit established"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-mean-field-cloning-sketch-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-mean-field-cloning",
+      "target_object": "obj-mean-field-cloning",
+      "established_by": "lem-mean-field-cloning-sketch",
+      "expression": "Mean-field cloning operator as N → ∞",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

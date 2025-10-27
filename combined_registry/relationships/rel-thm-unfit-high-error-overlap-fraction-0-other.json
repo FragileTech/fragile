@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-unfit-high-error-overlap-fraction-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-unfit-set",
+  "target_object": "obj-unified-high-low-error-sets",
+  "established_by": "thm-unfit-high-error-overlap-fraction",
+  "expression": "rel-targeting-correctness",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

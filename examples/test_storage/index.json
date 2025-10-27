@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+  "statistics": {
+    "total_objects": 6,
+    "counts_by_type": {
+      "MathematicalObject": 3,
+      "Axiom": 0,
+      "Parameter": 0,
+      "Property": 0,
+      "Relationship": 2,
+      "TheoremBox": 1
+    },
+    "total_tags": 11,
+    "all_tags": [
+      "adaptive-gas",
+      "continuous",
+      "discrete",
+      "discrete-continuous",
+      "euclidean-gas",
+      "finite",
+      "framework-extension",
+      "kinetic",
+      "mean-field",
+      "particle",
+      "pde"
+    ]
+  },
+  "all_ids": [
+    "obj-discrete-particle-system",
+    "obj-continuous-pde",
+    "obj-adaptive-gas-system",
+    "rel-discrete-continuous-equivalence",
+    "rel-euclidean-adaptive-extension",
+    "thm-mean-field-equivalence"
+  ],
+  "all_tags": [
+    "discrete-continuous",
+    "mean-field",
+    "adaptive-gas",
+    "framework-extension",
+    "continuous",
+    "discrete",
+    "pde",
+    "finite",
+    "euclidean-gas",
+    "kinetic",
+    "particle"
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "label": "thm-cloning-entropy-contraction",
+  "name": "Entropy Contraction for the Cloning Operator",
+  "statement_type": "theorem",
+  "source": {
+    "file": "09_kl_convergence.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-cloning-operator",
+    "def-hwi-inequality"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "kappa_W",
+    "delta",
+    "C_I",
+    "kappa_conf",
+    "C_W"
+  ],
+  "attributes_required": {
+    "hwi": [
+      "HWI inequality applies (log-concave \u03c0)"
+    ],
+    "talagrand": [
+      "Reverse Talagrand bound for log-concave measures"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-cloning-wasserstein-contraction",
+    "lem-cloning-fisher-info",
+    "thm-hwi-inequality"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "lem-cloning-wasserstein-contraction",
+    "lem-cloning-fisher-info"
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Sublinear KL contraction for cloning alone",
+    "Motivates need for composition with kinetic operator"
+  ],
+  "relations_established": [
+    "D_KL(\u03bc_{S'}|\u03c0) \u2264 (1 \u2212 \u03ba_W\u00b2 \u03b4\u00b2/(2C_I)) D_KL(\u03bc_S|\u03c0) + C_clone (heuristic form)",
+    "KL contracts via W\u2082 contraction \u00d7 Fisher bound",
+    "Cloning alone insufficient \u2192 needs kinetic operator composition"
+  ]
+}

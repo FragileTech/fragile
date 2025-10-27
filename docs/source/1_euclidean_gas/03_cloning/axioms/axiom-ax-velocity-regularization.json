@@ -1,0 +1,6 @@
+{
+  "label": "axiom-ax-velocity-regularization",
+  "statement": "**(Axiom EG-4): Velocity Regularization via Reward**",
+  "mathematical_expression": "R_{\\text{total}}(x, v) := R_{\\text{pos}}(x) - c_{v\\_reg} \\|v\\|^2",
+  "foundational_framework": "Euclidean Gas"
+}

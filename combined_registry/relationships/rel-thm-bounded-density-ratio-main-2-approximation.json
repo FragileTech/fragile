@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-bounded-density-ratio-main-2-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-qsd",
+  "target_object": "obj-cloning-operator",
+  "established_by": "thm-bounded-density-ratio-main",
+  "expression": "sup_{t≥0} sup_{x∈X_valid} dμ̃_t/dπ̃_QSD(x) ≤ M < ∞",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+}

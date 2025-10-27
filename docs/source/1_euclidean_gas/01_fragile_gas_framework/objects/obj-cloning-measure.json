@@ -1,0 +1,12 @@
+{
+  "label": "obj-cloning-measure",
+  "name": "Cloning Measure",
+  "mathematical_expression": "\\delta > 0",
+  "object_type": "measure",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle"
+  ],
+  "source": null
+}

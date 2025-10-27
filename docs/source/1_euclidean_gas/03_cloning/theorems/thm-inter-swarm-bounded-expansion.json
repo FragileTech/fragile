@@ -1,0 +1,53 @@
+{
+  "label": "thm-inter-swarm-bounded-expansion",
+  "name": "Bounded Expansion of Inter-Swarm Wasserstein Distance",
+  "statement_type": "theorem",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-cloning-operator-formal",
+    "obj-w2-output-metric",
+    "obj-displacement-components",
+    "obj-swarm-and-state-space"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "D_valid",
+    "L_clone",
+    "C_jitter"
+  ],
+  "attributes_required": {
+    "obj-cloning-operator-formal": [
+      "attr-lipschitz-continuity"
+    ],
+    "obj-w2-output-metric": [
+      "attr-decomposition"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-location-error-bounded-expansion",
+    "lem-structural-error-bounded-expansion",
+    "lem-desynchronization-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-location-error-bounded-expansion",
+      "lem-desynchronization-bound"
+    ],
+    [
+      "lem-structural-error-bounded-expansion",
+      "lem-desynchronization-bound"
+    ]
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "attr-bounded-expansion-inter-swarm"
+  ],
+  "relations_established": [
+    "rel-cloning-expands-vw-bounded"
+  ]
+}

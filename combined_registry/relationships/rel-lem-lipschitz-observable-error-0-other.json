@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-lipschitz-observable-error-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-empirical-measure",
+  "target_object": "obj-nu-n-qsd",
+  "established_by": "lem-lipschitz-observable-error",
+  "expression": "kantorovich-rubinstein-duality",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds"
+}

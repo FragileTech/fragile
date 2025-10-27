@@ -1,0 +1,12 @@
+{
+  "label": "obj-greedy-pairing-algorithm",
+  "name": "Sequential Stochastic Greedy Pairing Operator",
+  "mathematical_expression": "w_{ij} := \\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\epsilon_d^2}\\right)",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle"
+  ],
+  "source": null
+}

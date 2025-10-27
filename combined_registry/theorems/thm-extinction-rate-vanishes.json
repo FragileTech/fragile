@@ -1,0 +1,20 @@
+{
+  "label": "thm-extinction-rate-vanishes",
+  "name": "Extinction Rate Vanishes in the Mean-Field Limit",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "08_propagation_chaos",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": []
+}

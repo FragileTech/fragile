@@ -1,0 +1,6 @@
+{
+  "label": "axiom-diffusion-tensor",
+  "statement": "Anisotropic Diffusion Tensor",
+  "mathematical_expression": "\\lambda_{\\min}(\\Sigma(x,v)\\Sigma(x,v)^T) \\geq \\sigma_{\\min}^2 > 0 \\quad \\forall (x,v)",
+  "foundational_framework": "Euclidean Gas"
+}

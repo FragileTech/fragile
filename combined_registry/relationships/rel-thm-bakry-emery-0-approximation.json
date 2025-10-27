@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-bakry-emery-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-bakry-emery-criterion",
+  "target_object": "obj-bakry-emery-criterion",
+  "established_by": "thm-bakry-emery",
+  "expression": "Curvature bound implies LSI",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

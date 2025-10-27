@@ -1,0 +1,15 @@
+{
+  "label": "obj-fitness-potential-operator",
+  "name": "Fitness Potential Operator",
+  "mathematical_expression": "V_i := (d'_i)^\\beta \\cdot (r'_i)^\\alpha",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

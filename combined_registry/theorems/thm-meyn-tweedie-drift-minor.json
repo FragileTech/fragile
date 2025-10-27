@@ -1,0 +1,54 @@
+{
+  "label": "thm-meyn-tweedie-drift-minor",
+  "name": "Drift-Minorization Implies Geometric Ergodicity (Meyn & Tweedie)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-markov-kernel",
+    "obj-invariant-measure"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa",
+    "b",
+    "delta",
+    "M",
+    "rho"
+  ],
+  "properties_required": {
+    "obj-lyapunov-v": [
+      "prop-drift-condition"
+    ],
+    "obj-small-set-c": [
+      "prop-minorization"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-markov-iterates-invariant-measure-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-markov-iterates",
+      "target_object": "obj-invariant-measure",
+      "established_by": "thm-meyn-tweedie-drift-minor",
+      "expression": "bound: ||T^n(s,.) - nu||_TV <= C_erg * rho^n * V(s)",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    }
+  ]
+}

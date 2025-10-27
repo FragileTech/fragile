@@ -1,0 +1,66 @@
+{
+  "label": "lem-strict-positivity-cloning",
+  "name": "Strict Positivity After Cloning",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-cloning-operator",
+    "def-state-space"
+  ],
+  "input_axioms": [
+    "def-axiom-rescale-function",
+    "ax-domain-regularity"
+  ],
+  "input_parameters": [
+    "sigma_x",
+    "R",
+    "eta",
+    "d"
+  ],
+  "properties_required": {
+    "gaussian-convolution": [
+      "ρ_post = ∫ G_σ_x(x−y) w(y) ρ_pre(y) dy"
+    ],
+    "positivity-floor": [
+      "w(y) ≥ η"
+    ],
+    "local-lower-bound": [
+      "G_σ_x(x−y) ≥ c_σ_x,R for x, y ∈ B_R"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-gaussian-kernel-lower-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-gaussian-kernel-lower-bound",
+      "lem-strict-positivity-cloning"
+    ]
+  ],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-strict-positivity-cloning-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-state-space",
+      "established_by": "lem-strict-positivity-cloning",
+      "expression": "ρ_post(x) ≥ η ∫ G_σ_x(x−y) ρ_pre(y) dy ≥ η c_σ_x,R ||ρ_pre||_{L^1}",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    }
+  ]
+}

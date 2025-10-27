@@ -1,0 +1,15 @@
+{
+  "label": "rel-euclidean-adaptive-extension",
+  "relationship_type": "extension",
+  "bidirectional": false,
+  "source_object": "obj-euclidean-gas-discrete",
+  "target_object": "obj-adaptive-gas",
+  "established_by": "thm-adaptive-gas-extension",
+  "expression": "Euclidean Gas ⊂ Adaptive Gas (ε_F = 0)",
+  "properties": [],
+  "tags": [
+    "framework-extension",
+    "adaptive"
+  ],
+  "timestamp": null
+}

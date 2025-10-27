@@ -1,0 +1,44 @@
+{
+  "label": "lem-boundary-heat-kernel",
+  "name": "Heat‑kernel death probability is Lipschitz with constant $\\lesssim 1/\\sigma$",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-alive-dead-sets",
+    "obj-valid-state-space",
+    "obj-perturbation-measure",
+    "obj-cloning-probability-function"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-boundary-regularity"
+  ],
+  "input_parameters": [
+    "param-sigma"
+  ],
+  "properties_required": {
+    "obj-alive-dead-sets": [
+      "prop-finite-perimeter"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-lipschitz-continuous-with-bound",
+      "expression": "\\mathrm{Lip}(P_\\sigma) \\lesssim 1/\\sigma",
+      "object_label": "obj-cloning-probability-function",
+      "established_by": "lem-boundary-heat-kernel",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

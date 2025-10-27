@@ -1,0 +1,12 @@
+{
+  "label": "obj-killing-operator",
+  "name": "Interior Killing Operator",
+  "mathematical_expression": "k_{\\text{killed}}[f](t) := \\int_{\\Omega} c(z) f(t,z) \\, \\mathrm{d}z",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "07_mean_field"
+}

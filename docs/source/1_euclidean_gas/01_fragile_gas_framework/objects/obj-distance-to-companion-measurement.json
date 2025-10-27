@@ -1,0 +1,13 @@
+{
+  "label": "obj-distance-to-companion-measurement",
+  "name": "Distance-to-Companion Measurement",
+  "mathematical_expression": "d_i := d_{\\text{alg}}(x_i, x_{c_{\\text{pot}}(i)}) \\quad \\text{where} \\quad c_{\\text{pot}}(i) \\sim \\mathbb{C}_i(\\cdot)",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

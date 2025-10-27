@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-sinh-bound-global-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-unknown",
+  "target_object": "obj-unknown",
+  "established_by": "lem-sinh-bound-global",
+  "expression": "Elementary inequality for sinh",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

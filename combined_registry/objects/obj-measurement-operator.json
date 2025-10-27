@@ -1,0 +1,15 @@
+{
+  "label": "obj-measurement-operator",
+  "name": "The Measurement Operator",
+  "mathematical_expression": "\\pi \\sim P_{\\text{pair}}(S, \\cdot)",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

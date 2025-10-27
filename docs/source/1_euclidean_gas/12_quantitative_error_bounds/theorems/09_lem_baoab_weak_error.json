@@ -1,0 +1,58 @@
+{
+  "label": "lem-baoab-weak-error",
+  "type": "lemma",
+  "name": "BAOAB Second-Order Weak Convergence",
+  "line_range": [
+    1179,
+    1284
+  ],
+  "status": "complete",
+  "input_objects": [
+    "obj-continuous-langevin-sde",
+    "obj-baoab-chain"
+  ],
+  "input_axioms": [],
+  "input_theorems": [
+    "attr-fourth-moment-baoab"
+  ],
+  "input_parameters": [
+    "delta_t",
+    "C_weak",
+    "M_4"
+  ],
+  "attributes_required": {
+    "obj-test-function-phi": [
+      "attr-c4-regularity",
+      "attr-bounded-derivatives-order-4"
+    ],
+    "obj-potential-u": [
+      "attr-lipschitz-gradient"
+    ]
+  },
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-second-order-weak-convergence"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-baoab-discrete",
+      "to": "obj-langevin-continuous",
+      "type": "finite_time_weak_error",
+      "bound": "|E[phi(Z_k)] - E[phi(Z(k*dt))]| <= C_weak * ||phi||_C4 * (dt)^2 * T",
+      "order": "O((dt)^2)"
+    }
+  ],
+  "internal_lemmas": [],
+  "proof_strategy": "Backward error analysis + Strang splitting theory + Gronwall argument",
+  "generator_expansion": "L_BAOAB = L + (dt)^2 L_2 + O((dt)^4)",
+  "notes": [
+    "Second-order convergence due to BAOAB symmetry",
+    "Even powers only in generator expansion (symmetric integrator)",
+    "Local error O((dt)^3) accumulates to global O((dt)^2) over T/dt steps",
+    "Fourth moment bounds ensure generator error is bounded"
+  ],
+  "external_references": [
+    "Bou-Rabee & Sanz-Serna (2017) - Theorem 3.1",
+    "Leimkuhler & Matthews (2015) - Chapter 7"
+  ]
+}

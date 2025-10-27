@@ -1,0 +1,50 @@
+{
+  "label": "lem-lie-splitting-weak-error",
+  "name": "Lie Splitting Local O((\u0394t)\u00b2) Weak Error",
+  "statement_type": "lemma",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-lie-splitting-operator",
+    "obj-continuous-semigroup"
+  ],
+  "input_theorems": [
+    "attr-fourth-moment-baoab"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "C_split",
+    "phi_C4",
+    "Delta_t",
+    "lambda",
+    "beta",
+    "C_chaos",
+    "C_F",
+    "sigma",
+    "nabla2_U"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "taylor-expansion",
+    "commutator-calculation",
+    "mean-field-cancellation"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-o-dt-squared-local-error"
+  ],
+  "relations_established": [
+    "commutator-gives-local-error",
+    "mean-field-cancellation-provides-n-uniformity"
+  ],
+  "bound": "|E[(T^Delta_t - P^Delta_t) phi(Z)]| <= C_split * ||phi||_C4 * (Delta_t)^2",
+  "commutator": "(T^Delta_t - P^Delta_t) = (Delta_t)^2 / 2 * [L_clone, L_Langevin] + O((Delta_t)^3)",
+  "n_uniformity": "Mean-field cancellation via empirical measure fluctuations O(1/sqrt(N)) in probability",
+  "explicit_constant": "C_split = (1/2) * lambda * beta * C_chaos * max(C_F, sigma^2, ||nabla^2 U||_inf)",
+  "proof_technique": "Taylor expansion + commutator calculation + mean-field cancellation"
+}

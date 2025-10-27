@@ -1,0 +1,14 @@
+{
+  "label": "obj-geometric-gas",
+  "name": "Geometric Gas (Riemannian)",
+  "mathematical_expression": "S_M = {(x_i, v_i)} on (M, g)",
+  "object_type": "set",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "geometric-gas",
+    "riemannian",
+    "manifold",
+    "extended"
+  ]
+}

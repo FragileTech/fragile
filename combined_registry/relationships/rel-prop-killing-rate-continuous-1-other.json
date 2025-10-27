@@ -1,0 +1,17 @@
+{
+  "label": "rel-prop-killing-rate-continuous-1-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-walker-state",
+  "target_object": "obj-position-state-space",
+  "established_by": "prop-killing-rate-continuous",
+  "expression": "rel-exit-probability-killing-rate",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence"
+}

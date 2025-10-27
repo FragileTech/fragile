@@ -1,0 +1,49 @@
+{
+  "label": "thm-lsi-perturbation",
+  "name": "LSI Stability Under Bounded Perturbations",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-total-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "delta"
+  ],
+  "properties_required": {
+    "base-lsi": [
+      "Base operator has LSI"
+    ],
+    "small-perturbation": [
+      "Perturbation is small"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-lsi-perturbation-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-total-operator",
+      "target_object": "obj-total-operator",
+      "established_by": "thm-lsi-perturbation",
+      "expression": "Perturbed LSI constant close to original",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

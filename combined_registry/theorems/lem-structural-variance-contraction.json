@@ -1,0 +1,55 @@
+{
+  "label": "lem-structural-variance-contraction",
+  "name": "Exponential Contraction of Structural Variance",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [
+    "tau",
+    "kappa_W",
+    "kappa_kin",
+    "C_W",
+    "C_kin",
+    "delta",
+    "d"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "thm-main-contraction-full",
+      "lem-structural-variance-contraction"
+    ],
+    [
+      "thm-foster-lyapunov-main",
+      "lem-structural-variance-contraction"
+    ]
+  ],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-centered-empirical-measure-centered-qsd-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-centered-empirical-measure",
+      "target_object": "obj-centered-qsd",
+      "established_by": "lem-structural-variance-contraction",
+      "expression": "metric: wasserstein-distance, rate: lambda_struct",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    }
+  ]
+}

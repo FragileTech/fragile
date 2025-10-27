@@ -1,0 +1,24 @@
+{
+  "label": "attr-barrier-existence",
+  "name": "Existence of a Global Smooth Barrier Function",
+  "statement_type": "proposition",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-valid-state-space"
+  ],
+  "input_axioms": [
+    "axiom-ax-domain-regularity"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Existence",
+  "attributes_added": [],
+  "relations_established": []
+}

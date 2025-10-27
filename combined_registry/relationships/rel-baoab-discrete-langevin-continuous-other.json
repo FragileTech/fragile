@@ -1,0 +1,17 @@
+{
+  "label": "rel-baoab-discrete-langevin-continuous-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-baoab-discrete",
+  "target_object": "obj-langevin-continuous",
+  "established_by": "lem-baoab-weak-error",
+  "expression": "bound: |E[phi(Z_k)] - E[phi(Z(k*dt))]| <= C_weak * ||phi||_C4 * (dt)^2 * T",
+  "properties": [],
+  "tags": [
+    "inferred-from-dict"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds"
+}

@@ -1,0 +1,28 @@
+{
+  "label": "thm-balanced-optimality",
+  "name": "Necessity of Balanced Rates at Optimum",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {
+    "obj-param-selection": [
+      "attr-subgradient-min"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-balanced-optimality-necessary",
+      "expression": "If P* is a local maximizer (interior), then \u2203 i\u2260j with \u03ba_i(P*) = \u03ba_j(P*) = \u03ba_total(P*)",
+      "object_label": "obj-param-selection"
+    }
+  ],
+  "relations_established": []
+}

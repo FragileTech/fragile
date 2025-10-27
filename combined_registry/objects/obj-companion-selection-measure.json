@@ -1,0 +1,16 @@
+{
+  "label": "obj-companion-selection-measure",
+  "name": "Companion Selection Measure",
+  "mathematical_expression": "i \\in \\{1, \\dots, N\\}",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "discrete",
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

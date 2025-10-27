@@ -1,0 +1,15 @@
+{
+  "label": "obj-structural-error-component",
+  "name": "The Structural Error Component ($V_{\\text{struct}}$)",
+  "mathematical_expression": "\\tilde{\\mu}_k := \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\delta_{(\\delta_{x,k,i}, \\delta_{v,k,i})}",
+  "object_type": "measure",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

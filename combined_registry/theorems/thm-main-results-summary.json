@@ -1,0 +1,110 @@
+{
+  "label": "thm-main-results-summary",
+  "name": "Main Results of the Cloning Analysis (Summary)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-cloning-operator-formal",
+    "obj-full-synergistic-lyapunov-function",
+    "obj-variance-conversions",
+    "obj-boundary-potential-recall"
+  ],
+  "input_axioms": [
+    "axiom-ax-domain-regularity",
+    "axiom-ax-lipschitz-fields",
+    "axiom-ax-safe-harbor",
+    "axiom-ax-non-deceptive-landscape",
+    "axiom-ax-velocity-regularization",
+    "axiom-ax-active-diversity"
+  ],
+  "input_parameters": [
+    "kappa_x",
+    "C_x",
+    "C_v",
+    "kappa_b",
+    "C_b",
+    "C_W",
+    "chi_epsilon",
+    "g_max"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-main-results-summary-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator-formal",
+      "target_object": "obj-full-synergistic-lyapunov-function",
+      "established_by": "thm-main-results-summary",
+      "expression": "rel-keystone-complete",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    },
+    {
+      "label": "rel-thm-main-results-summary-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator-formal",
+      "target_object": "obj-full-synergistic-lyapunov-function",
+      "established_by": "thm-main-results-summary",
+      "expression": "rel-partial-contraction-structure",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    },
+    {
+      "label": "rel-thm-main-results-summary-2-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator-formal",
+      "target_object": "obj-full-synergistic-lyapunov-function",
+      "established_by": "thm-main-results-summary",
+      "expression": "rel-n-uniformity-all-constants",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    },
+    {
+      "label": "rel-thm-main-results-summary-3-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator-formal",
+      "target_object": "obj-full-synergistic-lyapunov-function",
+      "established_by": "thm-main-results-summary",
+      "expression": "rel-synergy-foundation",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-tensorization-0-equivalence",
+  "relationship_type": "equivalence",
+  "bidirectional": true,
+  "source_object": "obj-discrete-lsi",
+  "target_object": "obj-product-kernel",
+  "established_by": "thm-tensorization",
+  "expression": "For K = ⊗ K_i: C_LSI(K) = max{C_1, C_2, ..., C_N}",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

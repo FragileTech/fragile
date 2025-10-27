@@ -1,0 +1,63 @@
+{
+  "label": "thm-cloning-operator-composition",
+  "name": "Compositional Structure of $\\Psi_{\\text{clone}}$",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-cloning-operator-formal",
+    "obj-measurement-operator",
+    "obj-fitness-operator",
+    "obj-decision-operator",
+    "obj-update-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [
+    "prop-expected-displacement-cloning"
+  ],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-cloning-operator-composition-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator-formal",
+      "target_object": "obj-measurement-operator",
+      "established_by": "thm-cloning-operator-composition",
+      "expression": "cloning_operator_is_markov_kernel",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    },
+    {
+      "label": "rel-thm-cloning-operator-composition-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator-formal",
+      "target_object": "obj-measurement-operator",
+      "established_by": "thm-cloning-operator-composition",
+      "expression": "compositional_decomposition",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

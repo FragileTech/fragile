@@ -1,0 +1,30 @@
+{
+  "label": "lem-raw-gap-to-rescaled-gap",
+  "name": "From Raw Measurement Gap to Rescaled Value Gap",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-standardization-operator",
+    "obj-logistic-rescale"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "eta",
+    "L_g"
+  ],
+  "properties_required": {
+    "obj-logistic-rescale": [
+      "prop-logistic-lipschitz"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": []
+}

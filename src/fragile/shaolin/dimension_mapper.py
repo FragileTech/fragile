@@ -18,6 +18,11 @@ def is_bool_column(df, column_name):
     return df[column_name].apply(lambda x: isinstance(x, bool | np.bool_)).any()
 
 
+def is_categorical_column(df, column_name):
+    """Check if a column is categorical dtype."""
+    return isinstance(df[column_name].dtype, pd.CategoricalDtype)
+
+
 def normalize_array(array, min_val, max_val):
     return (array - min_val) / (max_val - min_val)
 
@@ -55,6 +60,7 @@ class DimensionMapper(param.Parameterized):
         self.valid_cols = self.get_valid_columns()
         self.value_range = self.init_range_widget(value_range, resolution, default_range)
         self.is_bool_col = False
+        self.is_categorical = False
         self.std_col = 0
         self.max_col = 1
         self.min_col = 0
@@ -116,11 +122,23 @@ class DimensionMapper(param.Parameterized):
         if self.column.value is None:
             return
 
+        col = self.df[self.column.value]
         self.is_bool_col = is_bool_column(self.df, self.column.value)
-        self.max_col = self.df[self.column.value].max()
-        self.min_col = self.df[self.column.value].min()
-        self.len_col = self.df[self.column.value].values.shape[0]
-        self.std_col = self.df[self.column.value].std()
+        self.is_categorical = is_categorical_column(self.df, self.column.value)
+
+        # Categorical columns don't support min/max/std (unless ordered)
+        # For categorical mapping, we don't need these stats anyway
+        if self.is_categorical:
+            # Set non-zero dummy values (std_col != 0 means "use column mapping, not default")
+            self.max_col = 1.0
+            self.min_col = 0.0
+            self.len_col = col.values.shape[0]
+            self.std_col = 1.0  # Non-zero to indicate this is a valid column for mapping
+        else:
+            self.max_col = col.max()
+            self.min_col = col.min()
+            self.len_col = col.values.shape[0]
+            self.std_col = col.std()
 
     def panel(self):
         return pn.Column(
@@ -285,6 +303,15 @@ class ColorDim(DimensionMapper):
         if self.column.value is None or self.std_col == 0:
             self.value = self.default_value.value
             return
+
+        # For categorical columns, use HoloViews' built-in categorical mapping
+        # No normalization needed - HoloViews handles it automatically
+        if self.is_categorical:
+            # Use categorical colormap instead of continuous (viridis)
+            self.cmap = 'Category20'  # 20 distinct colors for categorical data
+            self.value = hv.dim(self.column.value)
+            return
+
         will_invert = "Invert" in self.button_check.value
         will_log = "Log scale" in self.button_check.value and not self.is_bool_col
         value = hv.dim(self.column.value)
@@ -325,9 +352,10 @@ class ColorDim(DimensionMapper):
         use_default = self.column.value is None
         std_0 = bool(self.std_col == 0)
         self.default_value.visible = use_default or std_0
-        self.colormap_widget.cmap_widget.visible = not use_default and not std_0
-        self.colormap_widget.autocomplete.visible = not use_default and not std_0
-        self.button_check.visible = not use_default and not self.is_bool_col and not std_0
+        # Hide colormap/transform controls for categorical columns
+        self.colormap_widget.cmap_widget.visible = not use_default and not std_0 and not self.is_categorical
+        self.colormap_widget.autocomplete.visible = not use_default and not std_0 and not self.is_categorical
+        self.button_check.visible = not use_default and not self.is_bool_col and not std_0 and not self.is_categorical
 
     @param.depends("colormap_widget.value")
     def update_cmap(self):

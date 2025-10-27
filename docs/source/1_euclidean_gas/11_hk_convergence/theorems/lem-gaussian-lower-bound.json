@@ -1,0 +1,66 @@
+{
+  "label": "lem-gaussian-lower-bound",
+  "name": "Gaussian Mollification Provides Uniform Lower Bound",
+  "statement_type": "lemma",
+  "source": {
+    "file": "docs/source/1_euclidean_gas/11_hk_convergence.md",
+    "line_start": 2043,
+    "line_end": 2076
+  },
+  "input_objects": [
+    "obj-empirical-measure",
+    "obj-cloning-operator",
+    "obj-gaussian-kernel",
+    "obj-alive-domain"
+  ],
+  "input_axioms": [
+    "def-axiom-local-perturbation"
+  ],
+  "input_parameters": [
+    "sigma_x",
+    "R",
+    "d"
+  ],
+  "attributes_required": {
+    "obj-cloning-operator": ["attr-gaussian-jitter"],
+    "obj-empirical-measure": ["attr-finite-mass"]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-strict-positivity",
+    "attr-uniform-lower-bound",
+    "attr-density-ratio-bound"
+  ],
+  "relations_established": [
+    {
+      "type": "lower_bound",
+      "from": "obj-post-clone-density",
+      "to": "constant-c-sigma-R",
+      "description": "Gaussian mollification provides uniform lower bound c_{sigma_x,R} on post-cloning density"
+    },
+    {
+      "type": "upper_bound",
+      "from": "density-ratio",
+      "to": "constant-M-gaussian",
+      "description": "Density ratio bounded by M_Gaussian(sigma_x, R) = exp((2R)^2/sigma_x^2)"
+    }
+  ],
+  "dependencies_summary": {
+    "from_chapter_03": [
+      "def-axiom-local-perturbation",
+      "cloning position jitter mechanism"
+    ],
+    "mathematical_framework": [
+      "standard mollification theory (Evans PDE Section 5.3.3)",
+      "Gaussian kernel properties"
+    ],
+    "parameters": {
+      "sigma_x": "position jitter scale (cloning noise)",
+      "R": "domain radius",
+      "d": "spatial dimension"
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "label": "thm-complete-boundary-drift",
+  "name": "Complete Boundary Potential Drift Characterization",
+  "statement_type": "theorem",
+  "source": {
+    "file": "03_cloning.md:7640-7662",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-boundary-potential-recall",
+    "obj-cloning-operator-formal",
+    "obj-swarm-and-state-space"
+  ],
+  "input_axioms": [
+    "axiom-ax-safe-harbor"
+  ],
+  "input_parameters": [
+    "kappa_b",
+    "C_b",
+    "phi_thresh",
+    "sigma_x",
+    "N"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lem-boundary-enhanced-cloning",
+    "lem-barrier-reduction-cloning"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-boundary-enhanced-cloning",
+      "thm-complete-boundary-drift"
+    ],
+    [
+      "lem-barrier-reduction-cloning",
+      "thm-complete-boundary-drift"
+    ],
+    [
+      "thm-boundary-potential-contraction",
+      "thm-complete-boundary-drift"
+    ]
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "complete_boundary_drift_inequality"
+  ],
+  "relations_established": [
+    "unconditional_boundary_contraction",
+    "n_uniform_contraction_rate",
+    "complementary_to_variance_contraction"
+  ]
+}

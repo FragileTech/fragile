@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0",
+  "statistics": {
+    "total_objects": 10,
+    "counts_by_type": {
+      "MathematicalObject": 2,
+      "Axiom": 0,
+      "Parameter": 0,
+      "Property": 0,
+      "Relationship": 0,
+      "TheoremBox": 8
+    },
+    "total_tags": 2,
+    "all_tags": [
+      "particle",
+      "swarm"
+    ]
+  },
+  "all_ids": [
+    "obj-target-complement",
+    "obj-cluster-coupling",
+    "thm-main-contraction-full",
+    "lem-variance-decomposition",
+    "lem-cross-swarm-distance",
+    "lem-variance-wasserstein-link",
+    "lem-cluster-alignment",
+    "lem-expected-distance-change",
+    "lem-target-cloning-pressure",
+    "lem-wasserstein-population-bound"
+  ],
+  "all_tags": [
+    "swarm",
+    "particle"
+  ]
+}

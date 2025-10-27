@@ -1,0 +1,14 @@
+{
+  "label": "obj-discrete-dirichlet",
+  "name": "Discrete Dirichlet Form",
+  "mathematical_expression": "\\mathcal{E}_{\\Psi}(f, f) := \\mathbb{E}_\\pi[(f - \\Psi f)^2]",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "discrete"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

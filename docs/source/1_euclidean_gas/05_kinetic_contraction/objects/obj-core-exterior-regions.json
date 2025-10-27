@@ -1,0 +1,10 @@
+{
+  "label": "obj-core-exterior-regions",
+  "name": "Core and Exterior Regions",
+  "mathematical_expression": "\\mathcal{R}_{\\text{core}} := \\{x \\in \\mathcal{X}_{\\text{valid}} : \\text{dist}(x, \\partial\\mathcal{X}_{\\text{valid}}) \\geq \\delta_{\\text{core}}\\}",
+  "object_type": "space",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [],
+  "source": null
+}

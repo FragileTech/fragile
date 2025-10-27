@@ -1,0 +1,54 @@
+{
+  "label": "attr-empirical-wasserstein-concentration",
+  "type": "proposition",
+  "name": "Empirical Measure Concentration",
+  "line_range": [
+    512,
+    524
+  ],
+  "status": "complete",
+  "input_objects": [
+    "obj-empirical-measure",
+    "obj-rho-0-product",
+    "obj-nu-n"
+  ],
+  "input_axioms": [],
+  "input_theorems": [],
+  "input_parameters": [
+    "C_var",
+    "C_dep"
+  ],
+  "attributes_required": {
+    "obj-nu-n": [
+      "attr-exchangeable",
+      "attr-marginal-convergence"
+    ],
+    "obj-rho-0": [
+      "attr-finite-second-moment"
+    ]
+  },
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-w2-concentration"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-empirical-measure",
+      "to": "obj-rho-0",
+      "type": "w2_concentration_bound",
+      "bound": "E[W_2^2(bar_mu_N, rho_0)] <= C_var/N + C_dep * D_KL(nu_N || rho_0^otimes_N)",
+      "order": "O(1/N)"
+    }
+  ],
+  "internal_lemmas": [],
+  "proof_strategy": "Fournier-Guillin bound for exchangeable measures",
+  "notes": [
+    "Used within proof of lem-lipschitz-observable-error",
+    "Handles non-i.i.d. case via exchangeability",
+    "Requires finite second moment verification"
+  ],
+  "external_references": [
+    "Fournier & Guillin (2015) - Theorem 2",
+    "Bolley et al (2007) - Quantitative concentration inequalities"
+  ]
+}

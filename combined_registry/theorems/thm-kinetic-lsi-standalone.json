@@ -1,0 +1,58 @@
+{
+  "label": "thm-kinetic-lsi-standalone",
+  "name": "Hypocoercive LSI for Kinetic Operator",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-kinetic-operator",
+    "def-qsd"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf",
+    "sigma",
+    "tau"
+  ],
+  "properties_required": {
+    "log-concave-target": [
+      "π_QSD is log-concave"
+    ],
+    "langevin-dynamics": [
+      "BAOAB integrator for Langevin dynamics"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-bakry-emery-classical",
+    "lem-kinetic-lsi-established"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-kinetic-lsi-standalone-0-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-kinetic-operator",
+      "target_object": "obj-qsd",
+      "established_by": "thm-kinetic-lsi-standalone",
+      "expression": "LSI constant C_kin = O(1/(γ κ_conf))",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

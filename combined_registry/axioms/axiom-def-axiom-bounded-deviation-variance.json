@@ -1,0 +1,8 @@
+{
+  "label": "axiom-def-axiom-bounded-deviation-variance",
+  "statement": "Axiom of Bounded Deviation from Aggregated Variance",
+  "mathematical_expression": "\\sum_{i \\in \\mathcal{A}} (v_i - \\mu(\\mathcal{S}, \\mathbf{v}_{\\mathcal{A}}))^2 \\le \\kappa_{\\text{var}} \\cdot |\\mathcal{A}| \\cdot \\text{Var}[M(\\mathcal{S}, \\mathbf{v}_{\\mathcal{A}})]",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

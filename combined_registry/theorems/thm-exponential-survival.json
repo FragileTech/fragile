@@ -1,0 +1,89 @@
+{
+  "label": "thm-exponential-survival",
+  "name": "Exponential Survival Time (QSD Theory)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-qsd",
+    "def-alive-mass"
+  ],
+  "input_axioms": [
+    "ax-guaranteed-revival"
+  ],
+  "input_parameters": [
+    "N",
+    "T",
+    "C_death",
+    "C_revival"
+  ],
+  "properties_required": {
+    "qsd-init-or-near": [
+      "Results stated for initialization at QSD; extension via mixing for t ≥ t_eq"
+    ],
+    "large-deviations": [
+      "Survival tail estimates scale as e^{−Θ(N)}"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-exponential-survival-0-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-qsd",
+      "target_object": "obj-alive-mass",
+      "established_by": "thm-exponential-survival",
+      "expression": "E_{π_QSD}[τ_†] = e^{Θ(N)}",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    },
+    {
+      "label": "rel-thm-exponential-survival-1-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-qsd",
+      "target_object": "obj-alive-mass",
+      "established_by": "thm-exponential-survival",
+      "expression": "P_{π_QSD}(τ_† > T) ≥ 1 − T e^{−Θ(N)}",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    },
+    {
+      "label": "rel-thm-exponential-survival-2-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-qsd",
+      "target_object": "obj-alive-mass",
+      "established_by": "thm-exponential-survival",
+      "expression": "m_a^* = C_revival/(C_death + C_revival) > 0",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    }
+  ]
+}

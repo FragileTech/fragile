@@ -1,0 +1,59 @@
+{
+  "label": "thm-quantitative-error-propagation",
+  "type": "theorem",
+  "name": "Error Propagation for Ergodic Chains",
+  "line_range": [
+    2343,
+    2450
+  ],
+  "status": "complete",
+  "input_objects": [
+    "obj-nu-n-discrete",
+    "obj-nu-n-continuous"
+  ],
+  "input_axioms": [],
+  "input_theorems": [
+    "lem-lie-splitting-weak-error",
+    "lem-uniform-geometric-ergodicity"
+  ],
+  "input_parameters": [
+    "C_split",
+    "kappa_mix",
+    "C_poisson"
+  ],
+  "attributes_required": {
+    "obj-discrete-chain": [
+      "attr-geometric-ergodicity"
+    ],
+    "obj-test-function-phi": [
+      "attr-c4-regularity"
+    ]
+  },
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-invariant-measure-error-o-dt"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-nu-n-discrete",
+      "to": "obj-nu-n-continuous",
+      "type": "invariant_measure_error",
+      "bound": "|E_nu_discrete[phi] - E_nu_cont[phi]| <= (C_split / kappa_mix) * ||phi||_C4 * dt",
+      "order": "O(dt)"
+    }
+  ],
+  "internal_lemmas": [],
+  "proof_strategy": "Poisson equation + telescoping via invariance + apply local error bound",
+  "poisson_equation": "L psi = -phi_c, with ||psi||_C6 <= C_poisson/kappa_mix * ||phi||_C4",
+  "key_mechanism": "O((dt)^2) local error accumulates over ~1/dt steps to give O(dt) global error",
+  "notes": [
+    "Converts local O((dt)^2) to global O(dt)",
+    "Crucial step connecting Parts II and III to Part IV",
+    "Mixing time 1/kappa_mix determines error equilibration",
+    "Poisson equation regularity requires C^4 test functions"
+  ],
+  "explicit_constant": "C_total = C_split * C_poisson / kappa_mix",
+  "external_references": [
+    "Hairer (2010) - Theorem 4.1 (Poisson equation regularity)"
+  ]
+}

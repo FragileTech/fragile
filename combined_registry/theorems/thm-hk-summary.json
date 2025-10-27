@@ -1,0 +1,142 @@
+{
+  "label": "thm-hk-summary",
+  "name": "Exponential HK-Convergence (Summary)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-fragile-gas",
+    "obj-qsd",
+    "obj-hk-metric",
+    "obj-empirical-measure"
+  ],
+  "input_axioms": [
+    "ax-uniform-density-bound-hk",
+    "def-axiom-guaranteed-revival",
+    "def-axiom-local-perturbation"
+  ],
+  "input_parameters": [
+    "param-convergence-rate-hk",
+    "param-convergence-rate-kinetic",
+    "param-convergence-rate-structural",
+    "param-wasserstein-contraction-rate",
+    "param-revival-rate",
+    "param-death-rate",
+    "param-effective-entropy-dissipation-rate",
+    "param-time-step",
+    "param-reversibility-constant",
+    "param-density-bound-M"
+  ],
+  "properties_required": {
+    "obj-fragile-gas": [
+      "prop-hybrid-dynamics",
+      "prop-exponential-stability"
+    ],
+    "obj-qsd": [
+      "prop-quasi-stationary",
+      "prop-unique"
+    ],
+    "obj-hk-metric": [
+      "prop-additive-decomposition"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-mass-contraction-revival-death",
+    "lem-structural-variance-contraction",
+    "lem-kinetic-hellinger-contraction"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-mass-contraction-revival-death",
+      "thm-hk-convergence-main-assembly"
+    ],
+    [
+      "lem-structural-variance-contraction",
+      "thm-hk-convergence-main-assembly"
+    ],
+    [
+      "lem-kinetic-hellinger-contraction",
+      "thm-hk-convergence-main-assembly"
+    ],
+    [
+      "thm-hk-convergence-main-assembly",
+      "thm-hk-summary"
+    ]
+  ],
+  "output_type": "Classification",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-hk-summary-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-fragile-gas",
+      "target_object": "obj-qsd",
+      "established_by": "thm-hk-summary",
+      "expression": "rel-rate-minimum-formula",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    },
+    {
+      "label": "rel-thm-hk-summary-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-fragile-gas",
+      "target_object": "obj-qsd",
+      "established_by": "thm-hk-summary",
+      "expression": "rel-hellinger-wasserstein-bottleneck",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    },
+    {
+      "label": "rel-thm-hk-summary-2-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-fragile-gas",
+      "target_object": "obj-qsd",
+      "established_by": "thm-hk-summary",
+      "expression": "rel-parameter-to-convergence",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    },
+    {
+      "label": "rel-thm-hk-summary-3-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-fragile-gas",
+      "target_object": "obj-qsd",
+      "established_by": "thm-hk-summary",
+      "expression": "rel-algorithmic-convergence-guarantee",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    }
+  ]
+}

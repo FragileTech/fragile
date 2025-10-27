@@ -1,0 +1,17 @@
+{
+  "label": "rel-post-clone-density-constant-c-sigma-r-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-post-clone-density",
+  "target_object": "obj-constant-c-sigma-r",
+  "established_by": "lem-gaussian-lower-bound",
+  "expression": "{'type': 'lower_bound', 'from': 'obj-post-clone-density', 'to': 'constant-c-sigma-R', 'description': 'Gaussian mollification provides uniform lower bound c_{sigma_x,R} on post-cloning density'}",
+  "properties": [],
+  "tags": [
+    "inferred-from-dict"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence"
+}

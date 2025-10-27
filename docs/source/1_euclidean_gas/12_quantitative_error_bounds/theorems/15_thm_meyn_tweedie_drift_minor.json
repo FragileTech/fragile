@@ -1,0 +1,54 @@
+{
+  "label": "thm-meyn-tweedie-drift-minor",
+  "type": "theorem",
+  "name": "Drift-Minorization Implies Geometric Ergodicity (Meyn & Tweedie)",
+  "line_range": [
+    2194,
+    2219
+  ],
+  "status": "external",
+  "input_objects": [
+    "obj-markov-kernel",
+    "obj-invariant-measure"
+  ],
+  "input_axioms": [],
+  "input_theorems": [],
+  "input_parameters": [
+    "kappa",
+    "b",
+    "delta",
+    "M",
+    "rho"
+  ],
+  "attributes_required": {
+    "obj-lyapunov-v": [
+      "attr-drift-condition"
+    ],
+    "obj-small-set-c": [
+      "attr-minorization"
+    ]
+  },
+  "output_type": "Property",
+  "attributes_added": [
+    "attr-geometric-ergodicity"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-markov-iterates",
+      "to": "obj-invariant-measure",
+      "type": "geometric_convergence",
+      "bound": "||T^n(s,.) - nu||_TV <= C_erg * rho^n * V(s)",
+      "order": "exponential"
+    }
+  ],
+  "internal_lemmas": [],
+  "notes": [
+    "EXTERNAL THEOREM from Meyn & Tweedie (2009)",
+    "Standard result in Markov chain theory",
+    "Applied within proof of lem-uniform-geometric-ergodicity",
+    "Not proved in this document"
+  ],
+  "external_references": [
+    "Meyn & Tweedie (2009) - Markov Chains and Stochastic Stability, Theorem 15.0.1"
+  ]
+}

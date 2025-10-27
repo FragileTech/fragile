@@ -1,0 +1,54 @@
+{
+  "label": "attr-weak-error-wasserstein",
+  "name": "BAOAB Weak Error for Wasserstein Distance",
+  "statement_type": "proposition",
+  "source": {
+    "file": "05_kinetic_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-baoab-integrator",
+    "def-hypocoercive-norm"
+  ],
+  "input_axioms": [
+    "axiom-confining-potential",
+    "axiom-diffusion-tensor"
+  ],
+  "input_parameters": [
+    "V_W",
+    "d",
+    "gamma",
+    "L_F",
+    "L_Sigma",
+    "sigma_max",
+    "lambda_v",
+    "b",
+    "tau"
+  ],
+  "attributes_required": {
+    "potential": [
+      "coercivity"
+    ],
+    "force": [
+      "global-lipschitz"
+    ],
+    "diffusion": [
+      "global-lipschitz"
+    ]
+  },
+  "internal_lemmas": [
+    "single-pair-weak-error",
+    "noise-cancellation",
+    "residual-noise-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "N-independent-weak-error"
+  ],
+  "relations_established": [
+    "synchronous-coupling-enables-wasserstein-weak-error"
+  ]
+}

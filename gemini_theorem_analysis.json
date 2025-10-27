@@ -1,0 +1,300 @@
+[
+  {
+    "label": "lem-squashing-properties-generic",
+    "input_objects": ["obj-euclidean-space"],
+    "required_properties": {},
+    "input_parameters": ["param-dimension", "param-generic-positive-constant"],
+    "output_type": "Property",
+    "properties_established": [
+      {"object_label": "obj-squashing-map", "property_label": "attr-lipschitz", "description": "Squashing map is 1-Lipschitz"},
+      {"object_label": "obj-squashing-map", "property_label": "attr-smooth", "description": "C^∞ away from the origin"},
+      {"object_label": "obj-squashing-map", "property_label": "attr-bounded-image", "description": "Image is contained in an open ball of radius C"}
+    ],
+    "dependencies": []
+  },
+  {
+    "label": "lem-projection-lipschitz",
+    "input_objects": ["obj-projection-map", "obj-squashing-map", "obj-euclidean-space"],
+    "required_properties": {},
+    "input_parameters": ["param-dimension", "param-lambda-v"],
+    "output_type": "Property",
+    "properties_established": [
+      {"object_label": "obj-projection-map", "property_label": "attr-lipschitz", "description": "The projection map is Lipschitz continuous with respect to the Sasaki metric on the target space."}
+    ],
+    "dependencies": ["lem-squashing-properties-generic"]
+  },
+  {
+    "label": "lem-sasaki-kinetic-lipschitz",
+    "input_objects": ["obj-kinetic-flow-map", "obj-force-field", "obj-anisotropy-field", "obj-squashing-map"],
+    "required_properties": {
+        "obj-force-field": ["attr-lipschitz"],
+        "obj-anisotropy-field": ["attr-lipschitz"]
+    },
+    "input_parameters": ["param-dimension", "param-tau", "param-mass", "param-gamma-fric", "param-sigma-v", "param-sigma-x", "param-v-alg"],
+    "output_type": "Property",
+    "properties_established": [
+      {"object_label": "obj-kinetic-flow-map", "property_label": "attr-lipschitz", "description": "The one-step kinetic flow map is Lipschitz continuous."}
+    ],
+    "dependencies": ["lem-squashing-properties-generic"]
+  },
+  {
+    "label": "lem-euclidean-boundary-holder",
+    "input_objects": ["obj-death-probability-function", "obj-kinetic-flow-map", "obj-valid-domain"],
+    "required_properties": {
+        "obj-kinetic-flow-map": ["attr-lipschitz"],
+        "obj-valid-domain": ["attr-compact"]
+    },
+    "input_parameters": ["param-dimension", "param-tau", "param-sigma-x"],
+    "output_type": "Property",
+    "properties_established": [
+      {"object_label": "obj-death-probability-function", "property_label": "attr-holder-continuous", "description": "The death probability function is locally Hölder continuous."}
+    ],
+    "dependencies": ["lem-euclidean-geometric-consistency", "lem-sasaki-kinetic-lipschitz"]
+  },
+  {
+    "label": "lem-euclidean-reward-regularity",
+    "input_objects": ["obj-reward-function", "obj-positional-reward-function", "obj-sasaki-metric"],
+    "required_properties": {
+        "obj-positional-reward-function": ["attr-continuous"]
+    },
+    "input_parameters": ["param-lambda-vel"],
+    "output_type": "Property",
+    "properties_established": [
+      {"object_label": "obj-reward-function", "property_label": "attr-continuous", "description": "The full reward function is continuous with respect to the Sasaki metric."}
+    ],
+    "dependencies": ["def-axiom-reward-regularity"]
+  },
+  {
+    "label": "lem-euclidean-richness",
+    "input_objects": ["obj-reward-function", "obj-positional-reward-function"],
+    "required_properties": {},
+    "input_parameters": ["param-lambda-vel", "param-v-alg"],
+    "output_type": "Property",
+    "properties_established": [
+      {"object_label": "obj-environment", "property_label": "attr-environmental-richness", "description": "The environment satisfies the Axiom of Environmental Richness."}
+    ],
+    "dependencies": ["def-axiom-environmental-richness"]
+  },
+  {
+    "label": "lem-euclidean-perturb-moment",
+    "input_objects": ["obj-kinetic-kernel", "obj-sasaki-metric"],
+    "required_properties": {},
+    "input_parameters": ["param-tau", "param-sigma-x", "param-sigma-v"],
+    "output_type": "Property",
+    "properties_established": [
+      {"object_label": "obj-kinetic-kernel", "property_label": "attr-bounded-second-moment", "description": "The kinetic perturbation kernel has a bounded second moment in the Sasaki metric."}
+    ],
+    "dependencies": ["lem-squashing-properties-generic"]
+  },
+  {
+    "label": "lem-euclidean-geometric-consistency",
+    "input_objects": ["obj-kinetic-kernel", "obj-valid-domain", "obj-force-field", "obj-anisotropy-field"],
+    "required_properties": {
+        "obj-valid-domain": ["attr-compact"],
+        "obj-force-field": ["attr-continuous"],
+        "obj-anisotropy-field": ["attr-continuous"]
+    },
+    "input_parameters": ["param-tau", "param-v-alg", "param-gamma-fric", "param-sigma-v"],
+    "output_type": "Property",
+    "properties_established": [
+      {"object_label": "obj-kinetic-kernel", "property_label": "attr-geometric-consistency", "description": "The capped kinetic kernel satisfies the Axiom of Geometric Consistency."}
+    ],
+    "dependencies": ["def-axiom-geometric-consistency"]
+  },
+  {
+    "label": "lem-sasaki-single-walker-positional-error",
+    "input_objects": ["obj-swarm-state", "obj-companion-selection-measure", "obj-sasaki-metric", "obj-projection-map"],
+    "required_properties": {},
+    "input_parameters": [],
+    "output_type": "Relation",
+    "properties_established": [
+       {"description": "Bounds the change in expected distance to companions for a single walker based on the change in its own state."}
+    ],
+    "dependencies": []
+  },
+  {
+    "label": "lem-sasaki-single-walker-structural-error",
+    "input_objects": ["obj-swarm-state", "obj-companion-selection-measure", "obj-sasaki-metric", "obj-projection-map"],
+    "required_properties": {},
+    "input_parameters": ["param-N"],
+    "output_type": "Relation",
+    "properties_established": [
+      {"description": "Bounds the change in expected distance to companions due to a change in the companion selection measure."}
+    ],
+    "dependencies": ["thm-total-error-status-bound"]
+  },
+  {
+    "label": "lem-sasaki-total-squared-error-stable",
+    "input_objects": ["obj-swarm-state", "obj-measurement-operator"],
+    "required_properties": {},
+    "input_parameters": ["param-N"],
+    "output_type": "Relation",
+    "properties_established": [
+      {"description": "Bounds the sum of squared errors in the raw distance measurements for stable walkers."}
+    ],
+    "dependencies": ["lem-sasaki-single-walker-positional-error"]
+  },
+  {
+    "label": "thm-sasaki-distance-ms",
+    "input_objects": ["obj-swarm-state", "obj-measurement-operator"],
+    "required_properties": {},
+    "input_parameters": ["param-N"],
+    "output_type": "Property",
+    "properties_established": [
+      {"object_label": "obj-measurement-operator", "property_label": "attr-continuous", "description": "The distance measurement operator is mean-square continuous in the Sasaki metric."}
+    ],
+    "dependencies": ["lem-sasaki-total-squared-error-stable", "lem-sasaki-single-walker-structural-error"]
+  },
+  {
+    "label": "lem-sasaki-aggregator-value",
+    "input_objects": ["obj-swarm-aggregation-operator", "obj-swarm-state"],
+    "required_properties": {},
+    "input_parameters": ["param-N"],
+    "output_type": "Property",
+    "properties_established": [
+      {"object_label": "obj-swarm-aggregation-operator", "property_label": "attr-lipschitz", "description": "The empirical mean and second moment aggregators are Lipschitz continuous with respect to changes in the input value vector."}
+    ],
+    "dependencies": []
+  },
+  {
+    "label": "lem-sasaki-aggregator-structural",
+    "input_objects": ["obj-swarm-aggregation-operator", "obj-swarm-state"],
+    "required_properties": {},
+    "input_parameters": ["param-N"],
+    "output_type": "Property",
+    "properties_established": [
+      {"object_label": "obj-swarm-aggregation-operator", "property_label": "attr-continuous", "description": "The empirical mean and second moment aggregators are continuous with respect to changes in the swarm structure (status changes)."}
+    ],
+    "dependencies": []
+  },
+  {
+    "label": "lem-sasaki-aggregator-lipschitz",
+    "input_objects": ["obj-swarm-aggregation-operator"],
+    "required_properties": {},
+    "input_parameters": [],
+    "output_type": "Property",
+    "properties_established": [
+      {"object_label": "obj-swarm-aggregation-operator", "property_label": "attr-lipschitz", "description": "Provides the specific Lipschitz constants for the empirical mean and second moment aggregators."}
+    ],
+    "dependencies": ["lem-sasaki-aggregator-value", "lem-sasaki-aggregator-structural"]
+  },
+  {
+    "label": "lem-sasaki-value-error-decomposition",
+    "input_objects": ["obj-standardization-operator"],
+    "required_properties": {},
+    "input_parameters": [],
+    "output_type": "Decomposition",
+    "properties_established": [
+      {"description": "Decomposes the value error of the standardization operator into direct, mean, and denominator shift components."}
+    ],
+    "dependencies": []
+  },
+  {
+    "label": "lem-sasaki-direct-shift-bound-sq",
+    "input_objects": ["obj-standardization-operator"],
+    "required_properties": {},
+    "input_parameters": ["param-epsilon-std", "param-kappa-var-min"],
+    "output_type": "Relation",
+    "properties_established": [
+      {"description": "Bounds the squared norm of the direct shift component of the value error."}
+    ],
+    "dependencies": ["def-statistical-properties-measurement"]
+  },
+  {
+    "label": "lem-sasaki-mean-shift-bound-sq",
+    "input_objects": ["obj-standardization-operator", "obj-swarm-aggregation-operator"],
+    "required_properties": {},
+    "input_parameters": ["param-N", "param-epsilon-std", "param-kappa-var-min"],
+    "output_type": "Relation",
+    "properties_established": [
+      {"description": "Bounds the squared norm of the mean shift component of the value error."}
+    ],
+    "dependencies": ["lem-sasaki-aggregator-lipschitz", "lem-sasaki-aggregator-value"]
+  },
+  {
+    "label": "lem-sasaki-denom-shift-bound-sq",
+    "input_objects": ["obj-standardization-operator", "obj-swarm-aggregation-operator"],
+    "required_properties": {},
+    "input_parameters": ["param-N", "param-epsilon-std", "param-kappa-var-min", "param-R-x"],
+    "output_type": "Relation",
+    "properties_established": [
+      {"description": "Bounds the squared norm of the denominator shift component of the value error."}
+    ],
+    "dependencies": ["thm-z-score-norm-bound", "lem-stats-value-continuity"]
+  },
+  {
+    "label": "thm-sasaki-standardization-structural-sq",
+    "input_objects": ["obj-standardization-operator", "obj-swarm-state"],
+    "required_properties": {},
+    "input_parameters": ["param-N"],
+    "output_type": "Property",
+    "properties_established": [
+      {"object_label": "obj-standardization-operator", "property_label": "attr-continuous", "description": "Establishes the structural continuity of the patched standardization operator, bounding the output error by the number of status changes."}
+    ],
+    "dependencies": ["def-sasaki-structural-coeffs-sq"]
+  },
+  {
+    "label": "lem-sasaki-structural-error-decomposition",
+    "input_objects": ["obj-standardization-operator"],
+    "required_properties": {},
+    "input_parameters": [],
+    "output_type": "Decomposition",
+    "properties_established": [
+      {"description": "Decomposes the structural error of the standardization operator into direct and indirect components."}
+    ],
+    "dependencies": []
+  },
+  {
+    "label": "lem-sasaki-direct-structural-error-sq",
+    "input_objects": ["obj-standardization-operator"],
+    "required_properties": {},
+    "input_parameters": ["param-R-x", "param-epsilon-std", "param-kappa-var-min"],
+    "output_type": "Relation",
+    "properties_established": [
+      {"description": "Bounds the squared norm of the direct component of the structural error."}
+    ],
+    "dependencies": ["thm-z-score-norm-bound"]
+  },
+  {
+    "label": "lem-sasaki-indirect-structural-error-sq",
+    "input_objects": ["obj-standardization-operator"],
+    "required_properties": {},
+    "input_parameters": ["param-N"],
+    "output_type": "Relation",
+    "properties_established": [
+      {"description": "Bounds the squared norm of the indirect component of the structural error."}
+    ],
+    "dependencies": ["def-sasaki-structural-coeffs-sq", "lem-sasaki-aggregator-structural", "lem-stats-structural-continuity"]
+  },
+  {
+    "label": "thm-sasaki-standardization-composite-sq",
+    "input_objects": ["obj-standardization-operator", "obj-swarm-state"],
+    "required_properties": {},
+    "input_parameters": ["param-N"],
+    "output_type": "Property",
+    "properties_established": [
+      {"object_label": "obj-standardization-operator", "property_label": "attr-continuous", "description": "Establishes the composite continuity of the patched standardization operator with respect to the dispersion metric."}
+    ],
+    "dependencies": ["thm-sasaki-standardization-value", "thm-sasaki-standardization-structural-sq", "thm-rescale-function-lipschitz"]
+  },
+  {
+    "label": "thm-euclidean-feller",
+    "input_objects": ["obj-euclidean-gas-operator"],
+    "required_properties": {},
+    "input_parameters": [],
+    "output_type": "Property",
+    "properties_established": [
+      {"object_label": "obj-euclidean-gas-operator", "property_label": "attr-feller-continuous", "description": "The Euclidean Gas transition operator is Feller continuous."}
+    ],
+    "dependencies": [
+        "lem-sasaki-single-walker-positional-error",
+        "thm-sasaki-distance-ms",
+        "lem-sasaki-aggregator-lipschitz",
+        "thm-sasaki-standardization-value",
+        "thm-sasaki-standardization-structural",
+        "lem-squashing-properties-generic",
+        "lem-euclidean-perturb-moment",
+        "lem-euclidean-boundary-holder"
+    ]
+  }
+]

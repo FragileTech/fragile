@@ -1,0 +1,74 @@
+{
+  "label": "thm-unfit-high-error-overlap-fraction",
+  "name": "N-Uniform Lower Bound on the Unfit-High-Error Overlap Fraction",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-unfit-set",
+    "obj-unified-high-low-error-sets",
+    "obj-fitness-potential-operator",
+    "obj-swarm-and-state-space"
+  ],
+  "input_axioms": [
+    "axiom-ax-non-deceptive-landscape",
+    "axiom-ax-active-diversity"
+  ],
+  "input_parameters": [
+    "V_struct",
+    "R_spread_sq",
+    "epsilon",
+    "f_UH"
+  ],
+  "properties_required": {
+    "obj-fitness-potential-operator": [
+      "prop-intelligent-targeting"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-unfit-fraction-lower-bound",
+    "lem-high-error-fraction-lower-bound",
+    "lem-fitness-gap-high-low-error"
+  ],
+  "internal_propositions": [
+    "prop-stability-condition-consequences"
+  ],
+  "lemma_dag_edges": [
+    [
+      "lem-unfit-fraction-lower-bound",
+      "lem-fitness-gap-high-low-error"
+    ],
+    [
+      "lem-high-error-fraction-lower-bound",
+      "thm-geometry-guarantees-variance"
+    ],
+    [
+      "lem-fitness-gap-high-low-error",
+      "thm-stability-condition-final-corrected"
+    ]
+  ],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-unfit-high-error-overlap-fraction-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-unfit-set",
+      "target_object": "obj-unified-high-low-error-sets",
+      "established_by": "thm-unfit-high-error-overlap-fraction",
+      "expression": "rel-targeting-correctness",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

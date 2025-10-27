@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-exp-convergence-standalone-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-total-operator",
+  "target_object": "obj-qsd",
+  "established_by": "thm-exp-convergence-standalone",
+  "expression": "D_KL(μ_t || π_QSD) ≤ e^{-t/C_LSI} D_KL(μ_0 || π_QSD)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

@@ -1,0 +1,36 @@
+{
+  "label": "lem-log-gap-lower-bound",
+  "name": "Lower Bound on Logarithmic Mean Gap",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-boundary-potential-recall"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-dimension",
+    "param-swarm-size"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-log-gap-lower-bound",
+      "expression": "\\mathbb{E}[\\ln(X)] - \\mathbb{E}[\\ln(Y)] \\ge \\ln\\left(1 + \\frac{\\kappa}{V_{\\max}}\\right)",
+      "object_label": "obj-fitness-potential-operator",
+      "established_by": "lem-log-gap-lower-bound",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

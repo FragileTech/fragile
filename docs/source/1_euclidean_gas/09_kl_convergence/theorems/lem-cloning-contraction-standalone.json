@@ -1,0 +1,35 @@
+{
+  "label": "lem-cloning-contraction-standalone",
+  "name": "Mean-Field Cloning Contraction",
+  "statement_type": "lemma",
+  "source": {
+    "file": "09_kl_convergence.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-cloning-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa_W",
+    "delta"
+  ],
+  "attributes_required": {
+    "wasserstein-contraction": [
+      "\u03ba_W > 0"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-cloning-wasserstein-contraction"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Standalone statement of cloning contraction"
+  ],
+  "relations_established": [
+    "W\u2082 contraction via cloning measurement"
+  ]
+}

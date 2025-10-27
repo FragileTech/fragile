@@ -1,0 +1,30 @@
+{
+  "label": "lem-variance-to-mean-separation",
+  "name": "**(From Total Variance to Mean Separation)**",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "section": "7.4.2",
+    "line_start": 3753,
+    "line_end": 3832
+  },
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa_var",
+    "f_min",
+    "V_min",
+    "V_max"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "mean_separation_bound"
+  ],
+  "relations_established": [
+    "(mu_H - mu_L)^2 >= (kappa_var - Var_max)/(f_H * f_L)"
+  ]
+}

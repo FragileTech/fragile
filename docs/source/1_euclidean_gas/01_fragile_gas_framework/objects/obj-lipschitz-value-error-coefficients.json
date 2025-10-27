@@ -1,0 +1,12 @@
+{
+  "label": "obj-lipschitz-value-error-coefficients",
+  "name": "Value Error Coefficients",
+  "mathematical_expression": "\\sigma'_{\\min\\,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "swarm"
+  ],
+  "source": null
+}

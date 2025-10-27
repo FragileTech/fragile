@@ -1,0 +1,17 @@
+{
+  "label": "rel-centered-empirical-measure-centered-qsd-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-centered-empirical-measure",
+  "target_object": "obj-centered-qsd",
+  "established_by": "lem-structural-variance-contraction",
+  "expression": "metric: wasserstein-distance, rate: lambda_struct",
+  "properties": [],
+  "tags": [
+    "inferred-from-dict"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence"
+}

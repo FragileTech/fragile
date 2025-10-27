@@ -1,0 +1,63 @@
+{
+  "label": "attr-parameter-classification",
+  "name": "Parameter Classification",
+  "statement_type": "proposition",
+  "source": null,
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-lambda",
+    "param-sigma-x",
+    "param-alpha-rest",
+    "param-lambda-alg",
+    "param-epsilon-c",
+    "param-epsilon-d",
+    "param-gamma",
+    "param-sigma-v",
+    "param-tau",
+    "param-N",
+    "param-kappa-wall",
+    "param-d-safe"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Classification",
+  "attributes_added": [
+    {
+      "label": "attr-parameter-classes",
+      "expression": "Class A (direct rate): {\u03bb, \u03b3, \u03ba_wall}; Class B (indirect): {\u03b1_rest, \u03c3_x, \u03c4}; Class C (geometric): {\u03bb_alg, \u03b5_c, \u03b5_d}; Class D (equilibrium): {\u03c3_v, N}; Class E (safety): {d_safe}",
+      "object_label": "obj-param-selection"
+    }
+  ],
+  "relations_established": [
+    {
+      "source": "param-lambda",
+      "target": "\u03ba_x",
+      "type": "other"
+    },
+    {
+      "source": "param-gamma",
+      "target": "\u03ba_v",
+      "type": "other"
+    },
+    {
+      "source": "param-gamma",
+      "target": "\u03ba_W",
+      "type": "other"
+    },
+    {
+      "source": "param-kappa-wall",
+      "target": "\u03ba_b",
+      "type": "other"
+    },
+    {
+      "source": "param-sigma-v",
+      "target": "C_i",
+      "type": "other"
+    }
+  ]
+}

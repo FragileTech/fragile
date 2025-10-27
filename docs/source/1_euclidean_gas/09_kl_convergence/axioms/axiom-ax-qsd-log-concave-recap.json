@@ -1,0 +1,6 @@
+{
+  "label": "axiom-ax-qsd-log-concave-recap",
+  "statement": "Log-Concavity of the Quasi-Stationary Distribution (Historical Requirement - Now Proven)",
+  "mathematical_expression": "\\pi_{\\text{QSD}}(S) = \\exp(-V_{\\text{QSD}}(S))",
+  "foundational_framework": "Euclidean Gas"
+}

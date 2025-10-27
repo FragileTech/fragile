@@ -1,0 +1,250 @@
+{
+  "total_theorems": 51,
+  "theorems_with_inputs": 26,
+  "theorems_with_outputs": 4,
+  "total_object_dependencies": 17,
+  "total_axiom_dependencies": 6,
+  "total_parameter_dependencies": 18,
+  "total_lemma_dependencies": 0,
+  "output_type_distribution": {
+    "property": 51
+  },
+  "most_referenced_objects": [
+    {
+      "label": "obj-alive-dead-sets",
+      "count": 13
+    },
+    {
+      "label": "obj-perturbation-measure",
+      "count": 2
+    },
+    {
+      "label": "obj-valid-state-space",
+      "count": 2
+    }
+  ],
+  "most_referenced_axioms": [
+    {
+      "label": "axiom-def-axiom-rescale-function",
+      "count": 3
+    },
+    {
+      "label": "axiom-bounded-measurement-variance",
+      "count": 1
+    },
+    {
+      "label": "axiom-def-axiom-bounded-second-moment-perturbation",
+      "count": 1
+    },
+    {
+      "label": "axiom-def-axiom-boundary-regularity",
+      "count": 1
+    }
+  ],
+  "theorems_by_complexity": [
+    {
+      "label": "lem-boundary-heat-kernel",
+      "complexity": 2
+    },
+    {
+      "label": "lem-boundary-uniform-ball",
+      "complexity": 2
+    },
+    {
+      "label": "thm-distance-operator-satisfies-bounded-variance-axiom",
+      "complexity": 1
+    },
+    {
+      "label": "thm-distance-operator-mean-square-continuity",
+      "complexity": 1
+    },
+    {
+      "label": "thm-perturbation-operator-continuity-reproof",
+      "complexity": 1
+    },
+    {
+      "label": "thm-expected-cloning-action-continuity",
+      "complexity": 1
+    },
+    {
+      "label": "lem-empirical-aggregator-properties",
+      "complexity": 1
+    },
+    {
+      "label": "thm-total-expected-cloning-action-continuity",
+      "complexity": 1
+    },
+    {
+      "label": "thm-canonical-logistic-validity",
+      "complexity": 1
+    },
+    {
+      "label": "lem-single-walker-structural-error",
+      "complexity": 1
+    },
+    {
+      "label": "lem-stats-value-continuity",
+      "complexity": 1
+    },
+    {
+      "label": "lem-total-squared-error-stable",
+      "complexity": 1
+    },
+    {
+      "label": "thm-expected-raw-distance-bound",
+      "complexity": 1
+    },
+    {
+      "label": "lem-rescale-monotonicity",
+      "complexity": 1
+    },
+    {
+      "label": "thm-post-perturbation-status-update-continuity",
+      "complexity": 1
+    },
+    {
+      "label": "lem-total-squared-error-unstable",
+      "complexity": 1
+    },
+    {
+      "label": "thm-mean-square-standardization-error",
+      "complexity": 1
+    },
+    {
+      "label": "thm-z-score-norm-bound",
+      "complexity": 1
+    },
+    {
+      "label": "thm-asymptotic-std-dev-structural-continuity",
+      "complexity": 1
+    },
+    {
+      "label": "thm-rescale-function-lipschitz",
+      "complexity": 1
+    },
+    {
+      "label": "thm-expected-raw-distance-k1",
+      "complexity": 1
+    },
+    {
+      "label": "lem-set-difference-bound",
+      "complexity": 0
+    },
+    {
+      "label": "thm-standardization-structural-error-mean-square",
+      "complexity": 0
+    },
+    {
+      "label": "lem-single-walker-own-status-error",
+      "complexity": 0
+    },
+    {
+      "label": "lem-normalization-difference-bound",
+      "complexity": 0
+    },
+    {
+      "label": "lem-sigma-patch-derivative-bound",
+      "complexity": 0
+    },
+    {
+      "label": "lem-cubic-patch-derivative",
+      "complexity": 0
+    },
+    {
+      "label": "lem-cubic-patch-derivative-bounds",
+      "complexity": 0
+    },
+    {
+      "label": "attr-coefficient-regularity",
+      "complexity": 0
+    },
+    {
+      "label": "thm-total-error-status-bound",
+      "complexity": 0
+    },
+    {
+      "label": "lem-sub-lem-lipschitz-value-error-decomposition",
+      "complexity": 0
+    },
+    {
+      "label": "thm-mcdiarmids-inequality",
+      "complexity": 0
+    },
+    {
+      "label": "lem-cubic-patch-uniqueness",
+      "complexity": 0
+    },
+    {
+      "label": "lem-polishness-and-w2",
+      "complexity": 0
+    },
+    {
+      "label": "lem-cubic-patch-coefficients",
+      "complexity": 0
+    },
+    {
+      "label": "thm-forced-activity",
+      "complexity": 0
+    },
+    {
+      "label": "lem-sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+      "complexity": 0
+    },
+    {
+      "label": "lem-stats-structural-continuity",
+      "complexity": 0
+    },
+    {
+      "label": "thm-lipschitz-value-error-bound",
+      "complexity": 0
+    },
+    {
+      "label": "thm-lipschitz-structural-error-bound",
+      "complexity": 0
+    },
+    {
+      "label": "thm-deterministic-error-decomposition",
+      "complexity": 0
+    },
+    {
+      "label": "thm-revival-guarantee",
+      "complexity": 0
+    },
+    {
+      "label": "thm-k1-revival-state",
+      "complexity": 0
+    },
+    {
+      "label": "attr-w2-bound-no-offset",
+      "complexity": 0
+    },
+    {
+      "label": "lem-cloning-probability-lipschitz",
+      "complexity": 0
+    },
+    {
+      "label": "lem-single-walker-positional-error",
+      "complexity": 0
+    },
+    {
+      "label": "lem-sub-lem-perturbation-positional-bound-reproof",
+      "complexity": 0
+    },
+    {
+      "label": "attr-psi-markov-kernel",
+      "complexity": 0
+    },
+    {
+      "label": "thm-global-continuity-patched-standardization",
+      "complexity": 0
+    },
+    {
+      "label": "lem-polynomial-patch-monotonicity",
+      "complexity": 0
+    },
+    {
+      "label": "thm-standardization-value-error-mean-square",
+      "complexity": 0
+    }
+  ]
+}

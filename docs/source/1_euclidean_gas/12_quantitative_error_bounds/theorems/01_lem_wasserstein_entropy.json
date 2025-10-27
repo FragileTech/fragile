@@ -1,0 +1,62 @@
+{
+  "label": "lem-wasserstein-entropy",
+  "type": "lemma",
+  "name": "Wasserstein-Entropy Inequality",
+  "line_range": [
+    37,
+    162
+  ],
+  "status": "complete",
+  "input_objects": [
+    "obj-nu-n-qsd",
+    "obj-rho-0-product",
+    "obj-n-particle-phase-space"
+  ],
+  "input_axioms": [
+    "axiom-confined-potential"
+  ],
+  "input_theorems": [
+    "thm-kl-convergence-euclidean"
+  ],
+  "input_parameters": [
+    "lambda_lsi",
+    "gamma",
+    "kappa_conf",
+    "kappa_W",
+    "delta",
+    "C_0"
+  ],
+  "attributes_required": {
+    "obj-nu-n-qsd": [
+      "attr-n-uniform-lsi",
+      "attr-absolute-continuity-lebesgue"
+    ],
+    "obj-rho-0-product": [
+      "attr-product-measure-structure"
+    ]
+  },
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-wasserstein-kl-bound"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-nu-n-qsd",
+      "to": "obj-rho-0-product",
+      "type": "wasserstein_distance_bound",
+      "bound": "W_2^2 <= (2/lambda_lsi) * D_KL",
+      "order": "O(1)"
+    }
+  ],
+  "internal_lemmas": [],
+  "notes": [
+    "NOT USED in final proof of thm-quantitative-propagation-chaos",
+    "Included for completeness and alternative proof strategies",
+    "Useful for full N-particle Wasserstein distances",
+    "Fournier-Guillin approach is more direct for empirical measures"
+  ],
+  "external_references": [
+    "Otto & Villani (2000) - Theorem 1",
+    "Guillin et al (2021) - Proposition 2.3"
+  ]
+}

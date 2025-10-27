@@ -1,0 +1,38 @@
+{
+  "label": "thm-langevin-baoab-discretization-error",
+  "name": "Langevin-BAOAB O((\u0394t)\u00b2) Discretization Error",
+  "statement_type": "theorem",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [],
+  "input_theorems": [
+    "lem-baoab-invariant-measure-error"
+  ],
+  "input_axioms": [
+    "axiom-confined-potential"
+  ],
+  "input_parameters": [
+    "C_BAOAB",
+    "phi_C4",
+    "Delta_t"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-o-dt-squared-invariant-error",
+    "attr-n-uniform-discretization"
+  ],
+  "relations_established": [
+    "langevin-alone-second-order",
+    "n-uniform-for-external-potentials"
+  ],
+  "bound": "|E_nu_N^BAOAB[phi] - E_nu_N^Langevin[phi]| <= C_BAOAB * ||phi||_C4 * (Delta_t)^2",
+  "scope": "Langevin dynamics ALONE (no cloning)",
+  "limitation": "Does not include cloning mechanism (analyzed in Part III)"
+}

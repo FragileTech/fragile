@@ -1,0 +1,52 @@
+{
+  "label": "lem-unfit-fraction-lower-bound",
+  "name": "N-Uniform Lower Bound on the Unfit Fraction",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-unfit-set",
+    "obj-fitness-potential-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa_V_gap",
+    "V_pot_max",
+    "V_pot_min"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [
+    "lem-potential-bounds"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-potential-bounds",
+      "lem-unfit-fraction-lower-bound"
+    ]
+  ],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-unfit-fraction-lower-bound-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-unfit-set",
+      "target_object": "obj-fitness-potential-operator",
+      "established_by": "lem-unfit-fraction-lower-bound",
+      "expression": "|U_k|/k >= kappa_V_gap / (2(V_pot_max - V_pot_min))",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-hwi-inequality-1-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-wasserstein-distance",
+  "target_object": "obj-relative-entropy",
+  "established_by": "thm-hwi-inequality",
+  "expression": "Foundation for displacement convexity approach to LSI",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

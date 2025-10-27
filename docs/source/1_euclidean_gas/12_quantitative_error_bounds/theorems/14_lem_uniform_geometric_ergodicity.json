@@ -1,0 +1,64 @@
+{
+  "label": "lem-uniform-geometric-ergodicity",
+  "type": "lemma",
+  "name": "Uniform Geometric Ergodicity",
+  "line_range": [
+    1983,
+    2268
+  ],
+  "status": "complete",
+  "input_objects": [
+    "obj-discrete-chain-t-dt"
+  ],
+  "input_axioms": [
+    "axiom-confined-potential"
+  ],
+  "input_theorems": [
+    "thm-meyn-tweedie-drift-minor",
+    "attr-fourth-moment-baoab"
+  ],
+  "input_parameters": [
+    "kappa_mix",
+    "C_erg",
+    "kappa_E",
+    "C_4"
+  ],
+  "attributes_required": {
+    "obj-discrete-chain": [
+      "attr-lyapunov-drift",
+      "attr-minorization"
+    ]
+  },
+  "output_type": "Property",
+  "attributes_added": [
+    "attr-geometric-ergodicity",
+    "attr-dt-uniform-mixing-rate"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-discrete-distribution-k",
+      "to": "obj-nu-n-discrete",
+      "type": "total_variation_convergence",
+      "bound": "||P_k - nu_N_discrete||_TV <= C_erg * exp(-kappa_mix * k * dt)",
+      "order": "exponential",
+      "dt_uniformity": true
+    }
+  ],
+  "internal_lemmas": [
+    "thm-meyn-tweedie-drift-minor"
+  ],
+  "proof_strategy": "Lyapunov drift (V = 1 + E^2) + minorization via cloning noise + Meyn-Tweedie theorem",
+  "drift_condition": "E[V(T^dt(S)) | S] <= (1 - kappa_E * dt) V(S) + C_4 * dt",
+  "minorization_mechanism": "Gaussian cloning noise provides full support for irreducibility",
+  "notes": [
+    "Key for connecting local to global errors via Poisson equation",
+    "Drift constants kappa_E, C_4 independent of dt",
+    "Minorization constant delta_minor independent of dt",
+    "Mixing rate kappa_mix = kappa_E (for dt small)",
+    "Cloning provides irreducibility; friction provides drift"
+  ],
+  "external_references": [
+    "Meyn & Tweedie (2009) - Theorem 15.0.1",
+    "Hairer, Stuart, Voss (2011) - Theorem 3.10"
+  ]
+}

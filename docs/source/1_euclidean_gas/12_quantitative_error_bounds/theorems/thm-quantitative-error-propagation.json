@@ -1,0 +1,43 @@
+{
+  "label": "thm-quantitative-error-propagation",
+  "name": "Local O((\u0394t)\u00b2) \u2192 Global O(\u0394t) Error Propagation",
+  "statement_type": "theorem",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [],
+  "input_theorems": [
+    "lem-lie-splitting-weak-error",
+    "lem-uniform-geometric-ergodicity"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "C_split",
+    "kappa_mix",
+    "phi_C4",
+    "Delta_t",
+    "C_poisson"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "poisson-equation",
+    "telescoping",
+    "invariance"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-invariant-measure-error-o-dt"
+  ],
+  "relations_established": [
+    "local-o-dt-squared-becomes-global-o-dt",
+    "accumulated-over-1-over-dt-steps"
+  ],
+  "bound": "|E_nu_discrete[phi] - E_nu_cont[phi]| <= (C_split / kappa_mix) * ||phi||_C4 * Delta_t",
+  "key_mechanism": "O((Delta_t)^2) local error accumulates over ~1/Delta_t steps",
+  "explicit_constant": "C_total = C_split * C_poisson / kappa_mix",
+  "proof_technique": "Poisson equation + telescoping + invariance"
+}

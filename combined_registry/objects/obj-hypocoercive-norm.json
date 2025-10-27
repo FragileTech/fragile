@@ -1,0 +1,14 @@
+{
+  "label": "obj-hypocoercive-norm",
+  "name": "The Hypocoercive Norm",
+  "mathematical_expression": "\\|\\!(\\Delta x, \\Delta v)\\!\\|_h^2 := \\|\\Delta x\\|^2 + \\lambda_v \\|\\Delta v\\|^2 + b \\langle \\Delta x, \\Delta v \\rangle",
+  "object_type": "measure",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction"
+}

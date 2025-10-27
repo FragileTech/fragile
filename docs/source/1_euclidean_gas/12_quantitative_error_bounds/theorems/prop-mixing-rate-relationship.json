@@ -1,0 +1,42 @@
+{
+  "label": "attr-mixing-rate-relationship",
+  "name": "Discrete-Continuous Mixing Rate Convergence",
+  "statement_type": "proposition",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-continuous-generator",
+    "obj-discrete-kernel"
+  ],
+  "input_theorems": [],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa_mix_discrete",
+    "kappa_mix_continuous",
+    "tau",
+    "lambda_1"
+  ],
+  "attributes_required": {
+    "obj-continuous-generator": [
+      "attr-spectral-gap-positive"
+    ]
+  },
+  "internal_lemmas": [
+    "spectral-analysis"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Relation",
+  "attributes_added": [
+    "attr-mixing-rate-convergence-to-continuous"
+  ],
+  "relations_established": [
+    "discrete-continuous-mixing-rate-comparable-for-small-dt"
+  ],
+  "relation": "kappa_mix^discrete(tau) = lambda_1 + O(tau)",
+  "implication": "Discrete and continuous mixing rates comparable for small Delta_t",
+  "proof_technique": "Spectral analysis"
+}

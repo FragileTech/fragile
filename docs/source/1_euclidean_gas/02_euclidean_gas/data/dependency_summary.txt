@@ -1,0 +1,24 @@
+DEPENDENCY SUMMARY
+================================================================================
+
+Total directives analyzed: 31
+Total explicit dependencies: 51
+Total implicit dependencies: 33
+Total assumptions: 9
+Total standard math uses: 3
+
+Total edges in graph: 87
+
+================================================================================
+Top 10 most depended-on results:
+
+  sasaki-metric-definition: 9 dependencies
+  lem-squashing-properties-generic: 7 dependencies
+  lem-projection-lipschitz: 7 dependencies
+  lem-euclidean-geometric-consistency: 4 dependencies
+  def-statistical-properties-measurement: 3 dependencies
+  reward-function-definition: 3 dependencies
+  lem-sasaki-single-walker-positional-error: 3 dependencies
+  thm-sasaki-distance-ms: 3 dependencies
+  lem-euclidean-reward-regularity: 3 dependencies
+  thm-sasaki-standardization-composite-sq: 3 dependencies

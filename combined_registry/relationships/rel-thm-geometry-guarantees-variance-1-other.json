@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-geometry-guarantees-variance-1-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-greedy-pairing-algorithm",
+  "target_object": "obj-swarm-and-state-space",
+  "established_by": "thm-geometry-guarantees-variance",
+  "expression": "law_of_total_variance_application",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

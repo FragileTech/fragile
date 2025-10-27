@@ -2,23 +2,23 @@
   "total_theorems": 68,
   "execution_order": [
     "thm-complete-boundary-drift",
-    "prop-coupling-constant-existence",
+    "attr-coupling-constant-existence",
     "thm-main-results-summary",
-    "prop-explicit-constants",
+    "attr-explicit-constants",
     "cor-net-velocity-contraction",
     "cor-total-boundary-safety",
     "thm-synergistic-rate-derivation",
     "thm-total-rate-explicit",
-    "prop-mixing-time-explicit",
-    "prop-parameter-classification",
+    "attr-mixing-time-explicit",
+    "attr-parameter-classification",
     "thm-explicit-rate-sensitivity",
     "thm-svd-rate-matrix",
-    "prop-condition-number-rate",
+    "attr-condition-number-rate",
     "thm-subgradient-min",
     "thm-balanced-optimality",
-    "prop-restitution-friction-coupling",
-    "prop-jitter-cloning-coupling",
-    "prop-phase-space-pairing",
+    "attr-restitution-friction-coupling",
+    "attr-jitter-cloning-coupling",
+    "attr-phase-space-pairing",
     "thm-error-propagation",
     "thm-closed-form-optimum",
     "thm-mean-field-limit-informal",
@@ -38,7 +38,7 @@
     "thm-villani-hypocoercivity-recap",
     "thm-unconditional-lsi",
     "cor-mean-field-lsi",
-    "prop-killing-rate-continuous",
+    "attr-killing-rate-continuous",
     "lem-gaussian-lower-bound",
     "thm-hk-summary",
     "lem-hormander-bracket",
@@ -51,10 +51,10 @@
     "lem-variance-wasserstein-link",
     "lem-expected-distance-change",
     "lem-target-cloning-pressure",
-    "prop-velocity-rate-explicit",
-    "prop-position-rate-explicit",
-    "prop-wasserstein-rate-explicit",
-    "prop-boundary-rate-explicit",
+    "attr-velocity-rate-explicit",
+    "attr-position-rate-explicit",
+    "attr-wasserstein-rate-explicit",
+    "attr-boundary-rate-explicit",
     "thm-main-kl-convergence",
     "cor-n-particle-kinetic-lsi",
     "lem-meanfield-cloning-dissipation-hybrid",
@@ -245,28 +245,28 @@
       "line": 7161,
       "type": "theorem"
     },
-    "prop-velocity-rate-explicit": {
+    "attr-velocity-rate-explicit": {
       "dependencies": [],
       "status": "pending",
       "document": "06_convergence.md",
       "line": 1233,
       "type": "proposition"
     },
-    "prop-position-rate-explicit": {
+    "attr-position-rate-explicit": {
       "dependencies": [],
       "status": "pending",
       "document": "06_convergence.md",
       "line": 1321,
       "type": "proposition"
     },
-    "prop-wasserstein-rate-explicit": {
+    "attr-wasserstein-rate-explicit": {
       "dependencies": [],
       "status": "pending",
       "document": "06_convergence.md",
       "line": 1419,
       "type": "proposition"
     },
-    "prop-boundary-rate-explicit": {
+    "attr-boundary-rate-explicit": {
       "dependencies": [],
       "status": "pending",
       "document": "06_convergence.md",
@@ -287,18 +287,18 @@
       "line": 1715,
       "type": "theorem"
     },
-    "prop-mixing-time-explicit": {
+    "attr-mixing-time-explicit": {
       "dependencies": [],
       "status": "pending",
       "document": "06_convergence.md",
       "line": 1821,
       "type": "proposition"
     },
-    "prop-parameter-classification": {
+    "attr-parameter-classification": {
       "dependencies": [
-        "prop-position-rate-explicit",
-        "prop-wasserstein-rate-explicit",
-        "prop-velocity-rate-explicit"
+        "attr-position-rate-explicit",
+        "attr-wasserstein-rate-explicit",
+        "attr-velocity-rate-explicit"
       ],
       "status": "pending",
       "document": "06_convergence.md",
@@ -307,8 +307,8 @@
     },
     "thm-explicit-rate-sensitivity": {
       "dependencies": [
-        "prop-boundary-rate-explicit",
-        "prop-wasserstein-rate-explicit"
+        "attr-boundary-rate-explicit",
+        "attr-wasserstein-rate-explicit"
       ],
       "status": "pending",
       "document": "06_convergence.md",
@@ -322,7 +322,7 @@
       "line": 2483,
       "type": "theorem"
     },
-    "prop-condition-number-rate": {
+    "attr-condition-number-rate": {
       "dependencies": [],
       "status": "pending",
       "document": "06_convergence.md",
@@ -343,21 +343,21 @@
       "line": 2667,
       "type": "theorem"
     },
-    "prop-restitution-friction-coupling": {
+    "attr-restitution-friction-coupling": {
       "dependencies": [],
       "status": "pending",
       "document": "06_convergence.md",
       "line": 2774,
       "type": "proposition"
     },
-    "prop-jitter-cloning-coupling": {
+    "attr-jitter-cloning-coupling": {
       "dependencies": [],
       "status": "pending",
       "document": "06_convergence.md",
       "line": 2829,
       "type": "proposition"
     },
-    "prop-phase-space-pairing": {
+    "attr-phase-space-pairing": {
       "dependencies": [],
       "status": "pending",
       "document": "06_convergence.md",
@@ -470,7 +470,7 @@
       "line": 7640,
       "type": "theorem"
     },
-    "prop-coupling-constant-existence": {
+    "attr-coupling-constant-existence": {
       "dependencies": [],
       "status": "pending",
       "document": "03_cloning.md",
@@ -548,7 +548,7 @@
       "line": 456,
       "type": "corollary"
     },
-    "prop-explicit-constants": {
+    "attr-explicit-constants": {
       "dependencies": [],
       "status": "pending",
       "document": "05_kinetic_contraction.md",
@@ -569,7 +569,7 @@
       "line": 2533,
       "type": "corollary"
     },
-    "prop-killing-rate-continuous": {
+    "attr-killing-rate-continuous": {
       "dependencies": [],
       "status": "pending",
       "document": "11_hk_convergence.md",

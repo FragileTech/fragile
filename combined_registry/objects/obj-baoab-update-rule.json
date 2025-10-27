@@ -1,0 +1,15 @@
+{
+  "label": "obj-baoab-update-rule",
+  "name": "The BAOAB Update Rule",
+  "mathematical_expression": "v_{n+1/2}^{(1)} = v_n + \\frac{\\tau}{2m} F(x_n)",
+  "object_type": "set",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "discrete",
+    "particle"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "07_mean_field"
+}

@@ -1,0 +1,54 @@
+{
+  "version": "1.0.0",
+  "statistics": {
+    "total_objects": 17,
+    "counts_by_type": {
+      "MathematicalObject": 12,
+      "Axiom": 0,
+      "Parameter": 0,
+      "Property": 0,
+      "Relationship": 0,
+      "TheoremBox": 5
+    },
+    "total_tags": 8,
+    "all_tags": [
+      "continuous",
+      "discrete",
+      "euclidean-gas",
+      "mean-field",
+      "particle",
+      "stability",
+      "swarm",
+      "variance"
+    ]
+  },
+  "all_ids": [
+    "obj-mean-field-phase-space",
+    "obj-phase-space-density",
+    "obj-mean-field-moments",
+    "obj-mean-field-patched-std",
+    "obj-mean-field-z-scores",
+    "obj-mean-field-fitness-potential",
+    "obj-baoab-update-rule",
+    "obj-kinetic-generator",
+    "obj-killing-operator",
+    "obj-revival-operator",
+    "obj-cloning-generator",
+    "obj-transport-operator",
+    "thm-mean-field-equation",
+    "thm-mass-conservation",
+    "thm-killing-rate-consistency",
+    "thm-mean-field-limit-informal",
+    "lem-mass-conservation-transport"
+  ],
+  "all_tags": [
+    "particle",
+    "mean-field",
+    "euclidean-gas",
+    "discrete",
+    "variance",
+    "continuous",
+    "stability",
+    "swarm"
+  ]
+}

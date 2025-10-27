@@ -1,0 +1,164 @@
+{
+  "label": "lem-sasaki-aggregator-structural",
+  "name": "Structural continuity of the empirical moments",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "02_euclidean_gas",
+    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+    "section": "2.3.3",
+    "line_range": [1241, 1256],
+    "directive_label": "lem-sasaki-aggregator-structural"
+  },
+  "input_objects": [
+    "obj-swarm-state",
+    "obj-empirical-mean-aggregator",
+    "obj-empirical-second-moment-aggregator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-N",
+    "param-V-max"
+  ],
+  "attributes_required": {
+    "obj-swarm-state": [
+      "attr-has-alive-set",
+      "attr-has-status-indicators"
+    ],
+    "obj-empirical-mean-aggregator": [
+      "attr-maps-vectors-to-scalars"
+    ],
+    "obj-empirical-second-moment-aggregator": [
+      "attr-maps-vectors-to-scalars"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-structural-continuity-mean",
+      "expression": "For swarms $\\mathcal{S}_r = ((x_{r,i}, v_{r,i}, s_{r,i}))_{i=1}^N$ with alive counts $k_r \\ge 1$, scalar vector $\\mathbf{v}$ on alive indices satisfying $|v_i| \\le V_{\\max}$, with $k_{\\min} := \\max\\{1, \\min(k_1, k_2)\\}$ and $n_c := \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2$ counting status changes: $|\\mu(\\mathcal{S}_1, \\mathbf{v}) - \\mu(\\mathcal{S}_2, \\mathbf{v})| \\le \\frac{3V_{\\max}}{k_{\\min}} n_c$",
+      "object_label": "obj-empirical-mean-aggregator",
+      "established_by": "lem-sasaki-aggregator-structural",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.3",
+        "line_range": [1247, 1247],
+        "directive_label": "lem-sasaki-aggregator-structural"
+      }
+    },
+    {
+      "label": "attr-structural-continuity-second-moment",
+      "expression": "For swarms $\\mathcal{S}_r = ((x_{r,i}, v_{r,i}, s_{r,i}))_{i=1}^N$ with alive counts $k_r \\ge 1$, scalar vector $\\mathbf{v}$ on alive indices satisfying $|v_i| \\le V_{\\max}$, with $k_{\\min} := \\max\\{1, \\min(k_1, k_2)\\}$ and $n_c := \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2$ counting status changes: $|m_2(\\mathcal{S}_1, \\mathbf{v}) - m_2(\\mathcal{S}_2, \\mathbf{v})| \\le \\frac{3V_{\\max}^2}{k_{\\min}} n_c$",
+      "object_label": "obj-empirical-second-moment-aggregator",
+      "established_by": "lem-sasaki-aggregator-structural",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.3",
+        "line_range": [1247, 1247],
+        "directive_label": "lem-sasaki-aggregator-structural"
+      }
+    },
+    {
+      "label": "attr-status-change-sensitivity",
+      "expression": "The empirical aggregators $\\mu$ and $m_2$ are sensitive to status changes $n_c$ (alive/dead walker transitions) with bounds proportional to $n_c/k_{\\min}$",
+      "object_label": "obj-empirical-mean-aggregator",
+      "established_by": "lem-sasaki-aggregator-structural",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.3",
+        "line_range": [1253, 1253],
+        "directive_label": "lem-sasaki-aggregator-structural"
+      }
+    }
+  ],
+  "relations_established": [
+    {
+      "label": "rel-mean-secondmoment-structural-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-empirical-mean-aggregator",
+      "target_object": "obj-empirical-second-moment-aggregator",
+      "established_by": "lem-sasaki-aggregator-structural",
+      "expression": "Both $\\mu$ and $m_2$ share the same structural continuity behavior with respect to status changes, differing only in scaling: $O(V_{\\max})$ vs $O(V_{\\max}^2)$",
+      "properties": [
+        {
+          "label": "same-exponent",
+          "expression": "$k_{\\min}$ appears in denominator with exponent $-1$ for both",
+          "description": "Both aggregators have identical dependence on minimum alive count"
+        },
+        {
+          "label": "status-change-proportional",
+          "expression": "Both bounds proportional to $n_c$",
+          "description": "Linear dependence on number of status changes for both aggregators"
+        }
+      ],
+      "tags": [
+        "aggregator-axioms",
+        "structural-continuity",
+        "sasaki-geometry"
+      ],
+      "timestamp": null,
+      "source": {
+        "document_id": "02_euclidean_gas",
+        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
+        "section": "2.3.3",
+        "line_range": [1247, 1247],
+        "directive_label": "lem-sasaki-aggregator-structural"
+      }
+    }
+  ],
+  "mathematical_content": {
+    "hypotheses": [
+      "Two swarms $\\mathcal{S}_1, \\mathcal{S}_2$ with structure $((x_{r,i}, v_{r,i}, s_{r,i}))_{i=1}^N$",
+      "Alive counts $k_1, k_2 \\ge 1$ where $k_r := |\\mathcal{A}(\\mathcal{S}_r)|$",
+      "Scalar vector $\\mathbf{v}$ on union of alive indices with $|v_i| \\le V_{\\max}$",
+      "Minimum alive count $k_{\\min} := \\max\\{1, \\min(k_1, k_2)\\}$",
+      "Status change count $n_c := \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2$"
+    ],
+    "conclusions": [
+      "Mean structural bound: $|\\mu(\\mathcal{S}_1, \\mathbf{v}) - \\mu(\\mathcal{S}_2, \\mathbf{v})| \\le \\frac{3V_{\\max}}{k_{\\min}} n_c$",
+      "Second moment structural bound: $|m_2(\\mathcal{S}_1, \\mathbf{v}) - m_2(\\mathcal{S}_2, \\mathbf{v})| \\le \\frac{3V_{\\max}^2}{k_{\\min}} n_c$"
+    ],
+    "proof_technique": "Decomposition into stable and unstable walker contributions",
+    "key_steps": [
+      "Decompose difference in means into contributions from walkers that remain alive in both swarms vs those that change status",
+      "Contributions from stable walkers vanish (same normalization)",
+      "Unstable walkers introduce at most $V_{\\max}$ per status flip",
+      "Account for normalization factors $1/k_r$ and difference in alive counts",
+      "For $m_2$: Use $|a^2 - b^2| \\le 2V_{\\max}|a - b|$ inequality"
+    ],
+    "dependencies": [
+      "Lemma 6.2.2.b from framework document (canonical version)"
+    ],
+    "used_by": [
+      "lem-sasaki-aggregator-lipschitz"
+    ],
+    "tags": [
+      "aggregator-axioms",
+      "structural-continuity",
+      "sasaki-geometry",
+      "euclidean-gas",
+      "status-changes"
+    ]
+  },
+  "metadata": {
+    "framework_context": "Establishes structural continuity axiom for empirical aggregators in Sasaki geometry variant of Euclidean Gas",
+    "physical_interpretation": "When walkers change status (alive ↔ dead), empirical statistics change proportionally to number of status flips, scaled by inverse minimum alive count",
+    "algorithmic_significance": "Critical for proving Lipschitz continuity of reward standardization operator under cloning events",
+    "comparison_to_canonical": "Mirrors Lemma 6.2.2.b of canonical framework but with Sasaki-specific constants"
+  }
+}

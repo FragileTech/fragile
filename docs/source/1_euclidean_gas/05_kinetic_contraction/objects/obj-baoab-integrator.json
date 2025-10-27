@@ -1,0 +1,10 @@
+{
+  "label": "obj-baoab-integrator",
+  "name": "BAOAB Integrator for Stratonovich Langevin",
+  "mathematical_expression": "v^{(1)} = v^{(0)} + \\frac{\\tau}{2} F(x^{(0)})",
+  "object_type": "space",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [],
+  "source": null
+}

@@ -1,0 +1,91 @@
+{
+  "label": "lem-kinetic-hellinger-contraction",
+  "name": "Kinetic Operator Hellinger Contraction",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-empirical-measure",
+    "obj-qsd",
+    "obj-kinetic-operator",
+    "obj-baoab-integrator",
+    "obj-hellinger-distance"
+  ],
+  "input_axioms": [
+    "def-axiom-local-perturbation",
+    "ax-confining-potential",
+    "ax-uniform-density-bound-hk"
+  ],
+  "input_parameters": [
+    "M",
+    "tau",
+    "gamma",
+    "delta",
+    "kappa_kin",
+    "C_kin",
+    "alpha_U"
+  ],
+  "properties_required": {
+    "obj-empirical-measure": [
+      "prop-normalized-density-bounded",
+      "prop-gaussian-regularization"
+    ],
+    "obj-kinetic-operator": [
+      "prop-baoab-integrator",
+      "prop-boundary-killing"
+    ],
+    "obj-qsd": [
+      "prop-smooth-density",
+      "prop-positive-lower-bound"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-mass-convergence",
+    "prop-killing-rate-continuous"
+  ],
+  "internal_propositions": [
+    "prop-killing-rate-continuous"
+  ],
+  "lemma_dag_edges": [],
+  "output_type": "Contraction",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-hellinger-distance-qsd-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-hellinger-distance",
+      "target_object": "obj-qsd",
+      "established_by": "lem-kinetic-hellinger-contraction",
+      "expression": "{'type': 'contraction', 'from': 'obj-hellinger-distance', 'to': 'obj-qsd', 'description': 'E[d_H^2(mu_{t+1}, pi_QSD) | mu_t] <= (1 - kappa_kin(M) tau) d_H^2(mu_t, pi_QSD) + C_kin tau^2'}",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    },
+    {
+      "label": "rel-kappa-kin-parameters-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-kappa-kin",
+      "target_object": "obj-parameters",
+      "established_by": "lem-kinetic-hellinger-contraction",
+      "expression": "{'type': 'rate_dependence', 'from': 'kappa_kin', 'to': 'parameters', 'description': 'Contraction rate depends on M (density bound), gamma (friction), alpha_U (potential coercivity), hypocoercive coupling'}",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    }
+  ]
+}

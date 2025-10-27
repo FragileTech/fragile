@@ -1,0 +1,44 @@
+{
+  "label": "thm-kinetic-lsi-standalone",
+  "name": "Hypocoercive LSI for Kinetic Operator",
+  "statement_type": "theorem",
+  "source": {
+    "file": "09_kl_convergence.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-kinetic-operator",
+    "def-qsd"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf",
+    "sigma",
+    "tau"
+  ],
+  "attributes_required": {
+    "log-concave-target": [
+      "\u03c0_QSD is log-concave"
+    ],
+    "langevin-dynamics": [
+      "BAOAB integrator for Langevin dynamics"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-bakry-emery-classical",
+    "lem-kinetic-lsi-established"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "Standalone LSI for kinetic operator"
+  ],
+  "relations_established": [
+    "LSI constant C_kin = O(1/(\u03b3 \u03ba_conf))"
+  ]
+}

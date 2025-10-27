@@ -1,0 +1,15 @@
+{
+  "label": "obj-fragile-swarm-instantiation",
+  "name": "Fragile Swarm Instantiation",
+  "mathematical_expression": "\\mathcal{F}",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

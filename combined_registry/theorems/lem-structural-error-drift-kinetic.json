@@ -1,0 +1,63 @@
+{
+  "label": "lem-structural-error-drift-kinetic",
+  "name": "Drift of Structural Error Under Kinetics",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [
+    "axiom-confining-potential",
+    "axiom-diffusion-tensor"
+  ],
+  "input_parameters": [
+    "V_struct",
+    "kappa_struct",
+    "C_struct_prime",
+    "N",
+    "gamma",
+    "sigma_min",
+    "sigma_max"
+  ],
+  "properties_required": {
+    "coupling": [
+      "synchronous"
+    ]
+  },
+  "internal_lemmas": [
+    "single-pair-drift-from-lem-4-5",
+    "aggregation-over-N-particles",
+    "optimal-transport-index-matching",
+    "lem-location-error-drift-kinetic"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-location-error-drift-kinetic",
+      "lem-structural-error-drift-kinetic"
+    ]
+  ],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-structural-error-drift-kinetic-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-unknown",
+      "target_object": "obj-unknown",
+      "established_by": "lem-structural-error-drift-kinetic",
+      "expression": "empirical-measure-wasserstein-contraction",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "05_kinetic_contraction"
+    }
+  ]
+}

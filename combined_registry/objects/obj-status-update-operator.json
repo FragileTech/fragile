@@ -1,0 +1,15 @@
+{
+  "label": "obj-status-update-operator",
+  "name": "Status Update Operator",
+  "mathematical_expression": "s_{\\text{out},i} = \\mathbb{1}_{\\text{valid}}(\\varphi(x_{\\text{in},i}))",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

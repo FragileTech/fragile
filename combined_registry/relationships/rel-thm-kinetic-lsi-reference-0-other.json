@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-kinetic-lsi-reference-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-kinetic-operator",
+  "target_object": "obj-kinetic-operator",
+  "established_by": "thm-kinetic-lsi-reference",
+  "expression": "Kinetic LSI from Bakry-Émery theory",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

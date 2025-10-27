@@ -1,0 +1,15 @@
+{
+  "label": "obj-phase-space-density",
+  "name": "Phase-Space Density",
+  "mathematical_expression": "\\text{Alive mass in } A = \\int_A f(t, z) dz.",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "07_mean_field"
+}

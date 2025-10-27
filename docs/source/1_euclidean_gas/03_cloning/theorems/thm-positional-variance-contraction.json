@@ -1,0 +1,65 @@
+{
+  "label": "thm-positional-variance-contraction",
+  "name": "Positional Variance Contraction Under Cloning",
+  "statement_type": "theorem",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-cloning-operator-formal",
+    "obj-variance-conversions",
+    "obj-barycentres-and-centered-vectors",
+    "obj-state-difference-vectors"
+  ],
+  "input_axioms": [
+    "axiom-ax-domain-regularity",
+    "axiom-ax-lipschitz-fields",
+    "axiom-ax-safe-harbor",
+    "axiom-ax-non-deceptive-landscape",
+    "axiom-ax-velocity-regularization"
+  ],
+  "input_parameters": [
+    "kappa_x",
+    "C_x",
+    "R_spread_sq"
+  ],
+  "attributes_required": {
+    "obj-cloning-operator-formal": [
+      "attr-keystone-principle"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-variance-change-decomposition",
+    "lem-keystone-contraction-alive",
+    "lem-status-change-bound",
+    "lem-expansion-status-changes"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-variance-change-decomposition",
+      "lem-keystone-contraction-alive"
+    ],
+    [
+      "lem-variance-change-decomposition",
+      "lem-status-change-bound"
+    ],
+    [
+      "lem-keystone-contraction-alive",
+      "lem-quantitative-keystone"
+    ],
+    [
+      "lem-status-change-bound",
+      "lem-expansion-status-changes"
+    ]
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "attr-positional-variance-contraction"
+  ],
+  "relations_established": [
+    "rel-cloning-contracts-positional-variance"
+  ]
+}

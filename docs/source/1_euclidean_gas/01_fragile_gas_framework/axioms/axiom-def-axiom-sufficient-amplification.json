@@ -1,0 +1,6 @@
+{
+  "label": "axiom-def-axiom-sufficient-amplification",
+  "statement": "Axiom of Sufficient Amplification",
+  "mathematical_expression": "\\kappa_{\\text{amplification}} := \\alpha + \\beta",
+  "foundational_framework": "Euclidean Gas"
+}

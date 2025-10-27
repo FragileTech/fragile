@@ -1,0 +1,17 @@
+{
+  "label": "rel-nu-n-discrete-nu-n-continuous-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-nu-n-discrete",
+  "target_object": "obj-nu-n-continuous",
+  "established_by": "thm-quantitative-error-propagation",
+  "expression": "bound: |E_nu_discrete[phi] - E_nu_cont[phi]| <= (C_split / kappa_mix) * ||phi||_C4 * dt",
+  "properties": [],
+  "tags": [
+    "inferred-from-dict"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds"
+}

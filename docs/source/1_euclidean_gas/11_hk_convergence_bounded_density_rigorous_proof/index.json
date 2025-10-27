@@ -1,0 +1,30 @@
+{
+  "version": "1.0.0",
+  "statistics": {
+    "total_objects": 11,
+    "counts_by_type": {
+      "MathematicalObject": 0,
+      "Axiom": 1,
+      "Parameter": 0,
+      "Property": 0,
+      "Relationship": 0,
+      "TheoremBox": 10
+    },
+    "total_tags": 0,
+    "all_tags": []
+  },
+  "all_ids": [
+    "axiom-ax-bounded-density-ratio-rigorous",
+    "thm-parabolic-harnack",
+    "thm-exponential-survival",
+    "thm-bounded-density-ratio-main",
+    "thm-hk-convergence-unconditional",
+    "lem-hormander-bracket",
+    "lem-linfty-full-operator",
+    "lem-gaussian-kernel-lower-bound",
+    "lem-strict-positivity-cloning",
+    "lem-qsd-strict-positivity",
+    "lem-mass-lower-bound-high-prob"
+  ],
+  "all_tags": []
+}

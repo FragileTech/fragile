@@ -1,0 +1,13 @@
+{
+  "label": "obj-sasaki-standardization-constants",
+  "name": "Standardization constants (Sasaki geometry)",
+  "mathematical_expression": "C_{V,\\mathrm{direct}} := \\frac{1}{\\sigma_{\\min,\\mathrm{patch}}}",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

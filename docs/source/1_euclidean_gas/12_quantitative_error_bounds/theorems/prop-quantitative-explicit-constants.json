@@ -1,0 +1,89 @@
+{
+  "label": "attr-quantitative-explicit-constants",
+  "name": "Implementation-Ready Explicit Constant Formulas",
+  "statement_type": "proposition",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [],
+  "input_theorems": [],
+  "input_axioms": [],
+  "input_parameters": [
+    "gamma",
+    "sigma",
+    "lambda",
+    "delta",
+    "beta",
+    "kappa_conf",
+    "kappa_W",
+    "C_0",
+    "L_log_rho_0",
+    "diam_Omega",
+    "C_F",
+    "C_chaos",
+    "nabla2_U",
+    "C_poisson",
+    "kappa_hypo"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Formulas",
+  "attributes_added": [
+    "attr-implementable-error-bounds"
+  ],
+  "relations_established": [
+    "all-constants-computable-from-system-parameters",
+    "parameter-to-error-mapping"
+  ],
+  "explicit_formulas": {
+    "C_MF": "sqrt(C_var + C' * C_int)",
+    "C_int": "lambda * L_log(rho_0) * diam(Omega)",
+    "C_discrete": "(C_split * C_poisson) / kappa_mix",
+    "C_split": "(1/2) * lambda * beta * C_chaos * max(C_F, sigma^2, ||nabla^2 U||_inf)",
+    "kappa_mix": "min(kappa_hypo, lambda)"
+  },
+  "typical_values": {
+    "gamma": "0.1 to 1.0 (friction)",
+    "sigma": "0.01 to 0.5 (noise)",
+    "lambda": "0.1 to 1.0 (cloning rate)",
+    "delta": "0.1 (cloning noise)",
+    "N": "10^3 to 10^5 (walkers)",
+    "Delta_t": "10^-3 to 10^-1 (timestep)"
+  },
+  "error_estimates": {
+    "mean_field": "~1/sqrt(N) \u2248 0.01 for N=10^4",
+    "discretization": "~Delta_t/N \u2248 10^-6 for Delta_t=0.01, N=10^4"
+  },
+  "recommended_settings": {
+    "for_accuracy": "N >= 10^4",
+    "for_speed": "Delta_t <= 0.1 / max(gamma, lambda)",
+    "balance": "N * Delta_t budget \u2248 constant"
+  },
+  "parameter_dependencies": {
+    "lambda_LSI": [
+      "gamma",
+      "kappa_conf",
+      "kappa_W",
+      "delta",
+      "C_0"
+    ],
+    "C_split": [
+      "lambda",
+      "beta",
+      "C_chaos",
+      "C_F",
+      "sigma",
+      "nabla2_U"
+    ],
+    "kappa_mix": [
+      "gamma",
+      "lambda",
+      "kappa_hypo"
+    ]
+  },
+  "purpose": "Enable practitioners to compute error bounds from physical parameters"
+}

@@ -1,0 +1,64 @@
+{
+  "label": "thm-killing-rate-consistency",
+  "name": "Consistency of the Interior Killing Rate Approximation",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "07_mean_field",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-mean-field-phase-space",
+    "obj-baoab-update-rule",
+    "obj-phase-space-density",
+    "obj-killing-operator"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-reward-regularity"
+  ],
+  "input_parameters": [
+    "param-tau",
+    "param-m",
+    "param-gamma",
+    "param-sigma-v",
+    "param-delta"
+  ],
+  "properties_required": {
+    "obj-mean-field-phase-space": [
+      "asmp-domain-regularity"
+    ],
+    "obj-baoab-update-rule": [
+      "asmp-integrator-regularity"
+    ],
+    "obj-phase-space-density": [
+      "asmp-density-regularity-killing"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Convergence",
+  "properties_added": [
+    {
+      "label": "prop-exit-rate-pointwise-limit",
+      "expression": "lim_{τ→0} τ^{-1} p_exit(x,v,τ) = c(x,v) with c(x,v) = ((v·n_x(x))^+)/d(x) · 1_{d(x)<δ}",
+      "object_label": "obj-killing-operator",
+      "established_by": "thm-killing-rate-consistency",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    },
+    {
+      "label": "prop-expected-killing-fraction-convergence",
+      "expression": "lim_{τ→0} τ^{-1} K_discrete(τ) = K_continuous; |τ^{-1}K_discrete(τ) − K_continuous| ≤ C(√τ + ||f^τ − f||_{L^1})",
+      "object_label": "obj-killing-operator",
+      "established_by": "thm-killing-rate-consistency",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

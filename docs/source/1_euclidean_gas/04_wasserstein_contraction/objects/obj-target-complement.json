@@ -1,0 +1,13 @@
+{
+  "label": "obj-target-complement",
+  "name": "Target Set and Complement",
+  "mathematical_expression": "I_k(\\varepsilon) := U_k \\cap H_k(\\varepsilon)",
+  "object_type": "space",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

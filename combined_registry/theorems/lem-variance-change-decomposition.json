@@ -1,0 +1,48 @@
+{
+  "label": "lem-variance-change-decomposition",
+  "name": "Variance Change Decomposition",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-barycentres-and-centered-vectors",
+    "obj-alive-dead-sets"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "N"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "def-variance-conversions",
+      "lem-variance-change-decomposition"
+    ]
+  ],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-variance-change-decomposition-0-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-barycentres-and-centered-vectors",
+      "target_object": "obj-alive-dead-sets",
+      "established_by": "lem-variance-change-decomposition",
+      "expression": "Delta V_Var,x = sum_k [Delta_alive + Delta_status]",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "03_cloning"
+    }
+  ]
+}

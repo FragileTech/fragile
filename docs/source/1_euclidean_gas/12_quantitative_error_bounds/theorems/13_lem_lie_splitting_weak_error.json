@@ -1,0 +1,60 @@
+{
+  "label": "lem-lie-splitting-weak-error",
+  "type": "lemma",
+  "name": "One-Step Weak Error for Lie Splitting",
+  "line_range": [
+    1671,
+    1972
+  ],
+  "status": "complete",
+  "input_objects": [
+    "obj-lie-splitting-operator",
+    "obj-continuous-semigroup"
+  ],
+  "input_axioms": [],
+  "input_theorems": [
+    "attr-fourth-moment-baoab"
+  ],
+  "input_parameters": [
+    "C_split",
+    "C_comm",
+    "lambda",
+    "beta",
+    "C_chaos"
+  ],
+  "attributes_required": {
+    "obj-test-function-phi": [
+      "attr-c4-regularity"
+    ]
+  },
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-o-dt-squared-local-error"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-discrete-operator",
+      "to": "obj-continuous-semigroup",
+      "type": "local_weak_error",
+      "bound": "|E[(T^dt - P^dt)phi(Z)]| <= C_split * ||phi||_C4 * (dt)^2",
+      "order": "O((dt)^2)"
+    }
+  ],
+  "internal_lemmas": [],
+  "proof_strategy": "Taylor expansion + commutator calculation + mean-field cancellation",
+  "commutator": "[L_clone, L_Langevin] = (1/2) * (dt)^2 * commutator_term",
+  "n_uniformity_mechanism": "Mean-field cancellation via empirical measure fluctuations (O(1/sqrt(N)) in probability)",
+  "notes": [
+    "Second-order LOCAL error from Lie splitting",
+    "Commutator non-zero due to fitness-dependent cloning",
+    "Key calculation: Mean-field scaling gives N-uniform bound",
+    "Propagation of chaos ensures C_comm independent of N",
+    "Local O((dt)^2) accumulates to global O(dt) over 1/dt steps"
+  ],
+  "explicit_commutator_bound": "C_comm = lambda * beta * C_chaos * max(C_F, sigma^2, ||nabla^2 U||_infty)",
+  "external_references": [
+    "Hairer, Lubich, Wanner (2006) - Section II.3",
+    "Hansen & Ostermann (2009) - Theorem 2.1",
+    "Sznitman (1991) - Theorem 4.2 (commutator estimates)"
+  ]
+}

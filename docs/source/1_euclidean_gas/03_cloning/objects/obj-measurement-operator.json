@@ -1,0 +1,13 @@
+{
+  "label": "obj-measurement-operator",
+  "name": "The Measurement Operator",
+  "mathematical_expression": "\\pi \\sim P_{\\text{pair}}(S, \\cdot)",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null
+}

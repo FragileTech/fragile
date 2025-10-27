@@ -1,0 +1,60 @@
+{
+  "label": "thm-unfit-high-error-overlap-fraction",
+  "name": "N-Uniform Lower Bound on the Unfit-High-Error Overlap Fraction",
+  "statement_type": "theorem",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-unfit-set",
+    "obj-unified-high-low-error-sets",
+    "obj-fitness-potential-operator",
+    "obj-swarm-and-state-space"
+  ],
+  "input_axioms": [
+    "axiom-ax-non-deceptive-landscape",
+    "axiom-ax-active-diversity"
+  ],
+  "input_parameters": [
+    "V_struct",
+    "R_spread_sq",
+    "epsilon",
+    "f_UH"
+  ],
+  "attributes_required": {
+    "obj-fitness-potential-operator": [
+      "attr-intelligent-targeting"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-unfit-fraction-lower-bound",
+    "lem-high-error-fraction-lower-bound",
+    "lem-fitness-gap-high-low-error"
+  ],
+  "internal_propositions": [
+    "attr-stability-condition-consequences"
+  ],
+  "lemma_dag_edges": [
+    [
+      "lem-unfit-fraction-lower-bound",
+      "lem-fitness-gap-high-low-error"
+    ],
+    [
+      "lem-high-error-fraction-lower-bound",
+      "thm-geometry-guarantees-variance"
+    ],
+    [
+      "lem-fitness-gap-high-low-error",
+      "thm-stability-condition-final-corrected"
+    ]
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "attr-unfit-high-error-overlap"
+  ],
+  "relations_established": [
+    "rel-targeting-correctness"
+  ]
+}

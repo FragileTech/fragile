@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0",
+  "statistics": {
+    "total_objects": 19,
+    "counts_by_type": {
+      "MathematicalObject": 0,
+      "Axiom": 0,
+      "Parameter": 0,
+      "Property": 0,
+      "Relationship": 0,
+      "TheoremBox": 19
+    },
+    "total_tags": 0,
+    "all_tags": []
+  },
+  "all_ids": [
+    "thm-quantitative-propagation-chaos",
+    "thm-langevin-baoab-discretization-error",
+    "thm-full-system-discretization-error",
+    "thm-meyn-tweedie-drift-minor",
+    "thm-quantitative-error-propagation",
+    "thm-total-error-bound",
+    "lem-wasserstein-entropy",
+    "lem-quantitative-kl-bound",
+    "lem-lipschitz-observable-error",
+    "lem-baoab-weak-error",
+    "lem-baoab-invariant-measure-error",
+    "lem-lie-splitting-weak-error",
+    "lem-uniform-geometric-ergodicity",
+    "attr-interaction-complexity-bound",
+    "attr-empirical-wasserstein-concentration",
+    "attr-finite-second-moment-meanfield",
+    "attr-fourth-moment-baoab",
+    "attr-mixing-rate-relationship",
+    "attr-quantitative-explicit-constants"
+  ],
+  "all_tags": []
+}

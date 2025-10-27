@@ -1,0 +1,29 @@
+{
+  "label": "thm-closed-form-optimum",
+  "name": "Closed-Form Balanced Optimum",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-lambda-min",
+    "param-lambda-max",
+    "param-d",
+    "param-V-target"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Algorithm",
+  "attributes_added": [
+    {
+      "label": "attr-closed-form-optimal-params",
+      "expression": "(\u03b3*, \u03bb*, \u03c4*, \u03c3_v*, \u03c3_x*, \u03bb_alg*, \u03b5_c*, \u03b1_rest*, d_safe*, \u03ba_wall*) = (\u03bb_min, 2\u03b3*/c_fit, min(0.5/\u03b3*, 1/\u221a\u03bb_max, 0.01), \u221a(\u03b3* V_target), \u03c3_v* \u03c4*/\u221a\u03b3*, (\u03c3_x*)^2/(\u03c3_v*)^2, \u03c3_x*, \u221a(2 - 2\u03b3_budget/\u03b3*), 3\u221aV_target, 10 \u03bb_min)",
+      "object_label": "obj-param-selection"
+    }
+  ],
+  "relations_established": []
+}

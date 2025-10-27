@@ -1,0 +1,17 @@
+{
+  "label": "rel-markov-iterates-invariant-measure-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-markov-iterates",
+  "target_object": "obj-invariant-measure",
+  "established_by": "thm-meyn-tweedie-drift-minor",
+  "expression": "bound: ||T^n(s,.) - nu||_TV <= C_erg * rho^n * V(s)",
+  "properties": [],
+  "tags": [
+    "inferred-from-dict"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds"
+}

@@ -1,0 +1,396 @@
+{
+  "$schema": "./math_schema.json",
+  "metadata": {
+    "title": "The Keystone Principle and the Contractive Nature of Cloning - Chapter 3",
+    "document_id": "cloning_ch03",
+    "version": "1.0.0",
+    "date_created": "2025-10-25",
+    "source_document": "docs/source/1_euclidean_gas/03_cloning.md",
+    "source_lines": "355-1141",
+    "chapters_covered": [
+      "3. The Augmented Hypocoercive Lyapunov Function"
+    ],
+    "authors": [
+      "Guillem Duran Ballester"
+    ],
+    "tags": [
+      "lyapunov-function",
+      "hypocoercivity",
+      "wasserstein-distance",
+      "variance-decomposition",
+      "synergistic-dissipation"
+    ],
+    "description": "Construction and analysis of the synergistic hypocoercive Lyapunov function, decomposing total error into location, structural, and internal variance components. Establishes the mathematical foundation for analyzing complementary dissipation mechanisms.",
+    "dependencies": {
+      "requires": [
+        "cloning_ch01_ch02.json"
+      ],
+      "builds_on": [
+        "Coupled state space",
+        "Barrier function",
+        "Wasserstein distance theory"
+      ]
+    },
+    "peer_review_status": {
+      "status": "in_progress",
+      "notes": "Initial extraction from source document"
+    }
+  },
+  "directives": [
+    {
+      "type": "definition",
+      "label": "def-barycentres-and-centered-vectors",
+      "title": "Barycentres and Centered Vectors (Alive Walkers Only)",
+      "content": "For each swarm in a coupled state, we define the centers of mass and centered vectors computed **over alive walkers only**, establishing the foundation for permutation-invariant error analysis.",
+      "defined_objects": [
+        {
+          "symbol": "\\mu_{x,k}",
+          "name": "Positional Center of Mass (Barycentre)",
+          "description": "For each swarm $k \\in \\{1, 2\\}$ with alive set $\\mathcal{A}(S_k)$ and $k_{\\text{alive}} := |\\mathcal{A}(S_k)|$ alive walkers: $$\\mu_{x,k} := \\frac{1}{k_{\\text{alive}}}\\sum_{i \\in \\mathcal{A}(S_k)} x_{k,i}$$",
+          "properties": [
+            "Computed over alive walkers only (dead walkers excluded)",
+            "Represents the geometric center of the alive walker distribution",
+            "Used as reference point for centered vectors"
+          ]
+        },
+        {
+          "symbol": "\\mu_{v,k}",
+          "name": "Velocity Center of Mass",
+          "description": "The velocity barycentre computed over alive walkers only: $$\\mu_{v,k} := \\frac{1}{k_{\\text{alive}}}\\sum_{i \\in \\mathcal{A}(S_k)} v_{k,i}$$",
+          "properties": [
+            "Velocity analog of positional barycentre",
+            "Essential for hypocoercive analysis coupling position and velocity"
+          ]
+        },
+        {
+          "symbol": "\\delta_{x,k,i}",
+          "name": "Centered Position Vector",
+          "description": "For alive walker $i \\in \\mathcal{A}(S_k)$, the centered position vector is: $$\\delta_{x,k,i} := x_{k,i} - \\mu_{x,k}$$",
+          "properties": [
+            "Measures walker's position relative to swarm's center of mass",
+            "By construction: $\\sum_{i \\in \\mathcal{A}(S_k)} \\delta_{x,k,i} = 0$ (zero-mean)",
+            "Used to compute internal variance"
+          ]
+        },
+        {
+          "symbol": "\\delta_{v,k,i}",
+          "name": "Centered Velocity Vector",
+          "description": "For alive walker $i \\in \\mathcal{A}(S_k)$, the centered velocity vector is: $$\\delta_{v,k,i} := v_{k,i} - \\mu_{v,k}$$",
+          "properties": [
+            "Measures walker's velocity relative to swarm's velocity center",
+            "By construction: $\\sum_{i \\in \\mathcal{A}(S_k)} \\delta_{v,k,i} = 0$ (zero-mean)",
+            "Essential for velocity variance calculations"
+          ]
+        }
+      ],
+      "rationale": "Dead walkers ($i \\notin \\mathcal{A}(S_k)$) do not contribute to barycentres, variances, or any statistical quantities. Including them would distort geometric properties. Dead walkers represent failed exploration paths - historical artifacts, not part of the current active distribution. The cloning operator $\\Psi_{\\text{clone}}$ acts on the fitness and geometric distribution of **alive** walkers.",
+      "prerequisites": [],
+      "tags": [
+        "barycentre",
+        "centered-vectors",
+        "alive-walkers",
+        "variance-foundation"
+      ],
+      "notation_introduced": [
+        {
+          "symbol": "\\mu_{x,k}",
+          "description": "Positional barycentre of swarm $k$",
+          "type": "vector",
+          "domain": "\\mathbb{R}^d"
+        },
+        {
+          "symbol": "\\mu_{v,k}",
+          "description": "Velocity barycentre of swarm $k$",
+          "type": "vector",
+          "domain": "\\mathbb{R}^d"
+        },
+        {
+          "symbol": "\\delta_{x,k,i}",
+          "description": "Centered position of walker $i$ in swarm $k$",
+          "type": "vector",
+          "domain": "\\mathbb{R}^d"
+        },
+        {
+          "symbol": "\\delta_{v,k,i}",
+          "description": "Centered velocity of walker $i$ in swarm $k$",
+          "type": "vector",
+          "domain": "\\mathbb{R}^d"
+        },
+        {
+          "symbol": "\\mathcal{A}(S_k)",
+          "description": "Set of alive walker indices in swarm $k$",
+          "type": "set"
+        },
+        {
+          "symbol": "k_{\\text{alive}}",
+          "description": "Number of alive walkers in swarm",
+          "type": "integer"
+        }
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-location-error-component",
+      "title": "The Location Error Component ($V_{\\text{loc}}$)",
+      "content": "The location error captures the distance between the swarms' centers of mass using the hypocoercive quadratic form.",
+      "defined_objects": [
+        {
+          "symbol": "V_{\\text{loc}}",
+          "name": "Location Error Component",
+          "description": "For any pair of swarm configurations $(S_1, S_2)$ with barycenters $(\\mu_{x,1}, \\mu_{v,1})$ and $(\\mu_{x,2}, \\mu_{v,2})$: $$V_{\\text{loc}} := \\|\\Delta\\mu_x\\|^2 + \\lambda_v\\|\\Delta\\mu_v\\|^2 + b\\langle\\Delta\\mu_x, \\Delta\\mu_v\\rangle$$ where $\\Delta\\mu_x = \\mu_{x,1} - \\mu_{x,2}$ and $\\Delta\\mu_v = \\mu_{v,1} - \\mu_{v,2}$.",
+          "properties": [
+            "Intrinsically permutation-invariant (depends only on centers of mass)",
+            "Hypocoercive quadratic form coupling position and velocity",
+            "Positive-definite when $b^2 < 4\\lambda_v$",
+            "Measures how far apart the swarms are as distributions"
+          ]
+        }
+      ],
+      "rationale": "The distance between swarms' centers is a natural permutation-invariant quantity. The hypocoercive form couples position and velocity errors, essential for analyzing systems where both coordinates evolve.",
+      "prerequisites": [
+        {
+          "label": "def-barycentres-and-centered-vectors",
+          "type": "definition",
+          "role": "requires",
+          "description": "Depends on barycentre definitions"
+        }
+      ],
+      "tags": [
+        "location-error",
+        "hypocoercive",
+        "permutation-invariant"
+      ],
+      "notation_introduced": [
+        {
+          "symbol": "V_{\\text{loc}}",
+          "description": "Location error component",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\Delta\\mu_x",
+          "description": "Position barycentre difference",
+          "type": "vector"
+        },
+        {
+          "symbol": "\\Delta\\mu_v",
+          "description": "Velocity barycentre difference",
+          "type": "vector"
+        },
+        {
+          "symbol": "b",
+          "description": "Hypocoercive coupling parameter",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\lambda_v",
+          "description": "Velocity weight in hypocoercive form",
+          "type": "scalar"
+        }
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-structural-error-component",
+      "title": "The Structural Error Component ($V_{\\text{struct}}$)",
+      "content": "The structural error measures the mismatch between the shapes of the two swarms via the hypocoercive Wasserstein distance between centered empirical measures.",
+      "defined_objects": [
+        {
+          "symbol": "\\tilde{\\mu}_k",
+          "name": "Centered Empirical Measure",
+          "description": "The centered empirical measure of swarm $k$ computed over alive walkers: $$\\tilde{\\mu}_k := \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\delta_{(\\delta_{x,k,i}, \\delta_{v,k,i})}$$ where $\\delta_{(\\cdot)}$ denotes the Dirac measure.",
+          "properties": [
+            "Zero barycenter by construction",
+            "Captures the shape of the swarm (independent of location)",
+            "Defined on phase space $(x,v)$"
+          ]
+        },
+        {
+          "symbol": "V_{\\text{struct}}",
+          "name": "Structural Error Component",
+          "description": "The squared hypocoercive Wasserstein distance between centered measures: $$V_{\\text{struct}} := W_h^2(\\tilde{\\mu}_1, \\tilde{\\mu}_2) = \\inf_{\\gamma \\in \\Gamma(\\tilde{\\mu}_1, \\tilde{\\mu}_2)} \\int c(\\delta_{z,1}, \\delta_{z,2}) \\, d\\gamma$$ where $c$ is the hypocoercive cost function.",
+          "properties": [
+            "Permutation-invariant (minimum transport cost)",
+            "Measures shape mismatch independent of location",
+            "Positive-definite when hypocoercive cost is coercive"
+          ]
+        }
+      ],
+      "rationale": "To compare swarm shapes in a permutation-invariant way, we find the optimal matching between centered vectors and measure residual error. This is equivalent to the Wasserstein distance on centered empirical measures.",
+      "prerequisites": [
+        {
+          "label": "def-barycentres-and-centered-vectors",
+          "type": "definition",
+          "role": "requires",
+          "description": "Uses centered vectors"
+        }
+      ],
+      "tags": [
+        "structural-error",
+        "wasserstein-distance",
+        "optimal-transport",
+        "shape-mismatch"
+      ],
+      "notation_introduced": [
+        {
+          "symbol": "\\tilde{\\mu}_k",
+          "description": "Centered empirical measure of swarm $k$",
+          "type": "measure"
+        },
+        {
+          "symbol": "V_{\\text{struct}}",
+          "description": "Structural error component",
+          "type": "scalar"
+        },
+        {
+          "symbol": "W_h^2",
+          "description": "Squared hypocoercive Wasserstein distance",
+          "type": "distance-functional"
+        },
+        {
+          "symbol": "\\Gamma(\\tilde{\\mu}_1, \\tilde{\\mu}_2)",
+          "description": "Set of couplings between measures",
+          "type": "set"
+        }
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-wasserstein-decomposition",
+      "title": "Decomposition of the Hypocoercive Wasserstein Distance",
+      "statement": "The total inter-swarm error, as measured by the squared hypocoercive Wasserstein distance $W_h^2(\\mu_1, \\mu_2)$ between the two swarms' full empirical measures $\\mu_1$ and $\\mu_2$, decomposes exactly into the sum of the location and structural error components: $$W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}$$",
+      "hypotheses": [
+        {
+          "statement": "$\\mu_1, \\mu_2$ are empirical measures of two swarms with finite second moments",
+          "type": "regularity"
+        },
+        {
+          "statement": "Hypocoercive cost function $c(z_1, z_2)$ is a quadratic form",
+          "type": "structural"
+        }
+      ],
+      "conclusion": {
+        "statement": "Total Wasserstein distance decomposes exactly into location and structural components",
+        "properties_established": [
+          "$W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}$",
+          "Decomposition is exact (not an approximation)",
+          "Holds for any quadratic cost function"
+        ]
+      },
+      "importance": "foundational",
+      "proof_reference": {
+        "label": "proof-wasserstein-decomposition",
+        "type": "labeled-proof"
+      },
+      "prerequisites": [
+        {
+          "label": "def-location-error-component",
+          "type": "definition",
+          "role": "uses"
+        },
+        {
+          "label": "def-structural-error-component",
+          "type": "definition",
+          "role": "uses"
+        }
+      ],
+      "tags": [
+        "wasserstein-decomposition",
+        "optimal-transport",
+        "fundamental-theorem"
+      ],
+      "related_concepts": [
+        {
+          "label": "gluing-lemma",
+          "description": "Key tool from optimal transport theory enabling the decomposition",
+          "relationship": "uses"
+        }
+      ]
+    }
+  ],
+  "dependency_graph": {
+    "nodes": [
+      {
+        "label": "def-barycentres-and-centered-vectors",
+        "type": "definition",
+        "level": 0
+      },
+      {
+        "label": "def-location-error-component",
+        "type": "definition",
+        "level": 1
+      },
+      {
+        "label": "def-structural-error-component",
+        "type": "definition",
+        "level": 1
+      },
+      {
+        "label": "lem-wasserstein-decomposition",
+        "type": "lemma",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "from": "def-location-error-component",
+        "to": "def-barycentres-and-centered-vectors",
+        "relationship": "requires",
+        "critical": true
+      },
+      {
+        "from": "def-structural-error-component",
+        "to": "def-barycentres-and-centered-vectors",
+        "relationship": "requires",
+        "critical": true
+      },
+      {
+        "from": "lem-wasserstein-decomposition",
+        "to": "def-location-error-component",
+        "relationship": "uses",
+        "critical": true
+      },
+      {
+        "from": "lem-wasserstein-decomposition",
+        "to": "def-structural-error-component",
+        "relationship": "uses",
+        "critical": true
+      }
+    ]
+  },
+  "constants_glossary": {
+    "b": {
+      "symbol": "b",
+      "value": "parameter (hypocoercive coupling)",
+      "description": "Coupling parameter in hypocoercive quadratic form",
+      "units": "dimensionless",
+      "defined_in": "def-location-error-component",
+      "used_in": [
+        "def-location-error-component",
+        "def-structural-error-component",
+        "lem-V-coercive"
+      ]
+    },
+    "lambda_v": {
+      "symbol": "\\lambda_v",
+      "value": "parameter (velocity weight)",
+      "description": "Weight for velocity terms in hypocoercive form",
+      "units": "dimensionless",
+      "defined_in": "def-location-error-component",
+      "used_in": [
+        "def-location-error-component",
+        "def-structural-error-component",
+        "lem-V-coercive"
+      ]
+    }
+  },
+  "notation_index": {
+    "\\mu_{x,k}": "Positional barycentre of swarm k",
+    "\\mu_{v,k}": "Velocity barycentre of swarm k",
+    "\\delta_{x,k,i}": "Centered position vector for walker i in swarm k",
+    "\\delta_{v,k,i}": "Centered velocity vector for walker i in swarm k",
+    "V_{\\text{loc}}": "Location error component",
+    "V_{\\text{struct}}": "Structural error component",
+    "\\tilde{\\mu}_k": "Centered empirical measure of swarm k",
+    "W_h^2": "Squared hypocoercive Wasserstein distance"
+  }
+}

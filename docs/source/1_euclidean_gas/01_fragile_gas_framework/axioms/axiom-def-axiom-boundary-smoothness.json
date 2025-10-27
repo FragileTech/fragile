@@ -1,0 +1,6 @@
+{
+  "label": "axiom-def-axiom-boundary-smoothness",
+  "statement": "Axiom of Boundary Smoothness",
+  "mathematical_expression": "\\partial \\mathcal{X}_{\\mathrm{valid}}",
+  "foundational_framework": "Euclidean Gas"
+}

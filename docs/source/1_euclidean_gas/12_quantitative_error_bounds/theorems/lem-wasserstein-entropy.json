@@ -1,0 +1,44 @@
+{
+  "label": "lem-wasserstein-entropy",
+  "name": "Wasserstein-Entropy Inequality (Talagrand)",
+  "statement_type": "lemma",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-nu-n-qsd",
+    "obj-rho-0-product"
+  ],
+  "input_theorems": [
+    "thm-kl-convergence-euclidean"
+  ],
+  "input_axioms": [
+    "axiom-confined-potential"
+  ],
+  "input_parameters": [
+    "lambda_lsi",
+    "W_2"
+  ],
+  "attributes_required": {
+    "obj-nu-n-qsd": [
+      "attr-n-uniform-lsi"
+    ],
+    "obj-rho-0-product": [
+      "attr-product-measure"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-wasserstein-kl-bound"
+  ],
+  "relations_established": [
+    "talagrand-inequality-w2-kl",
+    "not-used-in-final-proof-fournier-guillin-more-direct"
+  ],
+  "note": "Historical/completeness - Fournier-Guillin approach more direct for empirical measures"
+}

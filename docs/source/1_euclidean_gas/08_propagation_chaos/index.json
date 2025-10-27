@@ -1,0 +1,57 @@
+{
+  "version": "1.0.0",
+  "statistics": {
+    "total_objects": 28,
+    "counts_by_type": {
+      "MathematicalObject": 3,
+      "Axiom": 0,
+      "Parameter": 0,
+      "Property": 0,
+      "Relationship": 0,
+      "TheoremBox": 25
+    },
+    "total_tags": 4,
+    "all_tags": [
+      "convergence",
+      "euclidean-gas",
+      "particle",
+      "swarm"
+    ]
+  },
+  "all_ids": [
+    "obj-sequence-of-qsds",
+    "obj-uniqueness-weighted-sobolev-h1w",
+    "obj-sequence-of-qsds-summary",
+    "thm-qsd-marginals-are-tight",
+    "thm-extinction-rate-vanishes",
+    "thm-limit-is-weak-solution",
+    "thm-uniqueness-completeness-h1w-omega",
+    "thm-uniqueness-hormander",
+    "thm-uniqueness-hypoelliptic-regularity",
+    "thm-uniqueness-contraction-solution-operator",
+    "thm-uniqueness-uniqueness-stationary-solution",
+    "thm-qsd-marginals-are-tight-summary",
+    "thm-limit-is-weak-solution-summary",
+    "thm-uniqueness-of-qsd",
+    "thm-thermodynamic-limit",
+    "lem-exchangeability",
+    "lem-empirical-convergence",
+    "lem-reward-continuity",
+    "lem-distance-continuity",
+    "lem-uniform-integrability",
+    "lem-boundary-convergence",
+    "lem-uniqueness-self-mapping",
+    "lem-uniqueness-lipschitz-moments",
+    "lem-uniqueness-fixed-point-bounded",
+    "lem-uniqueness-lipschitz-fitness-potential",
+    "lem-uniqueness-lipschitz-cloning-operator",
+    "lem-uniqueness-hormander-verification",
+    "lem-uniqueness-scaling-hypoelliptic-constant"
+  ],
+  "all_tags": [
+    "convergence",
+    "euclidean-gas",
+    "particle",
+    "swarm"
+  ]
+}

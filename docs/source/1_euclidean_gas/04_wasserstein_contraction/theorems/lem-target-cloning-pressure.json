@@ -1,0 +1,48 @@
+{
+  "label": "lem-target-cloning-pressure",
+  "name": "Cloning Pressure on Target Set",
+  "statement_type": "lemma",
+  "source": {
+    "file": "04_wasserstein_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-target-complement",
+    "def-unfit-set",
+    "def-cloning-probability"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "epsilon",
+    "p_max",
+    "V_pot_max",
+    "epsilon_clone",
+    "f_F",
+    "f_U",
+    "kappa_V_gap",
+    "k"
+  ],
+  "attributes_required": {
+    "target-set": [
+      "I_k \u2286 U_k (target set is subset of unfit set)",
+      "Lemma 8.3.2 applies to U_k"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-cloning-pressure-unfit",
+    "thm-n-uniformity-constants"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Uniform lower bound p_u(\u03b5) > 0 on cloning probability",
+    "Average cloning pressure p\u0304_I \u2265 p_u(\u03b5)"
+  ],
+  "relations_established": [
+    "For all i \u2208 I_k: p_{k,i} \u2265 p_u(\u03b5) > 0",
+    "p_u(\u03b5) = min(1, [f_F f_U \u03ba_{V,gap}(\u03b5)] / [p_max(V_{pot,max}+\u03b5_clone)(k-1)(f_F + f_U\u00b2/f_F)])",
+    "N-uniformity established by Theorem 8.7.1"
+  ]
+}

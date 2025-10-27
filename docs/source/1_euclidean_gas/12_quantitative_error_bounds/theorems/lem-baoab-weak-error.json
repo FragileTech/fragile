@@ -1,0 +1,42 @@
+{
+  "label": "lem-baoab-weak-error",
+  "name": "BAOAB O((\u0394t)\u00b2) Weak Convergence",
+  "statement_type": "lemma",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-continuous-langevin-sde",
+    "obj-baoab-chain"
+  ],
+  "input_theorems": [
+    "attr-fourth-moment-baoab"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "C_weak",
+    "phi_C4",
+    "Delta_t",
+    "T"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "backward-error-analysis",
+    "strang-splitting-theory"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-second-order-weak-convergence"
+  ],
+  "relations_established": [
+    "symmetric-integrator-gives-even-powers-only",
+    "baoab-second-order-weak"
+  ],
+  "bound": "|E[phi(Z_k)] - E[phi(Z(k*Delta_t))]| <= C_weak * ||phi||_C4 * (Delta_t)^2 * T",
+  "generator_expansion": "L_BAOAB = L + (Delta_t)^2 * L_2 + O((Delta_t)^4)",
+  "proof_technique": "Backward error analysis + Strang splitting"
+}

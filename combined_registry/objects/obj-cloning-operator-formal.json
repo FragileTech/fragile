@@ -1,0 +1,15 @@
+{
+  "label": "obj-cloning-operator-formal",
+  "name": "The Cloning Operator $\\Psi_{\\text{clone}}$",
+  "mathematical_expression": "\\Psi_{\\text{clone}} = \\Psi_{\\text{update}} \\circ \\Psi_{\\text{decision}} \\circ \\Psi_{\\text{fitness}} \\circ \\Psi_{\\text{measure}}",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

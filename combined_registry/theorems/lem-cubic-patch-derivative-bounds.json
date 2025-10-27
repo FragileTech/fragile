@@ -1,0 +1,35 @@
+{
+  "label": "lem-cubic-patch-derivative-bounds",
+  "name": "Bounds on the Polynomial Patch Derivative",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-asymmetric-rescale-function"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-z-max"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-derivative-uniformly-bounded",
+      "expression": "\\|P'\\|_\\infty \\leq L_P",
+      "object_label": "obj-asymmetric-rescale-function",
+      "established_by": "lem-cubic-patch-derivative-bounds",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

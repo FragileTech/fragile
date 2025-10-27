@@ -1,0 +1,26 @@
+{
+  "label": "thm-canonical-logistic-validity",
+  "name": "The Canonical Logistic Function is a Valid Rescale Function",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-canonical-logistic-rescale-function-example"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-rescale-function"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-is-valid-rescale-function",
+      "expression": "The object satisfies the Axiom of a Well-Behaved Rescale Function.",
+      "object_label": "obj-canonical-logistic-rescale-function-example"
+    }
+  ],
+  "relations_established": []
+}

@@ -1,0 +1,45 @@
+{
+  "label": "thm-exp-convergence-standalone",
+  "name": "Exponential KL Convergence",
+  "statement_type": "theorem",
+  "source": {
+    "file": "09_kl_convergence.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-total-operator",
+    "def-qsd"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf",
+    "kappa_W",
+    "delta",
+    "C_LSI"
+  ],
+  "attributes_required": {
+    "lsi": [
+      "\u03a8_total satisfies LSI with constant C_LSI"
+    ],
+    "qsd-unique": [
+      "Unique QSD exists"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-composition-standalone",
+    "thm-lsi-implies-kl-convergence"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Exponential KL convergence to QSD"
+  ],
+  "relations_established": [
+    "D_KL(\u03bc_t || \u03c0_QSD) \u2264 e^{-t/C_LSI} D_KL(\u03bc_0 || \u03c0_QSD)"
+  ]
+}

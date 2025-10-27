@@ -1,0 +1,36 @@
+{
+  "label": "lem-unfit-fraction-lower-bound",
+  "name": "N-Uniform Lower Bound on the Unfit Fraction",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "section": "7.6.1",
+    "line_start": 4520,
+    "line_end": 4574
+  },
+  "input_objects": [
+    "obj-unfit-set",
+    "obj-fitness-potential-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa_V_gap",
+    "V_pot_max",
+    "V_pot_min"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lem-potential-bounds"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "lem-potential-bounds"
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "unfit_fraction_bound"
+  ],
+  "relations_established": [
+    "|U_k|/k >= kappa_V_gap / (2(V_pot_max - V_pot_min))"
+  ]
+}

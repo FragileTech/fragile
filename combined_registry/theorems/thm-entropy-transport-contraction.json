@@ -1,0 +1,122 @@
+{
+  "label": "thm-entropy-transport-contraction",
+  "name": "Linear Contraction of the Entropy-Transport Lyapunov Function",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-lyapunov-function",
+    "def-total-operator"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "alpha",
+    "beta",
+    "kappa_W",
+    "c",
+    "rho_k",
+    "lambda",
+    "C_steady"
+  ],
+  "properties_required": {
+    "seesaw-condition": [
+      "κ_W > β/(1+β) (Wasserstein contraction dominates kinetic expansion)"
+    ],
+    "displacement-convexity": [
+      "Log-concavity of π (now PROVEN theorem)"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-entropy-transport-dissipation",
+    "lem-cloning-wasserstein-contraction",
+    "lem-kinetic-evolution-bounds"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-entropy-transport-dissipation",
+      "thm-entropy-transport-contraction"
+    ],
+    [
+      "lem-kinetic-evolution-bounds",
+      "thm-entropy-transport-contraction"
+    ]
+  ],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-entropy-transport-contraction-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-lyapunov-function",
+      "target_object": "obj-total-operator",
+      "established_by": "thm-entropy-transport-contraction",
+      "expression": "V_{t+1} ≤ λ V_t + C_steady",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    },
+    {
+      "label": "rel-thm-entropy-transport-contraction-1-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-lyapunov-function",
+      "target_object": "obj-total-operator",
+      "established_by": "thm-entropy-transport-contraction",
+      "expression": "c = α e^{-ρ_k}/(1−K_W)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    },
+    {
+      "label": "rel-thm-entropy-transport-contraction-2-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-lyapunov-function",
+      "target_object": "obj-total-operator",
+      "established_by": "thm-entropy-transport-contraction",
+      "expression": "K_W = (1+β)(1−κ_W)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    },
+    {
+      "label": "rel-thm-entropy-transport-contraction-3-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-lyapunov-function",
+      "target_object": "obj-total-operator",
+      "established_by": "thm-entropy-transport-contraction",
+      "expression": "Seesaw: cloning dissipates D_KL − α W₂², kinetic expands W₂ but dissipates KL",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

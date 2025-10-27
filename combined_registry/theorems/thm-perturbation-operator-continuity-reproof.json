@@ -1,0 +1,39 @@
+{
+  "label": "thm-perturbation-operator-continuity-reproof",
+  "name": "Probabilistic Continuity of the Perturbation Operator",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-perturbation-operator",
+    "obj-alg-distance",
+    "obj-n-particle-displacement-metric"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-bounded-second-moment-perturbation"
+  ],
+  "input_parameters": [
+    "param-failure-probability-delta"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-probabilistic-continuity",
+      "expression": "P(D^2(\\mathcal{S}'_1, \\mathcal{S}'_2) \\le B(\\delta) \\cdot d_{alg}(\\mathcal{S}_1, \\mathcal{S}_2)) \\ge 1 - \\delta",
+      "object_label": "obj-perturbation-operator",
+      "established_by": "thm-perturbation-operator-continuity-reproof",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

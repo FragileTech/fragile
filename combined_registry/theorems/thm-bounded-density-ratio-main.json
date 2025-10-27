@@ -1,0 +1,126 @@
+{
+  "label": "thm-bounded-density-ratio-main",
+  "name": "Bounded Density Ratio for the Euclidean Gas (RIGOROUS)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-qsd",
+    "def-cloning-operator",
+    "def-kinetic-operator"
+  ],
+  "input_axioms": [
+    "ax-domain-regularity",
+    "ax-lipschitz-fields",
+    "ax-velocity-regularization",
+    "def-axiom-rescale-function",
+    "ax-guaranteed-revival"
+  ],
+  "input_parameters": [
+    "gamma",
+    "sigma_v",
+    "sigma_x",
+    "U",
+    "R",
+    "M_0",
+    "N",
+    "eta",
+    "kappa_QSD",
+    "delta",
+    "d"
+  ],
+  "properties_required": {
+    "early-time-linfty": [
+      "lem-linfty-full-operator yields C_hypo(M_0, T_0, …)"
+    ],
+    "qsd-lower-bound": [
+      "lem-qsd-strict-positivity ⇒ inf_x π_QSD ≥ c_π = η c_σ_x,R m_eq"
+    ],
+    "mass-lower-prob": [
+      "lem-mass-lower-bound-high-prob ⇒ ||ρ_t||_{L^1} ≥ c_mass = m_eq/2 with high prob"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-linfty-full-operator",
+    "lem-qsd-strict-positivity",
+    "lem-mass-lower-bound-high-prob",
+    "lem-gaussian-kernel-lower-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-linfty-full-operator",
+      "thm-bounded-density-ratio-main"
+    ],
+    [
+      "lem-qsd-strict-positivity",
+      "thm-bounded-density-ratio-main"
+    ],
+    [
+      "lem-mass-lower-bound-high-prob",
+      "thm-bounded-density-ratio-main"
+    ],
+    [
+      "lem-gaussian-kernel-lower-bound",
+      "thm-bounded-density-ratio-main"
+    ]
+  ],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-bounded-density-ratio-main-0-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-qsd",
+      "target_object": "obj-cloning-operator",
+      "established_by": "thm-bounded-density-ratio-main",
+      "expression": "M = C_hypo(M_0, T_0, …)/(c_σ_x,R c_mass) with T_0 = O(κ_QSD^{-1})",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    },
+    {
+      "label": "rel-thm-bounded-density-ratio-main-1-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-qsd",
+      "target_object": "obj-cloning-operator",
+      "established_by": "thm-bounded-density-ratio-main",
+      "expression": "sup_x μ̃_t/π̃_QSD ≤ (||ρ_t||_∞ / inf_x π_QSD) · (m_eq/||ρ_t||_{L^1}) ≤ C_hypo/(c_σ_x,R c_mass)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    },
+    {
+      "label": "rel-thm-bounded-density-ratio-main-2-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-qsd",
+      "target_object": "obj-cloning-operator",
+      "established_by": "thm-bounded-density-ratio-main",
+      "expression": "sup_{t≥0} sup_{x∈X_valid} dμ̃_t/dπ̃_QSD(x) ≤ M < ∞",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    }
+  ]
+}

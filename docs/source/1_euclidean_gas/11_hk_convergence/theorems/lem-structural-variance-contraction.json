@@ -1,0 +1,95 @@
+{
+  "label": "lem-structural-variance-contraction",
+  "name": "Exponential Contraction of Structural Variance",
+  "statement_type": "lemma",
+  "source": {
+    "file": "docs/source/1_euclidean_gas/11_hk_convergence.md",
+    "line_start": 1008,
+    "line_end": 1028
+  },
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [
+    "tau",
+    "kappa_W",
+    "kappa_kin",
+    "C_W",
+    "C_kin",
+    "delta",
+    "d"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "thm-main-contraction-full",
+    "thm-foster-lyapunov-main"
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "structural-variance-exponential-contraction",
+    "centered-wasserstein-convergence"
+  ],
+  "relations_established": [
+    {
+      "type": "contraction",
+      "from": "centered-empirical-measure",
+      "to": "centered-qsd",
+      "metric": "wasserstein-distance",
+      "rate": "lambda_struct"
+    }
+  ],
+  "parameters_detailed": {
+    "tau": "Time step size",
+    "kappa_W": "Cloning operator Wasserstein contraction rate (from thm-main-contraction-full)",
+    "kappa_kin": "Kinetic operator contraction rate (from thm-foster-lyapunov-main)",
+    "C_W": "Noise constant from cloning operator (= 4*d*delta^2)",
+    "C_kin": "Noise constant from BAOAB discretization",
+    "delta": "Cloning Gaussian perturbation scale",
+    "d": "Dimension of state space"
+  },
+  "contraction_rates": {
+    "lambda_struct": {
+      "formula": "min(kappa_W / tau, kappa_kin)",
+      "description": "Exponential convergence rate for structural variance"
+    },
+    "C_struct": {
+      "formula": "C_W + C_kin * tau^2",
+      "description": "Combined noise constant from both operators"
+    }
+  },
+  "cross_chapter_dependencies": [
+    {
+      "chapter": "04_wasserstein_contraction",
+      "references": ["thm-main-contraction-full"],
+      "description": "Wasserstein contraction from cloning operator with N-uniform rate kappa_W and noise C_W = 4*d*delta^2"
+    },
+    {
+      "chapter": "06_convergence",
+      "references": ["thm-foster-lyapunov-main"],
+      "description": "Foster-Lyapunov function with Wasserstein component contracting at rate kappa_kin"
+    }
+  ],
+  "proof_structure": {
+    "key_insight": "Apply existing Wasserstein contraction theorems to centered (normalized) empirical measures",
+    "convergence_type": "Expected Wasserstein distance (second moment convergence)",
+    "steps": [
+      "Step 1: Apply cloning operator Wasserstein contraction (E[W_2^2(Psi_clone(mu1), Psi_clone(mu2))])",
+      "Step 2: Apply kinetic operator Wasserstein contraction (Foster-Lyapunov bound)",
+      "Step 3: Compose both operators sequentially",
+      "Step 4: Variance decomposition (Villani 2009, Theorem 7.17) to separate centered from total Wasserstein",
+      "Step 5: Exponential convergence via Foster-Lyapunov iteration"
+    ],
+    "variance_decomposition": {
+      "formula": "W_2^2(mu, pi) = W_2^2(tilde_mu, tilde_pi) + ||m_mu - m_pi||^2",
+      "tilde_mu": "Centered empirical measure (mean translated to origin)",
+      "tilde_pi": "Centered QSD measure"
+    }
+  },
+  "mathematical_foundation": {
+    "realization_level": "Bounds hold for individual random realizations, then expectation taken",
+    "metric": "Wasserstein-2 distance W_2^2 on centered measures",
+    "reference": "Villani 2009, Optimal Transport: Old and New, Theorem 7.17 (variance decomposition)"
+  },
+  "interpretation": "Structural variance (centered Wasserstein distance) contracts exponentially in expectation due to combined action of cloning and kinetic operators. Establishes convergence in second moment (E[W_2^2] -> 0), appropriate for HK metric framework."
+}

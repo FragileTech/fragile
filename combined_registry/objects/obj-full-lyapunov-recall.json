@@ -1,0 +1,15 @@
+{
+  "label": "obj-full-lyapunov-recall",
+  "name": "Synergistic Lyapunov Function (Recall)",
+  "mathematical_expression": "V_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "swarm",
+    "variance"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence"
+}

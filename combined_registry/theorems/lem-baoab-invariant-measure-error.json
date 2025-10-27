@@ -1,0 +1,67 @@
+{
+  "label": "lem-baoab-invariant-measure-error",
+  "name": "BAOAB Invariant Measure O((Δt)²) Error",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-nu-continuous",
+    "obj-nu-dt-baoab"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "C_inv",
+    "phi_C4",
+    "Delta_t",
+    "C_poisson",
+    "kappa_mix"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [
+    "poisson-equation",
+    "symmetric-integrator-cancellation"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-baoab-invariant-measure-error-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-nu-continuous",
+      "target_object": "obj-nu-dt-baoab",
+      "established_by": "lem-baoab-invariant-measure-error",
+      "expression": "poisson-equation-technique",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    },
+    {
+      "label": "rel-lem-baoab-invariant-measure-error-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-nu-continuous",
+      "target_object": "obj-nu-dt-baoab",
+      "established_by": "lem-baoab-invariant-measure-error",
+      "expression": "talay-cancellation-for-symmetric-schemes",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    }
+  ]
+}

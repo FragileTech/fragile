@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-softmax-lipschitz-status-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-softmax-selection",
+  "target_object": "obj-softmax-selection",
+  "established_by": "lem-softmax-lipschitz-status",
+  "expression": "Softmax is Lipschitz in fitness values",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

@@ -1,0 +1,12 @@
+{
+  "label": "obj-discrete-dirichlet",
+  "name": "Discrete Dirichlet Form",
+  "mathematical_expression": "\\mathcal{E}_{\\Psi}(f, f) := \\mathbb{E}_\\pi[(f - \\Psi f)^2]",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "discrete"
+  ],
+  "source": null
+}

@@ -2427,16 +2427,6 @@ $$
 **Q.E.D.**
 :::
 #### 10.2.5 Lemma: Bound on the Total Squared Error for Unstable Walkers
-:::{prf:lemma} Bound on the Total Squared Error for Unstable Walkers
-:label: lem-total-squared-error-unstable
-Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm states. The total squared error in the expected raw distance from the set of unstable walkers, $\mathcal{A}_{\text{unstable}}$, is bounded by the total number of status changes.
-$$
-
-\sum_{i \in \mathcal{A}_{\text{unstable}}} |\mathbb{E}[d_i(\mathcal{S}_1)] - \mathbb{E}[d_i(\mathcal{S}_2)]|^2 \le D_{\mathcal{Y}}^2 \sum_{j=1}^N (s_{1,j} - s_{2,j})^2
-
-$$
-where $D_{\mathcal{Y}}$ is the diameter of the algorithmic space.
-:::
 :::{prf:proof}
 **Proof.**
 1.  **Analyze a Single Unstable Walker:** Let $i$ be an unstable walker, meaning its status $s_i$ changes. From [](#lem-single-walker-own-status-error), the absolute error in its expected distance is bounded by $D_{\mathcal{Y}}$. Therefore, the squared error for any single unstable walker is bounded by $D_{\mathcal{Y}}^2$.
@@ -2451,15 +2441,6 @@ $$
 **Q.E.D.**
 :::
 #### 10.2.6 Lemma: Bound on the Total Squared Error for Stable Walkers
-:::{prf:lemma} Bound on the Total Squared Error for Stable Walkers
-:label: lem-total-squared-error-stable
-Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm states with $|\mathcal{A}(\mathcal{S}_1)|=k_1 \ge 2$. The total squared error in the expected raw distance from the set of stable walkers, $\mathcal{A}_{\text{stable}} = \mathcal{A}(\mathcal{S}_1) \cap \mathcal{A}(\mathcal{S}_2)$, is bounded as follows:
-$$
-
-\sum_{i \in \mathcal{A}_{\text{stable}}} |\mathbb{E}[d_i(\mathcal{S}_1)] - \mathbb{E}[d_i(\mathcal{S}_2)]|^2 \le 12 \sum_{j=1}^N d_{\text{alg}}(x_{1,j}, x_{2,j})^2 + \frac{8 k_1 D_{\mathcal{Y}}^2}{(k_1 - 1)^2} \left( \sum_{j=1}^N (s_{1,j} - s_{2,j})^2 \right)^2
-
-$$
-:::
 :::{prf:proof}
 **Proof.**
 The total error for a single stable walker is first decomposed into a positional component and a structural component. The squared L2-norm of the total error over all stable walkers is then bounded by combining the established bounds for the sum of the squares of these individual components.
@@ -2488,16 +2469,6 @@ $$
 **Q.E.D.**
 :::
 ##### 10.2.6.1 Sub-Lemma: Decomposition of Stable Walker Error
-:::{prf:lemma} Decomposition of Stable Walker Error
-:label: sub-lem-stable-walker-error-decomposition
-For each stable walker $i \in \mathcal{A}_{\text{stable}}$, the error in its expected raw distance can be decomposed into a positional error term, $\Delta_{\text{pos},i}$, and a structural error term, $\Delta_{\text{struct},i}$.
-The total squared error over the set of stable walkers is bounded by twice the sum of the squared norms of these two error components:
-$$
-
-\sum_{i \in \mathcal{A}_{\text{stable}}} |\mathbb{E}[d_i(\mathcal{S}_1)] - \mathbb{E}[d_i(\mathcal{S}_2)]|^2 \le 2 \sum_{i \in \mathcal{A}_{\text{stable}}} (\Delta_{\text{pos},i})^2 + 2 \sum_{i \in \mathcal{A}_{\text{stable}}} (\Delta_{\text{struct},i})^2
-
-$$
-:::
 :::{prf:proof}
 **Proof.**
 1.  **Decompose Single-Walker Error:** For each stable walker $i \in \mathcal{A}_{\text{stable}}$, we introduce the intermediate term $\mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} [d_{\text{alg}}(x_{2,i}, x_{2,c})]$ and apply the triangle inequality:
@@ -2512,15 +2483,6 @@ The term $\Delta_{\text{pos},i}$ is the error from positional change over a fixe
 **Q.E.D.**
 :::
 ##### 10.2.6.2 Sub-Lemma: Bounding the Positional Error Component
-:::{prf:lemma} Bounding the Positional Error Component
-:label: sub-lem-stable-positional-error-bound
-The total squared error arising from positional changes for stable walkers is bounded by the total displacement of all walkers in the swarm.
-$$
-
-\sum_{i \in \mathcal{A}_{\text{stable}}} (\Delta_{\text{pos},i})^2 \le 6 \sum_{j=1}^N d_{\text{alg}}(x_{1,j}, x_{2,j})^2
-
-$$
-:::
 :::{prf:proof}
 **Proof.**
 1.  **Bound the Single-Walker Squared Error:** We start with the bound on $\Delta_{\text{pos},i}$ from [](#lem-single-walker-positional-error) and apply the inequality $(a+b)^2 \le 2a^2 + 2b^2$:
@@ -2583,16 +2545,6 @@ $$
 **Q.E.D.**
 :::
 ##### 10.2.6.3 Sub-Lemma: Bounding the Structural Error Component for Stable Walkers
-:::{prf:lemma} Bounding the Structural Error Component for Stable Walkers
-:label: sub-lem-stable-structural-error-bound
-Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm states with $|\mathcal{A}(\mathcal{S}_1)| = k_1 \ge 2$. Let $\mathcal{A}_{\text{stable}} = \mathcal{A}(\mathcal{S}_1) \cap \mathcal{A}(\mathcal{S}_2)$ be the set of stable walkers, and let $\Delta_{\text{struct},i}$ be the error in a single walker's expected distance due to structural change.
-The total squared error arising from structural changes for stable walkers is bounded by the square of the total number of status changes in the swarm.
-$$
-
-\sum_{i \in \mathcal{A}_{\text{stable}}} (\Delta_{\text{struct},i})^2 \le \frac{4 k_1 D_{\mathcal{Y}}^2}{(k_1 - 1)^2} \left( \sum_{j=1}^N (s_{1,j} - s_{2,j})^2 \right)^2
-
-$$
-:::
 :::{prf:proof}
 **Proof.**
 The proof proceeds by taking the established bound for the structural error of a single stable walker and summing its square over all stable walkers in the set $\mathcal{A}_{\text{stable}}$.
@@ -3269,9 +3221,8 @@ $$
 
 where $L_{\mu,M}(S)$ and $L_{\sigma',M}(S)$ are the value Lipschitz functions for the aggregator's mean and regularized standard deviation, respectively.
 ##### 11.2.2.6. Proof of Theorem 11.2.2
-:label: thm-standardization-value-error-mean-square-proof
-:::{prf:theorem} Bounding the Expected Squared Value Error
-:label: thm-standardization-value-error-mean-square
+:label: proof-thm-standardization-value-error-mean-square
+:::{prf:proof} of Theorem 11.2.2
 Let $S_1$ be a fixed swarm state. Let $V$ be a raw value operator that is mean-square continuous, such that $\mathbb{E}[\|\mathbf{v}_1 - \mathbf{v}_2\|_2^2] \le F_{V,ms}(\mathcal{S}_1, \mathcal{S}_2)$ for some deterministic bounding function $F_{V,ms}$.
 The expected squared value error is bounded as follows:
 
@@ -3360,53 +3311,6 @@ $$
 $$
 
 where $C_{S,indirect}$ is the **Total Indirect Structural Error Coefficient**.
-:::{prf:proof}
-**Proof.**
-The proof decomposes the indirect error for each stable walker into a mean-shift part and a std-dev-shift part. Using $\|a+b\|^2 \leq 2(\|a\|^2 + \|b\|^2)$, we sum the bounds for these two effects over all stable walkers.
-- The mean shift error norm is $k_{\text{stable}} \cdot ((\mu_1 - \mu_2)/\sigma'_1)^2$. Using the structural continuity of the mean ($|\mu_1-\mu_2| \leq L_{\mu,S} \cdot n_c$), this is bounded by $k_{\text{stable}}(L_{\mu,S}/\sigma'_{\min,\text{bound}})^2 n_c^2$.
-- The std-dev shift error norm is $\|z_1((\sigma'_1-\sigma'_2)/\sigma'_2)\|^2 = \|z_1\|^2((\sigma'_1-\sigma'_2)/\sigma'_2)^2$. This is bounded using the bounds on $\|z_1\|^2$, $|\sigma'_1-\sigma'_2|$, and $1/\sigma'_2$.
-Summing these two bounds (multiplied by 2) gives the final coefficient $C_{S,indirect}$.
-**Q.E.D.**
-:::
-##### 11.2.3.4. Definition: Structural Error Coefficients
-:label: def-structural-error-coefficients
-Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm states with alive sets $\mathcal{A}_1$ and $\mathcal{A}_2$ of sizes $k_1$ and $k_2$. Let $k_{\text{stable}} := |\mathcal{A}_1 \cap \mathcal{A}_2|$. The coefficients for the structural error bounds are:
-1.  **The Direct Structural Error Coefficient ($C_{S,\text{direct}}$):**
-
-$$
-C_{S,\text{direct}} := \frac{4V_{\max}^2}{\sigma'^2_{\min,\text{bound}}}
-$$
-
-2.  **The Indirect Mean Shift Coefficient ($C_{S,\mu}(\mathcal{S}_1,\mathcal{S}_2)$):**
-
-$$
-C_{S,\mu}(\mathcal{S}_1, \mathcal{S}_2) := k_{\text{stable}} \frac{(L_{\mu,S}(\mathcal{S}_1, \mathcal{S}_2))^2}{\sigma'^2_{\min,\text{bound}}}
-$$
-
-3.  **The Indirect Fluctuation Coefficient ($C_{S,\sigma}(\mathcal{S}_1,\mathcal{S}_2)$):**
-
-$$
-C_{S,\sigma}(\mathcal{S}_1, \mathcal{S}_2) := k_1 \left(\frac{2V_{\max}}{\sigma'_{\min,\text{bound}}}\right)^2 \frac{(L_{\sigma',S}(\mathcal{S}_1, \mathcal{S}_2))^2}{\sigma'^2_{\min,\text{bound}}}
-$$
-
-4.  **The Total Indirect Structural Error Coefficient ($C_{S,\text{indirect}}(\mathcal{S}_1,\mathcal{S}_2)$):**
-
-$$
-C_{S,\text{indirect}}(\mathcal{S}_1, \mathcal{S}_2) := 2 \cdot \left( C_{S,\mu}(\mathcal{S}_1, \mathcal{S}_2) + C_{S,\sigma}(\mathcal{S}_1, \mathcal{S}_2) \right)
-$$
-
-where $L_{\mu,S}$ and $L_{\sigma',S}$ are the structural continuity functions for the aggregator's mean and regularized standard deviation.
-##### 11.2.3.5. Proof of Theorem 11.2.3
-:label: thm-standardization-structural-error-mean-square-proof
-:::{prf:theorem} Bounding the Expected Squared Structural Error
-:label: thm-standardization-structural-error-mean-square
-The expected squared structural error, $E_{S,ms}^2(\mathcal{S}_1, \mathcal{S}_2)$, is bounded deterministically by a function of the number of status changes, $n_c$.
-
-$$
-E_{S,ms}^2(\mathcal{S}_1, \mathcal{S}_2) \le C_{S,\text{direct}} \cdot n_c(\mathcal{S}_1, \mathcal{S}_2) + C_{S,\text{indirect}}(\mathcal{S}_1, \mathcal{S}_2) \cdot n_c(\mathcal{S}_1, \mathcal{S}_2)^2
-$$
-
-:::
 :::{prf:proof}
 **Proof.**
 The proof combines the algebraic error decomposition with the deterministic bounds for each component. From [](#sub-lem-structural-error-decomposition), $\|\Deltaz\|^2 = \|\Delta_{\text{direct}}\|^2 + \|\Delta_{\text{indirect}}\|^2$. We substitute the deterministic bounds from [](#sub-lem-direct-structural-error) and [](#sub-lem-indirect-structural-error). This gives a deterministic upper bound on the squared error for any realization of $v_2$:

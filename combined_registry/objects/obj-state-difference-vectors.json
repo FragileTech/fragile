@@ -1,0 +1,15 @@
+{
+  "label": "obj-state-difference-vectors",
+  "name": "State Difference Vectors",
+  "mathematical_expression": "\\Delta x_i := x_{1,i} - x_{2,i} \\in \\mathbb{R}^d",
+  "object_type": "set",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle",
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

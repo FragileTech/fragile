@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-entropy-transport-dissipation-1-equivalence",
+  "relationship_type": "equivalence",
+  "bidirectional": true,
+  "source_object": "obj-cloning-operator",
+  "target_object": "obj-wasserstein-distance",
+  "established_by": "lem-entropy-transport-dissipation",
+  "expression": "α = (τ_conv κ_W)/2 ≍ κ_conf κ_x",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

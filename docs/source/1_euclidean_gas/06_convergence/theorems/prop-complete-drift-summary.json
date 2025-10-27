@@ -1,0 +1,63 @@
+{
+  "label": "attr-complete-drift-summary",
+  "name": "Complete Drift Characterization",
+  "statement_type": "proposition",
+  "source": null,
+  "input_objects": [
+    "obj-swarm-and-state-space",
+    "obj-swarm-update-procedure",
+    "obj-cloning-measure",
+    "obj-kinetic-operator-stratonovich",
+    "obj-w2-output-metric",
+    "obj-positional-variance-recall",
+    "obj-velocity-variance-recall",
+    "obj-boundary-potential-recall"
+  ],
+  "input_axioms": [
+    "axiom-def-assumption-instep-independence"
+  ],
+  "input_parameters": [
+    "param-gamma",
+    "param-tau",
+    "param-sigma-v"
+  ],
+  "attributes_required": {
+    "obj-cloning-measure": [
+      "attr-positional-variance-contraction",
+      "attr-boundary-potential-contraction",
+      "attr-bounded-velocity-expansion"
+    ],
+    "obj-kinetic-operator-stratonovich": [
+      "attr-velocity-variance-contraction",
+      "attr-hypocoercive-wasserstein-contraction",
+      "attr-boundary-potential-contraction-kinetic"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-wasserstein-drift-bound",
+      "expression": "E_clone[\u0394 V_W] \u2264 C_W,  E_kin[\u0394 V_W] \u2264 -\u03ba_W \u03c4\u00b7V_W + C_W' \u03c4",
+      "object_label": "obj-w2-output-metric"
+    },
+    {
+      "label": "attr-positional-variance-drift-bound",
+      "expression": "E_clone[\u0394 V_{Var,x}] \u2264 -\u03ba_x V_{Var,x} + C_x,  E_kin[\u0394 V_{Var,x}] \u2264 C_{kin,x} \u03c4",
+      "object_label": "obj-positional-variance-recall"
+    },
+    {
+      "label": "attr-velocity-variance-drift-bound",
+      "expression": "E_clone[\u0394 V_{Var,v}] \u2264 C_v,  E_kin[\u0394 V_{Var,v}] \u2264 -2\u03b3 \u03c4\u00b7V_{Var,v} + d \u03c3_{max}^2 \u03c4",
+      "object_label": "obj-velocity-variance-recall"
+    },
+    {
+      "label": "attr-boundary-drift-bound",
+      "expression": "E_clone[\u0394 W_b] \u2264 -\u03ba_b W_b + C_b,  E_kin[\u0394 W_b] \u2264 -\u03ba_{pot} \u03c4\u00b7W_b + C_{pot} \u03c4",
+      "object_label": "obj-boundary-potential-recall"
+    }
+  ],
+  "relations_established": []
+}

@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-expected-distance-change-1-equivalence",
+  "relationship_type": "equivalence",
+  "bidirectional": true,
+  "source_object": "obj-cluster-coupling",
+  "target_object": "obj-target-complement",
+  "established_by": "lem-expected-distance-change",
+  "expression": "Quadratic identity: ||a - c||² - ||b - c||² = ||a - b||² + 2⟨a - b, b - c⟩",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction"
+}

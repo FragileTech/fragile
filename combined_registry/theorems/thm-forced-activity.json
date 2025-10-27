@@ -1,0 +1,39 @@
+{
+  "label": "thm-forced-activity",
+  "name": "Theorem of Forced Activity",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-fragile-gas-algorithm",
+    "obj-alive-dead-sets",
+    "obj-status-update-operator"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-guaranteed-revival"
+  ],
+  "input_parameters": [
+    "param-n"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-forced-activity",
+      "expression": "\\text{swarm maintains alive walkers under revival axiom}",
+      "object_label": "obj-fragile-gas-algorithm",
+      "established_by": "thm-forced-activity",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

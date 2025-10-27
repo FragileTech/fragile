@@ -1,0 +1,34 @@
+{
+  "label": "thm-cloning-operator-composition",
+  "name": "Compositional Structure of $\\Psi_{\\text{clone}}$",
+  "statement_type": "theorem",
+  "source": {
+    "file": "03_cloning.md:6106-6128",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "obj-cloning-operator-formal",
+    "obj-measurement-operator",
+    "obj-fitness-operator",
+    "obj-decision-operator",
+    "obj-update-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [
+    "attr-expected-displacement-cloning"
+  ],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "markov_kernel_composition",
+    "operator_compositional_structure"
+  ],
+  "relations_established": [
+    "cloning_operator_is_markov_kernel",
+    "compositional_decomposition"
+  ]
+}

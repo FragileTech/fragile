@@ -1,0 +1,24 @@
+{
+  "label": "lem-log-gap-upper-bound",
+  "name": "Upper Bound on Logarithmic Mean Gap",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [
+    "V_min",
+    "V_max",
+    "kappa"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": []
+}

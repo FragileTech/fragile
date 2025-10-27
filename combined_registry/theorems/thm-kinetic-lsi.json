@@ -1,0 +1,57 @@
+{
+  "label": "thm-kinetic-lsi",
+  "name": "Hypocoercive LSI for the Kinetic Flow Map",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-kinetic-operator",
+    "def-qsd"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf",
+    "sigma",
+    "tau"
+  ],
+  "properties_required": {
+    "log-concave-target": [
+      "π_QSD is log-concave (from ax-qsd-log-concave)"
+    ],
+    "foster-lyapunov": [
+      "Foster-Lyapunov conditions satisfied"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-bakry-emery-classical"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-kinetic-lsi-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-kinetic-operator",
+      "target_object": "obj-qsd",
+      "established_by": "thm-kinetic-lsi",
+      "expression": "Ent(Ψ_kin μ | π) ≤ (1 - τ/C_kin) Ent(μ | π) + o(τ)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-meanfield-lsi-standalone-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-mean-field-operator",
+  "target_object": "obj-mean-field-operator",
+  "established_by": "thm-meanfield-lsi-standalone",
+  "expression": "Mean-field LSI constant independent of N",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

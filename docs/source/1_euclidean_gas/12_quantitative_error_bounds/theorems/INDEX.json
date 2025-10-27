@@ -1,0 +1,236 @@
+{
+  "chapter": "12_quantitative_error_bounds",
+  "title": "Quantitative Error Bounds for Discrete Fragile Gas",
+  "total_objects": 19,
+  "main_results": [
+    "thm-quantitative-propagation-chaos",
+    "thm-total-error-bound"
+  ],
+  "parts": {
+    "part_i": {
+      "name": "Mean-Field Convergence via Relative Entropy",
+      "objects": 7,
+      "range": "01-07",
+      "main_result": "thm-quantitative-propagation-chaos",
+      "key_rate": "O(1/sqrt(N))"
+    },
+    "part_ii": {
+      "name": "Time Discretization Error Bounds (BAOAB)",
+      "objects": 4,
+      "range": "08-11",
+      "main_result": "thm-langevin-baoab-discretization-error",
+      "key_rate": "O((dt)^2)",
+      "scope": "Langevin dynamics alone (no cloning)"
+    },
+    "part_iii": {
+      "name": "Cloning Mechanism Error Bounds",
+      "objects": 6,
+      "range": "12-17",
+      "main_result": "thm-full-system-discretization-error",
+      "key_rate": "O(dt)",
+      "key_insight": "Operator splitting dominates BAOAB symmetry"
+    },
+    "part_iv": {
+      "name": "Total Error Bound",
+      "objects": 2,
+      "range": "18-19",
+      "main_result": "thm-total-error-bound",
+      "key_rate": "O(1/sqrt(N) + dt/N)"
+    }
+  },
+  "objects": [
+    {
+      "id": 1,
+      "label": "lem-wasserstein-entropy",
+      "type": "lemma",
+      "part": "I",
+      "status": "not_used",
+      "file": "01_lem_wasserstein_entropy.json"
+    },
+    {
+      "id": 2,
+      "label": "lem-quantitative-kl-bound",
+      "type": "lemma",
+      "part": "I",
+      "importance": "high",
+      "file": "02_lem_quantitative_kl_bound.json"
+    },
+    {
+      "id": 3,
+      "label": "attr-interaction-complexity-bound",
+      "type": "proposition",
+      "part": "I",
+      "importance": "high",
+      "completes": "lem-quantitative-kl-bound",
+      "file": "03_prop_interaction_complexity_bound.json"
+    },
+    {
+      "id": 4,
+      "label": "lem-lipschitz-observable-error",
+      "type": "lemma",
+      "part": "I",
+      "importance": "high",
+      "file": "04_lem_lipschitz_observable_error.json"
+    },
+    {
+      "id": 5,
+      "label": "attr-empirical-wasserstein-concentration",
+      "type": "proposition",
+      "part": "I",
+      "used_in": "lem-lipschitz-observable-error",
+      "file": "05_prop_empirical_wasserstein_concentration.json"
+    },
+    {
+      "id": 6,
+      "label": "attr-finite-second-moment-meanfield",
+      "type": "proposition",
+      "part": "I",
+      "prerequisite_for": "Fournier-Guillin bound",
+      "file": "06_prop_finite_second_moment_meanfield.json"
+    },
+    {
+      "id": 7,
+      "label": "thm-quantitative-propagation-chaos",
+      "type": "theorem",
+      "part": "I",
+      "importance": "critical",
+      "main_result": true,
+      "file": "07_thm_quantitative_propagation_chaos.json"
+    },
+    {
+      "id": 8,
+      "label": "attr-fourth-moment-baoab",
+      "type": "proposition",
+      "part": "II",
+      "importance": "high",
+      "prerequisite_for": "weak_convergence",
+      "file": "08_prop_fourth_moment_baoab.json"
+    },
+    {
+      "id": 9,
+      "label": "lem-baoab-weak-error",
+      "type": "lemma",
+      "part": "II",
+      "importance": "high",
+      "file": "09_lem_baoab_weak_error.json"
+    },
+    {
+      "id": 10,
+      "label": "lem-baoab-invariant-measure-error",
+      "type": "lemma",
+      "part": "II",
+      "importance": "high",
+      "file": "10_lem_baoab_invariant_measure_error.json"
+    },
+    {
+      "id": 11,
+      "label": "thm-langevin-baoab-discretization-error",
+      "type": "theorem",
+      "part": "II",
+      "importance": "high",
+      "scope": "Langevin only",
+      "file": "11_thm_langevin_baoab_discretization_error.json"
+    },
+    {
+      "id": 12,
+      "label": "thm-full-system-discretization-error",
+      "type": "theorem",
+      "part": "III",
+      "importance": "critical",
+      "status": "target",
+      "file": "12_thm_full_system_discretization_error.json"
+    },
+    {
+      "id": 13,
+      "label": "lem-lie-splitting-weak-error",
+      "type": "lemma",
+      "part": "III",
+      "importance": "critical",
+      "file": "13_lem_lie_splitting_weak_error.json"
+    },
+    {
+      "id": 14,
+      "label": "lem-uniform-geometric-ergodicity",
+      "type": "lemma",
+      "part": "III",
+      "importance": "critical",
+      "file": "14_lem_uniform_geometric_ergodicity.json"
+    },
+    {
+      "id": 15,
+      "label": "thm-meyn-tweedie-drift-minor",
+      "type": "theorem",
+      "part": "III",
+      "status": "external",
+      "source": "Meyn & Tweedie (2009)",
+      "file": "15_thm_meyn_tweedie_drift_minor.json"
+    },
+    {
+      "id": 16,
+      "label": "attr-mixing-rate-relationship",
+      "type": "proposition",
+      "part": "III",
+      "file": "16_prop_mixing_rate_relationship.json"
+    },
+    {
+      "id": 17,
+      "label": "thm-quantitative-error-propagation",
+      "type": "theorem",
+      "part": "III",
+      "importance": "critical",
+      "converts": "local O((dt)^2) to global O(dt)",
+      "file": "17_thm_quantitative_error_propagation.json"
+    },
+    {
+      "id": 18,
+      "label": "thm-total-error-bound",
+      "type": "theorem",
+      "part": "IV",
+      "importance": "critical",
+      "main_result": true,
+      "file": "18_thm_total_error_bound.json"
+    },
+    {
+      "id": 19,
+      "label": "attr-quantitative-explicit-constants",
+      "type": "proposition",
+      "part": "IV",
+      "importance": "high",
+      "purpose": "implementation",
+      "file": "19_prop_quantitative_explicit_constants.json"
+    }
+  ],
+  "external_dependencies": {
+    "chapter_06": [
+      "thm-foster-lyapunov-main",
+      "thm-main-convergence",
+      "thm-energy-bounds"
+    ],
+    "chapter_08": [
+      "propagation-of-chaos-framework",
+      "exchangeability-arguments"
+    ],
+    "chapter_09": [
+      "thm-kl-convergence-euclidean"
+    ]
+  },
+  "axioms_used": [
+    "axiom-confined-potential"
+  ],
+  "key_constants": {
+    "C_MF": "Mean-field error constant",
+    "C_discrete": "Discretization error constant",
+    "C_int": "Interaction complexity constant",
+    "C_obs": "Observable error constant",
+    "lambda_lsi": "LSI constant (N-uniform)",
+    "kappa_mix": "Mixing rate",
+    "M_4": "Fourth moment bound"
+  },
+  "extraction_metadata": {
+    "date": "2025-10-26",
+    "extractor": "Claude (Sonnet 4.5)",
+    "document_size": "50682 tokens",
+    "extraction_method": "strategic_section_reading",
+    "validation": "complete"
+  }
+}

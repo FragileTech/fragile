@@ -1,0 +1,14 @@
+{
+  "label": "obj-algorithmic-distance-metric",
+  "name": "Algorithmic Distance for Companion Selection",
+  "mathematical_expression": "d_{\\text{alg}}(i, j)^2 := \\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2",
+  "object_type": "set",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "particle"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

@@ -1,0 +1,32 @@
+{
+  "label": "thm-error-propagation",
+  "name": "Parameter Error Propagation Bound",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-param-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-epsilon-max"
+  ],
+  "attributes_required": {
+    "obj-param-selection": [
+      "attr-rate-sensitivity-matrix",
+      "attr-svd-decomposition-mkappa",
+      "attr-condition-number-mkappa"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-parameter-error-propagation",
+      "expression": "|\u03b4 \u03ba_total|/\u03ba_total \u2264 \u03ba(M_\u03ba) \u00b7 ||M_\u03ba||_2 \u00b7 \u03b5_max / \u221a12  (\u2248 0.25 for \u03b5_max=0.1)",
+      "object_label": "obj-param-selection"
+    }
+  ],
+  "relations_established": []
+}

@@ -1,0 +1,271 @@
+{
+  "document": "docs/source/2_geometric_gas/11_geometric_gas.md",
+  "title": "The Geometric Viscous Fluid Model",
+  "total_directives": 61,
+  "directive_types": {
+    "definition": 12,
+    "proposition": 5,
+    "axiom": 4,
+    "theorem": 12,
+    "lemma": 19,
+    "corollary": 6,
+    "remark": 2,
+    "conjecture": 1
+  },
+  "explicit_dependencies": {
+    "internal": [],
+    "cross_document": {
+      "03_cloning.md": [
+        "Keystone Principle (Theorem 8.1)",
+        "Cloning operator definition (Def. 5.6.1)",
+        "Axioms of foundational cloning (Chapter 4)"
+      ],
+      "04_convergence.md / 06_convergence.md": [
+        "Axiom of Globally Confining Potential (Axiom 1.3.1)",
+        "Foster-Lyapunov convergence (Theorem 1.4.2)",
+        "Discretization Theorem (Theorem 1.7.2)",
+        "Petite set property (Theorem 1.4.3)",
+        "Backbone drift analysis (Section 2.1)"
+      ],
+      "05_kinetic_contraction.md": [
+        "Hypocoercive Wasserstein contraction",
+        "Velocity dissipation mechanism"
+      ],
+      "07_mean_field.md": [
+        "Propagation of chaos",
+        "Mean-field limit theory"
+      ],
+      "08_propagation_chaos.md": [
+        "Propagation of chaos techniques"
+      ]
+    }
+  },
+  "implicit_dependencies": [],
+  "critical_path_to_main_theorem": [
+    {
+      "step": 1,
+      "label": "axiom-confining-potential",
+      "source": "04_convergence.md Axiom 1.3.1",
+      "why": "Foundation: Provides globally confining potential U(x) ensuring backbone stability"
+    },
+    {
+      "step": 2,
+      "label": "backbone-convergence",
+      "source": "04_convergence.md Theorem 1.4.2 + 05_kinetic_contraction.md",
+      "why": "Establishes \u03ba_backbone-exponential convergence of base Euclidean Gas (\u03b5_F=0)"
+    },
+    {
+      "step": 3,
+      "label": "def-localization-kernel",
+      "source": "Section 1.0.2 (this document)",
+      "why": "Enables \u03c1-parameterized framework unifying global and local regimes"
+    },
+    {
+      "step": 4,
+      "label": "thm-c1-regularity",
+      "source": "Appendix A Theorem A.1",
+      "why": "Proves C\u00b9 regularity of \u03c1-localized fitness potential with N-uniform bounds"
+    },
+    {
+      "step": 5,
+      "label": "thm-c2-regularity",
+      "source": "Appendix A Theorem A.2",
+      "why": "Proves C\u00b2 regularity of \u03c1-localized fitness potential with N-uniform Hessian bounds"
+    },
+    {
+      "step": 6,
+      "label": "thm-ueph",
+      "source": "Chapter 4 Theorem 4.1",
+      "why": "CRITICAL: Proves uniform ellipticity c_min(\u03c1)I \u2aaf G_reg \u2aaf c_max(\u03c1)I by construction"
+    },
+    {
+      "step": 7,
+      "label": "cor-wellposed",
+      "source": "Chapter 4 Corollary 4.3",
+      "why": "Well-posedness: Unique strong solution exists for adaptive SDE"
+    },
+    {
+      "step": 8,
+      "label": "lem-adaptive-force-bounded",
+      "source": "Chapter 6 Lemma 6.2",
+      "why": "Perturbation bound: Adaptive force contributes O(\u03b5_F K_F(\u03c1) V_total)"
+    },
+    {
+      "step": 9,
+      "label": "lem-viscous-dissipative",
+      "source": "Chapter 6 Lemma 6.3",
+      "why": "Viscous force provides additional dissipation (negative drift)"
+    },
+    {
+      "step": 10,
+      "label": "lem-diffusion-perturbation",
+      "source": "Chapter 6 Lemma 6.4",
+      "why": "Diffusion perturbation contributes C_diff,0(\u03c1) + C_diff,1(\u03c1) V_total"
+    },
+    {
+      "step": 11,
+      "label": "thm-foster-lyapunov",
+      "source": "Chapter 7 Theorem 7.1",
+      "why": "MAIN RESULT: Combines backbone + perturbations \u2192 net contraction for \u03b5_F < \u03b5_F*(\u03c1)"
+    },
+    {
+      "step": 12,
+      "label": "discretization-verification",
+      "source": "Chapter 7 Section 7.2",
+      "why": "Verifies Discretization Theorem extends to adaptive system with state-dependent diffusion"
+    },
+    {
+      "step": 13,
+      "label": "thm-geometric-ergodicity",
+      "source": "Chapter 9 Theorem 9.1",
+      "why": "CONVERGENCE: Exponential convergence to unique QSD with rate \u03bb = 1 - \u03ba_total(\u03c1)"
+    }
+  ],
+  "key_foundations": {
+    "from_euclidean_gas": [
+      {
+        "label": "axiom-confining-potential",
+        "source": "04_convergence.md Axiom 1.3.1",
+        "role": "Provides backbone stability via globally confining potential U(x)"
+      },
+      {
+        "label": "keystone-principle",
+        "source": "03_cloning.md Theorem 8.1",
+        "role": "Guarantees cloning operator reduces variance; extended to \u03c1-localized model in Appendix B"
+      },
+      {
+        "label": "discretization-theorem",
+        "source": "04_convergence.md Theorem 1.7.2",
+        "role": "Connects continuous-time drift to discrete-time Foster-Lyapunov condition"
+      },
+      {
+        "label": "backbone-convergence",
+        "source": "04_convergence.md Theorem 1.4.2 + 05_kinetic_contraction.md",
+        "role": "Establishes exponential convergence of base Euclidean Gas (\u03b5_F=0, \u03bd=0)"
+      }
+    ],
+    "novel_to_geometric_gas": [
+      {
+        "label": "def-localization-kernel",
+        "role": "Unifies global (\u03c1\u2192\u221e) and local (finite \u03c1) measurement regimes"
+      },
+      {
+        "label": "thm-ueph",
+        "role": "Proves uniform ellipticity by construction for regularized Hessian diffusion"
+      },
+      {
+        "label": "lem-adaptive-force-bounded",
+        "role": "Establishes N-uniform bound on adaptive force: ||F_adapt|| \u2264 \u03b5_F F_adapt,max(\u03c1)"
+      },
+      {
+        "label": "thm-foster-lyapunov",
+        "role": "Main convergence result: drift \u2264 -\u03ba_total(\u03c1) V_total + C_total(\u03c1)"
+      }
+    ]
+  },
+  "main_theorems": {
+    "thm-ueph": {
+      "title": "k-Uniform Ellipticity of the Regularized Metric",
+      "statement": "c_min(\u03c1) I \u2aaf G_reg \u2aaf c_max(\u03c1) I for all N, all \u03c1 > 0",
+      "dependencies": [
+        "thm-c2-regularity",
+        "lem-hessian-bounded"
+      ],
+      "role": "Establishes well-posedness and non-degeneracy of adaptive diffusion"
+    },
+    "thm-foster-lyapunov": {
+      "title": "Foster-Lyapunov Drift for \u03c1-Localized Geometric Viscous Fluid",
+      "statement": "For \u03b5_F < \u03b5_F*(\u03c1), drift \u2264 -(1-\u03ba_total(\u03c1)) V_total + C_total(\u03c1)",
+      "dependencies": [
+        "backbone-convergence (from 04_convergence.md)",
+        "lem-adaptive-force-bounded",
+        "lem-viscous-dissipative",
+        "lem-diffusion-perturbation"
+      ],
+      "role": "Main drift condition enabling geometric ergodicity",
+      "critical_threshold": "\u03b5_F*(\u03c1) = (\u03ba_backbone - C_diff,1(\u03c1)) / (2 K_F(\u03c1))"
+    },
+    "thm-geometric-ergodicity": {
+      "title": "Geometric Ergodicity of the Geometric Viscous Fluid Model",
+      "statement": "Exponential convergence to unique QSD with rate \u03bb = 1 - \u03ba_total(\u03c1)",
+      "dependencies": [
+        "thm-foster-lyapunov",
+        "petite-set-property (from 04_convergence.md)"
+      ],
+      "role": "Final convergence guarantee for adaptive algorithm"
+    },
+    "thm-lsi-adaptive-gas": {
+      "title": "N-Uniform Log-Sobolev Inequality",
+      "statement": "Ent(g\u00b2|\u03c0_N) \u2264 C_LSI \u222b |\u2207g|\u00b2 d\u03c0_N",
+      "dependencies": [
+        "thm-ueph",
+        "backbone-LSI (from Chapter 1)"
+      ],
+      "role": "Entropy decay and concentration of measure"
+    },
+    "thm-keystone-adaptive": {
+      "title": "Keystone Lemma for \u03c1-Localized Adaptive Model",
+      "statement": "Cloning operator contracts \u03c1-localized variance with \u03c1-dependent constants",
+      "dependencies": [
+        "thm-signal-generation-adaptive",
+        "thm-stability-condition-rho",
+        "keystone-principle (from 03_cloning.md)"
+      ],
+      "role": "Extends backbone Keystone Principle to adaptive setting"
+    }
+  },
+  "proof_dependencies": {
+    "thm-ueph": {
+      "inputs": [
+        "thm-c2-regularity (Appendix A.2): N-uniform bound H_max(\u03c1) on ||H(S)||",
+        "lem-hessian-bounded: Pure Hessian bounded by H_max(\u03c1)"
+      ],
+      "proof_technique": "Linear algebra: eigenvalue bounds on (H + \u03b5_\u03a3 I)^{-1}",
+      "outputs": [
+        "c_min(\u03c1) = 1/(H_max(\u03c1) + \u03b5_\u03a3)",
+        "c_max(\u03c1) = 1/\u03b5_\u03a3",
+        "Uniform ellipticity for all N, all \u03c1 > 0"
+      ]
+    },
+    "thm-foster-lyapunov": {
+      "inputs": [
+        "Backbone drift (04_convergence.md): E[A_backbone] \u2264 -\u03ba_backbone V_total + C_backbone",
+        "lem-adaptive-force-bounded: ||F_adapt|| \u2264 \u03b5_F F_adapt,max(\u03c1)",
+        "lem-viscous-dissipative: Viscous force dissipative",
+        "lem-diffusion-perturbation: Diffusion change bounded",
+        "thm-ueph: Uniform ellipticity"
+      ],
+      "proof_technique": "Perturbation analysis: backbone drift dominates adaptive perturbations for small \u03b5_F",
+      "outputs": [
+        "\u03ba_total(\u03c1) = \u03ba_backbone - \u03b5_F K_F(\u03c1) - C_diff,1(\u03c1)",
+        "Critical threshold: \u03b5_F*(\u03c1) = (\u03ba_backbone - C_diff,1(\u03c1)) / (2 K_F(\u03c1))",
+        "Drift \u2264 -(1 - \u03ba_total(\u03c1)) V_total + C_total(\u03c1) for \u03b5_F < \u03b5_F*(\u03c1)"
+      ]
+    },
+    "thm-geometric-ergodicity": {
+      "inputs": [
+        "thm-foster-lyapunov: Drift condition with \u03ba_total(\u03c1) > 0",
+        "Petite set property (04_convergence.md Theorem 1.4.3)",
+        "Irreducibility and aperiodicity (from positive diffusion + cloning)"
+      ],
+      "proof_technique": "General state space Markov chain theory (Meyn-Tweedie)",
+      "outputs": [
+        "Unique QSD \u03c0_\u221e",
+        "Exponential convergence ||\u03bc_t - \u03c0_\u221e|| \u2264 C e^{-\u03bbt} with \u03bb = 1 - \u03ba_total(\u03c1)"
+      ]
+    }
+  },
+  "statistics": {
+    "total_directives": 61,
+    "definitions": 12,
+    "theorems": 12,
+    "lemmas": 19,
+    "propositions": 5,
+    "axioms": 4,
+    "corollaries": 6,
+    "total_explicit_deps": 41,
+    "total_implicit_deps": 0,
+    "cross_document_refs": 5,
+    "critical_path_length": 13
+  }
+}

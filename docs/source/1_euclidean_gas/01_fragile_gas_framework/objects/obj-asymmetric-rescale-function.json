@@ -1,0 +1,12 @@
+{
+  "label": "obj-asymmetric-rescale-function",
+  "name": "Smooth Piecewise Rescale Function",
+  "mathematical_expression": "g_A(z) :=\n\\begin{cases}\n\\exp(z), & z \\le 0 \\\\\n\\log(1 + z) + 1, & 0 < z < z_{\\max} - 1 \\\\\nP(z), & z_{\\max} - 1 \\le z \\le z_{\\max} \\\\\n\\log(1 + z_{\\max}) + 1, & z > z_{\\max}\n\\end{cases}",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "continuous"
+  ],
+  "source": null
+}

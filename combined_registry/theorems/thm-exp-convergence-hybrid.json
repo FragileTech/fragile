@@ -1,0 +1,56 @@
+{
+  "label": "thm-exp-convergence-hybrid",
+  "name": "Exponential Convergence from LSI",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-total-operator",
+    "def-qsd"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf",
+    "kappa_W",
+    "delta"
+  ],
+  "properties_required": {
+    "hybrid-approach": [
+      "Combines kinetic LSI + cloning contraction"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-kinetic-lsi",
+    "lem-cloning-wasserstein-contraction",
+    "thm-hwi-inequality"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-exp-convergence-hybrid-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-total-operator",
+      "target_object": "obj-qsd",
+      "established_by": "thm-exp-convergence-hybrid",
+      "expression": "Seesaw mechanism: kinetic dissipates entropy, cloning contracts W₂",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

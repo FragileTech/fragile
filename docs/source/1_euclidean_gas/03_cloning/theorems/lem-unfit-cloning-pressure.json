@@ -1,0 +1,37 @@
+{
+  "label": "lem-unfit-cloning-pressure",
+  "name": "Guaranteed Cloning Pressure on the Unfit Set",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "section": "8.3",
+    "line_start": 4891,
+    "line_end": 4944
+  },
+  "input_objects": [
+    "obj-unfit-set",
+    "obj-cloning-probability",
+    "obj-fitness-potential-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa_V_gap",
+    "epsilon_clone",
+    "V_pot_max"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lem-mean-companion-fitness-gap"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "lem-mean-companion-fitness-gap"
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    "cloning_pressure_bound"
+  ],
+  "relations_established": [
+    "p_k,i >= p_u(epsilon) > 0 for all i in U_k"
+  ]
+}

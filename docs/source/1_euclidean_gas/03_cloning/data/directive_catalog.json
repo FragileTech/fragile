@@ -1,0 +1,1518 @@
+{
+  "def-single-swarm-space": {
+    "type": "definition",
+    "title": "Single-Walker and Swarm State Spaces",
+    "line_range": [
+      108,
+      128
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-coupled-state-space": {
+    "type": "definition",
+    "title": "The Coupled State Space",
+    "line_range": [
+      146,
+      159
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-state-difference-vectors": {
+    "type": "definition",
+    "title": "State Difference Vectors",
+    "line_range": [
+      166,
+      187
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "axiom-domain-regularity": {
+    "type": "axiom",
+    "title": "**(Axiom EG-0): Regularity of the Domain**",
+    "line_range": [
+      198,
+      201
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": [
+      "axiom-domain-regularity"
+    ]
+  },
+  "attr-barrier-existence": {
+    "type": "proposition",
+    "title": "Existence of a Global Smooth Barrier Function",
+    "line_range": [
+      210,
+      216
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": [
+      "axiom-domain-regularity"
+    ]
+  },
+  "def-barycentres-and-centered-vectors": {
+    "type": "definition",
+    "title": "Barycentres and Centered Vectors (Alive Walkers Only)",
+    "line_range": [
+      364,
+      414
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "\\\\Psi_\\{\\\\text\\{clone\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "def-location-error-component": {
+    "type": "definition",
+    "title": "The Location Error Component ($V_{\\text{loc}}$)",
+    "line_range": [
+      426,
+      435
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{loc\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "def-structural-error-component": {
+    "type": "definition",
+    "title": "The Structural Error Component ($V_{\\text{struct}}$)",
+    "line_range": [
+      442,
+      459
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{struct\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "lem-wasserstein-decomposition": {
+    "type": "lemma",
+    "title": "Decomposition of the Hypocoercive Wasserstein Distance",
+    "line_range": [
+      466,
+      474
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{loc\\}\\}",
+      "V_\\{\\\\text\\{struct\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "lem-sx-implies-variance": {
+    "type": "lemma",
+    "title": "Structural Positional Error and Internal Variance",
+    "line_range": [
+      621,
+      635
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-full-synergistic-lyapunov-function": {
+    "type": "definition",
+    "title": "The Full Synergistic Hypocoercive Lyapunov Function",
+    "line_range": [
+      743,
+      845
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{loc\\}\\}",
+      "V_\\{\\\\text\\{struct\\}\\}",
+      "V_\\{\\\\text\\{Var\\},x\\}",
+      "\\\\Psi_\\{\\\\text\\{clone\\}\\}",
+      "\\\\Psi_\\{\\\\text\\{kin\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "def-variance-conversions": {
+    "type": "definition",
+    "title": "Variance Notation Conversion Formulas",
+    "line_range": [
+      853,
+      895
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{Var\\},x\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "attr-lyapunov-necessity": {
+    "type": "proposition",
+    "title": "Necessity of the Augmented Lyapunov Structure",
+    "line_range": [
+      916,
+      969
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{Var\\},x\\}",
+      "V_\\{\\\\text\\{Var\\},v\\}",
+      "\\\\Psi_\\{\\\\text\\{clone\\}\\}",
+      "\\\\Psi_\\{\\\\text\\{kin\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "axiom-lipschitz-fields": {
+    "type": "axiom",
+    "title": "**(Axiom EG-1): Lipschitz Regularity of Environmental Fields**",
+    "line_range": [
+      1155,
+      1163
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": [
+      "axiom-lipschitz-fields"
+    ]
+  },
+  "axiom-safe-harbor": {
+    "type": "axiom",
+    "title": "**(Axiom EG-2): Existence of a Safe Harbor**",
+    "line_range": [
+      1179,
+      1187
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": [
+      "axiom-safe-harbor"
+    ]
+  },
+  "axiom-non-deceptive-landscape": {
+    "type": "axiom",
+    "title": "**(Axiom EG-3): Non-Deceptive Landscape**",
+    "line_range": [
+      1207,
+      1214
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": [
+      "axiom-non-deceptive-landscape"
+    ]
+  },
+  "axiom-velocity-regularization": {
+    "type": "axiom",
+    "title": "**(Axiom EG-4): Velocity Regularization via Reward**",
+    "line_range": [
+      1236,
+      1257
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{Var\\},x\\}",
+      "V_\\{\\\\text\\{Var\\},v\\}"
+    ],
+    "axioms_invoked": [
+      "axiom-velocity-regularization"
+    ]
+  },
+  "axiom-active-diversity": {
+    "type": "axiom",
+    "title": "**(Axiom EG-5): Active Diversity Signal**",
+    "line_range": [
+      1280,
+      1289
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": [
+      "axiom-active-diversity"
+    ]
+  },
+  "def-algorithmic-distance-metric": {
+    "type": "definition",
+    "title": "Algorithmic Distance for Companion Selection",
+    "line_range": [
+      1345,
+      1354
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "d_\\{\\\\text\\{alg\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "def-spatial-pairing-operator-diversity": {
+    "type": "definition",
+    "title": "Spatially-Aware Pairing Operator (Idealized Model)",
+    "line_range": [
+      1387,
+      1417
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "d_\\{\\\\text\\{alg\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "def-greedy-pairing-algorithm": {
+    "type": "definition",
+    "title": "Sequential Stochastic Greedy Pairing Operator",
+    "line_range": [
+      1426,
+      1452
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "d_\\{\\\\text\\{alg\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "def-geometric-partition": {
+    "type": "definition",
+    "title": "Geometric Partitioning of High-Variance Swarms",
+    "line_range": [
+      1510,
+      1517
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-greedy-preserves-signal": {
+    "type": "lemma",
+    "title": "Greedy Pairing Guarantees Signal Separation",
+    "line_range": [
+      1522,
+      1543
+    ],
+    "explicit_refs": [
+      "def-greedy-pairing-algorithm"
+    ],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-raw-value-operators": {
+    "type": "definition",
+    "title": "Raw Value Operators",
+    "line_range": [
+      1734,
+      1753
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "d_\\{\\\\text\\{alg\\}\\}"
+    ],
+    "axioms_invoked": [
+      "axiom-velocity-regularization"
+    ]
+  },
+  "def-swarm-aggregation-operator": {
+    "type": "definition",
+    "title": "Swarm Aggregation Operator",
+    "line_range": [
+      1772,
+      1775
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-patched-std-dev-function": {
+    "type": "definition",
+    "title": "Patched Standard Deviation Function",
+    "line_range": [
+      1785,
+      1799
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-patching-properties": {
+    "type": "lemma",
+    "title": "Properties of the Patching Function",
+    "line_range": [
+      1802,
+      1804
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-standardization-operator": {
+    "type": "definition",
+    "title": "N-Dimensional Standardization Operator",
+    "line_range": [
+      1811,
+      1820
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-compact-support-z-scores": {
+    "type": "lemma",
+    "title": "Compact Support of Standardized Scores",
+    "line_range": [
+      1823,
+      1825
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-logistic-rescale": {
+    "type": "definition",
+    "title": "Canonical Logistic Rescale Function",
+    "line_range": [
+      1837,
+      1845
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-logistic-properties": {
+    "type": "lemma",
+    "title": "Verification of Axiomatic Properties",
+    "line_range": [
+      1848,
+      1850
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-fitness-potential-operator": {
+    "type": "definition",
+    "title": "Fitness Potential Operator",
+    "line_range": [
+      1857,
+      1876
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-potential-bounds": {
+    "type": "lemma",
+    "title": "Uniform Bounds of the Fitness Potential",
+    "line_range": [
+      1879,
+      1884
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-cloning-companion-operator": {
+    "type": "definition",
+    "title": "Companion Selection Operator for Cloning",
+    "line_range": [
+      1925,
+      1952
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "d_\\{\\\\text\\{alg\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "def-cloning-score": {
+    "type": "definition",
+    "title": "The Canonical Cloning Score",
+    "line_range": [
+      1956,
+      1965
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-cloning-probability": {
+    "type": "definition",
+    "title": "Total Cloning Probability",
+    "line_range": [
+      1968,
+      1983
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-cloning-decision": {
+    "type": "definition",
+    "title": "The Stochastic Cloning Decision",
+    "line_range": [
+      1996,
+      1999
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-inelastic-collision-update": {
+    "type": "definition",
+    "title": "The Inelastic Collision State Update",
+    "line_range": [
+      2008,
+      2068
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{Var\\},v\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "attr-bounded-velocity-expansion": {
+    "type": "proposition",
+    "title": "Bounded Velocity Variance Expansion from Cloning",
+    "line_range": [
+      2075,
+      2084
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-V_Varx-implies-variance": {
+    "type": "lemma",
+    "title": "Large $V_{\\text{Var},x}$ Implies Large Single-Swarm Positional Variance",
+    "line_range": [
+      2312,
+      2326
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{Var\\},x\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "def-unified-high-low-error-sets": {
+    "type": "definition",
+    "title": "The Unified High-Error and Low-Error Sets",
+    "line_range": [
+      2360,
+      2402
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "d_\\{\\\\text\\{alg\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "lem-phase-space-packing": {
+    "type": "lemma",
+    "title": "The Phase-Space Packing Lemma",
+    "line_range": [
+      2419,
+      2436
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "d_\\{\\\\text\\{alg\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "lem-var-x-implies-var-h": {
+    "type": "lemma",
+    "title": "Positional Variance as a Lower Bound for Hypocoercive Variance",
+    "line_range": [
+      2563,
+      2572
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-outlier-fraction-lower-bound": {
+    "type": "lemma",
+    "title": "N-Uniform Lower Bound on the Outlier Fraction",
+    "line_range": [
+      2597,
+      2608
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-outlier-cluster-fraction-lower-bound": {
+    "type": "lemma",
+    "title": "N-Uniform Lower Bound on the Outlier-Cluster Fraction",
+    "line_range": [
+      2701,
+      2713
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "cor-vvarx-to-high-error-fraction": {
+    "type": "corollary",
+    "title": "A Large Intra-Swarm Positional Variance Guarantees a Non-Vanishing High-Error Fraction",
+    "line_range": [
+      2789,
+      2799
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{Var\\},x\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "lem-geometric-separation-of-partition": {
+    "type": "lemma",
+    "title": "Geometric Separation of the Partition",
+    "line_range": [
+      2871,
+      2892
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "d_\\{\\\\text\\{alg\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "thm-geometry-guarantees-variance": {
+    "type": "theorem",
+    "title": "Geometric Structure Guarantees Measurement Variance",
+    "line_range": [
+      3307,
+      3317
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "attr-satisfiability-of-snr-gamma": {
+    "type": "proposition",
+    "title": "**(Satisfiability of the Signal-to-Noise Condition via Signal Gain)**",
+    "line_range": [
+      3459,
+      3470
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-variance-to-gap": {
+    "type": "lemma",
+    "title": "From Bounded Variance to a Guaranteed Gap",
+    "line_range": [
+      3569,
+      3577
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-max-patched-std": {
+    "type": "definition",
+    "title": "Maximum Patched Standard Deviation",
+    "line_range": [
+      3630,
+      3639
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-rescale-derivative-lower-bound": {
+    "type": "lemma",
+    "title": "Positive Derivative Bound for the Rescale Function",
+    "line_range": [
+      3644,
+      3653
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-raw-gap-to-rescaled-gap": {
+    "type": "lemma",
+    "title": "From Raw Measurement Gap to Rescaled Value Gap",
+    "line_range": [
+      3672,
+      3686
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-variance-to-mean-separation": {
+    "type": "lemma",
+    "title": "**(From Total Variance to Mean Separation)**",
+    "line_range": [
+      3753,
+      3771
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "thm-derivation-of-stability-condition": {
+    "type": "theorem",
+    "title": "Derivation of the Stability Condition for Intelligent Adaptation",
+    "line_range": [
+      3883,
+      3894
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-log-gap-lower-bound": {
+    "type": "lemma",
+    "title": "Lower Bound on Logarithmic Mean Gap",
+    "line_range": [
+      3998,
+      4008
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "attr-adversarial-signal-bound-naive": {
+    "type": "proposition",
+    "title": "**(Worst-Case Upper Bound on the Adversarial Reward Signal)**",
+    "line_range": [
+      4300,
+      4308
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "attr-raw-reward-mean-gap-bound": {
+    "type": "proposition",
+    "title": "**(Lipschitz Bound on the Raw Reward Mean Gap)**",
+    "line_range": [
+      4361,
+      4371
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "attr-log-reward-gap-axiom-bound": {
+    "type": "proposition",
+    "title": "**(Axiom-Based Bound on the Logarithmic Reward Gap)**",
+    "line_range": [
+      4396,
+      4405
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "thm-stability-condition-final-corrected": {
+    "type": "theorem",
+    "title": "**(The Corrected Stability Condition for Intelligent Adaptation)**",
+    "line_range": [
+      4464,
+      4471
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-unfit-set": {
+    "type": "definition",
+    "title": "The Unfit Set",
+    "line_range": [
+      4509,
+      4517
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-unfit-fraction-lower-bound": {
+    "type": "lemma",
+    "title": "N-Uniform Lower Bound on the Unfit Fraction",
+    "line_range": [
+      4520,
+      4531
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "thm-unfit-high-error-overlap-fraction": {
+    "type": "theorem",
+    "title": "N-Uniform Lower Bound on the Unfit-High-Error Overlap Fraction",
+    "line_range": [
+      4582,
+      4593
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-quantitative-keystone": {
+    "type": "lemma",
+    "title": "The N-Uniform Quantitative Keystone Lemma",
+    "line_range": [
+      4658,
+      4672
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{struct\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "def-critical-target-set": {
+    "type": "definition",
+    "title": "The Critical Target Set",
+    "line_range": [
+      4707,
+      4716
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-mean-companion-fitness-gap": {
+    "type": "lemma",
+    "title": "Lower Bound on Mean Companion Fitness Gap",
+    "line_range": [
+      4727,
+      4750
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-unfit-cloning-pressure": {
+    "type": "remark",
+    "title": "N-Uniformity of the Bound",
+    "line_range": [
+      4885,
+      4899
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "cor-cloning-pressure-target-set": {
+    "type": "corollary",
+    "title": "Cloning Pressure on the Target Set",
+    "line_range": [
+      4948,
+      4956
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-error-concentration-target-set": {
+    "type": "lemma",
+    "title": "Error Concentration in the Target Set",
+    "line_range": [
+      5090,
+      5101
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "attr-n-uniformity-keystone": {
+    "type": "proposition",
+    "title": "N-Uniformity of Keystone Constants",
+    "line_range": [
+      5495,
+      5504
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-cloning-operator-formal": {
+    "type": "definition",
+    "title": "The Cloning Operator $\\Psi_{\\text{clone}}$",
+    "line_range": [
+      5738,
+      5765
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "\\\\Psi_\\{\\\\text\\{clone\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "def-measurement-operator": {
+    "type": "definition",
+    "title": "The Measurement Operator",
+    "line_range": [
+      5785,
+      5816
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "d_\\{\\\\text\\{alg\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "rem-measurement-coupling": {
+    "type": "remark",
+    "title": "Stochastic Coupling for Drift Analysis",
+    "line_range": [
+      5819,
+      5825
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-fitness-operator": {
+    "type": "definition",
+    "title": "The Fitness Evaluation Operator",
+    "line_range": [
+      5832,
+      5902
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-decision-operator": {
+    "type": "definition",
+    "title": "The Cloning Decision Operator",
+    "line_range": [
+      5909,
+      5960
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "d_\\{\\\\text\\{alg\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "lem-dead-walker-clone-prob": {
+    "type": "lemma",
+    "title": "Total Cloning Probability for Dead Walkers",
+    "line_range": [
+      5963,
+      5971
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-update-operator": {
+    "type": "definition",
+    "title": "The State Update Operator",
+    "line_range": [
+      5994,
+      6083
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "rem-position-velocity-update-difference": {
+    "type": "remark",
+    "title": "Position Jitter vs. Velocity Collision Model",
+    "line_range": [
+      6086,
+      6099
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "thm-cloning-operator-composition": {
+    "type": "theorem",
+    "title": "Compositional Structure of $\\Psi_{\\text{clone}}$",
+    "line_range": [
+      6106,
+      6127
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "\\\\Psi_\\{\\\\text\\{clone\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "def-key-operator-outputs": {
+    "type": "definition",
+    "title": "Key Operator Outputs",
+    "line_range": [
+      6134,
+      6173
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "\\\\Psi_\\{\\\\text\\{clone\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "attr-expected-displacement-cloning": {
+    "type": "proposition",
+    "title": "Expected Displacement Under Cloning",
+    "line_range": [
+      6176,
+      6187
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-coupled-cloning-expectation": {
+    "type": "definition",
+    "title": "Coupled Cloning Expectation",
+    "line_range": [
+      6253,
+      6269
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "\\\\Psi_\\{\\\\text\\{clone\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "rem-coupling-benefits": {
+    "type": "remark",
+    "title": "Synchronous Coupling Benefits",
+    "line_range": [
+      6272,
+      6281
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "thm-positional-variance-contraction": {
+    "type": "theorem",
+    "title": "Positional Variance Contraction Under Cloning",
+    "line_range": [
+      6290,
+      6304
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{Var\\},x\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "lem-variance-change-decomposition": {
+    "type": "lemma",
+    "title": "Variance Change Decomposition",
+    "line_range": [
+      6318,
+      6345
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{Var\\},x\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "lem-keystone-contraction-alive": {
+    "type": "lemma",
+    "title": "Keystone-Driven Contraction for Stably Alive Walkers",
+    "line_range": [
+      6384,
+      6395
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{struct\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "lem-dead-walker-revival-bounded": {
+    "type": "lemma",
+    "title": "Bounded Contribution from Dead Walker Revival",
+    "line_range": [
+      6484,
+      6493
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{Var\\},x\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "thm-velocity-variance-bounded-expansion": {
+    "type": "theorem",
+    "title": "Bounded Velocity Variance Expansion from Cloning",
+    "line_range": [
+      6670,
+      6684
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{Var\\},v\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "rem-synergistic-velocity-dissipation": {
+    "type": "remark",
+    "title": "Synergistic Dissipation Enables Net Contraction",
+    "line_range": [
+      6755,
+      6772
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{Var\\},v\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "cor-structural-error-contraction": {
+    "type": "corollary",
+    "title": "Structural Error Contraction",
+    "line_range": [
+      6779,
+      6788
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{struct\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "thm-complete-variance-drift": {
+    "type": "theorem",
+    "title": "Complete Variance Drift Characterization for Cloning",
+    "line_range": [
+      6813,
+      6840
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{Var\\},x\\}",
+      "V_\\{\\\\text\\{Var\\},v\\}",
+      "\\\\Psi_\\{\\\\text\\{clone\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "rem-drift-constants-dependencies": {
+    "type": "remark",
+    "title": "Constants and Parameter Dependencies",
+    "line_range": [
+      6898,
+      6914
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-boundary-potential-recall": {
+    "type": "definition",
+    "title": "Boundary Potential Component (Recall)",
+    "line_range": [
+      6969,
+      6986
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "rem-barrier-geometric-penalty": {
+    "type": "remark",
+    "title": "Barrier Function as Geometric Penalty",
+    "line_range": [
+      6989,
+      7000
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-fitness-gradient-boundary": {
+    "type": "lemma",
+    "title": "Fitness Gradient from Boundary Proximity",
+    "line_range": [
+      7013,
+      7028
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "def-boundary-exposed-set": {
+    "type": "definition",
+    "title": "The Boundary-Exposed Set",
+    "line_range": [
+      7176,
+      7192
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "rem-boundary-mass-relationship": {
+    "type": "remark",
+    "title": "Relationship to Total Boundary Potential",
+    "line_range": [
+      7195,
+      7204
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "thm-boundary-potential-contraction": {
+    "type": "theorem",
+    "title": "Boundary Potential Contraction Under Cloning",
+    "line_range": [
+      7209,
+      7223
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "rem-progressive-safety": {
+    "type": "remark",
+    "title": "Interpretation: Progressive Safety Enhancement",
+    "line_range": [
+      7226,
+      7234
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-boundary-enhanced-cloning": {
+    "type": "lemma",
+    "title": "Enhanced Cloning Probability Near Boundary",
+    "line_range": [
+      7243,
+      7252
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "lem-barrier-reduction-cloning": {
+    "type": "lemma",
+    "title": "Expected Barrier Reduction for Cloned Walker",
+    "line_range": [
+      7313,
+      7329
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "cor-bounded-boundary-exposure": {
+    "type": "corollary",
+    "title": "Bounded Boundary Exposure in Equilibrium",
+    "line_range": [
+      7470,
+      7479
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "cor-extinction-suppression": {
+    "type": "corollary",
+    "title": "Exponentially Suppressed Extinction Probability",
+    "line_range": [
+      7512,
+      7521
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "rem-safety-margin-tuning": {
+    "type": "remark",
+    "title": "Safety Margin and Parameter Tuning",
+    "line_range": [
+      7622,
+      7633
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "thm-complete-boundary-drift": {
+    "type": "theorem",
+    "title": "Complete Boundary Potential Drift Characterization",
+    "line_range": [
+      7640,
+      7660
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "\\\\Psi_\\{\\\\text\\{clone\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "thm-inter-swarm-bounded-expansion": {
+    "type": "theorem",
+    "title": "Bounded Expansion of Inter-Swarm Wasserstein Distance",
+    "line_range": [
+      7744,
+      7760
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{loc\\}\\}",
+      "V_\\{\\\\text\\{struct\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "rem-why-vw-expands": {
+    "type": "remark",
+    "title": "Why Inter-Swarm Error Doesn't Contract Under Cloning",
+    "line_range": [
+      7856,
+      7867
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "cor-component-bounds-vw": {
+    "type": "corollary",
+    "title": "Component-Wise Bounds on Inter-Swarm Error",
+    "line_range": [
+      7874,
+      7886
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{loc\\}\\}",
+      "V_\\{\\\\text\\{struct\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "thm-complete-wasserstein-drift": {
+    "type": "theorem",
+    "title": "Complete Wasserstein Decomposition Drift",
+    "line_range": [
+      7889,
+      7927
+    ],
+    "explicit_refs": [
+      "cor-component-bounds-vw"
+    ],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{loc\\}\\}",
+      "V_\\{\\\\text\\{struct\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "thm-complete-cloning-drift": {
+    "type": "theorem",
+    "title": "Complete Drift Inequality for the Cloning Operator",
+    "line_range": [
+      7980,
+      8013
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{Var\\},x\\}",
+      "V_\\{\\\\text\\{Var\\},v\\}",
+      "\\\\Psi_\\{\\\\text\\{clone\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "attr-kinetic-necessity": {
+    "type": "proposition",
+    "title": "Necessity of the Kinetic Operator",
+    "line_range": [
+      8083,
+      8097
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{Var\\},v\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "rem-perfect-complementarity": {
+    "type": "remark",
+    "title": "Perfect Complementarity",
+    "line_range": [
+      8115,
+      8123
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "thm-synergistic-foster-lyapunov-preview": {
+    "type": "theorem",
+    "title": "Synergistic Foster-Lyapunov Condition (Preview)",
+    "line_range": [
+      8128,
+      8142
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "\\\\Psi_\\{\\\\text\\{clone\\}\\}",
+      "\\\\Psi_\\{\\\\text\\{kin\\}\\}"
+    ],
+    "axioms_invoked": []
+  },
+  "attr-coupling-constant-existence": {
+    "type": "proposition",
+    "title": "Existence of Valid Coupling Constants",
+    "line_range": [
+      8230,
+      8250
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "rem-tuning-guidance": {
+    "type": "remark",
+    "title": "Tuning Guidance",
+    "line_range": [
+      8253,
+      8267
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [],
+    "axioms_invoked": []
+  },
+  "thm-main-results-summary": {
+    "type": "theorem",
+    "title": "Main Results of the Cloning Analysis (Summary)",
+    "line_range": [
+      8276,
+      8308
+    ],
+    "explicit_refs": [],
+    "implicit_refs": [],
+    "notation_used": [
+      "V_\\{\\\\text\\{struct\\}\\}",
+      "V_\\{\\\\text\\{Var\\},x\\}",
+      "V_\\{\\\\text\\{Var\\},v\\}",
+      "\\\\Psi_\\{\\\\text\\{clone\\}\\}"
+    ],
+    "axioms_invoked": []
+  }
+}

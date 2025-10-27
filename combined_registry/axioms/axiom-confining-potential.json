@@ -1,0 +1,8 @@
+{
+  "label": "axiom-confining-potential",
+  "statement": "Globally Confining Potential",
+  "mathematical_expression": "U \\in C^2(\\mathcal{X}_{\\text{valid}})",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction"
+}

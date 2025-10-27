@@ -1,0 +1,12 @@
+{
+  "label": "obj-patched-std-dev-function",
+  "name": "Patched Standard Deviation Function",
+  "mathematical_expression": "\\sigma'_{\\text{patch}}(V) :=\n\\begin{cases}\n\\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\mathrm{std}}^2}, & V \\le \\kappa_{\\text{var,min}} \\\\\nP(V), & \\kappa_{\\text{var,min}} < V < 2\\kappa_{\\text{var,min}} \\\\\n\\sqrt{V + \\varepsilon_{\\mathrm{std}}^2}, & V \\ge 2\\kappa_{\\text{var,min}}\n\\end{cases}",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "variance"
+  ],
+  "source": null
+}

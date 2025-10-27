@@ -1,0 +1,59 @@
+{
+  "label": "lem-cluster-alignment",
+  "name": "Cluster-Level Outlier Alignment",
+  "statement_type": "lemma",
+  "source": {
+    "file": "04_wasserstein_contraction.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-target-complement",
+    "def-fitness-landscape",
+    "def-unified-high-low-error-sets"
+  ],
+  "input_axioms": [
+    "axiom-confining-potential",
+    "axiom-environmental-richness"
+  ],
+  "input_parameters": [
+    "epsilon",
+    "L",
+    "D_min",
+    "c_sep",
+    "D_diam",
+    "c_d",
+    "lambda_v",
+    "c_geom"
+  ],
+  "attributes_required": {
+    "swarms": [
+      "Structural error: V_struct > R\u00b2_spread",
+      "Separation: L = ||x\u0304_1 - x\u0304_2|| > D_min(\u03b5)",
+      "D_min(\u03b5) \u2265 c_geom \u00b7 R_spread(\u03b5) with c_geom >> 1"
+    ],
+    "stability": [
+      "Stability Condition holds (Theorem 7.5.2.4)"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-stability-condition",
+    "lem-phase-space-packing",
+    "def-unified-high-low-error-sets",
+    "cor-between-group-dominance"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    "cor-between-group-dominance"
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Spatial alignment of target set barycenters",
+    "N-uniform geometric alignment constant c_align(\u03b5) > 0"
+  ],
+  "relations_established": [
+    "\u27e8\u03bc_x(I_1) - \u03bc_x(J_1), x\u0304_1 - x\u0304_2\u27e9 \u2265 c_align(\u03b5) ||\u03bc_x(I_1) - \u03bc_x(J_1)|| \u00b7 L",
+    "Target set I_1 clusters away from other swarm (far-side property)",
+    "c_align(\u03b5) > 0 (N-uniform, depends on c_sep and D_diam)"
+  ]
+}

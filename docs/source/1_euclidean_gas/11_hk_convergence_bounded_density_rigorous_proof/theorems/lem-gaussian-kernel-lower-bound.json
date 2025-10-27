@@ -1,0 +1,47 @@
+{
+  "label": "lem-gaussian-kernel-lower-bound",
+  "name": "Gaussian Kernel Lower Bound",
+  "statement_type": "lemma",
+  "source": {
+    "file": "11_hk_convergence_bounded_density_rigorous_proof.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-cloning-operator",
+    "def-state-space"
+  ],
+  "input_axioms": [
+    "ax-domain-regularity"
+  ],
+  "input_parameters": [
+    "sigma_x",
+    "R",
+    "d",
+    "m"
+  ],
+  "attributes_required": {
+    "gaussian-kernel-normalized": [
+      "\u222b G_\u03c3_x(x-y) dy = 1 on \u211d^d"
+    ],
+    "gaussian-positivity": [
+      "G_\u03c3_x(\u00b7) > 0 on \u211d^d"
+    ],
+    "bounded-domain": [
+      "x, y \u2208 B_R \u21d2 ||x\u2212y|| \u2264 2R"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "Uniform convolution lower bound on B_R with explicit constant c_\u03c3_x,R",
+    "Gaussian ratio bound over B_R"
+  ],
+  "relations_established": [
+    "inf_{x\u2208B_R} \u222b_{B_R} G_\u03c3_x(x\u2212y) \u03c1(y) dy \u2265 m \u00b7 c_\u03c3_x,R",
+    "c_\u03c3_x,R = (2\u03c0\u03c3_x\u00b2)^{\u2212d/2} \u00b7 exp(\u2212(2R)\u00b2/(2\u03c3_x\u00b2))",
+    "G_\u03c3_x(x_1)/G_\u03c3_x(x_2) \u2264 exp((2R)\u00b2/(2\u03c3_x\u00b2)) for x_1, x_2 \u2208 B_R"
+  ]
+}

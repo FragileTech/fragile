@@ -1,0 +1,41 @@
+{
+  "label": "lem-greedy-preserves-signal",
+  "name": "Greedy Pairing Guarantees Signal Separation",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-geometric-partition",
+    "obj-greedy-pairing-algorithm",
+    "obj-measurement-operator",
+    "obj-swarm-and-state-space",
+    "obj-walker"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-dimension",
+    "param-epsilon",
+    "param-swarm-size"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-greedy-preserves-signal",
+      "expression": "\\mathbb{E}[d_i \\mid S_t, i \\in H_k] \\ge D_H(\\epsilon)",
+      "object_label": "obj-greedy-pairing-algorithm",
+      "established_by": "lem-greedy-preserves-signal",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

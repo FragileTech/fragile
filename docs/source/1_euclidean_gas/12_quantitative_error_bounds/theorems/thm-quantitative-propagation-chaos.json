@@ -1,0 +1,46 @@
+{
+  "label": "thm-quantitative-propagation-chaos",
+  "name": "Quantitative Propagation of Chaos - O(1/\u221aN) Mean-Field Convergence",
+  "statement_type": "theorem",
+  "source": {
+    "file": "12_quantitative_error_bounds.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [],
+  "input_theorems": [
+    "thm-kl-convergence-euclidean",
+    "lem-lipschitz-observable-error",
+    "lem-quantitative-kl-bound",
+    "attr-finite-second-moment-meanfield"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "C_obs",
+    "L_phi",
+    "N",
+    "C_var",
+    "C_int"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-mean-field-convergence-o-1-over-sqrt-n"
+  ],
+  "relations_established": [
+    "optimal-clt-rate",
+    "explicit-observable-constant"
+  ],
+  "bound": "|E_nu_N[phi_N] - E_rho_0[phi]| <= (C_obs * L_phi) / sqrt(N)",
+  "constant": "C_obs = sqrt(C_var + C' * C_int)",
+  "proof_chain": [
+    "D_KL = O(1/N) via lem-quantitative-kl-bound",
+    "E[W_2^2] <= O(1/N) via Fournier-Guillin",
+    "E[W_1] <= O(1/sqrt(N)) via Jensen + W_2",
+    "Observable error <= L_phi * W_1 via Kantorovich-Rubinstein"
+  ],
+  "main_result": "PART I"
+}

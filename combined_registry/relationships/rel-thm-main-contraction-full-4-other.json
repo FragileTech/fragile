@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-main-contraction-full-4-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-cloning-operator",
+  "target_object": "obj-target-complement",
+  "established_by": "thm-main-contraction-full",
+  "expression": "Foundation for mean-field limit and propagation of chaos",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction"
+}

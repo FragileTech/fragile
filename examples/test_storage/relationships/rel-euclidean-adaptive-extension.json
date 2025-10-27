@@ -1,0 +1,14 @@
+{
+  "label": "rel-euclidean-adaptive-extension",
+  "relationship_type": "extension",
+  "bidirectional": false,
+  "source_object": "obj-discrete-particle-system",
+  "target_object": "obj-adaptive-gas-system",
+  "established_by": "thm-adaptive-extension",
+  "expression": "Euclidean Gas ⊂ Adaptive Gas",
+  "properties": [],
+  "tags": [
+    "framework-extension"
+  ],
+  "timestamp": null
+}

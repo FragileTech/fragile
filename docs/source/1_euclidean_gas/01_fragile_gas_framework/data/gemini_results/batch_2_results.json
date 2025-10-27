@@ -1,0 +1,205 @@
+{
+  "lem-polynomial-patch-monotonicity": {
+    "input_objects": [],
+    "input_axioms": [],
+    "input_parameters": ["param-z-max"],
+    "attributes_required": {},
+    "output_type": "Property",
+    "attributes_added": [
+      {
+        "label": "attr-monotonicity",
+        "expression": "P'(z) \\ge 0 \\quad \\forall z \\in [z_{\\max}-1, z_{\\max}]",
+        "object_label": "obj-polynomial-patch"
+      }
+    ],
+    "relations_established": []
+  },
+  "lem-rescale-monotonicity": {
+    "input_objects": ["obj-asymmetric-rescale-function"],
+    "input_axioms": ["axiom-def-axiom-rescale-function"],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Property",
+    "attributes_added": [
+      {
+        "label": "attr-monotonic-non-decreasing",
+        "expression": "\\forall z_1, z_2 \\in \\mathbb{R}, z_1 \\le z_2 \\implies g_A(z_1) \\le g_A(z_2)",
+        "object_label": "obj-asymmetric-rescale-function"
+      }
+    ],
+    "relations_established": []
+  },
+  "lem-set-difference-bound": {
+    "input_objects": ["obj-alive-dead-sets", "obj-reward-measurement"],
+    "input_axioms": [],
+    "input_parameters": ["param-m-f"],
+    "attributes_required": {
+      "obj-reward-measurement": ["attr-bounded-real-valued"],
+      "obj-alive-dead-sets": ["attr-non-empty"]
+    },
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-set-difference-error-bound",
+        "expression": "|\\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j| \\le M_f \\frac{|S_1 \\Delta S_2|}{|S_1|}",
+        "object_label": "obj-statistical-properties-measurement"
+      }
+    ],
+    "relations_established": []
+  },
+  "lem-sigma-patch-derivative-bound": {
+    "input_objects": ["obj-statistical-properties-measurement"],
+    "input_axioms": [],
+    "input_parameters": ["param-kappa-var-min"],
+    "attributes_required": {},
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-derivative-bound-regularized-std-dev",
+        "expression": "|\\sigma'_{\\text{reg}}'(V)| \\leq \\frac{1}{2\\sigma'_{\\min}}",
+        "object_label": "obj-statistical-properties-measurement"
+      }
+    ],
+    "relations_established": []
+  },
+  "lem-single-walker-own-status-error": {
+    "input_objects": [
+      "obj-swarm-and-state-space",
+      "obj-walker",
+      "obj-raw-value-operator",
+      "obj-distance-to-cemetery-state",
+      "obj-status-update-operator"
+    ],
+    "input_axioms": ["axiom-raw-value-mean-square-continuity"],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-single-walker-error-bound-by-cemetery-dist",
+        "expression": "|\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]| \\le D_{\\text{cemetery}} \\text{ if } s_{1,i} \\neq s_{2,i}",
+        "object_label": "obj-walker"
+      }
+    ],
+    "relations_established": []
+  },
+  "lem-single-walker-positional-error": {
+    "input_objects": [
+      "obj-fragile-swarm-instantiation",
+      "obj-walker",
+      "obj-alive-dead-sets",
+      "obj-companion-selection-measure",
+      "obj-distance-positional-measures",
+      "obj-raw-value-operator"
+    ],
+    "input_axioms": ["axiom-raw-value-mean-square-continuity"],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-single-walker-positional-error-bound",
+        "expression": "|\\mathbb{E}[d(x_{2,i}, \\mathbb{C}_i(\\mathcal{S}_2))] - \\mathbb{E}[d(x_{1,i}, \\mathbb{C}_i(\\mathcal{S}_1))]| \\le K",
+        "object_label": "obj-distance-positional-measures"
+      }
+    ],
+    "relations_established": []
+  },
+  "lem-single-walker-structural-error": {
+    "input_objects": [
+      "obj-fragile-swarm-instantiation",
+      "obj-alive-dead-sets",
+      "obj-walker",
+      "obj-companion-selection-measure",
+      "obj-lipschitz-structural-error-coefficients"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-single-walker-structural-error-bound",
+        "expression": "d_{err}(w_i, \\mathcal{S}_1, \\mathcal{S}_2) \\le C_{struct} \\cdot d_{struct}(\\mu_{i,1}, \\mu_{i,2})",
+        "object_label": "obj-walker"
+      }
+    ],
+    "relations_established": []
+  },
+  "lem-stats-structural-continuity": {
+    "input_objects": [
+      "obj-statistical-properties-measurement",
+      "obj-raw-value-operator",
+      "obj-fragile-swarm-instantiation",
+      "obj-lipschitz-structural-error-coefficients"
+    ],
+    "input_axioms": ["axiom-raw-value-mean-square-continuity"],
+    "input_parameters": [],
+    "attributes_required": {},
+    "output_type": "Property",
+    "attributes_added": [
+      {
+        "label": "attr-mean-structural-lipschitz",
+        "expression": "|\\mu(\\mathcal{S}_1, \\mathbf{v}) - \\mu(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\mu} \\cdot d_{struct}(\\mathcal{S}_1, \\mathcal{S}_2)",
+        "object_label": "obj-statistical-properties-measurement"
+      },
+      {
+        "label": "attr-std-dev-structural-lipschitz",
+        "expression": "|\\sigma'(\\mathcal{S}_1, \\mathbf{v}) - \\sigma'(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\sigma'} \\cdot d_{struct}(\\mathcal{S}_1, \\mathcal{S}_2)",
+        "object_label": "obj-statistical-properties-measurement"
+      }
+    ],
+    "relations_established": []
+  },
+  "lem-stats-value-continuity": {
+    "input_objects": [
+      "obj-alive-dead-sets",
+      "obj-raw-value-operator",
+      "obj-statistical-properties-measurement"
+    ],
+    "input_axioms": [],
+    "input_parameters": ["param-v-max"],
+    "attributes_required": {
+      "obj-raw-value-operator": ["attr-bounded-components"],
+      "obj-alive-dead-sets": ["attr-non-empty"]
+    },
+    "output_type": "Property",
+    "attributes_added": [
+      {
+        "label": "attr-lipschitz-continuity-value",
+        "expression": "|\\text{mean}(\\mathbf{v}_1) - \\text{mean}(\\mathbf{v}_2)| \\leq L_1 \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|",
+        "object_label": "obj-statistical-properties-measurement"
+      }
+    ],
+    "relations_established": []
+  },
+  "lem-total-squared-error-stable": {
+    "input_objects": [
+      "obj-swarm-and-state-space",
+      "obj-alive-dead-sets",
+      "obj-raw-value-operator",
+      "obj-walker",
+      "obj-distance-positional-measures",
+      "obj-lipschitz-structural-error-coefficients",
+      "obj-components-mean-square-standardization-error"
+    ],
+    "input_axioms": [
+      "axiom-raw-value-mean-square-continuity",
+      "axiom-def-axiom-margin-stability"
+    ],
+    "input_parameters": [],
+    "attributes_required": {
+      "obj-swarm-and-state-space": ["attr-has-at-least-two-walkers"],
+      "obj-walker": ["attr-is-stable"]
+    },
+    "output_type": "Bound",
+    "attributes_added": [
+      {
+        "label": "attr-total-squared-error-bound-for-stable-walkers",
+        "expression": "E_{d \\sim D_{raw}}[d^2] \\le C_{pos} \\cdot \\Delta_{pos}^2 + C_{struct} \\cdot \\Delta_{struct}^2",
+        "object_label": "obj-components-mean-square-standardization-error"
+      }
+    ],
+    "relations_established": []
+  }
+}

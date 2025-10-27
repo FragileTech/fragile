@@ -1,0 +1,44 @@
+{
+  "label": "thm-phi-irreducibility",
+  "name": "\u03c6-Irreducibility of the Euclidean Gas",
+  "statement_type": "theorem",
+  "source": null,
+  "input_objects": [
+    "obj-swarm-and-state-space",
+    "obj-swarm-update-procedure",
+    "obj-kinetic-operator-stratonovich",
+    "obj-cloning-measure"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-non-degenerate-noise",
+    "axiom-def-axiom-reward-regularity",
+    "axiom-def-axiom-environmental-richness",
+    "axiom-def-axiom-boundary-regularity"
+  ],
+  "input_parameters": [
+    "param-N",
+    "param-gamma",
+    "param-sigma-v",
+    "param-tau"
+  ],
+  "attributes_required": {
+    "obj-kinetic-operator-stratonovich": [
+      "attr-hypoelliptic-positive-density"
+    ],
+    "obj-swarm-and-state-space": [
+      "attr-has-open-core-with-positive-measure"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-phi-irreducible",
+      "expression": "\u2200 S\u2208\u03a3_N^{alive}, \u2200 open O\u2282\u03a3_N^{alive}, \u2203M: P^M(S,O) > 0",
+      "object_label": "obj-swarm-update-procedure"
+    }
+  ],
+  "relations_established": []
+}

@@ -1,0 +1,14 @@
+{
+  "label": "obj-coupled-state-space",
+  "name": "The Coupled State Space",
+  "mathematical_expression": "S_1 = \\left( (x_{1,1}, v_{1,1}, s_{1,1}), \\dots, (x_{1,N}, v_{1,N}, s_{1,N}) \\right) \\in \\Sigma_N,",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "euclidean-gas",
+    "swarm",
+    "convergence"
+  ],
+  "source": null
+}

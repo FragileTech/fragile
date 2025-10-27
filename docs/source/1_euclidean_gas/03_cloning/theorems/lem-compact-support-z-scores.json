@@ -1,0 +1,27 @@
+{
+  "label": "lem-compact-support-z-scores",
+  "name": "Compact Support of Standardized Scores",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "line_start": 1823,
+    "line_end": 1846
+  },
+  "input_objects": [
+    "obj-fitness-operator",
+    "obj-fitness-potential-operator",
+    "obj-swarm-and-state-space"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-dimension",
+    "param-sigma"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": []
+}

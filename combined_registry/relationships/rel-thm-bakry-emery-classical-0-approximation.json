@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-bakry-emery-classical-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-diffusion-generator",
+  "target_object": "obj-dirichlet-form",
+  "established_by": "thm-bakry-emery-classical",
+  "expression": "Γ₂(f) ≥ ρ Γ(f) implies LSI with C_LSI ≤ 2/ρ",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

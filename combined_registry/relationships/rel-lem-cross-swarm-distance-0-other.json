@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-cross-swarm-distance-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-target-complement",
+  "target_object": "obj-target-complement",
+  "established_by": "lem-cross-swarm-distance",
+  "expression": "D_II ≈ L² + Var_x(I_1) + Var_x(I_2) + O(L·R_I)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction"
+}

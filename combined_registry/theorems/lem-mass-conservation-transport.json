@@ -1,0 +1,45 @@
+{
+  "label": "lem-mass-conservation-transport",
+  "name": "Mass Conservation of Transport",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "07_mean_field",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-transport-operator",
+    "obj-kinetic-generator",
+    "obj-mean-field-phase-space"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-bounded-algorithmic-diameter",
+    "axiom-def-axiom-boundary-smoothness"
+  ],
+  "input_parameters": [],
+  "properties_required": {
+    "obj-transport-operator": [
+      "asmp-regularity-summary"
+    ],
+    "obj-mean-field-phase-space": [
+      "asmp-domain-regularity"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-mass-conservation-transport",
+      "expression": "∫_Ω L^† f(t,z) dz = 0",
+      "object_label": "obj-transport-operator",
+      "established_by": "lem-mass-conservation-transport",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

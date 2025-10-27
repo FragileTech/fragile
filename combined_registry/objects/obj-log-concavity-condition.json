@@ -1,0 +1,14 @@
+{
+  "label": "obj-log-concavity-condition",
+  "name": "Explicit Log-Concavity Condition",
+  "mathematical_expression": "\\nabla^2 \\left[\\frac{1}{2}\\log(\\det g(x)) - \\frac{U_{\\text{eff}}(x)}{T}\\right] \\preceq 0",
+  "object_type": "set",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "swarm"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

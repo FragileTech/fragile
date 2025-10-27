@@ -1,0 +1,10 @@
+{
+  "label": "obj-transport-operator",
+  "name": "Transport Operator and Probability Flux",
+  "mathematical_expression": "L^\\dagger f = -\\nabla \\cdot J[f] = -\\nabla_x \\cdot J_x[f] - \\nabla_v \\cdot J_v[f]",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [],
+  "source": null
+}

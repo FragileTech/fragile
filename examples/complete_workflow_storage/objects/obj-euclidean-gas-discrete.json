@@ -1,0 +1,14 @@
+{
+  "label": "obj-euclidean-gas-discrete",
+  "name": "Euclidean Gas (Discrete)",
+  "mathematical_expression": "S_N = {(x_i, v_i, r_i)}_{i=1}^N",
+  "object_type": "set",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "euclidean-gas",
+    "discrete",
+    "particle-system",
+    "core"
+  ]
+}

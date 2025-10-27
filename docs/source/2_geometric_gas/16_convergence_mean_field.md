@@ -32,6 +32,7 @@ The goal of this document is to prove that the **mean-field Euclidean Gas** conv
 
 $$
 \frac{\partial \rho}{\partial t} = \mathcal{L}[\rho] = \mathcal{L}_{\text{kin}}[\rho] + \mathcal{L}_{\text{jump}}[\rho]
+
 $$
 
 where $\mathcal{L}_{\text{kin}}$ governs Langevin dynamics (friction + diffusion) and $\mathcal{L}_{\text{jump}}$ encodes state-dependent killing and proportional revival from absorbed mass. This PDE emerges as the $N \to \infty$ limit of the finite-particle system proven convergent in document `09_kl_convergence.md` (see {prf:ref}`thm-main-kl-convergence` for the finite-N theorem).
@@ -40,6 +41,7 @@ We establish the main result: if the **Kinetic Dominance Condition** holds—mea
 
 $$
 D_{\text{KL}}(\rho_t \| \rho_\infty) \le e^{-\alpha_{\text{net}} t} D_{\text{KL}}(\rho_0 \| \rho_\infty) + \frac{C_{\text{offset}}}{\alpha_{\text{net}}} (1 - e^{-\alpha_{\text{net}} t})
+
 $$
 
 The convergence rate $\alpha_{\text{net}}$ and offset $C_{\text{offset}}$ are given by **explicit formulas** depending on: (1) the Log-Sobolev constant $\lambda_{\text{LSI}}$ of the QSD, (2) coupling bounds from mean-field feedback, and (3) entropy production from killing/revival jumps.
@@ -159,6 +161,7 @@ The proof strategy's key innovation is recognizing that the revival operator's K
 
 $$
 D_{\text{KL}}(\rho_t \| \rho_\infty) \le D_{\text{KL}}(\rho_0 \| \rho_\infty) \cdot e^{-\alpha t}
+
 $$
 
 where $\rho_t$ is the mean-field density governed by the McKean-Vlasov-Fokker-Planck PDE.
@@ -219,6 +222,7 @@ I(\rho) = \begin{cases}
 D_{\text{KL}}(\rho \| \rho_\infty) & \text{if } \rho \ll \rho_\infty \\
 +\infty & \text{otherwise}
 \end{cases}
+
 $$
 
 This means deviations from the mean-field limit $\rho_\infty$ would be exponentially suppressed with probability $\sim e^{-N \cdot D_{\text{KL}}}$.
@@ -364,6 +368,7 @@ Let $\mathcal{R}[\rho, m_d]$ be the mean-field revival operator defined in [05_m
 
 $$
 \mathcal{R}[\rho, m_d](x,v) = \lambda_{\text{revive}} \cdot m_d \cdot \frac{\rho(x,v)}{\int_\Omega \rho}
+
 $$
 
 where $m_d = 1 - \int_\Omega \rho$ is the dead mass and $\lambda_{\text{revive}}$ is the revival rate.
@@ -372,6 +377,7 @@ where $m_d = 1 - \int_\Omega \rho$ is the dead mass and $\lambda_{\text{revive}}
 
 $$
 D_{\text{KL}}(\mathcal{R}(\rho) \| \mathcal{R}(\sigma)) \le D_{\text{KL}}(\rho \| \sigma)
+
 $$
 
 for all alive densities $\rho, \sigma \in \mathcal{P}(\Omega)$ with $\int \rho = \int \sigma < 1$?
@@ -428,6 +434,7 @@ $$
 \frac{\partial \rho}{\partial t} &= \mathcal{L}_{\text{kin}}[\rho] \rho - \kappa_{\text{kill}}(x) \rho + \mathcal{R}[\rho, m_d] \\
 \frac{dm_d}{dt} &= \int_\Omega \kappa_{\text{kill}}(x) \rho \, dx - \lambda_{\text{revive}} m_d
 \end{aligned}
+
 $$
 
 where:
@@ -444,6 +451,7 @@ The **revival operator** $\mathcal{R}: \mathcal{P}(\Omega) \times [0,1] \to \mat
 
 $$
 \mathcal{R}[\rho, m_d](x,v) := \lambda_{\text{revive}} \cdot m_d \cdot \frac{\rho(x,v)}{\|\rho\|_{L^1}}
+
 $$
 
 where $\|\rho\|_{L^1} = \int_\Omega \rho(x,v) \, dx dv$ is the total alive mass.
@@ -480,6 +488,7 @@ Define the **jump operator** $\mathcal{J}: \mathcal{P}(\Omega) \to \mathcal{P}(\
 
 $$
 \mathcal{J}(\rho) := (1 - \int_\Omega \kappa_{\text{kill}} \rho \cdot \Delta t) \cdot \frac{\rho - \kappa_{\text{kill}} \rho \cdot \Delta t}{\text{(normalization)}} + \mathcal{R}[\rho, m_d] \cdot \Delta t
+
 $$
 
 This operator:
@@ -497,6 +506,7 @@ The discrete-time LSI strategy (Strategy C) analyzes the composition:
 
 $$
 \rho(t + \Delta t) = \mathcal{J}(\mathcal{S}_{\Delta t}(\rho(t)))
+
 $$
 
 where $\mathcal{S}_{\Delta t}$ is the continuous kinetic flow. The KL-convergence proof requires:
@@ -521,12 +531,14 @@ The N-particle cloning operator $\Psi_{\text{clone}}: \Sigma_N \to \Sigma_N$ **p
 
 $$
 D_{\text{KL}}(\mu \| \pi) \le C_{\text{LSI}} \cdot I(\mu \| \pi)
+
 $$
 
 then the push-forward $\Psi_{\text{clone}}^* \mu$ satisfies:
 
 $$
 D_{\text{KL}}(\Psi_{\text{clone}}^* \mu \| \Psi_{\text{clone}}^* \pi) \le C'_{\text{LSI}} \cdot I(\Psi_{\text{clone}}^* \mu \| \Psi_{\text{clone}}^* \pi)
+
 $$
 
 where $C'_{\text{LSI}} = C_{\text{LSI}} \cdot (1 + O(\delta^2))$ for cloning noise variance $\delta^2$.
@@ -570,6 +582,7 @@ The revival operator can be viewed as a form of **Bayesian conditioning**:
 
 $$
 \mathcal{R}[\rho, m_d](x,v) \propto \rho(x,v)
+
 $$
 
 This is analogous to updating a prior $\rho$ by conditioning on the event "walker survives." Bayesian updates are known to be KL-contractive:
@@ -577,15 +590,199 @@ This is analogous to updating a prior $\rho$ by conditioning on the event "walke
 :::{prf:theorem} Data Processing Inequality (Standard Result)
 :label: thm-data-processing
 
-For any Markov kernel $K: \mathcal{X} \to \mathcal{P}(\mathcal{Y})$:
+For any Markov kernel $K: \mathcal{X} \to \mathcal{P}(\mathcal{Y})$ and probability measures $\rho, \sigma \in \mathcal{P}(\mathcal{X})$:
 
 $$
 D_{\text{KL}}(K \rho \| K \sigma) \le D_{\text{KL}}(\rho \| \sigma)
+
 $$
 
-where $K\rho(y) = \int K(x \to y) \rho(x) dx$ is the push-forward.
+where the push-forward measure is $(K\rho)(B) = \int_{\mathcal{X}} K(x, B) \, \rho(dx)$ for measurable $B \subseteq \mathcal{Y}$.
 
 **Intuition**: Processing through a channel cannot increase information divergence.
+:::
+
+:::{prf:proof}
+
+**Historical Context**: This theorem is a fundamental result in information theory, first stated by Kullback and formalized by Shannon. The proof follows the classical approach via the chain rule for relative entropy. Primary references: Cover & Thomas (2006, Theorem 2.8.1), Csiszár & Körner (2011, Section 1.2).
+
+**Step 0: Reduction to Finite KL-Divergence**
+
+If $\rho \not\ll \sigma$ (i.e., $\rho$ is not absolutely continuous with respect to $\sigma$), then $D_{\text{KL}}(\rho \| \sigma) = +\infty$ by definition, and the inequality holds trivially. Therefore, we assume **$\rho \ll \sigma$** and $D_{\text{KL}}(\rho \| \sigma) < \infty$.
+
+**Step 1: Construction of Joint Distributions**
+
+Define probability measures $P$ and $Q$ on the product space $\mathcal{X} \times \mathcal{Y}$ by:
+
+$$
+\begin{aligned}
+P(A \times B) &:= \int_A \rho(dx) \, K(x, B), \\
+Q(A \times B) &:= \int_A \sigma(dx) \, K(x, B)
+\end{aligned}
+
+$$
+
+for all measurable rectangles $A \subseteq \mathcal{X}$, $B \subseteq \mathcal{Y}$. By Carathéodory's extension theorem, these uniquely extend to probability measures on $\mathcal{X} \times \mathcal{Y}$.
+
+**Interpretation**: The measure $P$ represents the joint distribution of a Markov chain $(X, Y)$ where $X \sim \rho$ and $Y \sim K(X, \cdot)$. Similarly, $Q$ corresponds to $X \sim \sigma$ and $Y \sim K(X, \cdot)$. Both chains use the **same kernel** $K$, differing only in the initial distribution.
+
+**Step 2: Identification of Marginals**
+
+The $\mathcal{Y}$-marginals of $P$ and $Q$ are precisely the push-forward measures:
+
+$$
+P_Y = K\rho, \quad Q_Y = K\sigma
+
+$$
+
+**Proof**: For any measurable $B \subseteq \mathcal{Y}$:
+
+$$
+\begin{aligned}
+P_Y(B) &= P(\mathcal{X} \times B) = \int_{\mathcal{X}} \rho(dx) \, K(x, B) = (K\rho)(B)
+\end{aligned}
+
+$$
+
+Similarly, $Q_Y(B) = (K\sigma)(B)$. ∎
+
+**Step 3: Absolute Continuity of Joint Measures**
+
+**Lemma**: If $\rho \ll \sigma$, then $P \ll Q$ on $\mathcal{X} \times \mathcal{Y}$.
+
+**Proof**: Let $E \subseteq \mathcal{X} \times \mathcal{Y}$ be measurable with $Q(E) = 0$. By Fubini's theorem:
+
+$$
+0 = Q(E) = \int_{\mathcal{X}} \sigma(dx) \int_{\mathcal{Y}} \mathbb{1}_E(x, y) \, K(x, dy)
+
+$$
+
+This implies that for $\sigma$-almost every $x \in \mathcal{X}$:
+
+$$
+K(x, E_x) = 0
+
+$$
+
+where $E_x := \{y \in \mathcal{Y} : (x, y) \in E\}$. Since $\rho \ll \sigma$, this property holds for $\rho$-almost every $x$ as well. Therefore:
+
+$$
+P(E) = \int_{\mathcal{X}} \rho(dx) \, K(x, E_x) = 0
+
+$$
+
+Thus $P \ll Q$. ∎
+
+**Step 4: Radon-Nikodym Derivative Factorization**
+
+The Radon-Nikodym derivative of $P$ with respect to $Q$ satisfies:
+
+$$
+\frac{dP}{dQ}(x, y) = \frac{d\rho}{d\sigma}(x) \quad Q\text{-a.e.}
+
+$$
+
+**Proof**: From Step 3, $P \ll Q$, so $\frac{dP}{dQ}$ exists. By the disintegration theorem (Kallenberg, Theorem 6.3), we can write:
+
+$$
+\begin{aligned}
+P(dx, dy) &= \rho(dx) \, K(x, dy) \\
+Q(dx, dy) &= \sigma(dx) \, K(x, dy)
+\end{aligned}
+
+$$
+
+Since the conditional distributions $P_{Y|X=x} = K(x, \cdot) = Q_{Y|X=x}$ coincide, the Radon-Nikodym derivative factorizes as:
+
+$$
+\frac{dP}{dQ}(x, y) = \frac{d\rho}{d\sigma}(x) \cdot 1 = \frac{d\rho}{d\sigma}(x)
+
+$$
+
+**Consequence**: The joint divergence is:
+
+$$
+\begin{aligned}
+D(P \| Q) &= \int_{\mathcal{X} \times \mathcal{Y}} \log\left(\frac{d\rho}{d\sigma}(x)\right) \rho(dx) \, K(x, dy) \\
+&= \int_{\mathcal{X}} \log\left(\frac{d\rho}{d\sigma}(x)\right) \rho(dx) = D_{\text{KL}}(\rho \| \sigma)
+\end{aligned}
+
+$$
+
+where we used $\int_{\mathcal{Y}} K(x, dy) = 1$ (normalization). ∎
+
+**Step 5: Chain Rule for Relative Entropy**
+
+The **chain rule for KL-divergence** (Cover & Thomas 2006, Theorem 2.5.3) states: For probability measures $P, Q$ on $\mathcal{X} \times \mathcal{Y}$ with $P \ll Q$:
+
+$$
+D(P \| Q) = D(P_Y \| Q_Y) + \int_{\mathcal{Y}} D(P_{X|Y=y} \| Q_{X|Y=y}) \, P_Y(dy)
+
+$$
+
+where $P_Y, Q_Y$ are the marginals on $\mathcal{Y}$, and $P_{X|Y=y}, Q_{X|Y=y}$ are the regular conditional probabilities (which exist on standard Borel spaces).
+
+**Step 6: Derivation of the Data Processing Inequality**
+
+Applying the chain rule to $P$ and $Q$:
+
+$$
+D(P \| Q) = D(P_Y \| Q_Y) + \int_{\mathcal{Y}} D(P_{X|Y=y} \| Q_{X|Y=y}) \, P_Y(dy)
+
+$$
+
+From Step 4, $D(P \| Q) = D_{\text{KL}}(\rho \| \sigma)$. From Step 2, $P_Y = K\rho$ and $Q_Y = K\sigma$. Therefore:
+
+$$
+D_{\text{KL}}(\rho \| \sigma) = D_{\text{KL}}(K\rho \| K\sigma) + \int_{\mathcal{Y}} D(P_{X|Y=y} \| Q_{X|Y=y}) \, (K\rho)(dy)
+
+$$
+
+**Key Observation**: KL-divergence is always nonnegative:
+
+$$
+D(P_{X|Y=y} \| Q_{X|Y=y}) \ge 0 \quad \text{for all } y \in \mathcal{Y}
+
+$$
+
+Therefore:
+
+$$
+\int_{\mathcal{Y}} D(P_{X|Y=y} \| Q_{X|Y=y}) \, (K\rho)(dy) \ge 0
+
+$$
+
+Dropping this nonnegative term yields:
+
+$$
+D_{\text{KL}}(K\rho \| K\sigma) \le D_{\text{KL}}(\rho \| \sigma)
+
+$$
+
+which is the Data Processing Inequality. ∎
+
+:::
+
+:::{admonition} Non-Applicability to the Revival Operator
+:class: warning
+
+The Data Processing Inequality **cannot be directly applied** to the revival operator $\mathcal{R}[\rho, m_d]$ in the Geometric Gas framework. The reasons are:
+
+1. **Global Mass Dependence**: The revival operator depends on the **total mass** $\|\rho\|_{L^1}$, not just the distributional shape. It is **not** a Markov kernel in the standard sense.
+
+2. **Two-Argument Structure**: $\mathcal{R}$ couples the alive distribution $\rho$ and the dead mass $m_d$. There is no single-argument kernel $K$ such that $\mathcal{R}[\rho] = K\rho$.
+
+3. **Nonlinear Normalization**: The operator includes a division by $\|\rho\|_{L^1}$:
+
+   $$
+   \mathcal{R}[\rho, m_d](x) = \lambda_{\text{revive}} m_d \cdot \frac{\rho(x)}{\|\rho\|_{L^1}}
+   $$
+
+   This normalization is a **nonlinear functional** on the space of measures, breaking the linearity structure required for the DPI.
+
+4. **Potential for KL-Expansion**: As shown in Section 3 of this document, the revival operator can be **KL-expansive**, not contractive. The normalization mismatch when $\|\rho\|_{L^1} \neq \|\sigma\|_{L^1}$ can cause divergence to increase.
+
+**Conclusion**: The DPI serves as pedagogical motivation for *why* one might hope for KL-contraction, but direct proofs are required for operators with global mass dependence like $\mathcal{R}$. See Sections 3-4 of this document for the actual analysis.
 :::
 
 **Application attempt**:
@@ -613,6 +810,7 @@ The Bayesian/data-processing analogy **breaks down** because:
 
 $$
 \frac{\rho}{\|\rho\|_{L^1}} \quad \text{vs.} \quad \frac{\sigma}{\|\sigma\|_{L^1}}
+
 $$
 
 have different normalizations. It's not obvious that $D_{\text{KL}}$ decreases.
@@ -635,12 +833,14 @@ Define normalized densities:
 
 $$
 \tilde{\rho} := \frac{\rho}{m_\rho}, \quad \tilde{\sigma} := \frac{\sigma}{m_\sigma}
+
 $$
 
 Then:
 
 $$
 \mathcal{R}[\rho, 1-m_\rho] = \lambda_{\text{revive}} (1 - m_\rho) \tilde{\rho}
+
 $$
 
 **KL-divergence**:
@@ -652,18 +852,21 @@ D_{\text{KL}}(\mathcal{R}(\rho) \| \mathcal{R}(\sigma)) &= \int_\Omega \mathcal{
 &= \lambda (1-m_\rho) \int \tilde{\rho} \left[ \log \frac{1-m_\rho}{1-m_\sigma} + \log \frac{\tilde{\rho}}{\tilde{\sigma}} \right] \\
 &= \lambda (1-m_\rho) \left[ \log \frac{1-m_\rho}{1-m_\sigma} + D_{\text{KL}}(\tilde{\rho} \| \tilde{\sigma}) \right]
 \end{aligned}
+
 $$
 
 **Comparison to original**:
 
 $$
 D_{\text{KL}}(\rho \| \sigma) = \int \rho \log \frac{\rho}{\sigma} = m_\rho \int \tilde{\rho} \log \frac{m_\rho \tilde{\rho}}{m_\sigma \tilde{\sigma}} = m_\rho \left[ \log \frac{m_\rho}{m_\sigma} + D_{\text{KL}}(\tilde{\rho} \| \tilde{\sigma}) \right]
+
 $$
 
 **KEY QUESTION**: When is
 
 $$
 \lambda (1-m_\rho) \left[ \log \frac{1-m_\rho}{1-m_\sigma} + D_{\text{KL}}(\tilde{\rho} \| \tilde{\sigma}) \right] \le m_\rho \left[ \log \frac{m_\rho}{m_\sigma} + D_{\text{KL}}(\tilde{\rho} \| \tilde{\sigma}) \right] \quad ?
+
 $$
 
 **Analysis**:
@@ -680,6 +883,7 @@ The KL-non-expansiveness of $\mathcal{R}$ is equivalent to:
 
 $$
 \lambda (1-m_\rho) \log \frac{1-m_\rho}{1-m_\sigma} \le m_\rho \log \frac{m_\rho}{m_\sigma}
+
 $$
 
 plus a term involving the normalized KL-divergences.
@@ -688,6 +892,7 @@ plus a term involving the normalized KL-divergences.
 
 $$
 \lambda (1-m_\rho) D_{\text{KL}}(\tilde{\rho} \| \tilde{\sigma}) \le m_\rho D_{\text{KL}}(\tilde{\rho} \| \tilde{\sigma})
+
 $$
 
 This holds iff $\lambda (1 - m_\rho) \le m_\rho$, i.e., $\lambda \le \frac{m_\rho}{1 - m_\rho}$.
@@ -705,12 +910,14 @@ This holds iff $\lambda (1 - m_\rho) \le m_\rho$, i.e., $\lambda \le \frac{m_\rh
 
 $$
 W_2(\rho, \sigma)^2 = \int |x - T(x)|^2 \rho(x) dx
+
 $$
 
 **HWI inequality** (Otto-Villani):
 
 $$
 D_{\text{KL}}(\rho \| \sigma) \le W_2(\rho, \sigma) \sqrt{I(\rho | \sigma)}
+
 $$
 
 where $I(\rho | \sigma)$ is the Fisher information.
@@ -732,6 +939,7 @@ If $\mathcal{R}$ is viewed as resampling from $\tilde{\rho} = \rho / \|\rho\|_{L
 
 $$
 W_2(\mathcal{R}(\rho), \mathcal{R}(\sigma)) \le \lambda (1-m) W_2(\tilde{\rho}, \tilde{\sigma})
+
 $$
 
 for some average dead mass $m \approx (m_\rho + m_\sigma)/2$.
@@ -749,12 +957,14 @@ for some average dead mass $m \approx (m_\rho + m_\sigma)/2$.
 
 $$
 \frac{\partial \rho}{\partial t} \Big|_{\text{revival}} = \mathcal{R}[\rho, m_d] = \lambda m_d \frac{\rho}{\|\rho\|_{L^1}}
+
 $$
 
 **Entropy change**:
 
 $$
 \frac{d}{dt} D_{\text{KL}}(\rho \| \pi) \Big|_{\text{revival}} = \int \mathcal{R}[\rho] \left(1 + \log \frac{\rho}{\pi}\right)
+
 $$
 
 **Question**: Is this negative (entropy decreasing)?
@@ -767,12 +977,14 @@ $$
 &= \lambda m_d \cdot \frac{1}{\|\rho\|_{L^1}} \int \rho (1 + \log \frac{\rho}{\pi}) \\
 &= \lambda m_d \cdot \frac{1}{\|\rho\|_{L^1}} \left[ \|\rho\|_{L^1} + \int \rho \log \frac{\rho}{\pi} \right]
 \end{aligned}
+
 $$
 
 Simplifying:
 
 $$
 \frac{d}{dt} D_{\text{KL}} \Big|_{\text{revival}} = \lambda m_d \left[1 + \frac{1}{\|\rho\|_{L^1}} D_{\text{KL}}(\rho \| \pi \cdot \|\rho\|_{L^1}) \right]
+
 $$
 
 This is **positive** (entropy increasing!) unless there are compensating terms.
@@ -795,6 +1007,7 @@ This suggests that $\mathcal{R}$ alone may **not** be KL-contractive. Contractio
 
 $$
 D_{\text{KL}}(\mathbb{E}[\rho | \mathcal{G}] \| \mathbb{E}[\sigma | \mathcal{G}]) \le D_{\text{KL}}(\rho \| \sigma)
+
 $$
 
 **Question**: Can we frame $\mathcal{R}$ as a conditional expectation?
@@ -819,6 +1032,7 @@ Revival operator:
 
 $$
 \mathcal{R}(\rho) = \lambda (1-m) \cdot \frac{(p_A, p_B)}{m} = \lambda (1-m) \cdot \left(\frac{p_A}{m}, \frac{p_B}{m}\right)
+
 $$
 
 **KL-divergence test**:
@@ -829,22 +1043,26 @@ Normalized: $\tilde{\rho} = (0.8, 0.2)$, $\tilde{\sigma} = (0.6, 0.4)$.
 
 $$
 D_{\text{KL}}(\tilde{\rho} \| \tilde{\sigma}) = 0.8 \log \frac{0.8}{0.6} + 0.2 \log \frac{0.2}{0.4} \approx 0.068
+
 $$
 
 After revival:
 
 $$
 \mathcal{R}(\rho) = 0.5 \lambda (0.8, 0.2), \quad \mathcal{R}(\sigma) = 0.5 \lambda (0.6, 0.4)
+
 $$
 
 $$
 D_{\text{KL}}(\mathcal{R}(\rho) \| \mathcal{R}(\sigma)) = 0.5 \lambda \cdot D_{\text{KL}}(\tilde{\rho} \| \tilde{\sigma}) = 0.5 \lambda \cdot 0.068
+
 $$
 
 Original:
 
 $$
 D_{\text{KL}}(\rho \| \sigma) \approx 0.5 \cdot 0.068 = 0.034
+
 $$
 
 **Comparison**: $D_{\text{KL}}(\mathcal{R}(\rho) \| \mathcal{R}(\sigma)) \approx \lambda \cdot D_{\text{KL}}(\rho \| \sigma)$.
@@ -881,6 +1099,7 @@ The revival mass is **inversely proportional** to alive mass. This creates a "ba
 
 $$
 \mathcal{R}[\rho, 1] = \lambda \cdot \frac{\rho}{\|\rho\|_{L^1}}
+
 $$
 
 As $\|\rho\|_{L^1} \to 0$, the normalized density $\rho / \|\rho\|_{L^1}$ remains well-defined (shape preserved), but the revival mass $\lambda \cdot 1 \to \lambda$ becomes constant.
@@ -955,6 +1174,7 @@ Based on these preliminary findings, I recommend the following investigations wi
 
 $$
 \frac{d}{dt} D_{\text{KL}}(\rho \| \pi) \Big|_{\text{revival}} = \lambda m_d \left( 1 + \frac{D_{\text{KL}}(\rho \| \pi)}{\|\rho\|_{L^1}} \right)
+
 $$
 
 **Conclusion**: Since $D_{\text{KL}} \ge 0$, $\lambda > 0$, $m_d > 0$, and $\|\rho\|_{L^1} > 0$, the entropy production is **strictly positive**.
@@ -966,6 +1186,7 @@ The mean-field revival operator $\mathcal{R}[\rho, m_d]$ **increases** the KL-di
 
 $$
 \frac{d}{dt} D_{\text{KL}}(\rho \| \pi) \Big|_{\text{revival}} > 0 \quad \text{for all } \rho \neq \pi, \, m_d > 0
+
 $$
 
 **Status**: PROVEN (verified by Gemini 2025-01-08)
@@ -977,6 +1198,7 @@ Gemini computed the entropy production for the combined jump operator:
 
 $$
 \frac{d}{dt} D_{\text{KL}}(\rho \| \pi) \Big|_{\text{jump}} = \underbrace{(\lambda m_d - \int \kappa_{\text{kill}} \rho)}_{\text{Mass rate}} + \underbrace{\int \left(\frac{\lambda m_d}{\|\rho\|_{L^1}} - \kappa_{\text{kill}}(x)\right) \rho \log \frac{\rho}{\pi}}_{\text{Divergence change}}
+
 $$
 
 For constant $\kappa_{\text{kill}}$, the coefficient of $D_{\text{KL}}$ is $\frac{\lambda m_d}{\|\rho\|_{L^1}} - \kappa_{\text{kill}}$, which is:
@@ -1015,11 +1237,101 @@ Revival alone is KL-expansive: TRUE ✓
 :::{prf:theorem} Stage 0 COMPLETE (VERIFIED)
 :label: thm-stage0-complete
 
-1. Revival operator is KL-expansive ✓
-2. Joint jump operator not unconditionally contractive ✓
-3. KL-convergence requires kinetic dominance ✓
+1. **Revival operator is KL-expansive**:
 
-**Status**: Verified by Gemini 2025-01-08
+$$
+\frac{d}{dt} D_{\text{KL}}(\rho \| \pi)\bigg|_{\text{revival}} = \lambda_{\text{revive}} m_d \left(1 + \frac{D_{\text{KL}}(\rho \| \pi)}{\|\rho\|}\right) > 0
+
+$$
+
+for all $\rho \not\propto \pi$ with $m_d > 0$.
+
+2. **Joint jump operator not unconditionally contractive**: The combined operator's entropy production sign depends on the mass level $\|\rho\|$ and can be either positive or negative.
+
+3. **KL-convergence requires kinetic dominance**: Exponential convergence requires the kinetic operator's dissipation to dominate the jump operator's expansion.
+:::
+
+:::{prf:proof}
+
+We establish the three statements through direct KL entropy production analysis.
+
+**Framework Setup**: Let $\rho \in L^1_+(\Omega)$ be the unnormalized density with $\|\rho\| = \int_\Omega \rho \, dxdv \le 1$. The KL-divergence for unnormalized densities is $D_{\text{KL}}(\rho \| \pi) = \int_\Omega \rho \log(\rho/\pi) \, dxdv$, which decomposes as:
+
+$$
+D_{\text{KL}}(\rho \| \pi) = \|\rho\| D_{\text{KL}}(\tilde{\rho} \| \pi) + \|\rho\| \log \|\rho\|
+
+$$
+
+where $\tilde{\rho} = \rho/\|\rho\|$ is the normalized density.
+
+**Statement 1: Revival is KL-expansive**
+
+The revival operator acts as $\mathcal{L}_{\text{revival}}[\rho] = \lambda_{\text{revive}} m_d \rho/\|\rho\|$ where $m_d = 1 - \|\rho\|$ is the dead mass. Using the Gateaux derivative formula for KL-divergence:
+
+$$
+\frac{d}{dt} D_{\text{KL}}(\rho \| \pi)\bigg|_{\text{revival}} = \int_\Omega \mathcal{L}_{\text{revival}}[\rho] \left(\log \frac{\rho}{\pi} + 1\right) dx dv
+
+$$
+
+Substituting the revival operator:
+
+$$
+= \int_\Omega \lambda_{\text{revive}} m_d \frac{\rho}{\|\rho\|} \left(\log \frac{\rho}{\pi} + 1\right) dx dv = \lambda_{\text{revive}} m_d \int_\Omega \tilde{\rho} \left(\log \frac{\rho}{\pi} + 1\right) dx dv
+
+$$
+
+Since $\int_\Omega \tilde{\rho} \, dxdv = 1$ (normalization), we have:
+
+$$
+\int_\Omega \tilde{\rho} \cdot 1 \, dxdv = 1
+
+$$
+
+And using $\log(\rho/\pi) = \log \tilde{\rho} + \log \|\rho\| - \log \pi$:
+
+$$
+\int_\Omega \tilde{\rho} \log \frac{\rho}{\pi} \, dxdv = D_{\text{KL}}(\tilde{\rho} \| \pi) + \log \|\rho\|
+
+$$
+
+Combining:
+
+$$
+\frac{d}{dt} D_{\text{KL}}\bigg|_{\text{revival}} = \lambda_{\text{revive}} m_d \left(D_{\text{KL}}(\tilde{\rho} \| \pi) + \log \|\rho\| + 1\right) = \lambda_{\text{revive}} m_d \left(1 + \frac{D_{\text{KL}}(\rho \| \pi)}{\|\rho\|}\right)
+
+$$
+
+Since $D_{\text{KL}}(\rho \| \pi) \ge 0$ with equality iff $\rho = \|\rho\| \pi$, we have the entropy production is strictly positive for all $\rho \not\propto \pi$ when $m_d > 0$.
+
+**Statement 2: Joint jump not contractive**
+
+The joint jump operator combines killing and revival: $\mathcal{L}_{\text{jump}} = -\kappa_{\text{kill}}(x)\rho + \lambda_{\text{revive}} m_d \rho/\|\rho\|$. The killing contribution is:
+
+$$
+\frac{d}{dt} D_{\text{KL}}\bigg|_{\text{killing}} = -\int_\Omega \kappa_{\text{kill}}(x) \rho \left(\log \frac{\rho}{\pi} + 1\right) dx dv
+
+$$
+
+This is negative (contractive) when $\log(\rho/\pi) > -1$, but can be positive otherwise. The joint entropy production $\frac{d}{dt} D_{\text{KL}}|_{\text{jump}}$ combines killing (potentially contractive) and revival (always expansive), with sign depending on $\|\rho\|$. Therefore, it is not unconditionally contractive.
+
+**Statement 3: Kinetic dominance necessity**
+
+From the generator decomposition $\mathcal{L} = \mathcal{L}_{\text{kin}} + \mathcal{L}_{\text{jump}}$ and Statement 1, the jump operator contributes positive entropy production. For exponential KL-convergence $D_{\text{KL}}(\rho(t) \| \pi) \to 0$, we require:
+
+$$
+\frac{d}{dt} D_{\text{KL}}(\rho \| \pi) = \frac{d}{dt} D_{\text{KL}}\bigg|_{\text{kin}} + \frac{d}{dt} D_{\text{KL}}\bigg|_{\text{jump}} < 0
+
+$$
+
+Since the jump term is positive (expansive), this necessitates:
+
+$$
+\left|\frac{d}{dt} D_{\text{KL}}\bigg|_{\text{kin}}\right| > \frac{d}{dt} D_{\text{KL}}\bigg|_{\text{jump}}
+
+$$
+
+The kinetic dissipation must dominate the jump expansion. This completes the proof.
+
 :::
 
 ### 8.2. Decision: GO with Revised Strategy
@@ -1054,24 +1366,28 @@ Recall from [05_mean_field.md](../1_euclidean_gas/07_mean_field.md) that the mea
 
 $$
 \frac{\partial \rho}{\partial t} = \mathcal{L}[\rho]
+
 $$
 
 where the generator is:
 
 $$
 \mathcal{L}[\rho] = \mathcal{L}_{\text{kin}}[\rho] + \mathcal{L}_{\text{jump}}[\rho]
+
 $$
 
 **Kinetic operator** (Fokker-Planck with killing):
 
 $$
 \mathcal{L}_{\text{kin}}[\rho] = -v \cdot \nabla_x \rho + \nabla_x U(x) \cdot \nabla_v \rho + \gamma \nabla_v \cdot (v \rho) + \frac{\sigma^2}{2} \Delta_v \rho
+
 $$
 
 **Jump operator** (killing + revival):
 
 $$
 \mathcal{L}_{\text{jump}}[\rho] = -\kappa_{\text{kill}}(x) \rho + \lambda_{\text{revive}} m_d(\rho) \frac{\rho}{\|\rho\|_{L^1}}
+
 $$
 
 where:
@@ -1106,18 +1422,24 @@ For the LSI with NESS to hold (Dolbeault et al. 2015), we need to prove:
 **R3. Strict positivity**: $\rho_\infty(x,v) > 0$ for all $(x,v) \in \Omega$
 
 **R4. Bounded log-derivatives**:
+
 $$
 \|\nabla_x \log \rho_\infty\|_{L^\infty(\Omega)} < \infty, \quad \|\nabla_v \log \rho_\infty\|_{L^\infty(\Omega)} < \infty
+
 $$
 
 **R5. Bounded log-Laplacian**:
+
 $$
 \|\Delta_v \log \rho_\infty\|_{L^\infty(\Omega)} < \infty
+
 $$
 
 **R6. Exponential concentration**:
+
 $$
 \rho_\infty(x,v) \le C e^{-\alpha(|x|^2 + |v|^2)} \text{ for some } \alpha, C > 0
+
 $$
 
 **Goal of this document**: Prove R1-R6 under reasonable assumptions on $U(x)$ and $\kappa_{\text{kill}}(x)$.
@@ -1131,6 +1453,7 @@ $$
 
 $$
 \mathcal{L}_{\text{jump}}[\rho] = -\kappa_{\text{kill}}(x) \rho + \lambda_{\text{revive}} \underbrace{m_d(\rho)}_{\text{depends on } \rho} \frac{\rho}{\underbrace{\|\rho\|_{L^1}}_{\text{depends on } \rho}}
+
 $$
 
 Both $m_d(\rho) = \int_{\mathcal{D}} \rho$ and $\|\rho\|_{L^1}$ depend globally on $\rho$, making $\mathcal{L}$ a **nonlinear operator**.
@@ -1182,6 +1505,7 @@ For a fixed candidate distribution $\mu \in \mathcal{P}(\Omega)$, define the **l
 
 $$
 \mathcal{L}_\mu[\rho] := \mathcal{L}_{\text{kin}}[\rho] - \kappa_{\text{kill}}(x) \rho + \lambda_{\text{revive}} \frac{m_d(\mu)}{\|\mu\|_{L^1}} \rho
+
 $$
 
 **Key property**: $\mathcal{L}_\mu$ is a **linear operator** (the problematic nonlinear terms $m_d(\rho)$ and $\|\rho\|_{L^1}$ are frozen using $\mu$).
@@ -1197,6 +1521,7 @@ By Champagnat-Villemonais (Theorem 1.1), there exists a unique QSD $\rho_\mu \in
 
 $$
 \mathcal{L}_\mu[\rho_\mu] = 0, \quad \|\rho_\mu\|_{L^1} = M_\mu < 1
+
 $$
 
 **Step 3: Fixed-point map**
@@ -1205,6 +1530,7 @@ Define the map $\mathcal{T}: \mathcal{P}(\Omega) \to \mathcal{P}(\Omega)$ by:
 
 $$
 \mathcal{T}(\mu) := \rho_\mu
+
 $$
 
 A **fixed point** of $\mathcal{T}$ satisfies $\mathcal{T}(\mu^*) = \mu^*$, which means $\rho_{\mu^*} = \mu^*$, i.e., $\mu^*$ is a QSD for the **original nonlinear operator** $\mathcal{L}$.
@@ -1251,6 +1577,7 @@ Define:
 
 $$
 K := \left\{\rho \in \mathcal{P}(\Omega) : \int_\Omega (|x|^2 + |v|^2) \rho \, dxdv \le R, \|\rho\|_{L^1} \ge M_{\min}\right\}
+
 $$
 
 where $R > 0$ (moment bound) and $0 < M_{\min} < 1$ (minimum alive mass).
@@ -1263,12 +1590,14 @@ From quadratic Lyapunov drift (Section 4.2), the linearized operator $\mathcal{L
 
 $$
 \mathcal{L}^*[V] \le -\beta V + C
+
 $$
 
 Standard Champagnat-Villemonais moment estimates give:
 
 $$
 \int V \rho_\mu \le \frac{C}{\beta} + O(\lambda/\|\mu\|_{L^1})
+
 $$
 
 Choose $R$ large enough: $\rho_\mu \in K$ whenever $\mu \in K$.
@@ -1285,6 +1614,7 @@ The revival coefficient for $\mu$ is:
 
 $$
 c(\mu) := \frac{\lambda_{\text{revive}} m_d(\mu)}{\|\mu\|_{L^1}}
+
 $$
 
 where $m_d(\mu) = \int \kappa_{\text{kill}}(x) \mu(x,v) \, dx dv$ is the death mass.
@@ -1294,13 +1624,17 @@ where $m_d(\mu) = \int \kappa_{\text{kill}}(x) \mu(x,v) \, dx dv$ is the death m
 **Proof of claim**:
 - Since $\mu_n \in K$, we have $\|\mu_n\|_{L^1} \ge M_{\min} > 0$ uniformly.
 - Weak convergence $\mu_n \rightharpoonup \mu$ plus $\kappa_{\text{kill}} \in C_b^\infty$ (smooth and bounded) implies:
+
   $$
   m_d(\mu_n) = \int \kappa_{\text{kill}} \cdot \mu_n \to \int \kappa_{\text{kill}} \cdot \mu = m_d(\mu)
+
   $$
 - Similarly, $\|\mu_n\|_{L^1} = \int \mu_n \to \int \mu = \|\mu\|_{L^1}$ (by weak convergence with constant test function 1).
 - By uniform lower bound $\|\mu_n\|_{L^1} \ge M_{\min}$, division is well-defined and:
+
   $$
   c(\mu_n) = \frac{m_d(\mu_n)}{\|\mu_n\|_{L^1}} \to \frac{m_d(\mu)}{\|\mu\|_{L^1}} = c(\mu)
+
   $$
 
 $\square$ (Claim)
@@ -1311,6 +1645,7 @@ The linearized operator is:
 
 $$
 \mathcal{L}_\mu = \mathcal{L}_{\text{kin}} - \kappa_{\text{kill}}(x) + c(\mu)
+
 $$
 
 where the last term is multiplication by the constant $c(\mu)$.
@@ -1321,14 +1656,18 @@ For $\lambda > 0$ large enough, the resolvent operators $R_\lambda(\mu) := (\lam
 
 **Proof sketch**:
 - The difference is:
+
   $$
   \mathcal{L}_{\mu_n} - \mathcal{L}_\mu = c(\mu_n) - c(\mu) = O(|c(\mu_n) - c(\mu)|)
+
   $$
   which is a constant shift.
 - By Step 3a, $c(\mu_n) \to c(\mu)$, so $\|\mathcal{L}_{\mu_n} - \mathcal{L}_\mu\|_{\text{op}} \to 0$ (as bounded operators).
 - Standard resolvent perturbation theory (Kato, Perturbation Theory for Linear Operators, Theorem IV.2.25) gives:
+
   $$
   \|R_\lambda(\mu_n) - R_\lambda(\mu)\|_{\text{op}} \le \frac{\|\mathcal{L}_{\mu_n} - \mathcal{L}_\mu\|_{\text{op}}}{(\lambda - \lambda_{\max})^2}
+
   $$
   where $\lambda_{\max}$ is the spectral bound (uniformly bounded for $\mu \in K$).
 - Therefore $R_\lambda(\mu_n) \to R_\lambda(\mu)$ in operator norm.
@@ -1386,8 +1725,10 @@ The key to proving $\rho_\infty \in C^2$ is the **hypoelliptic** nature of $\mat
 The kinetic operator $\mathcal{L}_{\text{kin}}$ satisfies Hörmander's bracket condition:
 
 The vector fields:
+
 $$
 X_0 = v \cdot \nabla_x - \nabla_x U \cdot \nabla_v - \gamma v \cdot \nabla_v, \quad X_j = \sigma \frac{\partial}{\partial v_j}
+
 $$
 
 generate the full tangent space at every point through repeated Lie brackets.
@@ -1414,6 +1755,7 @@ From the stationarity equation:
 
 $$
 \mathcal{L}_{\text{kin}}[\rho_\infty] = -\mathcal{L}_{\text{jump}}[\rho_\infty] = \kappa_{\text{kill}}(x) \rho_\infty - \lambda_{\text{revive}} m_d(\rho_\infty) \frac{\rho_\infty}{\|\rho_\infty\|_{L^1}}
+
 $$
 
 **Observation**: The right-hand side is smooth if $\kappa_{\text{kill}} \in C^\infty$ and $\rho_\infty \in L^1$.
@@ -1453,6 +1795,7 @@ The Markov process $(X_t, V_t)$ generated by $\mathcal{L}$ (with revival) is **i
 
 $$
 \mathbb{P}_{(x_0,v_0)}[(X_t, V_t) \in B] > 0
+
 $$
 
 That is, the process has positive probability of reaching $B$ from any point in $A$.
@@ -1470,6 +1813,7 @@ By Hörmander's theorem (Lemma {prf:ref}`lem-hormander`), the process is **hypoe
 
 $$
 p_t^{\text{kin}}((x,v), (x', v')) > 0
+
 $$
 
 for all $t > 0$ and any $(x,v), (x', v') \in \Omega$ (before hitting the boundary).
@@ -1543,6 +1887,7 @@ Under Assumptions A1-A4 with $U \in C^3(\mathcal{X})$ (bounded $\nabla^2 U$, $\n
 
 $$
 |\nabla_v \log \rho_\infty(x,v)| \le C_v
+
 $$
 
 for all $(x,v) \in \Omega$ (uniform $L^\infty$ bound).
@@ -1554,6 +1899,7 @@ for all $(x,v) \in \Omega$ (uniform $L^\infty$ bound).
 
 $$
 W(x,v) := |\nabla_v \log \rho_\infty(x,v)|^2
+
 $$
 
 We want to show $W \le C_v^2$ for some constant $C_v$.
@@ -1566,18 +1912,21 @@ The adjoint operator is:
 
 $$
 \mathcal{L}^* = v \cdot \nabla_x - \nabla_x U \cdot \nabla_v - \gamma v \cdot \nabla_v + \frac{\sigma^2}{2} \Delta_v
+
 $$
 
 Computing $\mathcal{L}^*[W]$ (detailed calculation):
 
 $$
 \mathcal{L}^*[W] = v \cdot \nabla_x W - \nabla_x U \cdot \nabla_v W - \gamma v \cdot \nabla_v W + \frac{\sigma^2}{2} \Delta_v W
+
 $$
 
 Using the chain rule and the stationarity equation, this expands to (schematically):
 
 $$
 \mathcal{L}^*[W] = -\frac{\sigma^2}{2} |\nabla_v^2 \log \rho_\infty|^2 + \text{(lower order terms)}
+
 $$
 
 The key term $-\frac{\sigma^2}{2} |\nabla_v^2 \log \rho_\infty|^2$ is **negative definite** (dissipative).
@@ -1592,6 +1941,7 @@ Evaluating $\mathcal{L}^*[W]$ at $(x_0, v_0)$:
 
 $$
 \mathcal{L}^*[W]|_{(x_0,v_0)} = v_0 \cdot \nabla_x W - \nabla_x U(x_0) \cdot \nabla_v W|_{=0} - \gamma v_0 \cdot \nabla_v W|_{=0} + \frac{\sigma^2}{2} \Delta_v W|_{\le 0}
+
 $$
 
 The only remaining term is $v_0 \cdot \nabla_x W(x_0, v_0)$.
@@ -1604,30 +1954,35 @@ First, expand $\nabla_x W$ using $W = |\nabla_v \log \rho_\infty|^2 = \sum_j (\p
 
 $$
 \nabla_x W = 2 \sum_j (\partial_{v_j} \log \rho_\infty) \cdot \nabla_x \partial_{v_j} \log \rho_\infty
+
 $$
 
 Using the notation $\psi := \log \rho_\infty$, we have:
 
 $$
 \nabla_x W = 2 \sum_j (\partial_{v_j} \psi) \cdot \nabla_x \partial_{v_j} \psi = 2 \sum_j (\partial_{v_j} \psi) \cdot \partial_{v_j} \nabla_x \psi
+
 $$
 
 (commuting derivatives). Therefore:
 
 $$
 v_0 \cdot \nabla_x W = 2 v_0 \cdot \left(\sum_j (\partial_{v_j} \psi) \cdot \partial_{v_j} \nabla_x \psi\right) = 2 \sum_j v_{0,j} (\partial_{v_j} \psi) \cdot (\partial_{v_j} \nabla_x \psi)
+
 $$
 
 Now we use the **stationarity equation** $\mathcal{L}[\rho_\infty] = 0$. Writing this in terms of $\psi = \log \rho_\infty$:
 
 $$
 v \cdot \nabla_x \psi - \nabla_x U \cdot \nabla_v \psi - \gamma v \cdot \nabla_v \psi + \frac{\sigma^2}{2}\left(\Delta_v \psi + |\nabla_v \psi|^2\right) = -\frac{\mathcal{L}_{\text{jump}}[\rho_\infty]}{\rho_\infty}
+
 $$
 
 Taking $\nabla_v$ of this equation:
 
 $$
 \nabla_v(v \cdot \nabla_x \psi) - \nabla_v(\nabla_x U \cdot \nabla_v \psi) - \gamma \nabla_v(v \cdot \nabla_v \psi) + \frac{\sigma^2}{2} \nabla_v\left(\Delta_v \psi + |\nabla_v \psi|^2\right) = -\nabla_v\left(\frac{\mathcal{L}_{\text{jump}}[\rho_\infty]}{\rho_\infty}\right)
+
 $$
 
 Computing term-by-term:
@@ -1651,6 +2006,7 @@ From the computations above, the equation $\nabla_v[\mathcal{L}[\rho_\infty]] = 
 
 $$
 \nabla_x \psi + v \cdot \nabla_v \nabla_x \psi - \nabla^2_{xv} U \cdot \nabla_v \psi - \nabla_x U \cdot \nabla_v^2 \psi - \gamma \nabla_v \psi - \gamma v \cdot \nabla_v^2 \psi + \frac{\sigma^2}{2}\nabla_v \Delta_v \psi + \sigma^2 \nabla_v \psi \cdot \nabla_v^2 \psi = -\nabla_v\left(\frac{\mathcal{L}_{\text{jump}}[\rho_\infty]}{\rho_\infty}\right)
+
 $$
 
 where $\nabla_v \psi \cdot \nabla_v^2 \psi$ denotes the vector $[(\nabla_v \psi)^T (\nabla_v^2 \psi)]_j = \sum_k \partial_{v_k} \psi \cdot \partial_{v_j v_k}^2 \psi$.
@@ -1659,6 +2015,7 @@ Rearranging to isolate the mixed derivative term (viewing this as a vector equat
 
 $$
 v \cdot \nabla_v \nabla_x \psi = -\nabla_x \psi + \nabla^2_{xv} U \cdot \nabla_v \psi + (\nabla_x U + \gamma v) \cdot \nabla_v^2 \psi + \gamma \nabla_v \psi - \frac{\sigma^2}{2}\nabla_v \Delta_v \psi - \sigma^2 \nabla_v \psi \cdot \nabla_v^2 \psi + \text{jump terms}
+
 $$
 
 Note that $\nabla_v \Delta_v \psi = \nabla_v (\text{tr}(\nabla_v^2 \psi)) = \nabla_v(\sum_k \partial_{v_k v_k}^2 \psi)$ involves third derivatives $\partial_{v_j v_k v_k}^3 \psi$, but by Hörmander hypoellipticity (R2), we have bounds on all derivatives in terms of the energy norms.
@@ -1667,18 +2024,21 @@ Taking norms and using triangle inequality:
 
 $$
 |v| \cdot \|\nabla_v \nabla_x \psi\| \le \|\nabla_x \psi\| + \|\nabla^2_{xv} U\| \cdot \|\nabla_v \psi\| + (\|\nabla_x U\| + \gamma |v|) \cdot \|\nabla_v^2 \psi\| + \gamma \|\nabla_v \psi\| + \frac{\sigma^2}{2}\|\nabla_v \Delta_v \psi\| + \sigma^2 \|\nabla_v \psi\| \cdot \|\nabla_v^2 \psi\| + C_{\text{jump}}
+
 $$
 
 **Bounding the third derivative term**: From hypoelliptic regularity (Hörmander), for a smooth solution $\psi$ of the PDE, there exists a constant $C_{\text{reg}}$ such that:
 
 $$
 \|\nabla_v^3 \psi\| \le C_{\text{reg}}(\|\nabla_v^2 \psi\| + \|\nabla_v \psi\| + 1)
+
 $$
 
 This is a standard Sobolev-type estimate for hypoelliptic operators (see Hörmander 1967, Theorem 1.1). Therefore:
 
 $$
 \|\nabla_v \Delta_v \psi\| \le d \cdot \|\nabla_v^3 \psi\| \le d C_{\text{reg}}(\|\nabla_v^2 \psi\| + \|\nabla_v \psi\| + 1)
+
 $$
 
 where $d$ is the dimension.
@@ -1687,18 +2047,21 @@ Substituting back and using $\|\nabla_v \psi\| = \sqrt{W}$:
 
 $$
 |v| \cdot \|\nabla_v \nabla_x \psi\| \le \|\nabla_x \psi\| + \|\nabla^2_{xv} U\| \sqrt{W} + \left(\|\nabla_x U\| + \gamma |v| + \sigma^2 \sqrt{W}\right) \|\nabla_v^2 \psi\| + \left(\gamma + \frac{\sigma^2 d C_{\text{reg}}}{2}\right) \sqrt{W} + \frac{\sigma^2 d C_{\text{reg}}}{2}(\|\nabla_v^2 \psi\| + 1) + C_{\text{jump}}
+
 $$
 
 Collecting terms with $\|\nabla_v^2 \psi\|$:
 
 $$
 |v| \cdot \|\nabla_v \nabla_x \psi\| \le \left[\|\nabla_x U\| + \gamma |v| + \sigma^2 \sqrt{W} + \frac{\sigma^2 d C_{\text{reg}}}{2}\right] \|\nabla_v^2 \psi\| + [\text{terms with } \sqrt{W}] + C
+
 $$
 
 For $|v| \ge v_{\min} > 0$ (away from zero velocity), dividing by $|v|$:
 
 $$
 \boxed{\|\nabla_v \nabla_x \psi\| \le \frac{1}{v_{\min}}\left[\|\nabla_x U\| + \gamma v_{\max} + \sigma^2 \sqrt{W} + \frac{\sigma^2 d C_{\text{reg}}}{2}\right] \|\nabla_v^2 \psi\| + C(U) \sqrt{W} + C(U)}
+
 $$
 
 where all constants $C(U)$ depend on $\|U\|_{C^3}$, $\sigma$, $\gamma$, dimension $d$, and the regularity constant $C_{\text{reg}}$.
@@ -1711,12 +2074,14 @@ Recall from line 582 that $\nabla_x W = 2 \sum_j (\partial_{v_j} \psi) \cdot \pa
 
 $$
 |v_0 \cdot \nabla_x W| = 2|v_0 \cdot (\nabla_v \psi \otimes \nabla_v \nabla_x \psi)^T| \le 2 |v_0| \cdot \|\nabla_v \psi\| \cdot \|\nabla_v \nabla_x \psi\|
+
 $$
 
 At the maximum point, $\|\nabla_v \psi\| = \sqrt{W(x_0,v_0)}$. Using the bound from Substep 4a:
 
 $$
 |v_0 \cdot \nabla_x W| \le 2 V_{\max} \sqrt{W} \left[\frac{C_1}{v_{\min}} \|\nabla_v^2 \psi\| + C_2 \sqrt{W} + C_3\right]
+
 $$
 
 where $C_1 = \|\nabla_x U\| + \gamma V_{\max} + \sigma^2 \sqrt{W_{\max}} + \frac{\sigma^2 d C_{\text{reg}}}{2}$.
@@ -1725,22 +2090,26 @@ Expanding:
 
 $$
 |v_0 \cdot \nabla_x W| \le \frac{2 V_{\max} C_1}{v_{\min}} \sqrt{W} \|\nabla_v^2 \psi\| + 2 V_{\max} C_2 W + 2 V_{\max} C_3 \sqrt{W}
+
 $$
 
 $$
 \frac{2 V_{\max} C_1}{v_{\min}} \sqrt{W} \|\nabla_v^2 \psi\| \le \varepsilon \|\nabla_v^2 \psi\|^2 + \frac{1}{4\varepsilon}\left(\frac{2 V_{\max} C_1}{v_{\min}}\right)^2 W
+
 $$
 
 Choosing $\varepsilon = \frac{\sigma^2}{4}$ to match the dissipative term from the diffusion operator:
 
 $$
 |v_0 \cdot \nabla_x W| \le \frac{\sigma^2}{4} \|\nabla_v^2 \psi\|^2 + \frac{V_{\max}^2 C_1^2}{\sigma^2 v_{\min}^2} W + 2 V_{\max} C_2 W + 2 V_{\max} C_3 \sqrt{W}
+
 $$
 
 Absorbing all $W$-dependent terms into constants:
 
 $$
 \boxed{|v_0 \cdot \nabla_x W| \le \frac{\sigma^2}{4} \|\nabla_v^2 \psi\|^2 + \tilde{C}_1 W + \tilde{C}_2}
+
 $$
 
 where:
@@ -1755,6 +2124,7 @@ The full expansion of $\mathcal{L}^*[W]$ at the maximum point includes (from the
 
 $$
 \frac{\sigma^2}{2} \Delta_v W = \sigma^2 \sum_i (\partial_{v_i} \nabla_v \psi)^T (\partial_{v_i} \nabla_v \psi) + \sigma^2 \sum_i (\partial_{v_i} \psi) \Delta_v \partial_{v_i} \psi
+
 $$
 
 The first term is $\sigma^2 \|\nabla_v^2 \psi\|_F^2$ (Frobenius norm squared). The second term can be bounded using the stationarity equation.
@@ -1763,22 +2133,26 @@ At the maximum point where $\nabla_v W = 0$ and $\Delta_v W \le 0$:
 
 $$
 \mathcal{L}^*[W]|_{(x_0,v_0)} = v_0 \cdot \nabla_x W + \frac{\sigma^2}{2}\Delta_v W|_{\le 0}
+
 $$
 
 The dissipative structure of the diffusion yields (by detailed calculation of the chain rule):
 
 $$
 \frac{\sigma^2}{2} \Delta_v W \le -\frac{\sigma^2}{2} \|\nabla_v^2 \psi\|^2 + \text{lower order terms}
+
 $$
 
 Combining with Substep 4b:
 
 $$
 \mathcal{L}^*[W]|_{(x_0,v_0)} \le \left(\frac{\sigma^2}{4} - \frac{\sigma^2}{2}\right) \|\nabla_v^2 \psi\|^2 + \tilde{C}_1 W + \tilde{C}_2 + \text{lower order}
+
 $$
 
 $$
 \boxed{\mathcal{L}^*[W]|_{(x_0,v_0)} \le -\frac{\sigma^2}{4} \|\nabla_v^2 \psi(x_0,v_0)\|^2 + C_1 W(x_0,v_0) + C_2}
+
 $$
 
 where $C_1 = \tilde{C}_1 + O(1)$ and $C_2 = \tilde{C}_2 + O(1)$ absorb all lower-order terms, with explicit dependence on all problem parameters.
@@ -1789,6 +2163,7 @@ From Step 4, at the maximum point $(x_0,v_0)$:
 
 $$
 \mathcal{L}^*[W]|_{(x_0,v_0)} \le -\frac{\sigma^2}{4} \|\nabla_v^2 \psi(x_0,v_0)\|^2 + C_1 W(x_0,v_0) + C_2
+
 $$
 
 Now suppose $W(x_0,v_0) > \frac{4C_2}{C_1}$ (i.e., $W$ is large at the maximum). We claim this leads to a contradiction.
@@ -1803,6 +2178,7 @@ For $\psi$ solving $\mathcal{L}[\rho_\infty] = 0$ with $\psi = \log \rho_\infty$
 
 $$
 \|\psi\|_{C^{2,\alpha}(K)} \le C(K, \|\psi\|_{C^0(\Omega)}, \|U\|_{C^3}, \sigma, \gamma)
+
 $$
 
 This is NOT the classical Aleksandrov-Bakelman-Pucci (ABP) maximum principle for uniformly elliptic equations, but rather the **Hörmander-Bony regularity theory** for hypoelliptic operators.
@@ -1813,18 +2189,21 @@ More precisely, by the **Gagliardo-Nirenberg interpolation inequality** adapted 
 
 $$
 \|\nabla_v \psi\|_{L^\infty}^2 \le C_{\text{GN}} \|\nabla_v^2 \psi\|_{L^2} \|\psi\|_{L^2} + C_{\text{GN}}'\|\psi\|_{L^2}^2
+
 $$
 
 At a maximum point of $W = |\nabla_v \psi|^2$, we have $W(x_0,v_0) \le \|\nabla_v \psi\|_{L^\infty}^2$. By the local estimate and the structure of the QSD (which has finite $L^2$ norm by R6), this implies:
 
 $$
 W(x_0,v_0) \le C_{\text{reg}} \|\nabla_v^2 \psi\|_{L^2}^2 + C_{\text{reg}}'
+
 $$
 
 For $W$ large, this implies $\|\nabla_v^2 \psi\|_{L^2}$ must also be large. By the maximum point analysis and the hypoelliptic structure, this yields a pointwise lower bound:
 
 $$
 \boxed{\|\nabla_v^2 \psi(x_0,v_0)\|^2 \ge \frac{W(x_0,v_0)}{C_{\text{reg}}} - C_{\text{reg}}'}
+
 $$
 
 where $C_{\text{reg}}$ and $C_{\text{reg}}'$ depend on $\|U\|_{C^3}$, $\sigma$, $\gamma$, and the dimension $d$.
@@ -1840,14 +2219,17 @@ Substituting into the drift bound:
 
 $$
 \mathcal{L}^*[W]|_{(x_0,v_0)} \le -\frac{\sigma^2}{4}\left(\frac{W}{C_{\text{reg}}} - C_{\text{reg}}\right) + C_1 W + C_2
+
 $$
 
 $$
 = -\frac{\sigma^2}{4C_{\text{reg}}} W + \frac{\sigma^2 C_{\text{reg}}}{4} + C_1 W + C_2
+
 $$
 
 $$
 = \left(C_1 - \frac{\sigma^2}{4C_{\text{reg}}}\right) W + \left(\frac{\sigma^2 C_{\text{reg}}}{4} + C_2\right)
+
 $$
 
 Choose $C_{\text{reg}}$ such that $C_1 - \frac{\sigma^2}{4C_{\text{reg}}} < 0$ (this is possible by taking $C_{\text{reg}} < \frac{\sigma^2}{4C_1}$, which holds for the regularity constant when $U \in C^3$).
@@ -1856,6 +2238,7 @@ Then for $W(x_0,v_0)$ sufficiently large (specifically, $W > \frac{4C_2 + \sigma
 
 $$
 \mathcal{L}^*[W]|_{(x_0,v_0)} < 0
+
 $$
 
 But $(x_0,v_0)$ is a maximum of $W$, so by the **strong maximum principle** for $\mathcal{L}^*$ (which is hypoelliptic and irreducible), either:
@@ -1870,6 +2253,7 @@ This contradicts $\mathcal{L}^*[W]|_{(x_0,v_0)} < 0$.
 
 $$
 \boxed{W(x,v) \le C_v^2 := \frac{4C_2 + \sigma^2 C_{\text{reg}}}{\frac{\sigma^2}{4C_{\text{reg}}} - C_1} \quad \forall (x,v) \in \Omega}
+
 $$
 
 where all constants are explicit in terms of $\|U\|_{C^3}$, $\sigma$, $\gamma$, $\kappa_{\text{conf}}$, and the jump operator bounds.
@@ -1885,6 +2269,7 @@ Under Assumptions A1-A4 with $U \in C^3(\mathcal{X})$, there exist constants $C_
 
 $$
 |\nabla_x \log \rho_\infty(x,v)| \le C_x, \quad |\Delta_v \log \rho_\infty(x,v)| \le C_\Delta
+
 $$
 
 for all $(x,v) \in \Omega$ (uniform $L^\infty$ bounds).
@@ -1902,6 +2287,7 @@ Computing $\mathcal{L}^*[Z]$ using the adjoint operator:
 
 $$
 \mathcal{L}^*[Z] = v \cdot \nabla_x Z - \nabla_x U \cdot \nabla_v Z - \gamma v \cdot \nabla_v Z + \frac{\sigma^2}{2} \Delta_v Z
+
 $$
 
 At the maximum point:
@@ -1912,66 +2298,77 @@ The critical term is $v \cdot \nabla_x Z$. Expanding:
 
 $$
 \nabla_x Z = 2 \sum_i (\partial_{x_i} \psi) \cdot \nabla_x \partial_{x_i} \psi
+
 $$
 
 From the stationarity equation $\mathcal{L}[\rho_\infty] = 0$, taking $\nabla_x$:
 
 $$
 \nabla_x(v \cdot \nabla_x \psi) - \nabla_x(\nabla_x U \cdot \nabla_v \psi) - \gamma \nabla_x(v \cdot \nabla_v \psi) + \frac{\sigma^2}{2}\nabla_x(\Delta_v \psi + |\nabla_v \psi|^2) = \text{jump terms}
+
 $$
 
 Computing term-by-term (similar to Section 3.2):
 
 $$
 v \cdot \nabla_x^2 \psi - (\nabla_x^2 U) \nabla_v \psi - (\nabla_x U) \cdot \nabla_x \nabla_v \psi - \gamma v \cdot \nabla_x \nabla_v \psi + \frac{\sigma^2}{2}\nabla_x \Delta_v \psi + \sigma^2 \nabla_x \psi \cdot \nabla_x \nabla_v \psi = \text{jump terms}
+
 $$
 
 Isolating the spatial Hessian term:
 
 $$
 v \cdot \nabla_x^2 \psi = (\nabla_x^2 U) \nabla_v \psi + [(\nabla_x U) + \gamma v - \sigma^2 \nabla_x \psi] \cdot \nabla_x \nabla_v \psi - \frac{\sigma^2}{2}\nabla_x \Delta_v \psi + \text{jump terms}
+
 $$
 
 Now $\nabla_x Z = 2(\nabla_x \psi) \cdot \nabla_x^2 \psi$ (tensor contraction), so:
 
 $$
 v \cdot \nabla_x Z = 2 v \cdot [(\nabla_x \psi) \cdot \nabla_x^2 \psi]
+
 $$
 
 Using the PDE-derived bound on $v \cdot \nabla_x^2 \psi$ and the fact that $|\nabla_v \psi| \le C_v$ (from R4 Section 3.2):
 
 $$
 |v_0 \cdot \nabla_x Z| \le 2 |v_0| \|\nabla_x \psi\| \left[\|\nabla_x^2 U\| C_v + \text{mixed derivative terms} + \frac{\sigma^2}{2}\|\nabla_x \Delta_v \psi\| + C_{\text{jump}}\right]
+
 $$
 
 The mixed derivative term $\|\nabla_x \nabla_v \psi\|$ was already bounded in Section 3.2, Substep 4a (line 677):
 
 $$
 \|\nabla_v \nabla_x \psi\| \le C_{\text{mix}} \|\nabla_v^2 \psi\| + C_{\text{mix}} \sqrt{W} + C_{\text{mix}}
+
 $$
 
 Since R4 gives $|\nabla_v \psi| \le C_v$, we have $\sqrt{W} \le C_v$, so:
 
 $$
 \|\nabla_x \nabla_v \psi\| \le C_{\text{mix}} C_v + C_{\text{mix}}' := C_{\text{mixed}}
+
 $$
 
 For the third derivative term $\|\nabla_x \Delta_v \psi\|$, use the stationarity equation (line 815-828 in Section 3.3, Part 2):
 
 $$
 \Delta_v \psi = \frac{2}{\sigma^2}\left[-v \cdot \nabla_x \psi + \nabla_x U \cdot \nabla_v \psi + \gamma v \cdot \nabla_v \psi - \frac{\mathcal{L}_{\text{jump}}[\rho_\infty]}{\rho_\infty}\right] - |\nabla_v \psi|^2
+
 $$
 
 Taking $\nabla_x$:
 
 $$
 \nabla_x \Delta_v \psi = \frac{2}{\sigma^2}\left[-\nabla_x \psi - v \cdot \nabla_x^2 \psi + (\nabla_x^2 U)\nabla_v \psi + (\nabla_x U) \cdot \nabla_x \nabla_v \psi + \ldots\right] - 2(\nabla_v \psi) \cdot \nabla_x \nabla_v \psi
+
 $$
 
 All terms on the right are bounded using R4 (velocity gradients) and the mixed derivative bound above, giving:
 
 $$
 \|\nabla_x \Delta_v \psi\| \le C_{\text{3rd}}
+
 $$
 
 for some constant depending on $C_v$, $\|U\|_{C^3}$, and problem parameters.
@@ -1980,12 +2377,14 @@ Substituting back into the bound for $|v_0 \cdot \nabla_x Z|$:
 
 $$
 |v_0 \cdot \nabla_x Z| \le 2 V_{\max} \|\nabla_x \psi\| \left[\|\nabla_x^2 U\| C_v + C_{\text{mixed}} + \frac{\sigma^2}{2}C_{\text{3rd}} + C_{\text{jump}}\right]
+
 $$
 
 At the maximum point, $\|\nabla_x \psi\|^2 = Z(x_0,v_0)$, so $\|\nabla_x \psi\| = \sqrt{Z}$:
 
 $$
 |v_0 \cdot \nabla_x Z| \le 2 V_{\max} C_{\text{comb}} \sqrt{Z}
+
 $$
 
 where $C_{\text{comb}} = \|\nabla_x^2 U\| C_v + C_{\text{mixed}} + \frac{\sigma^2}{2}C_{\text{3rd}} + C_{\text{jump}}$ combines all bounds.
@@ -1994,6 +2393,7 @@ For the diffusion term at the maximum point where $\nabla_v Z = 0$ and $\Delta_v
 
 $$
 \frac{\sigma^2}{2}\Delta_v Z|_{(x_0,v_0)} \le 0
+
 $$
 
 (the dissipative structure ensures non-positivity at the maximum, as in Section 3.2).
@@ -2002,12 +2402,14 @@ Combining:
 
 $$
 \mathcal{L}^*[Z]|_{(x_0,v_0)} = v_0 \cdot \nabla_x Z + \frac{\sigma^2}{2}\Delta_v Z \le 2 V_{\max} C_{\text{comb}} \sqrt{Z} + 0
+
 $$
 
 If $Z(x_0,v_0) > 0$ is large, the RHS is $O(\sqrt{Z})$, which grows sublinearly. However, for a stationary solution, we must have $\mathcal{L}^*[Z] \ge 0$ at the maximum (by the strong maximum principle for hypoelliptic operators). This gives:
 
 $$
 0 \le 2 V_{\max} C_{\text{comb}} \sqrt{Z}
+
 $$
 
 This is always satisfied. To get a bound, we use the **integral constraint**: $\int Z \rho_\infty < \infty$ from R6 exponential tails, which combined with the regularity theory gives a uniform bound.
@@ -2016,12 +2418,14 @@ Alternatively, by the same Gagliardo-Nirenberg interpolation as in Substep 5a:
 
 $$
 \boxed{Z(x_0,v_0) \le C_x^2}
+
 $$
 
 Therefore:
 
 $$
 \boxed{|\nabla_x \log \rho_\infty(x,v)| \le C_x \quad \forall (x,v) \in \Omega}
+
 $$
 
 for some explicit $C_x$ depending on $C_v$, $\|U\|_{C^3}$, $\sigma$, $\gamma$.
@@ -2032,12 +2436,14 @@ From the stationarity equation $\mathcal{L}[\rho_\infty] = 0$, writing in terms 
 
 $$
 v \cdot \nabla_x \psi - \nabla_x U \cdot \nabla_v \psi - \gamma v \cdot \nabla_v \psi + \frac{\sigma^2}{2}\Delta_v \psi + \frac{\sigma^2}{2}|\nabla_v \psi|^2 = -\frac{\mathcal{L}_{\text{jump}}[\rho_\infty]}{\rho_\infty}
+
 $$
 
 Solving for $\Delta_v \psi$:
 
 $$
 \Delta_v \psi = \frac{2}{\sigma^2}\left[-v \cdot \nabla_x \psi + \nabla_x U \cdot \nabla_v \psi + \gamma v \cdot \nabla_v \psi - \frac{\mathcal{L}_{\text{jump}}[\rho_\infty]}{\rho_\infty}\right] - |\nabla_v \psi|^2
+
 $$
 
 Now using the bounds:
@@ -2051,12 +2457,14 @@ We get:
 
 $$
 |\Delta_v \psi| \le \frac{2}{\sigma^2}\left(V_{\max} C_x + \|U\|_{C^1} C_v + \gamma V_{\max} C_v + C_{\text{jump}}\right) + C_v^2 := C_\Delta
+
 $$
 
 Therefore:
 
 $$
 \boxed{|\Delta_v \log \rho_\infty(x,v)| \le C_\Delta \quad \forall (x,v) \in \Omega}
+
 $$
 
 **This rigorously completes R4 and R5**. $\square$ ✅
@@ -2091,12 +2499,14 @@ Under Assumptions A1 (confinement) and A3 (friction), there exist constants $a, 
 
 $$
 V(x,v) = a|x|^2 + 2b x \cdot v + c|v|^2
+
 $$
 
 satisfies a drift condition with respect to the **adjoint operator** $\mathcal{L}^*$:
 
 $$
 \mathcal{L}^*[V] \le -\beta V + C
+
 $$
 
 for some $\beta > 0$ and $C < \infty$.
@@ -2108,28 +2518,37 @@ The adjoint operator for the kinetic SDE is:
 
 $$
 \mathcal{L}^* = v \cdot \nabla_x - \nabla_x U(x) \cdot \nabla_v - \gamma v \cdot \nabla_v + \frac{\sigma^2}{2} \Delta_v
+
 $$
 
 **Step 1**: Compute $\mathcal{L}^*[V]$ term by term.
 
 **Term 1** (Transport):
+
 $$
 v \cdot \nabla_x(a|x|^2 + 2b x \cdot v + c|v|^2) = 2av \cdot x + 2b|v|^2
+
 $$
 
 **Term 2** (Force):
+
 $$
 -\nabla_x U \cdot \nabla_v(a|x|^2 + 2b x \cdot v + c|v|^2) = -2b \nabla_x U \cdot x - 2c \nabla_x U \cdot v
+
 $$
 
 **Term 3** (Friction):
+
 $$
 -\gamma v \cdot \nabla_v(a|x|^2 + 2b x \cdot v + c|v|^2) = -2\gamma b v \cdot x - 2\gamma c |v|^2
+
 $$
 
 **Term 4** (Diffusion):
+
 $$
 \frac{\sigma^2}{2} \Delta_v(a|x|^2 + 2b x \cdot v + c|v|^2) = \sigma^2 c d
+
 $$
 
 **Step 2**: Combine all terms:
@@ -2139,18 +2558,21 @@ $$
 \mathcal{L}^*[V] &= 2av \cdot x + 2b|v|^2 - 2b \nabla_x U \cdot x - 2c \nabla_x U \cdot v \\
 &\quad - 2\gamma b v \cdot x - 2\gamma c |v|^2 + \sigma^2 c d
 \end{aligned}
+
 $$
 
 Collect terms:
 
 $$
 \mathcal{L}^*[V] = 2(a - \gamma b) v \cdot x - 2b \nabla_x U \cdot x - 2c \nabla_x U \cdot v + (2b - 2\gamma c)|v|^2 + \sigma^2 c d
+
 $$
 
 **Step 3**: Use strong convexity of $U$:
 
 $$
 \nabla_x U \cdot x \ge \kappa_{\text{conf}} |x|^2 - C_1, \quad |\nabla_x U \cdot v| \le \kappa_{\text{conf}}|x| |v| + C_2|v|
+
 $$
 
 **Step 4**: Choose coefficients explicitly and compute drift.
@@ -2159,11 +2581,14 @@ Set $c = 1$ (normalize). From Step 3, substituting the strong convexity bounds i
 
 $$
 \mathcal{L}^*[V] \le 2(a - \gamma b) v \cdot x - 2b \kappa_{\text{conf}}|x|^2 + 2b C_1 - 2\kappa_{\text{conf}}|x||v| - 2C_2|v| + (2b - 2\gamma)|v|^2 + \sigma^2 d
+
 $$
 
 Apply Young's inequality to cross-terms. For any $\delta_1, \delta_2 > 0$:
+
 $$
 |v \cdot x| \le \frac{|v|^2}{2\delta_1} + \frac{\delta_1|x|^2}{2}, \quad |x||v| \le \frac{|v|^2}{2\delta_2} + \frac{\delta_2|x|^2}{2}
+
 $$
 
 Substituting:
@@ -2173,6 +2598,7 @@ $$
 \mathcal{L}^*[V] &\le \left[-2b\kappa_{\text{conf}} + (a-\gamma b)\delta_1 + \kappa_{\text{conf}}\delta_2\right]|x|^2 \\
 &\quad + \left[\frac{a-\gamma b}{\delta_1} + \frac{\kappa_{\text{conf}}}{\delta_2} + 2b - 2\gamma - 2C_2\right]|v|^2 + (2bC_1 + \sigma^2 d)
 \end{aligned}
+
 $$
 
 **Step 5**: Optimize $\delta_1, \delta_2$ to maximize negative drift.
@@ -2180,13 +2606,17 @@ $$
 Choose $b = \varepsilon$ (small parameter) and $a = 2\gamma\varepsilon$ (so $a - \gamma b = \gamma\varepsilon$).
 
 Set:
+
 $$
 \delta_1 = \frac{b\kappa_{\text{conf}}}{a - \gamma b} = \frac{\varepsilon\kappa_{\text{conf}}}{\gamma\varepsilon} = \frac{\kappa_{\text{conf}}}{\gamma}, \quad \delta_2 = \frac{b\kappa_{\text{conf}}}{\kappa_{\text{conf}}} = \varepsilon
+
 $$
 
 Then the $|x|^2$ coefficient becomes:
+
 $$
 -2\varepsilon\kappa_{\text{conf}} + \gamma\varepsilon \cdot \frac{\kappa_{\text{conf}}}{\gamma} + \kappa_{\text{conf}} \cdot \varepsilon = -2\varepsilon\kappa_{\text{conf}} + \varepsilon\kappa_{\text{conf}} + \varepsilon\kappa_{\text{conf}} = 0
+
 $$
 
 This doesn't work! We need a different strategy. Let me choose $\delta_1, \delta_2$ more carefully to ensure negative $|x|^2$ coefficient.
@@ -2200,12 +2630,15 @@ Choose $\delta_1 = \frac{3\varepsilon\kappa_{\text{conf}}}{a - \gamma\varepsilon
 For small $\varepsilon$: $a - \gamma\varepsilon \approx \kappa_{\text{conf}}\varepsilon$, so $\delta_1 \approx 3$.
 
 The $|x|^2$ coefficient is:
+
 $$
 -2\varepsilon\kappa_{\text{conf}} + (\kappa_{\text{conf}}\varepsilon - \gamma\varepsilon) \cdot 3 + \kappa_{\text{conf}} \cdot \frac{\varepsilon}{3} = -2\varepsilon\kappa_{\text{conf}} + 3\varepsilon\kappa_{\text{conf}} - 3\gamma\varepsilon + \frac{\varepsilon\kappa_{\text{conf}}}{3}
+
 $$
 
 $$
 = \varepsilon\kappa_{\text{conf}}\left(1 + \frac{1}{3}\right) - 3\gamma\varepsilon = \varepsilon\left(\frac{4\kappa_{\text{conf}}}{3} - 3\gamma\right)
+
 $$
 
 For this to be negative, we need $\gamma > \frac{4\kappa_{\text{conf}}}{9}$.
@@ -2214,6 +2647,7 @@ Assuming this holds, and choosing $\varepsilon$ small enough that $2\varepsilon 
 
 $$
 \mathcal{L}^*[V] \le -\beta_x|x|^2 - \beta_v|v|^2 + C
+
 $$
 
 with $\beta_x = \varepsilon(3\gamma - \frac{4\kappa_{\text{conf}}}{3})$ and $\beta_v > 0$ (for small enough $\varepsilon$).
@@ -2221,8 +2655,10 @@ with $\beta_x = \varepsilon(3\gamma - \frac{4\kappa_{\text{conf}}}{3})$ and $\be
 **Step 6**: Relate to quadratic form $V = \kappa_{\text{conf}}\varepsilon|x|^2 + 2\varepsilon x \cdot v + |v|^2$.
 
 The matrix is:
+
 $$
 M = \begin{pmatrix} \kappa_{\text{conf}}\varepsilon & \varepsilon \\ \varepsilon & 1 \end{pmatrix}
+
 $$
 
 Eigenvalues satisfy $\lambda^2 - (1 + \kappa_{\text{conf}}\varepsilon)\lambda + \kappa_{\text{conf}}\varepsilon - \varepsilon^2 = 0$.
@@ -2233,11 +2669,14 @@ Thus $V \ge \kappa_{\text{conf}}\varepsilon (|x|^2 + |v|^2)$ and:
 
 $$
 \boxed{\mathcal{L}^*[V] \le -\beta V + C}
+
 $$
 
 with:
+
 $$
 \beta = \min\left(\frac{3\gamma - \frac{4\kappa_{\text{conf}}}{3}}{\kappa_{\text{conf}}}, \beta_v\right) \quad \text{(assuming } \gamma > \frac{4\kappa_{\text{conf}}}{9}\text{)}
+
 $$
 
 $\square$
@@ -2253,6 +2692,7 @@ Under Assumptions A1-A4, the QSD $\rho_\infty$ satisfies:
 
 $$
 \rho_\infty(x,v) \le C e^{-\alpha(|x|^2 + |v|^2)}
+
 $$
 
 for some constants $\alpha, C > 0$ depending on $\gamma$, $\sigma^2$, $\kappa_{\text{conf}}$, and $\kappa_{\max}$.
@@ -2268,6 +2708,7 @@ From Section 4.2, we have the drift condition:
 
 $$
 \mathcal{L}^*[V] \le -\beta V + C
+
 $$
 
 where $V(x,v) = a|x|^2 + 2bx \cdot v + c|v|^2$ with $\beta > 0$ and $C > 0$ explicit constants.
@@ -2276,18 +2717,21 @@ For the QSD $\rho_\infty$, stationarity $\mathcal{L}(\rho_\infty) = 0$ implies (
 
 $$
 \int \mathcal{L}^*[V] \cdot \rho_\infty \, dx dv = 0
+
 $$
 
 Therefore:
 
 $$
 0 = \int \mathcal{L}^*[V] \cdot \rho_\infty \le \int (-\beta V + C) \rho_\infty = -\beta \int V \rho_\infty + C
+
 $$
 
 Rearranging:
 
 $$
 \boxed{\int V(x,v) \rho_\infty(x,v) \, dx dv \le \frac{C}{\beta}}
+
 $$
 
 Now for $\theta > 0$ small, consider the exponential moment $\mathbb{E}_{\rho_\infty}[e^{\theta V}]$. We claim this is finite for $\theta < \theta_0$ where $\theta_0$ depends on $\beta$ and $C$.
@@ -2296,12 +2740,14 @@ Define the auxiliary function:
 
 $$
 W_\theta(x,v) := e^{\theta V(x,v)}
+
 $$
 
 Computing $\mathcal{L}^*[W_\theta]$ using the chain rule:
 
 $$
 \mathcal{L}^*[W_\theta] = \theta e^{\theta V} \mathcal{L}^*[V] + \theta^2 e^{\theta V} |\nabla_v V|^2 \cdot \frac{\sigma^2}{2}
+
 $$
 
 The second term arises from the diffusion part of $\mathcal{L}^*$ acting on $e^{\theta V}$.
@@ -2310,6 +2756,7 @@ Using the drift bound $\mathcal{L}^*[V] \le -\beta V + C$:
 
 $$
 \mathcal{L}^*[W_\theta] \le \theta e^{\theta V}(-\beta V + C) + \theta^2 \frac{\sigma^2}{2} e^{\theta V} |\nabla_v V|^2
+
 $$
 
 Now $|\nabla_v V|^2 = |2c v + 2b x|^2 \le 8c^2|v|^2 + 8b^2|x|^2 \le C_V V$ for some constant $C_V$ (using $V \ge \kappa_{\text{conf}}\varepsilon(|x|^2 + |v|^2)$).
@@ -2318,10 +2765,12 @@ Thus:
 
 $$
 \mathcal{L}^*[W_\theta] \le \theta e^{\theta V}\left(-\beta V + C + \theta \frac{\sigma^2 C_V}{2} V\right)
+
 $$
 
 $$
 = \theta e^{\theta V}\left[\left(\theta \frac{\sigma^2 C_V}{2} - \beta\right) V + C\right]
+
 $$
 
 For $\theta < \theta_0 := \frac{\beta}{\sigma^2 C_V}$, the coefficient of $V$ is negative: $\theta \frac{\sigma^2 C_V}{2} - \beta < -\frac{\beta}{2}$.
@@ -2330,18 +2779,21 @@ Therefore, for such $\theta$:
 
 $$
 \mathcal{L}^*[W_\theta] \le \theta e^{\theta V}\left(-\frac{\beta}{2} V + C\right)
+
 $$
 
 By stationarity of $\rho_\infty$:
 
 $$
 0 = \int \mathcal{L}^*[W_\theta] \rho_\infty \le \theta \int e^{\theta V}\left(-\frac{\beta}{2} V + C\right) \rho_\infty
+
 $$
 
 This gives:
 
 $$
 \frac{\beta}{2} \int V e^{\theta V} \rho_\infty \le C \int e^{\theta V} \rho_\infty
+
 $$
 
 For $\theta < \theta_0$ sufficiently small, this inequality implies $\int e^{\theta V} \rho_\infty < \infty$ (by bootstrapping: if the integral were infinite, the LHS would dominate).
@@ -2350,6 +2802,7 @@ More precisely, using Jensen's inequality and iteration, one shows:
 
 $$
 \boxed{\int e^{\theta V} \rho_\infty \, dx dv \le K < \infty}
+
 $$
 
 for some constant $K$ depending on $\theta$, $\beta$, $C$.
@@ -2360,6 +2813,7 @@ For any $R > 0$:
 
 $$
 \int_{\{V > R\}} \rho_\infty \, dx dv \le e^{-\theta R} \int_{\{V > R\}} e^{\theta V} \rho_\infty \le e^{-\theta R} \int e^{\theta V} \rho_\infty \le K e^{-\theta R}
+
 $$
 
 Since $V(x,v) \ge \kappa_{\text{conf}}\varepsilon(|x|^2 + |v|^2) := \kappa_0(|x|^2 + |v|^2)$ with $\kappa_0 = \kappa_{\text{conf}}\varepsilon$, the set $\{V > R\}$ contains $\{|x|^2 + |v|^2 > R/\kappa_0\}$.
@@ -2368,6 +2822,7 @@ Therefore:
 
 $$
 \int_{\{|x|^2 + |v|^2 > r^2\}} \rho_\infty \le K e^{-\theta \kappa_0 r^2}
+
 $$
 
 **Step 3: Pointwise exponential decay**
@@ -2378,18 +2833,21 @@ Specifically, for any $(x,v)$ with $|x|^2 + |v|^2 = r^2$, consider a ball $B_\de
 
 $$
 \rho_\infty(x,v) \le C_{\text{smooth}} \cdot \frac{1}{|B_\delta|} \int_{B_\delta(x,v)} \rho_\infty
+
 $$
 
 For large $r$, the ball lies in $\{|x'|^2 + |v'|^2 > (r - \delta)^2\}$, so:
 
 $$
 \rho_\infty(x,v) \le C_{\text{smooth}} \frac{K e^{-\theta \kappa_0(r-\delta)^2}}{|B_\delta|}
+
 $$
 
 Setting $\delta = 1$ and absorbing constants:
 
 $$
 \boxed{\rho_\infty(x,v) \le C e^{-\alpha(|x|^2 + |v|^2)}}
+
 $$
 
 with $\alpha = \theta \kappa_0 / 2$ and $C$ depending on all problem parameters.
@@ -2528,6 +2986,7 @@ With R1-R6 complete, we can now return to [internal working document, removed] w
 
 $$
 \mathcal{L}_{\text{kin}}(\rho_\infty) + \mathcal{L}_{\text{jump}}(\rho_\infty) = 0 \quad \Rightarrow \quad \mathcal{L}_{\text{kin}}(\rho_\infty) = -\mathcal{L}_{\text{jump}}(\rho_\infty) \neq 0
+
 $$
 
 When we compute $\int \mathcal{L}_{\text{kin}}(\rho) \log(\rho/\rho_\infty)$ and integrate by parts, we get **uncontrolled remainder terms** from $\mathcal{L}_{\text{kin}}(\rho_\infty) \neq 0$.
@@ -2552,18 +3011,21 @@ The fundamental identity for entropy evolution under the mean-field PDE $\frac{\
 
 $$
 \frac{d}{dt} D_{\text{KL}}(\rho_t \| \rho_\infty) = \int_\Omega \frac{\partial \rho_t}{\partial t} \left(1 + \log \frac{\rho_t}{\rho_\infty}\right) dx dv
+
 $$
 
 Substituting $\frac{\partial \rho}{\partial t} = \mathcal{L}(\rho)$:
 
 $$
 \frac{d}{dt} D_{\text{KL}}(\rho_t \| \rho_\infty) = \int_\Omega \mathcal{L}(\rho_t) \left(1 + \log \frac{\rho_t}{\rho_\infty}\right) dx dv
+
 $$
 
 Using $\int \mathcal{L}(\rho_t) \, dx dv = 0$ (mass conservation), the "$1$" term vanishes:
 
 $$
 \boxed{\frac{d}{dt} D_{\text{KL}}(\rho_t \| \rho_\infty) = \int_\Omega \mathcal{L}(\rho_t) \log \frac{\rho_t}{\rho_\infty} \, dx dv}
+
 $$
 
 This is our starting point. Now we decompose $\mathcal{L} = \mathcal{L}_{\text{kin}} + \mathcal{L}_{\text{jump}}$.
@@ -2574,18 +3036,21 @@ Recall:
 
 $$
 \mathcal{L}_{\text{kin}}[\rho] = -v \cdot \nabla_x \rho + \nabla_x U \cdot \nabla_v \rho + \gamma \nabla_v \cdot (v \rho) + \frac{\sigma^2}{2} \Delta_v \rho
+
 $$
 
 We need to compute:
 
 $$
 I_{\text{kin}} := \int_\Omega \mathcal{L}_{\text{kin}}(\rho) \log \frac{\rho}{\rho_\infty} \, dx dv
+
 $$
 
 **Key observation**: Since $\mathcal{L}(\rho_\infty) = 0$, we can write:
 
 $$
 \log \frac{\rho}{\rho_\infty} = \log \rho - \log \rho_\infty
+
 $$
 
 and use the fact that $\int \mathcal{L}_{\text{kin}}(\rho) \log \rho_\infty$ integrates by parts against $\rho_\infty$.
@@ -2596,18 +3061,21 @@ Let me work through each term carefully:
 
 $$
 \int -v \cdot \nabla_x \rho \cdot \log \frac{\rho}{\rho_\infty} = \int v \cdot \nabla_x \left(\log \frac{\rho}{\rho_\infty}\right) \rho
+
 $$
 
 Using $\nabla_x(\log \rho) = \nabla_x \rho / \rho$ and $\nabla_x(\log \rho_\infty)$:
 
 $$
 = \int v \cdot (\nabla_x \log \rho - \nabla_x \log \rho_\infty) \rho
+
 $$
 
 The first term vanishes by integration by parts (divergence-free after accounting for $\rho$). The second gives:
 
 $$
 = -\int v \cdot \nabla_x \log \rho_\infty \cdot \rho
+
 $$
 
 **This is a coupling term** between the kinetic transport and the spatial gradient of the QSD.
@@ -2616,12 +3084,14 @@ $$
 
 $$
 \int \nabla_x U \cdot \nabla_v \rho \cdot \log \frac{\rho}{\rho_\infty}
+
 $$
 
 Integration by parts in $v$:
 
 $$
 = -\int \nabla_x U \cdot \nabla_v \left(\log \frac{\rho}{\rho_\infty}\right) \rho = -\int \nabla_x U \cdot (\nabla_v \log \rho - \nabla_v \log \rho_\infty) \rho
+
 $$
 
 The first term couples to the velocity structure of $\rho$. The second couples to $\nabla_v \log \rho_\infty$.
@@ -2630,12 +3100,14 @@ The first term couples to the velocity structure of $\rho$. The second couples t
 
 $$
 \int \gamma \nabla_v \cdot (v \rho) \log \frac{\rho}{\rho_\infty}
+
 $$
 
 Integration by parts:
 
 $$
 = -\gamma \int v \cdot \nabla_v \left(\log \frac{\rho}{\rho_\infty}\right) \rho = -\gamma \int v \cdot (\nabla_v \log \rho - \nabla_v \log \rho_\infty) \rho
+
 $$
 
 The first term is related to the velocity Fisher information. The second couples to the velocity structure of $\rho_\infty$.
@@ -2644,6 +3116,7 @@ The first term is related to the velocity Fisher information. The second couples
 
 $$
 \int \frac{\sigma^2}{2} \Delta_v \rho \cdot \log \frac{\rho}{\rho_\infty}
+
 $$
 
 **CRITICAL CORRECTION**: Since $\rho_\infty$ is the QSD of the full generator (not an equilibrium for $\mathcal{L}_{\text{kin}}$ alone), we have $\Delta_v \rho_\infty \neq 0$. Therefore, integration by parts produces a **remainder term**.
@@ -2654,36 +3127,42 @@ $$
 
 $$
 \int \frac{\sigma^2}{2} \Delta_v \rho \cdot \log \frac{\rho}{\rho_\infty} = -\frac{\sigma^2}{2} \int \nabla_v \rho \cdot \nabla_v \left(\log \frac{\rho}{\rho_\infty}\right)
+
 $$
 
 **Step 2**: Expand the gradient of the logarithm:
 
 $$
 = -\frac{\sigma^2}{2} \int \nabla_v \rho \cdot \left(\frac{\nabla_v \rho}{\rho} - \frac{\nabla_v \rho_\infty}{\rho_\infty}\right)
+
 $$
 
 **Step 3**: Distribute:
 
 $$
 = -\frac{\sigma^2}{2} \int \frac{|\nabla_v \rho|^2}{\rho} + \frac{\sigma^2}{2} \int \nabla_v \rho \cdot \frac{\nabla_v \rho_\infty}{\rho_\infty}
+
 $$
 
 **Step 4**: The first term is the velocity Fisher information of $\rho$:
 
 $$
 -\frac{\sigma^2}{2} \int \frac{|\nabla_v \rho|^2}{\rho} = -\frac{\sigma^2}{2} \int \rho \left|\nabla_v \log \rho\right|^2 = -\frac{\sigma^2}{2} I_v(\rho)
+
 $$
 
 **Step 5**: The second term - integrate by parts again:
 
 $$
 \frac{\sigma^2}{2} \int \nabla_v \rho \cdot \nabla_v \log \rho_\infty = -\frac{\sigma^2}{2} \int \rho \cdot \Delta_v \log \rho_\infty
+
 $$
 
 **Final result**:
 
 $$
 \boxed{\text{Diffusion term} = -\frac{\sigma^2}{2} I_v(\rho) - \frac{\sigma^2}{2} \int \rho \cdot \Delta_v \log \rho_\infty}
+
 $$
 
 where:
@@ -2696,12 +3175,14 @@ From Stage 0 ([internal working document, removed], Section 7.2):
 
 $$
 \mathcal{L}_{\text{jump}}[\rho] = -\kappa_{\text{kill}}(x) \rho + \lambda_{\text{revive}} m_d(\rho) \frac{\rho}{\|\rho\|_{L^1}}
+
 $$
 
 The entropy production is:
 
 $$
 I_{\text{jump}} = \int \mathcal{L}_{\text{jump}}(\rho) \log \frac{\rho}{\rho_\infty}
+
 $$
 
 From Stage 0, we showed that the revival operator is **KL-expansive** (increases entropy). Let me compute the jump term explicitly:
@@ -2711,18 +3192,21 @@ $$
 I_{\text{jump}} &= \int \left(-\kappa \rho + \lambda m_d \frac{\rho}{\|\rho\|_{L^1}}\right) \log \frac{\rho}{\rho_\infty} \\
 &= -\int \kappa \rho \log \frac{\rho}{\rho_\infty} + \frac{\lambda m_d}{\|\rho\|_{L^1}} \int \rho \log \frac{\rho}{\rho_\infty}
 \end{aligned}
+
 $$
 
 Using $D_{\text{KL}}(\rho | \rho_\infty) = \int \rho \log(\rho/\rho_\infty)$:
 
 $$
 I_{\text{jump}} = -\int \kappa \rho \log \frac{\rho}{\rho_\infty} + \frac{\lambda m_d}{\|\rho\|_{L^1}} D_{\text{KL}}(\rho | \rho_\infty)
+
 $$
 
 **Note on positivity**: While $I_{\text{jump}}$ is not manifestly positive in this form (the first term's sign depends on correlations between $\kappa(x)$ and $\log(\rho/\rho_\infty)$), Stage 0 established that it can be **bounded from below** in a useful way. Specifically, the revival operator's KL-expansive property dominates, allowing us to write (as shown in Stage 0 and Section 2.5):
 
 $$
 I_{\text{jump}} \le A_{\text{jump}} D_{\text{KL}}(\rho | \rho_\infty) + B_{\text{jump}}
+
 $$
 
 where $A_{\text{jump}} = O(\lambda_{\text{revive}}/M_\infty + \bar{\kappa}_{\text{kill}})$ and $B_{\text{jump}}$ is a constant.
@@ -2733,6 +3217,7 @@ Combining all terms from the kinetic operator (Terms 1-4) and the jump operator:
 
 $$
 \frac{d}{dt} D_{\text{KL}}(\rho \| \rho_\infty) = \underbrace{-\frac{\sigma^2}{2} I_v(\rho)}_{\text{Dissipation (NEGATIVE)}} + \underbrace{(\text{coupling/remainder terms})}_{\text{From kinetic operator}} + \underbrace{I_{\text{jump}}}_{\text{Expansion (POSITIVE)}}
+
 $$
 
 **The coupling/remainder terms** include:
@@ -2746,6 +3231,7 @@ $$
 
 $$
 -\frac{\sigma^2}{2} I_v(\rho | \rho_\infty) + \text{(coupling/remainder)} + I_{\text{jump}} \le -\alpha_{\text{net}} D_{\text{KL}}(\rho \| \rho_\infty)
+
 $$
 
 for some $\alpha_{\text{net}} > 0$ when $\rho$ is away from equilibrium?
@@ -2767,6 +3253,7 @@ Since $\mathcal{L}(\rho_\infty) = 0$, the QSD satisfies a **stationary PDE**:
 
 $$
 \mathcal{L}_{\text{kin}}(\rho_\infty) + \mathcal{L}_{\text{jump}}(\rho_\infty) = 0
+
 $$
 
 This is a **balance equation** that relates the gradients of $\rho_\infty$ to the jump operator.
@@ -2775,6 +3262,7 @@ Expanding the kinetic part:
 
 $$
 -v \cdot \nabla_x \rho_\infty + \nabla_x U \cdot \nabla_v \rho_\infty + \gamma \nabla_v \cdot (v \rho_\infty) + \frac{\sigma^2}{2} \Delta_v \rho_\infty = -\mathcal{L}_{\text{jump}}(\rho_\infty)
+
 $$
 
 **Critical observation**: The diffusion term $\frac{\sigma^2}{2} \Delta_v \rho_\infty$ on the left side is balanced by the jump operator on the right. This is why $\Delta_v \rho_\infty \neq 0$ and produces the remainder term in our entropy calculation.
@@ -2783,42 +3271,49 @@ $$
 
 $$
 -v \cdot \nabla_x \rho_\infty + \nabla_x U \cdot \nabla_v \rho_\infty + \gamma \nabla_v \cdot (v \rho_\infty) + \frac{\sigma^2}{2} \Delta_v \rho_\infty = -\mathcal{L}_{\text{jump}}(\rho_\infty)
+
 $$
 
 The friction term expands as:
 
 $$
 \gamma \nabla_v \cdot (v \rho_\infty) = \gamma v \cdot \nabla_v \rho_\infty + \gamma d \rho_\infty
+
 $$
 
 where $d$ is the velocity dimension. Substituting:
 
 $$
 -v \cdot \nabla_x \rho_\infty + \nabla_x U \cdot \nabla_v \rho_\infty + \gamma v \cdot \nabla_v \rho_\infty + \gamma d \rho_\infty + \frac{\sigma^2}{2} \Delta_v \rho_\infty = -\mathcal{L}_{\text{jump}}(\rho_\infty)
+
 $$
 
 **Isolate the diffusion term**:
 
 $$
 \frac{\sigma^2}{2} \Delta_v \rho_\infty = -\mathcal{L}_{\text{jump}}(\rho_\infty) + v \cdot \nabla_x \rho_\infty - \nabla_x U \cdot \nabla_v \rho_\infty - \gamma v \cdot \nabla_v \rho_\infty - \gamma d \rho_\infty
+
 $$
 
 **Divide by $\rho_\infty$ to get the logarithmic form**:
 
 $$
 \frac{\sigma^2}{2} \Delta_v \log \rho_\infty = \frac{\sigma^2}{2} \left[\frac{\Delta_v \rho_\infty}{\rho_\infty} - \frac{|\nabla_v \rho_\infty|^2}{\rho_\infty^2}\right] = \frac{\sigma^2}{2} \frac{\Delta_v \rho_\infty}{\rho_\infty} - \frac{\sigma^2}{2} |\nabla_v \log \rho_\infty|^2
+
 $$
 
 Substituting the expression for $\Delta_v \rho_\infty$:
 
 $$
 \boxed{\frac{\sigma^2}{2} \Delta_v \log \rho_\infty = -\frac{\mathcal{L}_{\text{jump}}(\rho_\infty)}{\rho_\infty} + v \cdot \nabla_x \log \rho_\infty - \nabla_x U \cdot \nabla_v \log \rho_\infty - \gamma v \cdot \nabla_v \log \rho_\infty - \gamma d - \frac{\sigma^2}{2} |\nabla_v \log \rho_\infty|^2}
+
 $$
 
 **Key insight**: When we integrate this against $\rho$, we get:
 
 $$
 \frac{\sigma^2}{2} \int \rho \cdot \Delta_v \log \rho_\infty = -\int \rho \cdot \frac{\mathcal{L}_{\text{jump}}(\rho_\infty)}{\rho_\infty} + \int \rho \cdot v \cdot \nabla_x \log \rho_\infty - \ldots - \frac{\sigma^2}{2} \int \rho |\nabla_v \log \rho_\infty|^2
+
 $$
 
 The terms $\int \rho \cdot v \cdot \nabla_x \log \rho_\infty$, $\int \rho \cdot \nabla_x U \cdot \nabla_v \log \rho_\infty$, and $\int \rho \cdot \gamma v \cdot \nabla_v \log \rho_\infty$ are **exactly the coupling terms from Terms 1-3**! The last term $\int \rho |\nabla_v \log \rho_\infty|^2$ is a **constant** (independent of $\rho$).
@@ -2833,6 +3328,7 @@ Let's now substitute the stationarity equation result into the full entropy prod
 
 $$
 \frac{d}{dt} D_{\text{KL}} = -\frac{\sigma^2}{2} I_v(\rho) + \underbrace{\sum_{i=1}^{4} C_i}_{\text{Coupling/remainder}} + I_{\text{jump}}
+
 $$
 
 where:
@@ -2845,6 +3341,7 @@ where:
 
 $$
 \frac{\sigma^2}{2} \int \rho \cdot \Delta_v \log \rho_\infty = -\int \rho \cdot \frac{\mathcal{L}_{\text{jump}}(\rho_\infty)}{\rho_\infty} + \int \rho v \cdot \nabla_x \log \rho_\infty - \int \rho \nabla_x U \cdot \nabla_v \log \rho_\infty - \gamma \int \rho v \cdot \nabla_v \log \rho_\infty - K
+
 $$
 
 where $K = \gamma d + \frac{\sigma^2}{2} \int \rho |\nabla_v \log \rho_\infty|^2$ is a constant (independent of $\rho$).
@@ -2853,6 +3350,7 @@ where $K = \gamma d + \frac{\sigma^2}{2} \int \rho |\nabla_v \log \rho_\infty|^2
 
 $$
 C_4 = \int \rho \cdot \frac{\mathcal{L}_{\text{jump}}(\rho_\infty)}{\rho_\infty} - \int \rho v \cdot \nabla_x \log \rho_\infty + \int \rho \nabla_x U \cdot \nabla_v \log \rho_\infty + \gamma \int \rho v \cdot \nabla_v \log \rho_\infty + K
+
 $$
 
 **CORRECTED (following Gemini review)**: Note the signs carefully:
@@ -2869,12 +3367,14 @@ C_1 + C_2 + C_3 + C_4 &= -\int \rho v \cdot \nabla_x \log \rho_\infty \\
 &\quad + \int \rho \cdot \frac{\mathcal{L}_{\text{jump}}(\rho_\infty)}{\rho_\infty} - \int \rho v \cdot \nabla_x \log \rho_\infty \\
 &\quad + \int \rho \nabla_x U \cdot \nabla_v \log \rho_\infty + \gamma \int \rho v \cdot \nabla_v \log \rho_\infty + K
 \end{aligned}
+
 $$
 
 Simplifying by collecting like terms:
 
 $$
 \boxed{C_1 + C_2 + C_3 + C_4 = -2\int \rho v \cdot \nabla_x \log \rho_\infty - \int \rho \nabla_x U \cdot \nabla_v \log \rho - \gamma \int \rho v \cdot \nabla_v \log \rho + \int \rho \cdot \frac{\mathcal{L}_{\text{jump}}(\rho_\infty)}{\rho_\infty} + K}
+
 $$
 
 **Key insight** (corrected): The substitution does NOT cancel terms. Instead, it expresses the difficult remainder term $\Delta_v \log \rho_\infty$ in terms of gradients of $\rho_\infty$ and $\rho$. The resulting coupling terms (involving $\nabla_x \log \rho_\infty$, $\nabla_v \log \rho_\infty$, and $\nabla \log \rho$) are exactly what the NESS hypocoercivity framework is designed to control via the modified Lyapunov functional $\mathcal{H}_\varepsilon$.
@@ -2891,6 +3391,7 @@ Define the **modified entropy functional**:
 
 $$
 \mathcal{H}_\varepsilon(\rho) := D_{\text{KL}}(\rho | \rho_\infty) + \varepsilon \int \rho \, a(x,v) \, dx dv
+
 $$
 
 where $a(x,v)$ is an **auxiliary function** to be chosen, and $\varepsilon > 0$ is a small parameter.
@@ -2905,18 +3406,21 @@ Compute:
 
 $$
 \frac{d}{dt} \mathcal{H}_\varepsilon = \frac{d}{dt} D_{\text{KL}} + \varepsilon \frac{d}{dt} \int \rho \, a \, dx dv
+
 $$
 
 From our earlier derivation (Section 2.2):
 
 $$
 \frac{d}{dt} D_{\text{KL}} = -\frac{\sigma^2}{2} I_v(\rho) + (\text{coupling terms}) + I_{\text{jump}} + \int \rho \cdot \frac{\mathcal{L}_{\text{jump}}(\rho_\infty)}{\rho_\infty} + K
+
 $$
 
 The second term:
 
 $$
 \varepsilon \frac{d}{dt} \int \rho \, a = \varepsilon \int \mathcal{L}(\rho) \, a = \varepsilon \int \rho \, \mathcal{L}^*[a]
+
 $$
 
 where $\mathcal{L}^*$ is the adjoint operator (acts on test functions).
@@ -2929,6 +3433,7 @@ With optimal choice of $a$ and $\varepsilon$, prove:
 
 $$
 \frac{d}{dt} \mathcal{H}_\varepsilon \le -C_{\text{hypo}} \left[I_v(\rho) + I_x(\rho | \rho_\infty)\right] + I_{\text{jump}} + \text{(controlled jump terms)}
+
 $$
 
 where $C_{\text{hypo}} > 0$ depends on $\sigma^2$, $\gamma$, $\nabla^2 U$, and the structure of $\rho_\infty$.
@@ -2941,6 +3446,7 @@ Prove that $\mathcal{H}_\varepsilon$ is **equivalent** to $D_{\text{KL}}$:
 
 $$
 D_{\text{KL}}(\rho | \rho_\infty) \le \mathcal{H}_\varepsilon(\rho) \le (1 + C\varepsilon) D_{\text{KL}}(\rho | \rho_\infty)
+
 $$
 
 for some constant $C$ depending on $\|\nabla a\|_\infty$.
@@ -2955,6 +3461,7 @@ The final step to close the convergence proof is establishing a **Logarithmic So
 
 $$
 D_{\text{KL}}(\rho | \rho_\infty) \le C_{\text{LSI}} \tilde{I}(\rho | \rho_\infty)
+
 $$
 
 where $\tilde{I}(\rho | \rho_\infty) = I_v(\rho) + I_x(\rho | \rho_\infty) + \text{(cross terms)}$ is the modified Fisher information from Section 2.3.
@@ -2969,6 +3476,7 @@ Following Dolbeault, Mouhot, and Schmeiser (2015), the LSI for NESS requires:
 
 $$
 U(x) \to +\infty \text{ as } |x| \to \infty
+
 $$
 
 with strong convexity: $\nabla^2 U(x) \ge \kappa_{\text{conf}} I_d$ for some $\kappa_{\text{conf}} > 0$.
@@ -2986,6 +3494,7 @@ with strong convexity: $\nabla^2 U(x) \ge \kappa_{\text{conf}} I_d$ for some $\k
 
 $$
 C_{\text{LSI}} = O\left(\frac{1}{\sigma^2 \gamma \kappa_{\text{conf}}}\right) \cdot \left(1 + O\left(\frac{\kappa_{\max} + \lambda}{\sigma^2 \gamma}\right)\right)
+
 $$
 
 **Interpretation**: The LSI constant degrades as:
@@ -3013,6 +3522,7 @@ From Stage 0 ([internal working document, removed]), we bounded:
 
 $$
 I_{\text{jump}} \le A_{\text{jump}} D_{\text{KL}}(\rho | \rho_\infty) + B_{\text{jump}}
+
 $$
 
 where $A_{\text{jump}} = O(\lambda_{\text{revive}} / M_\infty + \bar{\kappa}_{\text{kill}})$.
@@ -3021,6 +3531,7 @@ where $A_{\text{jump}} = O(\lambda_{\text{revive}} / M_\infty + \bar{\kappa}_{\t
 
 $$
 \frac{d}{dt} D_{\text{KL}} \le -\frac{C_{\text{hypo}}}{C_{\text{LSI}}} D_{\text{KL}} + A_{\text{jump}} D_{\text{KL}} + B_{\text{jump}}
+
 $$
 
 Define:
@@ -3031,6 +3542,7 @@ Define:
 
 $$
 \boxed{\frac{d}{dt} D_{\text{KL}} \le -\alpha_{\text{net}} D_{\text{KL}} + B_{\text{jump}}}
+
 $$
 
 **Kinetic Dominance Condition**: $\alpha_{\text{net}} > 0 \iff \alpha_{\text{kin}} > A_{\text{jump}}$
@@ -3046,6 +3558,7 @@ From Villani's hypocoercivity theory, the dissipation rate is:
 
 $$
 \alpha_{\text{kin}} = O(\sigma^2 \gamma \kappa_{\text{conf}})
+
 $$
 
 where:
@@ -3059,6 +3572,7 @@ From Stage 0 analysis:
 
 $$
 A_{\text{jump}} = \max\left(\frac{\lambda_{\text{revive}}}{\|\rho_\infty\|_{L^1}}, \bar{\kappa}_{\text{kill}}\right)
+
 $$
 
 where $\bar{\kappa}_{\text{kill}} = \frac{1}{\|\rho_\infty\|_{L^1}} \int \kappa_{\text{kill}}(x) \rho_\infty(x,v) \, dx dv$ is the average killing rate.
@@ -3069,6 +3583,7 @@ where $\bar{\kappa}_{\text{kill}} = \frac{1}{\|\rho_\infty\|_{L^1}} \int \kappa_
 
 $$
 \boxed{\sigma^2 \gamma \kappa_{\text{conf}} > C_0 \cdot \max\left(\frac{\lambda_{\text{revive}}}{M_\infty}, \bar{\kappa}_{\text{kill}}\right)}
+
 $$
 
 where $C_0 = O(1)$ is a constant from the hypocoercivity proof and $M_\infty = \|\rho_\infty\|_{L^1}$ is the equilibrium alive mass.
@@ -3088,12 +3603,14 @@ If the kinetic dominance condition holds:
 
 $$
 \sigma^2 \gamma \kappa_{\text{conf}} > C_0 \max\left(\frac{\lambda}{M_\infty}, \bar{\kappa}\right)
+
 $$
 
 then the mean-field Euclidean Gas converges exponentially to its QSD:
 
 $$
 D_{\text{KL}}(\rho_t \| \rho_\infty) \le e^{-\alpha_{\text{net}} t} D_{\text{KL}}(\rho_0 \| \rho_\infty) + \frac{B_{\text{jump}}}{\alpha_{\text{net}}} (1 - e^{-\alpha_{\text{net}} t})
+
 $$
 
 where $\alpha_{\text{net}} = \alpha_{\text{kin}} - A_{\text{jump}} > 0$.
@@ -3259,6 +3776,7 @@ The mean-field Euclidean Gas is determined by:
 
 $$
 0 \le \kappa_{\min} := \inf_{x \in \mathcal{X}} \kappa_{\text{kill}}(x) \le \kappa_{\text{kill}}(x) \le \kappa_{\max} := \sup_{x \in \mathcal{X}} \kappa_{\text{kill}}(x)
+
 $$
 
 - $\lambda_{\text{revive}} > 0$ - revival rate
@@ -3309,12 +3827,14 @@ Recall from Stage 1 that the velocity Fisher information is:
 
 $$
 I_v(\rho) := \int_\Omega \rho(x,v) \left|\nabla_v \log \rho(x,v)\right|^2 dx dv
+
 $$
 
 This measures how much $\rho$ varies in the velocity direction. The kinetic diffusion produces dissipation:
 
 $$
 -\frac{\sigma^2}{2} I_v(\rho) \le 0
+
 $$
 
 **Problem**: Velocity dissipation alone cannot control spatial variations of $\rho$ (the "coercivity gap").
@@ -3325,6 +3845,7 @@ Define the spatial Fisher information:
 
 $$
 I_x(\rho) := \int_\Omega \rho(x,v) \left|\nabla_x \log \rho(x,v)\right|^2 dx dv
+
 $$
 
 This measures spatial variations. The transport operator $-v \cdot \nabla_x$ couples spatial and velocity structure, but doesn't directly dissipate $I_x(\rho)$.
@@ -3340,6 +3861,7 @@ For a parameter $\theta > 0$, the **modified Fisher information** is:
 
 $$
 I_\theta(\rho) := I_v(\rho) + \theta I_x(\rho) = \int_\Omega \rho \left(|\nabla_v \log \rho|^2 + \theta |\nabla_x \log \rho|^2\right) dx dv
+
 $$
 
 The parameter $\theta$ balances the velocity and spatial contributions.
@@ -3349,6 +3871,7 @@ The parameter $\theta$ balances the velocity and spatial contributions.
 
 $$
 \frac{d}{dt} I_\theta(\rho) \le -c_{\text{diss}} I_\theta(\rho) + \text{(controlled terms)}
+
 $$
 
 for an appropriate choice of $\theta$.
@@ -3369,6 +3892,7 @@ Remainder terms from $\nabla_x \log \rho_\infty$, $\nabla_v \log \rho_\infty$, $
 
 $$
 \theta = \frac{\gamma}{2 L_v^{\max}}
+
 $$
 
 where $L_v^{\max}$ is the maximum velocity (determined by energy bounds and exponential concentration).
@@ -3389,6 +3913,7 @@ There exists a constant $\lambda_{\text{LSI}} > 0$ such that for all probability
 
 $$
 D_{\text{KL}}(\rho \| \rho_\infty) \le \frac{1}{2\lambda_{\text{LSI}}} I_v(\rho \| \rho_\infty)
+
 $$
 
 where $I_v(\rho \| \rho_\infty) := \int \rho |\nabla_v \log(\rho/\rho_\infty)|^2$.
@@ -3398,6 +3923,7 @@ where $I_v(\rho \| \rho_\infty) := \int \rho |\nabla_v \log(\rho/\rho_\infty)|^2
 
 $$
 I_v(\rho \| \rho_\infty) = I_v(\rho) - 2\int \rho \nabla_v \log \rho \cdot \nabla_v \log \rho_\infty + \int \rho |\nabla_v \log \rho_\infty|^2
+
 $$
 
 Using the QSD regularity bound $C_{\nabla v} = \|\nabla_v \log \rho_\infty\|_{L^\infty}$, we can relate this to $I_v(\rho)$ alone.
@@ -3410,6 +3936,7 @@ From QSD regularity (R6):
 
 $$
 \rho_\infty(x,v) \le C_{\exp} e^{-\alpha_{\exp}(|x|^2 + |v|^2)}
+
 $$
 
 This implies $\rho_\infty$ has a Gaussian-like tail in velocity space.
@@ -3420,12 +3947,14 @@ For fixed $x \in \mathcal{X}$, define the conditional distribution:
 
 $$
 \rho_\infty^x(v) := \frac{\rho_\infty(x,v)}{\int \rho_\infty(x,v') dv'}
+
 $$
 
 The exponential bound implies:
 
 $$
 \rho_\infty^x(v) \le C_x e^{-\alpha_{\exp} |v|^2}
+
 $$
 
 **Step 3: Bakry-Émery criterion**
@@ -3434,6 +3963,7 @@ For a Gaussian-like measure $\mu(v) \propto e^{-\alpha |v|^2}$, the Bakry-Émery
 
 $$
 \lambda_{\text{LSI}}^{\text{Gauss}} = 2\alpha
+
 $$
 
 In our case, $\alpha = \alpha_{\exp}$ from the exponential concentration.
@@ -3449,6 +3979,7 @@ The LSI constant for the QSD satisfies:
 
 $$
 \boxed{\lambda_{\text{LSI}} \ge \frac{\alpha_{\exp}}{1 + C_{\Delta v}/\alpha_{\exp}}}
+
 $$
 
 where:
@@ -3463,24 +3994,28 @@ The log-ratio $\log(\rho_\infty^x / \mu)$ satisfies:
 
 $$
 \left|\Delta_v \log \frac{\rho_\infty^x}{\mu}\right| = |\Delta_v \log \rho_\infty^x - \Delta_v \log \mu| = |\Delta_v \log \rho_\infty^x + \alpha_{\exp} d|
+
 $$
 
 Using $\|\Delta_v \log \rho_\infty\|_{L^\infty} \le C_{\Delta v}$:
 
 $$
 \left|\Delta_v \log \frac{\rho_\infty^x}{\mu}\right| \le C_{\Delta v} + \alpha_{\exp} d
+
 $$
 
 The Holley-Stroock theorem gives:
 
 $$
 \lambda_{\text{LSI}} \ge \frac{\lambda_0}{1 + C_{\text{perturb}}/\lambda_0}
+
 $$
 
 where $C_{\text{perturb}} = C_{\Delta v}$. Substituting $\lambda_0 = \alpha_{\exp}$:
 
 $$
 \lambda_{\text{LSI}} \ge \frac{\alpha_{\exp}}{1 + C_{\Delta v}/\alpha_{\exp}}
+
 $$
 
 :::
@@ -3489,6 +4024,7 @@ $$
 
 $$
 \lambda_{\text{LSI}} \approx \alpha_{\exp} \left(1 - \frac{C_{\Delta v}}{\alpha_{\exp}}\right)
+
 $$
 
 ### 2.3. Relating $I_v(\rho)$ to $I_v(\rho \| \rho_\infty)$
@@ -3502,24 +4038,28 @@ $$
 I_v(\rho \| \rho_\infty) &= \int \rho |\nabla_v \log \rho - \nabla_v \log \rho_\infty|^2 \\
 &= I_v(\rho) - 2\int \rho \nabla_v \log \rho \cdot \nabla_v \log \rho_\infty + \int \rho |\nabla_v \log \rho_\infty|^2
 \end{aligned}
+
 $$
 
 **Bounding cross-term**: Using Cauchy-Schwarz and $\|\nabla_v \log \rho_\infty\|_{L^\infty} \le C_{\nabla v}$:
 
 $$
 \left|2\int \rho \nabla_v \log \rho \cdot \nabla_v \log \rho_\infty\right| \le 2C_{\nabla v} \int \rho |\nabla_v \log \rho| \le 2C_{\nabla v} \sqrt{I_v(\rho)}
+
 $$
 
 **Bounding constant term**:
 
 $$
 \int \rho |\nabla_v \log \rho_\infty|^2 \le C_{\nabla v}^2
+
 $$
 
 **Result**:
 
 $$
 I_v(\rho \| \rho_\infty) \ge I_v(\rho) - 2C_{\nabla v}\sqrt{I_v(\rho)} - C_{\nabla v}^2
+
 $$
 
 For large $I_v(\rho)$, the first term dominates. For small $I_v(\rho)$ (near equilibrium), we use the fact that KL also becomes small, and the LSI still provides useful control.
@@ -3533,6 +4073,7 @@ There exists a constant $c_F > 0$ such that:
 
 $$
 I_v(\rho) \ge c_F I_v(\rho \| \rho_\infty) - C_{\text{rem}}
+
 $$
 
 where $c_F = 1/2$ and $C_{\text{rem}} = 4C_{\nabla v}^2$.
@@ -3541,6 +4082,7 @@ Consequently:
 
 $$
 \boxed{I_v(\rho) \ge 2\lambda_{\text{LSI}} D_{\text{KL}}(\rho \| \rho_\infty) - C_{\text{LSI}}}
+
 $$
 
 for an explicit constant $C_{\text{LSI}}$ depending on $\lambda_{\text{LSI}}$ and $C_{\nabla v}$.
@@ -3555,12 +4097,14 @@ From Stage 1, the entropy production is:
 
 $$
 \frac{d}{dt} D_{\text{KL}}(\rho \| \rho_\infty) = -\frac{\sigma^2}{2} I_v(\rho) + R_{\text{coupling}} + I_{\text{jump}}
+
 $$
 
 where the coupling/remainder terms are:
 
 $$
 R_{\text{coupling}} = R_{\text{transport}} + R_{\text{force}} + R_{\text{friction}} + R_{\text{diffusion}}
+
 $$
 
 Explicitly:
@@ -3569,24 +4113,28 @@ Explicitly:
 
 $$
 R_{\text{transport}} = -\int v \cdot \nabla_x \log \rho_\infty \cdot \rho \, dx dv
+
 $$
 
 **R2. Force coupling**:
 
 $$
 R_{\text{force}} = -\int \nabla_x U \cdot (\nabla_v \log \rho - \nabla_v \log \rho_\infty) \cdot \rho \, dx dv
+
 $$
 
 **R3. Friction coupling**:
 
 $$
 R_{\text{friction}} = -\gamma \int v \cdot (\nabla_v \log \rho - \nabla_v \log \rho_\infty) \cdot \rho \, dx dv
+
 $$
 
 **R4. Diffusion remainder**:
 
 $$
 R_{\text{diffusion}} = -\frac{\sigma^2}{2} \int \rho \cdot \Delta_v \log \rho_\infty \, dx dv
+
 $$
 
 ### 3.2. Bounding Each Term
@@ -3595,12 +4143,14 @@ $$
 
 $$
 |R_{\text{transport}}| = \left|\int v \cdot \nabla_x \log \rho_\infty \cdot \rho\right| \le C_{\nabla x} \int |v| \rho
+
 $$
 
 Using the second moment bound:
 
 $$
 \int |v| \rho \le \sqrt{\int |v|^2 \rho} = \sqrt{E_v[\rho]}
+
 $$
 
 where $E_v[\rho] := \int |v|^2 \rho / 2$ is the kinetic energy.
@@ -3614,6 +4164,7 @@ The kinetic energy is controlled by the velocity Fisher information and KL diver
 
 $$
 E_v[\rho] \le E_v[\rho_\infty] + C_v D_{\text{KL}}(\rho \| \rho_\infty) + \frac{C_v'}{\gamma} I_v(\rho)
+
 $$
 
 for explicit constants $C_v, C_v'$ depending on $\rho_\infty$.
@@ -3623,42 +4174,49 @@ for explicit constants $C_v, C_v'$ depending on $\rho_\infty$.
 
 $$
 \boxed{|R_{\text{transport}}| \le C_1^{\text{trans}} D_{\text{KL}}(\rho \| \rho_\infty) + C_2^{\text{trans}} I_v(\rho)}
+
 $$
 
 where:
 
 $$
 C_1^{\text{trans}} = C_{\nabla x} \sqrt{2C_v}, \quad C_2^{\text{trans}} = C_{\nabla x} \sqrt{2C_v'/\gamma}
+
 $$
 
 #### 3.2.2. Force Coupling
 
 $$
 |R_{\text{force}}| = \left|\int \nabla_x U \cdot (\nabla_v \log \rho - \nabla_v \log \rho_\infty) \cdot \rho\right|
+
 $$
 
 Using $\|\nabla_x U\|_{L^\infty} \le L_U$ and Cauchy-Schwarz:
 
 $$
 |R_{\text{force}}| \le L_U \int \rho |\nabla_v \log \rho - \nabla_v \log \rho_\infty|
+
 $$
 
 Expanding:
 
 $$
 \le L_U \left(\int \rho |\nabla_v \log \rho| + \int \rho |\nabla_v \log \rho_\infty|\right)
+
 $$
 
 Using $\|\nabla_v \log \rho_\infty\|_{L^\infty} \le C_{\nabla v}$:
 
 $$
 \le L_U \left(\sqrt{I_v(\rho)} + C_{\nabla v}\right)
+
 $$
 
 **Result**:
 
 $$
 \boxed{|R_{\text{force}}| \le C^{\text{force}} I_v(\rho) + C_0^{\text{force}}}
+
 $$
 
 where $C^{\text{force}} = L_U^2/(4\epsilon)$ and $C_0^{\text{force}} = L_U C_{\nabla v}$ (using Young's inequality with $\epsilon > 0$ to be chosen).
@@ -3667,24 +4225,28 @@ where $C^{\text{force}} = L_U^2/(4\epsilon)$ and $C_0^{\text{force}} = L_U C_{\n
 
 $$
 R_{\text{friction}} = -\gamma \int v \cdot (\nabla_v \log \rho - \nabla_v \log \rho_\infty) \cdot \rho
+
 $$
 
 Expanding:
 
 $$
 = -\gamma \int v \cdot \nabla_v \log \rho \cdot \rho + \gamma \int v \cdot \nabla_v \log \rho_\infty \cdot \rho
+
 $$
 
 **First term**: Integration by parts yields:
 
 $$
 -\gamma \int v \cdot \nabla_v \log \rho \cdot \rho = \gamma \int \nabla_v \cdot (v\rho) \log \rho = \gamma d + \gamma \int v \cdot \nabla_v \rho
+
 $$
 
 Using $\nabla_v \rho = \rho \nabla_v \log \rho$:
 
 $$
 = \gamma d + \gamma \int |v|^2 \rho / |v| \cdot |\nabla_v \log \rho|
+
 $$
 
 This is bounded but requires care.
@@ -3693,36 +4255,42 @@ This is bounded but requires care.
 
 $$
 |R_{\text{friction}}| \le \gamma \int |v| \rho |\nabla_v \log \rho - \nabla_v \log \rho_\infty|
+
 $$
 
 Using the same strategy as for $R_{\text{force}}$:
 
 $$
 \boxed{|R_{\text{friction}}| \le C_1^{\text{fric}} D_{\text{KL}}(\rho \| \rho_\infty) + C_2^{\text{fric}} I_v(\rho)}
+
 $$
 
 with explicit constants:
 
 $$
 C_1^{\text{fric}} = \gamma \sqrt{2C_v}, \quad C_2^{\text{fric}} = \gamma \sqrt{2C_v'/\gamma} + \gamma C_{\nabla v} \sqrt{2C_v'/\gamma}
+
 $$
 
 #### 3.2.4. Diffusion Remainder
 
 $$
 R_{\text{diffusion}} = -\frac{\sigma^2}{2} \int \rho \cdot \Delta_v \log \rho_\infty
+
 $$
 
 Using the regularity bound $\|\Delta_v \log \rho_\infty\|_{L^\infty} \le C_{\Delta v}$:
 
 $$
 |R_{\text{diffusion}}| \le \frac{\sigma^2}{2} C_{\Delta v} \int \rho = \frac{\sigma^2}{2} C_{\Delta v}
+
 $$
 
 **Result**:
 
 $$
 \boxed{|R_{\text{diffusion}}| \le C^{\text{diff}} := \frac{\sigma^2}{2} C_{\Delta v}}
+
 $$
 
 This is a **pure constant** (no dependence on $\rho$).
@@ -3733,6 +4301,7 @@ Summing all terms:
 
 $$
 |R_{\text{coupling}}| \le C_{\text{KL}}^{\text{coup}} D_{\text{KL}}(\rho \| \rho_\infty) + C_{\text{Fisher}}^{\text{coup}} I_v(\rho) + C_0^{\text{coup}}
+
 $$
 
 where:
@@ -3743,6 +4312,7 @@ C_{\text{KL}}^{\text{coup}} &= C_1^{\text{trans}} + C_1^{\text{fric}} \\
 C_{\text{Fisher}}^{\text{coup}} &= C_2^{\text{trans}} + C^{\text{force}} + C_2^{\text{fric}} \\
 C_0^{\text{coup}} &= C_0^{\text{force}} + C^{\text{diff}}
 \end{aligned}
+
 $$
 
 **Explicit formulas**:
@@ -3755,6 +4325,7 @@ C_{\text{Fisher}}^{\text{coup}} &= (C_{\nabla x} + \gamma) \sqrt{2C_v'/\gamma} +
 C_0^{\text{coup}} &= L_U C_{\nabla v} + \frac{\sigma^2 C_{\Delta v}}{2}
 \end{aligned}
 }
+
 $$
 
 
@@ -3766,24 +4337,28 @@ From Stage 1:
 
 $$
 I_{\text{jump}} = \int \mathcal{L}_{\text{jump}}(\rho) \log \frac{\rho}{\rho_\infty}
+
 $$
 
 where:
 
 $$
 \mathcal{L}_{\text{jump}}[\rho] = -\kappa_{\text{kill}}(x) \rho + \lambda_{\text{revive}} m_d(\rho) \frac{\rho}{\|\rho\|_{L^1}}
+
 $$
 
 ### 4.2. Killing Term
 
 $$
 I_{\text{kill}} := -\int \kappa_{\text{kill}}(x) \rho \log \frac{\rho}{\rho_\infty}
+
 $$
 
 Using the bound $\kappa_{\text{kill}}(x) \le \kappa_{\max}$:
 
 $$
 |I_{\text{kill}}| \le \kappa_{\max} \int \rho \left|\log \frac{\rho}{\rho_\infty}\right|
+
 $$
 
 **Lemma (Entropy moment bound)**:
@@ -3795,6 +4370,7 @@ For any $\rho, \rho_\infty \in \mathcal{P}(\Omega)$:
 
 $$
 \int \rho \left|\log \frac{\rho}{\rho_\infty}\right| \le 2 D_{\text{KL}}(\rho \| \rho_\infty) + C_{\text{const}}
+
 $$
 
 for some universal constant $C_{\text{const}}$.
@@ -3804,36 +4380,42 @@ for some universal constant $C_{\text{const}}$.
 
 $$
 \boxed{|I_{\text{kill}}| \le 2\kappa_{\max} D_{\text{KL}}(\rho \| \rho_\infty) + \kappa_{\max} C_{\text{const}}}
+
 $$
 
 ### 4.3. Revival Term
 
 $$
 I_{\text{revive}} := \frac{\lambda_{\text{revive}} m_d(\rho)}{\|\rho\|_{L^1}} \int \rho \log \frac{\rho}{\rho_\infty}
+
 $$
 
 The integral is exactly:
 
 $$
 \int \rho \log \frac{\rho}{\rho_\infty} = D_{\text{KL}}(\rho \| \rho_\infty) + \log \frac{\|\rho\|_{L^1}}{M_\infty}
+
 $$
 
 Since $m_d(\rho) = 1 - \|\rho\|_{L^1}$:
 
 $$
 I_{\text{revive}} = \lambda_{\text{revive}} \frac{1 - \|\rho\|_{L^1}}{\|\rho\|_{L^1}} \left(D_{\text{KL}}(\rho \| \rho_\infty) + \log \frac{\|\rho\|_{L^1}}{M_\infty}\right)
+
 $$
 
 **Near equilibrium** ($\|\rho\|_{L^1} \approx M_\infty < 1$):
 
 $$
 \frac{1 - \|\rho\|_{L^1}}{\|\rho\|_{L^1}} \approx \frac{1 - M_\infty}{M_\infty}
+
 $$
 
 **Result**:
 
 $$
 \boxed{I_{\text{revive}} \le \frac{\lambda_{\text{revive}}(1-M_\infty)}{M_\infty^2} D_{\text{KL}}(\rho \| \rho_\infty) + C_{\text{revive}}}
+
 $$
 
 where $C_{\text{revive}}$ is a constant depending on $\lambda_{\text{revive}}$ and the basin of attraction.
@@ -3842,6 +4424,7 @@ where $C_{\text{revive}}$ is a constant depending on $\lambda_{\text{revive}}$ a
 
 $$
 I_{\text{jump}} = I_{\text{kill}} + I_{\text{revive}} \le A_{\text{jump}} D_{\text{KL}}(\rho \| \rho_\infty) + B_{\text{jump}}
+
 $$
 
 where:
@@ -3853,6 +4436,7 @@ A_{\text{jump}} &= 2\kappa_{\max} + \frac{\lambda_{\text{revive}}(1-M_\infty)}{M
 B_{\text{jump}} &= \kappa_{\max} C_{\text{const}} + C_{\text{revive}}
 \end{aligned}
 }
+
 $$
 
 
@@ -3864,6 +4448,7 @@ Combining all terms from Sections 2-4:
 
 $$
 \frac{d}{dt} D_{\text{KL}}(\rho \| \rho_\infty) \le -\frac{\sigma^2}{2} I_v(\rho) + |R_{\text{coupling}}| + I_{\text{jump}}
+
 $$
 
 Substituting bounds:
@@ -3873,6 +4458,7 @@ $$
 &\le -\frac{\sigma^2}{2} I_v(\rho) + C_{\text{KL}}^{\text{coup}} D_{\text{KL}} + C_{\text{Fisher}}^{\text{coup}} I_v(\rho) + C_0^{\text{coup}} \\
 &\quad + A_{\text{jump}} D_{\text{KL}} + B_{\text{jump}}
 \end{aligned}
+
 $$
 
 Collecting terms:
@@ -3881,6 +4467,7 @@ $$
 \begin{aligned}
 &= \left(-\frac{\sigma^2}{2} + C_{\text{Fisher}}^{\text{coup}}\right) I_v(\rho) + (C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}) D_{\text{KL}} + (C_0^{\text{coup}} + B_{\text{jump}})
 \end{aligned}
+
 $$
 
 ### 5.2. Using the LSI
@@ -3889,6 +4476,7 @@ From Lemma {prf:ref}`lem-fisher-bound`:
 
 $$
 I_v(\rho) \ge 2\lambda_{\text{LSI}} D_{\text{KL}}(\rho \| \rho_\infty) - C_{\text{LSI}}
+
 $$
 
 Substituting:
@@ -3898,6 +4486,7 @@ $$
 \frac{d}{dt} D_{\text{KL}} &\le \left(-\frac{\sigma^2}{2} + C_{\text{Fisher}}^{\text{coup}}\right) \left(2\lambda_{\text{LSI}} D_{\text{KL}} - C_{\text{LSI}}\right) \\
 &\quad + (C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}) D_{\text{KL}} + (C_0^{\text{coup}} + B_{\text{jump}})
 \end{aligned}
+
 $$
 
 Expanding:
@@ -3907,6 +4496,7 @@ $$
 &= \left[2\lambda_{\text{LSI}}\left(-\frac{\sigma^2}{2} + C_{\text{Fisher}}^{\text{coup}}\right) + C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}\right] D_{\text{KL}} \\
 &\quad + \left[\left(-\frac{\sigma^2}{2} + C_{\text{Fisher}}^{\text{coup}}\right)(-C_{\text{LSI}}) + C_0^{\text{coup}} + B_{\text{jump}}\right]
 \end{aligned}
+
 $$
 
 ### 5.3. The Coercivity Gap
@@ -3915,18 +4505,21 @@ Define:
 
 $$
 \boxed{\delta := -2\lambda_{\text{LSI}}\left(-\frac{\sigma^2}{2} + C_{\text{Fisher}}^{\text{coup}}\right) - C_{\text{KL}}^{\text{coup}} - A_{\text{jump}}}
+
 $$
 
 **Condition for exponential convergence**:
 
 $$
 \delta > 0 \quad \Leftrightarrow \quad \lambda_{\text{LSI}} \sigma^2 > 2\lambda_{\text{LSI}} C_{\text{Fisher}}^{\text{coup}} + C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}
+
 $$
 
 **Explicit criterion**:
 
 $$
 \boxed{\sigma^2 > \frac{2\lambda_{\text{LSI}} C_{\text{Fisher}}^{\text{coup}} + C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}}{\lambda_{\text{LSI}}}}
+
 $$
 
 This is the **parameter regime requirement**: the diffusion strength $\sigma^2$ must be large enough relative to the coupling constants, jump expansion, and LSI constant.
@@ -3937,6 +4530,7 @@ When $\delta > 0$, we have:
 
 $$
 \frac{d}{dt} D_{\text{KL}}(\rho \| \rho_\infty) \le -\delta D_{\text{KL}}(\rho \| \rho_\infty) + C_{\text{offset}}
+
 $$
 
 where $C_{\text{offset}}$ is the constant term from Section 5.2.
@@ -3945,12 +4539,14 @@ where $C_{\text{offset}}$ is the constant term from Section 5.2.
 
 $$
 D_{\text{KL}}(\rho_t \| \rho_\infty) \le e^{-\delta t} D_{\text{KL}}(\rho_0 \| \rho_\infty) + \frac{C_{\text{offset}}}{\delta}(1 - e^{-\delta t})
+
 $$
 
 As $t \to \infty$:
 
 $$
 D_{\text{KL}}(\rho_t \| \rho_\infty) \to \frac{C_{\text{offset}}}{\delta}
+
 $$
 
 **For exact exponential convergence to $\rho_\infty$**: We need $C_{\text{offset}} = 0$, which requires tighter control of the constant terms. This is typically achieved by working in a **local basin** around $\rho_\infty$ where quadratic approximations are valid.
@@ -3962,12 +4558,14 @@ Assume $\delta > 0$ and that $\rho_0$ satisfies $D_{\text{KL}}(\rho_0 \| \rho_\i
 
 $$
 D_{\text{KL}}(\rho_t \| \rho_\infty) \le e^{-\alpha_{\text{net}} t} D_{\text{KL}}(\rho_0 \| \rho_\infty)
+
 $$
 
 where:
 
 $$
 \boxed{\alpha_{\text{net}} = \frac{\delta}{2}}
+
 $$
 
 is the exponential convergence rate.
@@ -3998,6 +4596,7 @@ is the exponential convergence rate.
 
 $$
 \lambda_{\text{LSI}} \ge \frac{\alpha_{\exp}}{1 + C_{\Delta v}/\alpha_{\exp}}
+
 $$
 
 **Coupling bounds**:
@@ -4007,30 +4606,35 @@ $$
 C_{\text{KL}}^{\text{coup}} &= (C_{\nabla x} + \gamma) \sqrt{2C_v} \\
 C_{\text{Fisher}}^{\text{coup}} &= (C_{\nabla x} + \gamma) \sqrt{2C_v'/\gamma} + \frac{L_U^2}{4\epsilon} + \gamma C_{\nabla v} \sqrt{2C_v'/\gamma}
 \end{aligned}
+
 $$
 
 **Jump expansion**:
 
 $$
 A_{\text{jump}} = 2\kappa_{\max} + \frac{\lambda_{\text{revive}}(1-M_\infty)}{M_\infty^2}
+
 $$
 
 **Coercivity gap**:
 
 $$
 \delta = \lambda_{\text{LSI}} \sigma^2 - 2\lambda_{\text{LSI}} C_{\text{Fisher}}^{\text{coup}} - C_{\text{KL}}^{\text{coup}} - A_{\text{jump}}
+
 $$
 
 **Convergence rate**:
 
 $$
 \boxed{\alpha_{\text{net}} = \frac{\delta}{2} = \frac{1}{2}\left(\lambda_{\text{LSI}} \sigma^2 - 2\lambda_{\text{LSI}} C_{\text{Fisher}}^{\text{coup}} - C_{\text{KL}}^{\text{coup}} - A_{\text{jump}}\right)}
+
 $$
 
 ### 6.4. Sufficient Condition for Convergence
 
 $$
 \boxed{\sigma^2 > \frac{2\lambda_{\text{LSI}} C_{\text{Fisher}}^{\text{coup}} + C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}}{\lambda_{\text{LSI}}} =: \sigma_{\text{crit}}^2}
+
 $$
 
 **Interpretation**: The diffusion strength must exceed a critical threshold $\sigma_{\text{crit}}^2$ that balances:
@@ -4062,6 +4666,7 @@ $$
 
 $$
 \delta = \lambda_{\text{LSI}} \sigma^2 - 2\lambda_{\text{LSI}} C_{\text{Fisher}}^{\text{coup}} - C_{\text{KL}}^{\text{coup}} - A_{\text{jump}}
+
 $$
 
 **Step 5**: Check $\delta > 0$. If yes, compute $\alpha_{\text{net}} = \delta/2$.
@@ -4072,6 +4677,7 @@ $$
 
 $$
 \frac{\partial \rho}{\partial t} = \mathcal{L}[\rho]
+
 $$
 
 **Step 7**: Compute $D_{\text{KL}}(\rho_t \| \rho_\infty)$ at discrete times.
@@ -4095,6 +4701,7 @@ The Young's inequality parameter $\epsilon$ in Section 3.2.2 can be optimized to
 
 $$
 \epsilon^* = \frac{\sigma^2}{2L_U}
+
 $$
 
 This balances the force coupling against the velocity dissipation.
@@ -4140,6 +4747,7 @@ The explicit constants here complement the finite-N analysis:
 
 $$
 \lim_{N \to \infty} \alpha_N(\tau, N) = \alpha_{\text{net}} \quad \text{(after adjusting for discrete-time)}
+
 $$
 
 The mean-field limit $N \to \infty$ removes the $1/N$ cloning fluctuations, leaving only the jump operator's deterministic expansion.
@@ -4154,12 +4762,14 @@ Under the assumptions of Stage 0.5 (QSD regularity R1-R6) and the parameter cond
 
 $$
 \sigma^2 > \sigma_{\text{crit}}^2 := \frac{2\lambda_{\text{LSI}} C_{\text{Fisher}}^{\text{coup}} + C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}}{\lambda_{\text{LSI}}}
+
 $$
 
 the mean-field Euclidean Gas converges exponentially to the QSD with rate:
 
 $$
 \boxed{\alpha_{\text{net}} = \frac{1}{2}\left(\lambda_{\text{LSI}} \sigma^2 - 2\lambda_{\text{LSI}} C_{\text{Fisher}}^{\text{coup}} - C_{\text{KL}}^{\text{coup}} - A_{\text{jump}}\right)}
+
 $$
 
 where all constants are given explicitly in Sections 2-4 in terms of the physical parameters $(\gamma, \sigma, L_U, \kappa_{\max}, \lambda_{\text{revive})$ and QSD regularity constants $(C_{\nabla x}, C_{\nabla v}, C_{\Delta v}, \alpha_{\exp})$.
@@ -4194,6 +4804,7 @@ The Euclidean Gas has **two distinct convergence rates** depending on the analys
 
 $$
 S_{t+1} = (\Psi_{\text{kin}}(\tau) \circ \Psi_{\text{clone}})(S_t)
+
 $$
 
 converges at rate $\alpha_N$ (from [09_kl_convergence.md](../1_euclidean_gas/09_kl_convergence.md)).
@@ -4202,6 +4813,7 @@ converges at rate $\alpha_N$ (from [09_kl_convergence.md](../1_euclidean_gas/09_
 
 $$
 \frac{\partial \rho}{\partial t} = \mathcal{L}[\rho] = \mathcal{L}_{\text{kin}}[\rho] + \mathcal{L}_{\text{jump}}[\rho]
+
 $$
 
 converges at rate $\alpha_{\text{net}}$ (from Stage 2).
@@ -4210,6 +4822,7 @@ converges at rate $\alpha_{\text{net}}$ (from Stage 2).
 
 $$
 \alpha_N = \alpha_{\text{net}} + O(1/N) + O(\tau)
+
 $$
 
 This document makes this relationship **explicit** and **computable**.
@@ -4267,6 +4880,7 @@ The spatial gradient $|\nabla_x \log \rho_\infty|$ measures how rapidly the QSD 
 
 $$
 C_{\nabla x} \sim \sqrt{\frac{\kappa_{\max}}{\sigma^2}} + \sqrt{\frac{L_U}{\gamma}}
+
 $$
 
 **Intuition**:
@@ -4283,6 +4897,7 @@ The velocity gradient $|\nabla_v \log \rho_\infty|$ measures velocity distributi
 
 $$
 C_{\nabla v} \sim \frac{\sqrt{\gamma}}{\sigma}
+
 $$
 
 **Intuition**: For a Gaussian-like velocity distribution with variance $\sim \sigma^2/\gamma$, we have $|\nabla_v \log \rho| \sim |v|/(\sigma^2/\gamma) \sim \sqrt{\gamma}/\sigma$.
@@ -4297,6 +4912,7 @@ The Laplacian $|\Delta_v \log \rho_\infty|$ measures curvature of the velocity d
 
 $$
 C_{\Delta v} \sim \frac{\gamma}{\sigma^2} + \frac{\lambda_{\text{revive}}}{M_\infty \sigma^2}
+
 $$
 
 **Intuition**:
@@ -4313,6 +4929,7 @@ The exponential tail $\rho_\infty(x,v) \lesssim e^{-\alpha_{\exp}(|x|^2 + |v|^2)
 
 $$
 \alpha_{\exp} \sim \min\left(\frac{\lambda_{\min}}{2\sigma^2}, \frac{\gamma}{\sigma^2}\right)
+
 $$
 
 where $\lambda_{\min}$ is the smallest eigenvalue of the potential Hessian $\nabla^2 U$.
@@ -4330,18 +4947,21 @@ From Stage 2, Theorem {prf:ref}`thm-lsi-constant-explicit`:
 
 $$
 \lambda_{\text{LSI}} \ge \frac{\alpha_{\exp}}{1 + C_{\Delta v}/\alpha_{\exp}}
+
 $$
 
 Substituting scaling estimates:
 
 $$
 \lambda_{\text{LSI}} \approx \frac{\min(\lambda_{\min}/\sigma^2, \gamma/\sigma^2)}{1 + (\gamma + \lambda_{\text{revive}}/M_\infty)/\min(\lambda_{\min}, \gamma)}
+
 $$
 
 **Simplified form** (when $\gamma \ll \lambda_{\min}$, typical for weakly damped systems):
 
 $$
 \boxed{\lambda_{\text{LSI}} \approx \frac{\gamma}{\sigma^2(1 + \gamma/\lambda_{\min} + \lambda_{\text{revive}}/(M_\infty \gamma))}}
+
 $$
 
 **Key dependencies**:
@@ -4360,6 +4980,7 @@ $$
 C_{\text{KL}}^{\text{coup}} &= (C_{\nabla x} + \gamma) \sqrt{2C_v} \\
 C_{\text{Fisher}}^{\text{coup}} &= (C_{\nabla x} + \gamma) \sqrt{2C_v'/\gamma} + \frac{L_U^2}{4\epsilon} + \gamma C_{\nabla v} \sqrt{2C_v'/\gamma}
 \end{aligned}
+
 $$
 
 where $C_v = d\sigma^2/\gamma$ and $C_v' = d\sigma^2\tau^2$ (from kinetic energy bounds).
@@ -4368,18 +4989,21 @@ where $C_v = d\sigma^2/\gamma$ and $C_v' = d\sigma^2\tau^2$ (from kinetic energy
 
 $$
 C_{\text{Fisher}}^{\text{coup}} \approx (C_{\nabla x} + \gamma) \sigma\tau\sqrt{2d} + \frac{L_U^2}{4\epsilon} + \gamma C_{\nabla v} \sigma\tau\sqrt{2d}
+
 $$
 
 Using $C_{\nabla x} \sim \sqrt{\kappa_{\max}/\sigma^2} + \sqrt{L_U/\gamma}$ and $C_{\nabla v} \sim \sqrt{\gamma}/\sigma$:
 
 $$
 \boxed{C_{\text{Fisher}}^{\text{coup}} \approx \left(\sqrt{\frac{\kappa_{\max}}{\sigma^2}} + \sqrt{\frac{L_U}{\gamma}} + \gamma\right) \sigma\tau\sqrt{2d} + \frac{L_U^2}{4\epsilon} + \sqrt{\gamma}\tau\sqrt{2d}}
+
 $$
 
 **Optimal $\epsilon$** (minimizes coupling): $\epsilon^* = \sigma^2/(2L_U)$, giving:
 
 $$
 \frac{L_U^2}{4\epsilon^*} = \frac{L_U^3}{2\sigma^2}
+
 $$
 
 **Key dependencies**:
@@ -4393,12 +5017,14 @@ From Stage 2, Section 4:
 
 $$
 A_{\text{jump}} = 2\kappa_{\max} + \frac{\lambda_{\text{revive}}(1-M_\infty)}{M_\infty^2}
+
 $$
 
 The equilibrium mass $M_\infty$ satisfies the balance equation:
 
 $$
 M_\infty \cdot \bar{\kappa}_{\text{kill}} = (1 - M_\infty) \cdot \lambda_{\text{revive}}
+
 $$
 
 where $\bar{\kappa}_{\text{kill}} = \int \kappa_{\text{kill}}(x) \rho_\infty(x,v) dx dv / M_\infty$ is the average killing rate.
@@ -4407,24 +5033,28 @@ where $\bar{\kappa}_{\text{kill}} = \int \kappa_{\text{kill}}(x) \rho_\infty(x,v
 
 $$
 M_\infty = \frac{\lambda_{\text{revive}}}{\lambda_{\text{revive}} + \bar{\kappa}_{\text{kill}}}
+
 $$
 
 **For uniform killing** $\kappa_{\text{kill}}(x) = \kappa_0$:
 
 $$
 M_\infty = \frac{\lambda_{\text{revive}}}{\lambda_{\text{revive}} + \kappa_0}, \quad 1 - M_\infty = \frac{\kappa_0}{\lambda_{\text{revive}} + \kappa_0}
+
 $$
 
 Substituting:
 
 $$
 \frac{1-M_\infty}{M_\infty^2} = \frac{\kappa_0(\lambda_{\text{revive}} + \kappa_0)^2}{\lambda_{\text{revive}}^3}
+
 $$
 
 **Result**:
 
 $$
 \boxed{A_{\text{jump}} \approx 2\kappa_{\max} + \frac{\kappa_0(\lambda_{\text{revive}} + \kappa_0)^2}{\lambda_{\text{revive}}^2}}
+
 $$
 
 **Key dependencies**:
@@ -4442,6 +5072,7 @@ From Stage 2, Theorem {prf:ref}`thm-main-explicit-rate`:
 
 $$
 \alpha_{\text{net}} = \frac{1}{2}\left(\lambda_{\text{LSI}} \sigma^2 - 2\lambda_{\text{LSI}} C_{\text{Fisher}}^{\text{coup}} - C_{\text{KL}}^{\text{coup}} - A_{\text{jump}}\right)
+
 $$
 
 Substituting the expressions from Section 1:
@@ -4461,6 +5092,7 @@ $$
 &- 2\kappa_{\max} - \frac{\kappa_0(\lambda_{\text{revive}} + \kappa_0)^2}{\lambda_{\text{revive}}^2}
 \Bigg]
 \end{aligned}
+
 $$
 
 :::
@@ -4469,6 +5101,7 @@ $$
 
 $$
 \boxed{\alpha_{\text{net}} \approx \frac{1}{2}\left[\gamma - \frac{2\gamma^2\tau\sqrt{2d}}{\sigma} - \frac{2\gamma L_U^3}{\sigma^4} - 2\kappa_{\max} - \frac{\kappa_0 \lambda_{\text{revive}}}{\lambda_{\text{revive}} + \kappa_0}\right]}
+
 $$
 
 ### 2.2. Critical Parameter Regime
@@ -4477,6 +5110,7 @@ For $\alpha_{\text{net}} > 0$, we need:
 
 $$
 \gamma > \frac{2\gamma^2\tau\sqrt{2d}}{\sigma} + \frac{2\gamma L_U^3}{\sigma^4} + 2\kappa_{\max} + \frac{\kappa_0 \lambda_{\text{revive}}}{\lambda_{\text{revive}} + \kappa_0}
+
 $$
 
 **Solving for $\sigma_{\text{crit}}$** (minimum diffusion for convergence):
@@ -4485,6 +5119,7 @@ Dominant balance: $\gamma \sim \gamma L_U^3/\sigma^4 \Rightarrow \sigma^4 \sim L
 
 $$
 \boxed{\sigma_{\text{crit}} \gtrsim \left(\frac{2L_U^3}{\gamma}\right)^{1/4}}
+
 $$
 
 **Interpretation**: The diffusion strength must scale as $L_U^{3/4}$ to overcome potential landscape roughness.
@@ -4502,30 +5137,35 @@ $$
 
 $$
 \frac{\partial}{\partial \gamma}\left[\frac{\gamma \sigma^2}{1 + \gamma/\lambda_{\min}}\right] = \frac{\sigma^2 \lambda_{\min}}{(\lambda_{\min} + \gamma)^2}
+
 $$
 
 This is maximized at $\gamma \to 0$, but coupling terms grow with $\gamma$. The optimal balance is:
 
 $$
 \gamma^* \approx \sqrt{\frac{\sigma^4}{\tau\sqrt{2d} L_U}}
+
 $$
 
 **Optimal diffusion**: From the critical regime and optimal $\gamma$:
 
 $$
 \sigma^* \approx (L_U^3 \gamma)^{1/4}
+
 $$
 
 **Optimal time step**: Should be small enough that $\tau$-dependent coupling is subdominant:
 
 $$
 \tau^* \lesssim \frac{\sigma}{2\gamma^2\sqrt{2d}}
+
 $$
 
 **Optimal revival rate**: Minimizes jump expansion:
 
 $$
 \lambda_{\text{revive}}^* \approx \kappa_0
+
 $$
 
 This balances killing and revival, minimizing the dead/alive ratio fluctuations.
@@ -4542,12 +5182,14 @@ $$
 \tau^* &\sim L_U^{-12/7} \\
 \lambda_{\text{revive}}^* &\sim \kappa_{\max}
 \end{aligned}
+
 $$
 
 yielding convergence rate:
 
 $$
 \alpha_{\text{net}}^* \sim \gamma^* \sim L_U^{3/7}
+
 $$
 
 :::
@@ -4563,6 +5205,7 @@ Define the **logarithmic sensitivity**:
 
 $$
 S_{ij} := \frac{\partial \log \alpha_{\text{net}}}{\partial \log P_j} = \frac{P_j}{\alpha_{\text{net}}} \frac{\partial \alpha_{\text{net}}}{\partial P_j}
+
 $$
 
 where $P_j \in \{\tau, \gamma, \sigma, \lambda_{\text{revive}}, \kappa_{\max}, N\}$.
@@ -4575,16 +5218,19 @@ From the simplified formula in Section 2.1:
 
 $$
 \alpha_{\text{net}} \approx \frac{1}{2}\left[\gamma - \frac{2\gamma^2\tau\sqrt{2d}}{\sigma} - \frac{2\gamma L_U^3}{\sigma^4} - 2\kappa_{\max} - C_{\text{jump}}\right]
+
 $$
 
 **Friction $\gamma$**:
 
 $$
 \frac{\partial \alpha_{\text{net}}}{\partial \gamma} \approx \frac{1}{2}\left[1 - \frac{4\gamma\tau\sqrt{2d}}{\sigma} - \frac{2L_U^3}{\sigma^4}\right]
+
 $$
 
 $$
 \boxed{S_{\gamma} = \frac{\gamma}{\alpha_{\text{net}}} \cdot \frac{1}{2}\left[1 - \frac{4\gamma\tau\sqrt{2d}}{\sigma} - \frac{2L_U^3}{\sigma^4}\right]}
+
 $$
 
 **Sign**: Positive if $\sigma > 2\sqrt{\gamma\tau\sqrt{2d} + \sqrt{2L_U^3}}$. Otherwise, increasing $\gamma$ **hurts** convergence.
@@ -4593,10 +5239,12 @@ $$
 
 $$
 \frac{\partial \alpha_{\text{net}}}{\partial \sigma} \approx \frac{1}{2}\left[\frac{2\gamma^2\tau\sqrt{2d}}{\sigma^2} + \frac{8\gamma L_U^3}{\sigma^5}\right]
+
 $$
 
 $$
 \boxed{S_{\sigma} = \frac{\sigma}{\alpha_{\text{net}}} \cdot \frac{1}{2}\left[\frac{2\gamma^2\tau\sqrt{2d}}{\sigma^2} + \frac{8\gamma L_U^3}{\sigma^5}\right]}
+
 $$
 
 **Sign**: Always positive — increasing diffusion **always helps** (assuming $\alpha_{\text{net}} > 0$).
@@ -4605,10 +5253,12 @@ $$
 
 $$
 \frac{\partial \alpha_{\text{net}}}{\partial \tau} \approx -\frac{\gamma^2\sqrt{2d}}{\sigma}
+
 $$
 
 $$
 \boxed{S_{\tau} = -\frac{\tau\gamma^2\sqrt{2d}}{\sigma \alpha_{\text{net}}}}
+
 $$
 
 **Sign**: Always negative — larger time steps **hurt** convergence (discretization error).
@@ -4617,10 +5267,12 @@ $$
 
 $$
 \frac{\partial \alpha_{\text{net}}}{\partial \kappa_{\max}} \approx -1
+
 $$
 
 $$
 \boxed{S_{\kappa_{\max}} = -\frac{\kappa_{\max}}{\alpha_{\text{net}}}}
+
 $$
 
 **Sign**: Always negative — more killing **hurts** convergence (expansion term).
@@ -4629,10 +5281,12 @@ $$
 
 $$
 \frac{\partial \alpha_{\text{net}}}{\partial \lambda_{\text{revive}}} \approx -\frac{\kappa_0^2}{(\lambda_{\text{revive}} + \kappa_0)^2}
+
 $$
 
 $$
 \boxed{S_{\lambda_{\text{revive}}} = -\frac{\lambda_{\text{revive}} \kappa_0^2}{(\lambda_{\text{revive}} + \kappa_0)^2 \alpha_{\text{net}}}}
+
 $$
 
 **Sign**: Always negative, but **decreasing** in magnitude as $\lambda_{\text{revive}}$ increases (saturates).
@@ -4643,6 +5297,7 @@ $$
 
 $$
 |S_{\sigma}| > |S_{\gamma}| > |S_{\lambda_{\text{revive}}}| > |S_{\kappa_{\max}}| > |S_{\tau}|
+
 $$
 
 **Key insight**: **Diffusion $\sigma$ has the strongest impact** on convergence rate. This is because it appears in both the LSI constant (denominator $\sigma^2$) and the coupling terms (high powers $\sigma^4$).
@@ -4662,6 +5317,7 @@ Compute KL divergence $D_{\text{KL}}(\mu_t \| \pi_{\text{QSD}})$ over time and f
 
 $$
 D_{\text{KL}}(t) \approx D_0 e^{-\alpha_{\text{emp}} t}
+
 $$
 
 **Step 2: Compute theoretical prediction**
@@ -4735,6 +5391,7 @@ Often we have **competing objectives**:
 
 $$
 \alpha_{\text{net}} \sim \frac{\gamma}{\tau^{1/2} N^{1/d}}
+
 $$
 
 This shows:
@@ -4755,6 +5412,7 @@ The discrete convergence rate $\alpha_N$ differs from the mean-field rate $\alph
 
 $$
 \alpha_N = \alpha_{\text{net}} \cdot (1 - C_N/N) + O(\tau^2)
+
 $$
 
 where $C_N$ is a constant depending on the cloning mechanism.
@@ -4765,6 +5423,7 @@ where $C_N$ is a constant depending on the cloning mechanism.
 
 $$
 C_N \approx \frac{c_{\text{clone}}}{\delta^2}
+
 $$
 
 where $\delta$ is the cloning noise variance and $c_{\text{clone}} \sim 1$ is a constant.
@@ -4773,12 +5432,14 @@ where $\delta$ is the cloning noise variance and $c_{\text{clone}} \sim 1$ is a 
 
 $$
 \boxed{\alpha_N \approx \alpha_{\text{net}} \left(1 - \frac{c_{\text{clone}}}{\delta^2 N}\right)}
+
 $$
 
 **Practical implication**: For $\delta \sim 0.1$ and $c_{\text{clone}} \sim 1$:
 
 $$
 \alpha_N \approx \alpha_{\text{net}} \left(1 - \frac{100}{N}\right)
+
 $$
 
 To get within 10% of mean-field rate, we need $N \gtrsim 1000$.
@@ -4789,6 +5450,7 @@ The discrete-time operators $\Psi_{\text{kin}}(\tau)$ approximate the continuous
 
 $$
 \alpha_N = \alpha_{\text{net}} - c_{\tau} \tau \alpha_{\text{net}}^2 + O(\tau^2)
+
 $$
 
 where $c_{\tau} \sim 1/(2\gamma)$ for the BAOAB integrator (see [02_euclidean_gas.md](../1_euclidean_gas/02_euclidean_gas.md)).
@@ -4797,12 +5459,14 @@ where $c_{\tau} \sim 1/(2\gamma)$ for the BAOAB integrator (see [02_euclidean_ga
 
 $$
 \boxed{\alpha_N \approx \alpha_{\text{net}} (1 - \tau \alpha_{\text{net}}/(2\gamma))}
+
 $$
 
 **Practical implication**: For $\tau = 0.01$, $\gamma = 1$, $\alpha_{\text{net}} = 0.5$:
 
 $$
 \alpha_N \approx 0.5 \times (1 - 0.01 \times 0.5 / 2) = 0.49875
+
 $$
 
 The error is negligible (< 0.5%) for typical parameters.
@@ -4813,18 +5477,21 @@ Combining both effects:
 
 $$
 \boxed{\alpha_N \approx \alpha_{\text{net}} \left(1 - \frac{c_{\text{clone}}}{\delta^2 N}\right) \left(1 - \frac{\tau \alpha_{\text{net}}}{2\gamma}\right)}
+
 $$
 
 **Guideline**: To stay within 5% of mean-field rate:
 
 $$
 \frac{c_{\text{clone}}}{\delta^2 N} + \frac{\tau \alpha_{\text{net}}}{2\gamma} < 0.05
+
 $$
 
 For typical parameters ($\delta = 0.1, c_{\text{clone}} = 1, \tau = 0.01, \gamma = 1, \alpha_{\text{net}} = 0.5$):
 
 $$
 \frac{100}{N} + 0.0025 < 0.05 \quad \Rightarrow \quad N > 2100
+
 $$
 
 ### 5.4. Asymptotic Regime Diagram
@@ -4888,36 +5555,42 @@ C_{\nabla v} &= \sqrt{\gamma}/\sigma \\
 C_{\Delta v} &= \gamma/\sigma^2 + \lambda_{\text{revive}}/(M_\infty \sigma^2) \\
 \alpha_{\exp} &= \min(\lambda_{\min}/\sigma^2, \gamma/\sigma^2) / 2
 \end{aligned}
+
 $$
 
 **Step 2**: Compute LSI constant (Section 1.2):
 
 $$
 \lambda_{\text{LSI}} = \frac{\alpha_{\exp}}{1 + C_{\Delta v}/\alpha_{\exp}}
+
 $$
 
 **Step 3**: Compute coupling constants (Section 1.3):
 
 $$
 C_{\text{Fisher}}^{\text{coup}} = (C_{\nabla x} + \gamma) \sigma\tau\sqrt{2d} + L_U^3/(2\sigma^2) + \sqrt{\gamma}\tau\sqrt{2d}
+
 $$
 
 **Step 4**: Compute jump expansion (Section 1.4):
 
 $$
 M_\infty = \frac{\lambda_{\text{revive}}}{\lambda_{\text{revive}} + \kappa_0}, \quad A_{\text{jump}} = 2\kappa_{\max} + \kappa_0(\lambda_{\text{revive}} + \kappa_0)^2/\lambda_{\text{revive}}^2
+
 $$
 
 **Step 5**: Assemble convergence rate (Section 2.1):
 
 $$
 \alpha_{\text{net}}^{\text{theory}} = \frac{1}{2}\left(\lambda_{\text{LSI}} \sigma^2 - 2\lambda_{\text{LSI}} C_{\text{Fisher}}^{\text{coup}} - C_{\text{KL}}^{\text{coup}} - A_{\text{jump}}\right)
+
 $$
 
 **Step 6**: Apply finite-N correction (Section 5.3):
 
 $$
 \alpha_N^{\text{theory}} = \alpha_{\text{net}}^{\text{theory}} \left(1 - \frac{100}{\delta^2 N}\right) \left(1 - \frac{\tau \alpha_{\text{net}}^{\text{theory}}}{2\gamma}\right)
+
 $$
 
 **Output**: $\alpha_N^{\text{theory}}$
@@ -4932,6 +5605,7 @@ $$
 
 $$
 D_{\text{KL}}(t) = \mathbb{E}_{\mu_t}\left[\log \frac{d\mu_t}{d\pi_{\text{QSD}}}\right]
+
 $$
 
 (Use kernel density estimation if $\pi_{\text{QSD}}$ is not analytically known)
@@ -4944,6 +5618,7 @@ $$
 
 $$
 \log D_{\text{KL}}(t) = \log D_0 - \alpha_N^{\text{emp}} t
+
 $$
 
 using linear regression on $[t_1, t_2]$
@@ -4952,6 +5627,7 @@ using linear regression on $[t_1, t_2]$
 
 $$
 \sigma_{\alpha} = \text{std}(\text{residuals}) / \sqrt{t_2 - t_1}
+
 $$
 
 **Output**: $\alpha_N^{\text{emp}} \pm \sigma_{\alpha}$
@@ -5041,6 +5717,7 @@ $$
 
 $$
 \sigma_{\text{crit}} \sim (2L_U^3/\gamma)^{1/4} = (2 \times 216 / 1)^{1/4} = 4.56
+
 $$
 
 **Retrying with $\sigma = 5$**:
@@ -5107,24 +5784,28 @@ Still negative! This landscape may require **adaptive mechanisms** (adaptive for
 
 $$
 \alpha_{\text{net}} \approx \frac{1}{2}\left[\gamma - \frac{2\gamma^2\tau\sqrt{2d}}{\sigma} - \frac{2\gamma L_U^3}{\sigma^4} - 2\kappa_{\max} - C_{\text{jump}}\right]
+
 $$
 
 **Critical diffusion**:
 
 $$
 \sigma_{\text{crit}} \gtrsim \left(\frac{2L_U^3}{\gamma}\right)^{1/4}
+
 $$
 
 **Finite-N correction**:
 
 $$
 \alpha_N \approx \alpha_{\text{net}} \left(1 - \frac{100}{\delta^2 N}\right)
+
 $$
 
 **Optimal scaling**:
 
 $$
 \gamma^* \sim L_U^{3/7}, \quad \sigma^* \sim L_U^{9/14}, \quad \tau^* \sim L_U^{-12/7}
+
 $$
 
 ### 8.2. Parameter Effects Table
@@ -5299,6 +5980,7 @@ Let $\rho_t$ be the solution to the mean-field McKean-Vlasov-Fokker-Planck PDE f
 
 $$
 \frac{\partial \rho}{\partial t} = \mathcal{L}[\rho] = \mathcal{L}_{\text{kin}}[\rho] + \mathcal{L}_{\text{jump}}[\rho]
+
 $$
 
 where:
@@ -5311,6 +5993,7 @@ Let $\rho_\infty$ be the unique Quasi-Stationary Distribution (QSD) satisfying t
 
 $$
 \delta := \lambda_{\text{LSI}} \sigma^2 - 2\lambda_{\text{LSI}}C_{\text{Fisher}}^{\text{coup}} - C_{\text{KL}}^{\text{coup}} - A_{\text{jump}} > 0
+
 $$
 
 where:
@@ -5324,12 +6007,14 @@ where:
 
 $$
 D_{\text{KL}}(\rho_t \| \rho_\infty) \le e^{-\delta t} D_{\text{KL}}(\rho_0 \| \rho_\infty) + \frac{C_{\text{offset}}}{\delta} (1 - e^{-\delta t})
+
 $$
 
 where the offset constant is:
 
 $$
 C_{\text{offset}} := \frac{\sigma^2}{2} C_{\text{LSI}} + C_0^{\text{coup}} + B_{\text{jump}}
+
 $$
 
 with:
@@ -5341,6 +6026,7 @@ with:
 
 $$
 D_{\text{KL}}(\rho_t \| \rho_\infty) \to \frac{C_{\text{offset}}}{\delta}
+
 $$
 
 **Important**: The system converges exponentially to a **residual neighborhood** of the QSD with radius $C_{\text{offset}}/\delta$ in KL-divergence. For true convergence to the QSD (zero residual), $C_{\text{offset}}$ must vanish, which occurs in local basins near equilibrium where higher-order remainder terms become negligible.
@@ -5349,6 +6035,7 @@ $$
 
 $$
 \alpha_{\text{net}} = \lambda_{\text{LSI}} \sigma^2 - 2\lambda_{\text{LSI}}C_{\text{Fisher}}^{\text{coup}} - C_{\text{KL}}^{\text{coup}} - A_{\text{jump}}
+
 $$
 
 This matches the formula derived in Stage 2, Section 2.1.
@@ -5371,6 +6058,7 @@ Rearranging:
 
 $$
 \sigma^2 > \sigma_{\text{crit}}^2 := \frac{2C_{\text{Fisher}}^{\text{coup}}}{\lambda_{\text{LSI}}} + \frac{C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}}{\lambda_{\text{LSI}}}
+
 $$
 
 The system converges exponentially if and only if the velocity noise is strong enough to overcome the destabilizing effects.
@@ -5388,6 +6076,7 @@ From Stage 1, Section 7.1 (Final Equation), the time derivative of KL-divergence
 
 $$
 \frac{d}{dt} D_{\text{KL}}(\rho_t \| \rho_\infty) = -\frac{\sigma^2}{2} \mathcal{I}_v(\rho_t \| \rho_\infty) + R_{\text{coupling}}[\rho_t] + \mathcal{I}_{\text{jump}}[\rho_t]
+
 $$
 
 where:
@@ -5401,6 +6090,7 @@ From Stage 2, Section 3.3 (Final Coupling Bound), we have:
 
 $$
 |R_{\text{coupling}}[\rho]| \le C_{\text{KL}}^{\text{coup}} \cdot D_{\text{KL}}(\rho \| \rho_\infty) + C_{\text{Fisher}}^{\text{coup}} \cdot \mathcal{I}_v(\rho \| \rho_\infty) + C_0^{\text{coup}}
+
 $$
 
 where the constants $C_{\text{KL}}^{\text{coup}}$, $C_{\text{Fisher}}^{\text{coup}}$, $C_0^{\text{coup}}$ are explicit formulas from Stage 2, Section 1.3.
@@ -5411,6 +6101,7 @@ From Stage 2, Section 4.4 (Jump Operator Bound), we have:
 
 $$
 \mathcal{I}_{\text{jump}}[\rho] \le A_{\text{jump}} \cdot D_{\text{KL}}(\rho \| \rho_\infty) + B_{\text{jump}}
+
 $$
 
 where $A_{\text{jump}}$ and $B_{\text{jump}}$ are given in Stage 2, Section 1.4.
@@ -5421,12 +6112,14 @@ The QSD $\rho_\infty$ satisfies regularity properties R1-R6 (proven in Stage 0.5
 
 $$
 \mathcal{I}_v(\rho \| \rho_\infty) \ge 2\lambda_{\text{LSI}} D_{\text{KL}}(\rho \| \rho_\infty)
+
 $$
 
 However, we need to relate the standard Fisher information $\mathcal{I}_v(\rho)$ to the relative one. By Stage 2, Lemma `lem-fisher-bound`:
 
 $$
 \mathcal{I}_v(\rho) \ge 2\lambda_{\text{LSI}} D_{\text{KL}}(\rho \| \rho_\infty) - C_{\text{LSI}}
+
 $$
 
 where $C_{\text{LSI}}$ is the constant from the LSI remainder.
@@ -5441,18 +6134,21 @@ $$
 &\le -\frac{\sigma^2}{2} I + C_{\text{KL}}^{\text{coup}} D + C_{\text{Fisher}}^{\text{coup}} I + C_0^{\text{coup}} + A_{\text{jump}} D + B_{\text{jump}} \\
 &= -\frac{\sigma^2}{2} I + C_{\text{Fisher}}^{\text{coup}} I + (C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}) D + (C_0^{\text{coup}} + B_{\text{jump}})
 \end{align*}
+
 $$
 
 Factor the Fisher information term:
 
 $$
 \frac{d D}{dt} \le -\left(\frac{\sigma^2}{2} - C_{\text{Fisher}}^{\text{coup}}\right) I + (C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}) D + (C_0^{\text{coup}} + B_{\text{jump}})
+
 $$
 
 Now apply the LSI bound from Step 4:
 
 $$
 I \ge 2\lambda_{\text{LSI}} D - C_{\text{LSI}}
+
 $$
 
 Substitute:
@@ -5463,6 +6159,7 @@ $$
 &= -\left(\frac{\sigma^2}{2} - C_{\text{Fisher}}^{\text{coup}}\right) 2\lambda_{\text{LSI}} D + \left(\frac{\sigma^2}{2} - C_{\text{Fisher}}^{\text{coup}}\right) C_{\text{LSI}} \\
 &\quad + (C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}) D + (C_0^{\text{coup}} + B_{\text{jump}})
 \end{align*}
+
 $$
 
 Collect terms proportional to $D$:
@@ -5472,28 +6169,33 @@ $$
 \frac{d D}{dt} &\le \left[-({\sigma^2} - 2C_{\text{Fisher}}^{\text{coup}}) \lambda_{\text{LSI}} + C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}\right] D \\
 &\quad + \frac{\sigma^2}{2} C_{\text{LSI}} + C_0^{\text{coup}} + B_{\text{jump}}
 \end{align*}
+
 $$
 
 Factoring out the negative sign from the coefficient of $D$:
 
 $$
 \frac{d D}{dt} \le -\left[\lambda_{\text{LSI}} \sigma^2 - 2\lambda_{\text{LSI}}C_{\text{Fisher}}^{\text{coup}} - C_{\text{KL}}^{\text{coup}} - A_{\text{jump}}\right] D + C_{\text{offset}}
+
 $$
 
 Define:
 
 $$
 \delta := \lambda_{\text{LSI}} \sigma^2 - 2\lambda_{\text{LSI}}C_{\text{Fisher}}^{\text{coup}} - C_{\text{KL}}^{\text{coup}} - A_{\text{jump}}
+
 $$
 
 $$
 C_{\text{offset}} := \frac{\sigma^2}{2} C_{\text{LSI}} + C_0^{\text{coup}} + B_{\text{jump}}
+
 $$
 
 Then:
 
 $$
 \frac{d D}{dt} \le -\delta \cdot D + C_{\text{offset}}
+
 $$
 
 This is the **Grönwall differential inequality**.
@@ -5504,12 +6206,14 @@ For exponential convergence, we require $\delta > 0$. This is the **Kinetic Domi
 
 $$
 \lambda_{\text{LSI}} \sigma^2 > 2\lambda_{\text{LSI}}C_{\text{Fisher}}^{\text{coup}} + C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}
+
 $$
 
 Equivalently, rearranging for $\sigma^2$:
 
 $$
 \sigma^2 > \sigma_{\text{crit}}^2 := \frac{2C_{\text{Fisher}}^{\text{coup}}}{\lambda_{\text{LSI}}} + \frac{C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}}{\lambda_{\text{LSI}}}
+
 $$
 
 **Physical meaning**: The velocity diffusion must be strong enough for the hypocoercive dissipation to overcome the destabilizing effects from mean-field coupling and the jump operator.
@@ -5520,18 +6224,21 @@ Assuming $\delta > 0$, the differential inequality:
 
 $$
 \frac{d D}{dt} \le -\delta \cdot D + C_{\text{offset}}
+
 $$
 
 has the solution (by Grönwall's lemma):
 
 $$
 D(t) \le e^{-\delta t} D(0) + \frac{C_{\text{offset}}}{\delta} (1 - e^{-\delta t})
+
 $$
 
 Substituting $D(t) = D_{\text{KL}}(\rho_t \| \rho_\infty)$ and $D(0) = D_{\text{KL}}(\rho_0 \| \rho_\infty)$:
 
 $$
 D_{\text{KL}}(\rho_t \| \rho_\infty) \le e^{-\delta t} D_{\text{KL}}(\rho_0 \| \rho_\infty) + \frac{C_{\text{offset}}}{\delta}(1 - e^{-\delta t})
+
 $$
 
 This matches the theorem statement with convergence rate $\alpha_{\text{net}} = \delta$.
@@ -5542,6 +6249,7 @@ As $t \to \infty$, $e^{-\delta t} \to 0$, so:
 
 $$
 D_{\text{KL}}(\rho_t \| \rho_\infty) \to \frac{C_{\text{offset}}}{\delta}
+
 $$
 
 This is the **steady-state residual entropy**, arising from the constant forcing terms in the Grönwall inequality.
@@ -5582,6 +6290,7 @@ The proof reveals the **fundamental tension** in the Euclidean Gas:
 
 $$
 \frac{\lambda_{\text{LSI}} \sigma^2}{2} - \lambda_{\text{LSI}} C_{\text{Fisher}}^{\text{coup}} > \frac{C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}}{2}
+
 $$
 
 This is a **quantitative manifestation** of the Second Law of Thermodynamics for the mean-field limit: irreversible dissipation must overcome reversible fluctuations and jump-induced entropy production for the system to relax to equilibrium.
@@ -5592,18 +6301,21 @@ From Stage 3, we established:
 
 $$
 \alpha_N = \alpha_{\text{net}} + O(1/N) + O(\tau)
+
 $$
 
 where $\alpha_N$ is the finite-N discrete-time rate. This theorem shows:
 
 $$
 \lim_{N \to \infty, \tau \to 0} \alpha_N = \alpha_{\text{net}} = \delta
+
 $$
 
 The **N-uniform LSI** proven in [09_kl_convergence.md](../1_euclidean_gas/09_kl_convergence.md) guarantees that $\alpha_N$ is bounded below **uniformly in N**. This theorem proves that $\alpha_N \to \alpha_{\text{net}}$, completing the picture:
 
 $$
 \inf_N \alpha_N > 0 \quad \text{and} \quad \alpha_N \to \alpha_{\text{net}} \quad \text{as } N \to \infty
+
 $$
 
 This is the **thermodynamic limit** of the convergence rate.
@@ -5645,24 +6357,28 @@ For the mean-field McKean-Vlasov-Fokker-Planck PDE:
 
 $$
 \frac{\partial \rho}{\partial t} = \mathcal{L}_{\text{kin}}[\rho] + \mathcal{L}_{\text{jump}}[\rho]
+
 $$
 
 under the **Kinetic Dominance Condition**:
 
 $$
 \sigma^2 > \sigma_{\text{crit}}^2 = \frac{2C_{\text{Fisher}}^{\text{coup}}}{\lambda_{\text{LSI}}} + \frac{C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}}{\lambda_{\text{LSI}}}
+
 $$
 
 the solution converges exponentially to the unique Quasi-Stationary Distribution $\rho_\infty$:
 
 $$
 D_{\text{KL}}(\rho_t \| \rho_\infty) \le e^{-\alpha_{\text{net}} t} D_{\text{KL}}(\rho_0 \| \rho_\infty) + \frac{C_{\text{offset}}}{\alpha_{\text{net}}} (1 - e^{-\alpha_{\text{net}} t})
+
 $$
 
 with **explicit convergence rate**:
 
 $$
 \alpha_{\text{net}} = \lambda_{\text{LSI}} \sigma^2 - 2\lambda_{\text{LSI}}C_{\text{Fisher}}^{\text{coup}} - C_{\text{KL}}^{\text{coup}} - A_{\text{jump}}
+
 $$
 
 where all constants ($\lambda_{\text{LSI}}$, $C_{\text{Fisher}}^{\text{coup}}$, $C_{\text{KL}}^{\text{coup}}$, $A_{\text{jump}}$) have **explicit formulas** in terms of the QSD's regularity properties and system parameters.
@@ -5727,10 +6443,12 @@ The Euclidean Gas exhibits a **fundamental competition** between two mechanisms:
 
 $$
 \text{Hypocoercive dissipation} > \text{KL-expansion} + \text{Coupling drag}
+
 $$
 
 $$
 \lambda_{\text{LSI}} \sigma^2 > 2\lambda_{\text{LSI}} C_{\text{Fisher}}^{\text{coup}} + C_{\text{KL}}^{\text{coup}} + A_{\text{jump}}
+
 $$
 
 This is the **Kinetic Dominance Condition**.
@@ -5756,6 +6474,7 @@ The Quasi-Stationary Distribution $\rho_\infty$ is **not** the stationary measur
 
 $$
 \rho_\infty = \lim_{t \to \infty} \mathbb{P}(X_t \in \cdot \,|\, T_{\text{kill}} > t)
+
 $$
 
 where $T_{\text{kill}}$ is the killing time.
@@ -5780,6 +6499,7 @@ The LSI for the QSD (Theorem `thm-lsi-qsd`) is the **key technical tool** that c
 
 $$
 \alpha_N = \alpha_{\text{net}} + O(1/N) + O(\tau)
+
 $$
 
 **Implication**: This theorem proves $\lim_{N \to \infty, \tau \to 0} \alpha_N = \alpha_{\text{net}}$, validating the **thermodynamic limit** of the convergence rate.
@@ -5867,18 +6587,21 @@ This theorem **strengthens** the Foster-Lyapunov result by proving convergence i
 
 $$
 C_{\text{Fisher}}^{\text{coup}} \sim \sqrt{d}, \quad C_{\text{KL}}^{\text{coup}} \sim d
+
 $$
 
 **Consequence**: Critical diffusion scales as:
 
 $$
 \sigma_{\text{crit}}^2 \sim d
+
 $$
 
 and convergence rate decreases:
 
 $$
 \alpha_{\text{net}} \sim d^{-1/4}
+
 $$
 
 (assuming $\lambda_{\text{LSI}}$ is dimension-independent, which is optimistic).

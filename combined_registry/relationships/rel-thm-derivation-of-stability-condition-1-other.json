@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-derivation-of-stability-condition-1-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-fitness-operator",
+  "target_object": "obj-fitness-potential-operator",
+  "established_by": "thm-derivation-of-stability-condition",
+  "expression": "necessary_sufficient_condition_for_intelligence",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

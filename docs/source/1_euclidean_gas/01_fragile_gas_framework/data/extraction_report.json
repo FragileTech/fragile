@@ -1,0 +1,172 @@
+{
+  "metadata": {
+    "source_document": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "extraction_date": "2025-10-26T10:39:15.638937",
+    "extraction_version": "1.0.0"
+  },
+  "summary": {
+    "total_objects": 113,
+    "objects": 43,
+    "axioms": 19,
+    "theorems": 24,
+    "lemmas": 24,
+    "propositions": 3
+  },
+  "extraction_statistics": {
+    "theorems_with_inputs": 26,
+    "theorems_with_outputs": 4,
+    "total_object_dependencies": 17,
+    "total_axiom_dependencies": 6,
+    "total_parameter_dependencies": 18,
+    "total_internal_lemma_dependencies": 0,
+    "average_dependencies_per_theorem": 0.45098039215686275
+  },
+  "dependency_graph_statistics": {
+    "total_nodes": 113,
+    "total_edges": 23,
+    "nodes_by_type": {
+      "object": 43,
+      "axiom": 19,
+      "lemma": 24,
+      "proposition": 3,
+      "theorem": 24
+    },
+    "edges_by_type": {
+      "uses_axiom": 6,
+      "uses_object": 17
+    }
+  },
+  "most_referenced_objects": [
+    {
+      "label": "obj-alive-dead-sets",
+      "count": 13
+    },
+    {
+      "label": "obj-perturbation-measure",
+      "count": 2
+    },
+    {
+      "label": "obj-valid-state-space",
+      "count": 2
+    }
+  ],
+  "most_referenced_axioms": [
+    {
+      "label": "axiom-def-axiom-rescale-function",
+      "count": 3
+    },
+    {
+      "label": "axiom-bounded-measurement-variance",
+      "count": 1
+    },
+    {
+      "label": "axiom-def-axiom-bounded-second-moment-perturbation",
+      "count": 1
+    },
+    {
+      "label": "axiom-def-axiom-boundary-regularity",
+      "count": 1
+    }
+  ],
+  "most_complex_theorems": [
+    {
+      "label": "lem-boundary-heat-kernel",
+      "complexity": 2
+    },
+    {
+      "label": "lem-boundary-uniform-ball",
+      "complexity": 2
+    },
+    {
+      "label": "thm-distance-operator-satisfies-bounded-variance-axiom",
+      "complexity": 1
+    },
+    {
+      "label": "thm-distance-operator-mean-square-continuity",
+      "complexity": 1
+    },
+    {
+      "label": "thm-perturbation-operator-continuity-reproof",
+      "complexity": 1
+    },
+    {
+      "label": "thm-expected-cloning-action-continuity",
+      "complexity": 1
+    },
+    {
+      "label": "lem-empirical-aggregator-properties",
+      "complexity": 1
+    },
+    {
+      "label": "thm-total-expected-cloning-action-continuity",
+      "complexity": 1
+    },
+    {
+      "label": "thm-canonical-logistic-validity",
+      "complexity": 1
+    },
+    {
+      "label": "lem-single-walker-structural-error",
+      "complexity": 1
+    },
+    {
+      "label": "lem-stats-value-continuity",
+      "complexity": 1
+    },
+    {
+      "label": "lem-total-squared-error-stable",
+      "complexity": 1
+    },
+    {
+      "label": "thm-expected-raw-distance-bound",
+      "complexity": 1
+    },
+    {
+      "label": "lem-rescale-monotonicity",
+      "complexity": 1
+    },
+    {
+      "label": "thm-post-perturbation-status-update-continuity",
+      "complexity": 1
+    }
+  ],
+  "extraction_quality": {
+    "method": "Pattern matching + heuristic analysis",
+    "completeness": "Partial - ~25% of theorems have extracted dependencies",
+    "accuracy": "High for explicit references, Medium for implicit dependencies",
+    "limitations": [
+      "Only 47/113 directives fully parsed (missing 66 definitions)",
+      "Implicit dependencies require deeper semantic analysis",
+      "Property and relationship extraction is minimal",
+      "Proof structure not fully captured",
+      "Mathematical notation mapping incomplete"
+    ],
+    "recommended_next_steps": [
+      "Use LLM-assisted extraction (Gemini 2.5 Pro) for semantic analysis",
+      "Manual review of theorem proofs to extract internal lemma dependencies",
+      "Expand mathematical notation dictionary",
+      "Extract property propagation chains",
+      "Build lemma dependency DAG from proof structure"
+    ]
+  },
+  "validation_status": {
+    "validation_errors": [],
+    "validation_warnings": [
+      "25 theorems have no extracted inputs",
+      "47 theorems have no extracted outputs",
+      "0 internal lemma dependencies extracted (proof structure not parsed)"
+    ],
+    "cross_references_resolved": true,
+    "label_patterns_valid": true
+  },
+  "files_generated": {
+    "pydantic_objects": "docs/source/1_euclidean_gas/01_fragile_gas_framework/data/pydantic_objects.json",
+    "dependency_graph": "docs/source/1_euclidean_gas/01_fragile_gas_framework/data/dependency_graph.json",
+    "extraction_statistics": "docs/source/1_euclidean_gas/01_fragile_gas_framework/data/extraction_statistics.json",
+    "extraction_report": "docs/source/1_euclidean_gas/01_fragile_gas_framework/data/extraction_report.json",
+    "readme": "docs/source/1_euclidean_gas/01_fragile_gas_framework/data/README.md",
+    "individual_objects": "docs/source/1_euclidean_gas/01_fragile_gas_framework/objects/*.json",
+    "individual_axioms": "docs/source/1_euclidean_gas/01_fragile_gas_framework/axioms/*.json",
+    "individual_theorems": "docs/source/1_euclidean_gas/01_fragile_gas_framework/theorems/*.json"
+  }
+}

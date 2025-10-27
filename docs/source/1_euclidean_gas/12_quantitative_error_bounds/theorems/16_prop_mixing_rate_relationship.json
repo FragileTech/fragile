@@ -1,0 +1,53 @@
+{
+  "label": "attr-mixing-rate-relationship",
+  "type": "proposition",
+  "name": "Relationship Between Continuous and Discrete Mixing Rates",
+  "line_range": [
+    2276,
+    2337
+  ],
+  "status": "complete",
+  "input_objects": [
+    "obj-continuous-generator",
+    "obj-discrete-kernel"
+  ],
+  "input_axioms": [],
+  "input_theorems": [],
+  "input_parameters": [
+    "lambda_1",
+    "tau",
+    "kappa_mix_cont",
+    "kappa_mix_discrete"
+  ],
+  "attributes_required": {
+    "obj-continuous-generator": [
+      "attr-spectral-gap-positive"
+    ]
+  },
+  "output_type": "Relation",
+  "attributes_added": [
+    "attr-mixing-rate-convergence-to-continuous"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-discrete-mixing-rate",
+      "to": "obj-continuous-mixing-rate",
+      "type": "asymptotic_equivalence",
+      "bound": "kappa_mix_discrete(tau) = lambda_1 + O(tau)",
+      "order": "O(tau)"
+    }
+  ],
+  "internal_lemmas": [],
+  "proof_strategy": "Spectral analysis + discrete spectrum = exp(continuous spectrum)",
+  "spectral_gap_relationship": "lambda_1(tau) = 1 - exp(-tau * lambda_1)",
+  "notes": [
+    "Shows discrete and continuous mixing rates are comparable",
+    "For small tau, discrete \u2192 continuous",
+    "Justifies using continuous mixing rate in error bounds",
+    "Difference only by structural constant O(1)"
+  ],
+  "external_references": [
+    "Meyn & Tweedie (2009) - Theorem 16.0.1",
+    "Hairer, Stuart, Voss (2011) - Theorem 3.10"
+  ]
+}

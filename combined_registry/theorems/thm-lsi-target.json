@@ -1,0 +1,50 @@
+{
+  "label": "thm-lsi-target",
+  "name": "Logarithmic Sobolev Inequality (Target)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-qsd"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "kappa_conf"
+  ],
+  "properties_required": {
+    "log-concave": [
+      "π_QSD is log-concave"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-bakry-emery-classical"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-lsi-target-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-qsd",
+      "target_object": "obj-qsd",
+      "established_by": "thm-lsi-target",
+      "expression": "LSI constant for π_QSD is O(1/κ_conf)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

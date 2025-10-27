@@ -1,0 +1,42 @@
+{
+  "label": "lem-polishness-and-w2",
+  "name": "Polishness of the quotient state space and $W_2$",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-metric-quotient",
+    "obj-n-particle-displacement-metric",
+    "obj-swarm-and-state-space",
+    "obj-w2-output-metric"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-n"
+  ],
+  "properties_required": {
+    "obj-swarm-and-state-space": [
+      "prop-is-polish"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-is-polish",
+      "expression": "The space (\\overline{\\Sigma}_N, \\overline d_{\\text{Disp},\\mathcal{Y}}) is Polish.",
+      "object_label": "obj-metric-quotient",
+      "established_by": "lem-polishness-and-w2",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

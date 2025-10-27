@@ -1,0 +1,104 @@
+{
+  "label": "lem-mass-lower-bound-high-prob",
+  "name": "High-Probability Alive Mass Lower Bound",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-qsd",
+    "def-alive-mass"
+  ],
+  "input_axioms": [
+    "ax-guaranteed-revival",
+    "ax-domain-regularity"
+  ],
+  "input_parameters": [
+    "N",
+    "kappa_QSD",
+    "m_eq",
+    "C_death",
+    "C_revival",
+    "t_eq",
+    "delta"
+  ],
+  "properties_required": {
+    "equilibration": [
+      "t ≥ t_eq = O(κ_QSD^{-1} log N) ⇒ TV distance ≤ 1/N²"
+    ],
+    "bounded-counts": [
+      "0 ≤ k_t ≤ N",
+      "Var(k) = O(N) (Lyapunov bounds)"
+    ],
+    "survival-tail": [
+      "P(τ_† > t) ≥ 1 − t e^{−Θ(N)}"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-exponential-survival"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "thm-exponential-survival",
+      "lem-mass-lower-bound-high-prob"
+    ]
+  ],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-mass-lower-bound-high-prob-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-qsd",
+      "target_object": "obj-alive-mass",
+      "established_by": "lem-mass-lower-bound-high-prob",
+      "expression": "P(k_t ≥ k_*/2 and τ_† > t) ≥ 1 − e^{−δN}",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    },
+    {
+      "label": "rel-lem-mass-lower-bound-high-prob-1-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-qsd",
+      "target_object": "obj-alive-mass",
+      "established_by": "lem-mass-lower-bound-high-prob",
+      "expression": "||ρ_t||_{L^1} = k_t/N ≥ m_eq/2 on high-probability event",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    },
+    {
+      "label": "rel-lem-mass-lower-bound-high-prob-2-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-qsd",
+      "target_object": "obj-alive-mass",
+      "established_by": "lem-mass-lower-bound-high-prob",
+      "expression": "c_mass := m_eq/2",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    }
+  ]
+}

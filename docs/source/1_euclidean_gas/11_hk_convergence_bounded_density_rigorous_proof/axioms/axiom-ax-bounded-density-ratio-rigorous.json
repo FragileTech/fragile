@@ -1,0 +1,6 @@
+{
+  "label": "axiom-ax-bounded-density-ratio-rigorous",
+  "statement": "Bounded Density Ratio (To Be Proven)",
+  "mathematical_expression": "\\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M",
+  "foundational_framework": "Euclidean Gas"
+}

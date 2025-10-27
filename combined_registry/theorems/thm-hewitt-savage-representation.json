@@ -1,0 +1,39 @@
+{
+  "label": "thm-hewitt-savage-representation",
+  "name": "Mixture Representation (Hewitt-Savage)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "10_qsd_exchangeability_theory",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-qsd"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-N"
+  ],
+  "properties_required": {
+    "obj-qsd": [
+      "prop-exchangeability"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Existence",
+  "properties_added": [
+    {
+      "label": "prop-de-finetti-mixture",
+      "expression": "π_N = ∫ μ^{⊗N} d𝒬_N(μ)",
+      "object_label": "obj-qsd",
+      "established_by": "thm-hewitt-savage-representation",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

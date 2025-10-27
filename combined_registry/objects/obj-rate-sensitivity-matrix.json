@@ -1,0 +1,12 @@
+{
+  "label": "obj-rate-sensitivity-matrix",
+  "name": "Log-Sensitivity Matrix for Convergence Rates",
+  "mathematical_expression": "(M_\\kappa)_{ij} = \\frac{\\partial \\log \\kappa_i}{\\partial \\log P_j}\\bigg|_{P_0}",
+  "object_type": "set",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "06_convergence"
+}

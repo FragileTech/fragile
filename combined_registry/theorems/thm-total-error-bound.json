@@ -1,0 +1,78 @@
+{
+  "label": "thm-total-error-bound",
+  "name": "Total Error Bound: Mean-Field O(1/√N) + Discretization O(Δt/N)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [
+    "C_MF",
+    "C_discrete",
+    "phi_C4",
+    "N",
+    "Delta_t"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-total-error-bound-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-unknown",
+      "target_object": "obj-unknown",
+      "established_by": "thm-total-error-bound",
+      "expression": "mean-field-dominates-for-large-n",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    },
+    {
+      "label": "rel-thm-total-error-bound-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-unknown",
+      "target_object": "obj-unknown",
+      "established_by": "thm-total-error-bound",
+      "expression": "discretization-negligible-for-large-n",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    },
+    {
+      "label": "rel-thm-total-error-bound-2-reduction",
+      "relationship_type": "reduction",
+      "bidirectional": false,
+      "source_object": "obj-unknown",
+      "target_object": "obj-unknown",
+      "established_by": "thm-total-error-bound",
+      "expression": "simple-n-scaling-reduces-both-errors",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    }
+  ]
+}

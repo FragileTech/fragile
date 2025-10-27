@@ -1,0 +1,38 @@
+{
+  "label": "lem-sub-lem-perturbation-positional-bound-reproof",
+  "name": "Bounding the Output Positional Displacement",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-perturbation-operator",
+    "obj-alg-distance",
+    "obj-fragile-swarm-instantiation",
+    "obj-n-particle-displacement-metric"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-bounded-second-moment-perturbation"
+  ],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [
+    {
+      "label": "prop-output-positional-displacement-bounded",
+      "expression": "D^2(O_{pert}(\\mathcal{S}_1), O_{pert}(\\mathcal{S}_2)) \\le C \\cdot d_{alg}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "object_label": "obj-perturbation-operator",
+      "established_by": "lem-sub-lem-perturbation-positional-bound-reproof",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

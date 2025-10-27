@@ -1,0 +1,15 @@
+{
+  "label": "obj-cloning-generator",
+  "name": "Internal Cloning Operator (Derived Form)",
+  "mathematical_expression": "S[f](t, z) = S_{\\text{src}}[f](t, z) - S_{\\text{sink}}[f](t, z)",
+  "object_type": "function",
+  "current_attributes": [],
+  "property_history": [],
+  "tags": [
+    "discrete",
+    "continuous",
+    "particle",
+    "mean-field"
+  ],
+  "source": null
+}

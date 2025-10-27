@@ -1,0 +1,44 @@
+{
+  "label": "lem-stats-value-continuity",
+  "name": "Value Continuity of Statistical Properties",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-alive-dead-sets",
+    "obj-raw-value-operator",
+    "obj-statistical-properties-measurement"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-v-max"
+  ],
+  "properties_required": {
+    "obj-raw-value-operator": [
+      "prop-bounded-components"
+    ],
+    "obj-alive-dead-sets": [
+      "prop-non-empty"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-lipschitz-continuity-value",
+      "expression": "|\\text{mean}(\\mathbf{v}_1) - \\text{mean}(\\mathbf{v}_2)| \\leq L_1 \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|",
+      "object_label": "obj-statistical-properties-measurement",
+      "established_by": "lem-stats-value-continuity",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}

@@ -1,0 +1,61 @@
+{
+  "label": "thm-full-system-discretization-error",
+  "type": "theorem",
+  "name": "Full System Time Discretization Error",
+  "line_range": [
+    1625,
+    1637
+  ],
+  "status": "target",
+  "input_objects": [
+    "obj-nu-n-continuous",
+    "obj-nu-n-discrete"
+  ],
+  "input_axioms": [],
+  "input_theorems": [
+    "thm-langevin-baoab-discretization-error",
+    "lem-lie-splitting-weak-error",
+    "lem-uniform-geometric-ergodicity",
+    "thm-quantitative-error-propagation"
+  ],
+  "input_parameters": [
+    "C_total",
+    "gamma",
+    "sigma",
+    "lambda",
+    "delta",
+    "M_4",
+    "kappa_mix"
+  ],
+  "attributes_required": {
+    "obj-test-function-phi": [
+      "attr-c4-regularity"
+    ]
+  },
+  "output_type": "Bound",
+  "attributes_added": [
+    "attr-o-dt-total-error"
+  ],
+  "relations_established": [
+    {
+      "from": "obj-nu-n-discrete",
+      "to": "obj-nu-n-continuous",
+      "type": "invariant_measure_error",
+      "bound": "|E_nu_discrete[phi] - E_nu_cont[phi]| <= C_total * ||phi||_C4 * dt",
+      "order": "O(dt)"
+    }
+  ],
+  "internal_lemmas": [],
+  "proof_structure": [
+    "lem-lie-splitting-weak-error: Local error O((dt)^2) from [L_clone, L_Langevin]",
+    "lem-uniform-geometric-ergodicity: Mixing rate uniform in dt",
+    "thm-quantitative-error-propagation: O((dt)^2) local \u2192 O(dt) global"
+  ],
+  "notes": [
+    "TARGET THEOREM for Part III",
+    "O(dt) rate dominated by cloning (despite BAOAB being O((dt)^2))",
+    "First-order due to non-commutativity of operators",
+    "N-uniform and dt-uniform constants (for dt < dt_0)"
+  ],
+  "external_references": []
+}

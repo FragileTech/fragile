@@ -1,0 +1,56 @@
+{
+  "label": "thm-villani-hypocoercivity",
+  "name": "Villani's Hypocoercivity (Simplified)",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-kinetic-operator",
+    "def-qsd"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf",
+    "sigma"
+  ],
+  "properties_required": {
+    "hypoelliptic": [
+      "Kinetic operator is hypoelliptic"
+    ],
+    "log-concave": [
+      "Target is log-concave"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-hypocoercive-dissipation"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-villani-hypocoercivity-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-kinetic-operator",
+      "target_object": "obj-qsd",
+      "established_by": "thm-villani-hypocoercivity",
+      "expression": "Modified entropy decays exponentially via hypocoercivity",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "09_kl_convergence"
+    }
+  ]
+}

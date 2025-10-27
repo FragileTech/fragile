@@ -1,0 +1,51 @@
+{
+  "label": "prop-interaction-complexity-bound",
+  "name": "Boundedness of Interaction Complexity Constant",
+  "statement_type": "proposition",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-diversity-companion-prob",
+    "obj-rho-0",
+    "obj-state-space-omega"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "lambda",
+    "L_log_rho_0",
+    "diam_omega"
+  ],
+  "properties_required": {
+    "obj-rho-0": [
+      "prop-lipschitz-log-density",
+      "prop-lsi-regularity"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-interaction-complexity-system-parameters-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-interaction-complexity",
+      "target_object": "obj-system-parameters",
+      "established_by": "prop-interaction-complexity-bound",
+      "expression": "bound: C_int <= lambda * L_log_rho_0 * diam(Omega)",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    }
+  ]
+}

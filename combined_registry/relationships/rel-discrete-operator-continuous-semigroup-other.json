@@ -1,0 +1,17 @@
+{
+  "label": "rel-discrete-operator-continuous-semigroup-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-discrete-operator",
+  "target_object": "obj-continuous-semigroup",
+  "established_by": "lem-lie-splitting-weak-error",
+  "expression": "bound: |E[(T^dt - P^dt)phi(Z)]| <= C_split * ||phi||_C4 * (dt)^2",
+  "properties": [],
+  "tags": [
+    "inferred-from-dict"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds"
+}

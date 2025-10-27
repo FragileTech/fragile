@@ -1,0 +1,14 @@
+{
+  "label": "obj-discrete-lsi",
+  "name": "Discrete-Time LSI",
+  "mathematical_expression": "\\text{Ent}_\\pi(K f^2) \\le e^{-\\tau/C_{\\text{LSI}}} \\cdot \\text{Ent}_\\pi(f^2)",
+  "object_type": "function",
+  "current_properties": [],
+  "property_history": [],
+  "tags": [
+    "discrete"
+  ],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "09_kl_convergence"
+}

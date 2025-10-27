@@ -1,0 +1,101 @@
+{
+  "label": "lem-hypoelliptic-density-bound",
+  "name": "Hypoelliptic Regularity Provides Density Bounds",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-kinetic-operator",
+    "obj-mckean-vlasov-generator",
+    "obj-empirical-measure",
+    "obj-qsd"
+  ],
+  "input_axioms": [
+    "def-axiom-local-perturbation",
+    "ax-confining-potential"
+  ],
+  "input_parameters": [
+    "M_0",
+    "t",
+    "T",
+    "gamma",
+    "sigma",
+    "sigma_x",
+    "U",
+    "R",
+    "d",
+    "tau",
+    "c_revival"
+  ],
+  "properties_required": {
+    "obj-kinetic-operator": [
+      "prop-hypoelliptic",
+      "prop-hormander-bracket-condition"
+    ],
+    "obj-mckean-vlasov-generator": [
+      "prop-smoothing",
+      "prop-gaussian-bounds"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-evolved-density-constant-c-hypo-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-evolved-density",
+      "target_object": "obj-constant-c-hypo",
+      "established_by": "lem-hypoelliptic-density-bound",
+      "expression": "{'type': 'upper_bound', 'from': 'obj-evolved-density', 'to': 'constant-C-hypo', 'description': 'L^infty bound: ||rho_t||_infty <= C_hypo(M_0, t, gamma, sigma, U, R)'}",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    },
+    {
+      "label": "rel-evolved-density-c-infinity-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-evolved-density",
+      "target_object": "obj-c-infinity",
+      "established_by": "lem-hypoelliptic-density-bound",
+      "expression": "{'type': 'smoothness', 'from': 'obj-evolved-density', 'to': 'C-infinity', 'description': 'Hypoelliptic smoothing: rho(t, ·) in C^infty(Omega) for t > 0'}",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    },
+    {
+      "label": "rel-transition-kernel-gaussian-bounds-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-transition-kernel",
+      "target_object": "obj-gaussian-bounds",
+      "established_by": "lem-hypoelliptic-density-bound",
+      "expression": "{'type': 'kernel_bound', 'from': 'obj-transition-kernel', 'to': 'gaussian-bounds', 'description': 'Transition kernel satisfies Gaussian bounds with Carnot-Carathéodory distance'}",
+      "properties": [],
+      "tags": [
+        "inferred-from-dict"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence"
+    }
+  ]
+}

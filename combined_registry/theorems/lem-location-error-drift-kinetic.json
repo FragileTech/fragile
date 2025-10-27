@@ -1,0 +1,69 @@
+{
+  "label": "lem-location-error-drift-kinetic",
+  "name": "Drift of Location Error Under Kinetics",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "05_kinetic_contraction",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-hypocoercive-norm"
+  ],
+  "input_axioms": [
+    "axiom-confining-potential",
+    "axiom-diffusion-tensor"
+  ],
+  "input_parameters": [
+    "V_loc",
+    "Q",
+    "M",
+    "alpha_eff",
+    "gamma",
+    "alpha_U",
+    "L_F",
+    "sigma_min",
+    "lambda_v",
+    "b",
+    "tau"
+  ],
+  "properties_required": {
+    "hypocoercive-weights": [
+      "positive-definiteness"
+    ],
+    "potential": [
+      "coercivity"
+    ],
+    "force": [
+      "lipschitz-not-convexity"
+    ]
+  },
+  "internal_lemmas": [
+    "drift-matrix-calculation",
+    "noise-expansion-bound",
+    "force-contribution-lipschitz"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-location-error-drift-kinetic-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-hypocoercive-norm",
+      "target_object": "obj-hypocoercive-norm",
+      "established_by": "lem-location-error-drift-kinetic",
+      "expression": "hypocoercive-coupling-enables-contraction-without-convexity",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "05_kinetic_contraction"
+    }
+  ]
+}

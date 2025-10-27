@@ -1,0 +1,102 @@
+{
+  "label": "lem-variance-wasserstein-link",
+  "name": "Structural Variance and Wasserstein Distance Relationship",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-target-complement",
+    "def-structural-variance",
+    "def-wasserstein-distance"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "epsilon",
+    "D_min",
+    "c_sep",
+    "f_UH",
+    "lambda_v"
+  ],
+  "properties_required": {
+    "swarm-separation": [
+      "L = ||x̄_1 - x̄_2|| > D_min(ε)",
+      "High-error regime: V_struct > R²_spread"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-variance-decomposition",
+    "cor-between-group-dominance",
+    "lem-phase-space-packing",
+    "thm-unfit-high-error-overlap",
+    "thm-n-uniformity-constants"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-variance-decomposition",
+      "lem-variance-wasserstein-link"
+    ],
+    [
+      "cor-between-group-dominance",
+      "lem-variance-wasserstein-link"
+    ]
+  ],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-variance-wasserstein-link-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-target-complement",
+      "target_object": "obj-structural-variance",
+      "established_by": "lem-variance-wasserstein-link",
+      "expression": "c_link⁻ W_2²(μ_1, μ_2) ≤ V_struct ≤ c_link⁺ W_2²(μ_1, μ_2)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    },
+    {
+      "label": "rel-lem-variance-wasserstein-link-1-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-target-complement",
+      "target_object": "obj-structural-variance",
+      "established_by": "lem-variance-wasserstein-link",
+      "expression": "c_link⁻ = f_UH² / c_sep(ε) (N-uniform)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    },
+    {
+      "label": "rel-lem-variance-wasserstein-link-2-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-target-complement",
+      "target_object": "obj-structural-variance",
+      "established_by": "lem-variance-wasserstein-link",
+      "expression": "c_link⁺ = 2 (N-uniform)",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "04_wasserstein_contraction"
+    }
+  ]
+}

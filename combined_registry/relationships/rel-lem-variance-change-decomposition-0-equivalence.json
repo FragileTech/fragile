@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-variance-change-decomposition-0-equivalence",
+  "relationship_type": "equivalence",
+  "bidirectional": true,
+  "source_object": "obj-barycentres-and-centered-vectors",
+  "target_object": "obj-alive-dead-sets",
+  "established_by": "lem-variance-change-decomposition",
+  "expression": "Delta V_Var,x = sum_k [Delta_alive + Delta_status]",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

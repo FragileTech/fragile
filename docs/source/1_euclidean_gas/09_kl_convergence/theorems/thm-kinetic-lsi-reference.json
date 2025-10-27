@@ -1,0 +1,37 @@
+{
+  "label": "thm-kinetic-lsi-reference",
+  "name": "Hypocoercive LSI for Kinetic Operator (Reference)",
+  "statement_type": "theorem",
+  "source": {
+    "file": "09_kl_convergence.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-kinetic-operator"
+  ],
+  "input_axioms": [
+    "ax-qsd-log-concave"
+  ],
+  "input_parameters": [
+    "gamma",
+    "kappa_conf"
+  ],
+  "attributes_required": {
+    "log-concave": [
+      "Target measure is log-concave"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-bakry-emery-classical"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "Reference to classical kinetic LSI result"
+  ],
+  "relations_established": [
+    "Kinetic LSI from Bakry-\u00c9mery theory"
+  ]
+}

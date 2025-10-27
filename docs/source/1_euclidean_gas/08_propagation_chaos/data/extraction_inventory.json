@@ -1,0 +1,416 @@
+{
+  "source_file": "/home/guillem/fragile/docs/source/1_euclidean_gas/08_propagation_chaos.md",
+  "total_directives": 31,
+  "counts_by_type": {
+    "definition": 3,
+    "theorem": 12,
+    "lemma": 13,
+    "remark": 2,
+    "corollary": 1
+  },
+  "directives": [
+    {
+      "type": "definition",
+      "label": "def-sequence-of-qsds",
+      "title": "Sequence of N-Particle QSDs and their Marginals",
+      "content": "1.  **The N-Particle Quasi-Stationary Distribution.** For each integer $N \\ge 2$, let $\\nu_N^{QSD} \\in \\mathcal{P}(\\Sigma_N)$ be the **unique Quasi-Stationary Distribution** for the N-particle Euclide...",
+      "math_expression_count": 8,
+      "first_math": "\\mu_N(A) := \\nu_N^{QSD}(\\{ S \\in \\Sigma_N \\mid (x_1, v_1) \\in A \\})",
+      "cross_refs": [],
+      "line_range": [
+        127,
+        137
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-qsd-marginals-are-tight",
+      "title": "The Sequence of Marginals $\\{\\mu_N\\}$ is Tight",
+      "content": "The sequence of single-particle marginal measures $\\{\\mu_N\\}_{N=2}^\\infty$ is tight in the space of probability measures on $\\Omega$, $\\mathcal{P}(\\Omega)$.",
+      "math_expression_count": 3,
+      "first_math": "\\{\\mu_N\\}_{N=2}^\\infty",
+      "cross_refs": [],
+      "line_range": [
+        154,
+        158
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-exchangeability",
+      "title": "Exchangeability of the N-Particle QSD",
+      "content": "The unique N-particle QSD $\\nu_N^{QSD}$ is an exchangeable measure on the product space $\\Omega^N$. That is, for any permutation $\\sigma$ of the indices $\\{1, \\ldots, N\\}$ and any measurable set $A \\s...",
+      "math_expression_count": 6,
+      "first_math": "\\nu_N^{QSD}(\\{(z_1, \\ldots, z_N) \\in A\\}) = \\nu_N^{QSD}(\\{(z_{\\sigma(1)}, \\ldots, z_{\\sigma(N)}) \\in A\\})",
+      "cross_refs": [],
+      "line_range": [
+        215,
+        225
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-empirical-convergence",
+      "title": "Weak Convergence of the Empirical Companion Measure",
+      "content": "Let $\\{N_k\\}$ be any subsequence such that $\\mu_{N_k} \\rightharpoonup \\mu_\\infty$. For a configuration $S_{N_k} = (z_1, \\ldots, z_{N_k})$ drawn from $\\nu_{N_k}^{QSD}$, define the empirical companion m...",
+      "math_expression_count": 8,
+      "first_math": "\\mu_{N_k-1}^{\\text{comp}}(S_{N_k}) := \\frac{1}{N_k-1} \\sum_{j=2}^{N_k} \\delta_{z_j}",
+      "cross_refs": [],
+      "line_range": [
+        236,
+        253
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-reward-continuity",
+      "title": "Continuity of the Reward Moments",
+      "content": "The reward moment functionals $\\mu_R[\\cdot]$ and $\\sigma_R^2[\\cdot]$ are continuous with respect to weak convergence of measures. That is, if $\\{\\mu_k\\}$ converges weakly to $\\mu_\\infty$, then\n\n$$\n\\li...",
+      "math_expression_count": 5,
+      "first_math": "\\lim_{k \\to \\infty} \\mu_R[\\mu_k] = \\mu_R[\\mu_\\infty] \\quad \\text{and} \\quad \\lim_{k \\to \\infty} \\sigma_R^2[\\mu_k] = \\sigma_R^2[\\mu_\\infty]",
+      "cross_refs": [],
+      "line_range": [
+        277,
+        287
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-distance-continuity",
+      "title": "Continuity of the Distance Moments",
+      "content": "The distance moment functionals $\\mu_D[\\cdot]$ and $\\sigma_D^2[\\cdot]$ are continuous with respect to weak convergence of measures. That is, if $\\{\\mu_k\\}$ converges weakly to $\\mu_\\infty$, then\n\n$$\n\\...",
+      "math_expression_count": 5,
+      "first_math": "\\lim_{k \\to \\infty} \\mu_D[\\mu_k] = \\mu_D[\\mu_\\infty] \\quad \\text{and} \\quad \\lim_{k \\to \\infty} \\sigma_D^2[\\mu_k] = \\sigma_D^2[\\mu_\\infty]",
+      "cross_refs": [],
+      "line_range": [
+        305,
+        315
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-uniform-integrability",
+      "title": "Uniform Integrability and Interchange of Limits",
+      "content": "Let $\\phi \\in C_c^\\infty(\\Omega)$ be a smooth, compactly supported test function. The sequence of integrands\n\n$$\n\\left\\{ \\mathcal{L}_{N_k} \\phi(z_1) \\right\\}_{k=1}^\\infty\n\n$$\n\nis uniformly integrable ...",
+      "math_expression_count": 7,
+      "first_math": "\\left\\{ \\mathcal{L}_{N_k} \\phi(z_1) \\right\\}_{k=1}^\\infty",
+      "cross_refs": [],
+      "line_range": [
+        359,
+        378
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-boundary-convergence",
+      "title": "Convergence of Boundary Death and Revival",
+      "content": "Let $\\{N_k\\}$ be any subsequence such that $\\mu_{N_k} \\rightharpoonup \\mu_\\infty$. The discrete boundary death and revival mechanism of the N-particle system converges to the continuous interior-killi...",
+      "math_expression_count": 6,
+      "first_math": "\\lim_{k \\to \\infty} \\mathbb{E}_{\\nu_{N_k}^{QSD}}[\\mathcal{L}_{\\text{boundary}, N_k} \\phi(z_1)]\n= \\int_{\\Omega} \\left(-c(z)\\rho_0(z) + B[\\rho_0, m_{d,\\infty}](z)\\right) \\phi(z) \\, dz",
+      "cross_refs": [],
+      "line_range": [
+        407,
+        420
+      ]
+    },
+    {
+      "type": "remark",
+      "label": "rem-qsd-vs-true-stationarity",
+      "title": "QSD Stationarity vs. True Stationarity",
+      "content": "For a finite N-particle system, the Quasi-Stationary Distribution $\\nu_N^{QSD}$ satisfies a **modified stationarity condition** that accounts for the non-zero probability of eventual extinction. For a...",
+      "math_expression_count": 7,
+      "first_math": "\\mathbb{E}_{\\nu_N^{QSD}}[\\mathcal{L}_N \\Phi] = -\\lambda_N \\mathbb{E}_{\\nu_N^{QSD}}[\\Phi]",
+      "cross_refs": [],
+      "line_range": [
+        522,
+        536
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-extinction-rate-vanishes",
+      "title": "Extinction Rate Vanishes in the Mean-Field Limit",
+      "content": "The extinction rate $\\lambda_N$ of the N-particle QSD satisfies:\n\n$$\n\\lim_{N \\to \\infty} \\lambda_N = 0\n\n$$\n\nConsequently, in the limit $N \\to \\infty$, the QSD stationarity condition converges to the s...",
+      "math_expression_count": 3,
+      "first_math": "\\lim_{N \\to \\infty} \\lambda_N = 0",
+      "cross_refs": [],
+      "line_range": [
+        539,
+        551
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-limit-is-weak-solution",
+      "title": "Limit Points are Weak Solutions to the Stationary Mean-Field PDE",
+      "content": "Let $\\{\\mu_{N_k}\\}$ be any subsequence of the marginal measures that converges weakly to a limit point $\\mu_\\infty$. Then $\\mu_\\infty$ is a weak solution to the stationary mean-field coupled system:\n\n...",
+      "math_expression_count": 10,
+      "first_math": "L^\\dagger \\rho_0 - c(z)\\rho_0 + S[\\rho_0] + B[\\rho_0, m_{d,\\infty}] = 0",
+      "cross_refs": [],
+      "line_range": [
+        676,
+        695
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-uniqueness-weighted-sobolev-h1w",
+      "title": "Weighted Sobolev Space $H^1_w(\\Omega)$",
+      "content": "Let $w(z) = w(x,v) = 1 + \\|x\\|^2 + \\|v\\|^2$ be a polynomial weight function. The weighted Sobolev space $H^1_w(\\Omega)$ consists of all measurable functions $\\rho: \\Omega \\to \\mathbb{R}_{\\ge 0}$ such ...",
+      "math_expression_count": 5,
+      "first_math": "\\|\\rho\\|_{H^1_w}^2 := \\int_{\\Omega} \\left[\\rho(z)^2 + \\|\\nabla_z \\rho(z)\\|^2\\right] w(z) \\, dz < \\infty",
+      "cross_refs": [],
+      "line_range": [
+        851,
+        863
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-uniqueness-completeness-h1w-omega",
+      "title": "Completeness of $H^1_w(\\Omega)$",
+      "content": "The weighted Sobolev space $H^1_w(\\Omega)$ with the norm $\\|\\cdot\\|_{H^1_w}$ is a Banach space.",
+      "math_expression_count": 2,
+      "first_math": "H^1_w(\\Omega)",
+      "cross_refs": [],
+      "line_range": [
+        864,
+        869
+      ]
+    },
+    {
+      "type": "remark",
+      "label": "rem-uniqueness-completeness-constraint-set",
+      "title": "Completeness of the Constraint Set $\\mathcal{P}$",
+      "content": "The space $\\mathcal{P}$ is a closed subset of the Banach space $H^1_w(\\Omega)$, hence complete. This follows from:\n\n1. **Non-negativity**: The set $\\{\\rho \\in H^1_w : \\rho \\ge 0 \\text{ a.e.}\\}$ is clo...",
+      "math_expression_count": 12,
+      "first_math": "\\mathcal{P}",
+      "cross_refs": [],
+      "line_range": [
+        888,
+        901
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-uniqueness-self-mapping",
+      "title": "Self-Mapping Property of the Solution Operator",
+      "content": "The solution operator $\\mathcal{T}: \\mathcal{P} \\to \\mathcal{P}$ maps probability densities to probability densities. That is, if $\\rho \\in \\mathcal{P}$ (non-negative, integrates to 1), then $\\mathcal...",
+      "math_expression_count": 3,
+      "first_math": "\\mathcal{T}: \\mathcal{P} \\to \\mathcal{P}",
+      "cross_refs": [],
+      "line_range": [
+        926,
+        931
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-uniqueness-lipschitz-moments",
+      "title": "Lipschitz Continuity of Moment Functionals",
+      "content": "The moment functionals $\\mu_R[\\cdot], \\sigma_R[\\cdot], \\mu_D[\\cdot], \\sigma_D[\\cdot]$ are Lipschitz continuous from $H^1_w(\\Omega)$ to $\\mathbb{R}$. That is, there exist constants $L_{\\mu}, L_{\\sigma}...",
+      "math_expression_count": 6,
+      "first_math": "|\\mu_R[\\rho_1] - \\mu_R[\\rho_2]| \\le L_{\\mu} \\|\\rho_1 - \\rho_2\\|_{H^1_w}",
+      "cross_refs": [],
+      "line_range": [
+        1052,
+        1064
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-uniqueness-fixed-point-bounded",
+      "title": "Fixed Points Lie in a Bounded Ball",
+      "content": "Any fixed point $\\rho^* \\in \\mathcal{P}$ of the solution operator $\\mathcal{T}$ satisfies a uniform bound in the $H^1_w$ norm. Specifically, there exists a radius $R_* < \\infty$, independent of the pa...",
+      "math_expression_count": 5,
+      "first_math": "\\|\\rho^*\\|_{H^1_w} \\leq R_*",
+      "cross_refs": [],
+      "line_range": [
+        1096,
+        1106
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-uniqueness-lipschitz-fitness-potential",
+      "title": "Lipschitz Continuity of the Fitness Potential",
+      "content": "The fitness potential operator $\\rho \\mapsto V[\\rho]$ is Lipschitz continuous from $\\mathcal{P}$ to $L^\\infty(\\Omega)$. That is, there exists $L_V > 0$ such that:\n\n$$\n\\|V[\\rho_1] - V[\\rho_2]\\|_{L^\\inf...",
+      "math_expression_count": 5,
+      "first_math": "\\|V[\\rho_1] - V[\\rho_2]\\|_{L^\\infty} \\le L_V \\|\\rho_1 - \\rho_2\\|_{H^1_w}",
+      "cross_refs": [],
+      "line_range": [
+        1229,
+        1239
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-uniqueness-lipschitz-cloning-operator",
+      "title": "Local Lipschitz Continuity of the Cloning Operator",
+      "content": "The cloning operator $S: \\mathcal{P} \\to H^1_w(\\Omega)$ is **locally Lipschitz continuous**. For any $R > 0$, on the ball $\\mathcal{P}_R := \\mathcal{P} \\cap \\{\\rho : \\|\\rho\\|_{H^1_w} \\leq R\\}$, there ...",
+      "math_expression_count": 8,
+      "first_math": "\\|S[\\rho_1] - S[\\rho_2]\\|_{H^1_w} \\le L_S(R) \\|\\rho_1 - \\rho_2\\|_{H^1_w}",
+      "cross_refs": [],
+      "line_range": [
+        1266,
+        1278
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-uniqueness-hormander",
+      "title": "H\u00f6rmander's Theorem for Kinetic Operators",
+      "content": "Let $L$ be a second-order operator of the form:\n\n$$\nL = \\sum_{i=1}^{m} X_i^2 + X_0\n\n$$\n\nwhere $X_0, X_1, \\ldots, X_m$ are smooth vector fields on a manifold $M$. If the Lie algebra generated by $\\{X_0...",
+      "math_expression_count": 10,
+      "first_math": "L = \\sum_{i=1}^{m} X_i^2 + X_0",
+      "cross_refs": [],
+      "line_range": [
+        1432,
+        1446
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-uniqueness-hormander-verification",
+      "title": "Verification of H\u00f6rmander's Condition for the Kinetic Operator",
+      "content": "The kinetic Fokker-Planck operator $L$ satisfies H\u00f6rmander's condition on $\\Omega = \\mathcal{X}_{\\text{valid}} \\times \\mathbb{R}^d$.",
+      "math_expression_count": 2,
+      "first_math": "L",
+      "cross_refs": [],
+      "line_range": [
+        1453,
+        1458
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-uniqueness-hypoelliptic-regularity",
+      "title": "Hypoelliptic Regularity for the Kinetic Operator",
+      "content": "Let $\\mathcal{L}_{\\text{lin}} = L^\\dagger - C \\cdot I$ where $C > 0$ is sufficiently large. For any $f \\in L^2_w(\\Omega)$, the equation\n\n$$\n-\\mathcal{L}_{\\text{lin}} u = f\n\n$$\n\nhas a unique solution $...",
+      "math_expression_count": 8,
+      "first_math": "-\\mathcal{L}_{\\text{lin}} u = f",
+      "cross_refs": [],
+      "line_range": [
+        1528,
+        1545
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-uniqueness-scaling-hypoelliptic-constant",
+      "title": "Scaling of $C_{\\text{hypo}}$ with Diffusion Strength",
+      "content": "The constant $C_{\\text{hypo}}$ from Theorem [](#thm-uniqueness-hypoelliptic-regularity) satisfies the scaling estimate:\n\n$$\nC_{\\text{hypo}} \\sim \\frac{1}{\\min(\\sigma_v^2 \\gamma, C)}\n\n$$\n\nIn particular...",
+      "math_expression_count": 5,
+      "first_math": "C_{\\text{hypo}} \\sim \\frac{1}{\\min(\\sigma_v^2 \\gamma, C)}",
+      "cross_refs": [],
+      "line_range": [
+        1625,
+        1642
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-uniqueness-contraction-solution-operator",
+      "title": "Contraction Property of the Solution Operator on an Invariant Ball",
+      "content": "Let $R^* > 0$ be the radius from Lemma [](#lem-uniqueness-fixed-point-boundedness) and define the closed ball:\n\n$$\n\\mathcal{P}_R := \\mathcal{P} \\cap \\{\\rho \\in H^1_w(\\Omega) : \\|\\rho\\|_{H^1_w} \\le R^*...",
+      "math_expression_count": 7,
+      "first_math": "\\mathcal{P}_R := \\mathcal{P} \\cap \\{\\rho \\in H^1_w(\\Omega) : \\|\\rho\\|_{H^1_w} \\le R^*\\}",
+      "cross_refs": [],
+      "line_range": [
+        1692,
+        1711
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-uniqueness-uniqueness-stationary-solution",
+      "title": "Uniqueness of the Stationary Solution",
+      "content": "The stationary coupled system:\n\n$$\n0 = L^\\dagger \\rho_0 - c(z)\\rho_0 + S[\\rho_0] + B[\\rho_0, m_{d,\\infty}]\n\n$$\n\nwith equilibrium condition $k_{\\text{killed}}[\\rho_0] = \\lambda_{\\text{rev}} m_{d,\\infty...",
+      "math_expression_count": 3,
+      "first_math": "0 = L^\\dagger \\rho_0 - c(z)\\rho_0 + S[\\rho_0] + B[\\rho_0, m_{d,\\infty}]",
+      "cross_refs": [],
+      "line_range": [
+        1833,
+        1845
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-sequence-of-qsds-summary",
+      "title": "Sequence of N-Particle QSDs and their Marginals (Summary)",
+      "content": "1.  **The N-Particle Quasi-Stationary Distribution.** For each integer $N \\ge 2$, let $\\nu_N^{QSD} \\in \\mathcal{P}(\\Sigma_N)$ be the **unique Quasi-Stationary Distribution** for the N-particle Euclide...",
+      "math_expression_count": 8,
+      "first_math": "\\mu_N(A) := \\nu_N^{QSD}(\\{ S \\in \\Sigma_N \\mid (x_1, v_1) \\in A \\})",
+      "cross_refs": [],
+      "line_range": [
+        1927,
+        1937
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-qsd-marginals-are-tight-summary",
+      "title": "The Sequence of Marginals $\\{\\mu_N\\}$ is Tight (Summary)",
+      "content": "The sequence of single-particle marginal measures $\\{\\mu_N\\}_{N=2}^\\infty$ is tight in the space of probability measures on $\\Omega$, $\\mathcal{P}(\\Omega)$.",
+      "math_expression_count": 3,
+      "first_math": "\\{\\mu_N\\}_{N=2}^\\infty",
+      "cross_refs": [],
+      "line_range": [
+        1944,
+        1948
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-limit-is-weak-solution-summary",
+      "title": "Limit Points are Weak Solutions to the Stationary Mean-Field PDE (Summary)",
+      "content": "Let $\\{\\mu_{N_k}\\}$ be any subsequence of the marginal measures that converges weakly to a limit point $\\mu_\\infty$. Then $\\mu_\\infty$ is a weak solution to the stationary mean-field equation $L^\\dagg...",
+      "math_expression_count": 6,
+      "first_math": "\\{\\mu_{N_k}\\}",
+      "cross_refs": [],
+      "line_range": [
+        1988,
+        1992
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-uniqueness-of-qsd",
+      "title": "Uniqueness of the Stationary Solution",
+      "content": "There is at most one probability density $\\rho \\in \\mathcal{P}(\\Omega)$ that is a weak solution to the stationary mean-field equation.",
+      "math_expression_count": 1,
+      "first_math": "\\rho \\in \\mathcal{P}(\\Omega)",
+      "cross_refs": [],
+      "line_range": [
+        2046,
+        2050
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-thermodynamic-limit",
+      "title": "Convergence of Macroscopic Observables (The Thermodynamic Limit)",
+      "content": "Let $\\rho_0$ be the unique stationary solution to the mean-field PDE. Let $\\phi: \\Omega \\to \\mathbb{R}$ be any bounded, continuous function (a \"macroscopic observable\").\n\nThen, the average value of th...",
+      "math_expression_count": 3,
+      "first_math": "\\lim_{N \\to \\infty} \\mathbb{E}_{\\nu_N^{QSD}} \\left[ \\frac{1}{N} \\sum_{i=1}^N \\phi(z_i) \\right] = \\int_\\Omega \\phi(z) \\rho_0(z) dz",
+      "cross_refs": [],
+      "line_range": [
+        2100,
+        2111
+      ]
+    },
+    {
+      "type": "corollary",
+      "label": "cor-w2-convergence-thermodynamic-limit",
+      "title": "Wasserstein-2 Convergence in the Thermodynamic Limit",
+      "content": "The convergence of marginals to the mean-field QSD holds in the stronger Wasserstein-2 metric:\n\n$$\n\\lim_{N \\to \\infty} W_2(\\mu_N, \\mu_\\infty) = 0\n\n$$\n\nwhere $W_2$ is the Wasserstein-2 (optimal transpo...",
+      "math_expression_count": 2,
+      "first_math": "\\lim_{N \\to \\infty} W_2(\\mu_N, \\mu_\\infty) = 0",
+      "cross_refs": [],
+      "line_range": [
+        2142,
+        2154
+      ]
+    }
+  ]
+}

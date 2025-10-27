@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-expected-distance-change-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-cluster-coupling",
+  "target_object": "obj-target-complement",
+  "established_by": "lem-expected-distance-change",
+  "expression": "E[Δ D_IJ] ≤ -p̄_I · c_geom ||μ_x(I_1) - μ_x(J_1)||² + O(δ²)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction"
+}

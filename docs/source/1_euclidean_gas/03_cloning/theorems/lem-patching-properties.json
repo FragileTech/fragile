@@ -1,0 +1,47 @@
+{
+  "label": "lem-patching-properties",
+  "name": "Properties of the Patching Function",
+  "statement_type": "lemma",
+  "source": {
+    "document": "03_cloning.md",
+    "section": "Section 5.3: Patching Function",
+    "line_number": 1803,
+    "path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md#lem-patching-properties"
+  },
+  "input_objects": [
+    "obj-patched-std-dev-function"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa_var_min",
+    "epsilon_std"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "property_label": "attr-patching-c1",
+      "property_name": "C^1 differentiability",
+      "property_type": "regularity"
+    },
+    {
+      "property_label": "attr-patching-strictly-positive",
+      "property_name": "Strict positivity",
+      "property_type": "positivity"
+    },
+    {
+      "property_label": "attr-patching-lipschitz",
+      "property_name": "Global Lipschitz continuity",
+      "property_type": "regularity"
+    },
+    {
+      "property_label": "attr-patching-lower-bound",
+      "property_name": "Uniform lower bound sigma_min_patch",
+      "property_type": "boundedness"
+    }
+  ],
+  "relations_established": []
+}

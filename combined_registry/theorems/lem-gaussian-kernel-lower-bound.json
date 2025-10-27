@@ -1,0 +1,92 @@
+{
+  "label": "lem-gaussian-kernel-lower-bound",
+  "name": "Gaussian Kernel Lower Bound",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "11_hk_convergence_bounded_density_rigorous_proof",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-cloning-operator",
+    "def-state-space"
+  ],
+  "input_axioms": [
+    "ax-domain-regularity"
+  ],
+  "input_parameters": [
+    "sigma_x",
+    "R",
+    "d",
+    "m"
+  ],
+  "properties_required": {
+    "gaussian-kernel-normalized": [
+      "∫ G_σ_x(x-y) dy = 1 on ℝ^d"
+    ],
+    "gaussian-positivity": [
+      "G_σ_x(·) > 0 on ℝ^d"
+    ],
+    "bounded-domain": [
+      "x, y ∈ B_R ⇒ ||x−y|| ≤ 2R"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-lem-gaussian-kernel-lower-bound-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-state-space",
+      "established_by": "lem-gaussian-kernel-lower-bound",
+      "expression": "inf_{x∈B_R} ∫_{B_R} G_σ_x(x−y) ρ(y) dy ≥ m · c_σ_x,R",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    },
+    {
+      "label": "rel-lem-gaussian-kernel-lower-bound-1-equivalence",
+      "relationship_type": "equivalence",
+      "bidirectional": true,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-state-space",
+      "established_by": "lem-gaussian-kernel-lower-bound",
+      "expression": "c_σ_x,R = (2πσ_x²)^{−d/2} · exp(−(2R)²/(2σ_x²))",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    },
+    {
+      "label": "rel-lem-gaussian-kernel-lower-bound-2-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-cloning-operator",
+      "target_object": "obj-state-space",
+      "established_by": "lem-gaussian-kernel-lower-bound",
+      "expression": "G_σ_x(x_1)/G_σ_x(x_2) ≤ exp((2R)²/(2σ_x²)) for x_1, x_2 ∈ B_R",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+    }
+  ]
+}

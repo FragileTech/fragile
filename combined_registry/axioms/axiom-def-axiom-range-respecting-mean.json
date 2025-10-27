@@ -1,0 +1,8 @@
+{
+  "label": "axiom-def-axiom-range-respecting-mean",
+  "statement": "Range‑Respecting Mean",
+  "mathematical_expression": "\\min_i v_i \\;\\le\\; \\mu \\;\\le\\; \\max_i v_i.",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

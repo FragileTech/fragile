@@ -1,0 +1,26 @@
+{
+  "label": "lem-outlier-fraction-lower-bound",
+  "name": "N-Uniform Lower Bound on the Outlier Fraction",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-geometric-partition"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "N",
+    "sigma_min",
+    "sigma_target"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": []
+}

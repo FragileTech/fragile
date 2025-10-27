@@ -1,0 +1,1595 @@
+{
+  "metadata": {
+    "source_document": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "extraction_date": "2025-10-26T10:39:15.637180",
+    "extraction_method": "Pattern matching + heuristic analysis",
+    "total_objects": 113
+  },
+  "axioms": [
+    {
+      "label": "axiom-raw-value-mean-square-continuity",
+      "statement": "Axiom of Mean-Square Continuity for Raw Values",
+      "mathematical_expression": "\\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-assumption-instep-independence",
+      "statement": "Conditional product structure within a step",
+      "mathematical_expression": "X_i \\;:=\\;\\big(U_i^{\\mathrm{comp}},\\,U_i^{\\mathrm{pert}},\\,U_i^{\\mathrm{status}},\\,U_i^{\\mathrm{clone}}\\big)",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-reward-regularity",
+      "statement": "Axiom of Reward Regularity",
+      "mathematical_expression": "|R_{\\mathcal{Y}}(y_1) - R_{\\mathcal{Y}}(y_2)| \\le L_{R,\\mathcal{Y}} \\cdot d_{\\mathcal{Y}}(y_1, y_2)^{\\alpha_R}.",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-bounded-variance-production",
+      "statement": "Axiom of Bounded Variance Production",
+      "mathematical_expression": "\\text{Var}[M(\\mathcal{S}, \\mathbf{v})] \\le \\kappa_{\\text{range}} \\cdot V_{\\max}^2",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-rescale-function",
+      "statement": "Axiom of a Well-Behaved Rescale Function",
+      "mathematical_expression": "g'_A(z) \\ge 0 \\quad \\forall z \\in \\mathbb{R}",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-sufficient-amplification",
+      "statement": "Axiom of Sufficient Amplification",
+      "mathematical_expression": "\\kappa_{\\text{amplification}} := \\alpha + \\beta",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-bounded-second-moment-perturbation",
+      "statement": "Axiom of Bounded Second Moment of Perturbation",
+      "mathematical_expression": "M_{\\text{pert}}^2 \\ge \\sup_{x_{\\text{in}} \\in \\mathcal{X}} \\mathbb{E}[Y]",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-environmental-richness",
+      "statement": "Axiom of Environmental Richness",
+      "mathematical_expression": "\\kappa_{\\text{richness}} \\le \\inf_{y \\in \\varphi(\\mathcal{X}_{\\mathrm{valid}}), r \\ge r_{\\min}} \\left( \\text{Var}_{y' \\in B(y,r) \\cap \\varphi(\\mathcal{X}_{\\mathrm{valid}})} [R_{\\mathcal{Y}}(y')] \\right)",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-bounded-deviation-variance",
+      "statement": "Axiom of Bounded Deviation from Aggregated Variance",
+      "mathematical_expression": "\\sum_{i \\in \\mathcal{A}} (v_i - \\mu(\\mathcal{S}, \\mathbf{v}_{\\mathcal{A}}))^2 \\le \\kappa_{\\text{var}} \\cdot |\\mathcal{A}| \\cdot \\text{Var}[M(\\mathcal{S}, \\mathbf{v}_{\\mathcal{A}})]",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-guaranteed-revival",
+      "statement": "Axiom of Guaranteed Revival",
+      "mathematical_expression": "\\kappa_{\\text{revival}} := \\frac{\\eta^{\\alpha+\\beta}}{\\varepsilon_{\\text{clone}} \\cdot p_{\\max}}",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-bounded-algorithmic-diameter",
+      "statement": "Axiom of Bounded Algorithmic Diameter",
+      "mathematical_expression": "(\\mathcal{Y}, d_{\\mathcal{Y}})",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-margin-stability",
+      "statement": "Axiom of Position\u2011Only Status Margin",
+      "mathematical_expression": "\\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal Y}\\!\\big(\\varphi(x_{1,i}),\\varphi(x_{2,i})\\big)^2\\;\\le\\; r_{\\mathrm{pos}},",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-bounded-measurement-variance",
+      "statement": "Axiom of Bounded Measurement Variance",
+      "mathematical_expression": "\\mathbb{E}[\\|\\mathbf{v} - \\mathbb{E}[\\mathbf{v}]\\|_2^2] \\le \\kappa^2_{\\text{variance}}",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-geometric-consistency",
+      "statement": "Axiom of Geometric Consistency",
+      "mathematical_expression": "\\kappa_{\\text{drift}} := \\sup_{x \\in \\mathcal{X}} \\|\\mathbb{E}_{x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)}[x' - x]\\|",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-bounded-relative-collapse",
+      "statement": "Axiom of Bounded Relative Collapse",
+      "mathematical_expression": "\\frac{|\\mathcal{A}(\\mathcal{S}_2)|}{|\\mathcal{A}(\\mathcal{S}_1)|} \\ge c_{\\min}",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-non-degenerate-noise",
+      "statement": "Axiom of Non-Degenerate Noise",
+      "mathematical_expression": "\\sigma",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-boundary-smoothness",
+      "statement": "Axiom of Boundary Smoothness",
+      "mathematical_expression": "\\partial \\mathcal{X}_{\\mathrm{valid}}",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-boundary-regularity",
+      "statement": "Axiom of Boundary Regularity",
+      "mathematical_expression": "|P(s_{\\text{out},i}=0 | \\mathcal{S}_1) - P(s_{\\text{out},i}=0 | \\mathcal{S}_2)| \\le L_{\\text{death}} \\cdot d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^{\\alpha_B}",
+      "foundational_framework": "Euclidean Gas"
+    },
+    {
+      "label": "axiom-def-axiom-range-respecting-mean",
+      "statement": "Range\u2011Respecting Mean",
+      "mathematical_expression": "\\min_i v_i \\;\\le\\; \\mu \\;\\le\\; \\max_i v_i.",
+      "foundational_framework": "Euclidean Gas"
+    }
+  ],
+  "objects": [
+    {
+      "label": "obj-algorithmic-space-generic",
+      "name": "Algorithmic Space",
+      "mathematical_expression": "(\\mathcal{Y}, d_{\\mathcal{Y}})",
+      "object_type": "space",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-total-expected-cloning-action",
+      "name": "Total Expected Cloning Action",
+      "mathematical_expression": "\\overline{P}_{\\text{clone}}(\\mathcal{S})_i := \\mathbb{E}_{\\mathbf{d} \\sim \\mathbf{d}(\\mathcal{S})} \\left[ P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V}(\\mathbf{r}(\\mathcal{S}), \\mathbf{d}))_i \\right]",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-alg-distance",
+      "name": "Algorithmic Distance",
+      "mathematical_expression": "\\boxed{d_{\\text{alg}}(x_1, x_2) := d_{\\mathcal{Y}}(\\varphi(x_1), \\varphi(x_2))}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-swarm-aggregation-operator-axiomatic",
+      "name": "Swarm Aggregation Operator",
+      "mathematical_expression": "|\\mu(\\mathcal{S}, \\mathbf{v}_1) - \\mu(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\mu,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "continuous",
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-n-particle-displacement-metric",
+      "name": "N-Particle Displacement Pseudometric ($d_{\\text{Disp},\\mathcal{Y}}$)",
+      "mathematical_expression": "d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)\n:= \\Bigg( \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}\\!\\big(\\varphi(x_{1,i}), \\varphi(x_{2,i})\\big)^2\n\\;+\n\\; \\frac{\\lambda_{\\mathrm{status}}}{N} \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2 \\Bigg)^{\\!1/2}.",
+      "object_type": "measure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-reward-measurement",
+      "name": "Reward Measurement",
+      "mathematical_expression": "r_i := \\mathbb{E}_{\\delta_{x_i}}[R] = \\int_{\\mathcal{X}} R(x) \\, d\\delta_{x_i}(x) = R(x_i)",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-perturbation-operator",
+      "name": "Perturbation Operator",
+      "mathematical_expression": "x_{\\text{out},i} \\sim \\mathcal{P}_\\sigma(x_{\\text{in},i}, \\cdot)",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-cloning-probability-function",
+      "name": "The Conditional Cloning Probability Function",
+      "mathematical_expression": "\\pi(v_c, v_i) := P(S(v_c, v_i) > T_{\\text{clone}}) = \\min\\left(1, \\max\\left(0, \\frac{S(v_c, v_i)}{p_{\\max}}\\right)\\right)",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-alive-dead-sets",
+      "name": "Alive and Dead Sets",
+      "mathematical_expression": "\\mathcal{A}(\\mathcal{S}) := \\{i \\in \\{1, \\dots, N\\} \\mid s_i = 1\\}",
+      "object_type": "set",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-swarm-potential-assembly-operator",
+      "name": "Swarm Potential Assembly Operator",
+      "mathematical_expression": "A_{\\text{pot}}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-metric-quotient",
+      "name": "Metric quotient of $(\\Sigma_N, d_{\\text{Disp},\\mathcal{Y}})$",
+      "mathematical_expression": "\\overline d_{\\text{Disp},\\mathcal{Y}}\\big([\\mathcal{S}_1],[\\mathcal{S}_2]\\big):= d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),",
+      "object_type": "set",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-cloning-score-function",
+      "name": "Cloning Score Function",
+      "mathematical_expression": "S(v_c, v_i) := \\frac{v_c - v_i}{v_i + \\varepsilon}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-reference-measures",
+      "name": "Reference Noise and Kernel Families",
+      "mathematical_expression": "\\mathcal{X}",
+      "object_type": "set",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-raw-value-operator",
+      "name": "Raw Value Operator",
+      "mathematical_expression": "V",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-swarm-update-procedure",
+      "name": "Swarm Update Procedure",
+      "mathematical_expression": "\\mathbf{V}_{\\mathcal{A}} \\leftarrow V_{\\text{op},\\mathcal{A}}(\\mathcal{S}_t, \\mathbf{r}_{\\mathcal{A}}, \\mathbf{d}_{\\mathcal{A}})",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-w2-output-metric",
+      "name": "Wasserstein-2 on the output space (quotient)",
+      "mathematical_expression": "W_2^2(\\mu,\\nu) := \\inf_{\\pi\\in\\Pi(\\mu,\\nu)} \\int \\overline d_{\\text{Disp},\\mathcal{Y}}(s',\\tilde s')^2\\,\\mathrm{d}\\pi(s',\\tilde s'),",
+      "object_type": "measure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-smoothed-gaussian-measure",
+      "name": "Smoothed Gaussian Measure",
+      "mathematical_expression": "\\tilde{\\rho}_{\\mathcal{S}, \\ell}(y) := \\frac{1}{|\\mathcal{A}(\\mathcal{S})|} \\sum_{i \\in \\mathcal{A}(\\mathcal{S})} K_\\ell(y, \\varphi(x_i))",
+      "object_type": "measure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-valid-state-space",
+      "name": "Valid State Space",
+      "mathematical_expression": "(\\mathcal{X}, d_{\\mathcal{X}}, \\mu_{\\mathcal{X}})",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "euclidean-gas",
+        "convergence"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-expected-cloning-action",
+      "name": "Conditional Expected Cloning Action",
+      "mathematical_expression": "P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i := \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S})} [\\pi(V_c, V_i)]",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-perturbation-measure",
+      "name": "Perturbation Measure",
+      "mathematical_expression": "\\sigma > 0",
+      "object_type": "measure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-cloning-measure",
+      "name": "Cloning Measure",
+      "mathematical_expression": "\\delta > 0",
+      "object_type": "measure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-displacement-components",
+      "name": "Components of Swarm Displacement",
+      "mathematical_expression": "\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\sum_{i=1}^N d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2",
+      "object_type": "space",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-distance-to-companion-measurement",
+      "name": "Distance-to-Companion Measurement",
+      "mathematical_expression": "d_i := d_{\\text{alg}}(x_i, x_{c_{\\text{pot}}(i)}) \\quad \\text{where} \\quad c_{\\text{pot}}(i) \\sim \\mathbb{C}_i(\\cdot)",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-canonical-logistic-rescale-function-example",
+      "name": "Canonical Logistic Rescale Function",
+      "mathematical_expression": "g_A(z) := \\frac{2}{1 + e^{-z}}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-perturbation-fluctuation-bounds-reproof",
+      "name": "Perturbation Fluctuation Bounds",
+      "mathematical_expression": "B_M(N) := N \\cdot M_{\\text{pert}}^2",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-valid-noise-measure",
+      "name": "Valid Noise Measure",
+      "mathematical_expression": "\\mathcal P_\\sigma",
+      "object_type": "measure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [],
+      "source": null
+    },
+    {
+      "label": "obj-distance-to-cemetery-state",
+      "name": "Distance to the Cemetery State",
+      "mathematical_expression": "W_p(\\nu, \\nu_{\\emptyset}) := D_{\\mathrm{valid}} \\quad \\text{and} \\quad W_p(\\nu_{\\emptyset}, \\nu_{\\emptyset}) := 0",
+      "object_type": "measure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-swarm-and-state-space",
+      "name": "Swarm and Swarm State Space",
+      "mathematical_expression": "\\mathcal{S} := (w_1, w_2, \\dots, w_N)",
+      "object_type": "space",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-cemetery-state-measure",
+      "name": "Cemetery State Measure",
+      "mathematical_expression": "\\mathcal{S}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-components-mean-square-standardization-error",
+      "name": "Components of Mean-Square Standardization Error",
+      "mathematical_expression": "\\mathbb{E}[\\|\\mathbf{z}(\\mathcal{S}_1, V, M) - \\mathbf{z}(\\mathcal{S}_2, V, M)\\|_2^2]",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-status-update-operator",
+      "name": "Status Update Operator",
+      "mathematical_expression": "s_{\\text{out},i} = \\mathbb{1}_{\\text{valid}}(\\varphi(x_{\\text{in},i}))",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-lipschitz-value-error-coefficients",
+      "name": "Value Error Coefficients",
+      "mathematical_expression": "\\sigma'_{\\min\\,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-walker",
+      "name": "Walker",
+      "mathematical_expression": "w := (x, s)",
+      "object_type": "space",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-companion-selection-measure",
+      "name": "Companion Selection Measure",
+      "mathematical_expression": "i \\in \\{1, \\dots, N\\}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "discrete",
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-fragile-gas-algorithm",
+      "name": "The Fragile Gas Algorithm",
+      "mathematical_expression": "\\mathcal{S}_{t+1} \\sim \\Psi_{\\mathcal{F}}(\\mathcal{S}_t, \\cdot)",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "discrete",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-alive-set-potential-operator",
+      "name": "Rescaled Potential Operator for the Alive Set",
+      "mathematical_expression": "V_i := (d'_i)^{\\beta} \\cdot (r'_i)^{\\alpha} \\quad \\text{for } i \\in \\mathcal{A}_t",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-statistical-properties-measurement",
+      "name": "Statistical Properties Measurement",
+      "mathematical_expression": "\\sigma'_{\\text{reg}}(V) := \\sqrt{V + \\sigma'^2_{\\min}}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "swarm",
+        "stability",
+        "variance"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-fragile-swarm-instantiation",
+      "name": "Fragile Swarm Instantiation",
+      "mathematical_expression": "\\mathcal{F}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-distance-positional-measures",
+      "name": "Distance Between Positional Measures",
+      "mathematical_expression": "d(\\varphi_* \\delta_{x_i}, \\varphi_* \\delta_{x_j}) := W_1(\\delta_{\\varphi(x_i)}, \\delta_{\\varphi(x_j)})",
+      "object_type": "measure",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-lipschitz-structural-error-coefficients",
+      "name": "Structural Error Coefficients",
+      "mathematical_expression": "\\sigma'_{\\min\\,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm",
+        "stability"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-standardization-operator-n-dimensional",
+      "name": "N-Dimensional Standardization Operator",
+      "mathematical_expression": "z",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-algorithmic-cemetery-extension",
+      "name": "Algorithmic space with cemetery point",
+      "mathematical_expression": "d_\\dagger(y_1,y_2)=d_{\\mathcal{Y}}(y_1,y_2),\\quad d_\\dagger(y,\\dagger)=D_{\\mathrm{valid}}\\quad \\text{for all }y\\in\\mathcal{Y}.",
+      "object_type": "space",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "particle",
+        "swarm"
+      ],
+      "source": null
+    },
+    {
+      "label": "obj-asymmetric-rescale-function",
+      "name": "Smooth Piecewise Rescale Function",
+      "mathematical_expression": "g_A(z) :=\n\\begin{cases}\n\\exp(z), & z \\le 0 \\\\\n\\log(1 + z) + 1, & 0 < z < z_{\\max} - 1 \\\\\nP(z), & z_{\\max} - 1 \\le z \\le z_{\\max} \\\\\n\\log(1 + z_{\\max}) + 1, & z > z_{\\max}\n\\end{cases}",
+      "object_type": "function",
+      "current_attributes": [],
+      "property_history": [],
+      "tags": [
+        "continuous"
+      ],
+      "source": null
+    }
+  ],
+  "theorems": [
+    {
+      "label": "thm-mcdiarmids-inequality",
+      "name": "McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron\u2013Lugosi\u2013Massart)",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-standardization-structural-error-mean-square",
+      "name": "Bounding the Expected Squared Structural Error",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-total-error-status-bound",
+      "name": "Total Error Bound in Terms of Status Changes",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-global-continuity-patched-standardization",
+      "name": "Global Continuity of the Patched Standardization Operator",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-z-score-norm-bound",
+      "name": "General Bound on the Norm of the Standardized Vector",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-perturbation-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-perturbation-operator-continuity-reproof",
+      "name": "Probabilistic Continuity of the Perturbation Operator",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [
+        "axiom-def-axiom-bounded-second-moment-perturbation"
+      ],
+      "input_parameters": [
+        "param-cloning-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-post-perturbation-status-update-continuity",
+      "name": "Probabilistic Continuity of the Post-Perturbation Status Update",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [
+        "axiom-def-axiom-boundary-regularity"
+      ],
+      "input_parameters": [
+        "param-alpha-reward"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-revival-guarantee",
+      "name": "Almost\u2011sure revival under the global constraint",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-alpha-reward",
+        "param-epsilon-clone",
+        "param-beta-diversity",
+        "param-rescale-floor"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-forced-activity",
+      "name": "Theorem of Forced Activity",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-deterministic-error-decomposition",
+      "name": "Decomposition of the Total Standardization Error",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-k1-revival-state",
+      "name": "Theorem of Guaranteed Revival from a Single Survivor",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-canonical-logistic-validity",
+      "name": "The Canonical Logistic Function is a Valid Rescale Function",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [
+        "axiom-def-axiom-rescale-function"
+      ],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-total-expected-cloning-action-continuity",
+      "name": "Continuity of the Total Expected Cloning Action",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-mean-square-standardization-error",
+      "name": "Asymptotic Behavior of the Mean-Square Standardization Error",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-epsilon-std"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-lipschitz-structural-error-bound",
+      "name": "Bounding the Squared Structural Error",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-distance-operator-mean-square-continuity",
+      "name": "Mean-Square Continuity of the Distance Operator",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-rescale-function-lipschitz",
+      "name": "Global Lipschitz Continuity of the Smooth Rescale Function",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [
+        "axiom-def-axiom-rescale-function"
+      ],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-standardization-value-error-mean-square",
+      "name": "Bounding the Expected Squared Value Error",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-expected-cloning-action-continuity",
+      "name": "Continuity of the Conditional Expected Cloning Action",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-distance-operator-satisfies-bounded-variance-axiom",
+      "name": "The Distance Operator Satisfies the Bounded Variance Axiom",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [
+        "axiom-bounded-measurement-variance"
+      ],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-expected-raw-distance-k1",
+      "name": "Deterministic Behavior of the Expected Raw Distance Vector at $k=1$",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [
+        {
+          "label": "attr-obj-alive-dead-sets-lipschitz",
+          "expression": "Lipschitz continuous",
+          "object_label": "obj-alive-dead-sets",
+          "established_by": "thm-expected-raw-distance-k1",
+          "can_be_refined": true
+        }
+      ],
+      "relations_established": []
+    },
+    {
+      "label": "thm-lipschitz-value-error-bound",
+      "name": "Bounding the Squared Value Error",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "thm-asymptotic-std-dev-structural-continuity",
+      "name": "Asymptotic Behavior of the Structural Continuity for the Regularized Standard Deviation",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-perturbation-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [
+        {
+          "label": "attr-obj-alive-dead-sets-lipschitz",
+          "expression": "Lipschitz continuous",
+          "object_label": "obj-alive-dead-sets",
+          "established_by": "thm-asymptotic-std-dev-structural-continuity",
+          "can_be_refined": true
+        }
+      ],
+      "relations_established": []
+    },
+    {
+      "label": "thm-expected-raw-distance-bound",
+      "name": "Bound on the Expected Raw Distance Vector Change",
+      "statement_type": "theorem",
+      "source": null,
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  ],
+  "lemmas": [
+    {
+      "label": "lem-boundary-heat-kernel",
+      "name": "Heat\u2011kernel death probability is Lipschitz with constant $\\lesssim 1/\\sigma$",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [
+        "obj-perturbation-measure",
+        "obj-valid-state-space"
+      ],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-perturbation-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-cubic-patch-derivative-bounds",
+      "name": "Bounds on the Polynomial Patch Derivative",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-sigma-patch-derivative-bound",
+      "name": "Derivative bound for \\sigma\\'_{\\text{reg}}",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-perturbation-noise",
+        "param-epsilon-std"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-sub-lem-perturbation-positional-bound-reproof",
+      "name": "Bounding the Output Positional Displacement",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-single-walker-structural-error",
+      "name": "Bound on Single-Walker Error from Structural Change",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-single-walker-own-status-error",
+      "name": "Bound on Single-Walker Error from Own Status Change",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-stats-value-continuity",
+      "name": "Value Continuity of Statistical Properties",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-perturbation-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [
+        {
+          "label": "attr-obj-alive-dead-sets-lipschitz",
+          "expression": "Lipschitz continuous",
+          "object_label": "obj-alive-dead-sets",
+          "established_by": "lem-stats-value-continuity",
+          "can_be_refined": true
+        }
+      ],
+      "relations_established": []
+    },
+    {
+      "label": "lem-cubic-patch-coefficients",
+      "name": "Explicit Coefficients of the Smooth Rescale Patch",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+      "name": "Probabilistic Bound on Total Perturbation-Induced Displacement",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-sub-lem-lipschitz-value-error-decomposition",
+      "name": "Algebraic Decomposition of the Value Error",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-polynomial-patch-monotonicity",
+      "name": "Monotonicity of the Polynomial Patch",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-total-squared-error-stable",
+      "name": "Bound on the Total Squared Error for Stable Walkers",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-single-walker-positional-error",
+      "name": "Bound on Single-Walker Error from Positional Change",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-normalization-difference-bound",
+      "name": "Bound on the Error from Normalization Change",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-empirical-aggregator-properties",
+      "name": "Axiomatic Properties of the Empirical Measure Aggregator",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-cloning-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-stats-structural-continuity",
+      "name": "Structural Continuity of Statistical Properties",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-perturbation-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-total-squared-error-unstable",
+      "name": "Bound on the Total Squared Error for Unstable Walkers",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [
+        "obj-alive-dead-sets"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-rescale-monotonicity",
+      "name": "Monotonicity of the Smooth Rescale Function",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [
+        "axiom-def-axiom-rescale-function"
+      ],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-cubic-patch-derivative",
+      "name": "Explicit Form of the Polynomial Patch Derivative",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-polishness-and-w2",
+      "name": "Polishness of the quotient state space and $W_2$",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-set-difference-bound",
+      "name": "Bound on the Error from Companion Set Change",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-cubic-patch-uniqueness",
+      "name": "Existence and Uniqueness of the Smooth Rescale Patch",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "lem-boundary-uniform-ball",
+      "name": "Uniform\u2011ball death probability is Lipschitz under finite perimeter",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [
+        "obj-perturbation-measure",
+        "obj-valid-state-space"
+      ],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-perturbation-noise"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [
+        {
+          "label": "attr-obj-valid-state-space-lipschitz",
+          "expression": "Lipschitz continuous",
+          "object_label": "obj-valid-state-space",
+          "established_by": "lem-boundary-uniform-ball",
+          "can_be_refined": true
+        },
+        {
+          "label": "attr-obj-perturbation-measure-lipschitz",
+          "expression": "Lipschitz continuous",
+          "object_label": "obj-perturbation-measure",
+          "established_by": "lem-boundary-uniform-ball",
+          "can_be_refined": true
+        }
+      ],
+      "relations_established": []
+    },
+    {
+      "label": "lem-cloning-probability-lipschitz",
+      "name": "Lipschitz Continuity of the Conditional Cloning Probability Function (case split)",
+      "statement_type": "lemma",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-epsilon-clone"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  ],
+  "propositions": [
+    {
+      "label": "attr-psi-markov-kernel",
+      "name": "The Swarm Update defines a Markov kernel",
+      "statement_type": "proposition",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "attr-w2-bound-no-offset",
+      "name": "W2 continuity bound without offset (for $k\\ge 2$)",
+      "statement_type": "proposition",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [
+        "param-alpha-reward"
+      ],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    },
+    {
+      "label": "attr-coefficient-regularity",
+      "name": "Boundedness and continuity of composite coefficients",
+      "statement_type": "proposition",
+      "source": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "attributes_required": {},
+      "internal_lemmas": [],
+      "internal_propositions": [],
+      "lemma_dag_edges": [],
+      "output_type": "property",
+      "attributes_added": [],
+      "relations_established": []
+    }
+  ]
+}

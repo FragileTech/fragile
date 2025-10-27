@@ -1,0 +1,17 @@
+{
+  "label": "rel-thm-stability-condition-final-corrected-0-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-fitness-potential-operator",
+  "target_object": "obj-logistic-rescale",
+  "established_by": "thm-stability-condition-final-corrected",
+  "expression": "rel-stability-requires-beta-dominance",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "03_cloning"
+}

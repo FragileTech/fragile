@@ -1,0 +1,32 @@
+{
+  "label": "lem-softmax-lipschitz-status",
+  "name": "Lipschitz Continuity of Softmax-Weighted Companion Selection",
+  "statement_type": "lemma",
+  "source": {
+    "file": "09_kl_convergence.md",
+    "line_start": 0,
+    "line_end": 0
+  },
+  "input_objects": [
+    "def-softmax-selection"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "alpha"
+  ],
+  "attributes_required": {
+    "softmax": [
+      "Softmax selection mechanism"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "Lipschitz property of softmax selection"
+  ],
+  "relations_established": [
+    "Softmax is Lipschitz in fitness values"
+  ]
+}

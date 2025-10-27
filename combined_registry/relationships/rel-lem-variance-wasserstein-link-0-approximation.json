@@ -1,0 +1,17 @@
+{
+  "label": "rel-lem-variance-wasserstein-link-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-target-complement",
+  "target_object": "obj-structural-variance",
+  "established_by": "lem-variance-wasserstein-link",
+  "expression": "c_link⁻ W_2²(μ_1, μ_2) ≤ V_struct ≤ c_link⁺ W_2²(μ_1, μ_2)",
+  "properties": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "04_wasserstein_contraction"
+}

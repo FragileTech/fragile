@@ -1,0 +1,67 @@
+{
+  "label": "prop-fourth-moment-baoab",
+  "name": "Uniform Fourth-Moment Bounds for BAOAB Chain",
+  "statement_type": "proposition",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "12_quantitative_error_bounds",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-baoab-chain"
+  ],
+  "input_axioms": [
+    "axiom-confined-potential"
+  ],
+  "input_parameters": [
+    "M_4",
+    "kappa_E",
+    "C_4",
+    "Delta_t"
+  ],
+  "properties_required": {},
+  "internal_lemmas": [
+    "lyapunov-e2-drift",
+    "youngs-inequality-absorption"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "properties_added": [],
+  "relations_established": [
+    {
+      "label": "rel-prop-fourth-moment-baoab-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-baoab-chain",
+      "target_object": "obj-baoab-chain",
+      "established_by": "prop-fourth-moment-baoab",
+      "expression": "fourth-moments-uniform-in-dt",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    },
+    {
+      "label": "rel-prop-fourth-moment-baoab-1-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-baoab-chain",
+      "target_object": "obj-baoab-chain",
+      "established_by": "prop-fourth-moment-baoab",
+      "expression": "prerequisite-for-weak-convergence",
+      "properties": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": null,
+      "chapter": "1_euclidean_gas",
+      "document": "12_quantitative_error_bounds"
+    }
+  ]
+}

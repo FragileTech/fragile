@@ -1,0 +1,32 @@
+{
+  "label": "lem-wasserstein-decomposition",
+  "name": "Decomposition of the Hypocoercive Wasserstein Distance",
+  "statement_type": "lemma",
+  "source": {
+    "file": "03_cloning.md",
+    "section": "3.2.3",
+    "line_start": 466,
+    "line_end": 613
+  },
+  "input_objects": [
+    "obj-barycentres-and-centered-vectors",
+    "obj-location-error-component",
+    "obj-structural-error-component"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "b",
+    "lambda_v"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    "decomposition_property"
+  ],
+  "relations_established": [
+    "W_h^2 = V_loc + V_struct"
+  ]
+}

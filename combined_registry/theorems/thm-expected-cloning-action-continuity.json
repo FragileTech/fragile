@@ -1,0 +1,34 @@
+{
+  "label": "thm-expected-cloning-action-continuity",
+  "name": "Continuity of the Conditional Expected Cloning Action",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-expected-cloning-action",
+    "obj-alg-distance"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "properties_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "properties_added": [
+    {
+      "label": "prop-lipschitz-continuous",
+      "expression": "|\\mathbb{E}[A(\\mathcal{S}_1)] - \\mathbb{E}[A(\\mathcal{S}_2)]| \\le L \\cdot d_{alg}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "object_label": "obj-expected-cloning-action",
+      "established_by": "thm-expected-cloning-action-continuity",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": []
+}
