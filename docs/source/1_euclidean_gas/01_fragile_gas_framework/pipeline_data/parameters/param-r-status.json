@@ -1,0 +1,8 @@
+{
+  "label": "param-r-status",
+  "name": "r_status",
+  "symbol": "r_status",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

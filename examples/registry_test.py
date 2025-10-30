@@ -11,24 +11,25 @@ Demonstrates:
 7. Registry statistics
 """
 
-import sys
 from pathlib import Path
+import sys
+
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from fragile.proofs import (
-    MathematicalObject,
+    CombinedTagQuery,
+    create_simple_object,
+    MathematicalRegistry,
     ObjectType,
     Relationship,
     RelationshipProperty,
     RelationType,
+    TagQuery,
     TheoremBox,
     TheoremOutputType,
-    create_simple_object,
 )
-from fragile.proofs import CombinedTagQuery, TagQuery
-from fragile.proofs import MathematicalRegistry
 
 
 def main() -> None:
@@ -87,7 +88,7 @@ def main() -> None:
     query_any = TagQuery(tags=["discrete", "continuous"], mode="any")
     result = registry.query_by_tag(query_any)
 
-    print(f"Query: Objects with tags 'discrete' OR 'continuous'")
+    print("Query: Objects with tags 'discrete' OR 'continuous'")
     print(f"Found: {result.count()} objects")
     for obj in result.matches:
         print(f"  - {obj.label}: {obj.tags}")
@@ -102,7 +103,7 @@ def main() -> None:
     query_all = TagQuery(tags=["euclidean-gas", "discrete"], mode="all")
     result = registry.query_by_tag(query_all)
 
-    print(f"Query: Objects with tags 'euclidean-gas' AND 'discrete'")
+    print("Query: Objects with tags 'euclidean-gas' AND 'discrete'")
     print(f"Found: {result.count()} objects")
     for obj in result.matches:
         print(f"  - {obj.label}: {obj.tags}")
@@ -115,16 +116,14 @@ def main() -> None:
     print("-" * 70)
 
     query_combined = CombinedTagQuery(
-        must_have=["discrete"],
-        any_of=["particle", "swarm"],
-        must_not_have=["deprecated"]
+        must_have=["discrete"], any_of=["particle", "swarm"], must_not_have=["deprecated"]
     )
     result = registry.query_by_tags(query_combined)
 
-    print(f"Query: Objects that:")
-    print(f"  - MUST have: discrete")
-    print(f"  - ANY of: particle, swarm")
-    print(f"  - MUST NOT have: deprecated")
+    print("Query: Objects that:")
+    print("  - MUST have: discrete")
+    print("  - ANY of: particle, swarm")
+    print("  - MUST NOT have: deprecated")
     print(f"Found: {result.count()} objects")
     for obj in result.matches:
         print(f"  - {obj.label}: {obj.tags}")
@@ -144,12 +143,7 @@ def main() -> None:
         bidirectional=True,
         established_by="thm-mean-field-equivalence",
         expression="S_N ≡ μ_t + O(N^{-1/d})",
-        properties=[
-            RelationshipProperty(
-                label="approx-error-N",
-                expression="O(N^{-1/d})"
-            )
-        ],
+        properties=[RelationshipProperty(label="approx-error-N", expression="O(N^{-1/d})")],
         tags=["mean-field", "discrete-continuous"],
     )
 
@@ -254,8 +248,8 @@ def main() -> None:
     stats = registry.get_statistics()
 
     print(f"Total objects: {stats['total_objects']}")
-    print(f"Counts by type:")
-    for type_name, count in stats['counts_by_type'].items():
+    print("Counts by type:")
+    for type_name, count in stats["counts_by_type"].items():
         if count > 0:
             print(f"  - {type_name}: {count}")
     print(f"Total unique tags: {stats['total_tags']}")
@@ -269,7 +263,7 @@ def main() -> None:
     print("-" * 70)
 
     result = registry.query_by_type("MathematicalObject")
-    print(f"Query: All MathematicalObject instances")
+    print("Query: All MathematicalObject instances")
     print(f"Found: {result.count()} objects")
     for obj in result.matches:
         print(f"  - {obj.label}")
@@ -314,7 +308,7 @@ def main() -> None:
     print("  5. Referential integrity validation")
     print("  6. Statistics and counts")
     print()
-    print(f"✅ Current Registry State:")
+    print("✅ Current Registry State:")
     print(f"  - {registry.count_total()} total objects")
     print(f"  - {len(registry.get_all_objects())} mathematical objects")
     print(f"  - {len(registry.get_all_relationships())} relationships")

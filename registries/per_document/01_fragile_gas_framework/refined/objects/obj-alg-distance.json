@@ -1,0 +1,35 @@
+{
+  "label": "obj-alg-distance",
+  "name": "Algorithmic Distance",
+  "mathematical_expression": "d_{\\text{alg}}(x_1, x_2) := d_{\\mathcal{Y}}(\\varphi(x_1), \\varphi(x_2))",
+  "object_type": "function",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "distance",
+    "measure-theory",
+    "metric",
+    "particle-system"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "5.3",
+    "directive_label": "def-alg-distance",
+    "equation": null,
+    "line_range": [
+      1232,
+      1241
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-alg-distance",
+  "definition": "The distance between two walkers in the abstract 'algorithmic space'. It is defined as the distance between their positions after being projected from the original state space into the algorithmic space. This serves as the practical ground distance for all subsequent calculations in the framework.",
+  "mathematical_properties": "This is a pseudometric on the state space X. It inherits its properties from the metric d_Y of the algorithmic space and the projection map φ. If d_Y is a metric and φ is continuous, d_alg is a continuous pseudometric. It becomes a true metric if φ is injective. The projection map φ: X → Y is assumed to be Lipschitz continuous as per the framework axioms.",
+  "dependencies": [
+    "obj-algorithmic-space-generic"
+  ],
+  "typical_values": null
+}

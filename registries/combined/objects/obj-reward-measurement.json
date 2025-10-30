@@ -1,0 +1,26 @@
+{
+  "label": "obj-reward-measurement",
+  "name": "Reward Measurement",
+  "mathematical_expression": "Reward Measurement",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "measure-theory",
+    "measurement",
+    "particle-system",
+    "reward"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "3.1",
+    "directive_label": "def-reward-measurement",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": null
+}

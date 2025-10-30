@@ -1,0 +1,32 @@
+{
+  "label": "obj-lipschitz-structural-error-coefficients",
+  "name": "Lipschitz Structural Error Coefficients",
+  "mathematical_expression": "\\sigma'_{\\min,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}",
+  "object_type": "set",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "aggregation",
+    "coefficients",
+    "continuity",
+    "error",
+    "lipschitz",
+    "particle-system",
+    "structural"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-lipschitz-structural-error-coefficients",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "11.3.6",
+    "line_range": [
+      3618,
+      3629
+    ],
+    "directive_label": "obj-lipschitz-structural-error-coefficients",
+    "equation": null,
+    "url_fragment": null
+  }
+}

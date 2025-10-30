@@ -1,0 +1,119 @@
+{
+  "source_section": "Section 12: Standardization Pipeline",
+  "source_file": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+  "source_lines": "2751-3682",
+  "processing_stage": "manual_extraction",
+  "timestamp": "2025-10-27T21:45:00Z",
+  "extraction_method": "Manual extraction by Claude Code",
+  "entities_extracted": {
+    "definitions": 4,
+    "lemmas": 3,
+    "theorems": 8,
+    "proofs": 0,
+    "axioms": 0,
+    "objects": 0,
+    "parameters": 0,
+    "equations": 0,
+    "remarks": 0,
+    "citations": 0
+  },
+  "total_entities": 15,
+  "output_directory": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework/raw_data",
+  "entity_details": {
+    "definitions": [
+      {
+        "label": "def-standardization-operator-n-dimensional",
+        "name": "N-Dimensional Standardization Operator",
+        "file": "definitions/def-standardization-operator-n-dimensional.json"
+      },
+      {
+        "label": "def-statistical-properties-measurement",
+        "name": "Statistical Properties Measurement",
+        "file": "definitions/def-statistical-properties-measurement.json"
+      },
+      {
+        "label": "def-value-error-coefficients",
+        "name": "Value Error Coefficients",
+        "file": "definitions/def-value-error-coefficients.json"
+      },
+      {
+        "label": "def-lipschitz-structural-error-coefficients",
+        "name": "Structural Error Coefficients",
+        "file": "definitions/def-lipschitz-structural-error-coefficients.json"
+      }
+    ],
+    "lemmas": [
+      {
+        "label": "lem-sigma-reg-derivative-bounds",
+        "name": "Derivative Bounds for Regularized Standard Deviation",
+        "file": "lemmas/lem-sigma-reg-derivative-bounds.json"
+      },
+      {
+        "label": "lem-stats-value-continuity",
+        "name": "Value Continuity of Statistical Properties",
+        "file": "lemmas/lem-stats-value-continuity.json"
+      },
+      {
+        "label": "lem-stats-structural-continuity",
+        "name": "Structural Continuity of Statistical Properties",
+        "file": "lemmas/lem-stats-structural-continuity.json"
+      }
+    ],
+    "theorems": [
+      {
+        "label": "thm-z-score-norm-bound",
+        "name": "General Bound on the Norm of the Standardized Vector",
+        "file": "theorems/thm-z-score-norm-bound.json"
+      },
+      {
+        "label": "thm-asymptotic-std-dev-structural-continuity",
+        "name": "Asymptotic Behavior of the Structural Continuity for the Regularized Standard Deviation",
+        "file": "theorems/thm-asymptotic-std-dev-structural-continuity.json"
+      },
+      {
+        "label": "thm-standardization-value-error-mean-square",
+        "name": "Bounding the Expected Squared Value Error",
+        "file": "theorems/thm-standardization-value-error-mean-square.json"
+      },
+      {
+        "label": "thm-standardization-structural-error-mean-square",
+        "name": "Bounding the Expected Squared Structural Error",
+        "file": "theorems/thm-standardization-structural-error-mean-square.json"
+      },
+      {
+        "label": "thm-deterministic-error-decomposition",
+        "name": "Decomposition of the Total Standardization Error",
+        "file": "theorems/thm-deterministic-error-decomposition.json"
+      },
+      {
+        "label": "thm-lipschitz-value-error-bound",
+        "name": "Bounding the Squared Value Error",
+        "file": "theorems/thm-lipschitz-value-error-bound.json"
+      },
+      {
+        "label": "thm-lipschitz-structural-error-bound",
+        "name": "Bounding the Squared Structural Error",
+        "file": "theorems/thm-lipschitz-structural-error-bound.json"
+      },
+      {
+        "label": "thm-global-continuity-patched-standardization",
+        "name": "Global Continuity of the Patched Standardization Operator",
+        "file": "theorems/thm-global-continuity-patched-standardization.json"
+      }
+    ]
+  },
+  "notes": [
+    "Section 12 contains the standardization pipeline - a critical component of the Fragile Gas framework",
+    "Key contribution: Regularized standard deviation function prevents pathological sensitivity near zero variance",
+    "Two complementary continuity analyses: mean-square continuity (Section 11.2) and deterministic Lipschitz-Holder continuity (Section 11.3)",
+    "The extracted entities do not include sub-lemmas or intermediate proof steps - only major definitions, lemmas, and theorems",
+    "Several additional sub-lemmas exist in the source document that provide algebraic decompositions but were not extracted as separate entities"
+  ],
+  "key_mathematical_contributions": [
+    "Regularized standard deviation function with explicit derivative bounds",
+    "Decomposition of standardization error into value error and structural error",
+    "Asymptotic scaling analysis showing O(k^{p_worst-case}) behavior",
+    "Global Lipschitz-Holder continuity bound with explicit coefficients",
+    "Identification of two operational regimes: normal operation (low attrition) and catastrophic collapse"
+  ]
+}

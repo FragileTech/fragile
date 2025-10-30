@@ -6,12 +6,20 @@
   "target_object": "obj-entropy",
   "established_by": "thm-entropy-bound-debruijn",
   "expression": "dH/dt = -I (Fisher information)",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence"
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "thm-entropy-bound-debruijn",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-entropy-bound-debruijn"
+  },
+  "chapter": null,
+  "document": null
 }

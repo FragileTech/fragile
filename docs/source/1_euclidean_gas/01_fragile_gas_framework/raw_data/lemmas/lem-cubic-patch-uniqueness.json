@@ -1,0 +1,48 @@
+{
+  "label": "lem-cubic-patch-uniqueness",
+  "name": "Existence and Uniqueness of the Smooth Rescale Patch",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "8.2.2.1",
+    "section_name": null,
+    "directive_label": "lem-cubic-patch-uniqueness",
+    "equation": null,
+    "line_range": [
+      1701,
+      1704
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-asymmetric-rescale-function",
+    "obj-cubic-patch-polynomial"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Cubic polynomial with 4 boundary conditions has unique solution via confluent Vandermonde matrix"
+  ],
+  "natural_language_statement": "For any z_max > 1, there exists a unique cubic polynomial P(z) that satisfies the four C¹ boundary conditions specified in def-asymmetric-rescale-function.",
+  "assumptions": [
+    "z_max > 1"
+  ],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [
+    "def-asymmetric-rescale-function"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

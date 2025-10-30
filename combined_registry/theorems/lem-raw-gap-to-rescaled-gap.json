@@ -2,9 +2,17 @@
   "label": "lem-raw-gap-to-rescaled-gap",
   "name": "From Raw Measurement Gap to Rescaled Value Gap",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning",
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "lem-raw-gap-to-rescaled-gap",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-raw-gap-to-rescaled-gap"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -16,15 +24,22 @@
     "eta",
     "L_g"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-logistic-rescale": [
-      "prop-logistic-lipschitz"
+      "attr-logistic-lipschitz"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

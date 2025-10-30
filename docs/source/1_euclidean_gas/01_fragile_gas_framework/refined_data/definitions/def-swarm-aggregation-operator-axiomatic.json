@@ -1,0 +1,23 @@
+{
+  "label": "def-swarm-aggregation-operator-axiomatic",
+  "name": "Swarm Aggregation Operator (Axiomatic)",
+  "statement_type": "definition",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "source": {
+    "start_line": 1273,
+    "end_line": 1300,
+    "section": "§7"
+  },
+  "proof": null,
+  "proof_status": "unproven",
+  "content": "A **Swarm Aggregation Operator**, denoted $M$, is a function that maps a swarm state $\\mathcal{S}$ and a raw value vector $\\mathbf{v}$ (defined on the alive set $\\mathcal{A}(\\mathcal{S})$) to a probability measure $\\mu_{\\mathbf{v}}$ on $\\mathbb{R}$.\n**Signature:** $M: \\Sigma_N \\times \\mathbb{R}^{|\\mathcal{A}(\\mathcal{S})|} \\to \\mathcal{P}(\\mathbb{R})$\nFor the operator to be valid, it must satisfy the foundational axioms for aggregators defined in Section 2.3.4. Furthermore, the user must provide proofs and explicit functions for the following continuity and structural properties.\n1.  **Value Continuity (Lipschitz):** For a fixed swarm structure $\\mathcal{S}$, the moment functions must be Lipschitz continuous with respect to the L2-norm of the input value vector $\\mathbf{v}$. The user must provide the **Value Lipschitz Functions**, $L_{\\mu,M}(\\mathcal{S})$ and $L_{m_2,M}(\\mathcal{S})$, such that for any two value vectors $\\mathbf{v}_1, \\mathbf{v}_2$:\n$$\n\n|\\mu(\\mathcal{S}, \\mathbf{v}_1) - \\mu(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\mu,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2\n\n$$\n$$\n|m_2(\\mathcal{S}, \\mathbf{v}_1) - m_2(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{m_2,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2\n$$\n\n2.  **Structural Continuity (Quadratic):** For a fixed value vector $\\mathbf{v}$, the change in the moment functions due to a change in the swarm's alive set must be bounded. The user must provide the **Structural Continuity Functions**, $L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2)$ and $L_{m_2,S}(\\mathcal{S}_1, \\mathcal{S}_2)$, which may depend on both the initial and final swarm states. These functions must satisfy the following inequalities for any two swarms $\\mathcal{S}_1, \\mathcal{S}_2$:\n\n$$\n|\\mu(\\mathcal{S}_1, \\mathbf{v}) - \\mu(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2\n$$\n\n$$\n|m_2(\\mathcal{S}_1, \\mathbf{v}) - m_2(\\mathcal{S}_2, \\mathbf{v})| \\le L_{m_2,S}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2\n$$",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "natural_language_statement": "A Swarm Aggregation Operator, M, maps a swarm state and a value vector to a probability measure, satisfying foundational axioms and specific continuity and structural properties.",
+  "assumptions": [],
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

@@ -6,12 +6,20 @@
   "target_object": "obj-wasserstein-distance",
   "established_by": "lem-entropy-transport-dissipation",
   "expression": "α = (τ_conv κ_W)/2 ≍ κ_conf κ_x",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence"
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "lem-entropy-transport-dissipation",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-entropy-transport-dissipation"
+  },
+  "chapter": null,
+  "document": null
 }

@@ -1,0 +1,45 @@
+{
+  "label": "lem-empirical-moments-lipschitz-dup",
+  "name": "Empirical moments are Lipschitz in L2",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "6.2.2",
+    "section_name": null,
+    "directive_label": "lem-empirical-moments-lipschitz-dup",
+    "equation": null,
+    "line_range": [
+      1314,
+      1317
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-aggregator-lipschitz-constants"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "General Result",
+  "attributes_added": [],
+  "relations_established": [
+    "Lipschitz constants for empirical mean: L_μ,M = 1/√k",
+    "Lipschitz constant for second moment: L_m2,M = 2V_max/√k"
+  ],
+  "natural_language_statement": "Let $\\mathbf v\\in\\mathbb R^k$ collect the values of the $k=|\\mathcal A(\\mathcal S)|$ alive walkers. Consider the empirical mean and second raw moment\n\n$$\n\\mu(\\mathbf v) = \\frac{1}{k}\\sum_{i=1}^k v_i,\\qquad m_2(\\mathbf v) = \\frac{1}{k}\\sum_{i=1}^k v_i^{\\,2}.\n$$\n\nAssume $|v_i|\\le V_{\\max}$ for all $i$. Then, with respect to the L2 norm on $\\mathbb R^k$,\n\n$$\n|\\mu(\\mathbf v_1)-\\mu(\\mathbf v_2)|\\;\\le\\; \\frac{1}{\\sqrt{k}}\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2,\\qquad\n|m_2(\\mathbf v_1)-m_2(\\mathbf v_2)|\\;\\le\\; \\frac{2 V_{\\max}}{\\sqrt{k}}\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2.\n$$\n\nIn particular, for the empirical aggregator we may take $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

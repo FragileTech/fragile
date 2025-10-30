@@ -9,8 +9,8 @@ Demonstrates how to:
 4. Load from JSON
 """
 
-import json
 from datetime import date
+import json
 from pathlib import Path
 
 from src.analysis.math_schema import (
@@ -20,8 +20,8 @@ from src.analysis.math_schema import (
     AlgorithmOutput,
     AlgorithmStep,
     CrossReference,
-    Definition,
     DefinedObject,
+    Definition,
     DefinitionExample,
     MathematicalDocument,
     MathematicalProperty,
@@ -196,7 +196,7 @@ def create_example_document() -> MathematicalDocument:
     )
 
     # Assemble the document
-    doc = MathematicalDocument(
+    return MathematicalDocument(
         metadata=metadata,
         directives=[
             walker_def,
@@ -205,8 +205,6 @@ def create_example_document() -> MathematicalDocument:
             cloning_algorithm,
         ],
     )
-
-    return doc
 
 
 def validate_and_save_example():
@@ -217,7 +215,7 @@ def validate_and_save_example():
     doc = create_example_document()
 
     # Validate (Pydantic does this automatically)
-    print(f"✅ Document validated successfully!")
+    print("✅ Document validated successfully!")
     print(f"  - Title: {doc.metadata.title}")
     print(f"  - Directives: {len(doc.directives)}")
     print(f"  - Version: {doc.metadata.version}")
@@ -226,18 +224,18 @@ def validate_and_save_example():
     output_path = Path("/tmp/example_document.json")
     doc_json = doc.model_dump(mode="json", exclude_none=True)
 
-    with open(output_path, "w") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         json.dump(doc_json, f, indent=2, default=str)
 
     print(f"\n✅ Document saved to: {output_path}")
     print(f"  - File size: {output_path.stat().st_size} bytes")
 
     # Load it back
-    with open(output_path) as f:
+    with open(output_path, encoding="utf-8") as f:
         loaded_json = json.load(f)
 
     loaded_doc = MathematicalDocument(**loaded_json)
-    print(f"\n✅ Document loaded successfully!")
+    print("\n✅ Document loaded successfully!")
     print(f"  - Loaded {len(loaded_doc.directives)} directives")
 
     return doc, output_path
@@ -265,7 +263,7 @@ def demonstrate_field_validation():
             ],
         )
     except Exception as e:
-        print(f"\n✅ Caught validation error (as expected):")
+        print("\n✅ Caught validation error (as expected):")
         print(f"  - {type(e).__name__}: Label must be kebab-case")
 
     try:
@@ -281,7 +279,7 @@ def demonstrate_field_validation():
             rigor_level=15,  # ❌ Must be 1-10
         )
     except Exception as e:
-        print(f"\n✅ Caught validation error (as expected):")
+        print("\n✅ Caught validation error (as expected):")
         print(f"  - {type(e).__name__}: Rigor level must be 1-10")
 
     try:
@@ -292,7 +290,7 @@ def demonstrate_field_validation():
             version="invalid-version",  # ❌ Must match semantic versioning
         )
     except Exception as e:
-        print(f"\n✅ Caught validation error (as expected):")
+        print("\n✅ Caught validation error (as expected):")
         print(f"  - {type(e).__name__}: Version must be semantic (e.g., '1.0.0')")
 
     print("\n✅ All validation tests passed!")
@@ -308,7 +306,7 @@ if __name__ == "__main__":
     print("\n" + "=" * 60)
     print("✅ Example complete!")
     print("=" * 60)
-    print(f"\nYou can now:")
+    print("\nYou can now:")
     print(f"  1. View the generated JSON: cat {path}")
     print(f"  2. Render it to markdown: python src/analysis/render_math_json.py {path}")
-    print(f"  3. Use it as a template for your own documents")
+    print("  3. Use it as a template for your own documents")

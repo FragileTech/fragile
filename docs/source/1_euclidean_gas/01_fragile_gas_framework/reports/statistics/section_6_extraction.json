@@ -1,0 +1,50 @@
+{
+  "source_file": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+  "section": "6. Algorithm Space and Distance Measurement",
+  "line_range": "1212-1241",
+  "extraction_timestamp": "2025-10-27T20:36:00Z",
+  "entities_extracted": {
+    "definitions": 3,
+    "theorems": 0,
+    "lemmas": 0,
+    "axioms": 0,
+    "propositions": 0,
+    "objects": 3,
+    "parameters": 0
+  },
+  "total_entities": 3,
+  "output_directory": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework/objects",
+  "files_created": [
+    "objects/obj-algorithmic-space-generic.json",
+    "objects/obj-distance-positional-measures.json",
+    "objects/obj-alg-distance.json"
+  ],
+  "entity_details": [
+    {
+      "label": "obj-algorithmic-space-generic",
+      "type": "object",
+      "name": "Algorithmic Space",
+      "object_type": "space",
+      "definition_label": "def-algorithmic-space-generic",
+      "source_line": 1214
+    },
+    {
+      "label": "obj-distance-positional-measures",
+      "type": "object",
+      "name": "Distance Between Positional Measures",
+      "object_type": "function",
+      "definition_label": "def-distance-positional-measures",
+      "source_line": 1220
+    },
+    {
+      "label": "obj-alg-distance",
+      "type": "object",
+      "name": "Algorithmic Distance",
+      "object_type": "function",
+      "definition_label": "def-alg-distance",
+      "source_line": 1232
+    }
+  ],
+  "validation_status": "All entities validated against Pydantic MathematicalObject schema",
+  "parsing_issues": []
+}

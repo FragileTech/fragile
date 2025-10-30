@@ -11,9 +11,9 @@ This example demonstrates the proof system's core features:
 We'll prove the Mean Field Limit theorem as a concrete example.
 """
 
-import sys
 from pathlib import Path
-from typing import List
+import sys
+
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -248,7 +248,7 @@ This establishes the claimed convergence rate.
     # STEP 4: Create the ProofBox
     # ==========================================================================
 
-    proof = ProofBox(
+    return ProofBox(
         proof_id="proof-thm-mean-field-limit",
         label="Mean Field Limit",
         proves="thm-mean-field-limit",
@@ -263,8 +263,6 @@ Three-step strategy:
         steps=[step_1, step_2, step_3],
         sub_proofs={},  # Will be populated when step-1 is expanded
     )
-
-    return proof
 
 
 def create_pde_wellposedness_subproof() -> ProofBox:
@@ -452,12 +450,12 @@ def main() -> None:
         print(f"  Type: {step.step_type.value}")
         print(f"  Status: {step.status.value}")
 
-        print(f"  Inputs:")
+        print("  Inputs:")
         for inp in step.inputs:
             prop_ids = [p.property_id for p in inp.required_properties]
             print(f"    - {inp.object_id}: {prop_ids}")
 
-        print(f"  Outputs:")
+        print("  Outputs:")
         for out in step.outputs:
             prop_ids = [p.property_id for p in out.properties_established]
             print(f"    - {out.object_id}: {prop_ids}")
@@ -470,7 +468,7 @@ def main() -> None:
                 lemma = step.derivation
                 print(f"  Lemma: {lemma.lemma_id}")
             elif step.step_type == ProofStepType.DIRECT_DERIVATION:
-                print(f"  ✓ Full mathematical derivation provided")
+                print("  ✓ Full mathematical derivation provided")
         print()
 
     # ==========================================================================
@@ -500,7 +498,7 @@ def main() -> None:
     engine = ProofEngine()
     engine.register_proof(proof)
 
-    print(f"✓ Registered proof with engine")
+    print("✓ Registered proof with engine")
     print()
 
     # Get expansion requests (sketched steps that need work)
@@ -563,7 +561,7 @@ def main() -> None:
 
     graph = proof.to_graph()
 
-    print(f"✓ Converted to graph:")
+    print("✓ Converted to graph:")
     print(f"  Nodes: {len(graph['nodes'])}")
     print(f"  Edges: {len(graph['edges'])}")
     print()
@@ -585,7 +583,7 @@ def main() -> None:
 
     print("Sample edges (dataflow):")
     for edge in graph["edges"][:5]:
-        props = edge.get('properties', [])
+        props = edge.get("properties", [])
         if props:
             print(f"  {edge['source']} → {edge['target']} (properties: {', '.join(props[:3])}...)")
         else:
@@ -660,10 +658,14 @@ def main() -> None:
     print("📊 Proof Statistics:")
     print(f"  Main proof: {len(proof.steps)} steps")
     print(f"  Sub-proofs: {len(proof.sub_proofs)}")
-    print(f"  Total steps (including sub-proofs): {len(proof.steps) + sum(len(sp.steps) for sp in proof.sub_proofs.values())}")
+    print(
+        f"  Total steps (including sub-proofs): {len(proof.steps) + sum(len(sp.steps) for sp in proof.sub_proofs.values())}"
+    )
     print(f"  Input objects: {len(proof.inputs)}")
     print(f"  Output objects: {len(proof.outputs)}")
-    print(f"  Total properties tracked: {sum(len(inp.required_properties) for inp in proof.inputs)}")
+    print(
+        f"  Total properties tracked: {sum(len(inp.required_properties) for inp in proof.inputs)}"
+    )
     print()
 
     print("🎯 System ready for LLM proving pipeline!")

@@ -1,0 +1,23 @@
+{
+  "label": "lem-polynomial-patch-monotonicity",
+  "name": "Monotonicity of the Polynomial Patch",
+  "statement_type": "lemma",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "source": null,
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-cubic-patch-polynomial"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "output_type": "Property",
+  "natural_language_statement": "Let $z_0=z_{\\max}-1$, $z_1=z_{\\max}$, $y_0=\\log(z_{\\max})+1$, $y_1=\\log(1+z_{\\max})+1$, and endpoint slopes $m_0=P'(z_0)=1/z_{\\max}$, $m_1=P'(z_1)=0$. Set the secant $\\Delta:=(y_1-y_0)/(z_1-z_0)=\\log(1+1/z_{\\max})>0$. Then the Hermite cubic $P$ on $[z_0,z_1]$ with $(y_0,m_0),(y_1,m_1)$ is monotonically non\u2011decreasing.",
+  "assumptions": [],
+  "conclusion": "",
+  "uses_definitions": [],
+  "lemma_dag_edges": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

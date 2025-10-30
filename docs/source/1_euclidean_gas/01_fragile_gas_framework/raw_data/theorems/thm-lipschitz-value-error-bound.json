@@ -1,0 +1,44 @@
+{
+  "label": "thm-lipschitz-value-error-bound",
+  "name": "Bounding the Squared Value Error",
+  "statement": "Let $\\mathcal{S}$ be a fixed swarm state. Let $\\mathbf{v}_1$ and $\\mathbf{v}_2$ be two raw value vectors. The squared value error, $E_V^2(\\mathcal{S}; \\mathbf{v}_1, \\mathbf{v}_2) = \\|z(\\mathcal{S}, \\mathbf{v}_1, M) - z(\\mathcal{S}, \\mathbf{v}_2, M)\\|_2^2$, is deterministically bounded as follows:\n\n$$\nE_{V}^2(\\mathcal{S}; \\mathbf{v}_1, \\mathbf{v}_2) \\le C_{V,\\text{total}}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2\n$$\n\nwhere $C_{V,\\text{total}}(\\mathcal{S})$ is the **Total Value Error Coefficient**, a deterministic, finite constant that depends on the state $\\mathcal{S}$ but not on the raw value vectors, as formally defined in def-value-error-coefficients.",
+  "proof_sketch": "The proof bounds the squared L2-norm of each of the three components from the algebraic decomposition (direct shift, mean shift, denominator shift) and then sums them. Each component is shown to be bounded by a term proportional to $\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2$, using the axiomatic properties of the aggregation operator and the lower bound on the regularized standard deviation.",
+  "source_section": "12",
+  "source_document": "01_fragile_gas_framework.md",
+  "dependencies": [
+    "def-value-error-coefficients",
+    "lem-stats-value-continuity",
+    "thm-z-score-norm-bound"
+  ],
+  "tags": [
+    "lipschitz",
+    "value-error",
+    "continuity",
+    "deterministic"
+  ],
+  "input_objects": [
+    "obj-aggregator-lipschitz-constants",
+    "obj-standardization-total-value-error-coefficient",
+    "obj-potential-bounds"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "output_type": "Bound",
+  "relations_established": [
+    "Value error component is Lipschitz bounded"
+  ],
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "12",
+    "section_name": null,
+    "directive_label": "thm-lipschitz-value-error-bound",
+    "equation": null,
+    "line_range": [
+      3505,
+      3514
+    ],
+    "url_fragment": "#thm-lipschitz-value-error-bound"
+  }
+}

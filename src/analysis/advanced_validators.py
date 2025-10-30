@@ -19,20 +19,21 @@ Usage:
 """
 
 from contextvars import ContextVar
-from datetime import date, datetime
+from datetime import date
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any
 
 import networkx as nx
 from pydantic import (
     BaseModel,
+    computed_field,
     ConfigDict,
     Field,
-    computed_field,
     field_validator,
     model_validator,
 )
+
 
 try:
     from sympy import simplify, sympify
@@ -53,8 +54,8 @@ class ValidationContext:
 
     def __init__(
         self,
-        all_labels: Optional[Set[str]] = None,
-        dependency_graph: Optional[nx.DiGraph] = None,
+        all_labels: set[str] | None = None,
+        dependency_graph: nx.DiGraph | None = None,
         enable_symbolic: bool = True,
     ):
         self.all_labels = all_labels or set()
@@ -62,20 +63,18 @@ class ValidationContext:
         self.enable_symbolic = enable_symbolic
 
     def __enter__(self):
-        _validation_context.set(
-            {
-                "all_labels": self.all_labels,
-                "dependency_graph": self.dependency_graph,
-                "enable_symbolic": self.enable_symbolic,
-            }
-        )
+        _validation_context.set({
+            "all_labels": self.all_labels,
+            "dependency_graph": self.dependency_graph,
+            "enable_symbolic": self.enable_symbolic,
+        })
         return self
 
     def __exit__(self, *args):
         _validation_context.set({})
 
     @classmethod
-    def from_all_documents(cls, document_paths: List[Path], **kwargs):
+    def from_all_documents(cls, document_paths: list[Path], **kwargs):
         """Create context by scanning all documents."""
         all_labels = set()
         G = nx.DiGraph()
@@ -84,7 +83,7 @@ class ValidationContext:
         import json
 
         for path in document_paths:
-            with open(path) as f:
+            with open(path, encoding="utf-8") as f:
                 data = json.load(f)
 
             for directive in data.get("directives", []):
@@ -103,7 +102,7 @@ class CrossReference(BaseModel):
 
     label: str = Field(..., pattern=r"^[a-z][a-z0-9-]*[a-z0-9]$")
     type: str
-    role: Optional[str] = None
+    role: str | None = None
 
     @field_validator("label")
     @classmethod
@@ -125,9 +124,7 @@ class SymbolicClaim(BaseModel):
 
     premise: str = Field(..., description="Starting expression (SymPy syntax)")
     conclusion: str = Field(..., description="Resulting expression (SymPy syntax)")
-    variables: Optional[Dict[str, str]] = Field(
-        None, description="Variable declarations"
-    )
+    variables: dict[str, str] | None = Field(None, description="Variable declarations")
 
     @model_validator(mode="after")
     def verify_claim(self) -> "SymbolicClaim":
@@ -161,13 +158,13 @@ class ProofStep(BaseModel):
     """Proof step with advanced validation."""
 
     id: str
-    title: Optional[str] = None
+    title: str | None = None
     content: str
-    techniques: Optional[List[str]] = None
-    justification: Optional[Union[str, List[Union[str, CrossReference]]]] = None
-    intermediate_result: Optional[str] = None
-    substeps: Optional[List["ProofStep"]] = None
-    symbolic_claim: Optional[SymbolicClaim] = None
+    techniques: list[str] | None = None
+    justification: str | list[str | CrossReference] | None = None
+    intermediate_result: str | None = None
+    substeps: list["ProofStep"] | None = None
+    symbolic_claim: SymbolicClaim | None = None
 
     @field_validator("id")
     @classmethod
@@ -203,9 +200,7 @@ class ProofStep(BaseModel):
         # Rule 4: Proof by contradiction requires justification
         if self.techniques and "contradiction" in self.techniques:
             if not self.justification:
-                raise ValueError(
-                    f"Step {self.id} uses contradiction but lacks justification"
-                )
+                raise ValueError(f"Step {self.id} uses contradiction but lacks justification")
 
         return self
 
@@ -220,9 +215,7 @@ class ProofStep(BaseModel):
 
         depth = max_depth(self)
         if depth > 5:
-            raise ValueError(
-                f"Step {self.id}: Proof nesting too deep ({depth} levels). Max: 5"
-            )
+            raise ValueError(f"Step {self.id}: Proof nesting too deep ({depth} levels). Max: 5")
 
         return self
 
@@ -282,18 +275,19 @@ class ValidatedTheorem(BaseModel):
     label: str = Field(..., pattern=r"^thm-[a-z0-9-]+$")
     title: str
     statement: str
-    hypotheses: List[Any] = Field(default_factory=list)
+    hypotheses: list[Any] = Field(default_factory=list)
     conclusion: Any
-    prerequisites: Optional[List[CrossReference]] = None
-    importance: Optional[str] = None
-    peer_review: Optional[Any] = None
+    prerequisites: list[CrossReference] | None = None
+    importance: str | None = None
+    peer_review: Any | None = None
 
     @field_validator("title")
     @classmethod
     def validate_title(cls, v: str) -> str:
         """Title should not be empty and should be reasonably short."""
         if not v.strip():
-            raise ValueError("Title cannot be empty")
+            msg = "Title cannot be empty"
+            raise ValueError(msg)
         if len(v) > 200:
             raise ValueError(f"Title too long ({len(v)} chars). Max: 200")
         return v.strip()
@@ -303,7 +297,8 @@ class ValidatedTheorem(BaseModel):
     def validate_statement(cls, v: str) -> str:
         """Statement should be substantial."""
         if len(v.strip()) < 10:
-            raise ValueError("Statement too short (<10 chars)")
+            msg = "Statement too short (<10 chars)"
+            raise ValueError(msg)
         return v
 
     @model_validator(mode="after")
@@ -323,8 +318,7 @@ class ValidatedTheorem(BaseModel):
         for prereq in self.prerequisites:
             if prereq.label not in all_labels:
                 raise ValueError(
-                    f"Theorem {self.label} requires undefined prerequisite: "
-                    f"{prereq.label}"
+                    f"Theorem {self.label} requires undefined prerequisite: " f"{prereq.label}"
                 )
 
         return self
@@ -355,12 +349,12 @@ class ValidatedProof(BaseModel):
     title: str
     statement: str
     proves: CrossReference
-    proof_type: Optional[str] = None
+    proof_type: str | None = None
     strategy: str
-    steps: List[ProofStep] = Field(..., min_length=1)
-    prerequisites: Optional[List[CrossReference]] = None
-    difficulty: Optional[str] = None
-    rigor_level: Optional[int] = Field(None, ge=1, le=10)
+    steps: list[ProofStep] = Field(..., min_length=1)
+    prerequisites: list[CrossReference] | None = None
+    difficulty: str | None = None
+    rigor_level: int | None = Field(None, ge=1, le=10)
 
     @model_validator(mode="after")
     def validate_proves_reference(self) -> "ValidatedProof":
@@ -376,7 +370,7 @@ class ValidatedProof(BaseModel):
 
         # Check that the proved theorem actually exists
         node_data = G.nodes[self.proves.label]
-        if node_data.get("type") not in ["theorem", "lemma", "proposition"]:
+        if node_data.get("type") not in {"theorem", "lemma", "proposition"}:
             raise ValueError(
                 f"Proof {self.label} claims to prove {self.proves.label}, "
                 f"but that is a {node_data.get('type')}, not a theorem/lemma/proposition"
@@ -443,26 +437,21 @@ class ValidatedProof(BaseModel):
         return count(self.steps)
 
     @lru_cache(maxsize=1)
-    def analyze_structure(self) -> Dict[str, Any]:
+    def analyze_structure(self) -> dict[str, Any]:
         """Analyze proof structure (cached for performance)."""
 
         def max_depth(steps, current=0):
             if not steps:
                 return current
             return max(
-                (
-                    max_depth(s.substeps, current + 1) if s.substeps else current
-                    for s in steps
-                ),
+                (max_depth(s.substeps, current + 1) if s.substeps else current for s in steps),
                 default=current,
             )
 
         return {
             "max_depth": max_depth(self.steps),
             "total_steps": self._count_all_steps(),
-            "has_symbolic_claims": any(
-                s.symbolic_claim for s in self._iter_all_steps()
-            ),
+            "has_symbolic_claims": any(s.symbolic_claim for s in self._iter_all_steps()),
         }
 
     def _iter_all_steps(self):
@@ -484,15 +473,16 @@ class ValidatedDocument(BaseModel):
 
     model_config = ConfigDict(validate_assignment=True)
 
-    metadata: Dict[str, Any]
-    directives: List[Union[ValidatedTheorem, ValidatedProof, Any]]
+    metadata: dict[str, Any]
+    directives: list[ValidatedTheorem | ValidatedProof | Any]
 
     @field_validator("directives", mode="before")
     @classmethod
     def parse_directives(cls, v):
         """Parse directives into appropriate types."""
         if not isinstance(v, list):
-            raise ValueError("Directives must be a list")
+            msg = "Directives must be a list"
+            raise ValueError(msg)
 
         parsed = []
         for directive in v:
@@ -517,9 +507,7 @@ class ValidatedDocument(BaseModel):
         """Validate all cross-references within document."""
 
         # Build label set
-        all_labels = {
-            d.label for d in self.directives if hasattr(d, "label")
-        }
+        all_labels = {d.label for d in self.directives if hasattr(d, "label")}
 
         # Check each directive's references
         for directive in self.directives:
@@ -529,9 +517,7 @@ class ValidatedDocument(BaseModel):
             if directive.prerequisites:
                 for ref in directive.prerequisites:
                     if ref.label not in all_labels:
-                        raise ValueError(
-                            f"{directive.label} references undefined {ref.label}"
-                        )
+                        raise ValueError(f"{directive.label} references undefined {ref.label}")
 
         return self
 
@@ -595,19 +581,16 @@ class ValidatedDocument(BaseModel):
 
     @computed_field
     @property
-    def validation_summary(self) -> Dict[str, Any]:
+    def validation_summary(self) -> dict[str, Any]:
         """Compute validation summary."""
         return {
             "total_directives": len(self.directives),
             "theorem_count": sum(
                 1 for d in self.directives if getattr(d, "type", None) == "theorem"
             ),
-            "proof_count": sum(
-                1 for d in self.directives if getattr(d, "type", None) == "proof"
-            ),
+            "proof_count": sum(1 for d in self.directives if getattr(d, "type", None) == "proof"),
             "has_cross_references": any(
-                hasattr(d, "prerequisites") and d.prerequisites
-                for d in self.directives
+                hasattr(d, "prerequisites") and d.prerequisites for d in self.directives
             ),
             "acyclic": True,  # If we got here, it passed validation
         }
@@ -621,11 +604,11 @@ class ValidationPipeline:
 
     def __init__(self, enable_symbolic: bool = True):
         self.enable_symbolic = enable_symbolic
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def validate_document(
-        self, data: Dict[str, Any], all_labels: Optional[Set[str]] = None
+        self, data: dict[str, Any], all_labels: set[str] | None = None
     ) -> ValidatedDocument:
         """Validate a document with full pipeline."""
 
@@ -713,7 +696,7 @@ def example_usage():
 
     # Example 3: Invalid proof (will fail validation)
     try:
-        invalid_proof = ValidatedProof(
+        ValidatedProof(
             label="proof-invalid",
             title="Invalid Proof",
             statement="Bad proof",

@@ -1,0 +1,25 @@
+{
+  "label": "rel-thm-mean-square-standardization-error-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-lipschitz-value-error-coefficients",
+  "target_object": "obj-raw-value-operator",
+  "established_by": "thm-mean-square-standardization-error",
+  "expression": "Expected squared standardization error bounded by sum of value and structural errors",
+  "attributes": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "thm-mean-square-standardization-error",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-mean-square-standardization-error"
+  },
+  "chapter": null,
+  "document": null
+}

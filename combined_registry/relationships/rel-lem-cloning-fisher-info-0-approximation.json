@@ -6,12 +6,20 @@
   "target_object": "obj-fisher-information",
   "established_by": "lem-cloning-fisher-info",
   "expression": "I(Ψ_clone μ | π) ≤ C_I D_KL(μ | π)",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence"
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "lem-cloning-fisher-info",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-cloning-fisher-info"
+  },
+  "chapter": null,
+  "document": null
 }

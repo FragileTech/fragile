@@ -4,10 +4,10 @@ import numpy as np
 import torch
 
 from fragile.experiments.gauge.regime_comparison import (
-    RegimeComparisonConfig,
     compare_regimes,
     generate_regime_comparison_report,
     identify_critical_scale,
+    RegimeComparisonConfig,
     scan_correlation_length,
     scan_field_gradients,
 )
@@ -167,9 +167,7 @@ def test_compare_regimes(simple_swarm_2d):
     assert len(result["gradient_scan"]["gradient_mean"]) == len(config.rho_values) + 1
 
     # Critical scales can be None or float
-    assert result["rho_c_correlation"] is None or isinstance(
-        result["rho_c_correlation"], float
-    )
+    assert result["rho_c_correlation"] is None or isinstance(result["rho_c_correlation"], float)
     assert result["rho_c_gradient"] is None or isinstance(result["rho_c_gradient"], float)
 
 

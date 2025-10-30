@@ -10,28 +10,24 @@ Demonstrates:
 6. Reference resolution
 """
 
-import sys
 from pathlib import Path
+import sys
+
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from fragile.proofs import (
-    MathematicalObject,
+    create_simple_object,
+    load_registry_from_directory,
+    MathematicalRegistry,
     ObjectType,
     Relationship,
     RelationshipProperty,
     RelationType,
+    save_registry_to_directory,
     TheoremBox,
     TheoremOutputType,
-    create_simple_object,
-)
-from fragile.proofs import MathematicalRegistry
-from fragile.proofs import (
-    StorageConfig,
-    RegistryStorage,
-    save_registry_to_directory,
-    load_registry_from_directory,
 )
 
 
@@ -117,7 +113,7 @@ def main() -> None:
     # Add to registry
     registry.add_all([obj1, obj2, obj3, rel1, rel2, thm])
 
-    print(f"✓ Created registry with:")
+    print("✓ Created registry with:")
     print(f"  - {len(registry.get_all_objects())} mathematical objects")
     print(f"  - {len(registry.get_all_relationships())} relationships")
     print(f"  - {len(registry.get_all_theorems())} theorems")
@@ -135,6 +131,7 @@ def main() -> None:
     # Clean up previous test data
     if storage_dir.exists():
         import shutil
+
         shutil.rmtree(storage_dir)
 
     # Save registry
@@ -162,7 +159,8 @@ def main() -> None:
     rel_file = storage_dir / "relationships" / "rel-discrete-continuous-equivalence.json"
     if rel_file.exists():
         import json
-        with open(rel_file, "r") as f:
+
+        with open(rel_file, encoding="utf-8") as f:
             rel_data = json.load(f)
 
         print("Relationship file content (truncated):")
@@ -178,14 +176,17 @@ def main() -> None:
     index_file = storage_dir / "index.json"
     if index_file.exists():
         import json
-        with open(index_file, "r") as f:
+
+        with open(index_file, encoding="utf-8") as f:
             index_data = json.load(f)
 
         print("Index file content:")
         print(f"  version: {index_data.get('version')}")
         print(f"  total_objects: {index_data.get('statistics', {}).get('total_objects')}")
         print(f"  total_tags: {index_data.get('statistics', {}).get('total_tags')}")
-        print(f"  all_ids ({len(index_data.get('all_ids', []))}): {index_data.get('all_ids', [])[:3]}...")
+        print(
+            f"  all_ids ({len(index_data.get('all_ids', []))}): {index_data.get('all_ids', [])[:3]}..."
+        )
         print()
 
     # ==========================================================================
@@ -197,7 +198,7 @@ def main() -> None:
     # Load registry
     loaded_registry = load_registry_from_directory(MathematicalRegistry, storage_dir)
 
-    print(f"✓ Loaded registry with:")
+    print("✓ Loaded registry with:")
     print(f"  - {len(loaded_registry.get_all_objects())} mathematical objects")
     print(f"  - {len(loaded_registry.get_all_relationships())} relationships")
     print(f"  - {len(loaded_registry.get_all_theorems())} theorems")
@@ -262,11 +263,12 @@ def main() -> None:
 
     # Query by tag
     from fragile.proofs import TagQuery
+
     query = TagQuery(tags=["discrete"], mode="all")
     result = loaded_registry.query_by_tag(query)
     print(f"Objects with tag 'discrete': {result.count()}")
     for obj in result.matches:
-        obj_id = getattr(obj, 'label', 'unknown')
+        obj_id = getattr(obj, "label", "unknown")
         print(f"  - {obj_id}")
     print()
 
@@ -292,9 +294,15 @@ def main() -> None:
     print("Original vs Loaded:")
     print(f"  Total objects: {original_stats['total_objects']} → {loaded_stats['total_objects']}")
     print(f"  Total tags: {original_stats['total_tags']} → {loaded_stats['total_tags']}")
-    print(f"  Objects: {original_stats['counts_by_type']['MathematicalObject']} → {loaded_stats['counts_by_type']['MathematicalObject']}")
-    print(f"  Relationships: {original_stats['counts_by_type']['Relationship']} → {loaded_stats['counts_by_type']['Relationship']}")
-    print(f"  Theorems: {original_stats['counts_by_type']['TheoremBox']} → {loaded_stats['counts_by_type']['TheoremBox']}")
+    print(
+        f"  Objects: {original_stats['counts_by_type']['MathematicalObject']} → {loaded_stats['counts_by_type']['MathematicalObject']}"
+    )
+    print(
+        f"  Relationships: {original_stats['counts_by_type']['Relationship']} → {loaded_stats['counts_by_type']['Relationship']}"
+    )
+    print(
+        f"  Theorems: {original_stats['counts_by_type']['TheoremBox']} → {loaded_stats['counts_by_type']['TheoremBox']}"
+    )
     print()
 
     # Check if statistics match

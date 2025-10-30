@@ -378,7 +378,7 @@ def compute_fitness(
     # This ensures shortest distance through wrapping: dx_wrapped = dx - L * round(dx / L)
     if pbc and bounds is not None:
         L = bounds.high - bounds.low  # Domain size [d]
-        pos_diff = pos_diff - L * torch.round(pos_diff / L)  # Wrap to [-L/2, L/2]
+        pos_diff -= L * torch.round(pos_diff / L)  # Wrap to [-L/2, L/2]
 
     vel_diff = velocities - velocities[companions]  # Velocities never use PBC
     pos_sq = (pos_diff**2).sum(dim=-1)

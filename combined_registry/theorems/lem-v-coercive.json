@@ -2,9 +2,17 @@
   "label": "lem-v-coercive",
   "name": "Coercivity of the Hypocoercive Lyapunov Components",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning",
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "lem-v-coercive",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-v-coercive"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -18,32 +26,18 @@
     "param-dimension",
     "param-swarm-size"
   ],
-  "properties_required": {},
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [
-    {
-      "label": "prop-coercive",
-      "expression": "V_{\\text{loc}} \\geq \\lambda_1 (\\|\\Delta\\mu_x\\|^2 + \\|\\Delta\\mu_v\\|^2) \\text{ and } V_{\\text{struct}} \\geq \\lambda_2 \\frac{1}{N}\\sum_i (\\|\\Delta\\delta_{x,i}\\|^2 + \\|\\Delta\\delta_{v,i}\\|^2)",
-      "object_label": "obj-location-error-component",
-      "established_by": "lem-v-coercive",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "prop-coercive",
-      "expression": "V_{\\text{struct}} \\geq \\lambda_2 \\frac{1}{N}\\sum_i (\\|\\Delta\\delta_{x,i}\\|^2 + \\|\\Delta\\delta_{v,i}\\|^2)",
-      "object_label": "obj-structural-error-component",
-      "established_by": "lem-v-coercive",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

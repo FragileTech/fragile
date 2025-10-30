@@ -23,18 +23,17 @@ score-based phases).
 - Proposed: Phase from fitness comparison (algorithm's "perception" of quality difference)
 """
 
-import torch
 from pydantic import BaseModel, Field
+import torch
 from torch import Tensor
 
 from fragile.core.companion_selection import (
     compute_algorithmic_distance_matrix,
-    select_companions_softmax,
 )
 from fragile.experiments.gauge.observables import (
-    ObservablesConfig,
     compute_cloning_score,
     compute_collective_fields,
+    ObservablesConfig,
 )
 
 
@@ -89,9 +88,7 @@ def compute_su2_phase_current(
         config = SU2Config()
 
     # Compute full distance matrix [N, N]
-    dist_sq = compute_algorithmic_distance_matrix(
-        positions, velocities, config.lambda_alg
-    )
+    dist_sq = compute_algorithmic_distance_matrix(positions, velocities, config.lambda_alg)
 
     # Extract distances to cloning companions [N]
     N = positions.shape[0]
@@ -139,8 +136,13 @@ def compute_su2_phase_proposed(
     Example:
         >>> # Compute phases in local regime
         >>> phases = compute_su2_phase_proposed(
-        ...     positions, velocities, rewards,
-        ...     diversity_companions, clone_companions, alive, rho=0.05
+        ...     positions,
+        ...     velocities,
+        ...     rewards,
+        ...     diversity_companions,
+        ...     clone_companions,
+        ...     alive,
+        ...     rho=0.05,
         ... )
     """
     if obs_config is None:
@@ -155,9 +157,7 @@ def compute_su2_phase_proposed(
     fitness = fields["fitness"]
 
     # Compute cloning scores
-    scores = compute_cloning_score(
-        fitness, alive, clone_companions, su2_config.epsilon_clone
-    )
+    scores = compute_cloning_score(fitness, alive, clone_companions, su2_config.epsilon_clone)
 
     # Compute phases: θ_ij = S_i(j) / ℏ_eff
     phases = scores / su2_config.h_eff
@@ -197,9 +197,7 @@ def compute_su2_pairing_probability(
     N = positions.shape[0]
 
     # Compute distance matrix
-    dist_sq = compute_algorithmic_distance_matrix(
-        positions, velocities, config.lambda_alg
-    )
+    dist_sq = compute_algorithmic_distance_matrix(positions, velocities, config.lambda_alg)
 
     # Compute softmax weights: exp(-d²/(2ε²))
     weights = torch.exp(-dist_sq / (2 * config.epsilon_c**2))
@@ -210,9 +208,7 @@ def compute_su2_pairing_probability(
     weights = weights * alive_mask.float() * self_mask.float()
 
     # Normalize to probabilities
-    probs = weights / (weights.sum(dim=1, keepdim=True) + 1e-10)
-
-    return probs
+    return weights / (weights.sum(dim=1, keepdim=True) + 1e-10)
 
 
 def compute_isospin_doublet_state(
@@ -300,16 +296,19 @@ def compare_su2_phases(
 
     Example:
         >>> comparison = compare_su2_phases(
-        ...     positions, velocities, rewards,
-        ...     diversity_companions, clone_companions, alive, rho=0.05
+        ...     positions,
+        ...     velocities,
+        ...     rewards,
+        ...     diversity_companions,
+        ...     clone_companions,
+        ...     alive,
+        ...     rho=0.05,
         ... )
         >>> print(f"Correlation: {comparison['correlation']:.4f}")
         >>> print(f"Mean difference: {comparison['difference'].mean():.4f}")
     """
     # Compute both phase structures
-    current = compute_su2_phase_current(
-        positions, velocities, clone_companions, alive, su2_config
-    )
+    current = compute_su2_phase_current(positions, velocities, clone_companions, alive, su2_config)
     proposed = compute_su2_phase_proposed(
         positions,
         velocities,
@@ -328,9 +327,7 @@ def compare_su2_phases(
 
     # Compute correlation
     if len(current_alive) > 1:
-        correlation = torch.corrcoef(
-            torch.stack([current_alive, proposed_alive])
-        )[0, 1].item()
+        correlation = torch.corrcoef(torch.stack([current_alive, proposed_alive]))[0, 1].item()
     else:
         correlation = 0.0
 

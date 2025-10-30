@@ -525,6 +525,7 @@ Return a JSON array of RawEquation objects:
 # UTILITY FUNCTIONS
 # =============================================================================
 
+
 def get_extraction_prompt(section_text: str, section_id: str) -> str:
     """
     Get the main extraction prompt with section content substituted.
@@ -538,21 +539,13 @@ def get_extraction_prompt(section_text: str, section_id: str) -> str:
 
     Examples:
         >>> prompt = get_extraction_prompt(
-        ...     section_text="# Section 2\\n\\n**Theorem 2.1**...",
-        ...     section_id="§2"
+        ...     section_text="# Section 2\\n\\n**Theorem 2.1**...", section_id="§2"
         ... )
     """
-    return MAIN_EXTRACTION_PROMPT.format(
-        section_text=section_text,
-        section_id=section_id
-    )
+    return MAIN_EXTRACTION_PROMPT.format(section_text=section_text, section_id=section_id)
 
 
-def get_focused_extraction_prompt(
-    entity_type: str,
-    section_text: str,
-    section_id: str
-) -> str:
+def get_focused_extraction_prompt(entity_type: str, section_text: str, section_id: str) -> str:
     """
     Get a focused extraction prompt for a specific entity type.
 
@@ -576,7 +569,4 @@ def get_focused_extraction_prompt(
     if entity_type not in prompts:
         raise ValueError(f"Unknown entity type: {entity_type}")
 
-    return prompts[entity_type].format(
-        section_text=section_text,
-        section_id=section_id
-    )
+    return prompts[entity_type].format(section_text=section_text, section_id=section_id)

@@ -1,0 +1,8 @@
+{
+  "label": "param-param-kappa-var-min",
+  "name": "param-kappa-var-min",
+  "symbol": "param-kappa-var-min",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

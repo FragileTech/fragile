@@ -6,12 +6,20 @@
   "target_object": "obj-mean-field-limit",
   "established_by": "thm-quantitative-propagation-chaos",
   "expression": "bound: |E_nu_N[phi_N] - E_rho_0[phi]| <= C_obs * L_phi / sqrt(N)",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-dict"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "12_quantitative_error_bounds"
+  "source": {
+    "document_id": "12_quantitative_error_bounds",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+    "section": null,
+    "directive_label": "thm-quantitative-propagation-chaos",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-quantitative-propagation-chaos"
+  },
+  "chapter": null,
+  "document": null
 }

@@ -1,0 +1,32 @@
+{
+  "label": "def-stochastic-threshold-cloning",
+  "term": "Stochastic Threshold Cloning",
+  "type": "definition",
+  "statement": "For each walker $i \\in \\{1, \\dots, N\\}$, the cloning action $a_i \\in \\{\\text{Clone}, \\text{Persist}\\}$ is determined by the following procedure, which depends on the full fitness potential vector of the swarm and an independent random choice of a companion.\n\n**Inputs:**\n- The full N-dimensional fitness potential vector, $\\mathbf{V}_{\\text{fit}}$.\n- The walker's index, $i$.\n- The **Companion Selection Measure** for that walker, $\\mathbb{C}_i$.\n- The **Clone Threshold Scale** parameter, $p_{\\max}$.\n\n**Operation:**\n1. **Sample Cloning Companion:** An independent cloning companion index, $c_{\\text{clone}}(i)$, is sampled from the companion measure: $c_{\\text{clone}}(i) \\sim \\mathbb{C}_i(\\cdot)$.\n2. **Compute Score:** The walker's potential, $v_i = V_{\\text{fit},i}$, and its companion's potential, $v_c = V_{\\text{fit},c_{\\text{clone}}(i)}$, are used to compute the cloning score:\n$$\nS_i := S(v_c, v_i)\n$$\n3. **Sample Cloning Threshold:** A random threshold, $T_{\\text{clone}}$, is drawn from a uniform distribution:\n$$\nT_{\\text{clone}} \\sim \\text{Uniform}(0, p_{\\max})\n$$\n4. **Determine Action:** The action is determined by comparing the score to the threshold:\n$$\na_i :=\n\\begin{cases}\n\\text{Clone} & \\text{if } S_i > T_{\\text{clone}} \\\\\n\\text{Persist} & \\text{if } S_i \\le T_{\\text{clone}}\n\\end{cases}\n$$",
+  "dependencies": [
+    "def-cloning-score-function"
+  ],
+  "tags": [
+    "cloning",
+    "stochastic-process",
+    "measurement",
+    "revival"
+  ],
+  "context": "Section 16: The Cloning Transition Measure, subsection 15.1.2",
+  "source_file": "01_fragile_gas_framework.md",
+  "line_number": 4231,
+  "extraction_date": "2025-10-27T21:43:09.486085",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.1.2",
+    "section_name": null,
+    "directive_label": "def-stochastic-threshold-cloning",
+    "equation": null,
+    "line_range": [
+      4241,
+      4278
+    ],
+    "url_fragment": "#def-stochastic-threshold-cloning"
+  }
+}

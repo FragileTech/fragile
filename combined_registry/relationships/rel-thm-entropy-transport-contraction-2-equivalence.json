@@ -6,12 +6,20 @@
   "target_object": "obj-total-operator",
   "established_by": "thm-entropy-transport-contraction",
   "expression": "K_W = (1+β)(1−κ_W)",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence"
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "thm-entropy-transport-contraction",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-entropy-transport-contraction"
+  },
+  "chapter": null,
+  "document": null
 }

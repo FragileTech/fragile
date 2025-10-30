@@ -2,9 +2,17 @@
   "label": "lem-cubic-patch-coefficients",
   "name": "Explicit Coefficients of the Smooth Rescale Patch",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "lem-cubic-patch-coefficients",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-cubic-patch-coefficients"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -17,56 +25,22 @@
   "input_parameters": [
     "param-z-max"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-asymmetric-rescale-function": [
-      "prop-is-cubic-polynomial"
+      "attr-is-cubic-polynomial"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [
-    {
-      "label": "prop-coefficient-a",
-      "expression": "a = -2",
-      "object_label": "obj-asymmetric-rescale-function",
-      "established_by": "lem-cubic-patch-coefficients",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "prop-coefficient-b",
-      "expression": "b = 3",
-      "object_label": "obj-asymmetric-rescale-function",
-      "established_by": "lem-cubic-patch-coefficients",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "prop-coefficient-c",
-      "expression": "c = 0",
-      "object_label": "obj-asymmetric-rescale-function",
-      "established_by": "lem-cubic-patch-coefficients",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "prop-coefficient-d",
-      "expression": "d = 0",
-      "object_label": "obj-asymmetric-rescale-function",
-      "established_by": "lem-cubic-patch-coefficients",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

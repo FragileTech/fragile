@@ -1,0 +1,31 @@
+{
+  "label": "axiom-range-respecting-mean",
+  "statement": "For any finite collection of inputs $\\{v_i\\}$, the aggregator's mean output $\\mu$ satisfies\n\n$$\n\\min_i v_i \\;\\le\\; \\mu \\;\\le\\; \\max_i v_i.\n$$\n\nThis property holds for empirical means and is assumed for any user‑chosen mean‑type aggregator in this framework.",
+  "mathematical_expression": "For any finite collection of inputs $\\{v_i\\}$, the aggregator's mean output $\\mu$ satisfies\n\n$$\n\\min_i v_i \\;\\le\\; \\mu \\;\\le\\; \\max_i v_i.\n$$\n\nThis property holds for empirical means and is assumed for any user‑chosen mean‑type aggregator in this framework.",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Range Respecting Mean",
+  "core_assumption": "The aggregation function for combining values behaves like a standard mean, ensuring the output is a convex combination of the inputs and preventing extrapolation beyond the observed range. This guarantees that the aggregated value is a plausible representation of the inputs.",
+  "parameters": [
+    {
+      "name": "v_i",
+      "description": "A finite collection of input values to be aggregated."
+    },
+    {
+      "name": "μ",
+      "description": "The aggregated mean output produced by the aggregator."
+    }
+  ],
+  "condition": "This axiom applies to any aggregator used in the framework that is described as a 'mean-type' aggregator. It must hold for any finite set of input values.",
+  "failure_mode_analysis": "If an aggregator violates this axiom, it could produce outputs that are outside the range of its inputs. This can lead to severe instability in the system's dynamics. For example, if a mean could be larger than the maximum input, feedback loops could cause values to grow without bound, leading to numerical explosion and algorithmic failure. Conversely, if the mean could be smaller than the minimum, it could artificially suppress signals.",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-axiom-range-respecting-mean",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

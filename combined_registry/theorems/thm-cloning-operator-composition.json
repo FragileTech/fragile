@@ -2,9 +2,17 @@
   "label": "thm-cloning-operator-composition",
   "name": "Compositional Structure of $\\Psi_{\\text{clone}}$",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning",
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "thm-cloning-operator-composition",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-cloning-operator-composition"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -16,14 +24,14 @@
   ],
   "input_axioms": [],
   "input_parameters": [],
-  "properties_required": {},
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [
-    "prop-expected-displacement-cloning"
+    "attr-expected-displacement-cloning"
   ],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-cloning-operator-composition-0-other",
@@ -33,14 +41,22 @@
       "target_object": "obj-measurement-operator",
       "established_by": "thm-cloning-operator-composition",
       "expression": "cloning_operator_is_markov_kernel",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "03_cloning"
+      "source": {
+        "document_id": "03_cloning",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+        "section": null,
+        "directive_label": "thm-cloning-operator-composition",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-cloning-operator-composition"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-cloning-operator-composition-1-other",
@@ -50,14 +66,29 @@
       "target_object": "obj-measurement-operator",
       "established_by": "thm-cloning-operator-composition",
       "expression": "compositional_decomposition",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "03_cloning"
+      "source": {
+        "document_id": "03_cloning",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+        "section": null,
+        "directive_label": "thm-cloning-operator-composition",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-cloning-operator-composition"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

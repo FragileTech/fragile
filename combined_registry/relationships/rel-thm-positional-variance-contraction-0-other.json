@@ -6,12 +6,20 @@
   "target_object": "obj-variance-conversions",
   "established_by": "thm-positional-variance-contraction",
   "expression": "rel-cloning-contracts-positional-variance",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning"
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "thm-positional-variance-contraction",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-positional-variance-contraction"
+  },
+  "chapter": null,
+  "document": null
 }

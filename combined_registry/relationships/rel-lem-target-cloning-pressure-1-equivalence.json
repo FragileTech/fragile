@@ -6,12 +6,20 @@
   "target_object": "obj-unfit-set",
   "established_by": "lem-target-cloning-pressure",
   "expression": "p_u(ε) = min(1, [f_F f_U κ_{V,gap}(ε)] / [p_max(V_{pot,max}+ε_clone)(k-1)(f_F + f_U²/f_F)])",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "04_wasserstein_contraction"
+  "source": {
+    "document_id": "04_wasserstein_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+    "section": null,
+    "directive_label": "lem-target-cloning-pressure",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-target-cloning-pressure"
+  },
+  "chapter": null,
+  "document": null
 }

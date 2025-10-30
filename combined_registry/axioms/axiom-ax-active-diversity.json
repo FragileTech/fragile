@@ -4,5 +4,11 @@
   "mathematical_expression": "\\beta > 0",
   "foundational_framework": "Euclidean Gas",
   "chapter": "1_euclidean_gas",
-  "document": "03_cloning"
+  "document": "03_cloning",
+  "name": null,
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": null
 }

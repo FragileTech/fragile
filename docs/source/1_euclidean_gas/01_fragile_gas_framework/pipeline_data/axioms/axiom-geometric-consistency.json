@@ -1,0 +1,144 @@
+{
+  "label": "axiom-geometric-consistency",
+  "statement": "The algorithmic noise should be unbiased and isotropic, unless intentionally designed otherwise.",
+  "mathematical_expression": "\\kappa_{\\text{drift}} := \\sup_{x \\in \\mathcal{X}} \\|\\mathbb{E}_{x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)}[x' - x]\\|",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Geometric Consistency",
+  "core_assumption": "The algorithmic noise measure should behave like natural diffusion on the state space, characterized by unbiased displacement (zero expected drift) and isotropic spread (equal variance in all directions). This axiom establishes a benchmark against which any chosen perturbation measure can be evaluated. Deviations from this ideal are quantified by two diagnostic parameters: κ_drift measures systematic bias (non-zero mean displacement), and κ_anisotropy measures directional imbalance (non-uniform covariance eigenvalues). For ideal geometric consistency: κ_drift = 0 (unbiased) and κ_anisotropy = 1 (isotropic). The axiom does not prohibit intentional violations—users can deliberately introduce drift or anisotropy—but requires quantifying these deviations so their impact on algorithm stability can be analyzed. The reference standard is the heat kernel of the state space, which naturally satisfies κ_drift = 0 and κ_anisotropy = 1.",
+  "parameters": [
+    {
+      "symbol": "\\kappa_{\\text{drift}}",
+      "name": "Anomalous Drift",
+      "description": "The maximum magnitude of any local drift (systematic bias) introduced by the noise measure. Measures the supremum over all positions x in the state space of the expected displacement norm when noise is applied. Quantifies how much the perturbation measure violates the unbiased property (zero expected displacement) of natural diffusion.",
+      "type": "real",
+      "constraint": "\\kappa_{\\text{drift}} \\geq 0; ideal value is \\kappa_{\\text{drift}} = 0 (unbiased noise)",
+      "role": "diagnostic_parameter",
+      "canonical_bounds": "For symmetric kernels (Gaussian, uniform ball centered at identity): κ_drift = 0 exactly. For rejection sampling near boundaries: κ_drift ~ O(boundary_proximity/σ). For adaptive mechanisms with mean-field drift: κ_drift ~ O(|∇V_fit|)."
+    },
+    {
+      "symbol": "\\kappa_{\\text{anisotropy}}",
+      "name": "Diffusion Anisotropy",
+      "description": "The maximum condition number (ratio of largest to smallest eigenvalue) of the displacement covariance matrix. Measures directional imbalance in the noise: κ_anisotropy = 1 means perfectly isotropic (equal variance in all directions), while κ_anisotropy >> 1 indicates strongly directional exploration favoring certain directions over others.",
+      "type": "real",
+      "constraint": "\\kappa_{\\text{anisotropy}} := \\sup_{x \\in \\mathcal{X}} \\frac{\\lambda_{\\max}(\\text{Cov}_{x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)}[x'])}{\\lambda_{\\min}(\\text{Cov}_{x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)}[x'])} \\geq 1; ideal value is \\kappa_{\\text{anisotropy}} = 1 (isotropic noise)",
+      "role": "diagnostic_parameter",
+      "canonical_bounds": "For isotropic kernels (Gaussian with identity covariance, uniform ball): κ_anisotropy = 1 exactly. For Hessian-based anisotropic diffusion (Adaptive Gas): κ_anisotropy ~ cond(H), where H is the Hessian. For metric-aware heat kernels on manifolds: κ_anisotropy ~ cond(g), where g is the metric tensor."
+    },
+    {
+      "symbol": "\\mathcal{P}_\\sigma",
+      "description": "Perturbation noise measure: A Markov kernel on the state space X parameterized by noise scale σ > 0. For each base position x ∈ X, P_σ(x, ·) is a probability measure on X defining the distribution of perturbed positions. Used during the perturbation step to enable walker exploration. The geometric consistency axiom evaluates the drift and anisotropy of this kernel.",
+      "constraints": "Valid noise measure (Definition 2.3 in document); must support finite second moment for the Axiom of Bounded Second Moment of Perturbation"
+    },
+    {
+      "symbol": "x",
+      "description": "Base position in the state space from which the noise measure is evaluated. The supremum in the axiom's expression is taken over all such positions to capture worst-case drift and anisotropy.",
+      "constraints": "x \\in \\mathcal{X}"
+    },
+    {
+      "symbol": "x'",
+      "description": "Perturbed position: A random position drawn from the perturbation kernel P_σ(x, ·) given base position x. The distribution of x' determines the drift (E[x' - x]) and anisotropy (Cov[x']) measured by this axiom.",
+      "constraints": "x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)"
+    },
+    {
+      "symbol": "\\mathcal{X}",
+      "description": "State space: The space in which walkers evolve. Must be a Valid State Space: a Polish metric space equipped with a reference measure μ_X and supporting valid noise measures. The geometric structure of X (metric, volume measure) defines the natural diffusion against which geometric consistency is benchmarked.",
+      "constraints": "Valid State Space (Definition 1.4 in document); must be Polish with reference measure \\mu_{\\mathcal{X}}"
+    },
+    {
+      "symbol": "\\mathbb{E}_{x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)}[x' - x]",
+      "description": "Expected displacement: The mean displacement vector when noise is applied at position x. For unbiased noise (ideal geometric consistency), this should be zero at every x. Non-zero values indicate systematic drift in a preferred direction, violating the unbiased property of natural diffusion.",
+      "constraints": "Value in tangent space at x (or ambient Euclidean space if X ⊂ ℝ^d)"
+    },
+    {
+      "symbol": "\\text{Cov}_{x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)}[x']",
+      "description": "Displacement covariance matrix: The covariance matrix of the displacement x' - x when noise is applied at position x. Its eigenvalues λ_min and λ_max measure the minimum and maximum variance in any direction. For isotropic noise (ideal geometric consistency), all eigenvalues should be equal (λ_min = λ_max = σ²), giving κ_anisotropy = 1.",
+      "constraints": "Positive semi-definite d×d matrix where d = dim(X)"
+    }
+  ],
+  "condition": "This axiom applies universally to any perturbation noise measure P_σ chosen by the user. It is a design principle rather than a strict requirement: the framework does not mandate κ_drift = 0 and κ_anisotropy = 1, but requires users to quantify deviations from this ideal. For ideal geometric consistency (natural, unbiased diffusion): κ_drift = 0 and κ_anisotropy = 1. Users can intentionally violate these ideals—e.g., introducing directional bias for adaptive exploration (Adaptive Gas with mean-field drift) or anisotropic diffusion for geometry-aware exploration (Hessian-based noise)—but must explicitly compute or bound κ_drift and κ_anisotropy for stability analysis. The axiom's role is diagnostic: it transforms abstract questions like 'Is my noise well-behaved?' into concrete, measurable quantities that can be propagated through the framework's continuity bounds.",
+  "failure_mode_analysis": {
+    "primary_failure": "Confounded Optimization and Inefficient Exploration",
+    "mechanism": "Non-ideal geometric consistency introduces systematic artifacts that interfere with the algorithm's ability to find optima purely based on the reward function. Anomalous drift (κ_drift > 0) adds a fixed directional bias independent of rewards, while diffusion anisotropy (κ_anisotropy >> 1) creates preferential exploration in certain directions, potentially missing optima in under-explored directions.",
+    "consequences": [
+      {
+        "scenario": "κ_drift > 0 (Systematic Drift)",
+        "effect": "The swarm experiences a consistent bias in a fixed direction, overlaying the reward-driven drift with an artificial, reward-independent component. This confounds optimization: walkers are pushed by both the reward gradient (intended signal) and the anomalous drift (algorithmic artifact).",
+        "downstream_impact": "In mild cases (κ_drift << ||∇R||), the drift acts as a weak exploration bias that slightly skews the search. In severe cases (κ_drift ~ ||∇R||), the swarm may converge to spurious optima determined primarily by drift direction rather than reward landscape. The algorithm effectively optimizes R + (κ_drift/σ) · x (reward plus linear drift term), not the true reward function R."
+      },
+      {
+        "scenario": "κ_anisotropy >> 1 (Highly Anisotropic Diffusion)",
+        "effect": "Exploration becomes highly directional. Some directions are aggressively explored (high-eigenvalue directions of covariance), while others are barely explored (low-eigenvalue directions). The swarm behaves like a 'blind search' with biased attention: overfocusing on easy directions, neglecting hard ones.",
+        "downstream_impact": "Inefficient search: the swarm may waste computational resources over-exploring directions that don't lead to optima, while missing critical features in under-explored directions. For κ_anisotropy = 100, the strongest exploration direction is 100× more active than the weakest, creating effective dimensionality reduction but at the risk of ignoring important structure."
+      },
+      {
+        "scenario": "Combined Non-Ideality (κ_drift > 0 and κ_anisotropy >> 1)",
+        "effect": "The noise becomes a biased, anisotropic drift-diffusion process. The swarm drifts deterministically in the κ_drift direction while diffusing anisotropically around it. Exploration strategy transforms from 'follow reward gradient' to 'follow reward + drift + anisotropic diffusion', fundamentally changing algorithmic behavior.",
+        "downstream_impact": "The framework's stability analysis remains valid but requires explicitly incorporating these parameters into all continuity bounds. Convergence rates degrade proportionally to κ_drift and κ_anisotropy. In extreme cases, the algorithm may fail to converge to the true optimum, instead settling into a quasi-stationary distribution biased by drift and shaped by anisotropy."
+      }
+    ],
+    "diagnostic_protocol": [
+      "Empirically measure κ_drift by computing E[x' - x] over grid of positions x and taking supremum",
+      "Empirically measure κ_anisotropy by computing sample covariance of displacements and checking condition number",
+      "Test for systematic bias: run swarm on flat reward landscape (R = const) and check if walkers drift in a preferred direction",
+      "Test for anisotropy: visualize displacement distributions at various positions; look for elongated ellipsoids (anisotropic) vs spherical clouds (isotropic)",
+      "Compare against reference: for Gaussian noise with identity covariance, verify κ_drift ≈ 0 and κ_anisotropy ≈ 1 as sanity check"
+    ],
+    "mitigation_strategies": [
+      {
+        "strategy": "Symmetrize the Noise Kernel",
+        "rationale": "If κ_drift > 0 due to kernel asymmetry, replace P_σ(x, ·) with a symmetrized version: P_σ^sym(x, A) = (1/2)[P_σ(x, A) + P_σ(x, 2x - A)] where 2x - A reflects set A through point x. This forces E[x' - x] = 0.",
+        "tradeoff": "Doubles computational cost (need to sample twice). May not be feasible if drift is state-dependent (e.g., boundary effects) rather than kernel-intrinsic."
+      },
+      {
+        "strategy": "Prewhiten Anisotropic Noise",
+        "rationale": "If κ_anisotropy >> 1, apply a whitening transformation to the noise. Compute Σ = Cov[x'], decompose as Σ = Q Λ Q^T (eigendecomposition), and replace noise ξ with Λ^(-1/2) Q^T ξ. This forces unit covariance (κ_anisotropy = 1).",
+        "tradeoff": "Requires computing and storing covariance matrix and its inverse square root. May be expensive for high-dimensional spaces. Eliminates intentional anisotropy (problematic for Adaptive Gas)."
+      },
+      {
+        "strategy": "Explicitly Model Drift and Anisotropy",
+        "rationale": "Accept non-ideal values but incorporate them into stability analysis. Modify continuity bounds to include κ_drift and κ_anisotropy as explicit factors. Document that convergence guarantees apply to the modified algorithm (R + drift + anisotropic diffusion), not the original problem.",
+        "tradeoff": "More complex analysis. Degrades convergence rates by factors of κ_drift and √κ_anisotropy. Requires user to understand whether the modified problem is still meaningful."
+      },
+      {
+        "strategy": "Use Canonical Isotropic Kernels",
+        "rationale": "For Euclidean state spaces, use standard Gaussian N(0, σ²I) or uniform ball noise, which exactly satisfy κ_drift = 0 and κ_anisotropy = 1 by construction. Avoid rejection sampling or adaptive mechanisms unless necessary.",
+        "tradeoff": "Gives up potential benefits of adaptive noise (e.g., Hessian-based diffusion for local geometry awareness). May be suboptimal for non-Euclidean or constrained state spaces."
+      },
+      {
+        "strategy": "Boundary-Aware Kernel Design",
+        "rationale": "If κ_drift > 0 due to boundary proximity (rejection sampling biases displacement away from boundaries), use boundary-aware kernels like reflected Brownian motion or mirror coupling that maintain unbiasedness near boundaries.",
+        "tradeoff": "Significantly more complex to implement and sample from. May introduce computational overhead."
+      }
+    ],
+    "critical_threshold": "For stability: κ_drift << ||∇R||_typical (drift negligible compared to reward gradients) and κ_anisotropy ≲ 10 (at most 10× imbalance between exploration directions). Beyond these thresholds, algorithmic behavior diverges significantly from ideal reward-driven optimization. Quantitative bounds require problem-specific analysis.",
+    "system_level_impact": "Unlike other axioms that directly enter continuity bounds, Geometric Consistency is a design principle affecting interpretability and convergence quality. Violations don't break the framework's mathematical validity but change what problem is being solved. The algorithm remains stable but optimizes a modified objective that includes drift and anisotropic diffusion terms. This axiom is therefore critical for understanding and trusting algorithm behavior, even if not strictly necessary for mathematical correctness.",
+    "intentional_violations": [
+      {
+        "use_case": "Adaptive Gas with Mean-Field Drift",
+        "violation": "κ_drift ~ ||∇V_fit|| > 0 by design (adaptive force introduces systematic drift toward high-fitness regions)",
+        "justification": "The drift is intentional and adaptive, derived from mean-field fitness potential. It enhances convergence by adding deterministic exploitation to stochastic exploration. The 'violation' is a feature, not a bug.",
+        "analysis": "Framework handles this by treating adaptive force separately from perturbation noise. Stability analysis decomposes operator into drift (deterministic) + diffusion (stochastic) components. Convergence theorems apply to the composed system."
+      },
+      {
+        "use_case": "Hessian-Based Anisotropic Diffusion",
+        "violation": "κ_anisotropy ~ cond(Hessian) >> 1 by design (noise aligned with local geometry)",
+        "justification": "Anisotropic diffusion adapts to landscape curvature: aggressive exploration along flat directions (large eigenvalues), conservative exploration along steep directions (small eigenvalues). Improves sample efficiency in ill-conditioned landscapes.",
+        "analysis": "κ_anisotropy enters continuity bounds as multiplicative factor. Stability analysis accounts for it by tracking directional variance growth. Convergence rate depends on κ_anisotropy but remains valid."
+      }
+    ]
+  },
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.4.1",
+    "directive_label": "def-axiom-geometric-consistency",
+    "equation": null,
+    "line_range": [
+      963,
+      986
+    ],
+    "url_fragment": "#axiom-of-geometric-consistency"
+  }
+}

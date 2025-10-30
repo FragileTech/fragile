@@ -2,9 +2,17 @@
   "label": "thm-equilibrium-variance-bounds",
   "name": "Equilibrium Variance Bounds from Drift Inequalities",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "06_convergence",
+  "source": {
+    "document_id": "06_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/06_convergence.md",
+    "section": null,
+    "directive_label": "thm-equilibrium-variance-bounds",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-equilibrium-variance-bounds"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -21,52 +29,28 @@
     "param-tau",
     "param-sigma-v"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-positional-variance-recall": [
-      "prop-positional-variance-drift-bound"
+      "attr-positional-variance-drift-bound"
     ],
     "obj-velocity-variance-recall": [
-      "prop-velocity-variance-drift-bound"
+      "attr-velocity-variance-drift-bound"
     ],
     "obj-boundary-potential-recall": [
-      "prop-boundary-drift-bound"
+      "attr-boundary-drift-bound"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [
-    {
-      "label": "prop-qsd-positional-variance-bound",
-      "expression": "V_{Var,x}^{QSD} ≤ C_x/κ_x",
-      "object_label": "obj-positional-variance-recall",
-      "established_by": "thm-equilibrium-variance-bounds",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "prop-qsd-velocity-variance-bound",
-      "expression": "V_{Var,v}^{QSD} ≤ (C_v + d σ_{max}^2 τ)/(2γ τ) ≈ d σ_{max}^2/(2γ)",
-      "object_label": "obj-velocity-variance-recall",
-      "established_by": "thm-equilibrium-variance-bounds",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "prop-qsd-boundary-potential-bound",
-      "expression": "W_b^{QSD} ≤ C_b/κ_b",
-      "object_label": "obj-boundary-potential-recall",
-      "established_by": "thm-equilibrium-variance-bounds",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

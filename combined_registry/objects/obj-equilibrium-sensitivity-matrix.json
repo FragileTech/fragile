@@ -3,10 +3,19 @@
   "name": "Equilibrium Constant Sensitivity Matrix",
   "mathematical_expression": "(M_C)_{ij} = \\frac{\\partial \\log C_i}{\\partial \\log P_j}\\bigg|_{P_0}",
   "object_type": "set",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "06_convergence"
+  "source": {
+    "document_id": "06_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/06_convergence.md",
+    "section": null,
+    "directive_label": "obj-equilibrium-sensitivity-matrix",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-equilibrium-sensitivity-matrix"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

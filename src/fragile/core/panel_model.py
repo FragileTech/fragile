@@ -37,9 +37,7 @@ class FileInputWidget(param.Parameterized):
         else:
             file_path = str(file_path)
             setattr(ref, ref_name, file_path)
-        super().__init__(
-            widget_name=widget_name, file_path=file_path, **params
-        )
+        super().__init__(widget_name=widget_name, file_path=file_path, **params)
 
         self.file_selector = pn.widgets.FileSelector(
             only_files=only_files,
@@ -63,35 +61,24 @@ class FileInputWidget(param.Parameterized):
         if event.new and len(event.new) > 0:
             new_value = str(event.new[0])
             self.file_path = new_value
-            self._header[0].object = (
-                f"### {self.widget_name}: {self.file_path}"
-            )
+            self._header[0].object = f"### {self.widget_name}: {self.file_path}"
             setattr(self._ref, self._ref_name, new_value)
 
     def __panel__(self):
         """Render the file input widget in a collapsed card."""
-        self._card = pn.Card(
-            self.file_selector, header=self._header, collapsed=True
-        )
+        self._card = pn.Card(self.file_selector, header=self._header, collapsed=True)
         return self._card
 
 
 class PanelModel(param.Parameterized):
-    _max_widget_width = param.Integer(
-        default=800, bounds=(0, None), doc="Max widget width"
-    )
-    _n_widget_columns = param.Integer(
-        default=2, bounds=(1, None), doc="Number of widget columns"
-    )
+    _max_widget_width = param.Integer(default=800, bounds=(0, None), doc="Max widget width")
+    _n_widget_columns = param.Integer(default=2, bounds=(1, None), doc="Number of widget columns")
     _target_ = param.String(doc="Target class for instantiation")
 
     @property
     def dict_param_names(self) -> list[str]:
         """Names of the config parameters that this class is tracking."""
-        return list(
-            set(list(self.param))
-            - {"_max_widget_width", "_n_widget_columns", "name"}
-        )
+        return list(set(self.param) - {"_max_widget_width", "_n_widget_columns", "name"})
 
     @property
     def widgets(self) -> dict[str, dict]:
@@ -113,12 +100,8 @@ class PanelModel(param.Parameterized):
             return type(type(cls).__name__, (cls,), kwargs)
 
         names = list(self.widget_parameters)
-        ncols = (
-            min(len(names), self._n_widget_columns)
-        )
-        return new_class(
-            pn.GridBox, ncols=ncols, max_width=self._max_widget_width
-        )
+        ncols = min(len(names), self._n_widget_columns)
+        return new_class(pn.GridBox, ncols=ncols, max_width=self._max_widget_width)
 
     @staticmethod
     def parse_lambda_function(k, d):
@@ -131,6 +114,7 @@ class PanelModel(param.Parameterized):
                 import inspect
 
                 return inspect.getsource(d[k]).strip()
+        return None
 
     @classmethod
     def from_dict(cls, d, parameters=None) -> "PanelModel":
@@ -170,9 +154,7 @@ class PanelModel(param.Parameterized):
             for k in d.keys()
             if _is_config(k)
         }
-        raw_params = {
-            k: v for k, v in d.items() if not _is_config(k) and k != "_target_"
-        }
+        raw_params = {k: v for k, v in d.items() if not _is_config(k) and k != "_target_"}
 
         all_params = {
             **instantiate(raw_params, _convert_="all"),
@@ -207,10 +189,8 @@ class PanelModel(param.Parameterized):
                     getattr(self, key).set_values(d[key])
                 except Exception as e:
                     print(
-
-                            f"Error setting values for {self.__class__.__name__} "
-                            f"{getattr(self, key)} {key} of {d.keys()} with value {d[key]}: {e}"
-
+                        f"Error setting values for {self.__class__.__name__} "
+                        f"{getattr(self, key)} {key} of {d.keys()} with value {d[key]}: {e}"
                     )
                     raise e
             elif key in d:

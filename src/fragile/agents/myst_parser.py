@@ -9,10 +9,10 @@ Version: 1.0.0
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Set
+import re
+
 
 # MyST directive pattern: :::{prf:type} Title
 # Captures opening (3 colons), title on same line, label on next line, content, closing (3 colons)
@@ -22,16 +22,13 @@ DIRECTIVE_PATTERN = re.compile(
     r"\n?"  # Optional blank line
     r"(?P<content>.*?)"  # Content (non-greedy)
     r"\n^:::\s*$",  # Closing (3 colons)
-    re.MULTILINE | re.DOTALL
+    re.MULTILINE | re.DOTALL,
 )
 
 # Simpler pattern for directives without content
 SIMPLE_DIRECTIVE_PATTERN = re.compile(
-    r"^::::\{prf:(\w+)\}\s+([^\n]+)\n"
-    r":label:\s+([^\n]+)\n"
-    r"(.*?)"
-    r"^::::\s*$",
-    re.MULTILINE | re.DOTALL
+    r"^::::\{prf:(\w+)\}\s+([^\n]+)\n" r":label:\s+([^\n]+)\n" r"(.*?)" r"^::::\s*$",
+    re.MULTILINE | re.DOTALL,
 )
 
 # Pattern for extracting math expressions
@@ -57,16 +54,17 @@ class MathDirective:
         line_start: Starting line number in source file
         line_end: Ending line number in source file
     """
+
     directive_type: str
     label: str
     title: str
     content: str
-    math_expressions: List[str]
-    cross_refs: List[str]
+    math_expressions: list[str]
+    cross_refs: list[str]
     line_start: int
     line_end: int
 
-    def get_first_math(self) -> Optional[str]:
+    def get_first_math(self) -> str | None:
         """Get first mathematical expression (useful for primary definition)."""
         return self.math_expressions[0] if self.math_expressions else None
 
@@ -74,7 +72,7 @@ class MathDirective:
         """Check if this directive references another label."""
         return label in self.cross_refs
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization."""
         return {
             "type": self.directive_type,
@@ -84,7 +82,7 @@ class MathDirective:
             "math_expression_count": len(self.math_expressions),
             "first_math": self.get_first_math(),
             "cross_refs": self.cross_refs,
-            "line_range": [self.line_start, self.line_end]
+            "line_range": [self.line_start, self.line_end],
         }
 
 
@@ -99,50 +97,51 @@ class DocumentInventory:
         directive_index: Map from label to directive
         type_index: Map from directive type to list of directives
     """
-    source_file: Path
-    directives: List[MathDirective]
-    directive_index: Dict[str, MathDirective]
-    type_index: Dict[str, List[MathDirective]]
 
-    def get_by_label(self, label: str) -> Optional[MathDirective]:
+    source_file: Path
+    directives: list[MathDirective]
+    directive_index: dict[str, MathDirective]
+    type_index: dict[str, list[MathDirective]]
+
+    def get_by_label(self, label: str) -> MathDirective | None:
         """Get directive by its label."""
         return self.directive_index.get(label)
 
-    def get_by_type(self, directive_type: str) -> List[MathDirective]:
+    def get_by_type(self, directive_type: str) -> list[MathDirective]:
         """Get all directives of a specific type."""
         return self.type_index.get(directive_type, [])
 
-    def get_definitions(self) -> List[MathDirective]:
+    def get_definitions(self) -> list[MathDirective]:
         """Get all definition directives."""
         return self.get_by_type("definition")
 
-    def get_theorems(self) -> List[MathDirective]:
+    def get_theorems(self) -> list[MathDirective]:
         """Get all theorem directives (theorem, lemma, proposition)."""
         return (
-            self.get_by_type("theorem") +
-            self.get_by_type("lemma") +
-            self.get_by_type("proposition")
+            self.get_by_type("theorem")
+            + self.get_by_type("lemma")
+            + self.get_by_type("proposition")
         )
 
-    def get_proofs(self) -> List[MathDirective]:
+    def get_proofs(self) -> list[MathDirective]:
         """Get all proof directives."""
         return self.get_by_type("proof")
 
-    def get_axioms(self) -> List[MathDirective]:
+    def get_axioms(self) -> list[MathDirective]:
         """Get all axiom directives."""
         return self.get_by_type("axiom")
 
-    def count_by_type(self) -> Dict[str, int]:
+    def count_by_type(self) -> dict[str, int]:
         """Get count of directives by type."""
         return {dtype: len(directives) for dtype, directives in self.type_index.items()}
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization."""
         return {
             "source_file": str(self.source_file),
             "total_directives": len(self.directives),
             "counts_by_type": self.count_by_type(),
-            "directives": [d.to_dict() for d in self.directives]
+            "directives": [d.to_dict() for d in self.directives],
         }
 
 
@@ -182,7 +181,7 @@ class MySTParser:
 
         # Build indices
         directive_index = {d.label: d for d in directives if d.label}
-        type_index: Dict[str, List[MathDirective]] = {}
+        type_index: dict[str, list[MathDirective]] = {}
         for directive in directives:
             if directive.directive_type not in type_index:
                 type_index[directive.directive_type] = []
@@ -192,10 +191,10 @@ class MySTParser:
             source_file=self.source_file,
             directives=directives,
             directive_index=directive_index,
-            type_index=type_index
+            type_index=type_index,
         )
 
-    def _parse_directive_match(self, match: re.Match) -> Optional[MathDirective]:
+    def _parse_directive_match(self, match: re.Match) -> MathDirective | None:
         """
         Parse a single directive match into MathDirective.
 
@@ -234,10 +233,10 @@ class MySTParser:
             math_expressions=math_expressions,
             cross_refs=cross_refs,
             line_start=line_start,
-            line_end=line_end
+            line_end=line_end,
         )
 
-    def _extract_math(self, content: str) -> List[str]:
+    def _extract_math(self, content: str) -> list[str]:
         """
         Extract all mathematical expressions from content.
 
@@ -259,7 +258,7 @@ class MySTParser:
 
         return expressions
 
-    def _extract_cross_refs(self, content: str) -> List[str]:
+    def _extract_cross_refs(self, content: str) -> list[str]:
         """
         Extract all cross-references from content.
 
@@ -298,7 +297,7 @@ class MySTParser:
             "axiom": "axiom",
             "proof": "proof",
             "algorithm": "alg",
-            "remark": "remark"
+            "remark": "remark",
         }
         prefix = prefix_map.get(directive_type, "item")
 

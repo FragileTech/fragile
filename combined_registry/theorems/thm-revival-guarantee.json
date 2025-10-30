@@ -2,19 +2,58 @@
   "label": "thm-revival-guarantee",
   "name": "Almost‑sure revival under the global constraint",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "section_name": null,
+    "directive_label": "thm-revival-guarantee",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-revival-guarantee"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
-  "input_objects": [],
-  "input_axioms": [],
-  "input_parameters": [],
-  "properties_required": {},
+  "input_objects": [
+    "obj-canonical-fragile-swarm",
+    "obj-walker",
+    "obj-cloning-threshold",
+    "obj-cloning-score"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-guaranteed-revival"
+  ],
+  "input_parameters": [
+    "param-epsilon-clone",
+    "param-p-max",
+    "param-eta",
+    "param-alpha",
+    "param-beta"
+  ],
+  "attributes_required": {
+    "obj-canonical-fragile-swarm": [
+      "attr-has-alive-walker"
+    ],
+    "obj-walker": [
+      "attr-dead"
+    ],
+    "obj-cloning-threshold": [
+      "attr-uniform-distribution"
+    ]
+  },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
-  "output_type": "Uniqueness",
-  "properties_added": [],
-  "relations_established": []
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

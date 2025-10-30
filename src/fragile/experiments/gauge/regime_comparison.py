@@ -19,19 +19,16 @@ old_docs/source/13_fractal_set_new/04c_test_cases.md - Test Case 3 (Crossover)
 """
 
 import numpy as np
-import torch
 from pydantic import BaseModel, Field
 from torch import Tensor
 
 from fragile.experiments.gauge.locality_tests import (
     LocalityTestsConfig,
     test_field_gradients,
-    test_perturbation_response,
     test_spatial_correlation,
 )
 from fragile.experiments.gauge.observables import (
     ObservablesConfig,
-    compute_collective_fields,
 )
 
 
@@ -80,15 +77,19 @@ def scan_correlation_length(
 
     Example:
         >>> results = scan_correlation_length(
-        ...     positions, velocities, rewards, companions, alive,
-        ...     rho_values=[0.01, 0.05, 0.1, 0.5, None]
+        ...     positions,
+        ...     velocities,
+        ...     rewards,
+        ...     companions,
+        ...     alive,
+        ...     rho_values=[0.01, 0.05, 0.1, 0.5, None],
         ... )
     """
     xi_values = []
     fit_qualities = []
 
     # Include mean-field (ρ=None) at end
-    rho_scan = list(rho_values) + [None]
+    rho_scan = [*list(rho_values), None]
 
     for rho in rho_scan:
         result = test_spatial_correlation(
@@ -134,14 +135,18 @@ def scan_field_gradients(
 
     Example:
         >>> results = scan_field_gradients(
-        ...     positions, velocities, rewards, companions, alive,
-        ...     rho_values=[0.01, 0.05, 0.1, 0.5, None]
+        ...     positions,
+        ...     velocities,
+        ...     rewards,
+        ...     companions,
+        ...     alive,
+        ...     rho_values=[0.01, 0.05, 0.1, 0.5, None],
         ... )
     """
     gradient_means = []
     gradient_stds = []
 
-    rho_scan = list(rho_values) + [None]
+    rho_scan = [*list(rho_values), None]
 
     for rho in rho_scan:
         result = test_field_gradients(
@@ -240,9 +245,7 @@ def compare_regimes(
         Dictionary with comprehensive regime comparison data
 
     Example:
-        >>> results = compare_regimes(
-        ...     positions, velocities, rewards, companions, alive
-        ... )
+        >>> results = compare_regimes(positions, velocities, rewards, companions, alive)
         >>> print(f"Critical scale: ρ_c ≈ {results['rho_c_correlation']:.4f}")
     """
     if regime_config is None:
@@ -310,12 +313,12 @@ def generate_regime_comparison_report(results: dict) -> str:
     rho_c_corr_str = f"{rho_c_corr:.6f}" if rho_c_corr is not None else "N/A"
     rho_c_grad_str = f"{rho_c_grad:.6f}" if rho_c_grad is not None else "N/A"
 
-    report = f"""
+    return f"""
 ================================================================================
 REGIME COMPARISON REPORT
 ================================================================================
 
-Scanned ρ values: {results['rho_values_scanned']}
+Scanned ρ values: {results["rho_values_scanned"]}
 
 --------------------------------------------------------------------------------
 Critical Scales:
@@ -334,30 +337,27 @@ Regime Classification:
 
 ================================================================================
 """
-    return report
 
 
 def _interpret_critical_scales(rho_c_corr: float | None, rho_c_grad: float | None) -> str:
     """Interpret critical scale findings."""
     if rho_c_corr is not None and rho_c_grad is not None:
         if abs(rho_c_corr - rho_c_grad) < 0.1:
-            return f"""✓ Both observables agree on critical scale: ρ_c ≈ {(rho_c_corr + rho_c_grad)/2:.4f}
+            return f"""✓ Both observables agree on critical scale: ρ_c ≈ {(rho_c_corr + rho_c_grad) / 2:.4f}
 
 This suggests a genuine crossover between local and mean-field regimes.
 For ρ < ρ_c: Local field theory
 For ρ > ρ_c: Mean-field theory"""
-        else:
-            return f"""Observables give different critical scales:
+        return f"""Observables give different critical scales:
   Correlation: ρ_c ≈ {rho_c_corr:.4f}
   Gradient:    ρ_c ≈ {rho_c_grad:.4f}
 
 This suggests different aspects transition at different scales."""
-    elif rho_c_corr is not None:
+    if rho_c_corr is not None:
         return f"Critical scale from correlation: ρ_c ≈ {rho_c_corr:.4f}"
-    elif rho_c_grad is not None:
+    if rho_c_grad is not None:
         return f"Critical scale from gradient: ρ_c ≈ {rho_c_grad:.4f}"
-    else:
-        return "No clear critical scale detected. System may be in single regime across scan range."
+    return "No clear critical scale detected. System may be in single regime across scan range."
 
 
 def _classify_regime(results: dict) -> str:

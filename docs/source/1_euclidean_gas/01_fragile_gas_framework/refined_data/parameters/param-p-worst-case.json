@@ -1,0 +1,9 @@
+{
+  "label": "param-p-worst-case",
+  "name": "Worst-Case Probability Parameter",
+  "symbol": "p_{\\text{worst-case}}",
+  "parameter_type": "real",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "statement_type": "parameter"
+}

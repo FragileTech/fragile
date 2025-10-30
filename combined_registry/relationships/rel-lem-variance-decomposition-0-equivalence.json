@@ -6,12 +6,20 @@
   "target_object": "obj-unified-high-low-error-sets",
   "established_by": "lem-variance-decomposition",
   "expression": "Var_x(S_k) = f_I Var_x(I_k) + f_J Var_x(J_k) + f_I f_J ||μ_x(I_k) - μ_x(J_k)||²",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "04_wasserstein_contraction"
+  "source": {
+    "document_id": "04_wasserstein_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+    "section": null,
+    "directive_label": "lem-variance-decomposition",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-variance-decomposition"
+  },
+  "chapter": null,
+  "document": null
 }

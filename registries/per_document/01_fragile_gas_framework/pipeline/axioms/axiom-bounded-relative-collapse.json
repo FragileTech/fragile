@@ -1,0 +1,22 @@
+{
+  "label": "axiom-bounded-relative-collapse",
+  "statement": "The scaling analysis for structural error is valid only for transitions that are not catastrophically large relative to the initial swarm size.",
+  "mathematical_expression": "$$\n\\frac{|\\mathcal{A}(\\mathcal{S}_2)|}{|\\mathcal{A}(\\mathcal{S}_1)|} \\ge c_{\\min}\n$$",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Bounded Relative Collapse",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.3.4",
+    "directive_label": "axiom-bounded-relative-collapse",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

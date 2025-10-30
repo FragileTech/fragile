@@ -1,0 +1,315 @@
+{
+  "refinement_stage": "Stage 2: Semantic Enrichment",
+  "source_directory": "docs/source/1_euclidean_gas/01_fragile_gas_framework/raw_data/definitions",
+  "output_directory": "docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/objects",
+  "timestamp": "2025-10-28T09:20:52.241428",
+  "statistics": {
+    "total_definitions_processed": 31,
+    "successful_refinements": 31,
+    "failed_refinements": 0,
+    "validation_errors": 0,
+    "by_object_type": {
+      "space": 4,
+      "function": 3,
+      "measure": 12,
+      "operator": 8,
+      "structure": 3,
+      "set": 1
+    },
+    "by_chapter": {
+      "1_euclidean_gas": 31
+    },
+    "by_document": {
+      "01_fragile_gas_framework": 31
+    }
+  },
+  "objects": [
+    {
+      "label": "obj-alg-distance",
+      "name": "Algorithmic Distance",
+      "object_type": "space",
+      "expression_length": 20,
+      "num_tags": 4,
+      "has_source": false
+    },
+    {
+      "label": "obj-algorithmic-cemetery-extension",
+      "name": "Algorithmic Cemetery Extension",
+      "object_type": "space",
+      "expression_length": 126,
+      "num_tags": 5,
+      "has_source": true
+    },
+    {
+      "label": "obj-algorithmic-space-generic",
+      "name": "Algorithmic Space",
+      "object_type": "space",
+      "expression_length": 30,
+      "num_tags": 4,
+      "has_source": false
+    },
+    {
+      "label": "obj-asymmetric-rescale-function",
+      "name": "Smooth Piecewise Rescale Function",
+      "object_type": "function",
+      "expression_length": 9,
+      "num_tags": 5,
+      "has_source": false
+    },
+    {
+      "label": "obj-canonical-logistic-rescale-function-example",
+      "name": "Canonical Logistic Rescale Function",
+      "object_type": "function",
+      "expression_length": 30,
+      "num_tags": 6,
+      "has_source": false
+    },
+    {
+      "label": "obj-cemetery-state-measure",
+      "name": "Cemetery State Measure",
+      "object_type": "measure",
+      "expression_length": 11,
+      "num_tags": 6,
+      "has_source": true
+    },
+    {
+      "label": "obj-cloning-measure",
+      "name": "Cloning Measure",
+      "object_type": "measure",
+      "expression_length": 10,
+      "num_tags": 5,
+      "has_source": false
+    },
+    {
+      "label": "obj-cloning-operator-continuity-coeffs-recorrected",
+      "name": "Cloning Operator Continuity Coefficients",
+      "object_type": "operator",
+      "expression_length": 48,
+      "num_tags": 9,
+      "has_source": true
+    },
+    {
+      "label": "obj-cloning-probability-function",
+      "name": "Conditional Cloning Probability Function",
+      "object_type": "measure",
+      "expression_length": 121,
+      "num_tags": 5,
+      "has_source": true
+    },
+    {
+      "label": "obj-cloning-score-function",
+      "name": "Cloning Score Function",
+      "object_type": "function",
+      "expression_length": 50,
+      "num_tags": 4,
+      "has_source": true
+    },
+    {
+      "label": "obj-composite-continuity-coeffs-recorrected",
+      "name": "Composite Continuity Coefficients",
+      "object_type": "structure",
+      "expression_length": 143,
+      "num_tags": 4,
+      "has_source": true
+    },
+    {
+      "label": "obj-distance-positional-measures",
+      "name": "Distance Between Positional Measures",
+      "object_type": "measure",
+      "expression_length": 102,
+      "num_tags": 6,
+      "has_source": false
+    },
+    {
+      "label": "obj-distance-to-cemetery-state",
+      "name": "Distance To Cemetery State",
+      "object_type": "space",
+      "expression_length": 113,
+      "num_tags": 6,
+      "has_source": true
+    },
+    {
+      "label": "obj-distance-to-companion-measurement",
+      "name": "Distance-to-Companion Measurement",
+      "object_type": "operator",
+      "expression_length": 117,
+      "num_tags": 5,
+      "has_source": false
+    },
+    {
+      "label": "obj-expected-cloning-action",
+      "name": "Conditional Expected Cloning Action",
+      "object_type": "measure",
+      "expression_length": 108,
+      "num_tags": 5,
+      "has_source": true
+    },
+    {
+      "label": "obj-final-status-change-coeffs",
+      "name": "Final Status Change Bound Coefficients",
+      "object_type": "structure",
+      "expression_length": 98,
+      "num_tags": 4,
+      "has_source": true
+    },
+    {
+      "label": "obj-lipschitz-structural-error-coefficients",
+      "name": "Lipschitz Structural Error Coefficients",
+      "object_type": "set",
+      "expression_length": 90,
+      "num_tags": 7,
+      "has_source": false
+    },
+    {
+      "label": "obj-perturbation-fluctuation-bounds-reproof",
+      "name": "Perturbation Fluctuation Bounds",
+      "object_type": "structure",
+      "expression_length": 132,
+      "num_tags": 4,
+      "has_source": true
+    },
+    {
+      "label": "obj-perturbation-measure",
+      "name": "Perturbation Measure",
+      "object_type": "measure",
+      "expression_length": 10,
+      "num_tags": 4,
+      "has_source": false
+    },
+    {
+      "label": "obj-perturbation-operator",
+      "name": "Perturbation Operator",
+      "object_type": "operator",
+      "expression_length": 54,
+      "num_tags": 3,
+      "has_source": false
+    },
+    {
+      "label": "obj-raw-value-operator",
+      "name": "Raw Value Operator",
+      "object_type": "operator",
+      "expression_length": 1,
+      "num_tags": 6,
+      "has_source": false
+    },
+    {
+      "label": "obj-reward-measurement",
+      "name": "Reward Measurement",
+      "object_type": "measure",
+      "expression_length": 100,
+      "num_tags": 4,
+      "has_source": false
+    },
+    {
+      "label": "obj-smoothed-gaussian-measure",
+      "name": "Smoothed Gaussian Measure",
+      "object_type": "measure",
+      "expression_length": 137,
+      "num_tags": 6,
+      "has_source": true
+    },
+    {
+      "label": "obj-standardization-operator-n-dimensional",
+      "name": "Standardization Operator N Dimensional",
+      "object_type": "operator",
+      "expression_length": 1,
+      "num_tags": 7,
+      "has_source": false
+    },
+    {
+      "label": "obj-statistical-properties-measurement",
+      "name": "Statistical Properties Measurement",
+      "object_type": "measure",
+      "expression_length": 54,
+      "num_tags": 7,
+      "has_source": false
+    },
+    {
+      "label": "obj-stochastic-threshold-cloning",
+      "name": "Stochastic Threshold Cloning",
+      "object_type": "measure",
+      "expression_length": 18,
+      "num_tags": 5,
+      "has_source": true
+    },
+    {
+      "label": "obj-swarm-aggregation-operator-axiomatic",
+      "name": "Swarm Aggregation Operator Axiomatic",
+      "object_type": "operator",
+      "expression_length": 132,
+      "num_tags": 7,
+      "has_source": true
+    },
+    {
+      "label": "obj-swarm-update-procedure",
+      "name": "Swarm Update Procedure",
+      "object_type": "operator",
+      "expression_length": 55,
+      "num_tags": 4,
+      "has_source": true
+    },
+    {
+      "label": "obj-total-expected-cloning-action",
+      "name": "Total Expected Cloning Action",
+      "object_type": "measure",
+      "expression_length": 194,
+      "num_tags": 8,
+      "has_source": true
+    },
+    {
+      "label": "obj-value-error-coefficients",
+      "name": "Value Error Coefficients",
+      "object_type": "operator",
+      "expression_length": 62,
+      "num_tags": 7,
+      "has_source": false
+    },
+    {
+      "label": "obj-w2-output-metric",
+      "name": "Wasserstein-2 on the output space (quotient)",
+      "object_type": "measure",
+      "expression_length": 45,
+      "num_tags": 4,
+      "has_source": true
+    }
+  ],
+  "corrections_applied": [
+    {
+      "object": "obj-composite-continuity-coeffs-recorrected",
+      "issue": "Missing mathematical_expression",
+      "fix": "Added composite continuity coefficient tuple expression"
+    },
+    {
+      "object": "obj-distance-to-companion-measurement",
+      "issue": "Missing mathematical_expression",
+      "fix": "Added stochastic measurement formula with companion sampling"
+    },
+    {
+      "object": "obj-final-status-change-coeffs",
+      "issue": "Missing mathematical_expression",
+      "fix": "Added status change coefficient tuple expression"
+    },
+    {
+      "object": "obj-perturbation-fluctuation-bounds-reproof",
+      "issue": "Missing mathematical_expression",
+      "fix": "Added mean and stochastic bound formulas"
+    },
+    {
+      "object": "obj-swarm-update-procedure",
+      "issue": "Missing mathematical_expression",
+      "fix": "Added swarm update operator expression"
+    },
+    {
+      "object": "obj-w2-output-metric",
+      "issue": "Missing mathematical_expression",
+      "fix": "Added Wasserstein-2 distance formula"
+    }
+  ],
+  "quality_metrics": {
+    "all_labels_valid": true,
+    "all_types_inferred": true,
+    "all_expressions_present": true,
+    "tags_extracted": true,
+    "source_locations_preserved": true
+  }
+}

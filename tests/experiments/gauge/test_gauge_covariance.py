@@ -3,9 +3,9 @@
 import torch
 
 from fragile.experiments.gauge.gauge_covariance import (
-    GaugeTransformConfig,
     apply_gauge_transformation_to_phases,
     define_gauge_transformation_region,
+    GaugeTransformConfig,
     generate_gauge_covariance_report,
     modify_companion_probabilities_with_gauge,
     test_gauge_covariance as run_gauge_covariance_test,
@@ -136,7 +136,7 @@ def test_gauge_covariance_mean_field(simple_swarm_2d):
 
     # Verdict should be string
     assert isinstance(result["verdict"], str)
-    assert result["verdict"] in ["covariant", "invariant", "inconclusive"]
+    assert result["verdict"] in {"covariant", "invariant", "inconclusive"}
 
     # Statistics should be scalars
     assert isinstance(result["delta_inside"], float)
@@ -162,7 +162,7 @@ def test_gauge_covariance_local(clustered_swarm_2d):
 
     # Check all outputs present
     assert "verdict" in result
-    assert result["verdict"] in ["covariant", "invariant", "inconclusive"]
+    assert result["verdict"] in {"covariant", "invariant", "inconclusive"}
 
     # Check statistics are reasonable
     assert result["delta_inside"] >= 0
@@ -184,7 +184,7 @@ def test_gauge_covariance_with_dead_walkers(partially_dead_swarm_2d):
 
     # Should complete without error
     assert "verdict" in result
-    assert result["verdict"] in ["covariant", "invariant", "inconclusive"]
+    assert result["verdict"] in {"covariant", "invariant", "inconclusive"}
 
 
 def test_gauge_covariance_custom_config(simple_swarm_2d):
@@ -239,8 +239,8 @@ def test_gauge_covariance_multiple_trials(simple_swarm_2d):
     )
 
     # Both should produce valid verdicts
-    assert result_1["verdict"] in ["covariant", "invariant", "inconclusive"]
-    assert result_5["verdict"] in ["covariant", "invariant", "inconclusive"]
+    assert result_1["verdict"] in {"covariant", "invariant", "inconclusive"}
+    assert result_5["verdict"] in {"covariant", "invariant", "inconclusive"}
 
     # Both should have valid statistics
     assert result_1["delta_inside"] >= 0
@@ -299,9 +299,7 @@ def test_gauge_transformation_region_edge_cases():
     positions = torch.zeros(10, 2)
     region_bounds = (0.3, 0.7, 0.3, 0.7)
 
-    inside, boundary, outside = define_gauge_transformation_region(
-        positions, region_bounds
-    )
+    inside, boundary, outside = define_gauge_transformation_region(positions, region_bounds)
 
     # All should be outside
     assert outside.all()
@@ -332,4 +330,4 @@ def test_gauge_covariance_numerical_stability(simple_swarm_2d):
     # Should complete without NaNs or Infs
     assert torch.isfinite(torch.tensor(result["delta_inside"]))
     assert torch.isfinite(torch.tensor(result["delta_outside"]))
-    assert result["verdict"] in ["covariant", "invariant", "inconclusive"]
+    assert result["verdict"] in {"covariant", "invariant", "inconclusive"}

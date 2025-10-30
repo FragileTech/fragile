@@ -2,158 +2,26 @@
   "label": "lem-euclidean-reward-regularity",
   "name": "Reward regularity in the Sasaki metric",
   "statement_type": "lemma",
-  "source": {
-    "document_id": "02_euclidean_gas",
-    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-    "line_range": [736, 761],
-    "section": "4.2 Environmental axioms"
-  },
-  "input_objects": [
-    "obj-reward-function",
-    "obj-positional-reward-function",
-    "obj-sasaki-metric",
-    "obj-algorithmic-space",
-    "obj-squashing-map-position",
-    "obj-squashing-map-velocity"
-  ],
-  "input_axioms": [
-    "axiom-reward-regularity"
-  ],
-  "input_parameters": [
-    "param-lambda-vel",
-    "param-lambda-v",
-    "param-r-x",
-    "param-v-alg",
-    "param-l-pos"
-  ],
-  "attributes_required": {
-    "obj-positional-reward-function": [
-      "attr-c1-smooth",
-      "attr-bounded-above",
-      "attr-lipschitz-gradient"
-    ],
-    "obj-squashing-map-position": [
-      "attr-1-lipschitz",
-      "attr-smooth-away-from-origin",
-      "attr-bijection-to-ball"
-    ],
-    "obj-squashing-map-velocity": [
-      "attr-1-lipschitz",
-      "attr-smooth-away-from-origin",
-      "attr-bijection-to-ball"
-    ],
-    "obj-algorithmic-space": [
-      "attr-compact",
-      "attr-bounded-diameter"
-    ]
-  },
-  "internal_lemmas": [
-    "lem-squashing-properties-generic"
-  ],
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
   "internal_propositions": [],
-  "lemma_dag_edges": [
-    ["lem-squashing-properties-generic", "lem-euclidean-reward-regularity"]
-  ],
+  "lemma_dag_edges": [],
   "output_type": "Property",
-  "attributes_added": [
-    {
-      "label": "attr-continuous-sasaki",
-      "expression": "R(x,v) = R_{\\mathrm{pos}}(x) - \\lambda_{\\mathrm{vel}}\\|v\\|^2 \\text{ is continuous on } (\\mathcal{Y}, d_{\\mathcal{Y}}^{\\mathrm{Sasaki}})",
-      "object_label": "obj-reward-function",
-      "established_by": "lem-euclidean-reward-regularity",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "line_range": [739, 739],
-        "section": "4.2 Environmental axioms"
-      }
-    },
-    {
-      "label": "attr-lipschitz-sasaki",
-      "expression": "|R(x_1,v_1) - R(x_2,v_2)| \\le L_R^{\\mathrm{Sasaki}} \\, d_{\\mathcal{Y}}^{\\mathrm{Sasaki}}((x_1,v_1),(x_2,v_2)) \\text{ where } L_R^{\\mathrm{Sasaki}} := L_{\\mathrm{pos}} + \\frac{2\\lambda_{\\mathrm{vel}}V_{\\mathrm{alg}}}{\\sqrt{\\lambda_v}}",
-      "object_label": "obj-reward-function",
-      "established_by": "lem-euclidean-reward-regularity",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "line_range": [1218, 1220],
-        "section": "4.2 Environmental axioms"
-      }
-    },
-    {
-      "label": "attr-uniformly-continuous",
-      "expression": "R_{\\mathcal{Y}} \\text{ is uniformly continuous on } \\varphi(\\mathcal{X}_{\\mathrm{valid}} \\times \\mathcal{V}_{\\mathrm{alg}})",
-      "object_label": "obj-reward-function",
-      "established_by": "lem-euclidean-reward-regularity",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "line_range": [759, 759],
-        "section": "4.2 Environmental axioms"
-      }
-    },
-    {
-      "label": "attr-satisfies-axiom-reward-regularity",
-      "expression": "\\text{The reward function satisfies the Axiom of Reward Regularity (def-axiom-reward-regularity)}",
-      "object_label": "obj-reward-function",
-      "established_by": "lem-euclidean-reward-regularity",
-      "timestamp": null,
-      "can_be_refined": false,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "line_range": [739, 739],
-        "section": "4.2 Environmental axioms"
-      }
-    }
-  ],
+  "attributes_added": [],
   "relations_established": [],
-  "mathematical_statement": "The reward function $R(x,v)=R_{\\mathrm{pos}}(x)-\\lambda_{\\mathrm{vel}}\\|v\\|^2$ is continuous on $(\\mathcal Y,d_{\\mathcal Y}^{\\mathrm{Sasaki}})$ and therefore satisfies the Axiom of Reward Regularity.",
-  "proof_strategy": "Compose the continuous positional reward function $R_{\\mathrm{pos}}$ and quadratic velocity term with the inverse squashing maps $\\psi_{R_x}^{-1}$ and $\\psi_{V_{\\mathrm{alg}}}^{-1}$ to define $R_{\\mathcal{Y}}$ on the bounded algorithmic space. Show continuity by composition, then prove uniform continuity on the compact image $\\varphi(\\mathcal{X}_{\\mathrm{valid}} \\times \\mathcal{V}_{\\mathrm{alg}})$. This establishes Lipschitz continuity without requiring a global Lipschitz bound for $R_{\\mathrm{pos}}$ on $\\mathbb{R}^d$.",
-  "key_techniques": [
-    "Composition with continuous inverse squashing maps",
-    "Compactness of valid domain implies uniform continuity",
-    "Sasaki metric structure to couple position and velocity coordinates",
-    "Avoidance of global Lipschitz assumption on $R_{\\mathrm{pos}}$"
-  ],
-  "dependencies": {
-    "lemmas": [
-      "lem-squashing-properties-generic"
-    ],
-    "definitions": [
-      "def-reward-function",
-      "def-sasaki-metric",
-      "def-squashing-map",
-      "def-algorithmic-space"
-    ],
-    "axioms": [
-      "axiom-reward-regularity"
-    ],
-    "theorems": []
-  },
-  "used_by": [
-    "thm-sasaki-standardization-value",
-    "lem-sasaki-aggregator-lipschitz",
-    "thm-euclidean-gas-valid-fragile-gas"
-  ],
-  "tags": [
-    "euclidean-gas",
-    "sasaki-metric",
-    "reward-function",
-    "environmental-axioms",
-    "continuity",
-    "lipschitz"
-  ],
-  "difficulty": "medium",
-  "importance": "high"
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

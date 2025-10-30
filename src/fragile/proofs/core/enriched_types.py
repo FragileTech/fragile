@@ -34,16 +34,17 @@ Maps to Lean:
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import Any, TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from fragile.proofs.core.math_types import ParameterType
 
+
 if TYPE_CHECKING:
     from fragile.proofs.core.article_system import SourceLocation
     from fragile.proofs.staging_types import RawEquation, RawParameter, RawRemark
-    from fragile.proofs.sympy.dual_representation import DualStatement
+    from fragile.proofs.sympy_integration.dual_representation import DualStatement
 
 
 # =============================================================================
@@ -91,7 +92,7 @@ class EquationBox(BaseModel):
         ...     dual_statement=DualStatement(...),
         ...     introduces_symbols=["x_t", "v_t", "gamma"],
         ...     context_before="The kinetic operator is defined by Langevin dynamics:",
-        ...     source=SourceLocation(...)
+        ...     source=SourceLocation(...),
         ... )
 
     Maps to Lean:
@@ -117,59 +118,57 @@ class EquationBox(BaseModel):
         description="Unique equation label (e.g., 'eq-langevin', 'eq-main-bound')",
     )
 
-    equation_number: Optional[str] = Field(
+    equation_number: str | None = Field(
         None, description="Equation number if numbered (e.g., '(2.1)', '(17)')"
     )
 
     # Mathematical Content
     latex_content: str = Field(..., min_length=1, description="LaTeX content (verbatim)")
 
-    dual_statement: Optional["DualStatement"] = Field(
+    dual_statement: DualStatement | None = Field(
         None, description="Dual LaTeX/SymPy representation if parseable"
     )
 
     # Symbol Tracking
-    introduces_symbols: List[str] = Field(
+    introduces_symbols: list[str] = Field(
         default_factory=list,
         description="Symbols first defined in this equation (e.g., ['x_t', 'v_t'])",
     )
 
-    uses_symbols: List[str] = Field(
+    uses_symbols: list[str] = Field(
         default_factory=list, description="Symbols used from earlier definitions"
     )
 
     # Context
-    context_before: Optional[str] = Field(
+    context_before: str | None = Field(
         None, description="Text immediately before equation (for understanding)"
     )
 
-    context_after: Optional[str] = Field(
+    context_after: str | None = Field(
         None, description="Text immediately after equation (for understanding)"
     )
 
     # Cross-References
-    referenced_by: List[str] = Field(
+    referenced_by: list[str] = Field(
         default_factory=list,
         description="Entities referencing this equation (e.g., ['thm-main', 'proof-001'])",
     )
 
-    appears_in_theorems: List[str] = Field(
+    appears_in_theorems: list[str] = Field(
         default_factory=list,
         description="Theorem labels where this equation appears in statement",
     )
 
     # Source
-    source: Optional["SourceLocation"] = Field(
-        None, description="Source location in documentation"
-    )
+    source: SourceLocation = Field(description="Source location in documentation")
 
     # Error Tracking (for enrichment failures)
-    validation_errors: List[str] = Field(
+    validation_errors: list[str] = Field(
         default_factory=list,
         description="Validation errors encountered during enrichment (if any)",
     )
 
-    raw_fallback: Optional[Dict[str, Any]] = Field(
+    raw_fallback: dict[str, Any] | None = Field(
         None, description="Original raw data preserved on partial enrichment failure"
     )
 
@@ -182,9 +181,7 @@ class EquationBox(BaseModel):
         return v
 
     @classmethod
-    def from_raw(
-        cls, raw: "RawEquation", label: str, source: Optional["SourceLocation"] = None
-    ) -> "EquationBox":
+    def from_raw(cls, raw: RawEquation, label: str, source: SourceLocation) -> EquationBox:
         """
         Create EquationBox from RawEquation (Stage 1 → Stage 2).
 
@@ -237,7 +234,7 @@ class ParameterBox(BaseModel):
         ...     meaning="friction coefficient controlling damping",
         ...     scope=ParameterScope.GLOBAL,
         ...     constraints=["γ > 0"],
-        ...     source=SourceLocation(...)
+        ...     source=SourceLocation(...),
         ... )
 
     Maps to Lean:
@@ -273,38 +270,32 @@ class ParameterBox(BaseModel):
 
     meaning: str = Field(..., min_length=1, description="Brief meaning/description")
 
-    scope: ParameterScope = Field(
-        default=ParameterScope.LOCAL, description="Parameter scope"
-    )
+    scope: ParameterScope = Field(default=ParameterScope.LOCAL, description="Parameter scope")
 
     # Constraints
-    constraints: List[str] = Field(
+    constraints: list[str] = Field(
         default_factory=list,
         description="Mathematical constraints (e.g., ['γ > 0', 'N >= 2'])",
     )
 
-    default_value: Optional[str] = Field(
-        None, description="Default or typical value (if applicable)"
-    )
+    default_value: str | None = Field(None, description="Default or typical value (if applicable)")
 
     # Context
-    full_definition_text: Optional[str] = Field(
+    full_definition_text: str | None = Field(
         None, description="Complete defining text from source"
     )
 
-    appears_in: List[str] = Field(
+    appears_in: list[str] = Field(
         default_factory=list,
         description="Entities using this parameter (e.g., ['thm-main', 'eq-langevin'])",
     )
 
     # Source
-    source: Optional["SourceLocation"] = Field(
-        None, description="Source location in documentation"
-    )
+    source: SourceLocation = Field(..., description="Source location in documentation")
 
     # Error Tracking
-    validation_errors: List[str] = Field(default_factory=list)
-    raw_fallback: Optional[Dict[str, Any]] = Field(None)
+    validation_errors: list[str] = Field(default_factory=list)
+    raw_fallback: dict[str, Any] | None = Field(None)
 
     @field_validator("label")
     @classmethod
@@ -317,11 +308,11 @@ class ParameterBox(BaseModel):
     @classmethod
     def from_raw(
         cls,
-        raw: "RawParameter",
+        raw: RawParameter,
         label: str,
         domain: ParameterType,
-        source: Optional["SourceLocation"] = None,
-    ) -> "ParameterBox":
+        source: SourceLocation,
+    ) -> ParameterBox:
         """
         Create ParameterBox from RawParameter (Stage 1 → Stage 2).
 
@@ -343,10 +334,7 @@ class ParameterBox(BaseModel):
             ...     ...
             ... )
             >>> param = ParameterBox.from_raw(
-            ...     raw_param,
-            ...     "param-gamma",
-            ...     ParameterType.REAL,
-            ...     source_loc
+            ...     raw_param, "param-gamma", ParameterType.REAL, source_loc
             ... )
         """
         scope = ParameterScope.GLOBAL if raw.scope == "global" else ParameterScope.LOCAL
@@ -382,7 +370,7 @@ class RemarkBox(BaseModel):
         ...     remark_type=RemarkType.REMARK,
         ...     content="The condition v > 0 is essential. Without kinetic energy...",
         ...     relates_to=["thm-convergence", "def-walker"],
-        ...     source=SourceLocation(...)
+        ...     source=SourceLocation(...),
         ... )
 
     Maps to Lean:
@@ -410,24 +398,25 @@ class RemarkBox(BaseModel):
     content: str = Field(..., min_length=1, description="Full text of the remark")
 
     # Cross-References
-    relates_to: List[str] = Field(
+    relates_to: list[str] = Field(
         default_factory=list,
         description="Entities this remark relates to (e.g., ['thm-main', 'def-walker'])",
     )
 
-    provides_intuition_for: List[str] = Field(
+    provides_intuition_for: list[str] = Field(
         default_factory=list,
         description="Entities this remark provides intuition for",
     )
 
     # Source
-    source: Optional["SourceLocation"] = Field(
-        None, description="Source location in documentation"
+    source: SourceLocation = Field(
+        ...,
+        description="Source location in documentation",
     )
 
     # Error Tracking
-    validation_errors: List[str] = Field(default_factory=list)
-    raw_fallback: Optional[Dict[str, Any]] = Field(None)
+    validation_errors: list[str] = Field(default_factory=list)
+    raw_fallback: dict[str, Any] | None = Field(None)
 
     @field_validator("label")
     @classmethod
@@ -439,8 +428,11 @@ class RemarkBox(BaseModel):
 
     @classmethod
     def from_raw(
-        cls, raw: "RawRemark", label: str, source: Optional["SourceLocation"] = None
-    ) -> "RemarkBox":
+        cls,
+        raw: RawRemark,
+        label: str,
+        source: SourceLocation,
+    ) -> RemarkBox:
         """
         Create RemarkBox from RawRemark (Stage 1 → Stage 2).
 
@@ -459,11 +451,7 @@ class RemarkBox(BaseModel):
             ...     full_text="The condition v > 0 is essential...",
             ...     ...
             ... )
-            >>> remark = RemarkBox.from_raw(
-            ...     raw_remark,
-            ...     "remark-kinetic-necessity",
-            ...     source_loc
-            ... )
+            >>> remark = RemarkBox.from_raw(raw_remark, "remark-kinetic-necessity", source_loc)
         """
         # Map string type to enum
         remark_type_map = {
@@ -482,3 +470,274 @@ class RemarkBox(BaseModel):
             source=source,
             raw_fallback=raw.model_dump(),
         )
+
+
+# =============================================================================
+# ENRICHED AXIOM BOX (Refined Data Stage)
+# =============================================================================
+
+
+class EnrichedAxiom(BaseModel):
+    """
+    Axiom in refined_data format (transitional stage between raw and pipeline).
+
+    This schema is MORE PERMISSIVE than the pipeline Axiom schema because
+    refined_data is a work-in-progress format that may have:
+    - Mixed field names (source vs source_location)
+    - Extra enrichment fields not in pipeline
+    - Optional semantic metadata
+
+    Use this for validating files in refined_data/ BEFORE conversion to pipeline_data/.
+
+    Maps to Lean:
+        structure EnrichedAxiom where
+          label : String
+          statement : String
+          mathematical_expression : String
+          name : Option String
+          ...
+    """
+
+    model_config = ConfigDict(frozen=True, extra="allow")  # Allow extra fields
+
+    # Required Core Fields
+    label: str = Field(..., pattern=r"^(axiom-|ax-)[a-z0-9-]+$")
+    statement: str = Field(..., min_length=1)
+    mathematical_expression: str = Field(..., min_length=1)
+
+    # Optional Enrichment Fields
+    name: str | None = None
+    natural_language_statement: str | None = None
+    description: str | None = None
+    entity_type: str | None = None
+    statement_type: str | None = None
+
+    # Framework Context
+    foundational_framework: str | None = Field(default="Fragile Gas Framework")
+    chapter: str | None = None
+    document: str | None = None
+
+    # Axiom-Specific Enrichment
+    assumptions_hypotheses: list[dict[str, Any]] | None = None
+    relations: list[dict[str, Any]] | None = None
+    core_assumption: Any | None = None  # DualStatement or dict
+    parameters: Any | None = None  # List[AxiomaticParameter] or list[dict]
+    condition: Any | None = None  # DualStatement or dict
+    failure_mode_analysis: str | None = None
+
+    # Dependencies
+    input_objects: list[str] = Field(default_factory=list)
+    input_axioms: list[str] = Field(default_factory=list)
+    input_parameters: list[str] = Field(default_factory=list)
+
+    # Internal Structure
+    lemma_dag_edges: list[list[str]] = Field(default_factory=list)
+    internal_lemmas: list[str] = Field(default_factory=list)
+
+    # Source
+    source: SourceLocation = Field(
+        ...,
+        description="Source location in documentation where this axiom is defined",
+    )
+
+    # Status
+    proof_status: str | None = None
+    conclusion_main_result: Any | None = None
+
+    # Fallback
+    raw_fallback: dict[str, Any] = Field(default_factory=dict)
+
+
+# =============================================================================
+# ENRICHED THEOREM BOX (Refined Data Stage)
+# =============================================================================
+
+
+class EnrichedTheorem(BaseModel):
+    """
+    Theorem/Lemma/Proposition in refined_data format.
+
+    This schema handles the transitional format with mixed field names
+    and optional enrichment metadata.
+
+    Use this for validating theorems in refined_data/ BEFORE conversion.
+
+    Maps to Lean:
+        structure EnrichedTheorem where
+          label : String
+          name : String
+          statement_type : String
+          ...
+    """
+
+    model_config = ConfigDict(frozen=True, extra="allow")
+
+    # Required Core Fields
+    label: str = Field(..., pattern=r"^(thm-|lem-|prop-|cor-)[a-z0-9-]+$")
+    name: str = Field(..., min_length=1)
+    statement_type: str  # "theorem", "lemma", "proposition", "corollary"
+
+    # Optional Statement Fields
+    natural_language_statement: str | None = None
+    assumptions: list[Any] = Field(default_factory=list)  # DualStatement or dict or str
+    conclusion: Any | None = None  # DualStatement or dict or str
+
+    # Framework Context
+    chapter: str | None = None
+    document: str | None = None
+
+    # Dependencies
+    input_objects: list[str] = Field(default_factory=list)
+    input_axioms: list[str] = Field(default_factory=list)
+    input_parameters: list[str] = Field(default_factory=list)
+
+    # Output Classification
+    output_type: str | None = None  # TheoremOutputType (may be non-standard in refined)
+
+    # Attributes/Properties (handles both names)
+    attributes_added: list[dict[str, Any]] = Field(default_factory=list)
+    attributes_required: dict[str, list[str]] = Field(default_factory=dict)
+    properties_added: list[dict[str, Any]] | None = None  # Legacy name
+    properties_required: dict[str, list[str]] | None = None  # Legacy name
+
+    # Relationships
+    relations_established: list[Any] = Field(default_factory=list)
+
+    # Internal Structure
+    internal_lemmas: list[str] = Field(default_factory=list)
+    internal_propositions: list[str] = Field(default_factory=list)
+    lemma_dag_edges: list[list[str]] = Field(default_factory=list)
+    uses_definitions: list[str] = Field(default_factory=list)
+
+    # Source
+    source: SourceLocation = Field(
+        ...,
+        description="Source location in documentation where this theorem is defined",
+    )
+
+    # Proof
+    proof: Any | None = None  # ProofBox or dict
+    proof_status: str | None = None
+
+    # Additional Metadata
+    equation_label: str | None = None
+    validation_errors: list[str] = Field(default_factory=list)
+
+    # Fallback
+    raw_fallback: dict[str, Any] | None = None
+
+
+# =============================================================================
+# ENRICHED DEFINITION BOX (Refined Data Stage)
+# =============================================================================
+
+
+class EnrichedDefinition(BaseModel):
+    """
+    Definition in refined_data format (becomes MathematicalObject in pipeline).
+
+    Definitions in refined_data have def-* labels and rich semantic metadata.
+    During conversion, they become obj-* labeled MathematicalObject instances.
+
+    Use this for validating definitions in refined_data/ BEFORE conversion.
+
+    Maps to Lean:
+        structure EnrichedDefinition where
+          label : String
+          name : String
+          entity_type : String
+          ...
+    """
+
+    model_config = ConfigDict(frozen=True, extra="allow")
+
+    # Required Core Fields
+    label: str = Field(..., pattern=r"^(def-|obj-)[a-z0-9-]+$")
+    name: str = Field(..., min_length=1)
+
+    # Type Classification
+    entity_type: str = Field(default="definition")
+    statement_type: str | None = None
+
+    # Content
+    natural_language_statement: str | None = None
+    description: str | None = None
+    formal_statement: str | None = None  # Mathematical expression
+
+    # Framework Context
+    chapter: str | None = None
+    document: str | None = None
+
+    # Dependencies
+    input_objects: list[str] = Field(default_factory=list)
+    input_axioms: list[str] = Field(default_factory=list)
+    input_parameters: list[str] = Field(default_factory=list)
+
+    # Relationships
+    relations: list[dict[str, Any]] = Field(default_factory=list)
+
+    # Source
+    source: SourceLocation = Field(
+        ...,
+        description="Source location in documentation where this definition is defined",
+    )
+
+    # Status
+    proof_status: str | None = None
+
+    # Fallback
+    raw_fallback: dict[str, Any] = Field(default_factory=dict)
+
+
+# =============================================================================
+# ENRICHED OBJECT BOX (Refined Data Stage - Standalone Objects)
+# =============================================================================
+
+
+class EnrichedObject(BaseModel):
+    """
+    Standalone mathematical object in refined_data format (not from definition).
+
+    Similar to EnrichedDefinition but for obj-* labeled entities that weren't
+    originally definitions.
+
+    Use this for validating standalone objects in refined_data/.
+
+    Maps to Lean:
+        structure EnrichedObject where
+          label : String
+          name : String
+          ...
+    """
+
+    model_config = ConfigDict(frozen=True, extra="allow")
+
+    # Required Core Fields
+    label: str = Field(..., pattern=r"^obj-[a-z0-9-]+$")
+    name: str = Field(..., min_length=1)
+
+    # Type Classification
+    entity_type: str | None = Field(default="object")
+    object_type: str | None = None  # ObjectType enum value
+
+    # Content
+    mathematical_expression: str | None = None
+    description: str | None = None
+
+    # Framework Context
+    chapter: str | None = None
+    document: str | None = None
+    tags: list[str] = Field(default_factory=list)
+
+    # Attributes (properties assigned by theorems)
+    current_attributes: list[dict[str, Any]] = Field(default_factory=list)
+    attribute_history: list[dict[str, Any]] = Field(default_factory=list)
+
+    # Source
+    source: SourceLocation = Field(
+        ...,
+        description="Source location in documentation where this object is defined",
+    )
+
+    # Fallback
+    raw_fallback: dict[str, Any] = Field(default_factory=dict)

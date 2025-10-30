@@ -59,9 +59,7 @@ def uniform_particles():
     x = np.linspace(bounds[0], bounds[1], n_side)
     y = np.linspace(bounds[0], bounds[1], n_side)
     X, Y = np.meshgrid(x, y)
-    positions = torch.tensor(
-        np.column_stack([X.ravel()[:N], Y.ravel()[:N]]), dtype=torch.float32
-    )
+    positions = torch.tensor(np.column_stack([X.ravel()[:N], Y.ravel()[:N]]), dtype=torch.float32)
 
     velocities = torch.zeros((N, 2), dtype=torch.float32)
 
@@ -107,9 +105,7 @@ class TestFluidFieldComputer:
         dx = np.array([4.0, -4.0, 0.5])
         dy = np.array([4.0, -4.0, 0.5])
 
-        dx_periodic, dy_periodic = FluidFieldComputer._apply_periodic_distance(
-            dx, dy, domain_size
-        )
+        dx_periodic, dy_periodic = FluidFieldComputer._apply_periodic_distance(dx, dy, domain_size)
 
         # Check minimum image convention
         assert np.all(np.abs(dx_periodic) <= domain_size / 2)
@@ -149,7 +145,7 @@ class TestFluidFieldComputer:
         """Test vorticity computation."""
         positions, velocities = taylor_green_particles
 
-        X, Y, U, V = FluidFieldComputer.compute_velocity_field(
+        _X, _Y, U, V = FluidFieldComputer.compute_velocity_field(
             positions, velocities, grid_resolution=30
         )
 
@@ -171,7 +167,7 @@ class TestFluidFieldComputer:
         """Test divergence computation (should be ~0 for incompressible flow)."""
         positions, velocities = taylor_green_particles
 
-        X, Y, U, V = FluidFieldComputer.compute_velocity_field(
+        _X, _Y, U, V = FluidFieldComputer.compute_velocity_field(
             positions, velocities, grid_resolution=30
         )
 
@@ -194,16 +190,14 @@ class TestFluidFieldComputer:
         """Test stream function computation via integration."""
         positions, velocities = taylor_green_particles
 
-        X, Y, U, V = FluidFieldComputer.compute_velocity_field(
+        _X, _Y, U, V = FluidFieldComputer.compute_velocity_field(
             positions, velocities, grid_resolution=30
         )
 
         dx = 2 * np.pi / 30
         dy = 2 * np.pi / 30
 
-        psi = FluidFieldComputer.compute_stream_function(
-            U, V, dx, dy, method="integration"
-        )
+        psi = FluidFieldComputer.compute_stream_function(U, V, dx, dy, method="integration")
 
         # Check output shape
         assert psi.shape == (30, 30)
@@ -218,16 +212,14 @@ class TestFluidFieldComputer:
         """Test stream function computation via Poisson solver."""
         positions, velocities = taylor_green_particles
 
-        X, Y, U, V = FluidFieldComputer.compute_velocity_field(
+        _X, _Y, U, V = FluidFieldComputer.compute_velocity_field(
             positions, velocities, grid_resolution=30
         )
 
         dx = 2 * np.pi / 30
         dy = 2 * np.pi / 30
 
-        psi = FluidFieldComputer.compute_stream_function(
-            U, V, dx, dy, method="poisson"
-        )
+        psi = FluidFieldComputer.compute_stream_function(U, V, dx, dy, method="poisson")
 
         # Check output shape
         assert psi.shape == (30, 30)
@@ -237,7 +229,7 @@ class TestFluidFieldComputer:
 
     def test_density_field_normalization(self, uniform_particles):
         """Test that density field is properly normalized."""
-        positions, velocities = uniform_particles
+        positions, _velocities = uniform_particles
         N = len(positions)
 
         X, Y, density = FluidFieldComputer.compute_density_field(
@@ -267,32 +259,27 @@ class TestConservationValidator:
 
     def test_mass_conservation_perfect(self, uniform_particles):
         """Test mass conservation with constant particle count."""
-        positions, velocities = uniform_particles
-        N = len(positions)
+        positions, _velocities = uniform_particles
+        len(positions)
 
         # Create history with constant N
         positions_history = [positions for _ in range(10)]
 
-        metric = ConservationValidator.check_mass_conservation(
-            positions_history, tolerance=0.01
-        )
+        metric = ConservationValidator.check_mass_conservation(positions_history, tolerance=0.01)
 
         assert metric.passed, "Should pass with constant particle count"
         assert metric.measured_value < 1e-10, "Variation should be zero"
 
     def test_mass_conservation_violation(self, uniform_particles):
         """Test mass conservation with varying particle count."""
-        positions, velocities = uniform_particles
+        positions, _velocities = uniform_particles
 
         # Create history with varying N
         positions_history = [
-            positions[: int(len(positions) * (0.9 + 0.1 * i / 10))]
-            for i in range(10)
+            positions[: int(len(positions) * (0.9 + 0.1 * i / 10))] for i in range(10)
         ]
 
-        metric = ConservationValidator.check_mass_conservation(
-            positions_history, tolerance=0.05
-        )
+        metric = ConservationValidator.check_mass_conservation(positions_history, tolerance=0.05)
 
         assert not metric.passed, "Should fail with varying particle count"
         assert metric.measured_value > 0.05
@@ -313,7 +300,7 @@ class TestConservationValidator:
 
     def test_energy_budget_constant_energy(self, uniform_particles):
         """Test energy budget with constant kinetic energy."""
-        positions, velocities = uniform_particles
+        _positions, velocities = uniform_particles
 
         # Set constant non-zero velocity
         velocities[:] = 1.0
@@ -350,9 +337,7 @@ class TestFlowAnalyzer:
         positions, velocities = taylor_green_particles
 
         viscosity = 1.0
-        Re = FlowAnalyzer.compute_reynolds_number(
-            positions, velocities, viscosity
-        )
+        Re = FlowAnalyzer.compute_reynolds_number(positions, velocities, viscosity)
 
         # Check reasonable value
         assert Re > 0 and Re < 1000, f"Reynolds number unreasonable: {Re}"
@@ -520,7 +505,7 @@ class TestIntegration:
         velocities = torch.tensor(np.column_stack([u, v]), dtype=torch.float32)
 
         # Compute fields
-        X, Y, U, V = FluidFieldComputer.compute_velocity_field(
+        _X, _Y, U, V = FluidFieldComputer.compute_velocity_field(
             positions, velocities, grid_resolution=40
         )
 
@@ -529,7 +514,7 @@ class TestIntegration:
 
         omega = FluidFieldComputer.compute_vorticity(U, V, dx, dy)
         div = FluidFieldComputer.compute_divergence(U, V, dx, dy)
-        psi = FluidFieldComputer.compute_stream_function(U, V, dx, dy)
+        FluidFieldComputer.compute_stream_function(U, V, dx, dy)
 
         # Flow analysis
         Re = FlowAnalyzer.compute_reynolds_number(positions, velocities, 0.5)
@@ -537,9 +522,7 @@ class TestIntegration:
         stats = FlowAnalyzer.compute_vorticity_statistics(positions, velocities)
 
         # Conservation checks
-        metric_incomp = ConservationValidator.check_incompressibility(
-            positions, velocities
-        )
+        metric_incomp = ConservationValidator.check_incompressibility(positions, velocities)
 
         # Validation
         metric_vel = validator.validate_velocity_field(positions, velocities, t=0.0)

@@ -1,0 +1,82 @@
+{
+  "label": "axiom-raw-value-mean-square-continuity",
+  "type": "axiom",
+  "name": "Axiom of Mean-Square Continuity for Raw Values",
+  "statement": "Axiom of Mean-Square Continuity for Raw Values",
+  "mathematical_expression": "\\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas/01_fragile_gas_framework",
+  "document": "01_fragile_gas_framework.md",
+  "core_assumption": "The expected squared Euclidean distance between two sampled raw value vectors must be deterministically bounded by a function of the input swarm states.",
+  "parameters": [
+    {
+      "symbol": "V",
+      "description": "Raw Value Operator",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathcal{S}_1, \\mathcal{S}_2",
+      "description": "Two swarm states",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathbf{v}_1 \\sim V(\\mathcal{S}_1)",
+      "description": "Independently sampled raw value vector from state 1",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathbf{v}_2 \\sim V(\\mathcal{S}_2)",
+      "description": "Independently sampled raw value vector from state 2",
+      "constraints": null
+    },
+    {
+      "symbol": "F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "description": "Expected Squared Value Error Bound - explicit, deterministic bounding function",
+      "constraints": "Must be provided by user for their chosen operator V"
+    }
+  ],
+  "condition": "The user must prove that their chosen operator V satisfies this axiom by providing an explicit, deterministic Expected Squared Value Error Bound, F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2), such that: \\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+  "failure_mode_analysis": "If an operator violates this axiom, the expected error introduced at the measurement stage can be unbounded. This would lead to a breakdown of continuity in the standardization and cloning decisions, resulting in chaotic and unstable swarm behavior.",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "9.2",
+    "section_name": null,
+    "directive_label": "axiom-raw-value-mean-square-continuity",
+    "equation": null,
+    "line_range": [
+      2111,
+      2123
+    ],
+    "url_fragment": "#axiom-raw-value-mean-square-continuity"
+  },
+  "context": {
+    "motivation": "For the standardization pipeline to be stable, the Raw Value Operator cannot change arbitrarily with small changes in the swarm state. This axiom formalizes the requirement for mean-square continuity.",
+    "role": "Cornerstone of the entire system's stability analysis. The bounding function F_{V,ms} propagates through the continuity proofs of all subsequent operators."
+  },
+  "tags": [
+    "axiom",
+    "continuity",
+    "mean-square",
+    "raw-value",
+    "stability",
+    "measurement",
+    "error-bound",
+    "section-10"
+  ],
+  "relations": {
+    "applies_to": [
+      "def-raw-value-operator"
+    ],
+    "introduces": [
+      "F_{V,ms}"
+    ],
+    "required_for": [
+      "thm-standardization-value-error-mean-square",
+      "thm-global-continuity-patched-standardization"
+    ],
+    "proven_by_strategy": [
+      "axiom-bounded-measurement-variance"
+    ]
+  }
+}

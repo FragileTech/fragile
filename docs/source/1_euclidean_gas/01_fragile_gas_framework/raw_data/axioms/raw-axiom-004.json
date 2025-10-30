@@ -1,0 +1,20 @@
+{
+  "temp_id": "raw-axiom-004",
+  "label_text": "def-axiom-boundary-smoothness",
+  "axiom_name": "Boundary Smoothness",
+  "statement": "*   **Core Assumption:** The boundary of the valid domain, $\\partial \\mathcal{X}_{\\mathrm{valid}}$, must be a $(d-1)$‑dimensional continuously differentiable ($C^1$) submanifold of the $d$‑dimensional state space $\\mathcal{X}$.\n\n*   **Rationale:** This is the standard condition in geometric measure theory ensuring the boundary has Lebesgue measure zero in the ambient space. It is a critical prerequisite for proving that $\\partial \\mathcal{X}_{\\mathrm{valid}}$ is a null set for any absolutely con",
+  "source_section": "§3",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "3",
+    "section_name": null,
+    "directive_label": "def-axiom-boundary-smoothness",
+    "equation": null,
+    "line_range": [
+      704,
+      715
+    ],
+    "url_fragment": "#def-axiom-boundary-smoothness"
+  }
+}

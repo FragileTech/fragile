@@ -1,0 +1,46 @@
+{
+  "label": "axiom-rescale-function",
+  "statement": "Axiom of a Well-Behaved Rescale Function",
+  "mathematical_expression": "g_A: \\mathbb{R} \\to \\mathbb{R}_{>0} \\text{ must satisfy: } (1) \\text{ } C^1 \\text{ smoothness}, (2) \\text{ } g'_A(z) \\ge 0 \\text{ } \\forall z \\in \\mathbb{R}, (3) \\text{ range } (0, g_{A,\\max}], (4) \\text{ } \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of a Well-Behaved Rescale Function",
+  "core_assumption": null,
+  "parameters": [
+    {
+      "symbol": "g_A",
+      "description": "Rescale function that transforms standardized scores (Z-scores) to positive fitness components in the fitness potential operator",
+      "constraints": "g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}"
+    },
+    {
+      "symbol": "z",
+      "description": "Standardized score (Z-score) input to the rescale function",
+      "constraints": "z \\in \\mathbb{R}"
+    },
+    {
+      "symbol": "g_{A,\\max}",
+      "description": "Upper bound constant for the rescale function range - ensures uniform boundedness to prevent infinite fitness",
+      "constraints": "g_{A,\\max} > 0, \\text{ finite}"
+    },
+    {
+      "symbol": "L_{g_A}",
+      "description": "Lipschitz constant for the rescale function - uniform bound on the derivative ensuring global Lipschitz continuity",
+      "constraints": "L_{g_A} = \\sup_{z \\in \\mathbb{R}} |g'_A(z)| < \\infty"
+    }
+  ],
+  "condition": null,
+  "failure_mode_analysis": "Violating any of the four properties makes the algorithm unpredictable or unstable: (1) Without C^1 smoothness, discontinuous jumps in fitness destabilize the cloning dynamics; (2) Without monotonicity (g'_A(z) ≥ 0), higher standardized scores could result in lower fitness, breaking logical ordering and making better walkers less fit; (3) Without uniform boundedness to (0, g_{A,max}], infinite fitness breaks probability calculations and selection stability; (4) Without global Lipschitz continuity (bounded derivative L_{g_A}), small changes in standardized scores can be pathologically amplified, breaking the mean-square continuity of the composite Fitness Potential Operator and leading to unstable swarm behavior.",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "9. Rescale Transformation",
+    "directive_label": "def-axiom-rescale-function",
+    "equation": null,
+    "line_range": [
+      1641,
+      1663
+    ],
+    "url_fragment": null
+  }
+}

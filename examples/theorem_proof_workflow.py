@@ -15,23 +15,22 @@ This shows the organic connection between theorem validation and proof developme
 Version: 1.0.0
 """
 
-import sys
 from pathlib import Path
+import sys
+
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from fragile.proofs import (
-    MathematicalObject,
-    ObjectType,
-    Property,
-    TheoremBox,
-    TheoremOutputType,
     attach_proof_to_theorem,
     create_proof_sketch_from_theorem,
     create_simple_object,
-    create_simple_theorem,
+    ObjectType,
     print_validation_result,
+    Property,
+    TheoremBox,
+    TheoremOutputType,
 )
 
 
@@ -180,10 +179,13 @@ def main():
     # NEW FUNCTION: Attach proof with automatic validation
     try:
         theorem_with_proof = attach_proof_to_theorem(
-            theorem=theorem, proof=proof_sketch, objects=objects, validate=True  # Auto-validates!
+            theorem=theorem,
+            proof=proof_sketch,
+            objects=objects,
+            validate=True,  # Auto-validates!
         )
 
-        print(f"✓ Proof attached successfully!")
+        print("✓ Proof attached successfully!")
         print(f"  Theorem has proof: {theorem_with_proof.has_proof()}")  # NEW METHOD!
         print(f"  Proof status: {theorem_with_proof.proof_status}")  # Updated automatically!
         print(f"  Is proven: {theorem_with_proof.is_proven()}")  # NEW METHOD!
@@ -196,7 +198,7 @@ def main():
         print()
 
     except ValueError as e:
-        print(f"✗ Proof validation failed:")
+        print("✗ Proof validation failed:")
         print(f"  {e}")
         return
 
@@ -245,7 +247,9 @@ def main():
     print("✓ High-level specification (TheoremBox):")
     print(f"  - Theorem: {theorem_with_proof.label}")
     print(f"  - Input objects: {len(theorem_with_proof.input_objects)}")
-    print(f"  - Required properties: {sum(len(props) for props in theorem_with_proof.properties_required.values())}")
+    print(
+        f"  - Required properties: {sum(len(props) for props in theorem_with_proof.properties_required.values())}"
+    )
     print(f"  - Output properties: {len(theorem_with_proof.properties_added)}")
     print()
 
@@ -253,7 +257,9 @@ def main():
     print(f"  - Proof ID: {theorem_with_proof.proof.proof_id}")
     print(f"  - Proof steps: {len(theorem_with_proof.proof.steps)}")
     print(f"  - Sketched steps: {len(theorem_with_proof.proof.get_sketched_steps())}")
-    print(f"  - Expanded steps: {len([s for s in theorem_with_proof.proof.steps if s.is_expanded()])}")
+    print(
+        f"  - Expanded steps: {len([s for s in theorem_with_proof.proof.steps if s.is_expanded()])}"
+    )
     print()
 
     print("✓ Integration status:")

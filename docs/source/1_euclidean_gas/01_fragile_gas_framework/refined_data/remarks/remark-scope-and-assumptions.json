@@ -1,0 +1,11 @@
+{
+  "temp_id": "raw-remark-005",
+  "remark_type": "note",
+  "source_section": "§14 The Perturbation Operator",
+  "label": "remark-scope-and-assumptions",
+  "name": "Scope And Assumptions",
+  "statement_type": "remark",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "content": "This concentration bound relies on Assumption A (in‑step independence) and on the with‑replacement sampling policy in §7.1.1. Implementations that use within‑step dependence (e.g., systematic resampling with a shared uniform) violate these assumptions; in that case use a dependent bounded‑differences inequality (see Appendix) instead of McDiarmid."
+}

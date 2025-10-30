@@ -2,9 +2,17 @@
   "label": "thm-exp-convergence-standalone",
   "name": "Exponential KL Convergence",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence",
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "thm-exp-convergence-standalone",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-exp-convergence-standalone"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -21,7 +29,7 @@
     "delta",
     "C_LSI"
   ],
-  "properties_required": {
+  "attributes_required": {
     "lsi": [
       "Ψ_total satisfies LSI with constant C_LSI"
     ],
@@ -36,7 +44,7 @@
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-exp-convergence-standalone-0-approximation",
@@ -46,14 +54,29 @@
       "target_object": "obj-qsd",
       "established_by": "thm-exp-convergence-standalone",
       "expression": "D_KL(μ_t || π_QSD) ≤ e^{-t/C_LSI} D_KL(μ_0 || π_QSD)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-exp-convergence-standalone",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-exp-convergence-standalone"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

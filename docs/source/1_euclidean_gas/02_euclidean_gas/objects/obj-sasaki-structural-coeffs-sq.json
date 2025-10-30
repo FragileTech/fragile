@@ -4,11 +4,14 @@
   "mathematical_expression": "C_{S,\\mathrm{direct}}^{\\mathrm{sq}} := \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2",
   "object_type": "set",
   "current_attributes": [],
-  "property_history": [],
+  "attribute_history": [],
   "tags": [
     "particle",
     "swarm",
     "stability"
   ],
-  "source": null
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

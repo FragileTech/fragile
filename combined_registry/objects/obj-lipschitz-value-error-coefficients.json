@@ -3,12 +3,21 @@
   "name": "Value Error Coefficients",
   "mathematical_expression": "\\sigma'_{\\min\\,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "swarm"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "obj-lipschitz-value-error-coefficients",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-lipschitz-value-error-coefficients"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

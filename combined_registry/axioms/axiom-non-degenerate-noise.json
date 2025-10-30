@@ -1,0 +1,47 @@
+{
+  "label": "axiom-non-degenerate-noise",
+  "statement": "Walkers must be able to move and explore the state space. The Perturbation and Cloning measures must not be the Dirac delta measure.",
+  "mathematical_expression": "\\sigma > 0 \\text{ and } \\delta > 0",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Non Degenerate Noise",
+  "core_assumption": null,
+  "parameters": [
+    {
+      "symbol": "\\sigma",
+      "description": "Perturbation Noise Scale - controls the scale of random walks during the perturbation step of the algorithm. Appears in the Perturbation Measure P_σ(x, ·). Must be strictly positive to provide full-dimensional diffusion.",
+      "constraints": "\\sigma > 0"
+    },
+    {
+      "symbol": "\\delta",
+      "description": "Cloning Noise Scale - controls the scale of displacement for newly created walkers during the cloning step. Appears in the Cloning Measure Q_δ(x, ·). Must be strictly positive to introduce spatial diversity when cloning occurs.",
+      "constraints": "\\delta > 0"
+    },
+    {
+      "symbol": "\\mathcal{P}_\\sigma(x, \\cdot)",
+      "description": "Perturbation Measure - a Valid Noise Measure (Definition 2.3) that governs random walks during the perturbation step. Must be Feller, have bounded second moment in the algorithmic space Y, satisfy boundary regularity (Axiom 2.2.2), and be non-degenerate (not Dirac delta). For σ > 0, this is typically instantiated as a Gaussian heat kernel or uniform ball measure.",
+      "constraints": "Must satisfy Definition 2.3 (Valid Noise Measure) with σ > 0"
+    },
+    {
+      "symbol": "\\mathcal{Q}_\\delta(x, \\cdot)",
+      "description": "Cloning Measure - a Valid Noise Measure (Definition 2.3) that governs displacement for newly created walkers during the cloning step. Must be Feller, have bounded second moment, satisfy boundary regularity, and be non-degenerate (not Dirac delta). For δ > 0, this is typically instantiated as a Gaussian heat kernel or uniform ball measure centered at the companion's location.",
+      "constraints": "Must satisfy Definition 2.3 (Valid Noise Measure) with δ > 0"
+    }
+  ],
+  "condition": null,
+  "failure_mode_analysis": "If σ = 0 and δ = 0, the swarm cannot introduce new positions into the system, leading to a complete loss of exploration and eventual collapse to a few points.\n\nDetailed failure modes:\n\n1. **σ = 0 only (Deterministic Perturbation)**: The perturbation step Ψ_pert becomes deterministic with P_σ → δ_x (Dirac delta). Walkers cannot escape their current local regions through diffusion. The noise-driven exploration mechanism is completely disabled. If δ > 0, some spatial diversity is preserved through cloning, but the system loses the independent exploration capability provided by perturbation.\n\n2. **δ = 0 only (No Cloning Dispersion)**: The cloning step produces exact copies at the companion's location: Q_δ → δ_x_companion. This removes the cloning operator's ability to introduce spatial diversity when creating new walkers. All cloned walkers appear at identical positions, creating clustering and loss of swarm spread. If σ > 0, perturbation can still provide exploration, but cloning no longer contributes to spatial diversity.\n\n3. **Both σ = 0 and δ = 0 (Complete Degeneracy)**: The swarm becomes a fully deterministic dynamical system with no stochastic exploration whatsoever. The algorithm reduces to a collection of non-interacting particles moving only through deterministic fitness-driven dynamics. The swarm will rapidly collapse to a finite set of fixed points determined entirely by:\n   - Initial conditions (walker positions at t=0)\n   - Deterministic reward landscape gradients\n   - Cloning decisions (which become deterministic given no noise)\n   \n   The system loses all ability to:\n   - Explore new regions of state space\n   - Escape local optima through stochastic jumps\n   - Maintain spatial diversity under fitness pressure\n   - Adapt to changing or uncertain environments\n\n4. **Theoretical Consequence**: When noise measures become Dirac delta (δ_x), the algorithm violates the fundamental principle that optimization requires exploration. The swarm cannot perform the exploration-exploitation tradeoff central to stochastic optimization. Convergence to global optima becomes impossible except in the trivial case where the initial conditions already span the optimal region.\n\n5. **Measure-Theoretic Perspective**: The Dirac delta δ_x is a degenerate probability measure concentrated at a single point. It has zero entropy and zero variance. Valid Noise Measures must have full-dimensional support (non-zero measure on open sets) to satisfy the Axiom of Geometric Consistency (Section 2.3.4) and provide sufficient diffusion for the Axiom of Bounded Second Moment of Perturbation (Section 2.2.3).\n\n6. **Relationship to Other Axioms**:\n   - **Theorem of Guaranteed Active Cloning (Section 2.4.1)**: Requires σ > 0 or δ > 0 to ensure p_clone,min > 0. Without noise, the swarm can enter states where everyone has identical fitness and no cloning occurs.\n   - **Axiom of Geometric Consistency (Section 2.3.4)**: Requires noise measures to be unbiased and isotropic. Dirac delta is maximally biased (all mass at one point) and violates κ_drift = 0 and κ_anisotropy = 1 conditions.\n   - **Axiom of Bounded Second Moment (Section 2.2.3)**: Technically satisfied by Dirac delta (M_pert = 0), but the bound becomes vacuous. The noise provides no displacement, making continuity analysis meaningless.\n\n7. **Empirical Failure Signature**: If σ, δ → 0, experiments will show:\n   - Rapid collapse of swarm diameter: diam(swarm) → 0\n   - Loss of statistical diversity: Var(fitness) → 0\n   - Premature convergence to suboptimal solutions\n   - Inability to track moving optima\n   - Deterministic trajectories highly sensitive to initialization\n\n8. **Recovery Strategy**: If accidentally set to σ = 0 or δ = 0, immediately:\n   - Reset σ ≥ σ_min > 0 (e.g., σ_min = 0.01 × diam(state space))\n   - Reset δ ≥ δ_min > 0 (e.g., δ_min = 0.01 × σ)\n   - Restart from a spatially diverse initialization\n   - Monitor swarm diameter and fitness variance for recovery",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.3.2",
+    "section_name": null,
+    "directive_label": "def-axiom-non-degenerate-noise",
+    "equation": null,
+    "line_range": [
+      860,
+      867
+    ],
+    "url_fragment": "axiom-of-non-degenerate-noise"
+  }
+}

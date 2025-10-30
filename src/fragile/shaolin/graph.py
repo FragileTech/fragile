@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import panel as pn
 import param
+from shaolin.utils import find_closest_point
 
 # import torch
 from fragile.shaolin.dimension_mapper import (
@@ -21,7 +22,6 @@ from fragile.shaolin.dimension_mapper import (
     SizeDim,
     widget_priority,
 )
-from shaolin.utils import find_closest_point
 
 
 Value = np.ndarray | list  # | torch.Tensor

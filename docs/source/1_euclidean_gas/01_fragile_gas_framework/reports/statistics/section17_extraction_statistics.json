@@ -1,0 +1,101 @@
+{
+  "section": "Section 17: The Revival State",
+  "source_document": "01_fragile_gas_framework.md",
+  "source_lines": "4555-4626",
+  "extraction_date": "2025-10-27",
+  "total_lines": 72,
+  "entities_extracted": {
+    "theorems": 1,
+    "proofs": 1,
+    "objects": 2,
+    "remarks": 2,
+    "axioms": 0,
+    "lemmas": 0,
+    "definitions": 0,
+    "equations": 0,
+    "parameters": 0
+  },
+  "total_entities": 6,
+  "theorem_details": [
+    {
+      "label": "thm-k1-revival-state",
+      "name": "Theorem of Guaranteed Revival from a Single Survivor",
+      "type": "theorem",
+      "has_proof": true,
+      "proof_label": "proof-thm-k1-revival-state"
+    }
+  ],
+  "object_details": [
+    {
+      "label": "obj-revival-state",
+      "name": "Revival State",
+      "type": "mathematical_object"
+    },
+    {
+      "label": "obj-revival-score-ratio",
+      "name": "Revival Score Ratio",
+      "type": "mathematical_object"
+    }
+  ],
+  "remark_details": [
+    {
+      "label": "remark-phoenix-effect",
+      "name": "The Phoenix Effect",
+      "type": "remark"
+    },
+    {
+      "label": "remark-extinction-risk-shift",
+      "name": "Extinction Risk Shifts to Single Event",
+      "type": "remark"
+    }
+  ],
+  "dependencies_referenced": [
+    "def-axiom-guaranteed-revival",
+    "def-companion-selection-measure",
+    "def-cloning-score-function",
+    "lem-potential-boundedness",
+    "def-swarm-update-procedure",
+    "def-perturbation-operator",
+    "def-status-update-operator",
+    "def-swarm-state",
+    "def-alive-set",
+    "def-dead-set"
+  ],
+  "key_parameters": [
+    "kappa_revival",
+    "epsilon_clone",
+    "p_max",
+    "eta",
+    "alpha",
+    "beta",
+    "V_pot_min"
+  ],
+  "key_equations": [
+    "S_j = 0 (survivor cloning score)",
+    "S_i = V_j / epsilon_clone (dead walker cloning score)",
+    "kappa_revival = eta^(alpha+beta) / (epsilon_clone * p_max) > 1",
+    "S_i >= eta^(alpha+beta) / epsilon_clone > p_max >= T_clone"
+  ],
+  "section_topics": [
+    "Revival state dynamics",
+    "Single survivor behavior",
+    "Phoenix effect",
+    "Guaranteed revival mechanism",
+    "Near-extinction recovery",
+    "Deterministic cloning in k=1 state",
+    "Extinction risk transformation"
+  ],
+  "extraction_quality": {
+    "completeness": "complete",
+    "detail_level": "high",
+    "cross_references": "comprehensive",
+    "mathematical_rigor": "formal"
+  },
+  "notes": [
+    "Section focuses on critical boundary condition where only one walker survives",
+    "Main result is deterministic revival mechanism ('phoenix effect')",
+    "Proof uses case analysis for survivor vs. dead walkers",
+    "Key insight: extinction risk shifts from gradual to simultaneous event",
+    "Section numbered as 17 but theorem subsection labeled as 16.1 (possible numbering inconsistency in source)"
+  ]
+}

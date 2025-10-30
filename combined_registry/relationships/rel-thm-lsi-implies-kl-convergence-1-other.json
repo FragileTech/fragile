@@ -6,12 +6,20 @@
   "target_object": "obj-markov-kernel",
   "established_by": "thm-lsi-implies-kl-convergence",
   "expression": "Standard LSI → exponential KL convergence",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence"
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "thm-lsi-implies-kl-convergence",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-lsi-implies-kl-convergence"
+  },
+  "chapter": null,
+  "document": null
 }

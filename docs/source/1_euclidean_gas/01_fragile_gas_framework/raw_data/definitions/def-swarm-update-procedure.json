@@ -1,0 +1,24 @@
+{
+  "label": "def-swarm-update-procedure",
+  "type": "definition",
+  "name": "Swarm Update Procedure",
+  "section": "18",
+  "subsection": "",
+  "source_file": "01_fragile_gas_framework.md",
+  "source_lines": "4627-5086",
+  "extraction_date": "2025-10-27",
+  "status": "extracted",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17.1",
+    "section_name": null,
+    "directive_label": "def-swarm-update-procedure",
+    "equation": null,
+    "line_range": [
+      4639,
+      4697
+    ],
+    "url_fragment": "#def-swarm-update-procedure"
+  }
+}

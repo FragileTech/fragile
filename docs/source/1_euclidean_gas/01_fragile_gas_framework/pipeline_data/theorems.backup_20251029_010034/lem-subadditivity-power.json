@@ -1,0 +1,29 @@
+{
+  "label": "lem-subadditivity-power",
+  "name": "Subadditivity of Fractional Powers",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "General Result",
+  "attributes_added": [],
+  "relations_established": [
+    "Subadditivity property for fractional powers with 0 < α ≤ 1"
+  ],
+  "natural_language_statement": "For α ∈ (0, 1], the function t ↦ t^α is subadditive: (a + b)^α ≤ a^α + b^α for all a, b ≥ 0.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

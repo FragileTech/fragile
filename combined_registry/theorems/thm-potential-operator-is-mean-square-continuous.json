@@ -1,0 +1,36 @@
+{
+  "label": "thm-potential-operator-is-mean-square-continuous",
+  "name": "The Fitness Potential Operator is Mean-Square Continuous",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-rescale-lipschitz-constants",
+    "obj-raw-value-operator",
+    "obj-potential-bounds"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity",
+    "axiom-rescale-function"
+  ],
+  "input_parameters": [
+    "param-F-V-ms"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

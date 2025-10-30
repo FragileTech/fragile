@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "statistics": {
+    "total_objects": 0,
+    "counts_by_type": {
+      "MathematicalObject": 0,
+      "Axiom": 0,
+      "Parameter": 0,
+      "Attribute": 0,
+      "Relationship": 0,
+      "TheoremBox": 0
+    },
+    "total_tags": 0,
+    "all_tags": []
+  },
+  "all_ids": [],
+  "all_tags": []
+}

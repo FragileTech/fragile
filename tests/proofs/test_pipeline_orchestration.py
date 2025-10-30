@@ -4,19 +4,20 @@ Tests for Pipeline Orchestration.
 Tests the end-to-end Extract-then-Enrich pipeline with mocked LLM calls.
 """
 
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 
 from fragile.proofs.llm import (
+    enrich_and_assemble,
+    MathematicalDocument,
+    merge_sections,
+    process_document,
     process_section,
     process_sections_parallel,
-    merge_sections,
-    enrich_and_assemble,
-    process_document,
 )
-from fragile.proofs.tools import DocumentSection, DirectiveHint
-from fragile.proofs.staging_types import StagingDocument, RawAxiom, RawTheorem, RawDefinition
-from fragile.proofs.llm import MathematicalDocument
+from fragile.proofs.staging_types import RawAxiom, RawDefinition, RawTheorem, StagingDocument
+from fragile.proofs.tools import DirectiveHint, DocumentSection
 
 
 # Sample markdown for testing
@@ -50,7 +51,7 @@ All walkers satisfy displacement bounds.
 class TestProcessSection:
     """Tests for process_section() with mocked LLM."""
 
-    @patch('fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm')
+    @patch("fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm")
     def test_process_section_basic(self, mock_llm):
         """Test processing a single section."""
         # Mock LLM response
@@ -63,7 +64,7 @@ class TestProcessSection:
             "citations": [],
             "equations": [],
             "parameters": [],
-            "remarks": []
+            "remarks": [],
         }
 
         # Create a simple section
@@ -74,7 +75,7 @@ class TestProcessSection:
             start_line=1,
             end_line=10,
             content="Test content",
-            directives=[]
+            directives=[],
         )
 
         # Process
@@ -88,7 +89,7 @@ class TestProcessSection:
         assert staging_doc.section_id == "§1"
         assert staging_doc.total_entities == 0
 
-    @patch('fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm')
+    @patch("fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm")
     def test_process_section_with_entities(self, mock_llm):
         """Test processing section with extracted entities."""
         # Mock LLM response with entities
@@ -100,7 +101,7 @@ class TestProcessSection:
                     "label_text": "def-walker",
                     "term": "Walker",
                     "statement_text": "A walker is a tuple",
-                    "source_section": "§1"
+                    "source_section": "§1",
                 }
             ],
             "theorems": [
@@ -109,7 +110,7 @@ class TestProcessSection:
                     "label_text": "thm-test",
                     "name": "Test Theorem",
                     "statement_text": "Test statement",
-                    "source_section": "§1"
+                    "source_section": "§1",
                 }
             ],
             "proofs": [],
@@ -117,7 +118,7 @@ class TestProcessSection:
             "citations": [],
             "equations": [],
             "parameters": [],
-            "remarks": []
+            "remarks": [],
         }
 
         section = DocumentSection(
@@ -127,7 +128,7 @@ class TestProcessSection:
             start_line=1,
             end_line=10,
             content="Content",
-            directives=[]
+            directives=[],
         )
 
         staging_doc = process_section(section)
@@ -136,7 +137,7 @@ class TestProcessSection:
         assert len(staging_doc.theorems) == 1
         assert staging_doc.total_entities == 2
 
-    @patch('fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm')
+    @patch("fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm")
     def test_process_section_with_directives(self, mock_llm):
         """Test that directive hints are passed to LLM."""
         mock_llm.return_value = {
@@ -148,7 +149,7 @@ class TestProcessSection:
             "citations": [],
             "equations": [],
             "parameters": [],
-            "remarks": []
+            "remarks": [],
         }
 
         # Create section with directives
@@ -158,7 +159,7 @@ class TestProcessSection:
             start_line=5,
             end_line=10,
             content="Test content",
-            section="§1"
+            section="§1",
         )
 
         section = DocumentSection(
@@ -168,10 +169,10 @@ class TestProcessSection:
             start_line=1,
             end_line=20,
             content="Content",
-            directives=[directive]
+            directives=[directive],
         )
 
-        staging_doc = process_section(section)
+        process_section(section)
 
         # Verify LLM was called with directive hints in the text
         call_args = mock_llm.call_args
@@ -179,7 +180,7 @@ class TestProcessSection:
         # Should include directive hints
         assert "Directive Hints" in call_args.kwargs["section_text"]
 
-    @patch('fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm')
+    @patch("fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm")
     def test_process_section_error_handling(self, mock_llm):
         """Test error handling when LLM fails."""
         # Mock LLM to raise exception
@@ -192,7 +193,7 @@ class TestProcessSection:
             start_line=1,
             end_line=10,
             content="Content",
-            directives=[]
+            directives=[],
         )
 
         # Should return empty staging document on error
@@ -205,7 +206,7 @@ class TestProcessSection:
 class TestProcessSectionsParallel:
     """Tests for process_sections_parallel()."""
 
-    @patch('fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm')
+    @patch("fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm")
     def test_process_multiple_sections(self, mock_llm):
         """Test processing multiple sections."""
         # Mock LLM to return different data for each call
@@ -219,7 +220,7 @@ class TestProcessSectionsParallel:
                 "citations": [],
                 "equations": [],
                 "parameters": [],
-                "remarks": []
+                "remarks": [],
             },
             {
                 "section_id": "§2",
@@ -230,13 +231,13 @@ class TestProcessSectionsParallel:
                 "citations": [],
                 "equations": [],
                 "parameters": [],
-                "remarks": []
-            }
+                "remarks": [],
+            },
         ]
 
         sections = [
             DocumentSection("§1", "Section 1", 1, 1, 10, "Content 1", []),
-            DocumentSection("§2", "Section 2", 1, 11, 20, "Content 2", [])
+            DocumentSection("§2", "Section 2", 1, 11, 20, "Content 2", []),
         ]
 
         staging_docs = process_sections_parallel(sections)
@@ -269,7 +270,7 @@ class TestMergeSections:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
 
         merged = merge_sections([staging])
@@ -285,7 +286,7 @@ class TestMergeSections:
             label_text="axiom-1",
             name="Axiom 1",
             core_assumption_text="Test",
-            source_section="§1"
+            source_section="§1",
         )
         staging1 = StagingDocument(
             section_id="§1",
@@ -296,7 +297,7 @@ class TestMergeSections:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
 
         # Section 2 with theorem
@@ -305,7 +306,7 @@ class TestMergeSections:
             label_text="thm-1",
             name="Theorem 1",
             statement_text="Test",
-            source_section="§2"
+            source_section="§2",
         )
         staging2 = StagingDocument(
             section_id="§2",
@@ -316,7 +317,7 @@ class TestMergeSections:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
 
         merged = merge_sections([staging1, staging2])
@@ -340,7 +341,7 @@ class TestEnrichAndAssemble:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
 
         math_doc = enrich_and_assemble(staging, chapter="1_euclidean_gas")
@@ -359,7 +360,7 @@ class TestEnrichAndAssemble:
             core_assumption_text="All walkers satisfy bounds",
             parameters_text=["ε > 0"],
             condition_text="When Δt < ε²",
-            source_section="§1"
+            source_section="§1",
         )
 
         staging = StagingDocument(
@@ -371,7 +372,7 @@ class TestEnrichAndAssemble:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
 
         math_doc = enrich_and_assemble(staging, chapter="1_euclidean_gas", document="01_framework")
@@ -388,7 +389,7 @@ class TestEnrichAndAssemble:
             label_text="axiom-test",
             name="Test",
             core_assumption_text="Test",
-            source_section="§1"
+            source_section="§1",
         )
 
         definition = RawDefinition(
@@ -396,7 +397,7 @@ class TestEnrichAndAssemble:
             label_text="def-walker",
             term="Walker",
             statement_text="A walker is...",
-            source_section="§1"
+            source_section="§1",
         )
 
         theorem = RawTheorem(
@@ -404,7 +405,7 @@ class TestEnrichAndAssemble:
             label_text="thm-conv",
             name="Convergence",
             statement_text="The system converges",
-            source_section="§1"
+            source_section="§1",
         )
 
         staging = StagingDocument(
@@ -416,7 +417,7 @@ class TestEnrichAndAssemble:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
 
         math_doc = enrich_and_assemble(staging)
@@ -438,7 +439,7 @@ class TestEnrichAndAssemble:
             label_text="axiom-test",
             name="Test",
             core_assumption_text="Test",
-            source_section="§1"
+            source_section="§1",
         )
 
         staging = StagingDocument(
@@ -450,7 +451,7 @@ class TestEnrichAndAssemble:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
 
         error_logger = create_logger_for_document("test_doc")
@@ -463,7 +464,7 @@ class TestEnrichAndAssemble:
 class TestProcessDocument:
     """Tests for process_document() end-to-end."""
 
-    @patch('fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm')
+    @patch("fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm")
     def test_process_document_end_to_end(self, mock_llm):
         """Test complete document processing pipeline."""
         # Mock LLM to return entities for each section
@@ -475,7 +476,7 @@ class TestProcessDocument:
                     "label_text": "def-walker",
                     "term": "Walker",
                     "statement_text": "A walker is a tuple",
-                    "source_section": "test"
+                    "source_section": "test",
                 }
             ],
             "theorems": [],
@@ -488,20 +489,20 @@ class TestProcessDocument:
                     "core_assumption_text": "All walkers satisfy bounds",
                     "parameters_text": [],
                     "condition_text": "",
-                    "source_section": "test"
+                    "source_section": "test",
                 }
             ],
             "citations": [],
             "equations": [],
             "parameters": [],
-            "remarks": []
+            "remarks": [],
         }
 
         math_doc = process_document(
             markdown_text=SAMPLE_MARKDOWN,
             document_id="test_doc",
             chapter="1_euclidean_gas",
-            enable_error_logging=False  # Disable for test
+            enable_error_logging=False,  # Disable for test
         )
 
         # Verify document structure
@@ -514,7 +515,7 @@ class TestProcessDocument:
         # Should have enriched some entities
         assert math_doc.total_enriched_entities > 0
 
-    @patch('fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm')
+    @patch("fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm")
     def test_process_document_with_file_path(self, mock_llm):
         """Test process_document with file_path metadata."""
         mock_llm.return_value = {
@@ -526,7 +527,7 @@ class TestProcessDocument:
             "citations": [],
             "equations": [],
             "parameters": [],
-            "remarks": []
+            "remarks": [],
         }
 
         math_doc = process_document(
@@ -534,12 +535,12 @@ class TestProcessDocument:
             document_id="test",
             chapter="1_euclidean_gas",
             file_path="/path/to/test.md",
-            enable_error_logging=False
+            enable_error_logging=False,
         )
 
         assert math_doc.file_path == "/path/to/test.md"
 
-    @patch('fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm')
+    @patch("fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm")
     def test_process_document_enrichment_statistics(self, mock_llm):
         """Test that enrichment statistics are calculated correctly."""
         # Mock to return 10 raw entities
@@ -556,21 +557,21 @@ class TestProcessDocument:
                     "core_assumption_text": "Test",
                     "parameters_text": [],
                     "condition_text": "",
-                    "source_section": "test"
+                    "source_section": "test",
                 }
                 for i in range(10)
             ],
             "citations": [],
             "equations": [],
             "parameters": [],
-            "remarks": []
+            "remarks": [],
         }
 
         math_doc = process_document(
             markdown_text="# Test\n\nContent",
             document_id="test",
             chapter="1_euclidean_gas",
-            enable_error_logging=False
+            enable_error_logging=False,
         )
 
         # All 10 axioms should be enriched
@@ -582,7 +583,7 @@ class TestProcessDocument:
 class TestIntegration:
     """Integration tests for complete workflow."""
 
-    @patch('fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm')
+    @patch("fragile.proofs.llm.pipeline_orchestration.call_main_extraction_llm")
     def test_complete_workflow(self, mock_llm):
         """Test complete workflow from markdown to enriched document."""
         # Mock LLM responses
@@ -594,7 +595,7 @@ class TestIntegration:
                     "label_text": "def-walker",
                     "term": "Walker",
                     "statement_text": "A walker is a tuple (x, v, s)",
-                    "source_section": "test"
+                    "source_section": "test",
                 }
             ],
             "theorems": [
@@ -603,7 +604,7 @@ class TestIntegration:
                     "label_text": "thm-convergence",
                     "name": "Convergence Theorem",
                     "statement_text": "The system converges exponentially",
-                    "source_section": "test"
+                    "source_section": "test",
                 }
             ],
             "proofs": [],
@@ -616,13 +617,13 @@ class TestIntegration:
                     "parameters_text": ["ε > 0", "Δt"],
                     "condition_text": "When Δt < ε²",
                     "failure_mode_analysis_text": "Teleportation behavior",
-                    "source_section": "test"
+                    "source_section": "test",
                 }
             ],
             "citations": [],
             "equations": [],
             "parameters": [],
-            "remarks": []
+            "remarks": [],
         }
 
         # Process document
@@ -631,7 +632,7 @@ class TestIntegration:
             document_id="01_framework",
             chapter="1_euclidean_gas",
             file_path="/path/to/01_framework.md",
-            enable_error_logging=False
+            enable_error_logging=False,
         )
 
         # Verify complete structure

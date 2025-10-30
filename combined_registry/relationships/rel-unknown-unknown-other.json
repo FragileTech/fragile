@@ -6,12 +6,20 @@
   "target_object": "obj-unknown",
   "established_by": "lem-qsd-lower-bound",
   "expression": "{'type': 'bound', 'object': 'pi_QSD', 'property': 'uniform-lower-bound', 'value': 'c_pi = c_sigma_x_R * m_eq'}",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-dict"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence"
+  "source": {
+    "document_id": "11_hk_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+    "section": null,
+    "directive_label": "lem-qsd-lower-bound",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-qsd-lower-bound"
+  },
+  "chapter": null,
+  "document": null
 }

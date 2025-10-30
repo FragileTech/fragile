@@ -1,0 +1,8 @@
+{
+  "label": "param-l-sigma'-reg",
+  "name": "L_sigma'_reg",
+  "symbol": "L_sigma'_reg",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

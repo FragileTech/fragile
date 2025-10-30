@@ -1,0 +1,38 @@
+{
+  "label": "lem-probabilistic-bound-perturbation-displacement-reproof",
+  "name": "Probabilistic Bound on Total Perturbation-Induced Displacement",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-stochastic-fluctuation-bound",
+    "obj-n-particle-displacement-metric",
+    "obj-mean-displacement-bound",
+    "obj-perturbation-operator"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-bounded-second-moment-perturbation"
+  ],
+  "input_parameters": [
+    "param-failure-probability-delta"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Probabilistic bound on perturbation displacement using McDiarmid's inequality"
+  ],
+  "natural_language_statement": "With high probability (under concentration inequalities), the total perturbation-induced displacement across all walkers is bounded by a function of the number of walkers and perturbation scale.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

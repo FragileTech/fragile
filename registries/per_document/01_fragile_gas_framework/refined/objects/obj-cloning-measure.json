@@ -1,0 +1,36 @@
+{
+  "label": "obj-cloning-measure",
+  "name": "Cloning Measure",
+  "mathematical_expression": "\\mathcal{Q}_\\delta(x, \\cdot)",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "cloning",
+    "measure",
+    "measure-theory",
+    "particle-system",
+    "stochastic"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§5.1",
+    "directive_label": "def-cloning-measure",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-cloning-measure",
+  "definition": "The Cloning Measure, denoted Q_δ(x, ·), is a probability measure that governs the random displacement for newly created walkers during the cloning step. It is parameterized by a cloning noise scale δ > 0 and is centered on the position x of the parent walker from which the new walker is cloned.",
+  "mathematical_properties": "Must be a 'Valid Noise Measure' as per the framework's definition. Must satisfy the Axiom of Bounded Second Moment, ensuring the expected displacement is finite. Must satisfy the Axiom of Boundary Regularity, ensuring smooth behavior near the domain's boundaries.",
+  "dependencies": [
+    "axiom-bounded-second-moment-perturbation",
+    "axiom-boundary-regularity"
+  ],
+  "typical_values": {
+    "canonical_examples": "Gaussian (Heat Kernel) measure with covariance δ²I or uniform probability measure over a ball of radius δ centered at the parent walker's position"
+  }
+}

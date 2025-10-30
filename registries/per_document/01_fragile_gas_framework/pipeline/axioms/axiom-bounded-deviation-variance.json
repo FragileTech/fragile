@@ -1,0 +1,22 @@
+{
+  "label": "axiom-bounded-deviation-variance",
+  "statement": "The sum of squared deviations of the raw input values from the aggregator's computed mean must be controllably related to the variance computed by the aggregator itself.",
+  "mathematical_expression": "$$\n\\sum_{i \\in \\mathcal{A}} (v_i - \\mu(\\mathcal{S}, \\mathbf{v}_{\\mathcal{A}}))^2 \\le \\kappa_{\\text{var}} \\cdot |\\mathcal{A}| \\cdot \\text{Var}[M(\\mathcal{S}, \\mathbf{v}_{\\mathcal{A}})]\n$$",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Bounded Deviation Variance",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.3.4",
+    "directive_label": "axiom-bounded-deviation-variance",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "label": "lem-cloning-probability-lipschitz",
+  "name": "Lipschitz Continuity of the Conditional Cloning Probability Function",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.2",
+    "section_name": null,
+    "directive_label": "lem-cloning-probability-lipschitz",
+    "equation": null,
+    "line_range": [
+      4318,
+      4339
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-cloning-probability-lipschitz-constants",
+    "obj-potential-bounds",
+    "def-alive-set-potential-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Lipschitz Continuity",
+  "attributes_added": [],
+  "relations_established": [
+    "Lipschitz constants: L_{pi,c} = 1/(p_max*epsilon_clone), L_{pi,i} = (V_pot,max + epsilon_clone)/(p_max*epsilon_clone^2)",
+    "Conditional cloning probability pi(v_c, v_i) is Lipschitz continuous"
+  ],
+  "natural_language_statement": "The **Conditional Cloning Probability Function** $\\pi(v_c, v_i)$ is Lipschitz continuous with respect to its two inputs. For any two pairs of potentials $(v_{c1}, v_{i1})$ and $(v_{c2}, v_{i2})$:\n\n$$\n|\\pi(v_{c1}, v_{i1}) - \\pi(v_{c2}, v_{i2})| \\le L_{\\pi,c}|v_{c1} - v_{c2}| + L_{\\pi,i}|v_{i1} - v_{i2}|\n$$\n\nwhere the **Cloning Probability Lipschitz Constants** can be chosen uniformly over both alive and dead walkers by the worst‑case (dead‑walker) bounds:\n\n- **Companion Potential Lipschitz Constant ($L_{\\pi,c}$):**\n$$\nL_{\\pi,c} := \\frac{1}{p_{\\max} \\cdot \\varepsilon_{\\text{clone}}}\n$$\n\n- **Walker Potential Lipschitz Constant ($L_{\\pi,i}$):**\n$$\nL_{\\pi,i} := \\frac{V_{\\text{pot,max}} + \\varepsilon_{\\text{clone}}}{p_{\\max} \\cdot \\varepsilon_{\\text{clone}}^{\\,2}}\n$$",
+  "assumptions": [],
+  "conclusion": "The cloning probability function is Lipschitz continuous with explicit constants",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

@@ -1,0 +1,25 @@
+{
+  "label": "obj-one-step-ms-continuity-coefficients",
+  "name": "One-Step Mean-Square Continuity Coefficients",
+  "statement_type": "object",
+  "mathematical_expression": "Collection of coefficients controlling one-step mean-square continuity of the complete Swarm Update Operator, assembled from intermediate cloning and perturbation stages.",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-one-step-ms-continuity-coefficients",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17.2",
+    "line_range": [
+      4689,
+      4750
+    ],
+    "directive_label": "obj-one-step-ms-continuity-coefficients",
+    "equation": null,
+    "url_fragment": null
+  }
+}

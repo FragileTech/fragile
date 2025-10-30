@@ -1,0 +1,58 @@
+{
+  "label": "cor-closed-form-lipschitz-composite",
+  "name": "Closed-form bound for L_{g_A∘z} (empirical aggregator)",
+  "statement_type": "TheoremBox",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "9. Rescale Transformation",
+    "directive_label": "cor-closed-form-lipschitz-composite",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "verified",
+  "input_objects": [
+    "obj-standardization-operator-n-dimensional",
+    "obj-asymmetric-rescale-function"
+  ],
+  "input_axioms": [
+    "def-axiom-rescale-function"
+  ],
+  "input_parameters": [
+    "k",
+    "V_max",
+    "L_P",
+    "L_sigma'_reg"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    {
+      "source": "cor-closed-form-lipschitz-composite",
+      "target": "cor-chain-rule-sigma-reg-var"
+    },
+    {
+      "source": "cor-closed-form-lipschitz-composite",
+      "target": "thm-rescale-function-lipschitz"
+    },
+    {
+      "source": "cor-closed-form-lipschitz-composite",
+      "target": "lem-empirical-aggregator-properties"
+    }
+  ],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "For the empirical aggregator, the composite map for the standardized score, g_A ∘ z, is globally Lipschitz. Its Lipschitz constant has a closed-form bound that depends on the properties of the cubic patch, the regularized standardization, walker velocities, and the number of walkers.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": {}
+}

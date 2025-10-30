@@ -3,13 +3,14 @@
   "name": "Regularized Standard Deviation (Implementation)",
   "mathematical_expression": "\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}",
   "object_type": "set",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "stability",
     "variance"
   ],
   "source": null,
-  "chapter": "2_geometric_gas",
-  "document": "13_geometric_gas_c3_regularity"
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

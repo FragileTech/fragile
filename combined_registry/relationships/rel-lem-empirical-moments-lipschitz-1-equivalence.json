@@ -1,0 +1,25 @@
+{
+  "label": "rel-lem-empirical-moments-lipschitz-1-equivalence",
+  "relationship_type": "equivalence",
+  "bidirectional": true,
+  "source_object": "obj-aggregator-lipschitz-constants",
+  "target_object": "obj-swarm-aggregation-operator-axiomatic",
+  "established_by": "lem-empirical-moments-lipschitz",
+  "expression": "Empirical second moment is Lipschitz: L_{m2,M} = 2V_max/sqrt(k)",
+  "attributes": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "lem-empirical-moments-lipschitz",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-empirical-moments-lipschitz"
+  },
+  "chapter": null,
+  "document": null
+}

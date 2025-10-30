@@ -1,0 +1,22 @@
+{
+  "label": "axiom-boundary-regularity",
+  "statement": "The marginal probability of a single walker becoming invalid after the perturbation and status update stages must be a smooth (Hölder continuous) function of the initial N-particle swarm state.",
+  "mathematical_expression": "$$\n|P(s_{\\text{out},i}=0 | \\mathcal{S}_1) - P(s_{\\text{out},i}=0 | \\mathcal{S}_2)| \\le L_{\\text{death}} \\cdot d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^{\\alpha_B}\n$$",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Boundary Regularity",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.1.2",
+    "directive_label": "axiom-boundary-regularity",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

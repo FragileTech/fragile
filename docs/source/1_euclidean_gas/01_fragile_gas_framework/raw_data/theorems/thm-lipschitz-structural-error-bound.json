@@ -1,0 +1,45 @@
+{
+  "label": "thm-lipschitz-structural-error-bound",
+  "name": "Bounding the Squared Structural Error",
+  "statement": "Let $\\mathbf{v}$ be a fixed raw value vector. Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. The squared structural error, $E_S^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}) = \\|z(\\mathcal{S}_1, \\mathbf{v}, M) - z(\\mathcal{S}_2, \\mathbf{v}, M)\\|_2^2$, is deterministically bounded as follows:\n\n$$\nE_{S}^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}) \\le C_{S,\\text{direct}} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2\n$$\n\nwhere $C_{S,\\text{direct}}$ and $C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2)$ are the **Structural Error Coefficients**, which are deterministic, finite coefficients formally defined in def-lipschitz-structural-error-coefficients. The presence of the $n_c^2$ term confirms that the error is not linearly proportional to the number of status changes.",
+  "proof_sketch": "The proof decomposes the total structural error vector into two orthogonal components: a \"direct\" error from walkers whose status changes (bounded linearly in $n_c$), and an \"indirect\" error affecting walkers whose status is stable (bounded quadratically in $n_c$ through the change in statistical moments). The structural continuity functions for the mean and regularized standard deviation are used to establish the bounds.",
+  "source_section": "12",
+  "source_document": "01_fragile_gas_framework.md",
+  "dependencies": [
+    "def-lipschitz-structural-error-coefficients",
+    "lem-stats-structural-continuity",
+    "thm-z-score-norm-bound"
+  ],
+  "tags": [
+    "holder",
+    "structural-error",
+    "continuity",
+    "deterministic",
+    "quadratic"
+  ],
+  "input_objects": [
+    "obj-standardization-total-value-error-coefficient",
+    "obj-aggregator-lipschitz-constants",
+    "obj-swarm-aggregation-operator-axiomatic"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "output_type": "Bound",
+  "relations_established": [
+    "Structural error component is Lipschitz bounded"
+  ],
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "12",
+    "section_name": null,
+    "directive_label": "thm-lipschitz-structural-error-bound",
+    "equation": null,
+    "line_range": [
+      3587,
+      3596
+    ],
+    "url_fragment": "#thm-lipschitz-structural-error-bound"
+  }
+}

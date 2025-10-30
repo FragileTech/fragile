@@ -1,0 +1,10 @@
+{
+  "label": "param-param-bm-bound",
+  "name": "param-bm-bound",
+  "symbol": "param-bm-bound",
+  "parameter_type": "real",
+  "constraints": null,
+  "default_value": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

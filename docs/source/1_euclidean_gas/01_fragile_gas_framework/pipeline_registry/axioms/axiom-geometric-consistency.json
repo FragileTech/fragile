@@ -1,0 +1,22 @@
+{
+  "label": "axiom-geometric-consistency",
+  "statement": "The algorithmic noise should be unbiased and isotropic, unless intentionally designed otherwise.",
+  "mathematical_expression": "\\kappa_{\\text{drift}} := \\sup_{x \\in \\mathcal{X}} \\|\\mathbb{E}_{x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)}[x' - x]\\|",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Geometric Consistency",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.4.1",
+    "directive_label": "axiom-geometric-consistency",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

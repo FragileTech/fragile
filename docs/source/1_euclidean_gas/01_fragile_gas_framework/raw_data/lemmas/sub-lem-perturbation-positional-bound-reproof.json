@@ -1,0 +1,56 @@
+{
+  "label": "sub-lem-perturbation-positional-bound-reproof",
+  "name": "Bounding the Output Positional Displacement",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "13.2.2",
+    "section_name": null,
+    "directive_label": "sub-lem-perturbation-positional-bound-reproof",
+    "equation": null,
+    "line_range": [
+      3988,
+      3997
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-n-particle-displacement-metric",
+    "obj-mean-displacement-bound",
+    "obj-perturbation-measure",
+    "obj-fragile-swarm-instantiation",
+    "obj-perturbation-operator",
+    "obj-alg-distance"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-bounded-second-moment-perturbation"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-output-positional-displacement-bounded",
+      "expression": "D^2(O_{pert}(\\mathcal{S}_1), O_{pert}(\\mathcal{S}_2)) \\le C \\cdot d_{alg}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "object_label": "obj-perturbation-operator"
+    }
+  ],
+  "relations_established": [
+    "High-probability upper bound on positional displacement after perturbation"
+  ],
+  "natural_language_statement": "The squared positional displacement induced by the perturbation operator is bounded in expectation by a function of the initial displacement and perturbation constants.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

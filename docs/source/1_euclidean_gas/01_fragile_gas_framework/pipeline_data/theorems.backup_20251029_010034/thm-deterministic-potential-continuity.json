@@ -1,0 +1,113 @@
+{
+  "label": "thm-deterministic-potential-continuity",
+  "name": "Deterministic Continuity of the Fitness Potential Operator",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": null,
+    "file_path": null,
+    "section": "13. Fitness potential operator",
+    "directive_label": null,
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "def-alive-set-potential-operator",
+    "def-standardization-operator-n-dimensional",
+    "def-swarm-and-state-space"
+  ],
+  "input_axioms": [
+    "def-axiom-margin-stability"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lem-potential-boundedness",
+    "lem-component-potential-lipschitz"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-potential-boundedness",
+      "thm-deterministic-potential-continuity"
+    ],
+    [
+      "lem-component-potential-lipschitz",
+      "thm-deterministic-potential-continuity"
+    ],
+    [
+      "thm-global-continuity-patched-standardization",
+      "thm-deterministic-potential-continuity"
+    ]
+  ],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "This theorem establishes the deterministic continuity of the Fitness Potential Operator (V_op), which is constructed using a patched version of the N-Dimensional Standardization Operator. It asserts that for any two sets of inputs, each consisting of a swarm state (S), a raw reward vector (v_r), and a distance vector (v_d), the squared Euclidean distance between the two corresponding output fitness potential vectors (V_1 and V_2) is strictly bounded. This upper bound is given by a deterministic function, F_pot,det, which depends on both sets of inputs. A crucial property of this bounding function is that it is jointly continuous in all its arguments and, most importantly, it vanishes (approaches zero) as the difference between the two input sets diminishes. This convergence is measured by the swarm displacement metric (d_Disp,Y) between the swarm states and the Euclidean distance between their respective raw reward and distance vectors.",
+  "assumptions": [
+    "The Fitness Potential Operator V_op is constructed using the patched N-Dimensional Standardization Operator",
+    "Two sets of inputs (S_1, v_r1, v_d1) and (S_2, v_r2, v_d2) are provided",
+    "Each input set consists of: a swarm state, a raw reward vector, and a distance vector",
+    "V_1 and V_2 are the resulting N-dimensional fitness potential vectors from applying V_op to each input set"
+  ],
+  "conclusion": "The squared Euclidean error ||V_1 - V_2||_2^2 is deterministically bounded by a function F_pot,det(S_1, S_2, v_r1, v_r2, v_d1, v_d2) that is jointly continuous in all arguments and vanishes as d_Disp,Y(S_1, S_2) → 0, ||v_r1 - v_r2||_2 → 0, and ||v_d1 - v_d2||_2 → 0",
+  "equation_label": null,
+  "uses_definitions": [
+    "def-alive-set-potential-operator",
+    "def-standardization-operator-n-dimensional",
+    "def-swarm-and-state-space",
+    "def-lipschitz-value-error-coefficients",
+    "def-lipschitz-structural-error-coefficients",
+    "thm-global-continuity-patched-standardization"
+  ],
+  "validation_errors": [],
+  "raw_fallback": {
+    "label": "thm-deterministic-potential-continuity",
+    "name": "Deterministic Continuity of the Fitness Potential Operator",
+    "statement": "Let the Fitness Potential Operator $V_{\\text{op}}$ be constructed using the patched **N-Dimensional Standardization Operator**. Let $(\\mathcal{S}_1, \\mathbf{v}_{r1}, \\mathbf{v}_{d1})$ and $(\\mathcal{S}_2, \\mathbf{v}_{r2}, \\mathbf{v}_{d2})$ be two sets of inputs, consisting of swarm states and their corresponding raw reward and distance vectors. Let $\\mathbf{V}_1$ and $\\mathbf{V}_2$ be the resulting N-dimensional fitness potential vectors. The squared Euclidean error between the output potential vectors is deterministically bounded by a function of the swarm displacement and the raw value differences: $\\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2 \\le F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})$ where $F_{\\text{pot,det}}$ is a deterministic bounding function that is jointly continuous in its arguments and vanishes as $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2) \\to 0$, $\\|\\mathbf{v}_{r1} - \\mathbf{v}_{r2}\\|_2 \\to 0$, and $\\|\\mathbf{v}_{d1} - \\mathbf{v}_{d2}\\|_2 \\to 0$.",
+    "proof_sketch": "The proof proceeds by deterministically decomposing the total error into contributions from unstable walkers (whose status changes) and stable walkers. The error from unstable walkers is bounded deterministically by $V_{\\text{pot,max}}^2 \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)$. For stable walkers, the potential is a composite function of the standardized vectors, and using the Lipschitz continuity of the potential function, the error is bounded by a linear combination of the squared errors of the underlying standardization pipelines. We then substitute the deterministic bound from the global continuity theorem for patched standardization and assemble the final bound $F_{\\text{pot,det}}$.",
+    "dependencies": [
+      "def-alive-set-potential-operator",
+      "def-n-dimensional-standardization-operator",
+      "thm-global-continuity-patched-standardization"
+    ],
+    "proof_dependencies": [
+      "lem-potential-boundedness",
+      "lem-component-potential-lipschitz",
+      "thm-global-continuity-patched-standardization",
+      "def-lipschitz-value-error-coefficients",
+      "def-lipschitz-structural-error-coefficients"
+    ],
+    "has_full_proof": true,
+    "tags": [
+      "fitness-potential",
+      "deterministic-continuity",
+      "feynman-kac",
+      "operator"
+    ],
+    "source": {
+      "document": "01_fragile_gas_framework.md",
+      "section": "13. Fitness potential operator",
+      "subsection": "12.3.1 Theorem: Deterministic Continuity of the Fitness Potential Operator"
+    },
+    "input_objects": [
+      "obj-potential-bounds",
+      "obj-raw-value-operator",
+      "def-alive-set-potential-operator",
+      "obj-rescale-lipschitz-constants"
+    ],
+    "input_axioms": [
+      "axiom-rescale-function"
+    ],
+    "input_parameters": [],
+    "output_type": "Bound",
+    "relations_established": [
+      "Deterministic potential operator is continuous"
+    ],
+    "statement_type": "theorem"
+  }
+}

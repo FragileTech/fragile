@@ -1,0 +1,18 @@
+{
+  "source_file": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+  "section": "§1-introduction (lines 13-137)",
+  "processing_stage": "raw_extraction",
+  "entities_extracted": {
+    "definitions": 0,
+    "theorems": 1,
+    "axioms": 0,
+    "proofs": 0,
+    "equations": 0,
+    "parameters": 6,
+    "remarks": 1,
+    "citations": 1,
+    "objects": 1
+  },
+  "total_entities": 10,
+  "output_directory": "docs/source/1_euclidean_gas/01_fragile_gas_framework/raw_data"
+}

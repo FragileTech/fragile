@@ -1,0 +1,47 @@
+{
+  "label": "thm-swarm-update-operator-continuity-recorrected",
+  "name": "Continuity of the Swarm Update Operator",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm-update-procedure",
+    "obj-composite-continuity-coeffs-recorrected"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "The Swarm Update Operator, which composes the Kinetic, Perturbation, Measurement, and Cloning operators, is continuous with respect to the algorithmic distance metric. Small perturbations in the input swarm state lead to bounded perturbations in the output swarm state.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": {
+    "label": "thm-swarm-update-operator-continuity-recorrected",
+    "name": "Continuity of the Swarm Update Operator",
+    "section": "18",
+    "subsection": "17.2.4",
+    "source_file": "01_fragile_gas_framework.md",
+    "source_lines": "4627-5086",
+    "extraction_date": "2025-10-27",
+    "status": "extracted",
+    "statement_type": "theorem",
+    "input_objects": [],
+    "input_axioms": [],
+    "input_parameters": [],
+    "relations_established": [
+      "Swarm update operator is continuous in algorithmic distance metric"
+    ],
+    "output_type": "General Result"
+  }
+}

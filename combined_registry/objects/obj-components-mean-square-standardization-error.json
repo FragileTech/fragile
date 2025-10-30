@@ -3,13 +3,22 @@
   "name": "Components of Mean-Square Standardization Error",
   "mathematical_expression": "\\mathbb{E}[\\|\\mathbf{z}(\\mathcal{S}_1, V, M) - \\mathbf{z}(\\mathcal{S}_2, V, M)\\|_2^2]",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle",
     "swarm"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "obj-components-mean-square-standardization-error",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-components-mean-square-standardization-error"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

@@ -1,0 +1,26 @@
+{
+  "label": "obj-composite-continuity-coeffs-recorrected",
+  "name": "Composite Continuity Coefficients",
+  "mathematical_expression": "Composite Continuity Coefficients",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "composite",
+    "continuity",
+    "coefficients",
+    "operator"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "18",
+    "directive_label": "def-composite-continuity-coeffs-recorrected",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": null
+}

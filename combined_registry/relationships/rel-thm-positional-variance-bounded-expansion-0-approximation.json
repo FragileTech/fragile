@@ -6,12 +6,20 @@
   "target_object": "obj-positional-variance-recall",
   "established_by": "thm-positional-variance-bounded-expansion",
   "expression": "thermal-noise-causes-bounded-diffusion",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "05_kinetic_contraction"
+  "source": {
+    "document_id": "05_kinetic_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+    "section": null,
+    "directive_label": "thm-positional-variance-bounded-expansion",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-positional-variance-bounded-expansion"
+  },
+  "chapter": null,
+  "document": null
 }

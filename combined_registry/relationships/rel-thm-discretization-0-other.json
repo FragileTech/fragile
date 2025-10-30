@@ -6,12 +6,20 @@
   "target_object": "obj-generator",
   "established_by": "thm-discretization",
   "expression": "continuous-generator-to-discrete-expectation",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "05_kinetic_contraction"
+  "source": {
+    "document_id": "05_kinetic_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+    "section": null,
+    "directive_label": "thm-discretization",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-discretization"
+  },
+  "chapter": null,
+  "document": null
 }

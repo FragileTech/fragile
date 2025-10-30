@@ -68,7 +68,7 @@ def main() -> None:
     print(f"  Substitute back: ΔV_v|_eq = {verify_v}")
     assert verify_v == 0
     # Helpful decomposition for interpretation
-    Vv_eq_decomp = sp.simplify(sp.together(Vv_eq).rewrite(sp.Add))
+    sp.simplify(sp.together(Vv_eq).rewrite(sp.Add))
     # Manually show the split into Cv and noise terms
     Vv_eq_split = sp.simplify(Cv / (2 * gamma * tau) + (sigma2_max * d) / (2 * gamma))
     print(f"  Decomposition: V_v^QSD = {Vv_eq_split} = Cv/(2γτ) + (σ_max^2 d)/(2γ)")
@@ -83,9 +83,15 @@ def main() -> None:
     # Physical interpretations
     print("Physical interpretations:")
     print("- Position: V_x^QSD grows with injection C_x and shrinks with contraction kappa_x.")
-    print("- Velocity: V_v^QSD has a friction-limited piece Cv/(2γτ) and a noise-limited piece (σ_max^2 d)/(2γ).")
-    print("           Stronger friction (γ↑) lowers both; larger noise (σ_max^2↑) or dimension (d↑) raises it.")
-    print("- Boundary: W_b^QSD grows with boundary influx C_b and shrinks with boundary contraction kappa_b.")
+    print(
+        "- Velocity: V_v^QSD has a friction-limited piece Cv/(2γτ) and a noise-limited piece (σ_max^2 d)/(2γ)."
+    )
+    print(
+        "           Stronger friction (γ↑) lowers both; larger noise (σ_max^2↑) or dimension (d↑) raises it."
+    )
+    print(
+        "- Boundary: W_b^QSD grows with boundary influx C_b and shrinks with boundary contraction kappa_b."
+    )
     print()
 
     print("All symbolic verifications passed (Δ = 0 at the stated equilibria).")
@@ -93,4 +99,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

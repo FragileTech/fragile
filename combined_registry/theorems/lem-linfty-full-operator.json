@@ -2,9 +2,17 @@
   "label": "lem-linfty-full-operator",
   "name": "$L^\\infty$ Bound for the Full Operator",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence_bounded_density_rigorous_proof",
+  "source": {
+    "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+    "section": null,
+    "directive_label": "lem-linfty-full-operator",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-linfty-full-operator"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -32,7 +40,7 @@
     "lambda_rev",
     "d"
   ],
-  "properties_required": {
+  "attributes_required": {
     "harnack-hypoelliptic": [
       "Hörmander condition holds (lem-hormander-bracket)",
       "Harnack constants depend on (γ, σ_v, ||F||_Lip, d)"
@@ -60,7 +68,7 @@
     ]
   ],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-lem-linfty-full-operator-0-approximation",
@@ -70,14 +78,22 @@
       "target_object": "obj-kinetic-operator",
       "established_by": "lem-linfty-full-operator",
       "expression": "||L_clone^* f||_∞ ≤ 2 V_max ||f||_∞",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+      "source": {
+        "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+        "section": null,
+        "directive_label": "lem-linfty-full-operator",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-linfty-full-operator"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-lem-linfty-full-operator-1-approximation",
@@ -87,14 +103,22 @@
       "target_object": "obj-kinetic-operator",
       "established_by": "lem-linfty-full-operator",
       "expression": "||r_rev||_∞ ≤ (λ_rev ||c||_∞ / c_mass) ||f||_∞ (conditional)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+      "source": {
+        "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+        "section": null,
+        "directive_label": "lem-linfty-full-operator",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-linfty-full-operator"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-lem-linfty-full-operator-2-approximation",
@@ -104,14 +128,22 @@
       "target_object": "obj-kinetic-operator",
       "established_by": "lem-linfty-full-operator",
       "expression": "||f(T)||_∞ ≤ C_kin(T) M_0 + ∫_0^T C_kin(T−s)[||f(s)||_∞ + C_revival] ds",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+      "source": {
+        "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+        "section": null,
+        "directive_label": "lem-linfty-full-operator",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-linfty-full-operator"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-lem-linfty-full-operator-3-approximation",
@@ -121,14 +153,29 @@
       "target_object": "obj-kinetic-operator",
       "established_by": "lem-linfty-full-operator",
       "expression": "sup_{t∈[0,T]} ||f(t,·)||_∞ ≤ C_hypo(M_0, T, γ, σ_v, σ_x, U, R) < ∞",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+      "source": {
+        "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+        "section": null,
+        "directive_label": "lem-linfty-full-operator",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-linfty-full-operator"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

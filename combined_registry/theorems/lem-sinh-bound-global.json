@@ -2,15 +2,23 @@
   "label": "lem-sinh-bound-global",
   "name": "Sinh Inequality",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence",
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "lem-sinh-bound-global",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-sinh-bound-global"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [],
   "input_axioms": [],
   "input_parameters": [],
-  "properties_required": {
+  "attributes_required": {
     "sinh-inequality": [
       "sinh(x) ≤ e^x for x ≥ 0"
     ]
@@ -19,7 +27,7 @@
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-lem-sinh-bound-global-0-other",
@@ -29,14 +37,29 @@
       "target_object": "obj-unknown",
       "established_by": "lem-sinh-bound-global",
       "expression": "Elementary inequality for sinh",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "lem-sinh-bound-global",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-sinh-bound-global"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

@@ -6,12 +6,20 @@
   "target_object": "obj-wasserstein-distance",
   "established_by": "lem-wasserstein-population-bound",
   "expression": "W_2²(μ_1, μ_2) ≤ f_{I,1}f_{I,2}D_II + f_{I,1}f_{J,2}D_IJ + f_{J,1}f_{I,2}D_JI + f_{J,1}f_{J,2}D_JJ",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "04_wasserstein_contraction"
+  "source": {
+    "document_id": "04_wasserstein_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+    "section": null,
+    "directive_label": "lem-wasserstein-population-bound",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-wasserstein-population-bound"
+  },
+  "chapter": null,
+  "document": null
 }

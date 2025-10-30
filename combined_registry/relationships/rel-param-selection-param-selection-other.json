@@ -6,12 +6,20 @@
   "target_object": "obj-param-selection",
   "established_by": "thm-svd-rate-matrix",
   "expression": "{'source': 'obj-param-selection', 'target': 'obj-param-selection', 'type': 'decomposition'}",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-dict"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "06_convergence"
+  "source": {
+    "document_id": "06_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/06_convergence.md",
+    "section": null,
+    "directive_label": "thm-svd-rate-matrix",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-svd-rate-matrix"
+  },
+  "chapter": null,
+  "document": null
 }

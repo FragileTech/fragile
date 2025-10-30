@@ -2,9 +2,17 @@
   "label": "thm-entropy-transport-contraction",
   "name": "Linear Contraction of the Entropy-Transport Lyapunov Function",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence",
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "thm-entropy-transport-contraction",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-entropy-transport-contraction"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -23,7 +31,7 @@
     "lambda",
     "C_steady"
   ],
-  "properties_required": {
+  "attributes_required": {
     "seesaw-condition": [
       "κ_W > β/(1+β) (Wasserstein contraction dominates kinetic expansion)"
     ],
@@ -48,7 +56,7 @@
     ]
   ],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-entropy-transport-contraction-0-approximation",
@@ -58,14 +66,22 @@
       "target_object": "obj-total-operator",
       "established_by": "thm-entropy-transport-contraction",
       "expression": "V_{t+1} ≤ λ V_t + C_steady",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-entropy-transport-contraction",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-entropy-transport-contraction"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-entropy-transport-contraction-1-equivalence",
@@ -75,14 +91,22 @@
       "target_object": "obj-total-operator",
       "established_by": "thm-entropy-transport-contraction",
       "expression": "c = α e^{-ρ_k}/(1−K_W)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-entropy-transport-contraction",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-entropy-transport-contraction"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-entropy-transport-contraction-2-equivalence",
@@ -92,14 +116,22 @@
       "target_object": "obj-total-operator",
       "established_by": "thm-entropy-transport-contraction",
       "expression": "K_W = (1+β)(1−κ_W)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-entropy-transport-contraction",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-entropy-transport-contraction"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-entropy-transport-contraction-3-other",
@@ -109,14 +141,29 @@
       "target_object": "obj-total-operator",
       "established_by": "thm-entropy-transport-contraction",
       "expression": "Seesaw: cloning dissipates D_KL − α W₂², kinetic expands W₂ but dissipates KL",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-entropy-transport-contraction",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-entropy-transport-contraction"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

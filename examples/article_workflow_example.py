@@ -11,20 +11,17 @@ This example shows:
 5. Export/import functionality
 """
 
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 from fragile.proofs import (
     Article,
-    ArticleRegistry,
+    create_simple_object,
+    create_simple_theorem,
+    get_article_registry,
+    Property,
     SourceLocation,
     SourceLocationBuilder,
-    TheoremBox,
-    MathematicalObject,
-    Property,
-    create_simple_theorem,
-    create_simple_object,
-    get_article_registry,
 )
 
 
@@ -127,7 +124,9 @@ def main():
         source=euclidean_convergence_source,
     )
     print(f"✓ Created theorem: {euclidean_convergence_thm.label}")
-    print(f"  Source: {euclidean_convergence_source.file_path}#{euclidean_convergence_source.directive_label}")
+    print(
+        f"  Source: {euclidean_convergence_source.file_path}#{euclidean_convergence_source.directive_label}"
+    )
 
     # Example: Mathematical object with source
     state_space_source = SourceLocationBuilder.from_jupyter_directive(
@@ -202,7 +201,7 @@ def main():
 
     # Get statistics
     stats = registry.get_statistics()
-    print(f"\n✓ Registry Statistics:")
+    print("\n✓ Registry Statistics:")
     print(f"  Total articles: {stats['total_articles']}")
     print(f"  Total labels: {stats['total_labels']}")
     print(f"  Total tags: {stats['total_tags']}")

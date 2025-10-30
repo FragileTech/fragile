@@ -1,43 +1,50 @@
 {
   "label": "prop-w2-bound-no-offset",
-  "name": "W2 continuity bound without offset (for $k\\ge 2$)",
-  "statement_type": "proposition",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "name": "W2 continuity bound without offset (for k≥2)",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17.2.4.4",
+    "section_name": null,
+    "directive_label": "prop-w2-bound-no-offset",
+    "equation": null,
+    "line_range": [
+      4992,
+      5023
+    ],
+    "url_fragment": null
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
     "obj-swarm-update-procedure",
     "obj-w2-output-metric",
-    "obj-alg-distance",
-    "obj-alive-dead-sets"
+    "obj-n-particle-displacement-metric"
   ],
-  "input_axioms": [
-    "axiom-raw-value-mean-square-continuity",
-    "axiom-def-axiom-bounded-second-moment-perturbation",
-    "axiom-def-axiom-reward-regularity",
-    "axiom-def-axiom-rescale-function"
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "sub-lem-unify-holder-terms"
   ],
-  "input_parameters": [
-    "param-min-alive-walkers"
-  ],
-  "properties_required": {},
-  "internal_lemmas": [],
   "internal_propositions": [],
-  "lemma_dag_edges": [],
-  "output_type": "Bound",
-  "properties_added": [
-    {
-      "label": "prop-w2-bound-no-offset",
-      "expression": "d_{W_2}(U(s_1), U(s_2)) \\le L \\cdot d_{alg}(s_1, s_2) \\text{ for } |A(s_1)|, |A(s_2)| \\ge 2",
-      "object_label": "obj-swarm-update-procedure",
-      "established_by": "prop-w2-bound-no-offset",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
+  "lemma_dag_edges": [
+    [
+      "sub-lem-unify-holder-terms",
+      "prop-w2-bound-no-offset"
+    ]
   ],
-  "relations_established": []
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

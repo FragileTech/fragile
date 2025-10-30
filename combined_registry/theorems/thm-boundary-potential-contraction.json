@@ -2,9 +2,17 @@
   "label": "thm-boundary-potential-contraction",
   "name": "Boundary Potential Contraction Under Cloning",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning",
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "thm-boundary-potential-contraction",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-boundary-potential-contraction"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -21,7 +29,7 @@
     "C_b",
     "phi_thresh"
   ],
-  "properties_required": {},
+  "attributes_required": {},
   "internal_lemmas": [
     "lem-boundary-enhanced-cloning",
     "lem-barrier-reduction-cloning"
@@ -38,7 +46,7 @@
     ]
   ],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-boundary-potential-contraction-0-approximation",
@@ -48,14 +56,22 @@
       "target_object": "obj-cloning-operator-formal",
       "established_by": "thm-boundary-potential-contraction",
       "expression": "cloning_contracts_boundary_potential",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "03_cloning"
+      "source": {
+        "document_id": "03_cloning",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+        "section": null,
+        "directive_label": "thm-boundary-potential-contraction",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-boundary-potential-contraction"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-boundary-potential-contraction-1-other",
@@ -65,14 +81,29 @@
       "target_object": "obj-cloning-operator-formal",
       "established_by": "thm-boundary-potential-contraction",
       "expression": "safe_harbor_mechanism",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "03_cloning"
+      "source": {
+        "document_id": "03_cloning",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+        "section": null,
+        "directive_label": "thm-boundary-potential-contraction",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-boundary-potential-contraction"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

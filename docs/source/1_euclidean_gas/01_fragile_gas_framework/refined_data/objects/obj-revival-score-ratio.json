@@ -1,0 +1,25 @@
+{
+  "label": "obj-revival-score-ratio",
+  "name": "Revival Score Ratio",
+  "statement_type": "object",
+  "mathematical_expression": "The dimensionless ratio that governs the revival mechanism in the single-survivor state:\n$$\\kappa_{\\text{revival}} = \\frac{\\eta^{\\alpha+\\beta}}{\\varepsilon_{\\text{clone}} \\cdot p_{\\max}}$$\nwhere $\\eta$ is the rescale lower bound, $\\alpha$ and $\\beta$ are exploitation weights, $\\varepsilon_{\\text{clone}}$ is the cloning regularization parameter, and $p_{\\max}$ is the maximum cloning probability threshold.",
+  "object_type": "set",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-revival-score-ratio",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.1.1",
+    "line_range": [
+      1003,
+      1022
+    ],
+    "directive_label": "obj-revival-score-ratio",
+    "equation": null,
+    "url_fragment": null
+  }
+}

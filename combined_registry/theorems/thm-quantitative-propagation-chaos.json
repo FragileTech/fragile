@@ -2,9 +2,17 @@
   "label": "thm-quantitative-propagation-chaos",
   "name": "Quantitative Propagation of Chaos",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "12_quantitative_error_bounds",
+  "source": {
+    "document_id": "12_quantitative_error_bounds",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+    "section": null,
+    "directive_label": "thm-quantitative-propagation-chaos",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-quantitative-propagation-chaos"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -20,23 +28,23 @@
     "C_int",
     "L_phi"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-nu-n-qsd": [
-      "prop-n-uniform-lsi",
-      "prop-exchangeable"
+      "attr-n-uniform-lsi",
+      "attr-exchangeable"
     ],
     "obj-observable-phi": [
-      "prop-lipschitz-continuous"
+      "attr-lipschitz-continuous"
     ],
     "obj-rho-0": [
-      "prop-finite-second-moment"
+      "attr-finite-second-moment"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-n-particle-system-mean-field-limit-other",
@@ -46,14 +54,29 @@
       "target_object": "obj-mean-field-limit",
       "established_by": "thm-quantitative-propagation-chaos",
       "expression": "bound: |E_nu_N[phi_N] - E_rho_0[phi]| <= C_obs * L_phi / sqrt(N)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-dict"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "12_quantitative_error_bounds"
+      "source": {
+        "document_id": "12_quantitative_error_bounds",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+        "section": null,
+        "directive_label": "thm-quantitative-propagation-chaos",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-quantitative-propagation-chaos"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

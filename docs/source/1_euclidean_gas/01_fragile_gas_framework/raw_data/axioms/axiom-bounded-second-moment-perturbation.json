@@ -1,0 +1,50 @@
+{
+  "label": "def-axiom-bounded-second-moment-perturbation",
+  "type": "axiom",
+  "name": "Axiom of Bounded Second Moment of Perturbation",
+  "statement": "The expectation of the squared displacement caused by the **Perturbation Measure**, after being projected into the **Algorithmic Space**, is uniformly bounded across all possible starting positions.",
+  "full_text": "**Core Assumption:** The expectation of the squared displacement caused by the **Perturbation Measure**, after being projected into the **Algorithmic Space**, is uniformly bounded across all possible starting positions. This ensures that, on average, walkers do not experience infinite displacement.\n\n**Axiomatic Parameter:** The user of this framework must provide one non-negative constant derived from their choice of operators:\n1. **$M_{\\text{pert}}^2$ (The Maximum Expected Squared Displacement):** An upper bound on the expectation of the squared displacement.\n\n**Condition:** For any starting position $x_{\\text{in}} \\in \\mathcal{X}$, let the random variable for the squared displacement be $Y := d_{\\mathcal{Y}}(\\varphi(x_{\\text{out}}), \\varphi(x_{\\text{in}}))^2$ where $x_{\\text{out}} \\sim \\mathcal{P}_\\sigma(x_{\\text{in}}, \\cdot)$. The constant must satisfy:\n$$M_{\\text{pert}}^2 \\ge \\sup_{x_{\\text{in}} \\in \\mathcal{X}} \\mathbb{E}[Y]$$\n\n**Framework Application:** This axiom provides a uniform bound on the *mean* of the random displacement. The *fluctuations* around this mean are bounded via **McDiarmid's inequality** for functions of independent inputs (Assumption A), applied to the average of per‑walker squared displacements. Bounded differences hold with constants $c_i=D_{\\mathcal{Y}}^2/N$ since each term lies in $[0,D_{\\mathcal{Y}}^2]$ (finite diameter). No further variance assumptions are required. See Boucheron–Lugosi–Massart (Appendix B).\n\n**Failure Mode Analysis:** If this axiom is violated (i.e., if the supremum is infinite), walkers could be displaced by an infinite amount on average, making the operator's behavior unpredictable and breaking the continuity guarantees.",
+  "axiomatic_parameters": [
+    {
+      "symbol": "$M_{\\text{pert}}^2$",
+      "name": "Maximum Expected Squared Displacement",
+      "description": "An upper bound on the expectation of the squared displacement",
+      "constraint": "$M_{\\text{pert}}^2 \\ge \\sup_{x_{\\text{in}} \\in \\mathcal{X}} \\mathbb{E}[d_{\\mathcal{Y}}(\\varphi(x_{\\text{out}}), \\varphi(x_{\\text{in}}))^2]$"
+    }
+  ],
+  "source_section": "14. The Perturbation Operator",
+  "subsection": "13.2.1 Axiomatic Requirement: Bounded Second Moment of Perturbation",
+  "source_document": "01_fragile_gas_framework.md",
+  "line_range": [
+    3962,
+    3975
+  ],
+  "tags": [
+    "axiom",
+    "perturbation",
+    "bounded-moment",
+    "concentration",
+    "continuity"
+  ],
+  "dependencies": [
+    "Perturbation Measure",
+    "Projection Map",
+    "Algorithmic Space",
+    "McDiarmid's inequality"
+  ],
+  "framework_role": "Ensures statistical boundedness of perturbation-induced displacement",
+  "failure_mode": "Infinite average displacement, unpredictable behavior, broken continuity guarantees",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "14",
+    "section_name": null,
+    "directive_label": "def-axiom-bounded-second-moment-perturbation",
+    "equation": null,
+    "line_range": [
+      3974,
+      3974
+    ],
+    "url_fragment": null
+  }
+}

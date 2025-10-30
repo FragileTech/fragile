@@ -1,0 +1,22 @@
+{
+  "label": "axiom-non-degenerate-noise",
+  "statement": "Walkers must be able to move and explore the state space. The Perturbation and Cloning measures must not be the Dirac delta measure.",
+  "mathematical_expression": "\\sigma > 0 \\text{ and } \\delta > 0",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Non Degenerate Noise",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.3.2",
+    "directive_label": "axiom-non-degenerate-noise",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

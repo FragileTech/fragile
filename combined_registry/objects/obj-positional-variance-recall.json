@@ -3,10 +3,19 @@
   "name": "Positional Variance Component (Recall)",
   "mathematical_expression": "V_{\\text{Var},x}(S_1, S_2) = \\frac{1}{N}\\sum_{k=1,2} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2",
   "object_type": "set",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "05_kinetic_contraction"
+  "source": {
+    "document_id": "05_kinetic_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+    "section": null,
+    "directive_label": "obj-positional-variance-recall",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-positional-variance-recall"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

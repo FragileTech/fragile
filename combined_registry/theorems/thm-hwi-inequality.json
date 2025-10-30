@@ -2,9 +2,17 @@
   "label": "thm-hwi-inequality",
   "name": "The HWI Inequality (Otto-Villani)",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence",
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "thm-hwi-inequality",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-hwi-inequality"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -16,7 +24,7 @@
   "input_parameters": [
     "C_HWI"
   ],
-  "properties_required": {
+  "attributes_required": {
     "log-concavity": [
       "π log-concave (NOW PROVEN THEOREM via 15_geometric_gas_lsi_proof)",
       "Smoothness to define Fisher information I(μ|π)"
@@ -26,7 +34,7 @@
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-hwi-inequality-0-approximation",
@@ -36,14 +44,22 @@
       "target_object": "obj-relative-entropy",
       "established_by": "thm-hwi-inequality",
       "expression": "H(μ|π) ≤ W₂(μ,π) √I(μ|π)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-hwi-inequality",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-hwi-inequality"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-hwi-inequality-1-other",
@@ -53,14 +69,29 @@
       "target_object": "obj-relative-entropy",
       "established_by": "thm-hwi-inequality",
       "expression": "Foundation for displacement convexity approach to LSI",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-hwi-inequality",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-hwi-inequality"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

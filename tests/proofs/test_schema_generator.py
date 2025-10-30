@@ -5,8 +5,8 @@ Tests schema generation for all three modes: full, proof, sketch.
 """
 
 import json
-import tempfile
 from pathlib import Path
+import tempfile
 
 import pytest
 
@@ -108,7 +108,12 @@ class TestSchemaGeneration:
         sketch_schema = generate_sketch_schema(output_path=None, include_examples=False)
 
         # Complete schema should have all keys
-        complete_keys = ["metadata", "workflow_guide", "schemas_by_dependency", "documentation_index"]
+        complete_keys = [
+            "metadata",
+            "workflow_guide",
+            "schemas_by_dependency",
+            "documentation_index",
+        ]
         for key in complete_keys:
             assert key in complete_schema, f"Complete schema missing key: {key}"
 
@@ -125,8 +130,8 @@ class TestSchemaGeneration:
         without_examples = generate_complete_schema(output_path=None, include_examples=False)
 
         # Schemas with examples should be larger
-        with_json = json.dumps(with_examples)
-        without_json = json.dumps(without_examples)
+        json.dumps(with_examples)
+        json.dumps(without_examples)
 
         # Note: This might not always be true if examples fail to generate
         # assert len(with_json) >= len(without_json)

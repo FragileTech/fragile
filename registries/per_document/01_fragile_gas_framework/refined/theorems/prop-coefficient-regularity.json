@@ -1,0 +1,94 @@
+{
+  "label": "prop-coefficient-regularity",
+  "name": "Boundedness and continuity of composite coefficients",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17.2.4.6",
+    "directive_label": "prop-coefficient-regularity",
+    "equation": null,
+    "line_range": [
+      5040,
+      5053
+    ],
+    "url_fragment": null
+  },
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-lipschitz-structural-error-coefficients",
+    "obj-value-error-coefficients"
+  ],
+  "input_axioms": [
+    "axiom-bounded-algorithmic-diameter",
+    "axiom-instep-independence"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lem-sigma-patch-derivative-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-sigma-patch-derivative-bound",
+      "prop-coefficient-regularity"
+    ]
+  ],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-bounded-on-sublevel-sets",
+      "expression": "\\text{Coefficients } C_{\\text{clone},L/H}, K_{\\text{clone}}, C_{\\Psi,L/H}, K_{\\Psi}, C_{S,\\text{direct}}, C_{S,\\text{indirect}}, C_{V,\\text{total}} \\text{ are bounded on } \\mathcal{K}_R",
+      "object_label": "obj-lipschitz-structural-error-coefficients",
+      "established_by": "prop-coefficient-regularity",
+      "timestamp": null,
+      "can_be_refined": false,
+      "refinements": [],
+      "source": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": "17.2.4.6",
+        "directive_label": "prop-coefficient-regularity",
+        "equation": null,
+        "line_range": [
+          5040,
+          5053
+        ],
+        "url_fragment": null
+      }
+    },
+    {
+      "label": "attr-jointly-continuous",
+      "expression": "(\\mathcal{S}_1,\\mathcal{S}_2)\\mapsto C_{\\text{clone},L/H}, K_{\\text{clone}}, C_{\\Psi,L/H}, K_{\\Psi} \\text{ are jointly continuous in } (\\mathcal{S}_1,\\mathcal{S}_2)",
+      "object_label": "obj-lipschitz-structural-error-coefficients",
+      "established_by": "prop-coefficient-regularity",
+      "timestamp": null,
+      "can_be_refined": false,
+      "refinements": [],
+      "source": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": "17.2.4.6",
+        "directive_label": "prop-coefficient-regularity",
+        "equation": null,
+        "line_range": [
+          5040,
+          5053
+        ],
+        "url_fragment": null
+      }
+    }
+  ],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

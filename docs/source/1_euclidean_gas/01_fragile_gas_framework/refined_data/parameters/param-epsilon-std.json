@@ -1,0 +1,12 @@
+{
+  "label": "param-epsilon-std",
+  "name": "Standardization Error Parameter",
+  "statement_type": "parameter",
+  "symbol": "\\varepsilon_{\\text{std}}",
+  "parameter_type": "real",
+  "constraints": "\\varepsilon_{\\text{std}} \\ge 0",
+  "default_value": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}
+

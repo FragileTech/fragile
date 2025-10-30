@@ -1,0 +1,33 @@
+{
+  "label": "lem-total-clone-prob-value-error",
+  "name": "Bounding the Value Component of Cloning Probability Error",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-distance-measurement-ms-constants",
+    "obj-cloning-probability-lipschitz-constants",
+    "obj-potential-bounds"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Bounds value component of cloning probability error"
+  ],
+  "natural_language_statement": "Let $E_{\\text{val}}^{(\\overline{P})}$ be the value error component from **thm-total-expected-cloning-action-continuity**. It is deterministically bounded as follows:\n\n$$\nE_{\\text{val}}^{(\\overline{P})}(\\mathcal{S}_1, \\mathcal{S}_2) \\le C_{\\text{val}}^{(\\pi)} \\sqrt{2N \\cdot F_{\\text{pot}}(\\mathcal{S}_1, \\mathcal{S}_2)}\n$$\n\nwhere $F_{\\text{pot}}$ is the **Expected Squared Potential Error Bound**.",
+  "assumptions": [],
+  "conclusion": "Value error bounded by expected potential error",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

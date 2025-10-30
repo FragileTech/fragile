@@ -2,9 +2,17 @@
   "label": "lem-quantitative-kl-bound",
   "name": "Quantitative KL Bound",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "12_quantitative_error_bounds",
+  "source": {
+    "document_id": "12_quantitative_error_bounds",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+    "section": null,
+    "directive_label": "lem-quantitative-kl-bound",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-quantitative-kl-bound"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -19,22 +27,22 @@
     "lambda_eff",
     "C_int"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-nu-n-qsd": [
-      "prop-n-uniform-lsi",
-      "prop-exchangeability"
+      "attr-n-uniform-lsi",
+      "attr-exchangeability"
     ],
     "obj-diversity-companion-prob": [
-      "prop-fitness-dependent-selection"
+      "attr-fitness-dependent-selection"
     ]
   },
   "internal_lemmas": [
-    "prop-interaction-complexity-bound"
+    "attr-interaction-complexity-bound"
   ],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-nu-n-qsd-rho-0-product-other",
@@ -44,14 +52,29 @@
       "target_object": "obj-rho-0-product",
       "established_by": "lem-quantitative-kl-bound",
       "expression": "bound: D_KL(nu_N^QSD || rho_0^otimes_N) <= C_int / N",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-dict"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "12_quantitative_error_bounds"
+      "source": {
+        "document_id": "12_quantitative_error_bounds",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+        "section": null,
+        "directive_label": "lem-quantitative-kl-bound",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-quantitative-kl-bound"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

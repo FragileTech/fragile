@@ -1,0 +1,68 @@
+{
+  "label": "thm-deterministic-potential-continuity",
+  "name": "Deterministic Continuity of the Fitness Potential Operator",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "thm-deterministic-potential-continuity",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-deterministic-potential-continuity"
+  },
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-potential-bounds",
+    "obj-raw-value-operator",
+    "def-alive-set-potential-operator",
+    "obj-rescale-lipschitz-constants"
+  ],
+  "input_axioms": [
+    "axiom-rescale-function"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-deterministic-potential-continuity-0-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-potential-bounds",
+      "target_object": "obj-raw-value-operator",
+      "established_by": "thm-deterministic-potential-continuity",
+      "expression": "Deterministic potential operator is continuous",
+      "attributes": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": null,
+        "directive_label": "thm-deterministic-potential-continuity",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-deterministic-potential-continuity"
+      },
+      "chapter": null,
+      "document": null
+    }
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

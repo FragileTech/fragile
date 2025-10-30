@@ -1,0 +1,26 @@
+{
+  "label": "axiom-rescale-function",
+  "statement": "Axiom of a Well-Behaved Rescale Function",
+  "mathematical_expression": "g_A: \\mathbb{R} \\to \\mathbb{R}_{>0} \\text{ with: } (1) \\text{ } C^1 \\text{ smoothness}, (2) \\text{ } g'_A(z) \\ge 0 \\text{ } \\forall z, (3) \\text{ range } (0, g_{A,\\max}], (4) \\text{ } \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of a Well-Behaved Rescale Function",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": "Violating any property makes the algorithm unpredictable or unstable: (1) Smoothness prevents discontinuous jumps in fitness, (2) Monotonicity ensures logical ordering (better → higher fitness), (3) Boundedness prevents infinite fitness that breaks probability calculations, (4) Lipschitz continuity ensures small input changes cause proportional output changes",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "8.1",
+    "section_name": null,
+    "directive_label": "axiom-rescale-function",
+    "equation": null,
+    "line_range": [
+      1632,
+      1664
+    ],
+    "url_fragment": null
+  }
+}

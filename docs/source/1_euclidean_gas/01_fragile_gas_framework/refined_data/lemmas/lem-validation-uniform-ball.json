@@ -1,0 +1,42 @@
+{
+  "label": "lem-validation-uniform-ball",
+  "name": "Validation of the Uniform Ball Measure",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-perturbation-measure",
+    "obj-smoothed-gaussian-measure",
+    "obj-boundary-regularity-constants"
+  ],
+  "input_axioms": [
+    "def-axiom-bounded-second-moment-perturbation",
+    "def-axiom-boundary-regularity"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [
+    "Uniform ball distribution satisfies boundary regularity conditions"
+  ],
+  "natural_language_statement": "Let the noise measure $\\mathcal{P}_\\sigma(x, \\cdot)$ be defined as the uniform probability measure over a ball of radius $\\sigma$ centered at $x$ in the state space $\\mathcal{X}$. This measure satisfies the required axioms, provided the boundary of the valid set is sufficiently regular. In particular, the death-probability map is continuous under mild assumptions; to claim a global Lipschitz modulus with respect to $d_{\\text{Disp},\\mathcal{Y}}$, assume $\\mathcal{X}_{\\mathrm{valid}}$ has Lipschitz boundary or finite perimeter so that boundary layer estimates apply.",
+  "assumptions": [
+    "Uniform probability measure over ball $B(x, \\sigma)$",
+    "Sufficiently regular boundary (Lipschitz or finite perimeter)"
+  ],
+  "conclusion": "The uniform ball measure satisfies the required axioms with Lipschitz bound $L_{\\text{death}} \\le C_{\\text{perim}}/\\sigma$",
+  "equation_label": null,
+  "uses_definitions": [
+    "def-perturbation-measure",
+    "def-valid-noise-measure"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

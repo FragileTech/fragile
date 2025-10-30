@@ -1215,7 +1215,7 @@ def create_interactive_manifold_explorer(
             # Create FitnessOperator for on-the-fly Hessian computation if needed
             from fragile.core.companion_selection import CompanionSelection  # noqa: PLC0415
 
-            companion_selection = CompanionSelection(
+            CompanionSelection(
                 method=config.companion_method,
                 epsilon=config.companion_epsilon,
                 lambda_alg=config.lambda_alg,

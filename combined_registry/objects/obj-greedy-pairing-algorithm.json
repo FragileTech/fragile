@@ -3,12 +3,21 @@
   "name": "Sequential Stochastic Greedy Pairing Operator",
   "mathematical_expression": "w_{ij} := \\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\epsilon_d^2}\\right)",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning"
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "obj-greedy-pairing-algorithm",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-greedy-pairing-algorithm"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

@@ -4,5 +4,11 @@
   "mathematical_expression": "X_i \\;:=\\;\\big(U_i^{\\mathrm{comp}},\\,U_i^{\\mathrm{pert}},\\,U_i^{\\mathrm{status}},\\,U_i^{\\mathrm{clone}}\\big)",
   "foundational_framework": "Euclidean Gas",
   "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "document": "01_fragile_gas_framework",
+  "name": null,
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": null
 }

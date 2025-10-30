@@ -1,0 +1,20 @@
+{
+  "temp_id": "raw-axiom-011",
+  "label_text": "def-axiom-non-degenerate-noise",
+  "axiom_name": "Non Degenerate Noise",
+  "statement": "*   **Core Assumption:** The **Perturbation** and **Cloning** measures must not be the Dirac delta measure.\n*   **Axiomatic Parameters ($\\sigma$, $\\delta$ - The Noise Scales):** The user provides these parameters directly.\n*   **Condition:** The user must ensure **$\\sigma > 0$** and **$\\delta > 0$**.\n*   **Failure Mode Analysis:** If **$\\sigma = 0$** and **$\\delta = 0$**, the swarm cannot introduce new positions into the system, leading to a complete loss of exploration and eventual collapse to ",
+  "source_section": "§3",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "3",
+    "section_name": null,
+    "directive_label": "def-axiom-non-degenerate-noise",
+    "equation": null,
+    "line_range": [
+      860,
+      867
+    ],
+    "url_fragment": "#def-axiom-non-degenerate-noise"
+  }
+}

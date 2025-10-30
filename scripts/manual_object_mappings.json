@@ -1,0 +1,100 @@
+{
+  "_comment": "Manual mappings for objects without formal definitions in markdown",
+  "_format": "section should be in X.Y.Z format, line_range should be [start, end]",
+
+  "obj-aggregator-lipschitz-constants": {
+    "section": "6.2",
+    "line_range": [1273, 1370],
+    "reason": "Related to Swarm Aggregation Operator section"
+  },
+
+  "obj-boundary-regularity-constants": {
+    "section": "6.1",
+    "line_range": [1244, 1272],
+    "reason": "Related to Domain Geometry section"
+  },
+
+  "obj-canonical-fragile-swarm": {
+    "section": "19.1",
+    "line_range": [5124, 5300],
+    "reason": "Definition of Canonical Fragile Swarm section"
+  },
+
+  "obj-cloning-probability-lipschitz-constants": {
+    "section": "7",
+    "line_range": [1484, 1600],
+    "reason": "Related to Cloning Operator section"
+  },
+
+  "obj-continuity-constants-table": {
+    "section": "20",
+    "line_range": [5400, 5500],
+    "reason": "Constants table consolidation section"
+  },
+
+  "obj-distance-measurement-ms-constants": {
+    "section": "5.2",
+    "line_range": [1220, 1241],
+    "reason": "Related to Distance Measurement section"
+  },
+
+  "obj-expected-distance-error-coefficients": {
+    "section": "13.2.4",
+    "line_range": [4064, 4082],
+    "reason": "Related to Expected Distance Error section"
+  },
+
+  "obj-one-step-ms-continuity-coefficients": {
+    "section": "17",
+    "line_range": [4500, 4700],
+    "reason": "Related to One-Step Continuity section"
+  },
+
+  "obj-perturbation-constants": {
+    "section": "10",
+    "line_range": [2800, 3000],
+    "reason": "Related to Perturbation Operator section"
+  },
+
+  "obj-potential-bounds": {
+    "section": "11",
+    "line_range": [3200, 3400],
+    "reason": "Related to Fitness Potential section"
+  },
+
+  "obj-rescale-lipschitz-constants": {
+    "section": "8",
+    "line_range": [1650, 2100],
+    "reason": "Related to Rescale Function section"
+  },
+
+  "obj-revival-score-ratio": {
+    "section": "15",
+    "line_range": [4250, 4350],
+    "reason": "Related to Revival Operator section"
+  },
+
+  "obj-revival-state": {
+    "section": "15",
+    "line_range": [4250, 4350],
+    "reason": "Related to Revival Operator section"
+  },
+
+  "obj-standardization-lower-bound": {
+    "section": "9.2",
+    "line_range": [2200, 2400],
+    "reason": "Related to Standardization Operator section"
+  },
+
+  "obj-standardization-total-value-error-coefficient": {
+    "section": "9",
+    "line_range": [2100, 2600],
+    "reason": "Related to Standardization section"
+  },
+
+  "obj-stochastic-fluctuation-bound": {
+    "section": "13",
+    "line_range": [3800, 4100],
+    "reason": "Related to Stochastic Bounds section"
+  }
+}

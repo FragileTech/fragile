@@ -1,0 +1,22 @@
+{
+  "label": "obj-standardization-total-value-error-coefficient",
+  "name": "Total Value Error Coefficient for Standardization",
+  "mathematical_expression": "Total coefficient controlling mean-square value error in standardization operator under canonical empirical aggregator with regularized standard deviation.",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "section_name": null,
+    "directive_label": "obj-standardization-total-value-error-coefficient",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-standardization-total-value-error-coefficient"
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-standardization-total-value-error-coefficient"
+}

@@ -1,0 +1,900 @@
+====================================================================================================
+COMPREHENSIVE SOURCE LOCATION DIAGNOSTIC REPORT
+====================================================================================================
+
+Total files analyzed: 217
+  ✓ Valid (OK):           144 (66.4%)
+  ⚠ Medium issues:         50 (23.0%)
+  ✗ High severity:          2 (0.9%)
+  ✗✗ CRITICAL (no line_range):  21 (9.7%)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+ISSUES BY TYPE:
+────────────────────────────────────────────────────────────────────────────────────────────────────
+  MISSING         100 issues
+  OUT_OF_BOUNDS     2 issues
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+ISSUES BY FIELD:
+────────────────────────────────────────────────────────────────────────────────────────────────────
+  directive_label       67 issues
+  line_range            23 issues
+  section               12 issues
+
+
+====================================================================================================
+CRITICAL: Files without line_range (21 files)
+====================================================================================================
+
+File: raw-axiom-007.json
+  Label: axiom-7
+  Type: unknown
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: axiom-7
+     Fix: Set to: axiom-7
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: cor-chain-rule-sigma-reg-var.json
+  Label: cor-chain-rule-sigma-reg-var
+  Type: corollary
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: Corollary: Chain‑rule bound for σ'_reg ∘ Var
+     Fix: Set to: Corollary: Chain‑rule bound for σ'_reg ∘ Var
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: cor-closed-form-lipschitz-composite.json
+  Label: cor-closed-form-lipschitz-composite
+  Type: corollary
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: Corollary: Closed‑form bound for L_{g_A∘z} (empirical aggregator)
+     Fix: Set to: Corollary: Closed‑form bound for L_{g_A∘z} (empirical aggregator)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: cor-pipeline-continuity-margin-stability.json
+  Label: cor-pipeline-continuity-margin-stability
+  Type: corollary
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: Corollary: Pipeline Continuity Under Margin-Based Status Stability
+     Fix: Set to: Corollary: Pipeline Continuity Under Margin-Based Status Stability
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: def-distance-to-companion-measurement.json
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: lem-bounded-differences-favg.json
+  Label: lem-bounded-differences-favg
+  Type: lemma
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: lem-bounded-differences-favg
+     Fix: Set to: lem-bounded-differences-favg
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: lem-empirical-moments-lipschitz.json
+  Label: lem-empirical-moments-lipschitz
+  Type: lemma
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: lem-empirical-moments-lipschitz
+     Fix: Set to: lem-empirical-moments-lipschitz
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: param-epsilon-std.json
+  Label: param-epsilon-std
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: param-epsilon-std
+     Fix: Set to: param-epsilon-std
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: param-f-v-ms.json
+  Label: param-f-v-ms
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: param-f-v-ms
+     Fix: Set to: param-f-v-ms
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: param-kappa-revival.json
+  Label: param-kappa-revival
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: param-kappa-revival
+     Fix: Set to: param-kappa-revival
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: param-kappa-variance.json
+  Label: param-kappa-variance
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: param-kappa-variance
+     Fix: Set to: param-kappa-variance
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: param-l-phi.json
+  Label: param-l-phi
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: param-l-phi
+     Fix: Set to: param-l-phi
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: param-p-worst-case.json
+  Label: param-p-worst-case
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: param-p-worst-case
+     Fix: Set to: param-p-worst-case
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: raw-param-005.json
+  Type: unknown
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-lem-empirical-moments-lipschitz.json
+  Label: proof-lem-empirical-moments-lipschitz
+  Type: unknown
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: proof-lem-empirical-moments-lipschitz
+     Fix: Set to: proof-lem-empirical-moments-lipschitz
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: unlabeled-proof-134.json
+  Label: unlabeled-proof-134
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: unlabeled-proof-134
+     Fix: Set to: unlabeled-proof-134
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: unlabeled-proof-88.json
+  Label: unlabeled-proof-88
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: unlabeled-proof-88
+     Fix: Set to: unlabeled-proof-88
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: remark-cemetery-convention.json
+  Type: unknown
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: remark-cloning-scope-companion-convention.json
+  Type: unknown
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: remark-extinction-risk-shift.json
+  Type: unknown
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: remark-phoenix-effect.json
+  Type: unknown
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+====================================================================================================
+HIGH SEVERITY: Invalid formats (2 files)
+====================================================================================================
+
+File: obj-canonical-fragile-swarm.json
+  Label: obj-canonical-fragile-swarm
+  Type: unknown
+
+  ⚠ line_range: OUT_OF_BOUNDS
+     Problem: end 5300 exceeds file length 5289
+     Current: [5124, 5300]
+     Fix: Truncate to file length: [5124, 5289]
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-canonical-fragile-swarm
+     Fix: Set to: obj-canonical-fragile-swarm
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-continuity-constants-table.json
+  Label: obj-continuity-constants-table
+  Type: unknown
+
+  ⚠ line_range: OUT_OF_BOUNDS
+     Problem: end 5500 exceeds file length 5289
+     Current: [5400, 5500]
+     Fix: Truncate to file length: [5400, 5289]
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-continuity-constants-table
+     Fix: Set to: obj-continuity-constants-table
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+====================================================================================================
+MEDIUM: Missing optional fields (50 files)
+====================================================================================================
+
+File: axiom-bounded-second-moment-perturbation.json
+  Label: def-axiom-bounded-second-moment-perturbation
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: def-axiom-bounded-second-moment-perturbation
+     Fix: Set to: def-axiom-bounded-second-moment-perturbation
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: axiom-rescale-function.json
+  Label: axiom-rescale-function
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: axiom-rescale-function
+     Fix: Set to: axiom-rescale-function
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: def-cloning-operator-continuity-coeffs-recorrected.json
+  Label: def-cloning-operator-continuity-coeffs-recorrected
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: def-cloning-operator-continuity-coeffs-recorrected
+     Fix: Set to: def-cloning-operator-continuity-coeffs-recorrected
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: def-composite-continuity-coeffs-recorrected.json
+  Label: def-composite-continuity-coeffs-recorrected
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: def-composite-continuity-coeffs-recorrected
+     Fix: Set to: def-composite-continuity-coeffs-recorrected
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: def-final-status-change-coeffs.json
+  Label: def-final-status-change-coeffs
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: def-final-status-change-coeffs
+     Fix: Set to: def-final-status-change-coeffs
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: def-value-error-coefficients.json
+  Label: def-value-error-coefficients
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: def-value-error-coefficients
+     Fix: Set to: def-value-error-coefficients
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: lem-empirical-moments-lipschitz-dup.json
+  Label: lem-empirical-moments-lipschitz-dup
+  Type: lemma
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: lem-empirical-moments-lipschitz-dup
+     Fix: Set to: lem-empirical-moments-lipschitz-dup
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: lem-lipschitz-variance-functional.json
+  Label: lem-lipschitz-variance-functional
+  Type: lemma
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: lem-lipschitz-variance-functional
+     Fix: Set to: lem-lipschitz-variance-functional
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: lem-validation-heat-kernel.json
+  Label: lem-validation-heat-kernel
+  Type: lemma
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: lem-validation-heat-kernel
+     Fix: Set to: lem-validation-heat-kernel
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: lem-validation-uniform-ball.json
+  Label: lem-validation-uniform-ball
+  Type: lemma
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: lem-validation-uniform-ball
+     Fix: Set to: lem-validation-uniform-ball
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-aggregator-lipschitz-constants.json
+  Label: obj-aggregator-lipschitz-constants
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-aggregator-lipschitz-constants
+     Fix: Set to: obj-aggregator-lipschitz-constants
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-boundary-regularity-constants.json
+  Label: obj-boundary-regularity-constants
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-boundary-regularity-constants
+     Fix: Set to: obj-boundary-regularity-constants
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-cloning-probability-lipschitz-constants.json
+  Label: obj-cloning-probability-lipschitz-constants
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-cloning-probability-lipschitz-constants
+     Fix: Set to: obj-cloning-probability-lipschitz-constants
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-distance-measurement-ms-constants.json
+  Label: obj-distance-measurement-ms-constants
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-distance-measurement-ms-constants
+     Fix: Set to: obj-distance-measurement-ms-constants
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-expected-distance-error-coefficients.json
+  Label: obj-expected-distance-error-coefficients
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-expected-distance-error-coefficients
+     Fix: Set to: obj-expected-distance-error-coefficients
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-one-step-ms-continuity-coefficients.json
+  Label: obj-one-step-ms-continuity-coefficients
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-one-step-ms-continuity-coefficients
+     Fix: Set to: obj-one-step-ms-continuity-coefficients
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-perturbation-constants.json
+  Label: obj-perturbation-constants
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-perturbation-constants
+     Fix: Set to: obj-perturbation-constants
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-potential-bounds.json
+  Label: obj-potential-bounds
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-potential-bounds
+     Fix: Set to: obj-potential-bounds
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-rescale-lipschitz-constants.json
+  Label: obj-rescale-lipschitz-constants
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-rescale-lipschitz-constants
+     Fix: Set to: obj-rescale-lipschitz-constants
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-revival-score-ratio.json
+  Label: obj-revival-score-ratio
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-revival-score-ratio
+     Fix: Set to: obj-revival-score-ratio
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-revival-state.json
+  Label: obj-revival-state
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-revival-state
+     Fix: Set to: obj-revival-state
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-reward-measurement.json
+  Label: obj-reward-measurement
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-reward-measurement
+     Fix: Set to: obj-reward-measurement
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-standardization-lower-bound.json
+  Label: obj-standardization-lower-bound
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-standardization-lower-bound
+     Fix: Set to: obj-standardization-lower-bound
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-standardization-total-value-error-coefficient.json
+  Label: obj-standardization-total-value-error-coefficient
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-standardization-total-value-error-coefficient
+     Fix: Set to: obj-standardization-total-value-error-coefficient
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: obj-stochastic-fluctuation-bound.json
+  Label: obj-stochastic-fluctuation-bound
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: obj-stochastic-fluctuation-bound
+     Fix: Set to: obj-stochastic-fluctuation-bound
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: param-l-r.json
+  Label: param-l-r
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: param-l-r
+     Fix: Set to: param-l-r
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: param-n.json
+  Label: param-n
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: param-n
+     Fix: Set to: param-n
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-cloning-transition-operator-continuity-recorrected.json
+  Label: proof-cloning-transition-operator-continuity-recorrected
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: proof-cloning-transition-operator-continuity-recorrected
+     Fix: Set to: proof-cloning-transition-operator-continuity-recorrected
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-composite-continuity-bound-recorrected.json
+  Label: proof-composite-continuity-bound-recorrected
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: proof-composite-continuity-bound-recorrected
+     Fix: Set to: proof-composite-continuity-bound-recorrected
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-lem-cloning-probability-lipschitz.json
+  Label: proof-lem-cloning-probability-lipschitz
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: proof-lem-cloning-probability-lipschitz
+     Fix: Set to: proof-lem-cloning-probability-lipschitz
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-lem-empirical-aggregator-properties.json
+  Label: proof-lem-empirical-aggregator-properties
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: proof-lem-empirical-aggregator-properties
+     Fix: Set to: proof-lem-empirical-aggregator-properties
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-lem-total-clone-prob-structural-error.json
+  Label: proof-lem-total-clone-prob-structural-error
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: proof-lem-total-clone-prob-structural-error
+     Fix: Set to: proof-lem-total-clone-prob-structural-error
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-lem-total-clone-prob-value-error.json
+  Label: proof-lem-total-clone-prob-value-error
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: proof-lem-total-clone-prob-value-error
+     Fix: Set to: proof-lem-total-clone-prob-value-error
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-perturbation-operator-continuity.json
+  Label: proof-thm-perturbation-operator-continuity-reproof
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: proof-thm-perturbation-operator-continuity-reproof
+     Fix: Set to: proof-thm-perturbation-operator-continuity-reproof
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-perturbation-positional-bound.json
+  Label: proof-sub-lem-perturbation-positional-bound-reproof
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: proof-sub-lem-perturbation-positional-bound-reproof
+     Fix: Set to: proof-sub-lem-perturbation-positional-bound-reproof
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-probabilistic-bound-perturbation-displacement.json
+  Label: proof-sub-lem-probabilistic-bound-perturbation-displacement-reproof
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: proof-sub-lem-probabilistic-bound-perturbation-displacement-reproof
+     Fix: Set to: proof-sub-lem-probabilistic-bound-perturbation-displacement-reproof
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-sub-lem-bound-sum-total-cloning-probs.json
+  Label: proof-sub-lem-bound-sum-total-cloning-probs
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: proof-sub-lem-bound-sum-total-cloning-probs
+     Fix: Set to: proof-sub-lem-bound-sum-total-cloning-probs
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-thm-expected-cloning-action-continuity.json
+  Label: proof-thm-expected-cloning-action-continuity
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: proof-thm-expected-cloning-action-continuity
+     Fix: Set to: proof-thm-expected-cloning-action-continuity
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-thm-k1-revival-state.json
+  Label: proof-thm-k1-revival-state
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: proof-thm-k1-revival-state
+     Fix: Set to: proof-thm-k1-revival-state
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-thm-potential-operator-is-mean-square-continuous.json
+  Label: proof-thm-potential-operator-is-mean-square-continuous
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: proof-thm-potential-operator-is-mean-square-continuous
+     Fix: Set to: proof-thm-potential-operator-is-mean-square-continuous
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-thm-total-expected-cloning-action-continuity.json
+  Label: proof-thm-total-expected-cloning-action-continuity
+  Type: unknown
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: proof-thm-total-expected-cloning-action-continuity
+     Fix: Set to: proof-thm-total-expected-cloning-action-continuity
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: raw-thm-001.json
+  Label: thm-revival-guarantee
+  Type: theorem
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: thm-revival-guarantee
+     Fix: Set to: thm-revival-guarantee
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: raw-thm-002.json
+  Label: thm-mean-square-standardization-error
+  Type: theorem
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: thm-mean-square-standardization-error
+     Fix: Set to: thm-mean-square-standardization-error
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: thm-cloning-transition-operator-continuity-recorrected.json
+  Label: thm-cloning-transition-operator-continuity-recorrected
+  Type: theorem
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: thm-cloning-transition-operator-continuity-recorrected
+     Fix: Set to: thm-cloning-transition-operator-continuity-recorrected
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: thm-deterministic-potential-continuity.json
+  Label: thm-deterministic-potential-continuity
+  Type: theorem
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: thm-deterministic-potential-continuity
+     Fix: Set to: thm-deterministic-potential-continuity
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: thm-fitness-potential-mean-square-continuity.json
+  Label: thm-fitness-potential-mean-square-continuity
+  Type: theorem
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: thm-fitness-potential-mean-square-continuity
+     Fix: Set to: thm-fitness-potential-mean-square-continuity
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: thm-perturbation-operator-continuity.json
+  Label: thm-perturbation-operator-continuity
+  Type: theorem
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: thm-perturbation-operator-continuity
+     Fix: Set to: thm-perturbation-operator-continuity
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: thm-potential-operator-is-mean-square-continuous.json
+  Label: thm-potential-operator-is-mean-square-continuous
+  Type: theorem
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: thm-potential-operator-is-mean-square-continuous
+     Fix: Set to: thm-potential-operator-is-mean-square-continuous
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: thm-swarm-update-operator-continuity-recorrected.json
+  Label: thm-swarm-update-operator-continuity-recorrected
+  Type: theorem
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: thm-swarm-update-operator-continuity-recorrected
+     Fix: Set to: thm-swarm-update-operator-continuity-recorrected
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: thm-total-expected-distance-error-decomposition.json
+  Label: thm-total-expected-distance-error-decomposition
+  Type: theorem
+
+  ✗ directive_label: MISSING
+     Problem: directive_label missing but entity has label: thm-total-expected-distance-error-decomposition
+     Fix: Set to: thm-total-expected-distance-error-decomposition
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+====================================================================================================
+SUMMARY OF FIXES NEEDED
+====================================================================================================
+
+1. CRITICAL: Find line_range for 21 files
+   Use: scripts/enrich_line_ranges_from_directives.py
+   Or:  scripts/aggressive_text_matching.py
+   Or:  scripts/handle_special_cases.py
+
+4. HIGH: Fix 2 out-of-bounds line_range values
+   Manually correct line_range in JSON files
+
+5. MEDIUM: Add 50 missing optional fields
+   Extract sections: scripts/extract_sections_from_markdown.py
+
+====================================================================================================
+Valid files: 144/217 (66.4%)
+Files needing fixes: 73/217 (33.6%)
+====================================================================================================

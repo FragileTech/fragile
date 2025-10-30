@@ -168,10 +168,11 @@ class ConvergenceBoundsPanel(param.Parameterized):
         # Extract parameters from GasConfig
         # Note: sigma_v (Langevin noise) = sqrt(2 / (gamma * beta))
         import numpy as np
+
         from fragile.gas_parameters import (
             estimate_landscape_from_history,
-            extract_trajectory_data_from_history,
             estimate_rates_from_trajectory,
+            extract_trajectory_data_from_history,
         )
 
         gamma_val = float(self.gas_config.gamma)
@@ -198,8 +199,7 @@ class ConvergenceBoundsPanel(param.Parameterized):
                 # Estimate landscape from empirical data
                 use_bounds_analysis = not bool(self.gas_config.pbc)
                 landscape_empirical = estimate_landscape_from_history(
-                    self.history,
-                    use_bounds_analysis=use_bounds_analysis
+                    self.history, use_bounds_analysis=use_bounds_analysis
                 )
                 lambda_min = landscape_empirical.lambda_min
                 lambda_max = landscape_empirical.lambda_max
@@ -244,8 +244,10 @@ class ConvergenceBoundsPanel(param.Parameterized):
         var_v_eq = cb.equilibrium_variance_v(params["d"], params["sigma_v"], params["gamma"])
 
         # 5. Adaptive Gas Analysis (comprehensive diagnostics)
-        from fragile.experiments.adaptive_gas import create_adaptive_gas_diagnostics
-        from fragile.experiments.adaptive_gas import print_adaptive_gas_report
+        from fragile.experiments.adaptive_gas import (
+            create_adaptive_gas_diagnostics,
+            print_adaptive_gas_report,
+        )
 
         # Prepare parameters for adaptive gas validation
         adaptive_params = {
@@ -334,19 +336,19 @@ class ConvergenceBoundsPanel(param.Parameterized):
                 trajectory_data = extract_trajectory_data_from_history(
                     self.history,
                     stage="final",
-                    use_improved_wasserstein=True  # Use better Wasserstein proxy
+                    use_improved_wasserstein=True,  # Use better Wasserstein proxy
                 )
 
                 # Fit empirical convergence rates with verbose diagnostics
-                print("\n" + "="*60)
+                print("\n" + "=" * 60)
                 print("EMPIRICAL CONVERGENCE RATE ESTIMATION")
-                print("="*60)
+                print("=" * 60)
                 empirical_rates = estimate_rates_from_trajectory(
                     trajectory_data,
                     tau=params["tau"],
-                    verbose=True  # Enable diagnostic output
+                    verbose=True,  # Enable diagnostic output
                 )
-                print("="*60 + "\n")
+                print("=" * 60 + "\n")
 
                 # Extract fit diagnostics
                 fit_diagnostics = trajectory_data.get("_diagnostics", {}).get("fits", {})
@@ -357,30 +359,39 @@ class ConvergenceBoundsPanel(param.Parameterized):
                         "theoretical": kappa_x,
                         "empirical": empirical_rates.kappa_x,
                         "error": abs(kappa_x - empirical_rates.kappa_x) / (kappa_x + 1e-10),
-                        "fit_r2": fit_diagnostics.get("kappa_x", None).r_squared if fit_diagnostics.get("kappa_x") else 0.0,
+                        "fit_r2": fit_diagnostics.get("kappa_x", None).r_squared
+                        if fit_diagnostics.get("kappa_x")
+                        else 0.0,
                     },
                     "kappa_v": {
                         "theoretical": kappa_v,
                         "empirical": empirical_rates.kappa_v,
                         "error": abs(kappa_v - empirical_rates.kappa_v) / (kappa_v + 1e-10),
-                        "fit_r2": fit_diagnostics.get("kappa_v", None).r_squared if fit_diagnostics.get("kappa_v") else 0.0,
+                        "fit_r2": fit_diagnostics.get("kappa_v", None).r_squared
+                        if fit_diagnostics.get("kappa_v")
+                        else 0.0,
                     },
                     "kappa_W": {
                         "theoretical": kappa_W,
                         "empirical": empirical_rates.kappa_W,
                         "error": abs(kappa_W - empirical_rates.kappa_W) / (kappa_W + 1e-10),
-                        "fit_r2": fit_diagnostics.get("kappa_W", None).r_squared if fit_diagnostics.get("kappa_W") else 0.0,
+                        "fit_r2": fit_diagnostics.get("kappa_W", None).r_squared
+                        if fit_diagnostics.get("kappa_W")
+                        else 0.0,
                     },
                     "kappa_b": {
                         "theoretical": kappa_b,
                         "empirical": empirical_rates.kappa_b,
                         "error": abs(kappa_b - empirical_rates.kappa_b) / (kappa_b + 1e-10),
-                        "fit_r2": fit_diagnostics.get("kappa_b", None).r_squared if fit_diagnostics.get("kappa_b") else 0.0,
+                        "fit_r2": fit_diagnostics.get("kappa_b", None).r_squared
+                        if fit_diagnostics.get("kappa_b")
+                        else 0.0,
                     },
                     "kappa_total": {
                         "theoretical": kappa_total,
                         "empirical": empirical_rates.kappa_total,
-                        "error": abs(kappa_total - empirical_rates.kappa_total) / (kappa_total + 1e-10),
+                        "error": abs(kappa_total - empirical_rates.kappa_total)
+                        / (kappa_total + 1e-10),
                         "fit_r2": 0.0,  # Total doesn't have its own fit
                     },
                 }
@@ -389,6 +400,7 @@ class ConvergenceBoundsPanel(param.Parameterized):
             except Exception as e:
                 print(f"Warning: Empirical rate estimation failed: {e}")
                 import traceback
+
                 traceback.print_exc()
                 empirical_rates = None
                 rate_comparison = None
@@ -669,7 +681,10 @@ class ConvergenceBoundsPanel(param.Parameterized):
             md += f"- **Viscous coupling enabled**: {hypo.use_viscous_coupling}\n\n"
 
         # Viscous coupling section
-        if adaptive_diag.viscous_coupling is not None and adaptive_diag.viscous_coupling.is_enabled:
+        if (
+            adaptive_diag.viscous_coupling is not None
+            and adaptive_diag.viscous_coupling.is_enabled
+        ):
             md += "### Viscous Coupling\n\n"
             visc = adaptive_diag.viscous_coupling
 
@@ -789,8 +804,7 @@ class ConvergenceBoundsPanel(param.Parameterized):
             try:
                 use_bounds_analysis = not bool(self.gas_config.pbc)
                 landscape = estimate_landscape_from_history(
-                    self.history,
-                    use_bounds_analysis=use_bounds_analysis
+                    self.history, use_bounds_analysis=use_bounds_analysis
                 )
             except Exception as e:
                 print(f"Warning: Landscape estimation failed, using defaults: {e}")
@@ -812,7 +826,9 @@ class ConvergenceBoundsPanel(param.Parameterized):
 
         # Optimize parameters
         try:
-            self.status_pane.object = f"⏳ **Status:** Computing optimal parameters ({strategy} strategy)..."
+            self.status_pane.object = (
+                f"⏳ **Status:** Computing optimal parameters ({strategy} strategy)..."
+            )
 
             optimal_params, diagnostics = optimize_parameters_multi_strategy(
                 strategy=strategy,
@@ -837,13 +853,14 @@ class ConvergenceBoundsPanel(param.Parameterized):
         except Exception as e:
             self.status_pane.object = f"❌ **Status:** Optimization failed: {e}"
             import traceback
+
             traceback.print_exc()
 
     def _on_apply_click(self, event):
         """Handle 'Apply to Config' button click."""
         from fragile.gas_parameters import apply_gas_params_to_config
 
-        if not hasattr(self, 'suggested_params') or self.suggested_params is None:
+        if not hasattr(self, "suggested_params") or self.suggested_params is None:
             return
 
         try:
@@ -851,7 +868,7 @@ class ConvergenceBoundsPanel(param.Parameterized):
             apply_gas_params_to_config(
                 self.suggested_params,
                 self.gas_config,
-                preserve_adaptive=True  # Keep current adaptive settings
+                preserve_adaptive=True,  # Keep current adaptive settings
             )
 
             self.status_pane.object = "✅ **Status:** Parameters applied to configuration. Click 'Run Simulation' in the sidebar to test."
@@ -860,6 +877,7 @@ class ConvergenceBoundsPanel(param.Parameterized):
         except Exception as e:
             self.status_pane.object = f"❌ **Status:** Apply failed: {e}"
             import traceback
+
             traceback.print_exc()
 
     def _format_optimization_suggestion(self):
@@ -907,7 +925,7 @@ class ConvergenceBoundsPanel(param.Parameterized):
 
         # Expected improvement
         md += "\n### Expected Improvement\n\n"
-        improvement_pct = diag['improvement_ratio'] * 100
+        improvement_pct = diag["improvement_ratio"] * 100
         if improvement_pct > 0:
             md += f"- **Convergence rate increase**: +{improvement_pct:.1f}%\n"
         else:
@@ -940,18 +958,21 @@ class ConvergenceBoundsPanel(param.Parameterized):
                 ("Theoretical Bounds", self.bounds_pane),
                 ("Validation", self.validation_pane),
                 ("Sensitivity Analysis", self.sensitivity_pane),
-                ("Optimization", pn.Column(
-                    self.optimization_pane,  # Static analysis (Pareto frontier, etc.)
-                    pn.layout.Divider(),
-                    pn.pane.Markdown("### Interactive Parameter Optimization"),
-                    self.strategy_selector,
-                    self.suggest_button,
-                    pn.layout.Divider(),
-                    self.optimization_result_pane,
-                    pn.layout.Divider(),
-                    self.apply_button,
-                    sizing_mode="stretch_width",
-                )),
+                (
+                    "Optimization",
+                    pn.Column(
+                        self.optimization_pane,  # Static analysis (Pareto frontier, etc.)
+                        pn.layout.Divider(),
+                        pn.pane.Markdown("### Interactive Parameter Optimization"),
+                        self.strategy_selector,
+                        self.suggest_button,
+                        pn.layout.Divider(),
+                        self.optimization_result_pane,
+                        pn.layout.Divider(),
+                        self.apply_button,
+                        sizing_mode="stretch_width",
+                    ),
+                ),
                 active=[0, 1],  # Open first two sections by default
                 sizing_mode="stretch_width",
             ),

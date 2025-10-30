@@ -2,9 +2,17 @@
   "label": "thm-balanced-optimality",
   "name": "Necessity of Balanced Rates at Optimum",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "06_convergence",
+  "source": {
+    "document_id": "06_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/06_convergence.md",
+    "section": null,
+    "directive_label": "thm-balanced-optimality",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-balanced-optimality"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -12,26 +20,22 @@
   ],
   "input_axioms": [],
   "input_parameters": [],
-  "properties_required": {
+  "attributes_required": {
     "obj-param-selection": [
-      "prop-subgradient-min"
+      "attr-subgradient-min"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [
-    {
-      "label": "prop-balanced-optimality-necessary",
-      "expression": "If P* is a local maximizer (interior), then ∃ i≠j with κ_i(P*) = κ_j(P*) = κ_total(P*)",
-      "object_label": "obj-param-selection",
-      "established_by": "thm-balanced-optimality",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

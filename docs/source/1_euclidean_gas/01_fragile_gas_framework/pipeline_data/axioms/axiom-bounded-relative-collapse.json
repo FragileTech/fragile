@@ -1,0 +1,138 @@
+{
+  "label": "axiom-bounded-relative-collapse",
+  "statement": "For any transition with a non-empty initial swarm, the scaling analysis for structural error is valid only for transitions that are not catastrophically large relative to the initial swarm size.",
+  "mathematical_expression": "$$\n\\frac{|\\mathcal{A}(\\mathcal{S}_2)|}{|\\mathcal{A}(\\mathcal{S}_1)|} \\ge c_{\\min}\n$$",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Bounded Relative Collapse",
+  "core_assumption": {
+    "lhs": {
+      "latex": "\\frac{|\\mathcal{A}(\\mathcal{S}_2)|}{|\\mathcal{A}(\\mathcal{S}_1)|}",
+      "sympy": null,
+      "parse_status": "opaque",
+      "parse_error": "Set cardinality and swarm state operators not supported in SymPy"
+    },
+    "relation": ">=",
+    "rhs": {
+      "latex": "c_{\\min}",
+      "sympy": null,
+      "parse_status": "opaque",
+      "parse_error": "Symbolic constant defined by user"
+    },
+    "assumptions": {
+      "real": null,
+      "positive": null,
+      "negative": null,
+      "zero": null,
+      "nonzero": null,
+      "integer": null,
+      "rational": null,
+      "complex": null,
+      "finite": null,
+      "infinite": null,
+      "even": null,
+      "odd": null,
+      "prime": null,
+      "symmetric": null,
+      "hermitian": null,
+      "orthogonal": null,
+      "unitary": null,
+      "spd": null,
+      "invertible": null,
+      "bounded": null,
+      "continuous": null,
+      "differentiable": null,
+      "lipschitz": null,
+      "measurable": null,
+      "integrable": null,
+      "custom": {}
+    },
+    "context": "A transition from swarm $\\mathcal{S}_1$ to $\\mathcal{S}_2$ is considered non-catastrophic if this condition holds, provided $|\\mathcal{A}(\\mathcal{S}_1)| > 0$"
+  },
+  "parameters": [
+    {
+      "symbol": "c_{\\min}",
+      "description": "Relative Collapse Tolerance - the minimum fraction of the swarm that must survive a transition for the structural growth exponent analysis to be valid",
+      "constraints": "c_{\\min} \\in (0, 1]"
+    },
+    {
+      "symbol": "\\mathcal{S}_1",
+      "description": "Initial swarm state before transition",
+      "constraints": "Valid swarm configuration in \\Sigma_N with |\\mathcal{A}(\\mathcal{S}_1)| > 0 (non-empty alive set)"
+    },
+    {
+      "symbol": "\\mathcal{S}_2",
+      "description": "Final swarm state after transition",
+      "constraints": "Valid swarm configuration in \\Sigma_N"
+    },
+    {
+      "symbol": "\\mathcal{A}(\\mathcal{S})",
+      "description": "Alive set operator - returns the set of alive walkers in swarm state \\mathcal{S}",
+      "constraints": "\\mathcal{A}(\\mathcal{S}) \\subseteq \\{1, \\ldots, N\\}"
+    },
+    {
+      "symbol": "|\\mathcal{A}(\\mathcal{S})|",
+      "description": "Cardinality of the alive set - number of alive walkers in the swarm",
+      "constraints": "|\\mathcal{A}(\\mathcal{S})| \\in \\{0, 1, \\ldots, N\\}"
+    }
+  ],
+  "condition": {
+    "lhs": {
+      "latex": "\\frac{|\\mathcal{A}(\\mathcal{S}_2)|}{|\\mathcal{A}(\\mathcal{S}_1)|}",
+      "sympy": null,
+      "parse_status": "opaque",
+      "parse_error": "Set cardinality operator not supported in SymPy"
+    },
+    "relation": ">=",
+    "rhs": {
+      "latex": "c_{\\min}",
+      "sympy": null,
+      "parse_status": "opaque",
+      "parse_error": "User-provided constant"
+    },
+    "assumptions": {
+      "real": null,
+      "positive": null,
+      "negative": null,
+      "zero": null,
+      "nonzero": null,
+      "integer": null,
+      "rational": null,
+      "complex": null,
+      "finite": null,
+      "infinite": null,
+      "even": null,
+      "odd": null,
+      "prime": null,
+      "symmetric": null,
+      "hermitian": null,
+      "orthogonal": null,
+      "unitary": null,
+      "spd": null,
+      "invertible": null,
+      "bounded": null,
+      "continuous": null,
+      "differentiable": null,
+      "lipschitz": null,
+      "measurable": null,
+      "integrable": null,
+      "custom": {}
+    },
+    "context": "The axiom is a precondition for the validity of the framework's O(1/N) scaling analysis for structural error. It applies when the fraction of surviving walkers is at least c_{\\min}, defining the operational regime where theoretical guarantees hold."
+  },
+  "failure_mode_analysis": "This axiom represents a critical limitation of the framework. If the condition is violated (i.e., during a catastrophic collapse where |\\mathcal{A}(\\mathcal{S}_2)| / |\\mathcal{A}(\\mathcal{S}_1)| < c_{\\min}), the system enters a regime where the framework's guarantees on aggregator scaling properties **do not apply**. The structural error analysis relies on asymptotic scaling arguments that break down when the swarm size changes dramatically. Specifically:\n\n1. **Loss of Scaling Validity**: The O(1/N) growth rate bounds for structural error components (see Section 2.3 on Swarm Aggregation Operators) are not certified when the alive set collapses below the c_{\\min} threshold.\n\n2. **Statistical Instability**: Aggregator operators (mean, variance computation) become unreliable with too few samples, leading to pathological statistical moments decoupled from true population properties.\n\n3. **Framework Scope Limitation**: The analysis is valid for ensuring the system remains in a stable operational regime (small perturbations, gradual attrition) but is **not certified to describe the dynamics during the very collapse events it is meant to help understand**.\n\n4. **Practical Implications**: \n   - If c_{\\min} is too small (e.g., 0.1), the framework tolerates large population losses where statistical estimates become unreliable\n   - If c_{\\min} is too large (e.g., 0.95), the framework becomes overly conservative and may reject valid operational transitions\n   - Typical values: c_{\\min} \u2208 [0.5, 0.9] balance stability guarantees with operational flexibility. These values are empirically derived from the observation that aggregator estimates (particularly variance) require at least 50% sample retention to maintain statistical reliability, while values above 0.9 become too restrictive for systems experiencing natural population volatility under the cloning/killing dynamics.\n\n5. **Recovery Strategy**: If a catastrophic collapse occurs, the framework provides no guarantees until the swarm is replenished (through revival mechanisms) to restore |\\mathcal{A}(\\mathcal{S})| above the operational threshold.\n\nThis is fundamentally a **scope axiom** rather than a regularity condition - it defines where the framework's mathematical machinery is certified to work, not a property the algorithm must satisfy.",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.3.4",
+    "section_name": null,
+    "directive_label": "def-axiom-bounded-relative-collapse",
+    "equation": null,
+    "line_range": [
+      913,
+      925
+    ],
+    "url_fragment": "#axiom-bounded-relative-collapse"
+  }
+}

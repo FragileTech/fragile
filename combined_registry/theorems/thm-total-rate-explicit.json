@@ -2,9 +2,17 @@
   "label": "thm-total-rate-explicit",
   "name": "Total Convergence Rate (Parameter-Explicit)",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "06_convergence",
+  "source": {
+    "document_id": "06_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/06_convergence.md",
+    "section": null,
+    "directive_label": "thm-total-rate-explicit",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-total-rate-explicit"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -22,36 +30,22 @@
     "param-kappa-wall",
     "param-d-safe"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-swarm-update-procedure": [
-      "prop-total-drift-inequality"
+      "attr-total-drift-inequality"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [
-    {
-      "label": "prop-total-rate-explicit",
-      "expression": "κ_total = min( λ, 2γ, c_{hypo}^2 γ/(1+γ/λ_{min}), λ·Δ f_{boundary}/f_{typical}) · (1 - O(τ))",
-      "object_label": "obj-swarm-update-procedure",
-      "established_by": "thm-total-rate-explicit",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "prop-total-equilibrium-constant",
-      "expression": "C_total ≍ (σ_v^2 τ^2/(γ λ) + dσ_v^2/γ + σ_v^2 τ/N^{1/d} + σ_v^2 τ/d_{safe}^2)/κ_{total}",
-      "object_label": "obj-swarm-update-procedure",
-      "established_by": "thm-total-rate-explicit",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

@@ -1,0 +1,8 @@
+{
+  "label": "param-kappa-var",
+  "name": "kappa_var",
+  "symbol": "kappa_var",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

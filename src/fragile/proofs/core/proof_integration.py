@@ -13,19 +13,16 @@ All types follow Lean-compatible patterns:
 - Explicit validation with clear error messages
 """
 
-from typing import Dict, List, Optional, Set
-
 from pydantic import BaseModel, ConfigDict, Field
 
 from fragile.proofs.core.pipeline_types import (
-    MathematicalObject,
     Attribute,
+    MathematicalObject,
     Relationship,
     RelationshipAttribute,
-    RelationType,
     TheoremBox,
 )
-from fragile.proofs.core.proof_system import ProofBox, ProofInput, ProofOutput, AttributeReference
+from fragile.proofs.core.proof_system import AttributeReference, ProofBox, ProofInput, ProofOutput
 
 
 # =============================================================================
@@ -67,10 +64,10 @@ class ProofValidationResult(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     is_valid: bool = Field(..., description="Whether proof matches theorem")
-    mismatches: List[ProofTheoremMismatch] = Field(
+    mismatches: list[ProofTheoremMismatch] = Field(
         default_factory=list, description="Validation errors"
     )
-    warnings: List[str] = Field(default_factory=list, description="Non-blocking warnings")
+    warnings: list[str] = Field(default_factory=list, description="Non-blocking warnings")
 
 
 # =============================================================================
@@ -79,7 +76,7 @@ class ProofValidationResult(BaseModel):
 
 
 def validate_proof_for_theorem(
-    proof: ProofBox, theorem: TheoremBox, objects: Dict[str, MathematicalObject]
+    proof: ProofBox, theorem: TheoremBox, objects: dict[str, MathematicalObject]
 ) -> ProofValidationResult:
     """
     Validate that a proof correctly implements a theorem.
@@ -106,8 +103,8 @@ def validate_proof_for_theorem(
           : ProofValidationResult :=
           ...
     """
-    mismatches: List[ProofTheoremMismatch] = []
-    warnings: List[str] = []
+    mismatches: list[ProofTheoremMismatch] = []
+    warnings: list[str] = []
 
     # Check 1: Proof claims to prove this theorem
     if proof.proves != theorem.label:
@@ -122,7 +119,7 @@ def validate_proof_for_theorem(
 
     # Check 2: Validate inputs match theorem's property requirements
     # Build map of proof's input properties
-    proof_input_properties: Dict[str, Set[str]] = {}
+    proof_input_properties: dict[str, set[str]] = {}
     for proof_input in proof.inputs:
         if proof_input.object_id not in proof_input_properties:
             proof_input_properties[proof_input.object_id] = set()
@@ -166,7 +163,7 @@ def validate_proof_for_theorem(
 
     # Check 3: Validate outputs match theorem's claimed properties
     # Build map of proof's output properties
-    proof_output_properties: Dict[str, Set[str]] = {}
+    proof_output_properties: dict[str, set[str]] = {}
     for proof_output in proof.outputs:
         if proof_output.object_id not in proof_output_properties:
             proof_output_properties[proof_output.object_id] = set()
@@ -218,9 +215,7 @@ def validate_proof_for_theorem(
     return ProofValidationResult(is_valid=is_valid, mismatches=mismatches, warnings=warnings)
 
 
-def extract_relationships_from_proof(
-    proof: ProofBox, theorem: TheoremBox
-) -> List[Relationship]:
+def extract_relationships_from_proof(proof: ProofBox, theorem: TheoremBox) -> list[Relationship]:
     """
     Extract relationships from proof outputs.
 
@@ -241,7 +236,7 @@ def extract_relationships_from_proof(
           : List Relationship :=
           ...
     """
-    relationships: List[Relationship] = []
+    relationships: list[Relationship] = []
 
     # For each proof output pair, check if it establishes a relationship
     for i, output1 in enumerate(proof.outputs):
@@ -256,9 +251,11 @@ def extract_relationships_from_proof(
                     and rel.target_object == output1.object_id
                 ):
                     # Relationship matches - extract properties established
-                    properties: List[RelationshipAttribute] = []
+                    properties: list[RelationshipAttribute] = []
 
-                    for prop_ref in output1.properties_established + output2.properties_established:
+                    for prop_ref in (
+                        output1.properties_established + output2.properties_established
+                    ):
                         properties.append(
                             RelationshipAttribute(
                                 label=prop_ref.property_id,
@@ -273,8 +270,8 @@ def extract_relationships_from_proof(
 
 
 def create_proof_inputs_from_theorem(
-    theorem: TheoremBox, objects: Dict[str, MathematicalObject]
-) -> List[ProofInput]:
+    theorem: TheoremBox, objects: dict[str, MathematicalObject]
+) -> list[ProofInput]:
     """
     Create ProofInput list from theorem's required properties.
 
@@ -295,13 +292,13 @@ def create_proof_inputs_from_theorem(
           : List ProofInput :=
           ...
     """
-    proof_inputs: List[ProofInput] = []
+    proof_inputs: list[ProofInput] = []
 
     for obj_label, required_props in theorem.attributes_required.items():
         # Get object to extract property statements
         obj = objects.get(obj_label)
 
-        property_refs: List[AttributeReference] = []
+        property_refs: list[AttributeReference] = []
 
         for prop_label in required_props:
             # Try to find property statement from object
@@ -332,8 +329,8 @@ def create_proof_inputs_from_theorem(
 
 
 def create_proof_outputs_from_theorem(
-    theorem: TheoremBox, objects: Dict[str, MathematicalObject]
-) -> List[ProofOutput]:
+    theorem: TheoremBox, objects: dict[str, MathematicalObject]
+) -> list[ProofOutput]:
     """
     Create ProofOutput list from theorem's added properties.
 
@@ -354,10 +351,10 @@ def create_proof_outputs_from_theorem(
           : List ProofOutput :=
           ...
     """
-    proof_outputs: List[ProofOutput] = []
+    proof_outputs: list[ProofOutput] = []
 
     # Group properties by object
-    properties_by_object: Dict[str, List[Attribute]] = {}
+    properties_by_object: dict[str, list[Attribute]] = {}
     for prop in theorem.attributes_added:
         obj_label = prop.object_label
         if obj_label not in properties_by_object:
@@ -366,7 +363,7 @@ def create_proof_outputs_from_theorem(
 
     # Create ProofOutput for each object
     for obj_label, props in properties_by_object.items():
-        property_refs: List[AttributeReference] = []
+        property_refs: list[AttributeReference] = []
 
         for prop in props:
             property_refs.append(
@@ -391,7 +388,7 @@ def create_proof_outputs_from_theorem(
 
 def create_proof_sketch_from_theorem(
     theorem: TheoremBox,
-    objects: Dict[str, MathematicalObject],
+    objects: dict[str, MathematicalObject],
     strategy: str,
     num_steps: int = 3,
 ) -> ProofBox:
@@ -432,7 +429,12 @@ def create_proof_sketch_from_theorem(
             (steps := steps)
             (theorem := some theorem)
     """
-    from fragile.proofs.core.proof_system import ProofBox, ProofStep, ProofStepStatus, ProofStepType
+    from fragile.proofs.core.proof_system import (
+        ProofBox,
+        ProofStep,
+        ProofStepStatus,
+        ProofStepType,
+    )
 
     # Auto-generate inputs/outputs
     inputs = create_proof_inputs_from_theorem(theorem, objects)
@@ -447,8 +449,8 @@ def create_proof_sketch_from_theorem(
 
         steps.append(
             ProofStep(
-                step_id=f"step-{i+1}",
-                description=f"Step {i+1} of {num_steps} (to be expanded by LLM)",
+                step_id=f"step-{i + 1}",
+                description=f"Step {i + 1} of {num_steps} (to be expanded by LLM)",
                 inputs=step_inputs,
                 outputs=step_outputs,
                 step_type=ProofStepType.DIRECT_DERIVATION,
@@ -458,7 +460,9 @@ def create_proof_sketch_from_theorem(
         )
 
     # Create proof ID from theorem label
-    proof_id = f"proof-{theorem.label.replace('thm-', '').replace('lem-', '').replace('prop-', '')}"
+    proof_id = (
+        f"proof-{theorem.label.replace('thm-', '').replace('lem-', '').replace('prop-', '')}"
+    )
 
     # Create ProofBox with back-reference to theorem
     return ProofBox(
@@ -476,7 +480,7 @@ def create_proof_sketch_from_theorem(
 def attach_proof_to_theorem(
     theorem: TheoremBox,
     proof: ProofBox,
-    objects: Dict[str, MathematicalObject],
+    objects: dict[str, MathematicalObject],
     validate: bool = True,
 ) -> TheoremBox:
     """
@@ -572,7 +576,7 @@ def print_validation_result(result: ProofValidationResult) -> None:
             print(f"  ⚠ {warning}")
 
 
-def get_proof_statistics(proof: ProofBox) -> Dict[str, int]:
+def get_proof_statistics(proof: ProofBox) -> dict[str, int]:
     """
     Get statistics about a proof.
 
@@ -584,29 +588,19 @@ def get_proof_statistics(proof: ProofBox) -> Dict[str, int]:
     """
     from fragile.proofs.core.proof_system import ProofStepStatus, ProofStepType
 
-    stats = {
+    return {
         "total_steps": len(proof.steps),
         "direct_derivations": sum(
             1 for step in proof.steps if step.step_type == ProofStepType.DIRECT_DERIVATION
         ),
-        "sub_proofs": sum(
-            1 for step in proof.steps if step.step_type == ProofStepType.SUB_PROOF
-        ),
+        "sub_proofs": sum(1 for step in proof.steps if step.step_type == ProofStepType.SUB_PROOF),
         "lemma_applications": sum(
             1 for step in proof.steps if step.step_type == ProofStepType.LEMMA_APPLICATION
         ),
-        "sketched": sum(
-            1 for step in proof.steps if step.status == ProofStepStatus.SKETCHED
-        ),
-        "expanded": sum(
-            1 for step in proof.steps if step.status == ProofStepStatus.EXPANDED
-        ),
-        "verified": sum(
-            1 for step in proof.steps if step.status == ProofStepStatus.VERIFIED
-        ),
+        "sketched": sum(1 for step in proof.steps if step.status == ProofStepStatus.SKETCHED),
+        "expanded": sum(1 for step in proof.steps if step.status == ProofStepStatus.EXPANDED),
+        "verified": sum(1 for step in proof.steps if step.status == ProofStepStatus.VERIFIED),
         "nested_sub_proofs": len(proof.sub_proofs),
         "total_inputs": len(proof.inputs),
         "total_outputs": len(proof.outputs),
     }
-
-    return stats

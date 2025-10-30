@@ -15,9 +15,7 @@ def create_quadratic_potential(dims: int = 2) -> OptimBenchmark:
     def quadratic(x):
         return 0.5 * torch.sum(x**2, dim=-1)
 
-    bounds = TorchBounds(
-        low=torch.full((dims,), -5.0), high=torch.full((dims,), 5.0)
-    )
+    bounds = TorchBounds(low=torch.full((dims,), -5.0), high=torch.full((dims,), 5.0))
 
     return OptimBenchmark(dims=dims, function=quadratic, bounds=bounds)
 
@@ -370,7 +368,6 @@ class TestVelocitySquashing:
 
     def test_no_bound_without_squashing(self, kinetic_op_without_squashing):
         """Test that velocities are NOT bounded when squashing is disabled."""
-        V_alg = kinetic_op_without_squashing.V_alg
 
         # Start with high velocities in a region that would maintain velocity
         x = torch.zeros(10, 3, dtype=torch.float64)
@@ -378,7 +375,7 @@ class TestVelocitySquashing:
         state = SwarmState(x, v)
 
         torch.manual_seed(42)
-        new_state = kinetic_op_without_squashing.apply(state)
+        kinetic_op_without_squashing.apply(state)
 
         # Some velocities may exceed V_alg (since squashing is disabled)
         # We just check that the feature flag works
@@ -402,7 +399,6 @@ class TestVelocitySquashing:
 
     def test_squashing_is_smooth(self, kinetic_op_with_squashing):
         """Test that squashing produces smooth results for nearby velocities."""
-        V_alg = kinetic_op_with_squashing.V_alg
 
         # Create two states with slightly different velocities
         x = torch.zeros(2, 3, dtype=torch.float64)
@@ -458,7 +454,7 @@ class TestVelocitySquashing:
         )
 
         # V_alg should be infinite by default
-        assert op.V_alg == float('inf')
+        assert op.V_alg == float("inf")
         # Squashing should be disabled by default
         assert op.use_velocity_squashing is False
 
@@ -513,7 +509,9 @@ class TestVelocitySquashing:
             dist_squashed = torch.linalg.vector_norm(psi_v1 - psi_v2, dim=-1)
 
             # Lipschitz property: ||ψ(v1) - ψ(v2)|| ≤ ||v1 - v2||
-            assert torch.all(dist_squashed <= dist_original + 1e-6)  # Small tolerance for numerical errors
+            assert torch.all(
+                dist_squashed <= dist_original + 1e-6
+            )  # Small tolerance for numerical errors
 
     def test_psi_v_handles_batch(self):
         """Test that psi_v handles batched input correctly."""

@@ -1,0 +1,55 @@
+{
+  "label": "lem-validation-heat-kernel",
+  "name": "Validation of the Heat Kernel",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "4.2.1",
+    "section_name": null,
+    "directive_label": "lem-validation-heat-kernel",
+    "equation": null,
+    "line_range": [
+      1128,
+      1128
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-perturbation-measure",
+    "obj-smoothed-gaussian-measure",
+    "obj-boundary-regularity-constants"
+  ],
+  "input_axioms": [
+    "def-axiom-bounded-second-moment-perturbation",
+    "def-axiom-boundary-regularity"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Heat kernel satisfies boundary regularity conditions"
+  ],
+  "natural_language_statement": "If the state space $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu)$ is a Polish metric measure space with a canonical heat kernel $p_t(x, \\cdot)$ that has a uniformly bounded second moment, then defining the perturbation noise measure as $\\mathcal{P}_\\sigma(x, \\cdot) := p_{\\sigma^2}(x, \\cdot)$ satisfies the required axioms, provided the boundary of the valid set $\\mathcal{X}_{\\mathrm{valid}}$ is sufficiently regular.",
+  "assumptions": [
+    "Polish metric measure space $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu)$",
+    "Heat kernel $p_t(x, \\cdot)$ with uniformly bounded second moment",
+    "Sufficiently regular boundary of $\\mathcal{X}_{\\mathrm{valid}}$"
+  ],
+  "conclusion": "$\\mathcal{P}_\\sigma(x, \\cdot) := p_{\\sigma^2}(x, \\cdot)$ satisfies Axiom of Bounded Second Moment of Perturbation and Axiom of Boundary Regularity",
+  "equation_label": null,
+  "uses_definitions": [
+    "def-perturbation-measure",
+    "def-valid-noise-measure"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

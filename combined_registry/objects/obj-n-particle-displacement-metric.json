@@ -3,13 +3,22 @@
   "name": "N-Particle Displacement Pseudometric ($d_{\\text{Disp},\\mathcal{Y}}$)",
   "mathematical_expression": "d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)\n:= \\Bigg( \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}\\!\\big(\\varphi(x_{1,i}), \\varphi(x_{2,i})\\big)^2\n\\;+\n\\; \\frac{\\lambda_{\\mathrm{status}}}{N} \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2 \\Bigg)^{\\!1/2}.",
   "object_type": "measure",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle",
     "swarm"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "obj-n-particle-displacement-metric",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-n-particle-displacement-metric"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

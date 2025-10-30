@@ -1,0 +1,26 @@
+{
+  "label": "obj-swarm-potential-assembly-operator",
+  "name": "Swarm Potential Assembly Operator",
+  "mathematical_expression": "Swarm Potential Assembly Operator",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "fitness-potential",
+    "operator",
+    "assembly",
+    "swarm"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "13. Fitness potential operator",
+    "directive_label": null,
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": null
+}

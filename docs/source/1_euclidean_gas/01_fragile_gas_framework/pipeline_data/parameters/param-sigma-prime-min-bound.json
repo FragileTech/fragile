@@ -1,0 +1,8 @@
+{
+  "label": "param-sigma-prime-min-bound",
+  "name": "sigma_prime_min_bound",
+  "symbol": "sigma_prime_min_bound",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

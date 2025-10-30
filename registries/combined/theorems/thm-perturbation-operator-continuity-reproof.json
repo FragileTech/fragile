@@ -1,0 +1,76 @@
+{
+  "label": "thm-perturbation-operator-continuity-reproof",
+  "name": "Probabilistic Continuity of the Perturbation Operator",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-stochastic-fluctuation-bound",
+    "obj-perturbation-constants",
+    "obj-mean-displacement-bound",
+    "obj-perturbation-measure",
+    "obj-perturbation-operator",
+    "obj-alg-distance",
+    "obj-n-particle-displacement-metric"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-bounded-second-moment-perturbation",
+    "def-axiom-bounded-second-moment-perturbation"
+  ],
+  "input_parameters": [
+    "param-failure-probability-delta"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": {
+    "label": "thm-perturbation-operator-continuity-reproof",
+    "name": "Probabilistic Continuity of the Perturbation Operator",
+    "statement_type": "theorem",
+    "source": null,
+    "input_objects": [
+      "obj-stochastic-fluctuation-bound",
+      "obj-perturbation-constants",
+      "obj-mean-displacement-bound",
+      "obj-perturbation-measure",
+      "obj-perturbation-operator",
+      "obj-alg-distance",
+      "obj-n-particle-displacement-metric"
+    ],
+    "input_axioms": [
+      "axiom-def-axiom-bounded-second-moment-perturbation",
+      "def-axiom-bounded-second-moment-perturbation"
+    ],
+    "input_parameters": [
+      "param-failure-probability-delta"
+    ],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Continuity",
+    "attributes_added": [
+      {
+        "label": "attr-probabilistic-continuity",
+        "expression": "P(D^2(\\mathcal{S}'_1, \\mathcal{S}'_2) \\le B(\\delta) \\cdot d_{alg}(\\mathcal{S}_1, \\mathcal{S}_2)) \\ge 1 - \\delta",
+        "object_label": "obj-perturbation-operator"
+      }
+    ],
+    "relations_established": [
+      "Perturbation operator is probabilistically continuous"
+    ]
+  }
+}

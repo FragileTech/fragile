@@ -1,0 +1,8 @@
+{
+  "label": "param-\\delta-{x-i}",
+  "name": "\\delta_{x_i}",
+  "symbol": "\\delta_{x_i}",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

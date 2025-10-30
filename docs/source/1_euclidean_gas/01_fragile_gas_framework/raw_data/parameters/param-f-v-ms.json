@@ -1,0 +1,20 @@
+{
+  "label": "param-f-v-ms",
+  "name": "Expected Squared Value Error Bound",
+  "symbol": "F_{V,ms}",
+  "parameter_type": "symbolic",
+  "constraints": "F_{V,ms}: \\Sigma_N \\times \\Sigma_N \\to \\mathbb{R}_+, must satisfy \\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+  "default_value": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "section_name": null,
+    "directive_label": "param-f-v-ms",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

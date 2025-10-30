@@ -327,8 +327,9 @@ class TorchBounds:
 
         Examples:
             >>> import torch
-            >>> bounds = TorchBounds(low=torch.tensor([0., 0.]),
-            ...                      high=torch.tensor([1., 1.]))
+            >>> bounds = TorchBounds(
+            ...     low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0])
+            ... )
             >>> x = torch.tensor([[1.5, -0.3], [0.5, 0.5], [2.7, -1.2]])
             >>> bounds.pbc(x)
             tensor([[0.5000, 0.7000],
@@ -336,8 +337,9 @@ class TorchBounds:
                     [0.7000, 0.8000]])
 
             >>> # Works with arbitrary bounds
-            >>> bounds2 = TorchBounds(low=torch.tensor([1., 1.]),
-            ...                       high=torch.tensor([5., 5.]))
+            >>> bounds2 = TorchBounds(
+            ...     low=torch.tensor([1.0, 1.0]), high=torch.tensor([5.0, 5.0])
+            ... )
             >>> x2 = torch.tensor([[6.0, 0.0], [1.0, 5.0]])
             >>> bounds2.pbc(x2)
             tensor([[2.0000, 4.0000],
@@ -370,8 +372,9 @@ class TorchBounds:
 
         Examples:
             >>> import torch
-            >>> bounds = TorchBounds(low=torch.tensor([0., 0.]),
-            ...                      high=torch.tensor([1., 1.]))
+            >>> bounds = TorchBounds(
+            ...     low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0])
+            ... )
             >>> x = torch.tensor([[0.1, 0.5]])
             >>> y = torch.tensor([[0.9, 0.5]])
             >>> bounds.pbc_distance(x, y)
@@ -404,8 +407,9 @@ class TorchBounds:
 
         Examples:
             >>> import torch
-            >>> bounds = TorchBounds(low=torch.tensor([0., 0.]),
-            ...                      high=torch.tensor([1., 1.]))
+            >>> bounds = TorchBounds(
+            ...     low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0])
+            ... )
             >>> x = torch.tensor([[0.5, 0.5], [1.5, 0.5], [0.5, -0.1]])
             >>> x_corrected = bounds.apply_pbc_to_out_of_bounds(x)
             >>> print(x_corrected)
@@ -451,8 +455,9 @@ class TorchBounds:
 
         Examples:
             >>> import torch
-            >>> bounds = TorchBounds(low=torch.tensor([0., 0.]),
-            ...                      high=torch.tensor([1., 1.]))
+            >>> bounds = TorchBounds(
+            ...     low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0])
+            ... )
             >>> x = torch.tensor([[0.5, 0.5], [1.5, 0.5], [0.5, 0.5]])
             >>> bounds.contains(x)
             tensor([ True, False,  True])
@@ -553,8 +558,9 @@ class TorchBounds:
 
         Examples:
             >>> import torch
-            >>> bounds = TorchBounds(low=torch.tensor([0., 0.]),
-            ...                      high=torch.tensor([1., 1.]))
+            >>> bounds = TorchBounds(
+            ...     low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0])
+            ... )
             >>> x = torch.tensor([[0.5, 0.5], [1.5, 0.5], [0.5, -0.1]])
             >>> bounds.is_out_of_bounds(x)
             tensor([False,  True,  True])

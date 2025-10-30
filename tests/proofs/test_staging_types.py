@@ -4,14 +4,14 @@ Tests for Staging Types (Raw Extraction Models).
 Tests the new RawAxiom staging type and updates to StagingDocument.
 """
 
-import pytest
 from pydantic import ValidationError
+import pytest
 
 from fragile.proofs.staging_types import (
     RawAxiom,
     RawDefinition,
-    RawTheorem,
     RawProof,
+    RawTheorem,
     StagingDocument,
 )
 
@@ -26,7 +26,7 @@ class TestRawAxiom:
             label_text="axiom-test",
             name="Test Axiom",
             core_assumption_text="The fundamental assumption",
-            source_section="§1"
+            source_section="§1",
         )
 
         assert axiom.temp_id == "raw-axiom-001"
@@ -48,7 +48,7 @@ class TestRawAxiom:
             parameters_text=["ε > 0", "Δt"],
             condition_text="When Δt < ε²",
             failure_mode_analysis_text="Unphysical teleportation behavior",
-            source_section="§1.1"
+            source_section="§1.1",
         )
 
         assert axiom.temp_id == "raw-axiom-002"
@@ -67,7 +67,7 @@ class TestRawAxiom:
                 label_text="test",
                 name="Test",
                 core_assumption_text="Test",
-                source_section="§1"
+                source_section="§1",
             )
             assert axiom.temp_id == temp_id
 
@@ -80,7 +80,7 @@ class TestRawAxiom:
                     label_text="test",
                     name="Test",
                     core_assumption_text="Test",
-                    source_section="§1"
+                    source_section="§1",
                 )
 
     def test_raw_axiom_immutability(self):
@@ -90,7 +90,7 @@ class TestRawAxiom:
             label_text="test",
             name="Test",
             core_assumption_text="Test",
-            source_section="§1"
+            source_section="§1",
         )
 
         # Should not be able to modify fields
@@ -105,7 +105,7 @@ class TestRawAxiom:
             name="Test",
             core_assumption_text="Test",
             parameters_text=[],
-            source_section="§1"
+            source_section="§1",
         )
         assert axiom.parameters_text == []
 
@@ -119,7 +119,7 @@ class TestRawAxiom:
             parameters_text=["param1"],
             condition_text="condition",
             failure_mode_analysis_text="failure mode",
-            source_section="§1"
+            source_section="§1",
         )
 
         data = axiom.model_dump()
@@ -140,7 +140,7 @@ class TestStagingDocumentWithAxioms:
             label_text="test",
             name="Test",
             core_assumption_text="Test",
-            source_section="§1"
+            source_section="§1",
         )
 
         doc = StagingDocument(
@@ -152,7 +152,7 @@ class TestStagingDocumentWithAxioms:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
 
         assert len(doc.axioms) == 1
@@ -165,21 +165,21 @@ class TestStagingDocumentWithAxioms:
             label_text="test1",
             name="Test 1",
             core_assumption_text="Test",
-            source_section="§1"
+            source_section="§1",
         )
         axiom2 = RawAxiom(
             temp_id="raw-axiom-002",
             label_text="test2",
             name="Test 2",
             core_assumption_text="Test",
-            source_section="§1"
+            source_section="§1",
         )
 
         definition = RawDefinition(
             temp_id="raw-def-001",
             term_being_defined="Test Term",
             full_text="Test definition",
-            source_section="§1"
+            source_section="§1",
         )
 
         theorem = RawTheorem(
@@ -187,7 +187,7 @@ class TestStagingDocumentWithAxioms:
             label_text="thm-test",
             statement_type="theorem",
             full_statement_text="Test statement",
-            source_section="§1"
+            source_section="§1",
         )
 
         doc = StagingDocument(
@@ -199,7 +199,7 @@ class TestStagingDocumentWithAxioms:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
 
         # Should count: 1 definition + 1 theorem + 2 axioms = 4
@@ -212,7 +212,7 @@ class TestStagingDocumentWithAxioms:
             label_text="test",
             name="Test",
             core_assumption_text="Test",
-            source_section="§1"
+            source_section="§1",
         )
 
         doc = StagingDocument(
@@ -224,7 +224,7 @@ class TestStagingDocumentWithAxioms:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
 
         summary = doc.get_summary()
@@ -242,7 +242,7 @@ class TestStagingDocumentWithAxioms:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
 
         assert doc.axioms == []
@@ -255,7 +255,7 @@ class TestStagingDocumentWithAxioms:
             label_text="test",
             name="Test",
             core_assumption_text="Test",
-            source_section="§1"
+            source_section="§1",
         )
 
         doc = StagingDocument(
@@ -267,7 +267,7 @@ class TestStagingDocumentWithAxioms:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
 
         data = doc.model_dump()
@@ -285,7 +285,7 @@ class TestStagingDocumentWithAxioms:
             parameters_text=["param1", "param2"],
             condition_text="condition",
             failure_mode_analysis_text="failure",
-            source_section="§1"
+            source_section="§1",
         )
 
         doc = StagingDocument(
@@ -297,7 +297,7 @@ class TestStagingDocumentWithAxioms:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
 
         # Serialize

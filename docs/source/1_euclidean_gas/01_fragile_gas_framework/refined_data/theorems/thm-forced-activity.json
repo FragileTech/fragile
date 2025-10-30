@@ -1,0 +1,33 @@
+{
+  "label": "thm-forced-activity",
+  "name": "Theorem of Forced Activity",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "This theorem establishes that the Fragile Gas algorithm maintains forced activity, preventing walkers from becoming inactive or stagnant. The specific statement requires reading from the source document.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": {
+    "temp_id": "raw-thm-003",
+    "label_text": "thm-forced-activity",
+    "statement_type": "theorem",
+    "full_statement_text": "",
+    "source_section": "§3"
+  }
+}

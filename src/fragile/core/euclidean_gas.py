@@ -92,9 +92,7 @@ class EuclideanGas(PanelModel):
     _n_widget_columns = param.Integer(default=2, bounds=(1, None), doc="Number of widget columns")
     _max_widget_width = param.Integer(default=800, bounds=(0, None), doc="Maximum widget width")
 
-    N = param.Integer(
-        default=50, bounds=(1, None), softbounds=(50, 500), doc="Number of walkers"
-    )
+    N = param.Integer(default=50, bounds=(1, None), softbounds=(50, 500), doc="Number of walkers")
     d = param.Integer(default=2, bounds=(1, None), doc="Spatial dimension")
     companion_selection = param.Parameter(
         default=None, doc="Companion selection strategy for cloning"

@@ -2,9 +2,17 @@
   "label": "lem-entropy-transport-dissipation",
   "name": "Entropy-Transport Dissipation Inequality",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence",
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "lem-entropy-transport-dissipation",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-entropy-transport-dissipation"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -23,7 +31,7 @@
     "delta",
     "C_clone"
   ],
-  "properties_required": {
+  "attributes_required": {
     "displacement-convexity": [
       "Log-concavity of π enables CAT(0) W₂ geometry",
       "Law of cosines in W₂ space"
@@ -44,7 +52,7 @@
     ]
   ],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-lem-entropy-transport-dissipation-0-approximation",
@@ -54,14 +62,22 @@
       "target_object": "obj-wasserstein-distance",
       "established_by": "lem-entropy-transport-dissipation",
       "expression": "D_KL(μ'||π) ≤ D_KL(μ||π) − α W₂²(μ,π) + C_clone",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "lem-entropy-transport-dissipation",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-entropy-transport-dissipation"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-lem-entropy-transport-dissipation-1-equivalence",
@@ -71,14 +87,22 @@
       "target_object": "obj-wasserstein-distance",
       "established_by": "lem-entropy-transport-dissipation",
       "expression": "α = (τ_conv κ_W)/2 ≍ κ_conf κ_x",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "lem-entropy-transport-dissipation",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-entropy-transport-dissipation"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-lem-entropy-transport-dissipation-2-other",
@@ -88,14 +112,29 @@
       "target_object": "obj-wasserstein-distance",
       "established_by": "lem-entropy-transport-dissipation",
       "expression": "Gaussian noise produces O(δ²) remainder terms",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "lem-entropy-transport-dissipation",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-entropy-transport-dissipation"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

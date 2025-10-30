@@ -1,0 +1,181 @@
+{
+  "label": "axiom-bounded-deviation-variance",
+  "name": "Bounded Deviation Variance",
+  "statement": "The sum of squared deviations of the raw input values from the aggregator's computed mean must be controllably related to the variance computed by the aggregator itself.",
+  "mathematical_expression": "$$\n\\sum_{i \\in \\mathcal{A}} (v_i - \\mu(\\mathcal{S}, \\mathbf{v}_{\\mathcal{A}}))^2 \\le \\kappa_{\\text{var}} \\cdot |\\mathcal{A}| \\cdot \\text{Var}[M(\\mathcal{S}, \\mathbf{v}_{\\mathcal{A}})]\n$$",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "core_assumption": {
+    "natural_language": "The aggregator's output variance must honestly reflect the input data's spread. This prevents aggregators from producing statistical moments that are pathologically decoupled from the input data, ensuring that the standardization operator receives reliable statistical summaries of the swarm's raw values.",
+    "structured": {
+      "lhs": {
+        "latex": "\\sum_{i \\in \\mathcal{A}} (v_i - \\mu(\\mathcal{S}, \\mathbf{v}_{\\mathcal{A}}))^2",
+        "sympy": null,
+        "parse_status": "opaque",
+        "parse_error": "Involves swarm aggregation operator M and measure-valued operations not directly representable in SymPy"
+      },
+      "relation": "<=",
+      "rhs": {
+        "latex": "\\kappa_{\\text{var}} \\cdot |\\mathcal{A}| \\cdot \\text{Var}[M(\\mathcal{S}, \\mathbf{v}_{\\mathcal{A}})]",
+        "sympy": null,
+        "parse_status": "opaque",
+        "parse_error": "Involves swarm aggregation operator M and measure-valued operations not directly representable in SymPy"
+      },
+      "assumptions": {
+        "free_variables": [
+          "\\mathcal{S}",
+          "\\mathcal{A}",
+          "\\mathbf{v}_{\\mathcal{A}}",
+          "v_i",
+          "\\kappa_{\\text{var}}",
+          "\\mu",
+          "M"
+        ],
+        "domain_constraints": [
+          "|\\mathcal{A}| \\geq 1",
+          "|v_i| \\le V_{\\max} \\text{ for all } i \\in \\mathcal{A}",
+          "\\kappa_{\\text{var}} \\geq 1"
+        ]
+      }
+    }
+  },
+  "parameters": [
+    {
+      "symbol": "\\kappa_{\\text{var}}",
+      "name": "Variance Deviation Factor",
+      "description": "Axiomatic constant bounding the relationship between raw squared deviations and aggregated variance. User must provide κ_var ≥ 1.",
+      "constraint": "\\kappa_{\\text{var}} \\geq 1",
+      "typical_value": "1 (empirical aggregator)",
+      "role": "Controls how closely the aggregator's computed variance reflects the true spread of input data. Smaller values indicate better-behaved aggregators. Critical for deriving tight continuity bounds for the standardization operator."
+    },
+    {
+      "symbol": "\\mathcal{A}",
+      "name": "Alive Set",
+      "description": "Subset of walkers with survival status s_i = 1. The set of indices of walkers that are currently alive.",
+      "constraint": "\\mathcal{A} = \\mathcal{A}(\\mathcal{S}) \\subseteq \\{1, \\ldots, N\\}, |\\mathcal{A}| \\geq 1",
+      "typical_value": null,
+      "role": "Defines the population over which statistical aggregation is performed. Dynamically changes as walkers die and are revived."
+    },
+    {
+      "symbol": "|\\mathcal{A}|",
+      "name": "Alive Set Cardinality",
+      "description": "The number of alive walkers, denoted k in the framework",
+      "constraint": "k = |\\mathcal{A}| \\geq 1",
+      "typical_value": "k ∈ [1, N]",
+      "role": "Scales the variance bound. The left-hand side (sum of squared deviations) grows with k, requiring the right-hand side to scale proportionally."
+    },
+    {
+      "symbol": "v_i",
+      "name": "Raw Input Value",
+      "description": "Scalar value associated with walker i (e.g., reward, diversity score, standardized fitness). The measurement for walker i in the alive set.",
+      "constraint": "i \\in \\mathcal{A}, |v_i| \\le V_{\\max}",
+      "typical_value": null,
+      "role": "Raw data input to the aggregation operator. Bounded to ensure all statistical operations are well-defined."
+    },
+    {
+      "symbol": "\\mathbf{v}_{\\mathcal{A}}",
+      "name": "Raw Value Vector",
+      "description": "The k-dimensional vector of raw measurements (rewards or distances) for alive walkers",
+      "constraint": "\\mathbf{v}_{\\mathcal{A}} = (v_i)_{i \\in \\mathcal{A}}, |v_i| \\le V_{\\max}",
+      "typical_value": null,
+      "role": "Complete input vector to the aggregation operator M, containing all raw values for the alive population."
+    },
+    {
+      "symbol": "\\mu(\\mathcal{S}, \\mathbf{v}_{\\mathcal{A}})",
+      "name": "Aggregator Mean",
+      "description": "Mean computed by the swarm aggregation operator M over the alive set. The mean of the probability measure produced by M.",
+      "constraint": "\\min_i v_i \\le \\mu \\le \\max_i v_i (Range-Respecting Mean axiom)",
+      "typical_value": "For empirical aggregator: μ = (1/k) Σ_i v_i",
+      "role": "Central tendency measure used for computing deviations. Must be range-respecting to prevent pathological aggregation."
+    },
+    {
+      "symbol": "M",
+      "name": "Swarm Aggregation Operator",
+      "description": "Maps swarm state and raw values to a probability measure on ℝ. The fundamental statistical engine of the Fragile Gas.",
+      "constraint": "M: \\Sigma_N \\times \\mathbb{R}^{|\\mathcal{A}|} \\to \\mathcal{P}(\\mathbb{R})",
+      "typical_value": "Empirical measure aggregator (sample mean and variance)",
+      "role": "Transforms raw walker measurements into a probability distribution for standardization. Must satisfy all aggregator axioms."
+    },
+    {
+      "symbol": "\\text{Var}[M(\\mathcal{S}, \\mathbf{v}_{\\mathcal{A}})]",
+      "name": "Aggregator Variance",
+      "description": "Variance of the probability measure produced by aggregation operator M. The spread measure computed by the aggregator.",
+      "constraint": "\\text{Var}[M] \\geq 0, \\text{Var}[M] \\le \\kappa_{\\text{range}} \\cdot V_{\\max}^2 (Bounded Variance Production axiom)",
+      "typical_value": "For empirical aggregator: Var[M] = (1/k) Σ_i (v_i - μ)²",
+      "role": "Spread measure that must faithfully represent the input data variance. Used in the denominator of z-score standardization."
+    },
+    {
+      "symbol": "\\mathcal{S}",
+      "name": "Swarm State",
+      "description": "N-tuple of walker states (x_i, v_i, s_i). The current configuration of all N walkers including positions, velocities, and survival status.",
+      "constraint": "\\mathcal{S} \\in \\Sigma_N",
+      "typical_value": null,
+      "role": "Complete system configuration passed to aggregation operator. Encodes all walker information needed for statistical computation."
+    },
+    {
+      "symbol": "V_{\\max}",
+      "name": "Maximum Raw Value",
+      "description": "Uniform bound on the absolute value of all raw inputs",
+      "constraint": "V_{\\max} > 0",
+      "typical_value": "Problem-dependent (e.g., max reward range)",
+      "role": "Ensures all statistical operations are bounded. Appears in continuity bounds for aggregator operators."
+    }
+  ],
+  "condition": {
+    "natural_language": "For any swarm state S with alive set A and any raw value vector v_A with bounded components",
+    "structured": {
+      "lhs": {
+        "latex": "(\\mathcal{S}, \\mathcal{A}, \\mathbf{v}_{\\mathcal{A}})",
+        "sympy": null,
+        "parse_status": "opaque",
+        "parse_error": "Tuple of swarm configuration elements, not a single mathematical expression"
+      },
+      "relation": "∈",
+      "rhs": {
+        "latex": "\\Sigma_N \\times \\mathcal{P}(\\{1,\\ldots,N\\}) \\times \\mathbb{R}^{|\\mathcal{A}|}",
+        "sympy": null,
+        "parse_status": "opaque",
+        "parse_error": "Product of state space, power set, and Euclidean space - domain specification rather than SymPy expression"
+      },
+      "assumptions": {
+        "free_variables": [
+          "\\mathcal{S}",
+          "\\mathcal{A}",
+          "\\mathbf{v}_{\\mathcal{A}}",
+          "N"
+        ],
+        "domain_constraints": [
+          "|\\mathcal{A}| \\geq 1",
+          "|v_i| \\le V_{\\max} \\text{ for all } i \\in \\mathcal{A}"
+        ]
+      }
+    }
+  },
+  "failure_mode_analysis": {
+    "violation_scenario": "If κ_var >> 1, the aggregator produces statistical moments that are pathologically decoupled from the input data.",
+    "immediate_consequences": [
+      "Unreliable standardization: The z-score computation z = (v - μ) / σ'_reg uses aggregated variance that does not reflect true data spread",
+      "Fitness potential instability: Standardized fitness values become arbitrary, breaking the exploitation-exploration balance encoded in the cloning operator",
+      "Loss of continuity bounds: Theorems on standardization operator continuity (e.g., Theorem of Deterministic Potential Continuity) depend on κ_var being close to 1",
+      "Error amplification: The mean-square continuity bound contains factors proportional to κ_var, so large values amplify all sources of error"
+    ],
+    "system_level_impact": "The swarm's adaptive mechanism degenerates because cloning decisions are based on fitness values computed from invalid statistical summaries. The algorithm loses its ability to distinguish high-quality from low-quality walkers, potentially leading to catastrophic collapse (all walkers converge to mediocre regions) or stagnation (no effective selection pressure).",
+    "mathematical_breakdown": "The standardization operator's Lipschitz continuity bound (derived in §12 of the framework) contains a factor proportional to κ_var. Specifically, the value error component E²_V scales as O(κ_var), and the structural error component E²_S depends on the aggregator's structural growth exponents, which are themselves influenced by κ_var. Large κ_var destroys the mean-square continuity required for convergence theorems (e.g., Theorem on Mean-Square Continuity of Standardization Pipeline), invalidating Foster-Lyapunov and Feynman-Kac analyses that depend on controlled operator noise.",
+    "related_axioms": [
+      "def-axiom-bounded-variance-production",
+      "def-axiom-range-respecting-mean",
+      "def-axiom-bounded-relative-collapse"
+    ],
+    "practical_guidance": "Users must verify κ_var for their chosen aggregation operator. The empirical aggregator (sample mean and variance) satisfies this axiom with κ_var = 1 (optimal). Custom aggregators (e.g., robust estimators, weighted averages) must provide a proof of their κ_var value. If κ_var > 1 is unavoidable, downstream continuity bounds must be re-derived with the actual value."
+  },
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.3.4",
+    "directive_label": "def-axiom-bounded-deviation-variance",
+    "equation": null,
+    "line_range": [926, 941],
+    "url_fragment": "#def-axiom-bounded-deviation-variance"
+  }
+}

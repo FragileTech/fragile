@@ -1,0 +1,28 @@
+{
+  "label": "lem-potential-boundedness",
+  "name": "Boundedness of the Fitness Potential",
+  "statement_type": "lemma",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "source": {
+    "document": "01_fragile_gas_framework.md",
+    "section": "13. Fitness potential operator",
+    "subsection": "12.2.1. Lemma: Boundedness of the Fitness Potential"
+  },
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "def-alive-set-potential-operator",
+    "obj-potential-bounds"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "output_type": "Bound",
+  "natural_language_statement": "For any alive walker $i$, its fitness potential $V_i$ is strictly positive and uniformly bounded. That is, there exist finite, state-independent constants $V_{\\text{pot,min}}$ and $V_{\\text{pot,max}}$ such that: $0 < V_{\\text{pot,min}} \\le V_i \\le V_{\\text{pot,max}} < \\infty$ where the bounds are defined in terms of the global algorithmic parameters: $V_{\\text{pot,min}} := \\eta^{\\alpha+\\beta}$, $V_{\\text{pot,max}} := (g_{A,\\max} + \\eta)^{\\alpha+\\beta}$, $g_{A,\\max} := \\log(1 + z_{\\max}) + 1$",
+  "assumptions": [],
+  "conclusion": "",
+  "uses_definitions": [],
+  "lemma_dag_edges": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

@@ -3,13 +3,13 @@
 import torch
 
 from fragile.experiments.gauge.su2_symmetry import (
-    SU2Config,
     compare_su2_phases,
     compute_isospin_doublet_state,
     compute_su2_observable,
     compute_su2_pairing_probability,
     compute_su2_phase_current,
     compute_su2_phase_proposed,
+    SU2Config,
 )
 
 
@@ -222,8 +222,8 @@ def test_compute_isospin_doublet_state(simple_swarm_2d):
     N = simple_swarm_2d["N"]
     assert up_component.shape == (N,)
     assert down_component.shape == (N,)
-    assert up_component.dtype in [torch.complex64, torch.complex128]
-    assert down_component.dtype in [torch.complex64, torch.complex128]
+    assert up_component.dtype in {torch.complex64, torch.complex128}
+    assert down_component.dtype in {torch.complex64, torch.complex128}
 
     # Components should have finite values
     assert torch.isfinite(up_component).all()

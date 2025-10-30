@@ -1,0 +1,19 @@
+{
+  "temp_id": "raw-remark-003",
+  "remark_type": "note",
+  "full_text": "This construction is the standard monotone cubic Hermite approach (PCHIP/PCHIM). The global derivative bound $L_P\\approx 1.0054$ from §8.2.2.5 provides an explicit Lipschitz constant for the rescale segment.",
+  "source_section": "§9 Rescale Transformation, §8.2.2.4 Lemma: Monotonicity of the Polynomial Patch",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "9",
+    "section_name": null,
+    "directive_label": null,
+    "equation": null,
+    "line_range": [
+      1850,
+      1850
+    ],
+    "url_fragment": null
+  }
+}

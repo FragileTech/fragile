@@ -1,0 +1,55 @@
+{
+  "label": "prop-coefficient-regularity",
+  "name": "Boundedness and continuity of composite coefficients",
+  "statement_type": "proposition",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17.2.4.6",
+    "directive_label": "prop-coefficient-regularity",
+    "equation": null,
+    "line_range": [
+      5040,
+      5053
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-lipschitz-structural-error-coefficients",
+    "obj-lipschitz-value-error-coefficients"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-bounded-algorithmic-diameter",
+    "axiom-def-assumption-instep-independence"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lem-sigma-patch-derivative-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-sigma-patch-derivative-bound",
+      "prop-coefficient-regularity"
+    ]
+  ],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "On any sublevel set K_R ⊂ Σ_N×Σ_N where (i) the number of alive walkers is bounded between 1 and N for both inputs, (ii) positions lie in a common compact subset of the algorithmic space under φ, and (iii) aggregator Lipschitz/Hölder functions and the regularized standard deviation parameters remain bounded, all state-dependent continuity coefficients (C_clone,L/H, K_clone, C_Ψ,L/H, K_Ψ, C_S,direct, C_S,indirect, C_V,total) are bounded and jointly continuous in (S₁,S₂).",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [
+    "def-composite-continuity-coeffs-recorrected",
+    "def-lipschitz-structural-error-coefficients",
+    "def-lipschitz-value-error-coefficients"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

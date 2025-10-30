@@ -1,0 +1,29 @@
+{
+  "label": "obj-cloning-score-function",
+  "name": "Cloning Score Function",
+  "mathematical_expression": "S(v_c, v_i) := \\frac{v_c - v_i}{v_i + \\varepsilon}",
+  "object_type": "function",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "cloning",
+    "function",
+    "particle-system",
+    "score"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-cloning-score-function",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.1.1",
+    "line_range": [
+      4415,
+      4423
+    ],
+    "directive_label": "obj-cloning-score-function",
+    "equation": null,
+    "url_fragment": null
+  }
+}

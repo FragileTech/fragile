@@ -6,12 +6,20 @@
   "target_object": "obj-components-mean-square-standardization-error",
   "established_by": "lem-sub-lem-lipschitz-value-error-decomposition",
   "expression": "{'source': 'obj-standardization-operator-n-dimensional', 'target': 'obj-components-mean-square-standardization-error', 'type': 'equivalence'}",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-dict"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "lem-sub-lem-lipschitz-value-error-decomposition",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-sub-lem-lipschitz-value-error-decomposition"
+  },
+  "chapter": null,
+  "document": null
 }

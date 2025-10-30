@@ -1,0 +1,33 @@
+{
+  "label": "lem-cubic-patch-derivative-bounds",
+  "name": "Bounds on the Polynomial Patch Derivative",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-rescale-lipschitz-constants",
+    "obj-cubic-patch-polynomial"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Explicit bound: L_P = 1 + (3log(2)-2)^2/(3(2log(2)-1)) ~= 1.0054",
+    "Cubic patch derivative P'(z(s)) is uniformly bounded: 0 <= P'(z(s)) <= L_P"
+  ],
+  "natural_language_statement": "Let $P'(z(s))$ be the derivative of the cubic patch on the interval $s \\in [0, 1]$, as defined in lem-cubic-patch-derivative. This derivative is uniformly bounded on its domain for any choice of $z_{\\max} > 1$. Specifically, it satisfies:\n$$\n0 \\le P'(z(s)) \\le L_P\n$$\nwhere $L_P$ is a constant slightly greater than 1, given by:\n$$\nL_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054\n$$",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

@@ -1,0 +1,20 @@
+{
+  "temp_id": "raw-axiom-014",
+  "label_text": "def-axiom-bounded-variance-production",
+  "axiom_name": "Bounded Variance Production",
+  "statement": "*   **Core Assumption:** The variance of the measure produced by the aggregation operator must itself be bounded by a function of the input value range. This prevents an aggregator from creating arbitrarily large variance from bounded inputs.\n*   **Axiomatic Parameter ($\\kappa_{\\text{range}}$ - The Range-to-Variance Factor):** The user must provide a constant $\\kappa_{\\text{range}} \\geq 0$.\n*   **Condition:** For any swarm $S$ and any value vector $v$ with components bounded by $V_{\\max}$, the a",
+  "source_section": "§3",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "3",
+    "section_name": null,
+    "directive_label": "def-axiom-bounded-variance-production",
+    "equation": null,
+    "line_range": [
+      943,
+      955
+    ],
+    "url_fragment": "#def-axiom-bounded-variance-production"
+  }
+}

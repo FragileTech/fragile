@@ -40,6 +40,16 @@ Maps to Lean:
 """
 
 # Line finding utilities
+# Directive parsing utilities
+from fragile.proofs.tools.directive_parser import (
+    DirectiveHint,
+    DocumentSection,
+    extract_jupyter_directives,
+    format_directive_hints_for_llm,
+    generate_section_id,
+    get_directive_summary,
+    split_into_sections,
+)
 from fragile.proofs.tools.line_finder import (
     extract_lines,
     find_all_occurrences,
@@ -51,34 +61,24 @@ from fragile.proofs.tools.line_finder import (
     validate_line_range,
 )
 
-# Directive parsing utilities
-from fragile.proofs.tools.directive_parser import (
-    DirectiveHint,
-    DocumentSection,
-    extract_jupyter_directives,
-    format_directive_hints_for_llm,
-    generate_section_id,
-    get_directive_summary,
-    split_into_sections,
-)
 
 __all__ = [
-    # Line finding functions
-    "find_text_in_markdown",
-    "find_directive_lines",
-    "find_equation_lines",
-    "find_section_lines",
-    "find_all_occurrences",
-    # Utility functions
-    "validate_line_range",
-    "extract_lines",
-    "get_file_line_count",
     # Directive parsing (hybrid approach)
     "DirectiveHint",
     "DocumentSection",
     "extract_jupyter_directives",
-    "split_into_sections",
-    "get_directive_summary",
+    "extract_lines",
+    "find_all_occurrences",
+    "find_directive_lines",
+    "find_equation_lines",
+    "find_section_lines",
+    # Line finding functions
+    "find_text_in_markdown",
     "format_directive_hints_for_llm",
     "generate_section_id",
+    "get_directive_summary",
+    "get_file_line_count",
+    "split_into_sections",
+    # Utility functions
+    "validate_line_range",
 ]

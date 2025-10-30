@@ -1,9 +1,16 @@
+---
+name: theorem-prover
+description: Expand proof sketches into complete publication-ready proofs through dual validation with Gemini 2.5 Pro and GPT-5, ensuring Annals of Mathematics-level rigor
+tools: Read, Grep, Glob, Bash, Write, mcp__gemini-cli__ask-gemini, mcp__codex__codex
+model: sonnet
+---
+
 # Theorem Prover Agent - Autonomous Proof Expansion System
 
 **Agent Type**: Specialized Mathematical Proof Expansion to Publication Standard
 **Parallelizable**: Yes (multiple instances can run simultaneously)
 **Independent**: Does not depend on slash commands or other agents
-**Output**: Writes complete proofs to `proofs/proof_{timestamp}_{theorem_label}.md`
+**Output**: Writes complete proofs to `reports/proofs/proof_{timestamp}_{theorem_label}.md`
 **Models**: Gemini 2.5 Pro + GPT-5 with high reasoning effort - pinned unless user overrides
 **Rigor Standard**: Annals of Mathematics (top-tier journal quality)
 
@@ -1176,8 +1183,9 @@ sketch_path = Path("<sketch_file_path>")
 doc_parent = sketch_path.parent.parent  # Go up from sketcher/ to document dir
 theorem_label = "<theorem_label>"  # Extract from sketch
 
-# Create proofs directory
-proofs_dir = doc_parent / "proofs"
+# Create proofs directory under reports
+reports_dir = doc_parent / "reports"
+proofs_dir = reports_dir / "proofs"
 Bash(command=f"mkdir -p '{proofs_dir}'")
 
 # Generate timestamp

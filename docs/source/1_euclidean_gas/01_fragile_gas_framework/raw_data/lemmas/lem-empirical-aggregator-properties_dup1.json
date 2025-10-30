@@ -1,0 +1,126 @@
+{
+  "label": "lem-empirical-aggregator-properties",
+  "name": "Axiomatic Properties of the Empirical Measure Aggregator",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "6.2.2",
+    "section_name": null,
+    "directive_label": "lem-empirical-aggregator-properties",
+    "equation": null,
+    "line_range": [
+      1340,
+      1355
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-alive-dead-sets",
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-swarm-and-state-space"
+  ],
+  "input_axioms": [
+    "def-axiom-bounded-relative-collapse",
+    "def-axiom-bounded-variance-production",
+    "def-axiom-bounded-deviation-variance"
+  ],
+  "input_parameters": [
+    "k",
+    "c_min",
+    "kappa_range",
+    "V_max",
+    "n_c",
+    "kappa_var"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    {
+      "label": "rel-empirical-aggregator-is-valid-swarm-aggregator",
+      "relationship_type": "INSTANTIATION",
+      "source_object": "obj-swarm-aggregation-operator-axiomatic",
+      "target_object": "empirical-measure-aggregator",
+      "description": "The empirical measure M(S,v) = (1/k) sum delta_vi is a valid instantiation of the axiomatic Swarm Aggregation Operator"
+    },
+    {
+      "label": "rel-empirical-aggregator-value-lipschitz-mean",
+      "relationship_type": "PROPERTY",
+      "source_object": "empirical-measure-aggregator",
+      "target_object": "L_mu_M",
+      "expression": "L_{mu,M}(S) = k^{-1/2}",
+      "description": "Value Lipschitz constant for mean scales as inverse square root of alive set size"
+    },
+    {
+      "label": "rel-empirical-aggregator-value-lipschitz-m2",
+      "relationship_type": "PROPERTY",
+      "source_object": "empirical-measure-aggregator",
+      "target_object": "L_m2_M",
+      "expression": "L_{m_2,M}(S) <= 2V_max k^{-1/2}",
+      "description": "Value Lipschitz constant for second moment bounded by 2V_max k^{-1/2}"
+    },
+    {
+      "label": "rel-empirical-aggregator-structural-lipschitz-mean",
+      "relationship_type": "PROPERTY",
+      "source_object": "empirical-measure-aggregator",
+      "target_object": "L_mu_S",
+      "expression": "L_{mu,S}(S_1, S_2) <= 2V_max / |A(S_2)|",
+      "description": "Structural continuity constant for mean inversely proportional to target alive set size"
+    },
+    {
+      "label": "rel-empirical-aggregator-structural-lipschitz-m2",
+      "relationship_type": "PROPERTY",
+      "source_object": "empirical-measure-aggregator",
+      "target_object": "L_m2_S",
+      "expression": "L_{m_2,S}(S_1, S_2) <= 2V_max^2 / |A(S_2)|",
+      "description": "Structural continuity constant for second moment with V_max^2 scaling"
+    },
+    {
+      "label": "rel-empirical-aggregator-variance-deviation-factor",
+      "relationship_type": "PROPERTY",
+      "source_object": "empirical-measure-aggregator",
+      "target_object": "kappa_var",
+      "expression": "kappa_var = 1",
+      "description": "Variance deviation factor is exactly 1 for empirical aggregator (identity)"
+    },
+    {
+      "label": "rel-empirical-aggregator-range-variance-factor",
+      "relationship_type": "PROPERTY",
+      "source_object": "empirical-measure-aggregator",
+      "target_object": "kappa_range",
+      "expression": "kappa_range = 1",
+      "description": "Range-to-variance factor is exactly 1 for empirical aggregator"
+    },
+    {
+      "label": "rel-empirical-aggregator-structural-growth-exponents",
+      "relationship_type": "PROPERTY",
+      "source_object": "empirical-measure-aggregator",
+      "target_object": "structural_growth_exponents",
+      "expression": "p_{mu,S} = -1, p_{m_2,S} = -1, p_{worst-case} = -1",
+      "description": "Structural continuity improves linearly with alive set size (exponent -1)"
+    }
+  ],
+  "natural_language_statement": "Let the aggregation operator M be defined such that for any swarm state S with alive set A(S) of size k = |A(S)| >= 1, and any raw value vector v, it produces the discrete empirical measure: M(S, v) = (1/k) sum_{i in A(S)} delta_{v_i}. This operator is a valid Swarm Aggregation Operator. Assuming the raw values are bounded by |v_i| <= V_max, its moment functions, continuity functions, and axiomatic parameters satisfy specific bounds and properties.",
+  "assumptions": [
+    "Raw values bounded: |v_i| <= V_max for all i",
+    "Alive set non-empty: k = |A(S)| >= 1",
+    "Bounded relative collapse holds: k_2 >= c_min * k_1 for axiom verification"
+  ],
+  "conclusion": "The empirical measure aggregator satisfies all axiomatic requirements of def-swarm-aggregation-operator-axiomatic with explicit Lipschitz constants and growth exponents: (1) Value Lipschitz constants scale as k^{-1/2}, (2) Structural Lipschitz constants scale as k_2^{-1}, (3) Variance deviation and range factors both equal 1, (4) Structural growth exponents all equal -1.",
+  "equation_label": null,
+  "uses_definitions": [
+    "def-swarm-aggregation-operator-axiomatic",
+    "def-alive-dead-sets",
+    "def-swarm-and-state-space"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

@@ -408,7 +408,7 @@ class ConvergencePanel(param.Parameterized):
             fit_curve = hv.Curve([])
             title = "KL Divergence (no exponential fit)"
 
-        overlay = (scatter * fit_curve).opts(
+        return (scatter * fit_curve).opts(
             width=400,
             height=350,
             title=title,
@@ -418,8 +418,6 @@ class ConvergencePanel(param.Parameterized):
             show_grid=True,
             framewise=True,
         )
-
-        return overlay
 
     def _plot_lyapunov_decay(self, times: np.ndarray, lyapunov: np.ndarray):
         """Plot Lyapunov function vs time with exponential fit."""
@@ -449,7 +447,7 @@ class ConvergencePanel(param.Parameterized):
             fit_curve = hv.Curve([])
             title = "Lyapunov V_total (no exponential fit)"
 
-        overlay = (scatter * fit_curve).opts(
+        return (scatter * fit_curve).opts(
             width=400,
             height=350,
             title=title,
@@ -459,8 +457,6 @@ class ConvergencePanel(param.Parameterized):
             show_grid=True,
             framewise=True,
         )
-
-        return overlay
 
     def _plot_variances(self, times: np.ndarray, var_x: np.ndarray, var_v: np.ndarray):
         """Plot position and velocity variances vs time."""
@@ -492,7 +488,7 @@ class ConvergencePanel(param.Parameterized):
         if not curves:
             return None
 
-        overlay = hv.Overlay(curves).opts(
+        return hv.Overlay(curves).opts(
             width=400,
             height=350,
             title="Position & Velocity Variances",
@@ -503,8 +499,6 @@ class ConvergencePanel(param.Parameterized):
             legend_position="right",
             framewise=True,
         )
-
-        return overlay
 
     def _plot_distance_to_optimum(self, times: np.ndarray, distances: np.ndarray):
         """Plot distance to known optimum vs time."""
@@ -519,7 +513,7 @@ class ConvergencePanel(param.Parameterized):
             color="purple", line_width=2
         )
 
-        plot = curve.opts(
+        return curve.opts(
             width=400,
             height=350,
             title="Distance to Known Optimum",
@@ -528,8 +522,6 @@ class ConvergencePanel(param.Parameterized):
             show_grid=True,
             framewise=True,
         )
-
-        return plot
 
     def _summary_statistics_table(self):
         """Create summary statistics table."""
@@ -548,11 +540,13 @@ class ConvergencePanel(param.Parameterized):
         # KL statistics
         kl_fit = self._fit_exponential_decay(times, kl)
         if kl_fit is not None:
-            kappa_kl, C_kl, r_sq_kl = kl_fit
+            kappa_kl, _C_kl, r_sq_kl = kl_fit
             half_life_kl = np.log(2) / kappa_kl if kappa_kl > 0 else float("inf")
-            stats.append(("KL Convergence Rate κ", f"{kappa_kl:.5f}"))
-            stats.append(("KL Half-Life t₁/₂", f"{half_life_kl:.2f}"))
-            stats.append(("KL Fit R²", f"{r_sq_kl:.4f}"))
+            stats.extend((
+                ("KL Convergence Rate κ", f"{kappa_kl:.5f}"),
+                ("KL Half-Life t₁/₂", f"{half_life_kl:.2f}"),
+                ("KL Fit R²", f"{r_sq_kl:.4f}"),
+            ))
 
         final_kl = kl[np.isfinite(kl)][-1] if len(kl[np.isfinite(kl)]) > 0 else float("nan")
         stats.append(("Final KL Divergence", f"{final_kl:.4f}"))
@@ -560,9 +554,11 @@ class ConvergencePanel(param.Parameterized):
         # Lyapunov statistics
         lyap_fit = self._fit_exponential_decay(times, lyap)
         if lyap_fit is not None:
-            kappa_lyap, C_lyap, r_sq_lyap = lyap_fit
-            stats.append(("Lyapunov Decay Rate κ", f"{kappa_lyap:.5f}"))
-            stats.append(("Lyapunov Fit R²", f"{r_sq_lyap:.4f}"))
+            kappa_lyap, _C_lyap, r_sq_lyap = lyap_fit
+            stats.extend((
+                ("Lyapunov Decay Rate κ", f"{kappa_lyap:.5f}"),
+                ("Lyapunov Fit R²", f"{r_sq_lyap:.4f}"),
+            ))
 
         final_lyap = (
             lyap[np.isfinite(lyap)][-1] if len(lyap[np.isfinite(lyap)]) > 0 else float("nan")
@@ -576,8 +572,10 @@ class ConvergencePanel(param.Parameterized):
         final_var_v = (
             var_v[np.isfinite(var_v)][-1] if len(var_v[np.isfinite(var_v)]) > 0 else float("nan")
         )
-        stats.append(("Final Var[x]", f"{final_var_x:.4f}"))
-        stats.append(("Final Var[v]", f"{final_var_v:.4f}"))
+        stats.extend((
+            ("Final Var[x]", f"{final_var_x:.4f}"),
+            ("Final Var[v]", f"{final_var_v:.4f}"),
+        ))
 
         # Distance to optimum
         if self.metrics["has_optimum"] and self.metrics["distance_to_opt"] is not None:
@@ -589,13 +587,11 @@ class ConvergencePanel(param.Parameterized):
 
         # Create table
         df = pd.DataFrame(stats, columns=["Metric", "Value"])
-        table = hv.Table(df).opts(
+        return hv.Table(df).opts(
             width=800,
             height=400,
             title="Convergence Summary Statistics",
         )
-
-        return table
 
     def panel(self) -> pn.Column:
         """Create Panel layout for convergence analysis.

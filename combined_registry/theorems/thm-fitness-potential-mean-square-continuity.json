@@ -1,0 +1,101 @@
+{
+  "label": "thm-fitness-potential-mean-square-continuity",
+  "name": "Mean-Square Continuity of the Fitness Potential Operator",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§12.2.3 Mean-Square Continuity of the Fitness Potential Operator",
+    "section_name": null,
+    "directive_label": "thm-fitness-potential-mean-square-continuity",
+    "equation": null,
+    "line_range": [
+      3787,
+      3815
+    ],
+    "url_fragment": "#thm-fitness-potential-mean-square-continuity"
+  },
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm-state",
+    "obj-fitness-potential-vector",
+    "obj-raw-value-operator",
+    "obj-swarm-potential-assembly-operator",
+    "obj-potential-bounds",
+    "obj-rescale-lipschitz-constants",
+    "obj-alive-set-potential-operator"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity",
+    "axiom-bounded-measurement-variance"
+  ],
+  "input_parameters": [
+    "param-N",
+    "param-alpha",
+    "param-beta",
+    "param-eta",
+    "param-V-pot-max",
+    "param-L-F-r",
+    "param-L-F-d"
+  ],
+  "attributes_required": {
+    "obj-swarm-state": [
+      "attr-valid-state"
+    ],
+    "obj-raw-value-operator": [
+      "attr-mean-square-continuous"
+    ],
+    "obj-rescale-lipschitz-constants": [
+      "attr-finite-constants"
+    ]
+  },
+  "internal_lemmas": [
+    "lem-potential-boundedness",
+    "lem-component-potential-lipschitz",
+    "sub-lem-potential-unstable-error-mean-square",
+    "sub-lem-potential-stable-error-mean-square"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-potential-boundedness",
+      "sub-lem-potential-unstable-error-mean-square"
+    ],
+    [
+      "lem-component-potential-lipschitz",
+      "sub-lem-potential-stable-error-mean-square"
+    ],
+    [
+      "sub-lem-potential-unstable-error-mean-square",
+      "thm-fitness-potential-mean-square-continuity"
+    ],
+    [
+      "sub-lem-potential-stable-error-mean-square",
+      "thm-fitness-potential-mean-square-continuity"
+    ]
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-mean-square-continuous",
+      "expression": "\\mathbb{E}[\\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2] \\le F_{\\text{pot}}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "object_label": "obj-fitness-potential-operator",
+      "established_by": "thm-fitness-potential-mean-square-continuity",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

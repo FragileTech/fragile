@@ -1,0 +1,43 @@
+{
+  "label": "lem-sigma-reg-derivative-bounds",
+  "name": "Derivative Bounds for Regularized Standard Deviation",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "11.1.2",
+    "section_name": null,
+    "directive_label": "lem-sigma-reg-derivative-bounds",
+    "equation": null,
+    "line_range": [
+      2789,
+      2839
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-standardization-lower-bound"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Bounds on derivatives of regularized standard deviation sigma'_reg"
+  ],
+  "natural_language_statement": "The regularized standard deviation $\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}$ has explicit derivative bounds for all orders. For the first three derivatives:\n\n$$\n\\left|(\\sigma'_{\\text{reg}})'(V)\\right| = \\frac{1}{2\\sqrt{V + \\sigma'^2_{\\min}}} \\le \\frac{1}{2\\sigma'_{\\min}} =: L_{\\sigma'_{\\text{reg}}}\n$$\n\n$$\n\\left|(\\sigma'_{\\text{reg}})''(V)\\right| = \\frac{1}{4(V + \\sigma'^2_{\\min})^{3/2}} \\le \\frac{1}{4\\sigma'^3_{\\min}} =: L_{\\sigma''_{\\text{reg}}}\n$$\n\n$$\n\\left|(\\sigma'_{\\text{reg}})'''(V)\\right| = \\frac{3}{8(V + \\sigma'^2_{\\min})^{5/2}} \\le \\frac{3}{8\\sigma'^5_{\\min}} =: L_{\\sigma'''_{\\text{reg}}}\n$$\n\nGeneral form: For the $n$-th derivative with $n \\ge 1$,\n\n$$\n\\left|(\\sigma'_{\\text{reg}})^{(n)}(V)\\right| \\le \\frac{(2n-1)!!}{2^n \\sigma'^{(2n-1)}_{\\min}}\n$$\n\nwhere $(2n-1)!! = 1 \\cdot 3 \\cdot 5 \\cdots (2n-1)$ is the double factorial.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

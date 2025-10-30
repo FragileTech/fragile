@@ -180,9 +180,7 @@ class FluidFieldComputer:
 
             # Apply periodic boundary conditions
             if periodic:
-                dx, dy = FluidFieldComputer._apply_periodic_distance(
-                    dx, dy, domain_size
-                )
+                dx, dy = FluidFieldComputer._apply_periodic_distance(dx, dy, domain_size)
 
             r = np.sqrt(dx**2 + dy**2)
 
@@ -228,9 +226,7 @@ class FluidFieldComputer:
             dv_dx = np.gradient(V, dx, axis=1)
             du_dy = np.gradient(U, dy, axis=0)
 
-        vorticity = dv_dx - du_dy
-
-        return vorticity
+        return dv_dx - du_dy
 
     @staticmethod
     def compute_divergence(
@@ -259,9 +255,7 @@ class FluidFieldComputer:
             du_dx = np.gradient(U, dx, axis=1)
             dv_dy = np.gradient(V, dy, axis=0)
 
-        divergence = du_dx + dv_dy
-
-        return divergence
+        return du_dx + dv_dy
 
     @staticmethod
     def compute_stream_function(
@@ -517,12 +511,10 @@ class ConservationValidator:
             ValidationMetrics with energy budget check
         """
         # Compute kinetic energy at each timestep
-        kinetic_energies = [
-            0.5 * (vel**2).sum().item() / len(vel) for vel in velocities_history
-        ]
+        kinetic_energies = [0.5 * (vel**2).sum().item() / len(vel) for vel in velocities_history]
 
         # Compute energy change rate (central differences)
-        dE_dt = np.gradient(kinetic_energies, dt)
+        np.gradient(kinetic_energies, dt)
 
         # Expected rate: P_in - P_diss
         # For now, just check if energy is bounded (crude test)
@@ -567,7 +559,7 @@ class ConservationValidator:
             ValidationMetrics with incompressibility check
         """
         # Compute velocity field
-        X, Y, U, V = FluidFieldComputer.compute_velocity_field(
+        _X, _Y, U, V = FluidFieldComputer.compute_velocity_field(
             positions, velocities, grid_resolution, bounds=bounds
         )
 
@@ -648,9 +640,7 @@ class FlowAnalyzer:
             L = characteristic_length
 
         # Reynolds number
-        Re = U_rms * L / viscosity if viscosity > 1e-12 else np.inf
-
-        return Re
+        return U_rms * L / viscosity if viscosity > 1e-12 else np.inf
 
     @staticmethod
     def compute_enstrophy(
@@ -673,7 +663,7 @@ class FlowAnalyzer:
             Enstrophy Z
         """
         # Compute velocity field
-        X, Y, U, V = FluidFieldComputer.compute_velocity_field(
+        _X, _Y, U, V = FluidFieldComputer.compute_velocity_field(
             positions, velocities, grid_resolution, bounds=bounds
         )
 
@@ -685,9 +675,7 @@ class FlowAnalyzer:
         omega = FluidFieldComputer.compute_vorticity(U, V, dx, dy, periodic=True)
 
         # Integrate enstrophy
-        enstrophy = 0.5 * np.sum(omega**2) * dx * dy
-
-        return enstrophy
+        return 0.5 * np.sum(omega**2) * dx * dy
 
     @staticmethod
     def compute_vorticity_statistics(
@@ -707,7 +695,7 @@ class FlowAnalyzer:
                 - enstrophy: Enstrophy Z = (1/2)∫ω² dA
         """
         # Compute velocity field
-        X, Y, U, V = FluidFieldComputer.compute_velocity_field(
+        _X, _Y, U, V = FluidFieldComputer.compute_velocity_field(
             positions, velocities, grid_resolution, bounds=bounds
         )
 
@@ -719,15 +707,13 @@ class FlowAnalyzer:
         omega = FluidFieldComputer.compute_vorticity(U, V, dx, dy, periodic=True)
 
         # Statistics
-        stats = {
+        return {
             "mean": float(np.mean(omega)),
             "std": float(np.std(omega)),
             "max": float(np.max(omega)),
             "min": float(np.min(omega)),
             "enstrophy": float(0.5 * np.sum(omega**2) * dx * dy),
         }
-
-        return stats
 
 
 # ============================================================================
@@ -799,9 +785,7 @@ class TaylorGreenValidator:
             ω: Vorticity field [H, W]
         """
         decay = np.exp(-2 * self.nu * self.k**2 * t)
-        omega = 2 * self.k * self.U0 * np.cos(self.k * x) * np.cos(self.k * y) * decay
-
-        return omega
+        return 2 * self.k * self.U0 * np.cos(self.k * x) * np.cos(self.k * y) * decay
 
     def validate_velocity_field(
         self,

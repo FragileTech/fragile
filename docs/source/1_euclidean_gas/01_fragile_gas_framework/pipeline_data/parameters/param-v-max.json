@@ -1,0 +1,8 @@
+{
+  "label": "param-v-max",
+  "name": "V_max",
+  "symbol": "V_max",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

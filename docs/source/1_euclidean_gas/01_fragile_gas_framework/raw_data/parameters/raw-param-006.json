@@ -1,0 +1,21 @@
+{
+  "temp_id": "raw-param-006",
+  "symbol": "ε_std",
+  "meaning": "standardization error parameter",
+  "full_text": "For example, if fitness variance is unstable, check $\\varepsilon_{\\text{std}}$ (Section 9), variance axioms (Section 3), and $L_R$ (Section 4).",
+  "scope": "global",
+  "source_section": "§1-introduction",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "1",
+    "section_name": null,
+    "directive_label": null,
+    "equation": null,
+    "line_range": [
+      136,
+      136
+    ],
+    "url_fragment": null
+  }
+}

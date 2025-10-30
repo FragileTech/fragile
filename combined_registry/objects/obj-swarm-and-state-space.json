@@ -3,13 +3,22 @@
   "name": "Swarm and Swarm State Space",
   "mathematical_expression": "\\mathcal{S} := (w_1, w_2, \\dots, w_N)",
   "object_type": "space",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle",
     "swarm"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "obj-swarm-and-state-space",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-swarm-and-state-space"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

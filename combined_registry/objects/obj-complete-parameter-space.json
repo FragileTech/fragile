@@ -3,15 +3,24 @@
   "name": "Complete Parameter Space",
   "mathematical_expression": "\\mathbf{P} = (\\lambda, \\sigma_x, \\alpha_{\\text{rest}}, \\lambda_{\\text{alg}}, \\epsilon_c, \\epsilon_d, \\gamma, \\sigma_v, \\tau, N, \\kappa_{\\text{wall}}, d_{\\text{safe}}) \\in \\mathbb{R}_{+}^{12}",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "euclidean-gas",
     "particle",
     "swarm",
     "variance"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "06_convergence"
+  "source": {
+    "document_id": "06_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/06_convergence.md",
+    "section": null,
+    "directive_label": "obj-complete-parameter-space",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-complete-parameter-space"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

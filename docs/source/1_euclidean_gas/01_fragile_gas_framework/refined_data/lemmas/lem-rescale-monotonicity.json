@@ -1,0 +1,25 @@
+{
+  "label": "lem-rescale-monotonicity",
+  "name": "Monotonicity of the Smooth Rescale Function",
+  "statement_type": "lemma",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "source": null,
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-asymmetric-rescale-function"
+  ],
+  "input_axioms": [
+    "axiom-rescale-function"
+  ],
+  "input_parameters": [],
+  "output_type": "Property",
+  "natural_language_statement": "The Smooth Piecewise Rescale Function $g_A(z)$ is monotonically non-decreasing on $\\mathbb{R}$.",
+  "assumptions": [],
+  "conclusion": "",
+  "uses_definitions": [],
+  "lemma_dag_edges": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

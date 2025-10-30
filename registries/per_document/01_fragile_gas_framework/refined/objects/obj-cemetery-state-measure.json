@@ -1,0 +1,36 @@
+{
+  "label": "obj-cemetery-state-measure",
+  "name": "Cemetery State Measure",
+  "mathematical_expression": "\\mathcal{S}",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "cemetery",
+    "measure",
+    "measure-theory",
+    "metric",
+    "particle-system",
+    "state"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§7",
+    "directive_label": "def-cemetery-state-measure",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-cemetery-state-measure",
+  "definition": "The Cemetery State Measure, denoted as ν_∅, is the unique distributional representation for a swarm in which all walkers are dead (i.e., the alive set A(S) is empty). It is an abstract mathematical object that represents the terminal, absorbing state of the swarm. Its properties are not defined by a density function but by its interaction with distance metrics.",
+  "mathematical_properties": "It does not have a density on the algorithmic space Y. The distance between any probability measure ν of a living swarm and the Cemetery State Measure ν_∅ is defined as a maximal constant. For the Wasserstein metric, this distance is the diameter of the valid algorithmic domain, D_valid. Represents an absorbing state in the Markov process of the swarm's evolution.",
+  "dependencies": [
+    "obj-alive-set",
+    "obj-algorithmic-space-generic",
+    "obj-w2-output-metric"
+  ],
+  "typical_values": null
+}

@@ -2,9 +2,17 @@
   "label": "lem-cluster-alignment",
   "name": "Cluster-Level Outlier Alignment",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "04_wasserstein_contraction",
+  "source": {
+    "document_id": "04_wasserstein_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+    "section": null,
+    "directive_label": "lem-cluster-alignment",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-cluster-alignment"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -26,7 +34,7 @@
     "lambda_v",
     "c_geom"
   ],
-  "properties_required": {
+  "attributes_required": {
     "swarms": [
       "Structural error: V_struct > R²_spread",
       "Separation: L = ||x̄_1 - x̄_2|| > D_min(ε)",
@@ -50,7 +58,7 @@
     ]
   ],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-lem-cluster-alignment-0-approximation",
@@ -60,14 +68,22 @@
       "target_object": "obj-fitness-landscape",
       "established_by": "lem-cluster-alignment",
       "expression": "⟨μ_x(I_1) - μ_x(J_1), x̄_1 - x̄_2⟩ ≥ c_align(ε) ||μ_x(I_1) - μ_x(J_1)|| · L",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "04_wasserstein_contraction"
+      "source": {
+        "document_id": "04_wasserstein_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+        "section": null,
+        "directive_label": "lem-cluster-alignment",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-cluster-alignment"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-lem-cluster-alignment-1-other",
@@ -77,14 +93,22 @@
       "target_object": "obj-fitness-landscape",
       "established_by": "lem-cluster-alignment",
       "expression": "Target set I_1 clusters away from other swarm (far-side property)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "04_wasserstein_contraction"
+      "source": {
+        "document_id": "04_wasserstein_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+        "section": null,
+        "directive_label": "lem-cluster-alignment",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-cluster-alignment"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-lem-cluster-alignment-2-approximation",
@@ -94,14 +118,29 @@
       "target_object": "obj-fitness-landscape",
       "established_by": "lem-cluster-alignment",
       "expression": "c_align(ε) > 0 (N-uniform, depends on c_sep and D_diam)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "04_wasserstein_contraction"
+      "source": {
+        "document_id": "04_wasserstein_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+        "section": null,
+        "directive_label": "lem-cluster-alignment",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-cluster-alignment"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

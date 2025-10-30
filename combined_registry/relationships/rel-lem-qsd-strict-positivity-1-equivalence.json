@@ -6,12 +6,20 @@
   "target_object": "obj-cloning-operator",
   "established_by": "lem-qsd-strict-positivity",
   "expression": "c_π = η c_σ_x,R m_eq",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+  "source": {
+    "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+    "section": null,
+    "directive_label": "lem-qsd-strict-positivity",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-qsd-strict-positivity"
+  },
+  "chapter": null,
+  "document": null
 }

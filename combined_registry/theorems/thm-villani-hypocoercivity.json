@@ -2,9 +2,17 @@
   "label": "thm-villani-hypocoercivity",
   "name": "Villani's Hypocoercivity (Simplified)",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence",
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "thm-villani-hypocoercivity",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-villani-hypocoercivity"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -19,7 +27,7 @@
     "kappa_conf",
     "sigma"
   ],
-  "properties_required": {
+  "attributes_required": {
     "hypoelliptic": [
       "Kinetic operator is hypoelliptic"
     ],
@@ -33,7 +41,7 @@
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-villani-hypocoercivity-0-other",
@@ -43,14 +51,29 @@
       "target_object": "obj-qsd",
       "established_by": "thm-villani-hypocoercivity",
       "expression": "Modified entropy decays exponentially via hypocoercivity",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-villani-hypocoercivity",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-villani-hypocoercivity"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

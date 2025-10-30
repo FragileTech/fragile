@@ -2,9 +2,17 @@
   "label": "thm-complete-variance-drift",
   "name": "Complete Variance Drift Characterization for Cloning",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning",
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "thm-complete-variance-drift",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-complete-variance-drift"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -20,7 +28,7 @@
     "C_x",
     "C_v"
   ],
-  "properties_required": {},
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [
@@ -34,7 +42,7 @@
     ]
   ],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-complete-variance-drift-0-other",
@@ -44,14 +52,22 @@
       "target_object": "obj-full-synergistic-lyapunov-function",
       "established_by": "thm-complete-variance-drift",
       "expression": "net_variance_contraction_when_large",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "03_cloning"
+      "source": {
+        "document_id": "03_cloning",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+        "section": null,
+        "directive_label": "thm-complete-variance-drift",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-complete-variance-drift"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-complete-variance-drift-1-other",
@@ -61,14 +77,29 @@
       "target_object": "obj-full-synergistic-lyapunov-function",
       "established_by": "thm-complete-variance-drift",
       "expression": "synergistic_role_of_cloning",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "03_cloning"
+      "source": {
+        "document_id": "03_cloning",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+        "section": null,
+        "directive_label": "thm-complete-variance-drift",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-complete-variance-drift"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

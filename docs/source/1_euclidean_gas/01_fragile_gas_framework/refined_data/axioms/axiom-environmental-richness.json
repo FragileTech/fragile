@@ -1,0 +1,129 @@
+{
+  "label": "axiom-environmental-richness",
+  "name": "Environmental Richness",
+  "statement": "The reward function must not be pathologically flat at a user-defined minimum length scale. The algorithm requires a guaranteed level of reward variation to learn.",
+  "mathematical_expression": "$$\n\\kappa_{\\text{richness}} \\le \\inf_{y \\in \\varphi(\\mathcal{X}_{\\mathrm{valid}}), r \\ge r_{\\min}} \\left( \\text{Var}_{y' \\in B(y,r) \\cap \\varphi(\\mathcal{X}_{\\mathrm{valid}})} [R_{\\mathcal{Y}}(y')] \\right)\n$$",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "core_assumption": "The reward landscape must possess sufficient texture and variation at all relevant spatial scales to provide a learnable gradient signal. Specifically, within any localized region of the algorithmic space with radius at least r_min, the reward function must exhibit a guaranteed minimum variance kappa_richness. This ensures the swarm can always detect fitness differences when sufficiently dispersed, enabling the exploitation component of the fitness potential to drive adaptation. Without this guarantee, the swarm risks entering flat regions where all walkers appear equally fit, causing the cloning mechanism to lose its directional guidance and the algorithm to stagnate.",
+  "parameters": {
+    "r_min": {
+      "symbol": "r_{\\min}",
+      "name": "Minimum Richness Scale",
+      "description": "The minimum radius in the algorithmic space above which the reward function is guaranteed to exhibit variance. This parameter quantifies the resolution at which the user expects to find a learnable signal. It represents the smallest scale at which environmental features must be distinguishable.",
+      "type": "positive_real",
+      "constraint": "r_{\\min} > 0",
+      "role": "spatial_scale_threshold",
+      "physical_interpretation": "Defines the characteristic length scale of problem features. Swarms with spatial extent smaller than r_min may perceive the landscape as locally flat."
+    },
+    "kappa_richness": {
+      "symbol": "\\kappa_{\\text{richness}}",
+      "name": "Environmental Richness Floor",
+      "description": "A guaranteed lower bound on the variance of the reward function within any localized region of the projected valid domain with radius greater than or equal to r_min. Acts as a minimum signal-to-noise guarantee for the learning process.",
+      "type": "non_negative_real",
+      "constraint": "\\kappa_{\\text{richness}} > 0 (required for viability)",
+      "role": "variance_lower_bound",
+      "physical_interpretation": "Quantifies the guaranteed 'texture' of the reward landscape. Higher values ensure stronger gradient signals for adaptation."
+    },
+    "phi": {
+      "symbol": "\\varphi",
+      "name": "Projection Map",
+      "description": "A Lipschitz continuous map from the state space to the algorithmic space. Projects walker positions from the ambient state space X to the lower-dimensional algorithmic space Y where measurements and comparisons are performed.",
+      "type": "function",
+      "domain": "\\mathcal{X}",
+      "codomain": "\\mathcal{Y}",
+      "properties": ["lipschitz_continuous"],
+      "lipschitz_constant": "L_{\\varphi}",
+      "role": "dimension_reduction_operator"
+    },
+    "X_valid": {
+      "symbol": "\\mathcal{X}_{\\mathrm{valid}}",
+      "name": "Valid Domain",
+      "description": "The subset of the state space where walkers remain alive. Crossing the boundary of X_valid results in death (status s=0). The axiom requires rewards to vary over the projection of this domain.",
+      "type": "set",
+      "properties": ["C1_boundary", "subset_of_state_space"],
+      "role": "viability_constraint"
+    },
+    "R_Y": {
+      "symbol": "R_{\\mathcal{Y}}",
+      "name": "Projected Reward Function",
+      "description": "The reward function evaluated in the algorithmic space Y. For any point y in Y, R_Y(y) represents the reward value at that algorithmic position. Used to compute variance of rewards within local neighborhoods.",
+      "type": "function",
+      "domain": "\\mathcal{Y}",
+      "codomain": "\\mathbb{R}",
+      "role": "fitness_evaluation"
+    },
+    "B_y_r": {
+      "symbol": "B(y,r)",
+      "name": "Ball in Algorithmic Space",
+      "description": "A ball of radius r centered at point y in the algorithmic space Y, with respect to the Euclidean metric d_Y. Used to define local neighborhoods for variance computation.",
+      "type": "set",
+      "definition": "B(y,r) := \\{y' \\in \\mathcal{Y} : d_{\\mathcal{Y}}(y, y') \\le r\\}",
+      "role": "local_neighborhood"
+    },
+    "Var": {
+      "symbol": "\\text{Var}",
+      "name": "Variance Operator",
+      "description": "Statistical variance computed over the reward values within a specified region. Measures the dispersion of rewards around their mean, quantifying the richness or texture of the reward landscape.",
+      "type": "operator",
+      "role": "statistical_measure"
+    }
+  },
+  "condition": "The user must choose r_min and determine kappa_richness such that kappa_richness is a valid lower bound on the reward variance over all balls of radius at least r_min in the projected valid domain. Formally: kappa_richness is less than or equal to the infimum over all points y in the projected valid domain and all radii r greater than or equal to r_min of the variance of the projected reward function R_Y over the ball B(y,r) intersected with the projected valid domain. Additionally, kappa_richness must be strictly positive (kappa_richness > 0) to guarantee learnability and avoid algorithmic stagnation.",
+  "failure_mode_analysis": {
+    "primary_failure": {
+      "condition": "kappa_richness approximately equal to 0 for the chosen r_min",
+      "consequence": "The environment contains large regions of size r_min where the reward is essentially constant. If the swarm's spatial extent is smaller than r_min, it perceives the landscape as flat.",
+      "mechanism": "The exploitation component of the fitness potential will have near-zero variance, eliminating directional guidance from the cloning operator. Walkers appear equally fit regardless of position.",
+      "outcome": "Stalling of the learning process and adaptive dynamics. The swarm degenerates into independent random walkers without collective intelligence."
+    },
+    "scale_mismatch": {
+      "condition": "Swarm spatial extent < r_min",
+      "consequence": "Even if kappa_richness > 0 globally, a localized swarm smaller than r_min cannot detect environmental variance within its own span.",
+      "mechanism": "All walkers sample rewards within a region smaller than the guaranteed richness scale, experiencing an effectively flat landscape.",
+      "outcome": "Loss of adaptation pressure, stagnation, failure to converge."
+    },
+    "cascade_effect": {
+      "condition": "kappa_richness approaches 0 combined with environmental flatness",
+      "consequence": "Triggers violation of the Theorem of Forced Activity (p_clone,min approaches 0), breaking the guaranteed revival mechanism.",
+      "mechanism": "Zero fitness variance implies zero cloning probability implies no selection pressure implies no revival of dead walkers implies potential swarm extinction through attrition.",
+      "critical_parameter": "p_clone,min becomes zero, violating fundamental viability guarantees."
+    },
+    "diagnostic_guidance": "If the algorithm stagnates, measure the empirical reward variance within swarm-scale neighborhoods. If variance is approximately 0, either (1) reduce r_min to match the actual feature scale of the problem, or (2) increase initial swarm dispersion to span at least r_min, or (3) reconsider whether the problem has sufficient structure for swarm-based optimization."
+  },
+  "related_axioms": [
+    "def-axiom-reward-regularity",
+    "def-axiom-sufficient-amplification",
+    "def-axiom-non-degenerate-noise"
+  ],
+  "related_theorems": [
+    "thm-forced-activity"
+  ],
+  "emergent_properties": [
+    "When satisfied, this axiom guarantees that any non-degenerate swarm (spanning diameter > r_min) will experience fitness variance, enabling the cloning mechanism to generate selection pressure.",
+    "Combined with the Axiom of Sufficient Amplification and Axiom of Non-Degenerate Noise, ensures p_clone,min > 0, which prevents algorithmic stagnation.",
+    "The choice of r_min is critical: too large and the swarm cannot resolve fine features; too small and the variance guarantee becomes vacuous."
+  ],
+  "tags": [
+    "environmental-axiom",
+    "learnability",
+    "reward-structure",
+    "variance-guarantee",
+    "spatial-scale",
+    "viability",
+    "adaptation-prerequisite",
+    "parameter-selection"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "Section 2.2.1 Environmental Axioms",
+    "directive_label": "def-axiom-environmental-richness",
+    "line_range": {
+      "start": 741,
+      "end": 759
+    },
+    "url_fragment": "#axiom-of-environmental-richness"
+  }
+}

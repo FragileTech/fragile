@@ -2,27 +2,63 @@
   "label": "thm-lipschitz-value-error-bound",
   "name": "Bounding the Squared Value Error",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§11.3.3",
+    "section_name": null,
+    "directive_label": "thm-lipschitz-value-error-bound",
+    "equation": null,
+    "line_range": [
+      3493,
+      3533
+    ],
+    "url_fragment": "#thm-lipschitz-value-error-bound"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
-    "obj-lipschitz-value-error-coefficients",
+    "obj-standardization-operator-n-dimensional",
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-swarm-and-state-space",
     "obj-components-mean-square-standardization-error"
   ],
   "input_axioms": [],
-  "input_parameters": [],
-  "properties_required": {},
-  "internal_lemmas": [],
+  "input_parameters": [
+    "param-kappa-var-min",
+    "param-epsilon-std",
+    "param-V-max",
+    "param-k"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "sub-lem-lipschitz-value-error-decomposition",
+    "lem-stats-value-continuity",
+    "thm-z-score-norm-bound"
+  ],
   "internal_propositions": [],
-  "lemma_dag_edges": [],
+  "lemma_dag_edges": [
+    [
+      "sub-lem-lipschitz-value-error-decomposition",
+      "thm-lipschitz-value-error-bound"
+    ],
+    [
+      "lem-stats-value-continuity",
+      "thm-lipschitz-value-error-bound"
+    ],
+    [
+      "thm-z-score-norm-bound",
+      "thm-lipschitz-value-error-bound"
+    ]
+  ],
   "output_type": "Bound",
-  "properties_added": [
+  "attributes_added": [
     {
-      "label": "prop-value-error-lipschitz",
-      "expression": "\\|E_{value}\\| \\le L_{value} \\cdot \\|\\Delta_{value}\\|",
-      "object_label": "obj-lipschitz-value-error-coefficients",
+      "label": "attr-lipschitz-value-continuity",
+      "expression": "E_{V}^2(\\mathcal{S}; \\mathbf{v}_1, \\mathbf{v}_2) \\le C_{V,\\text{total}}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2",
+      "object_label": "obj-standardization-operator-n-dimensional",
       "established_by": "thm-lipschitz-value-error-bound",
       "timestamp": null,
       "can_be_refined": true,
@@ -30,5 +66,12 @@
       "source": null
     }
   ],
-  "relations_established": []
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

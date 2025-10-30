@@ -1,0 +1,32 @@
+{
+  "label": "obj-value-error-coefficients",
+  "name": "Value Error Coefficients",
+  "mathematical_expression": "C_{V,\\text{direct}} := \\frac{1}{\\sigma'^2_{\\min,\\text{bound}}}",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "aggregation",
+    "coefficients",
+    "continuity",
+    "error",
+    "operator",
+    "particle-system",
+    "value"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-value-error-coefficients",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "11.2.2.5",
+    "line_range": [
+      3194,
+      3231
+    ],
+    "directive_label": "obj-value-error-coefficients",
+    "equation": null,
+    "url_fragment": null
+  }
+}

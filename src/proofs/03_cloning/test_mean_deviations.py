@@ -1,13 +1,14 @@
 import sympy
 
+
 def test_mean_deviations_from_total():
     """
     Verify two mean deviation identities
     Source: docs/source/1_euclidean_gas/03_cloning.md, lines 3802-3804
     """
     # 1. Define symbols
-    f_H, f_L = sympy.symbols('f_H f_L', positive=True)
-    mu_H, mu_L = sympy.symbols('mu_H mu_L', real=True)
+    f_H, f_L = sympy.symbols("f_H f_L", positive=True)
+    mu_H, mu_L = sympy.symbols("mu_H mu_L", real=True)
 
     # 2. Define the total mean
     mu_V_expr = f_H * mu_H + f_L * mu_L
@@ -38,7 +39,8 @@ def test_mean_deviations_from_total():
 
     assert simplified_2 == 0, f"Claim 2 failed: expected 0, got {simplified_2}"
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     try:
         test_mean_deviations_from_total()
         print("Both algebraic claims successfully verified with SymPy.")

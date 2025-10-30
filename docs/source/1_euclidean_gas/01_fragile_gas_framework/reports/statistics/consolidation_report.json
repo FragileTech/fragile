@@ -1,0 +1,247 @@
+{
+  "base_directory": "docs/source/1_euclidean_gas/01_fragile_gas_framework",
+  "dry_run": false,
+  "files_moved": {
+    "lemmas": 33,
+    "proofs": 15,
+    "axioms": 4,
+    "remarks": 7,
+    "propositions": 3,
+    "theorems": 17,
+    "corollaries": 1,
+    "definitions": 22,
+    "objects": 38,
+    "parameters": 2,
+    "statistics": 14
+  },
+  "files_skipped": {
+    "statistics": 10
+  },
+  "duplicates_renamed": {
+    "lemmas": 1,
+    "statistics": 4
+  },
+  "total_moved": 156,
+  "details": {
+    "moved": {
+      "lemmas": [
+        "lem-probabilistic-bound-perturbation-displacement.json",
+        "lem-perturbation-positional-bound.json",
+        "sub-lem-bound-sum-total-cloning-probs.json",
+        "lem-bounded-differences-favg.json",
+        "lem-total-clone-prob-structural-error.json",
+        "unlabeled-lemma-72.json",
+        "lem-total-clone-prob-value-error.json",
+        "lem-empirical-aggregator-properties.json",
+        "lem-cloning-probability-lipschitz.json",
+        "lem-potential-boundedness.json",
+        "lem-boundary-heat-kernel.json",
+        "lem-component-potential-lipschitz.json",
+        "lem-single-walker-structural-error.json",
+        "lem-single-walker-own-status-error.json",
+        "lem-cubic-patch-coefficients.json",
+        "lem-validation-heat-kernel.json",
+        "sub-lem-potential-stable-error-mean-square.json",
+        "sub-lem-unify-holder-terms.json",
+        "lem-subadditivity-power.json",
+        "lem-final-status-change-bound.json",
+        "lem-final-positional-displacement-bound.json",
+        "lem-total-squared-error-stable.json",
+        "lem-inequality-toolbox.json",
+        "lem-empirical-moments-lipschitz.json",
+        "lem-validation-uniform-ball.json",
+        "lem-single-walker-positional-error.json",
+        "lem-normalization-difference-bound.json",
+        "lem-empirical-aggregator-properties.json",
+        "lem-total-squared-error-unstable.json",
+        "sub-lem-potential-unstable-error-mean-square.json",
+        "lem-set-difference-bound.json",
+        "lem-cubic-patch-uniqueness.json",
+        "lem-boundary-uniform-ball.json"
+      ],
+      "proofs": [
+        "proof-thm-potential-operator-is-mean-square-continuous.json",
+        "proof-lem-cloning-probability-lipschitz.json",
+        "proof-thm-k1-revival-state.json",
+        "proof-lem-total-clone-prob-value-error.json",
+        "unlabeled-proof-88.json",
+        "unlabeled-proof-134.json",
+        "proof-lem-total-clone-prob-structural-error.json",
+        "proof-cloning-transition-operator-continuity-recorrected.json",
+        "proof-sub-lem-bound-sum-total-cloning-probs.json",
+        "proof-probabilistic-bound-perturbation-displacement.json",
+        "proof-perturbation-positional-bound.json",
+        "proof-thm-expected-cloning-action-continuity.json",
+        "proof-thm-total-expected-cloning-action-continuity.json",
+        "proof-composite-continuity-bound-recorrected.json",
+        "proof-perturbation-operator-continuity.json"
+      ],
+      "axioms": [
+        "axiom-raw-value-mean-square-continuity.json",
+        "axiom-rescale-function.json",
+        "axiom-bounded-measurement-variance.json",
+        "axiom-bounded-second-moment-perturbation.json"
+      ],
+      "remarks": [
+        "remark-extinction-risk-shift.json",
+        "unlabeled-remark-211.json",
+        "remark-scope-and-assumptions.json",
+        "remark-phoenix-effect.json",
+        "remark-cloning-randomness-discipline.json",
+        "remark-randomness-discipline-perturbation.json",
+        "remark-cloning-scope-companion-convention.json"
+      ],
+      "propositions": [
+        "prop-psi-markov-kernel.json",
+        "prop-w2-bound-no-offset.json",
+        "prop-coefficient-regularity.json"
+      ],
+      "theorems": [
+        "thm-mcdiarmids-inequality.json",
+        "thm-total-error-status-bound.json",
+        "thm-total-expected-distance-error-decomposition.json",
+        "thm-perturbation-operator-continuity.json",
+        "thm-potential-operator-is-mean-square-continuous.json",
+        "thm-fitness-potential-mean-square-continuity.json",
+        "thm-post-perturbation-status-update-continuity.json",
+        "thm-k1-revival-state.json",
+        "thm-total-expected-cloning-action-continuity.json",
+        "thm-deterministic-potential-continuity.json",
+        "thm-distance-operator-mean-square-continuity.json",
+        "thm-expected-cloning-action-continuity.json",
+        "thm-distance-operator-satisfies-bounded-variance-axiom.json",
+        "thm-expected-raw-distance-k1.json",
+        "thm-swarm-update-operator-continuity-recorrected.json",
+        "thm-cloning-transition-operator-continuity-recorrected.json",
+        "thm-expected-raw-distance-bound.json"
+      ],
+      "corollaries": [
+        "cor-pipeline-continuity-margin-stability.json"
+      ],
+      "definitions": [
+        "def-expected-cloning-action.json",
+        "def-cloning-operator-continuity-coeffs-recorrected.json",
+        "def-distance-to-companion-measurement.json",
+        "def-perturbation-operator.json",
+        "def-cloning-measure.json",
+        "def-cemetery-state-measure.json",
+        "def-swarm-aggregation-operator-axiomatic.json",
+        "def-total-expected-cloning-action.json",
+        "def-cloning-probability-function.json",
+        "def-smoothed-gaussian-measure.json",
+        "def-raw-value-operator.json",
+        "def-swarm-update-procedure.json",
+        "def-distance-to-cemetery-state.json",
+        "def-algorithmic-cemetery-extension.json",
+        "def-w2-output-metric.json",
+        "def-stochastic-threshold-cloning.json",
+        "def-cloning-score-function.json",
+        "def-perturbation-measure.json",
+        "def-reward-measurement.json",
+        "def-perturbation-fluctuation-bounds.json",
+        "def-final-status-change-coeffs.json",
+        "def-composite-continuity-coeffs-recorrected.json"
+      ],
+      "objects": [
+        "obj-mean-displacement-bound.json",
+        "obj-algorithmic-space-generic.json",
+        "obj-alg-distance.json",
+        "obj-potential-bounds.json",
+        "obj-swarm-aggregation-operator-axiomatic.json",
+        "obj-reward-measurement.json",
+        "obj-standardization-lower-bound.json",
+        "obj-swarm-potential-assembly-operator.json",
+        "obj-standardization-total-value-error-coefficient.json",
+        "obj-revival-state.json",
+        "obj-raw-value-operator.json",
+        "obj-perturbation-constants.json",
+        "obj-cloning-probability-lipschitz-constants.json",
+        "obj-one-step-ms-continuity-coefficients.json",
+        "obj-smoothed-gaussian-measure.json",
+        "obj-perturbation-measure.json",
+        "obj-cloning-measure.json",
+        "obj-rescale-lipschitz-constants.json",
+        "obj-distance-measurement-ms-constants.json",
+        "obj-cubic-patch-polynomial.json",
+        "obj-canonical-logistic-rescale-function.json",
+        "obj-distance-to-cemetery-state.json",
+        "obj-cemetery-state-measure.json",
+        "obj-aggregator-lipschitz-constants.json",
+        "obj-stochastic-fluctuation-bound.json",
+        "obj-status-update-operator.json",
+        "obj-expected-distance-error-coefficients.json",
+        "obj-companion-selection-measure.json",
+        "obj-fragile-gas-algorithm.json",
+        "obj-continuity-constants-table.json",
+        "obj-alive-set-potential-operator.json",
+        "obj-boundary-regularity-constants.json",
+        "obj-fragile-swarm-instantiation.json",
+        "obj-distance-positional-measures.json",
+        "obj-revival-score-ratio.json",
+        "obj-algorithmic-cemetery-extension.json",
+        "obj-asymmetric-rescale-function.json",
+        "obj-canonical-fragile-swarm.json"
+      ],
+      "parameters": [
+        "param-kappa-variance.json",
+        "param-F-V-ms.json"
+      ],
+      "statistics": [
+        "section_18_extraction_summary.json",
+        "section_15_extraction_statistics.json",
+        "section7_extraction_stats.json",
+        "section16_extraction_stats.json",
+        "section_20_extraction_statistics.json",
+        "section14_extraction_report.json",
+        "section_11_statistics.json",
+        "raw_statistics.json",
+        "extraction_statistics.json",
+        "raw_statistics.json",
+        "section_21_extraction_summary.json",
+        "section_13_extraction_report.json",
+        "raw_statistics.json",
+        "raw_statistics.json"
+      ]
+    },
+    "skipped": {
+      "statistics": [
+        "raw_statistics_section3.json",
+        "section8_extraction.json",
+        "section17_extraction_statistics.json",
+        "section_6_extraction.json",
+        "section10_extraction_report.json",
+        "section6_raw_statistics.json",
+        "section_0_raw_statistics.json",
+        "section12_extraction_statistics.json",
+        "raw_statistics.json",
+        "section_1_raw_statistics.json"
+      ]
+    },
+    "duplicates": {
+      "lemmas": [
+        [
+          "lem-empirical-aggregator-properties.json",
+          "lem-empirical-aggregator-properties_dup1.json"
+        ]
+      ],
+      "statistics": [
+        [
+          "raw_statistics.json",
+          "raw_statistics_dup1.json"
+        ],
+        [
+          "raw_statistics.json",
+          "raw_statistics_dup2.json"
+        ],
+        [
+          "raw_statistics.json",
+          "raw_statistics_dup3.json"
+        ],
+        [
+          "raw_statistics.json",
+          "raw_statistics_dup4.json"
+        ]
+      ]
+    }
+  }
+}

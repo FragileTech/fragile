@@ -2,13 +2,28 @@
   "label": "obj-cemetery-state-measure",
   "name": "Cemetery State Measure",
   "mathematical_expression": "\\mathcal{S}",
-  "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
-    "swarm"
+    "cemetery",
+    "measure",
+    "measure-theory",
+    "metric",
+    "particle-system",
+    "state"
   ],
-  "source": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§7",
+    "section_name": null,
+    "directive_label": "def-cemetery-state-measure",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
   "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-cemetery-state-measure"
 }

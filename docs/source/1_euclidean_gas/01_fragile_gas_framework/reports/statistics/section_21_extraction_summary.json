@@ -1,0 +1,161 @@
+{
+  "extraction_metadata": {
+    "source_document": "01_fragile_gas_framework.md",
+    "section": "§21 - Continuity Constants: Canonical Values and Glossary",
+    "line_range": "5140-5262",
+    "extraction_date": "2025-10-27",
+    "total_lines_extracted": 122
+  },
+  "section_structure": {
+    "main_section": "§21 - Continuity Constants: Canonical Values and Glossary",
+    "subsections": [
+      "§21.1 - Quick Table (symbols, meaning, canonical value)",
+      "§21.2 - Fully Expanded mean-square constant for standardization",
+      "§21.3 - Distance measurement mean-square bound (empirical companion)",
+      "§21.4 - Cloning probability and potential pipeline",
+      "§21.5 - Perturbation and boundary constants (final-stage composition)",
+      "§21.6 - One-step mean-square continuity (structure of the final bound)"
+    ]
+  },
+  "entities_extracted": {
+    "total_count": 11,
+    "by_type": {
+      "mathematical_objects": 11,
+      "theorems": 0,
+      "lemmas": 0,
+      "axioms": 0,
+      "proofs": 0
+    }
+  },
+  "extracted_objects": [
+    {
+      "object_id": "obj-continuity-constants-table",
+      "name": "Continuity Constants Table",
+      "type": "reference_table",
+      "description": "Comprehensive table of 44+ constants organized by type",
+      "subsection": "§21.1"
+    },
+    {
+      "object_id": "obj-aggregator-lipschitz-constants",
+      "name": "Empirical Aggregator Lipschitz Constants",
+      "type": "constant_collection",
+      "description": "Collection of 5 Lipschitz constants for empirical moments",
+      "subsection": "§21.1"
+    },
+    {
+      "object_id": "obj-standardization-total-value-error-coefficient",
+      "name": "Total Value Error Coefficient for Standardization",
+      "type": "coefficient",
+      "description": "Three-component coefficient (direct, mean, std) for standardization",
+      "subsection": "§21.2"
+    },
+    {
+      "object_id": "obj-distance-measurement-ms-constants",
+      "name": "Distance Measurement Mean-Square Constants",
+      "type": "constant_collection",
+      "description": "Three constants (positional, linear status, quadratic status)",
+      "subsection": "§21.3"
+    },
+    {
+      "object_id": "obj-cloning-probability-lipschitz-constants",
+      "name": "Cloning Probability Lipschitz Constants",
+      "type": "constant_collection",
+      "description": "Four constants for cloning probability continuity",
+      "subsection": "§21.4"
+    },
+    {
+      "object_id": "obj-potential-bounds",
+      "name": "Fitness Potential Bounds",
+      "type": "bounds",
+      "description": "Lower and upper bounds on fitness potential",
+      "subsection": "§21.4"
+    },
+    {
+      "object_id": "obj-perturbation-constants",
+      "name": "Perturbation Stage Constants",
+      "type": "constant_collection",
+      "description": "Three constants for Gaussian perturbation bounds",
+      "subsection": "§21.5"
+    },
+    {
+      "object_id": "obj-boundary-regularity-constants",
+      "name": "Boundary Regularity Constants",
+      "type": "constant_collection",
+      "description": "Two constants (Hölder constant, Hölder exponent) for death probability",
+      "subsection": "§21.5"
+    },
+    {
+      "object_id": "obj-rescale-lipschitz-constants",
+      "name": "Rescale Function Lipschitz Constants",
+      "type": "constant_collection",
+      "description": "Three constants for rescale function and composition",
+      "subsection": "§21.1"
+    },
+    {
+      "object_id": "obj-one-step-ms-continuity-coefficients",
+      "name": "One-Step Mean-Square Continuity Coefficients",
+      "type": "coefficient_collection",
+      "description": "Complete collection of final coefficients (Lipschitz, Hölder, offset)",
+      "subsection": "§21.6"
+    },
+    {
+      "object_id": "obj-standardization-lower-bound",
+      "name": "Standardization Standard Deviation Lower Bound",
+      "type": "bound",
+      "description": "Uniform lower bound on smoothed standard deviation",
+      "subsection": "§21.1, §21.2"
+    }
+  ],
+  "key_constants_covered": {
+    "environment": ["R_max", "L_R"],
+    "geometry": ["D_Y", "L_phi"],
+    "noise": ["sigma", "delta"],
+    "dynamics": ["alpha", "beta"],
+    "regularization": ["epsilon_std", "kappa_var_min", "eta", "z_max"],
+    "cloning": ["p_max", "epsilon_clone"],
+    "structural": ["k", "n_c"],
+    "measurement": ["V_max"],
+    "aggregation": ["L_mu_M", "L_m2_M", "L_var", "L_sigma_reg", "L_sigma_M"],
+    "standardization": ["sigma'_min_bound", "C_V_direct", "C_V_mu", "C_V_sigma", "C_V_total"],
+    "rescale": ["L_P", "L_g_A", "L_g_A_circ_z"],
+    "potential": ["V_pot_min", "V_pot_max"],
+    "cloning_probability": ["L_pi_c", "L_pi_i", "C_val_pi", "C_struct_pi"],
+    "perturbation": ["M_pert_2", "B_M", "B_S"],
+    "boundary": ["L_death", "alpha_B"],
+    "distance": ["C_pos_d", "C_status_d_1", "C_status_d_2"],
+    "one_step": ["C_Psi_L", "C_Psi_H", "K_Psi", "C_clone_L", "C_clone_H", "K_clone"]
+  },
+  "referenced_results": [
+    "lem-sigma-reg-derivative-bounds",
+    "thm-distance-operator-mean-square-continuity"
+  ],
+  "parameter_tuning_guidance": {
+    "sensitivity_reduction": [
+      "Increase epsilon_std or kappa_var_min to decrease C_V_total",
+      "Larger k (alive walkers) tightens empirical-moment Lipschitz factors",
+      "Smaller sigma (tighter perturbation) reduces post-perturbation constants",
+      "Conservative p_max and larger eta shrink L_pi constants"
+    ],
+    "key_scaling_laws": [
+      "C_V_total scales as O(epsilon_std^{-6}) when kappa_var_min << epsilon_std^2",
+      "Aggregator constants scale as 1/sqrt(k)",
+      "L_death scales inversely with sigma: L_death ~ Per(E)/sigma",
+      "Perturbation bounds scale as O(N*d*sigma^2) deterministically"
+    ]
+  },
+  "output_directory": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework/objects",
+  "files_created": [
+    "obj-continuity-constants-table.json",
+    "obj-aggregator-lipschitz-constants.json",
+    "obj-standardization-total-value-error-coefficient.json",
+    "obj-distance-measurement-ms-constants.json",
+    "obj-cloning-probability-lipschitz-constants.json",
+    "obj-potential-bounds.json",
+    "obj-perturbation-constants.json",
+    "obj-boundary-regularity-constants.json",
+    "obj-rescale-lipschitz-constants.json",
+    "obj-one-step-ms-continuity-coefficients.json",
+    "obj-standardization-lower-bound.json",
+    "section_21_extraction_summary.json"
+  ]
+}

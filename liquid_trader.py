@@ -1,19 +1,18 @@
-import param
-import panel as pn
-import pandas as pd
-import numpy as np
-from typing import Dict, Any
-from hydra.utils import get_class
-
-from circuit_rl.config_ui.detector import Detector
-from circuit_rl.config_ui.lsm_config import LiquidStateMachineConfig
-from circuit_rl.liquid_trader import LiquidStateMachine
+from typing import Any
 
 from circuit_rl.config_ui.core import (
     DashboardConfig,
     INPUT_WIDTH,
     SLIDER_WIDTH,
 )
+from circuit_rl.config_ui.detector import Detector
+from circuit_rl.config_ui.lsm_config import LiquidStateMachineConfig
+from circuit_rl.liquid_trader import LiquidStateMachine
+from hydra.utils import get_class
+import numpy as np
+import pandas as pd
+import panel as pn
+import param
 
 
 class TradeMomentConfig(DashboardConfig):
@@ -39,9 +38,7 @@ class TradeMomentConfig(DashboardConfig):
     )
     detector = param.ClassSelector(class_=Detector, default=None)
     detector_type = param.String("maximal", doc="Type of detector")
-    _target_ = param.String(
-        default="circuit_rl.liquid_trader.TradeMomentConfig"
-    )
+    _target_ = param.String(default="circuit_rl.liquid_trader.TradeMomentConfig")
     _n_widget_columns = 5
 
     def __init__(self, detector=None, **params):
@@ -86,7 +83,7 @@ class TradeMomentConfig(DashboardConfig):
             },
         }
 
-    def to_dict(self, parameters=None) -> Dict[str, Any]:
+    def to_dict(self, parameters=None) -> dict[str, Any]:
         """Convert configuration to dictionary for serialization"""
         return {
             "_target_": self._target_,
@@ -102,7 +99,7 @@ class TradeMomentConfig(DashboardConfig):
             "minimal_trade_moment_distance": self.minimal_trade_moment_distance,
         }
 
-    def set_values(self, d: Dict[str, Any], parameters=None) -> None:
+    def set_values(self, d: dict[str, Any], parameters=None) -> None:
         """Set values from a dictionary"""
         if parameters is None:
             parameters = [
@@ -130,7 +127,7 @@ class TradeMomentConfig(DashboardConfig):
         ]
 
     def __panel__(self, parameters=None):
-        params = super().__panel__(parameters=parameters)
+        return super().__panel__(parameters=parameters)
         # detector = pn.Param(
         #     self,
         #     parameters=["detector", "detector_type"],
@@ -138,7 +135,6 @@ class TradeMomentConfig(DashboardConfig):
         #     widgets=self.widgets,
         #     default_layout=pn.Column,
         # )
-        return params
 
 
 class PriceNewsTicks(DashboardConfig):
@@ -236,9 +232,7 @@ class PriceNewsTicks(DashboardConfig):
             value=self.mode,
             button_type="primary",
         )
-        self._mode_toggle_col = pn.Row(
-            pn.pane.Markdown("#### Mode:"), self._mode_toggle
-        )
+        self._mode_toggle_col = pn.Row(pn.pane.Markdown("#### Mode:"), self._mode_toggle)
         self._mode_toggle.param.watch(self._update_mode, "value")
 
     @staticmethod
@@ -274,15 +268,13 @@ class PriceNewsTicks(DashboardConfig):
             "max_frequency",
         ]
 
-    def to_dict(self, parameters=None) -> Dict[str, Any]:
+    def to_dict(self, parameters=None) -> dict[str, Any]:
         if parameters is None:
             parameters = [
-                x
-                for x in self.dict_param_names
-                if x not in {"min_frequency", "max_frequency"}
+                x for x in self.dict_param_names if x not in {"min_frequency", "max_frequency"}
             ]
         data = super().to_dict(parameters=parameters)
-        if self.mode in ["fuzzy_news", "fuzzy_all"]:
+        if self.mode in {"fuzzy_news", "fuzzy_all"}:
             fuzzy_data = {
                 "min_frequency": self.min_frequency,
                 "max_frequency": self.max_frequency,
@@ -540,9 +532,7 @@ class LiquidTrader(DashboardConfig):
             input = PriceNewsTicks()
         if trade_moments is None:
             trade_moments = TradeMomentConfig()
-        super().__init__(
-            circuit=circuit, input=input, trade_moments=trade_moments, **params
-        )
+        super().__init__(circuit=circuit, input=input, trade_moments=trade_moments, **params)
 
     def instantiate(self, **kwargs):
         """Instantiate the LiquidTrader with the provided parameters"""
@@ -672,7 +662,7 @@ class FeaturesConfig(DashboardConfig):
         ]
         super().__init__(features=features, **params)
 
-    def to_dict(self, parameters=None) -> Dict[str, Any]:
+    def to_dict(self, parameters=None) -> dict[str, Any]:
         """Convert configuration to dictionary for serialization"""
         return {
             "_target_": self._target_,
@@ -682,16 +672,10 @@ class FeaturesConfig(DashboardConfig):
     def __panel__(self, parameters=None):
         return pn.Column(
             pn.pane.Markdown("### Features Configuration"),
-            pn.Row(
-                *[
-                    feature.__panel__()
-                    for feature in self.features
-                    if feature is not None
-                ]
-            ),
+            pn.Row(*[feature.__panel__() for feature in self.features if feature is not None]),
         )
 
-    def set_values(self, d: Dict[str, Any], parameters=None) -> None:
+    def set_values(self, d: dict[str, Any], parameters=None) -> None:
         """Set values from a dictionary"""
         if parameters is None:
             parameters = ["_target_"]
@@ -783,10 +767,7 @@ class ForecastingConfig(DashboardConfig):
     def to_dict(self, parameters=None):
         data = super().to_dict(parameters)
         # self.tick_data_folder = self.tick_data_widget.file_path
-        horizons = [
-            {"_target_": "pandas.Timedelta", "seconds": h}
-            for h in self.horizons
-        ]
+        horizons = [{"_target_": "pandas.Timedelta", "seconds": h} for h in self.horizons]
         data["horizons"] = horizons
         data["tick_data_folder"] = {
             "_target_": "pathlib.Path",
@@ -803,15 +784,14 @@ class ForecastingConfig(DashboardConfig):
     def dict_param_names(self) -> list[str]:
         return list(set(super().dict_param_names) - {"horizons"})
 
-    def set_values(self, d: Dict[str, Any], parameters=None) -> None:
+    def set_values(self, d: dict[str, Any], parameters=None) -> None:
         """Set values from a dictionary"""
         # if parameters is None:
         #     parameters = list(set(self.dict_param_names) - {"horizons"})
         horizons = d.pop("horizons", None)
         if parameters is None:
             parameters = list(
-                set(self.dict_param_names)
-                - {"features", "tick_data_folder", "delay"}
+                set(self.dict_param_names) - {"features", "tick_data_folder", "delay"}
             )
         for key in parameters:
             if key in d:
@@ -848,13 +828,9 @@ class ForecastingConfig(DashboardConfig):
             pn.pane.Markdown("### Forecasting Configuration"),
             # self.tick_data_widget,
             params,
-            pn.Row(
-                *[
-                    feature.__panel__()
-                    for feature in self.features.features
-                    if feature is not None
-                ]
-            ),
+            pn.Row(*[
+                feature.__panel__() for feature in self.features.features if feature is not None
+            ]),
         )
 
 
@@ -876,9 +852,7 @@ class TradingPeriod(DashboardConfig):
     test_start = param.Date(
         default=pd.to_datetime("2024-08-08 10:00:00"), doc="Testing start time"
     )
-    test_end = param.Date(
-        default=pd.to_datetime("2024-08-08 10:25:00"), doc="Testing end time"
-    )
+    test_end = param.Date(default=pd.to_datetime("2024-08-08 10:25:00"), doc="Testing end time")
     _target_ = param.String(default="circuit_rl.liquid_trader.TradingPeriod")
 
     def __panel__(self, parameters=None):
@@ -1040,11 +1014,7 @@ class TradingPeriod(DashboardConfig):
             "test_start",
             "test_end",
         ]:
-            value = (
-                pd.to_datetime(data[key])
-                if isinstance(data[key], str)
-                else data[key]
-            )
+            value = pd.to_datetime(data[key]) if isinstance(data[key], str) else data[key]
             data[key] = value.strftime(datetime_format)
         return super().instantiate(**data, _convert_="all")
 
@@ -1087,9 +1057,7 @@ class LiquidTraderConfig(DashboardConfig):
         default=False,
         doc="Use Pythia for forecasting",
     )
-    _target_ = param.String(
-        default="circuit_rl.liquid_trader.LiquidTraderConfig"
-    )
+    _target_ = param.String(default="circuit_rl.liquid_trader.LiquidTraderConfig")
 
     def __init__(
         self,
@@ -1172,14 +1140,10 @@ class LiquidTraderConfig(DashboardConfig):
     def set_values(self, d, parameters=None) -> None:
         """Set values from a dictionary"""
         parameters = parameters or {
-            x
-            for x in self.dict_param_names
-            if x not in {"output_folder", "config_file"}
+            x for x in self.dict_param_names if x not in {"output_folder", "config_file"}
         }
         super().set_values(d, parameters=parameters)
         if "output" in d:
             output = d["output"]
-            self.output_folder = output.get(
-                "output_folder", self.output_folder
-            )
+            self.output_folder = output.get("output_folder", self.output_folder)
             self.config_file = output.get("config_file", self.config_file)

@@ -1,0 +1,9 @@
+{
+  "label": "param-kappa-variance",
+  "name": "Maximum Measurement Variance",
+  "symbol": "\\kappa^2_{\\text{variance}}",
+  "parameter_type": "real",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "statement_type": "parameter"
+}

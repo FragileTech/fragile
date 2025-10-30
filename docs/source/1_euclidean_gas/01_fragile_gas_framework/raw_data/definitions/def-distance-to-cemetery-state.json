@@ -1,0 +1,21 @@
+{
+  "label": "def-distance-to-cemetery-state",
+  "type": "definition",
+  "content": "The distance between any valid probability measure $\\nu$ (representing a living swarm) and the Cemetery State Measure $\\nu_{\\emptyset}$ is defined to be a maximal constant, ensuring that entering the cemetery state represents the largest possible jump in distributional terms.\n*   **For the Wasserstein Metric:** Using [](#def-algorithmic-cemetery-extension), for any measure $\\nu$ corresponding to a living swarm:\n$$\n\n    W_p(\\nu, \\nu_{\\emptyset}) := D_{\\mathrm{valid}} \\quad \\text{and} \\quad W_p(\\nu_{\\emptyset}, \\nu_{\\emptyset}) := 0\n\n\n$$\n*   **For the MMD (on living swarms):** We evaluate $\\mathrm{MMD}_k$ only between measures supported on $\\mathcal Y$ (living swarms). No cemetery extension is defined here. If an extension is required, one must specify an explicit positive‑definite kernel $k^{\\dagger}$ on $\\mathcal Y^{\\dagger}$ that yields the desired constant distances while preserving metric properties. When $k$ is characteristic (e.g., Gaussian/RBF), MMD is a true metric on probability measures over $\\mathcal Y$.\n*   **For the $L_2$ Distance:** The distance is a pre-defined maximal value $M_{L2}$ for the norm. For any density $\\tilde{\\rho}$ corresponding to a living swarm:\n$$\n\n    \\|\\tilde{\\rho} - \\tilde{\\rho}_{\\emptyset}\\|_{L_2} := M_{L2} \\quad \\text{and} \\quad \\|\\tilde{\\rho}_{\\emptyset} - \\tilde{\\rho}_{\\emptyset}\\|_{L2} := 0\n\n\n$$",
+  "start_line": 1462,
+  "end_line": 1480,
+  "section": "§7",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "6.4",
+    "section_name": null,
+    "directive_label": "def-distance-to-cemetery-state",
+    "equation": null,
+    "line_range": [
+      1462,
+      1480
+    ],
+    "url_fragment": "#def-distance-to-cemetery-state"
+  }
+}

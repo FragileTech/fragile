@@ -1,0 +1,47 @@
+{
+  "temp_id": "raw-cor-002",
+  "label": "thm-closed-form-lipschitz-composite",
+  "label_text": "Corollary: Closed\u2011form bound for L_{g_A\u2218z} (empirical aggregator)",
+  "name": "Closed\u2011form bound for L_{g_A\u2218z} (empirical aggregator)",
+  "statement_type": "theorem",
+  "statement": "Let $k=|\\mathcal A(\\mathcal S)|$ and assume $|v_i|\\le V_{\\max}$. For the empirical aggregator of \u00a76.2.2.a (see lem-empirical-aggregator-properties) with the regularized standardization and piecewise rescale of \u00a78.2.2, the composite map $g_A\\circ z$ is globally Lipschitz with\n$$\n\\boxed{\\;L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}\\;}\n$$\nwhere $L_P=\\|P'\\|_\\infty$ is the uniform derivative bound of the cubic patch from \u00a78.2.2.5.",
+  "full_statement_text": "Let $k=|\\mathcal A(\\mathcal S)|$ and assume $|v_i|\\le V_{\\max}$. For the empirical aggregator of \u00a76.2.2.a (see lem-empirical-aggregator-properties) with the regularized standardization and piecewise rescale of \u00a78.2.2, the composite map $g_A\\circ z$ is globally Lipschitz with\n$$\n\\boxed{\\;L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}\\;}\n$$\nwhere $L_P=\\|P'\\|_\\infty$ is the uniform derivative bound of the cubic patch from \u00a78.2.2.5.",
+  "context_before": null,
+  "conclusion_formula_latex": "L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}",
+  "equation_label": null,
+  "explicit_definition_references": [
+    "lem-empirical-aggregator-properties"
+  ],
+  "explicit_theorem_references": [
+    "cor-chain-rule-sigma-reg-var",
+    "thm-rescale-function-lipschitz"
+  ],
+  "source_section": "9. Rescale Transformation",
+  "source": {
+    "document": "01_fragile_gas_framework.md",
+    "section": "9. Rescale Transformation",
+    "subsection": "8.2.2.10"
+  },
+  "has_proof": true,
+  "depends_on": [
+    "cor-chain-rule-sigma-reg-var",
+    "thm-rescale-function-lipschitz"
+  ],
+  "input_objects": [
+    "obj-rescale-lipschitz-constants",
+    "obj-potential-bounds",
+    "obj-aggregator-lipschitz-constants",
+    "obj-cubic-patch-polynomial"
+  ],
+  "input_axioms": [
+    "axiom-rescale-function"
+  ],
+  "input_parameters": [],
+  "output_type": "Bound",
+  "relations_established": [
+    "Establishes global Lipschitz bound for composite map g_A o z",
+    "Bound: L_{g_A o z} <= max{L_P, 1} * (2L_{sigma'_reg}V_max)/sqrt(k)"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

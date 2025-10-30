@@ -6,7 +6,7 @@
       "MathematicalObject": 4,
       "Axiom": 1,
       "Parameter": 0,
-      "Property": 0,
+      "Attribute": 0,
       "Relationship": 0,
       "TheoremBox": 25
     },
@@ -51,9 +51,9 @@
     "lem-sasaki-indirect-structural-error-sq"
   ],
   "all_tags": [
-    "particle",
+    "swarm",
     "stability",
-    "euclidean-gas",
-    "swarm"
+    "particle",
+    "euclidean-gas"
   ]
 }

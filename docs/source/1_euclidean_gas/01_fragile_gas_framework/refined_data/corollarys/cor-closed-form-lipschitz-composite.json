@@ -1,0 +1,8 @@
+{
+  "label": "cor-closed-form-lipschitz-composite",
+  "name": "Closed-form bound for L_{g_A\u2218z} (empirical aggregator)",
+  "statement_type": "corollary",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "output_type": "Bound"
+}

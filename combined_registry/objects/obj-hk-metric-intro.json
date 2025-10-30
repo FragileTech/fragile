@@ -3,13 +3,22 @@
   "name": "Additive Hellinger-Kantorovich Metric for the Fragile Gas",
   "mathematical_expression": "d_{HK}^2(\\mu_1, \\mu_2) := d_H^2(\\mu_1, \\mu_2) + W_2^2(\\tilde{\\mu}_1, \\tilde{\\mu}_2)",
   "object_type": "measure",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle",
     "convergence"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence"
+  "source": {
+    "document_id": "11_hk_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+    "section": null,
+    "directive_label": "obj-hk-metric-intro",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-hk-metric-intro"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

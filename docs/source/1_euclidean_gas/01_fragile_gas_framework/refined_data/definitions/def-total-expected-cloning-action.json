@@ -1,0 +1,35 @@
+{
+  "label": "def-total-expected-cloning-action",
+  "name": "Total Expected Cloning Action",
+  "statement_type": "definition",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "source": {
+    "source_file": "01_fragile_gas_framework.md",
+    "line_number": 4284,
+    "context": "Section 16: The Cloning Transition Measure, subsection 15.2.1"
+  },
+  "proof": null,
+  "proof_status": "unproven",
+  "statement": "The **Total Expected Cloning Action** for a walker $i$, denoted $\\overline{P}_{\\text{clone}}(\\mathcal{S})_i$, is the probability that walker $i$ will be assigned the \"Clone\" action, given the swarm state $\\mathcal{S}$. It is the expectation of the **Conditional Expected Cloning Action** (Def. 15.2.3) taken over the probability distribution of the raw distance vector $\\mathbf{d} \\sim \\mathbf{d}(\\mathcal{S})$.\n\nLet $\\mathbf{r}(\\mathcal{S})$ be the deterministic raw reward vector for state $\\mathcal{S}$, and let $\\mathbf{V}(\\mathbf{r}, \\mathbf{d})$ be the fitness potential vector generated from a specific realization of the raw measurement vectors. The total expected action is:\n\n$$\n\\overline{P}_{\\text{clone}}(\\mathcal{S})_i := \\mathbb{E}_{\\mathbf{d} \\sim \\mathbf{d}(\\mathcal{S})} \\left[ P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V}(\\mathbf{r}(\\mathcal{S}), \\mathbf{d}))_i \\right]\n$$\n\nThis quantity is a deterministic function of the input swarm state $\\mathcal{S}$ and is the central object for the continuity analysis of the cloning stage.",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "natural_language_statement": "The Total Expected Cloning Action for a walker is the probability it will be assigned the 'Clone' action, averaged over all possible raw distance measurements.",
+  "assumptions": [],
+  "uses_definitions": [
+    "def-expected-cloning-action"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null,
+  "dependencies": [
+    "def-expected-cloning-action"
+  ],
+  "tags": [
+    "cloning",
+    "probability",
+    "expectation",
+    "continuity"
+  ],
+  "extraction_date": "2025-10-27T21:43:09.486087"
+}

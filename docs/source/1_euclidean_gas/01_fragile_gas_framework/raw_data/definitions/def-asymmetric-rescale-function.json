@@ -1,0 +1,21 @@
+{
+  "label": "def-asymmetric-rescale-function",
+  "name": "Smooth Piecewise Rescale Function",
+  "statement": "The rescale function is parameterized by the **Rescale Saturation Threshold ($z_{\\max}$)**, which defines the upper saturation limit. For the function to be well-posed with distinct segments, this parameter must satisfy the constraint $z_{\\max} > 1$.\n\nThe **Smooth Piecewise Rescale Function** $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ is defined as:\n$$\ng_A(z) :=\n\\begin{cases}\n\\exp(z), & z \\le 0 \\\\\n\\log(1 + z) + 1, & 0 < z < z_{\\max} - 1 \\\\\nP(z), & z_{\\max} - 1 \\le z \\le z_{\\max} \\\\\n\\log(1 + z_{\\max}) + 1, & z > z_{\\max}\n\\end{cases}\n$$\n\nThe function $P(z)$ is a unique cubic polynomial defined on the interval $[z_{\\max}-1, z_{\\max}]$. It serves as a $C^1$ (continuously differentiable) patch that smoothly connects the logarithmic curve to the constant saturation value. Its four coefficients are uniquely determined by solving for the following four boundary conditions:\n1. **Match Value at Start:** $P(z_{\\max}-1) = \\log(z_{\\max}) + 1$\n2. **Match Slope at Start:** $P'(z_{\\max}-1) = 1 / z_{\\max}$\n3. **Match Value at End:** $P(z_{\\max}) = \\log(1 + z_{\\max}) + 1$\n4. **Match Slope at End:** $P'(z_{\\max}) = 0$\n\nThis construction ensures that $g_A(z)$ is continuously differentiable across its entire domain.",
+  "section": "9. Rescale Transformation",
+  "subsection": "8.2.1 Definition of the Asymmetric Rescale Function",
+  "type": "definition",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "8.2.1",
+    "section_name": null,
+    "directive_label": "def-asymmetric-rescale-function",
+    "equation": null,
+    "line_range": [
+      1675,
+      1696
+    ],
+    "url_fragment": "#def-asymmetric-rescale-function"
+  }
+}

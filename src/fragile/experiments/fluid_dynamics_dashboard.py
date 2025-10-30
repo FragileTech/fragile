@@ -73,7 +73,11 @@ class FluidDynamicsExplorer(param.Parameterized):
     # Benchmark selection (fluid-specific)
     benchmark_name = param.ObjectSelector(
         default="Taylor-Green Vortex",
-        objects=["Taylor-Green Vortex", "Lid-Driven Cavity (Re=100)", "Kelvin-Helmholtz Instability"],
+        objects=[
+            "Taylor-Green Vortex",
+            "Lid-Driven Cavity (Re=100)",
+            "Kelvin-Helmholtz Instability",
+        ],
         doc="Select fluid dynamics benchmark",
     )
 
@@ -103,13 +107,36 @@ class FluidDynamicsExplorer(param.Parameterized):
         """
         # Extract gas-related parameters to forward to GasConfig
         gas_param_names = {
-            'N', 'n_steps', 'enable_cloning', 'enable_kinetic', 'pbc',
-            'gamma', 'beta', 'delta_t', 'epsilon_F', 'use_fitness_force',
-            'use_potential_force', 'epsilon_Sigma', 'use_anisotropic_diffusion',
-            'diagonal_diffusion', 'nu', 'use_viscous_coupling', 'viscous_length_scale',
-            'V_alg', 'use_velocity_squashing', 'sigma_x', 'alpha_restitution',
-            'p_max', 'epsilon_clone', 'companion_method', 'alpha_fit', 'beta_fit',
-            'eta', 'lambda_alg', 'sigma_min', 'A'
+            "N",
+            "n_steps",
+            "enable_cloning",
+            "enable_kinetic",
+            "pbc",
+            "gamma",
+            "beta",
+            "delta_t",
+            "epsilon_F",
+            "use_fitness_force",
+            "use_potential_force",
+            "epsilon_Sigma",
+            "use_anisotropic_diffusion",
+            "diagonal_diffusion",
+            "nu",
+            "use_viscous_coupling",
+            "viscous_length_scale",
+            "V_alg",
+            "use_velocity_squashing",
+            "sigma_x",
+            "alpha_restitution",
+            "p_max",
+            "epsilon_clone",
+            "companion_method",
+            "alpha_fit",
+            "beta_fit",
+            "eta",
+            "lambda_alg",
+            "sigma_min",
+            "A",
         }
 
         gas_params = {k: v for k, v in params.items() if k in gas_param_names}
@@ -149,7 +176,9 @@ class FluidDynamicsExplorer(param.Parameterized):
         self.load_params_button.on_click(lambda _: self._load_recommended_params())
 
         self.status_pane = pn.pane.Markdown("", sizing_mode="stretch_width")
-        self.validation_pane = pn.pane.Markdown("## Validation Metrics\n\n*Run simulation to see metrics*", sizing_mode="stretch_width")
+        self.validation_pane = pn.pane.Markdown(
+            "## Validation Metrics\n\n*Run simulation to see metrics*", sizing_mode="stretch_width"
+        )
 
         # Animation controls
         self.play_button = pn.widgets.Button(name="▶ Play", button_type="success", width=80)
@@ -157,7 +186,9 @@ class FluidDynamicsExplorer(param.Parameterized):
 
         # Widget overrides for fluid-specific parameters
         self._widget_overrides = {
-            "kernel_bandwidth": pn.widgets.FloatSlider(name="kernel_bandwidth", start=0.1, end=1.0, step=0.05),
+            "kernel_bandwidth": pn.widgets.FloatSlider(
+                name="kernel_bandwidth", start=0.1, end=1.0, step=0.05
+            ),
         }
 
         # Watch for benchmark changes
@@ -186,7 +217,9 @@ class FluidDynamicsExplorer(param.Parameterized):
         # This will automatically trigger UI updates
         self.gas_config.param.update(**params)
 
-        self.status_pane.object = f"**Parameters loaded** from {self.benchmark_name} recommendations"
+        self.status_pane.object = (
+            f"**Parameters loaded** from {self.benchmark_name} recommendations"
+        )
 
     def _on_benchmark_change(self, *_):
         """Handle benchmark selection change."""
@@ -221,10 +254,20 @@ class FluidDynamicsExplorer(param.Parameterized):
         langevin_params = pn.Param(
             self.gas_config.param,
             parameters=[
-                "gamma", "beta", "delta_t", "nu", "use_viscous_coupling", "viscous_length_scale",
-                "epsilon_F", "use_fitness_force", "use_potential_force",
-                "epsilon_Sigma", "use_anisotropic_diffusion", "diagonal_diffusion",
-                "V_alg", "use_velocity_squashing"
+                "gamma",
+                "beta",
+                "delta_t",
+                "nu",
+                "use_viscous_coupling",
+                "viscous_length_scale",
+                "epsilon_F",
+                "use_fitness_force",
+                "use_potential_force",
+                "epsilon_Sigma",
+                "use_anisotropic_diffusion",
+                "diagonal_diffusion",
+                "V_alg",
+                "use_velocity_squashing",
             ],
             widgets=self.gas_config._widget_overrides,
             show_name=False,
@@ -289,6 +332,7 @@ class FluidDynamicsExplorer(param.Parameterized):
         except Exception as e:
             self.status_pane.object = f"**Error:** {e!s}"
             import traceback
+
             traceback.print_exc()
         finally:
             self.run_button.disabled = False
@@ -442,7 +486,9 @@ class FluidDynamicsExplorer(param.Parameterized):
             vorticity = self.field_computer.compute_vorticity(U, V, dx, dy)
 
             # Create vorticity image
-            vorticity_img = hv.Image((X[0, :], Y[:, 0], vorticity), kdims=["x", "y"], vdims=["vorticity"]).opts(
+            vorticity_img = hv.Image(
+                (X[0, :], Y[:, 0], vorticity), kdims=["x", "y"], vdims=["vorticity"]
+            ).opts(
                 cmap="RdBu_r",
                 alpha=0.6,
                 colorbar=True,
@@ -459,7 +505,9 @@ class FluidDynamicsExplorer(param.Parameterized):
                 positions, self.grid_resolution, bounds, smoothing=2.0
             )
 
-            density_img = hv.Image((X[0, :], Y[:, 0], density), kdims=["x", "y"], vdims=["density"]).opts(
+            density_img = hv.Image(
+                (X[0, :], Y[:, 0], density), kdims=["x", "y"], vdims=["density"]
+            ).opts(
                 cmap="viridis",
                 alpha=0.3,
                 colorbar=True,
@@ -495,7 +543,7 @@ class FluidDynamicsExplorer(param.Parameterized):
                 xlim=(bounds[0], bounds[1]),
                 ylim=(bounds[0], bounds[1]),
                 aspect="equal",
-                title=f"{self.benchmark_name} - Frame {frame_idx}/{self.history.n_recorded-1}",
+                title=f"{self.benchmark_name} - Frame {frame_idx}/{self.history.n_recorded - 1}",
                 xlabel="x",
                 ylabel="y",
             )
@@ -536,7 +584,7 @@ class FluidDynamicsExplorer(param.Parameterized):
         # Add theoretical decay for Taylor-Green
         if isinstance(self.benchmark, TaylorGreenVortex):
             E0 = energies[0]
-            nu_eff = self.gas_config.nu * self.gas_config.viscous_length_scale ** 2
+            nu_eff = self.gas_config.nu * self.gas_config.viscous_length_scale**2
             E_theory = [E0 * np.exp(-2 * nu_eff * t) for t in times]
 
             theory_curve = hv.Curve((times, E_theory), label="Theory E₀·exp(-2νt)").opts(
@@ -568,22 +616,25 @@ class FluidDynamicsExplorer(param.Parameterized):
         metrics = self.benchmark.compute_validation_metrics(self.history, frame_idx, params_dict)
 
         # Format metrics as markdown
-        lines = ["## Validation Metrics", f"\n**Frame {frame_idx}/{self.history.n_recorded-1}**\n"]
+        lines = [
+            "## Validation Metrics",
+            f"\n**Frame {frame_idx}/{self.history.n_recorded - 1}**\n",
+        ]
 
         for metric in metrics:
             symbol = "✓" if metric.passed else "✗"
-            color = "green" if metric.passed else "red"
 
-            lines.append(f"### {symbol} {metric.metric_name}")
-            lines.append(f"- **Measured**: {metric.measured_value:.4f}")
+            lines.extend((
+                f"### {symbol} {metric.metric_name}",
+                f"- **Measured**: {metric.measured_value:.4f}",
+            ))
             if metric.theoretical_value is not None:
                 lines.append(f"- **Theory**: {metric.theoretical_value:.4f}")
                 error = abs(metric.measured_value - metric.theoretical_value) / (
                     abs(metric.theoretical_value) + 1e-10
                 )
                 lines.append(f"- **Error**: {error:.2%}")
-            lines.append(f"- {metric.description}")
-            lines.append("")
+            lines.extend((f"- {metric.description}", ""))
 
         self.validation_pane.object = "\n".join(lines)
 
@@ -609,9 +660,7 @@ class FluidDynamicsExplorer(param.Parameterized):
             Panel Param widget with specified parameters
         """
         widgets = {
-            name: self._widget_overrides[name]
-            for name in names
-            if name in self._widget_overrides
+            name: self._widget_overrides[name] for name in names if name in self._widget_overrides
         }
         return pn.Param(
             self.param,
@@ -757,4 +806,3 @@ if __name__ == "__main__":
     dashboard = create_fluid_dashboard()
     dashboard.show(port=5007, open=False)
     print("Dashboard running at http://localhost:5007")
-

@@ -4,8 +4,8 @@ import numpy as np
 import torch
 
 from fragile.experiments.gauge.locality_tests import (
-    LocalityTestsConfig,
     generate_locality_report,
+    LocalityTestsConfig,
     run_all_locality_tests,
     test_field_gradients as run_field_gradients_test,
     test_perturbation_response as run_perturbation_response_test,
@@ -219,6 +219,7 @@ def test_perturbation_response_with_dead_walkers(partially_dead_swarm_2d):
     alive_indices = torch.where(partially_dead_swarm_2d["alive"])[0]
     if len(alive_indices) == 0:
         import pytest
+
         pytest.skip("No alive walkers in test fixture")
 
     perturb_idx = alive_indices[0].item()
@@ -258,7 +259,7 @@ def test_run_all_locality_tests_mean_field(simple_swarm_2d):
     # Summary should have verdict
     assert "verdict" in results["summary"]
     assert isinstance(results["summary"]["verdict"], str)
-    assert results["summary"]["verdict"] in ["local", "mean-field"]
+    assert results["summary"]["verdict"] in {"local", "mean-field"}
 
 
 def test_run_all_locality_tests_local(clustered_swarm_2d):

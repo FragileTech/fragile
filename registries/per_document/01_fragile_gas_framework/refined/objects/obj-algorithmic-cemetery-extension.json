@@ -1,0 +1,35 @@
+{
+  "label": "obj-algorithmic-cemetery-extension",
+  "name": "Algorithmic Cemetery Extension",
+  "mathematical_expression": "d_\\dagger(y_1,y_2)=d_{\\mathcal{Y}}(y_1,y_2),\\quad d_\\dagger(y,\\dagger)=D_{\\mathrm{valid}}\\quad \\text{for all }y\\in\\mathcal{Y}.",
+  "object_type": "space",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "algorithmic",
+    "cemetery",
+    "extension",
+    "metric",
+    "particle-system"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§7",
+    "directive_label": "def-algorithmic-cemetery-extension",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-algorithmic-cemetery-extension",
+  "definition": "An extension of the algorithmic space Y to include an abstract 'cemetery' point, denoted by a dagger symbol. This point represents the state of a dead walker. The distance from any valid point in the algorithmic space to the cemetery point is defined as a fixed constant, D_valid.",
+  "mathematical_properties": "This construction creates a new metric space (Y^dagger, d_dagger) where the distance to the cemetery point is constant. This simplifies the analysis of absorption events (all walkers dying) by making the Wasserstein distance to the cemetery state canonical and independent of the swarm's specific configuration before death.",
+  "dependencies": [
+    "obj-algorithmic-space-generic"
+  ],
+  "typical_values": {
+    "D_valid": "The diameter of the projected valid domain, diam_{d_Y}(φ(X_valid))."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "label": "obj-perturbation-constants",
+  "name": "Perturbation Stage Constants",
+  "mathematical_expression": "Perturbation Stage Constants",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": null
+}

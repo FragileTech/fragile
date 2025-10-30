@@ -1,0 +1,45 @@
+{
+  "label": "def-perturbation-operator",
+  "type": "definition",
+  "name": "Perturbation Operator",
+  "term_being_defined": "Perturbation Operator",
+  "full_text": "The **Perturbation Operator**, denoted $\\Psi_{\\text{pert}}: \\Sigma_N \\to \\mathcal{P}(\\Sigma_N)$, maps an input swarm $\\mathcal{S}_{\\text{in}}$ to a distribution over swarms where only the positions have been updated.\n\nFor each walker $i$, its output state $w_{\\text{out},i} = (x_{\\text{out},i}, s_{\\text{out},i})$ is determined as follows:\n\n1. Its output position is sampled from the **Perturbation Measure**:\n   $$x_{\\text{out},i} \\sim \\mathcal{P}_\\sigma(x_{\\text{in},i}, \\cdot)$$\n\n2. Its status remains unchanged from the input: $s_{\\text{out},i} = s_{\\text{in},i}$.\n\nThe operator is the product measure of these N independent processes.",
+  "statement": "The **Perturbation Operator**, denoted $\\Psi_{\\text{pert}}: \\Sigma_N \\to \\mathcal{P}(\\Sigma_N)$, maps an input swarm $\\mathcal{S}_{\\text{in}}$ to a distribution over swarms where only the positions have been updated.",
+  "notation": "$\\Psi_{\\text{pert}}: \\Sigma_N \\to \\mathcal{P}(\\Sigma_N)$",
+  "source_section": "14. The Perturbation Operator",
+  "source_document": "01_fragile_gas_framework.md",
+  "line_range": [
+    3940,
+    3953
+  ],
+  "tags": [
+    "perturbation",
+    "operator",
+    "stochastic",
+    "exploration"
+  ],
+  "dependencies": [
+    "Perturbation Measure",
+    "swarm state",
+    "walker state"
+  ],
+  "properties": [
+    "Stochastic operator",
+    "Updates positions only",
+    "Preserves status",
+    "Product measure of N independent processes"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "14",
+    "section_name": null,
+    "directive_label": "def-perturbation-operator",
+    "equation": null,
+    "line_range": [
+      3950,
+      3963
+    ],
+    "url_fragment": "#def-perturbation-operator"
+  }
+}

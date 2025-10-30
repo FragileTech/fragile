@@ -1,0 +1,44 @@
+{
+  "label": "lem-final-positional-displacement-bound",
+  "name": "Bounding the Final Positional Displacement (unconditional)",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17.2.2",
+    "section_name": null,
+    "directive_label": "lem-final-positional-displacement-bound",
+    "equation": null,
+    "line_range": [
+      4710,
+      4734
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-n-particle-displacement-metric",
+    "obj-swarm-and-state-space"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "General Result",
+  "attributes_added": [],
+  "relations_established": [
+    "Final positional displacement bounded by initial displacement squared"
+  ],
+  "natural_language_statement": "The total squared positional displacement from all walkers is bounded by a quadratic function of the initial displacement metric.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

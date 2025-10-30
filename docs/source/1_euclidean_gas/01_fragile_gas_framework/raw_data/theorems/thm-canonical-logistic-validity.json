@@ -1,0 +1,35 @@
+{
+  "label": "thm-canonical-logistic-validity",
+  "name": "The Canonical Logistic Function is a Valid Rescale Function",
+  "statement": "The **Canonical Logistic Rescale Function** defined in def-canonical-logistic-rescale-function-example satisfies all four conditions of the **Axiom of a Well-Behaved Rescale Function** (def-axiom-rescale-function).",
+  "section": "9. Rescale Transformation",
+  "subsection": "8.3.2. Theorem: The Canonical Logistic Function is a Valid Rescale Function",
+  "has_proof": true,
+  "key_result": "Canonical logistic function g_A(z) = 2/(1+e^{-z}) satisfies all axioms with L_{g_A} = 1/2 and g_{A,max} = 2",
+  "input_objects": [
+    "obj-canonical-logistic-rescale-function",
+    "obj-asymmetric-rescale-function"
+  ],
+  "input_axioms": [
+    "axiom-rescale-function"
+  ],
+  "input_parameters": [],
+  "output_type": "General Result",
+  "relations_established": [
+    "Canonical logistic rescale function satisfies all axiom requirements"
+  ],
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "8.3.2",
+    "section_name": null,
+    "directive_label": "thm-canonical-logistic-validity",
+    "equation": null,
+    "line_range": [
+      2080,
+      2083
+    ],
+    "url_fragment": "#thm-canonical-logistic-validity"
+  }
+}

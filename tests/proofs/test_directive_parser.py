@@ -10,10 +10,10 @@ from fragile.proofs.tools import (
     DirectiveHint,
     DocumentSection,
     extract_jupyter_directives,
-    split_into_sections,
+    format_directive_hints_for_llm,
     generate_section_id,
     get_directive_summary,
-    format_directive_hints_for_llm,
+    split_into_sections,
 )
 
 
@@ -282,7 +282,9 @@ class TestGenerateSectionId:
         """Test ID generation without section number."""
         assert generate_section_id("Introduction", 0) == "introduction"
         assert generate_section_id("Main Results", 10) == "main-results"
-        assert generate_section_id("Conclusion and Future Work", 20) == "conclusion-and-future-work"
+        assert (
+            generate_section_id("Conclusion and Future Work", 20) == "conclusion-and-future-work"
+        )
 
     def test_generate_id_special_characters(self):
         """Test handling of special characters."""
@@ -332,9 +334,7 @@ class TestFormatDirectiveHintsForLLM:
 
     def test_format_single_directive(self):
         """Test formatting single directive."""
-        directives = [
-            DirectiveHint("theorem", "thm-test", 10, 25, "...", "§2")
-        ]
+        directives = [DirectiveHint("theorem", "thm-test", 10, 25, "...", "§2")]
 
         formatted = format_directive_hints_for_llm(directives)
 
@@ -377,7 +377,7 @@ class TestDirectiveHintDataclass:
             start_line=10,
             end_line=25,
             content="Test content",
-            section="§1"
+            section="§1",
         )
 
         assert hint.directive_type == "theorem"
@@ -402,7 +402,7 @@ class TestDocumentSectionDataclass:
             start_line=1,
             end_line=50,
             content="Section content here",
-            directives=[directive]
+            directives=[directive],
         )
 
         assert section.section_id == "§1-intro"

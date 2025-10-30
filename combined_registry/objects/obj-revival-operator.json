@@ -3,13 +3,22 @@
   "name": "Revival Operator",
   "mathematical_expression": "B[f, m_d](t, z) := \\lambda_{\\text{revive}} \\cdot m_d(t) \\cdot \\frac{f(t,z)}{m_a(t)}",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "discrete",
     "particle"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "07_mean_field"
+  "source": {
+    "document_id": "07_mean_field",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/07_mean_field.md",
+    "section": null,
+    "directive_label": "obj-revival-operator",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-revival-operator"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

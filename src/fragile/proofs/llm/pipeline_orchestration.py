@@ -25,7 +25,6 @@ Maps to Lean:
 
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional
 
 from fragile.proofs.core import (
     Axiom,
@@ -33,7 +32,7 @@ from fragile.proofs.core import (
     ProofBox,
     TheoremBox,
 )
-from fragile.proofs.error_tracking import ErrorLogger, create_logger_for_document
+from fragile.proofs.error_tracking import create_logger_for_document, ErrorLogger
 from fragile.proofs.llm.document_container import MathematicalDocument
 from fragile.proofs.llm.llm_interface import (
     call_main_extraction_llm,
@@ -45,6 +44,7 @@ from fragile.proofs.tools import (
     format_directive_hints_for_llm,
     split_into_sections,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +58,7 @@ def process_section(
     section: DocumentSection,
     prompt_template: str = MAIN_EXTRACTION_PROMPT,
     model: str = "claude-sonnet-4",
-    **llm_kwargs
+    **llm_kwargs,
 ) -> StagingDocument:
     """
     Process a single section through Stage 1 extraction.
@@ -108,7 +108,7 @@ def process_section(
             section_id=section.section_id,
             prompt_template=prompt_template,
             model=model,
-            **llm_kwargs
+            **llm_kwargs,
         )
 
         # Validate and return
@@ -128,16 +128,16 @@ def process_section(
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
 
 
 def process_sections_parallel(
-    sections: List[DocumentSection],
+    sections: list[DocumentSection],
     prompt_template: str = MAIN_EXTRACTION_PROMPT,
     model: str = "claude-sonnet-4",
-    **llm_kwargs
-) -> List[StagingDocument]:
+    **llm_kwargs,
+) -> list[StagingDocument]:
     """
     Process multiple sections in parallel.
 
@@ -166,10 +166,7 @@ def process_sections_parallel(
     staging_docs = []
     for section in sections:
         staging_doc = process_section(
-            section,
-            prompt_template=prompt_template,
-            model=model,
-            **llm_kwargs
+            section, prompt_template=prompt_template, model=model, **llm_kwargs
         )
         staging_docs.append(staging_doc)
 
@@ -177,7 +174,7 @@ def process_sections_parallel(
     return staging_docs
 
 
-def merge_sections(staging_docs: List[StagingDocument]) -> StagingDocument:
+def merge_sections(staging_docs: list[StagingDocument]) -> StagingDocument:
     """
     Merge multiple section StagingDocuments into a single document.
 
@@ -226,7 +223,7 @@ def merge_sections(staging_docs: List[StagingDocument]) -> StagingDocument:
         citations=all_citations,
         equations=all_equations,
         parameters=all_parameters,
-        remarks=all_remarks
+        remarks=all_remarks,
     )
 
     logger.info(f"Merged document contains {merged.total_entities} total entities")
@@ -240,9 +237,9 @@ def merge_sections(staging_docs: List[StagingDocument]) -> StagingDocument:
 
 def enrich_and_assemble(
     staging_doc: StagingDocument,
-    chapter: Optional[str] = None,
-    document: Optional[str] = None,
-    error_logger: Optional[ErrorLogger] = None
+    chapter: str | None = None,
+    document: str | None = None,
+    error_logger: ErrorLogger | None = None,
 ) -> MathematicalDocument:
     """
     Enrich raw entities and assemble into MathematicalDocument.
@@ -275,9 +272,7 @@ def enrich_and_assemble(
 
     # Create document container
     math_doc = MathematicalDocument(
-        document_id=document or staging_doc.section_id,
-        chapter=chapter,
-        file_path=None
+        document_id=document or staging_doc.section_id, chapter=chapter, file_path=None
     )
 
     # Add staging document
@@ -287,66 +282,92 @@ def enrich_and_assemble(
     logger.info(f"Enriching {len(staging_doc.definitions)} definitions")
     for raw_def in staging_doc.definitions:
         try:
-            enriched = DefinitionBox.from_raw(raw_def, chapter=chapter, document=document)
+            if raw_def.source is None:
+                raise ValueError(
+                    f"Definition {raw_def.temp_id} missing source location. "
+                    "Run source_location_enricher before transformation."
+                )
+            enriched = DefinitionBox.from_raw(
+                raw_def, source=raw_def.source, chapter=chapter, document=document
+            )
             math_doc = math_doc.add_enriched_definition(enriched)
         except Exception as e:
-            logger.error(f"Failed to enrich definition {raw_def.label_text}: {e}")
+            logger.error(f"Failed to enrich definition {raw_def.temp_id}: {e}")
             if error_logger:
                 error_logger.log_error(
                     error_type="ENRICHMENT_ERROR",
                     message=f"Failed to enrich definition: {e}",
                     entity_id=raw_def.label_text,
-                    entity_type="definition"
+                    entity_type="definition",
                 )
 
     # Enrich theorems
     logger.info(f"Enriching {len(staging_doc.theorems)} theorems")
     for raw_thm in staging_doc.theorems:
         try:
-            enriched = TheoremBox.from_raw(raw_thm, chapter=chapter, document=document)
+            if raw_thm.source is None:
+                raise ValueError(
+                    f"Theorem {raw_thm.temp_id} missing source location. "
+                    "Run source_location_enricher before transformation."
+                )
+            enriched = TheoremBox.from_raw(
+                raw_thm, source=raw_thm.source, chapter=chapter, document=document
+            )
             math_doc = math_doc.add_enriched_theorem(enriched)
         except Exception as e:
-            logger.error(f"Failed to enrich theorem {raw_thm.label_text}: {e}")
+            logger.error(f"Failed to enrich theorem {raw_thm.temp_id}: {e}")
             if error_logger:
                 error_logger.log_error(
                     error_type="ENRICHMENT_ERROR",
                     message=f"Failed to enrich theorem: {e}",
                     entity_id=raw_thm.label_text,
-                    entity_type="theorem"
+                    entity_type="theorem",
                 )
 
     # Enrich axioms
     logger.info(f"Enriching {len(staging_doc.axioms)} axioms")
     for raw_axiom in staging_doc.axioms:
         try:
-            enriched = Axiom.from_raw(raw_axiom, chapter=chapter, document=document)
+            if raw_axiom.source is None:
+                raise ValueError(
+                    f"Axiom {raw_axiom.temp_id} missing source location. "
+                    "Run source_location_enricher before transformation."
+                )
+            enriched = Axiom.from_raw(
+                raw_axiom, source=raw_axiom.source, chapter=chapter, document=document
+            )
             math_doc = math_doc.add_enriched_axiom(enriched)
         except Exception as e:
-            logger.error(f"Failed to enrich axiom {raw_axiom.label_text}: {e}")
+            logger.error(f"Failed to enrich axiom {raw_axiom.temp_id}: {e}")
             if error_logger:
                 error_logger.log_error(
                     error_type="ENRICHMENT_ERROR",
                     message=f"Failed to enrich axiom: {e}",
                     entity_id=raw_axiom.label_text,
-                    entity_type="axiom"
+                    entity_type="axiom",
                 )
 
     # Enrich proofs
     logger.info(f"Enriching {len(staging_doc.proofs)} proofs")
     for raw_proof in staging_doc.proofs:
         try:
+            if raw_proof.source is None:
+                raise ValueError(
+                    f"Proof {raw_proof.temp_id} missing source location. "
+                    "Run source_location_enricher before transformation."
+                )
             # Need to determine what theorem this proves
-            proves = raw_proof.theorem_label
-            enriched = ProofBox.from_raw(raw_proof, proves=proves)
+            proves = raw_proof.proves_label_text
+            enriched = ProofBox.from_raw(raw_proof, source=raw_proof.source, proves=proves)
             math_doc = math_doc.add_enriched_proof(enriched)
         except Exception as e:
-            logger.error(f"Failed to enrich proof for {raw_proof.theorem_label}: {e}")
+            logger.error(f"Failed to enrich proof {raw_proof.temp_id}: {e}")
             if error_logger:
                 error_logger.log_error(
                     error_type="ENRICHMENT_ERROR",
                     message=f"Failed to enrich proof: {e}",
                     entity_id=raw_proof.temp_id,
-                    entity_type="proof"
+                    entity_type="proof",
                 )
 
     logger.info("Enrichment complete")
@@ -364,12 +385,12 @@ def enrich_and_assemble(
 def process_document(
     markdown_text: str,
     document_id: str,
-    chapter: Optional[str] = None,
-    file_path: Optional[str] = None,
+    chapter: str | None = None,
+    file_path: str | None = None,
     model: str = "claude-sonnet-4",
     enable_error_logging: bool = True,
-    log_dir: Optional[str] = None,
-    **llm_kwargs
+    log_dir: str | None = None,
+    **llm_kwargs,
 ) -> MathematicalDocument:
     """
     Complete end-to-end Extract-then-Enrich pipeline.
@@ -399,13 +420,13 @@ def process_document(
         >>> math_doc = process_document(
         ...     markdown_text,
         ...     document_id="01_fragile_gas_framework",
-        ...     chapter="1_euclidean_gas"
+        ...     chapter="1_euclidean_gas",
         ... )
         >>> print(math_doc.get_summary())
     """
-    logger.info("="*60)
+    logger.info("=" * 60)
     logger.info(f"STARTING DOCUMENT PROCESSING: {document_id}")
-    logger.info("="*60)
+    logger.info("=" * 60)
 
     # Set up error logging
     error_logger = None
@@ -421,11 +442,7 @@ def process_document(
 
         # Stage 1: Raw extraction
         logger.info("Stage 1: Raw extraction")
-        staging_docs = process_sections_parallel(
-            sections,
-            model=model,
-            **llm_kwargs
-        )
+        staging_docs = process_sections_parallel(sections, model=model, **llm_kwargs)
 
         # Merge sections
         merged_staging = merge_sections(staging_docs)
@@ -434,10 +451,7 @@ def process_document(
         # Stage 2: Enrichment
         logger.info("Stage 2: Semantic enrichment")
         math_doc = enrich_and_assemble(
-            merged_staging,
-            chapter=chapter,
-            document=document_id,
-            error_logger=error_logger
+            merged_staging, chapter=chapter, document=document_id, error_logger=error_logger
         )
 
         # Update file_path in document
@@ -445,9 +459,9 @@ def process_document(
             math_doc = math_doc.model_copy(update={"file_path": file_path})
 
         # Print summary
-        logger.info("="*60)
+        logger.info("=" * 60)
         logger.info("PROCESSING COMPLETE")
-        logger.info("="*60)
+        logger.info("=" * 60)
         logger.info(f"\n{math_doc.get_summary()}")
 
         # Save error log if enabled
@@ -465,17 +479,14 @@ def process_document(
                 error_type="PIPELINE_ERROR",
                 message=f"Document processing failed: {e}",
                 entity_id=document_id,
-                entity_type="document"
+                entity_type="document",
             )
             error_logger.save_report()
         raise
 
 
 def process_document_from_file(
-    file_path: str,
-    chapter: Optional[str] = None,
-    model: str = "claude-sonnet-4",
-    **llm_kwargs
+    file_path: str, chapter: str | None = None, model: str = "claude-sonnet-4", **llm_kwargs
 ) -> MathematicalDocument:
     """
     Process a markdown file through the complete pipeline.
@@ -494,7 +505,7 @@ def process_document_from_file(
     Examples:
         >>> math_doc = process_document_from_file(
         ...     "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-        ...     model="claude-sonnet-4"
+        ...     model="claude-sonnet-4",
         ... )
         >>> math_doc.document_id
         '01_fragile_gas_framework'
@@ -502,7 +513,7 @@ def process_document_from_file(
     path = Path(file_path)
 
     # Read file
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         markdown_text = f.read()
 
     # Auto-detect chapter from path if not provided
@@ -523,7 +534,7 @@ def process_document_from_file(
         chapter=chapter,
         file_path=str(path),
         model=model,
-        **llm_kwargs
+        **llm_kwargs,
     )
 
 
@@ -533,11 +544,8 @@ def process_document_from_file(
 
 
 def process_multiple_documents(
-    file_paths: List[str],
-    chapter: Optional[str] = None,
-    model: str = "claude-sonnet-4",
-    **llm_kwargs
-) -> Dict[str, MathematicalDocument]:
+    file_paths: list[str], chapter: str | None = None, model: str = "claude-sonnet-4", **llm_kwargs
+) -> dict[str, MathematicalDocument]:
     """
     Process multiple documents sequentially.
 
@@ -565,10 +573,7 @@ def process_multiple_documents(
     for file_path in file_paths:
         try:
             math_doc = process_document_from_file(
-                file_path,
-                chapter=chapter,
-                model=model,
-                **llm_kwargs
+                file_path, chapter=chapter, model=model, **llm_kwargs
             )
             results[math_doc.document_id] = math_doc
         except Exception as e:

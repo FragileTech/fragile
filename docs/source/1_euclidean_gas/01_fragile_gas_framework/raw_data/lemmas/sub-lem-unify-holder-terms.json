@@ -1,0 +1,41 @@
+{
+  "label": "sub-lem-unify-holder-terms",
+  "name": "Unifying Multiple Hölder Terms (global, with case split)",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17.2.4.3",
+    "section_name": null,
+    "directive_label": "sub-lem-unify-holder-terms",
+    "equation": null,
+    "line_range": [
+      4959,
+      4988
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "General Result",
+  "attributes_added": [],
+  "relations_established": [
+    "Unified Hölder bound for multiple terms"
+  ],
+  "natural_language_statement": "Multiple Hölder-type terms (√V, V^{1/3}, etc.) arising from different components can be unified into a single dominant term using subadditivity and case analysis.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

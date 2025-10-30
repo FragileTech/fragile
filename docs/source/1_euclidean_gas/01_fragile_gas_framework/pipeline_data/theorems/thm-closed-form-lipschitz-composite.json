@@ -1,0 +1,45 @@
+{
+  "label": "thm-closed-form-lipschitz-composite",
+  "name": "Closed‑form bound for L_{g_A∘z} (empirical aggregator)",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": null,
+    "file_path": null,
+    "section": "9. Rescale Transformation",
+    "directive_label": null,
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-rescale-lipschitz-constants",
+    "obj-potential-bounds",
+    "obj-aggregator-lipschitz-constants",
+    "obj-cubic-patch-polynomial"
+  ],
+  "input_axioms": [
+    "axiom-rescale-function"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Establishes global Lipschitz bound for composite map g_A o z",
+    "Bound: L_{g_A o z} <= max{L_P, 1} * (2L_{sigma'_reg}V_max)/sqrt(k)"
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

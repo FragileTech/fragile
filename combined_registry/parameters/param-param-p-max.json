@@ -1,0 +1,10 @@
+{
+  "label": "param-param-p-max",
+  "name": "param-p-max",
+  "symbol": "param-p-max",
+  "parameter_type": "real",
+  "constraints": null,
+  "default_value": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

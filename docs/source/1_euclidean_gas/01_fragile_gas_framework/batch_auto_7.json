@@ -1,0 +1,169 @@
+{
+  "raw_data/objects/obj-alive-set-potential-operator.json": {
+    "label": "obj-alive-set-potential-operator",
+    "name": "Rescaled Potential Operator for the Alive Set",
+    "mathematical_expression": "The **Rescaled Potential Operator for the Alive Set**, denoted $V_{\\text{op},\\mathcal{A}}$, is a deterministic function that maps the raw reward and distance vectors of an alive set of size $k=|\\mathcal{A}_t|$ to a vector of fitness potentials for that same set.",
+    "object_type": "operator",
+    "current_attributes": [],
+    "attribute_history": [],
+    "tags": [
+      "fitness-potential",
+      "operator",
+      "standardization",
+      "cloning"
+    ],
+    "source": {
+      "document": "01_fragile_gas_framework.md",
+      "section": "13. Fitness potential operator",
+      "document_id": "01_fragile_gas_framework",
+      "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md"
+    },
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "definition_label": "def-alive-set-potential-operator"
+  },
+  "raw_data/objects/obj-boundary-regularity-constants.json": {
+    "label": "obj-boundary-regularity-constants",
+    "name": "Boundary Regularity Constants",
+    "mathematical_expression": "Constants characterizing Hölder continuity of post-perturbation death probability via heat-kernel smoothing on smooth boundaries.",
+    "object_type": "structure",
+    "current_attributes": [],
+    "attribute_history": [],
+    "tags": [],
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "definition_label": "def-boundary-regularity-constants"
+  },
+  "raw_data/objects/obj-canonical-fragile-swarm.json": {
+    "label": "obj-canonical-fragile-swarm",
+    "name": "Canonical Fragile Swarm",
+    "mathematical_expression": "A concrete, complete instantiation of the Fragile Gas framework that serves as an existence proof for the axiom system. It specifies all foundational, environmental, and algorithmic components with standard, well-behaved choices.",
+    "object_type": "set",
+    "current_attributes": [],
+    "attribute_history": [],
+    "tags": [
+      "canonical",
+      "instantiation",
+      "existence-proof",
+      "baseline",
+      "complete-specification"
+    ],
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "definition_label": "def-canonical-fragile-swarm"
+  },
+  "raw_data/objects/obj-canonical-logistic-rescale-function.json": {
+    "label": "obj-canonical-logistic-rescale-function",
+    "name": "Canonical Logistic Rescale Function",
+    "mathematical_expression": "g_A(z) := \\frac{2}{1 + e^{-z}}",
+    "object_type": "function",
+    "current_attributes": [],
+    "attribute_history": [],
+    "tags": [
+      "rescale",
+      "logistic",
+      "sigmoid",
+      "fitness"
+    ],
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "definition_label": "def-canonical-logistic-rescale-function-example"
+  },
+  "raw_data/objects/obj-cloning-probability-lipschitz-constants.json": {
+    "label": "obj-cloning-probability-lipschitz-constants",
+    "name": "Cloning Probability Lipschitz Constants",
+    "mathematical_expression": "Collection of per-walker Lipschitz constants for cloning probability function and related structural/value continuity factors.",
+    "object_type": "structure",
+    "current_attributes": [],
+    "attribute_history": [],
+    "tags": [],
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "definition_label": "def-cloning-probability-lipschitz-constants"
+  },
+  "raw_data/objects/obj-companion-selection-measure.json": {
+    "label": "obj-companion-selection-measure",
+    "name": "Companion Selection Measure",
+    "mathematical_expression": "For each walker $i \\in \\{1, \\dots, N\\}$ in a swarm $\\mathcal{S}$ with alive set $\\mathcal{A}$, the **Companion Selection Measure**, $\\mathbb{C}_i(\\mathcal{S})$, is a **uniform discrete probability measure** over a support set $S_i \\subseteq \\{1, \\dots, N\\}$ of valid companion indices. The support set is defined as:\n* If walker $i$ is alive ($i \\in \\mathcal{A}$) and there is at least one other alive walker ($|\\mathcal{A}| \\ge 2$), the support set is all other alive walkers: $S_i := \\mathcal{A} \\setminus \\{i\\}$.\n* If walker $i$ is dead ($i \\notin \\mathcal{A}$) and the alive set is not empty ($|\\mathcal{A}| \\ge 1$), the support set is all alive walkers: $S_i := \\mathcal{A}$.\n* If walker $i$ is the only one alive ($|\\mathcal{A}| = 1$ and $\\mathcal{A} = \\{i\\}$), it is its own companion: $S_i := \\{i\\}$.\n* If the swarm is empty ($|\\mathcal{A}|=0$), the support set is empty: $S_i := \\emptyset$.\n\nThe measure is defined as $\\mathbb{C}_i(\\mathcal{S})(\\{j\\}) = 1/|S_i|$ if $j \\in S_i$ and $|S_i|>0$, and 0 otherwise. The expectation of any function $f$ under this measure is $\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S})}[f(j)] = \\frac{1}{|S_i|} \\sum_{j \\in S_i} f(j)$.",
+    "object_type": "measure",
+    "current_attributes": [],
+    "attribute_history": [],
+    "tags": [
+      "companion-selection",
+      "probability-measure",
+      "swarm",
+      "discrete"
+    ],
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "definition_label": "def-companion-selection-measure"
+  },
+  "raw_data/objects/obj-continuity-constants-table.json": {
+    "label": "obj-continuity-constants-table",
+    "name": "Continuity Constants Table",
+    "mathematical_expression": "Consolidated table of constants used across absolute-value and mean-square continuity results, organized by type (environment, geometry, noise, dynamics, regularization, cloning, structure, measurement, aggregation, standardization, rescale, potential, boundary, distance).",
+    "object_type": "structure",
+    "current_attributes": [],
+    "attribute_history": [],
+    "tags": [],
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "definition_label": "def-continuity-constants-table"
+  },
+  "raw_data/objects/obj-cubic-patch-polynomial.json": {
+    "label": "obj-cubic-patch-polynomial",
+    "name": "Cubic Polynomial Patch",
+    "mathematical_expression": "P(z) = az^3 + bz^2 + cz + d \\text{ on } [z_{\\max}-1, z_{\\max}] \\text{ with } C^1 \\text{ boundary conditions}",
+    "object_type": "function",
+    "current_attributes": [],
+    "attribute_history": [],
+    "tags": [
+      "rescale",
+      "cubic",
+      "polynomial",
+      "patch",
+      "interpolation"
+    ],
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "definition_label": "def-asymmetric-rescale-function"
+  },
+  "raw_data/objects/obj-distance-measurement-ms-constants.json": {
+    "label": "obj-distance-measurement-ms-constants",
+    "name": "Distance Measurement Mean-Square Constants",
+    "mathematical_expression": "Collection of constants controlling mean-square continuity bounds for distance-to-companion measurement with empirical companion selection.",
+    "object_type": "structure",
+    "current_attributes": [],
+    "attribute_history": [],
+    "tags": [],
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "definition_label": "def-distance-measurement-ms-constants"
+  },
+  "raw_data/objects/obj-expected-distance-error-coefficients.json": {
+    "label": "obj-expected-distance-error-coefficients",
+    "name": "Expected Distance Error Coefficients",
+    "mathematical_expression": "The coefficients that appear in the deterministic bound on the change of the expected raw distance vector between two swarm states.",
+    "object_type": "structure",
+    "current_attributes": [],
+    "attribute_history": [],
+    "tags": [
+      "coefficients",
+      "error-bound",
+      "distance",
+      "continuity"
+    ],
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "definition_label": "def-expected-distance-error-coefficients"
+  }
+}

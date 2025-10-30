@@ -3,12 +3,12 @@
 import torch
 
 from fragile.experiments.gauge.observables import (
-    ObservablesConfig,
     bin_by_distance,
     compute_cloning_score,
     compute_collective_fields,
     compute_field_gradients,
     fit_exponential_decay,
+    ObservablesConfig,
 )
 
 

@@ -3,13 +3,22 @@
   "name": "Cluster-Preserving Coupling",
   "mathematical_expression": "x'_{k,i} = \\begin{cases}\nx_{k, \\pi(i)} + \\zeta & \\text{if } T < p_{k,i} \\text{ (clone)} \\\\\nx_{k,i} & \\text{if } T \\geq p_{k,i} \\text{ (persist)}\n\\end{cases}",
   "object_type": "distribution",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle",
     "swarm"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "04_wasserstein_contraction"
+  "source": {
+    "document_id": "04_wasserstein_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+    "section": null,
+    "directive_label": "obj-cluster-coupling",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-cluster-coupling"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

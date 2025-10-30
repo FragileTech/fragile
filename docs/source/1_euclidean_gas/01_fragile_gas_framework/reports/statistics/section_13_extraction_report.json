@@ -1,0 +1,149 @@
+{
+  "extraction_metadata": {
+    "source_document": "01_fragile_gas_framework.md",
+    "section": "13. Fitness potential operator",
+    "line_range": "3683-3936",
+    "extraction_date": "2025-10-27",
+    "total_lines": 254
+  },
+  "entity_summary": {
+    "total_entities_extracted": 9,
+    "by_type": {
+      "definitions": 2,
+      "lemmas": 4,
+      "theorems": 2,
+      "corollaries": 1
+    }
+  },
+  "extracted_entities": {
+    "definitions": [
+      {
+        "label": "def-alive-set-potential-operator",
+        "name": "Rescaled Potential Operator for the Alive Set",
+        "file": "objects/obj-alive-set-potential-operator.json",
+        "subsection": "12.1 Rescaled Potential Operator for the Alive Set"
+      },
+      {
+        "label": "def-swarm-potential-assembly-operator",
+        "name": "Swarm Potential Assembly Operator",
+        "file": "objects/obj-swarm-potential-assembly-operator.json",
+        "subsection": "12.1 Rescaled Potential Operator for the Alive Set"
+      }
+    ],
+    "lemmas": [
+      {
+        "label": "lem-potential-boundedness",
+        "name": "Boundedness of the Fitness Potential",
+        "file": "theorems/lem-potential-boundedness.json",
+        "subsection": "12.2.1. Lemma: Boundedness of the Fitness Potential",
+        "has_full_proof": true
+      },
+      {
+        "label": "lem-component-potential-lipschitz",
+        "name": "Lipschitz Continuity of the Fitness Potential Function",
+        "file": "theorems/lem-component-potential-lipschitz.json",
+        "subsection": "12.2.2. Lemma: Lipschitz Continuity of the Fitness Potential Function",
+        "has_full_proof": true
+      },
+      {
+        "label": "sub-lem-potential-unstable-error-mean-square",
+        "name": "Bounding the Expected Error from Unstable Walkers",
+        "file": "theorems/sub-lem-potential-unstable-error-mean-square.json",
+        "subsection": "12.2.4. Sub-Lemma: Bounding the Expected Error from Unstable Walkers",
+        "has_full_proof": true
+      },
+      {
+        "label": "sub-lem-potential-stable-error-mean-square",
+        "name": "Bounding the Expected Error from Stable Walkers",
+        "file": "theorems/sub-lem-potential-stable-error-mean-square.json",
+        "subsection": "12.2.5. Sub-Lemma: Bounding the Expected Error from Stable Walkers",
+        "has_full_proof": true
+      }
+    ],
+    "theorems": [
+      {
+        "label": "thm-fitness-potential-mean-square-continuity",
+        "name": "Mean-Square Continuity of the Fitness Potential Operator",
+        "file": "theorems/thm-fitness-potential-mean-square-continuity.json",
+        "subsection": "12.2.3. Theorem: Mean-Square Continuity of the Fitness Potential Operator",
+        "has_full_proof": true
+      },
+      {
+        "label": "thm-deterministic-potential-continuity",
+        "name": "Deterministic Continuity of the Fitness Potential Operator",
+        "file": "theorems/thm-deterministic-potential-continuity.json",
+        "subsection": "12.3.1 Theorem: Deterministic Continuity of the Fitness Potential Operator",
+        "has_full_proof": true
+      }
+    ],
+    "corollaries": [
+      {
+        "label": "cor-pipeline-continuity-margin-stability",
+        "name": "Pipeline Continuity Under Margin-Based Status Stability",
+        "file": "theorems/cor-pipeline-continuity-margin-stability.json",
+        "subsection": "12.3.3 Corollary: Pipeline Continuity Under Margin-Based Status Stability",
+        "has_full_proof": false
+      }
+    ]
+  },
+  "key_concepts": [
+    "Fitness potential operator",
+    "Rescaled potential operator",
+    "Mean-square continuity",
+    "Deterministic continuity",
+    "Unstable walkers error bound",
+    "Stable walkers error bound",
+    "Lipschitz continuity",
+    "Margin-based status stability"
+  ],
+  "dependencies_identified": [
+    "def-n-dimensional-standardization-operator",
+    "def-smooth-piecewise-rescale-function",
+    "thm-rescale-function-lipschitz",
+    "thm-standardization-operator-unified-mean-square-continuity",
+    "thm-global-continuity-patched-standardization",
+    "def-lipschitz-value-error-coefficients",
+    "def-lipschitz-structural-error-coefficients",
+    "def-axiom-margin-stability"
+  ],
+  "output_files": {
+    "objects": [
+      "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework/objects/obj-alive-set-potential-operator.json",
+      "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework/objects/obj-swarm-potential-assembly-operator.json"
+    ],
+    "theorems": [
+      "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework/theorems/lem-potential-boundedness.json",
+      "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework/theorems/lem-component-potential-lipschitz.json",
+      "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework/theorems/sub-lem-potential-unstable-error-mean-square.json",
+      "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework/theorems/sub-lem-potential-stable-error-mean-square.json",
+      "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework/theorems/thm-fitness-potential-mean-square-continuity.json",
+      "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework/theorems/thm-deterministic-potential-continuity.json",
+      "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework/theorems/cor-pipeline-continuity-margin-stability.json"
+    ]
+  },
+  "section_structure": {
+    "main_sections": [
+      "12.1 Rescaled Potential Operator for the Alive Set",
+      "12.2 Mean-Square Continuity of the Fitness Potential Operator",
+      "12.3 Deterministic Continuity of the Fitness Potential Operator"
+    ],
+    "subsections": [
+      "12.2.1. Lemma: Boundedness of the Fitness Potential",
+      "12.2.2. Lemma: Lipschitz Continuity of the Fitness Potential Function",
+      "12.2.3. Theorem: Mean-Square Continuity of the Fitness Potential Operator",
+      "12.2.4. Sub-Lemma: Bounding the Expected Error from Unstable Walkers",
+      "12.2.5. Sub-Lemma: Bounding the Expected Error from Stable Walkers",
+      "12.3.1 Theorem: Deterministic Continuity of the Fitness Potential Operator",
+      "12.3.2 Proof of Deterministic Continuity for the Fitness Potential Operator",
+      "12.3.3 Corollary: Pipeline Continuity Under Margin-Based Status Stability"
+    ]
+  },
+  "notes": [
+    "Section 13 defines the multi-stage composition of deterministic operators that transform raw measurement vectors into fitness potential vectors",
+    "All proofs are complete and rigorous, establishing both mean-square and deterministic continuity",
+    "The deterministic continuity result is a prerequisite for Feynman-Kac convergence analysis",
+    "The section establishes uniform bounds on fitness potentials and Lipschitz continuity properties",
+    "Error decomposition into unstable (status-changing) and stable (alive in both states) walkers is a key technique",
+    "The corollary shows how the Axiom of Margin-Based Status Stability simplifies the continuity bounds"
+  ]
+}

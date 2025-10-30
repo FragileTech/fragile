@@ -1,0 +1,63 @@
+{
+  "label": "thm-total-expected-distance-error-decomposition",
+  "name": "Total Expected Distance Error Decomposition",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-alg-distance",
+    "obj-distance-measurement-ms-constants"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. The total squared difference between their expected raw distance vectors is the sum of the squared differences over all walkers. This sum can be partitioned into a sum over the set of *stable walkers*, $\\mathcal{A}_{\\text{stable}} = \\mathcal{A}(\\mathcal{S}_1) \\cap \\mathcal{A}(\\mathcal{S}_2)$, and a sum over the set of *unstable walkers*, $\\mathcal{A}_{\\text{unstable}} = \\mathcal{A}(\\mathcal{S}_1) \\Delta \\mathcal{A}(\\mathcal{S}_2)$.\n\n$$\n\\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] - \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_2)] \\|_2^2 = \\underbrace{\\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]|^2}_{\\text{Error from Stable Walkers}} + \\underbrace{\\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]|^2}_{\\text{Error from Unstable Walkers}}\n$$",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": {
+    "theorem_id": "thm-total-expected-distance-error-decomposition",
+    "label": "thm-total-expected-distance-error-decomposition",
+    "title": "Decomposition of the Total Squared Error",
+    "statement_type": "theorem",
+    "statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. The total squared difference between their expected raw distance vectors is the sum of the squared differences over all walkers. This sum can be partitioned into a sum over the set of *stable walkers*, $\\mathcal{A}_{\\text{stable}} = \\mathcal{A}(\\mathcal{S}_1) \\cap \\mathcal{A}(\\mathcal{S}_2)$, and a sum over the set of *unstable walkers*, $\\mathcal{A}_{\\text{unstable}} = \\mathcal{A}(\\mathcal{S}_1) \\Delta \\mathcal{A}(\\mathcal{S}_2)$.",
+    "formal_statement": "$$\n\\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] - \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_2)] \\|_2^2 = \\underbrace{\\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]|^2}_{\\text{Error from Stable Walkers}} + \\underbrace{\\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]|^2}_{\\text{Error from Unstable Walkers}}\n$$",
+    "proof_sketch": "This decomposition is an identity that follows directly from partitioning the set of all walker indices into two disjoint subsets: those whose survival status is the same in both swarms (stable), and those whose status changes (unstable). For any walker that is dead in both states, its error contribution is 0.",
+    "proof_status": "complete",
+    "dependencies": [],
+    "used_in": [
+      "thm-expected-raw-distance-bound"
+    ],
+    "tags": [
+      "decomposition",
+      "error-analysis",
+      "distance",
+      "stable-walkers",
+      "unstable-walkers"
+    ],
+    "importance": "foundational",
+    "notes": "This theorem provides the fundamental decomposition of the total error into contributions from stable and unstable walkers, which allows separate analysis of each component.",
+    "input_objects": [
+      "obj-alg-distance",
+      "obj-distance-measurement-ms-constants"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "output_type": "General Result",
+    "relations_established": [
+      "Total expected distance error decomposes into stable and unstable components"
+    ],
+    "name": "Total Expected Distance Error Decomposition"
+  }
+}

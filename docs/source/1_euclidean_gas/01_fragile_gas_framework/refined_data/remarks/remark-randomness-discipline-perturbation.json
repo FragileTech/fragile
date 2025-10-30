@@ -1,0 +1,11 @@
+{
+  "temp_id": "raw-remark-004",
+  "remark_type": "note",
+  "source_section": "§14 The Perturbation Operator",
+  "label": "remark-randomness-discipline-perturbation",
+  "name": "Randomness Discipline Perturbation",
+  "statement_type": "remark",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "content": "For each walker $i$, sample the perturbation noise $\\xi_i$ independently from the chosen noise law (Gaussian, uniform ball, heat kernel, …), using a per‑walker PRNG stream. If the noise scale $\\sigma$ is adapted from $\\mathcal S_t$, the mapping $\\sigma(\\mathcal S_t)$ is deterministic; no shared, additional randomness is introduced at this stage. This enforces within‑step independence required by Assumption A."
+}

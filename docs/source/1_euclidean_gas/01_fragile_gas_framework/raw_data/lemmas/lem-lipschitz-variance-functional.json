@@ -1,0 +1,44 @@
+{
+  "label": "lem-lipschitz-variance-functional",
+  "name": "Lipschitz bound for the variance functional",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "8.2.2.10",
+    "section_name": null,
+    "directive_label": "lem-lipschitz-variance-functional",
+    "equation": null,
+    "line_range": [
+      2017,
+      2017
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-aggregator-lipschitz-constants",
+    "obj-potential-bounds"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Lipschitz Continuity",
+  "attributes_added": [],
+  "relations_established": [
+    "Variance functional Var(v) is Lipschitz with L_var <= 4V_max/sqrt(k)"
+  ],
+  "natural_language_statement": "Let $\\mu(\\mathbf v)$ and $m_2(\\mathbf v)$ denote, respectively, the (aggregator) mean and second raw moment computed from a value vector $\\mathbf v\\in\\mathbb{R}^k$ over the alive set. Assume the moment maps are Lipschitz in $\\mathbf v$ with constants $L_{\\mu,M}$ and $L_{m_2,M}$ as in §6.2.1, and suppose $|v_i|\\le V_{\\max}$. Define the variance functional $\\mathrm{Var}(\\mathbf v):=m_2(\\mathbf v) - \\mu(\\mathbf v)^2$. Then, for all $\\mathbf v_1,\\mathbf v_2$,\n$$\n\\big|\\,\\mathrm{Var}(\\mathbf v_1)-\\mathrm{Var}(\\mathbf v_2)\\,\\big|\\;\\le\\;\\Big( L_{m_2,M}\\; +\\; 2 V_{\\max}\\,L_{\\mu,M}\\Big)\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2.\n$$\nIn particular, the variance functional is $L_{\\mathrm{var}}$‑Lipschitz with $L_{\\mathrm{var}}:=L_{m_2,M}+2 V_{\\max} L_{\\mu,M}$.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

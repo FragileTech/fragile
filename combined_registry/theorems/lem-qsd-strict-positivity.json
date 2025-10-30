@@ -2,9 +2,17 @@
   "label": "lem-qsd-strict-positivity",
   "name": "QSD Strict Positivity",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence_bounded_density_rigorous_proof",
+  "source": {
+    "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+    "section": null,
+    "directive_label": "lem-qsd-strict-positivity",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-qsd-strict-positivity"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -24,7 +32,7 @@
     "d",
     "m_eq"
   ],
-  "properties_required": {
+  "attributes_required": {
     "small-set-minorization": [
       "K_clone ≥ η G_σ_x(x'−x) ⇒ P(z, ·) ≥ δ ν(·) with δ = η c_σ_x,R"
     ],
@@ -56,7 +64,7 @@
     ]
   ],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-lem-qsd-strict-positivity-0-approximation",
@@ -66,14 +74,22 @@
       "target_object": "obj-cloning-operator",
       "established_by": "lem-qsd-strict-positivity",
       "expression": "P(z, dx) ≥ η c_σ_x,R dx ⇒ π_QSD(dx) ≥ η c_σ_x,R ||π_QSD||_{L^1} dx",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+      "source": {
+        "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+        "section": null,
+        "directive_label": "lem-qsd-strict-positivity",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-qsd-strict-positivity"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-lem-qsd-strict-positivity-1-equivalence",
@@ -83,14 +99,22 @@
       "target_object": "obj-cloning-operator",
       "established_by": "lem-qsd-strict-positivity",
       "expression": "c_π = η c_σ_x,R m_eq",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+      "source": {
+        "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+        "section": null,
+        "directive_label": "lem-qsd-strict-positivity",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-qsd-strict-positivity"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-lem-qsd-strict-positivity-2-approximation",
@@ -100,14 +124,29 @@
       "target_object": "obj-cloning-operator",
       "established_by": "lem-qsd-strict-positivity",
       "expression": "inf_{x ∈ X_valid} π_QSD(x) ≥ c_π > 0",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+      "source": {
+        "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+        "section": null,
+        "directive_label": "lem-qsd-strict-positivity",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-qsd-strict-positivity"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

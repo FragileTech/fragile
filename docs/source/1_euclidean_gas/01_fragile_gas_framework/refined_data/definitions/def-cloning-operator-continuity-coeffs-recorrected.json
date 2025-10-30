@@ -1,0 +1,29 @@
+{
+  "label": "def-cloning-operator-continuity-coeffs-recorrected",
+  "name": "Cloning Operator Continuity Coefficients",
+  "entity_type": "definition",
+  "statement_type": "DefinitionBox",
+  "natural_language_statement": "This defines the three state-dependent coefficients that appear in the continuity bound for the Cloning Transition Operator.",
+  "description": "These coefficients break down the error propagation through the cloning operator. The Lipschitz factor captures linear error propagation, the Hölder factor captures complex non-linearities arising from status changes, and the stochastic offset represents the baseline noise inherent to the operator.",
+  "formal_statement": "The coefficients in the continuity bound for the Cloning Transition Operator are: ...",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "lemma_dag_edges": [
+    {
+      "source": "def-cloning-operator-continuity-coeffs-recorrected",
+      "target": "thm-cloning-transition-operator-continuity-recorrected"
+    }
+  ],
+  "internal_lemmas": [],
+  "relations": [],
+  "proof_status": "n/a",
+  "raw_fallback": {},
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "16. The Cloning Transition Measure",
+    "subsection": "15.2.8.1 Definition: Cloning Operator Continuity Coefficients",
+    "directive_label": "def-cloning-operator-continuity-coeffs-recorrected"
+  }
+}

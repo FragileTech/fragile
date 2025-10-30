@@ -1,0 +1,127 @@
+{
+  "source_file": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+  "section": "Section 9: Rescale Transformation",
+  "lines": "1620-2096",
+  "extraction_date": "2025-10-27",
+  "extraction_method": "Manual extraction from MyST directives",
+  "entities_extracted": {
+    "axioms": 1,
+    "definitions": 2,
+    "lemmas": 8,
+    "theorems": 2,
+    "corollaries": 2,
+    "remarks": 1,
+    "proofs": 0,
+    "equations": 0,
+    "parameters": 0,
+    "citations": 0
+  },
+  "total_entities": 16,
+  "output_directory": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework/section_9_rescale/raw_data",
+  "entity_details": {
+    "axioms": [
+      {
+        "label": "def-axiom-rescale-function",
+        "name": "Axiom of a Well-Behaved Rescale Function",
+        "description": "Defines four properties for valid rescale functions: C^1 smoothness, monotonicity, uniform boundedness, and global Lipschitz continuity"
+      }
+    ],
+    "definitions": [
+      {
+        "label": "def-asymmetric-rescale-function",
+        "name": "Smooth Piecewise Rescale Function",
+        "description": "Piecewise function with exponential, logarithmic, cubic polynomial, and constant segments"
+      },
+      {
+        "label": "def-canonical-logistic-rescale-function-example",
+        "name": "Canonical Logistic Rescale Function",
+        "description": "Logistic sigmoid function g_A(z) = 2/(1+e^{-z})"
+      }
+    ],
+    "lemmas": [
+      {
+        "label": "lem-cubic-patch-uniqueness",
+        "name": "Existence and Uniqueness of the Smooth Rescale Patch",
+        "description": "Proves unique cubic polynomial exists satisfying boundary conditions"
+      },
+      {
+        "label": "lem-cubic-patch-coefficients",
+        "name": "Explicit Coefficients of the Smooth Rescale Patch",
+        "description": "Derives explicit formulas for cubic patch coefficients A, B, C, D"
+      },
+      {
+        "label": "lem-cubic-patch-derivative",
+        "name": "Explicit Form of the Polynomial Patch Derivative",
+        "description": "Provides explicit formula for P'(z) as quadratic function"
+      },
+      {
+        "label": "lem-polynomial-patch-monotonicity",
+        "name": "Monotonicity of the Polynomial Patch",
+        "description": "Proves monotonicity using Fritsch-Carlson/Hyman conditions"
+      },
+      {
+        "label": "lem-cubic-patch-derivative-bounds",
+        "name": "Bounds on the Polynomial Patch Derivative",
+        "description": "Establishes 0 ≤ P'(z) ≤ L_P ≈ 1.0054"
+      },
+      {
+        "label": "lem-rescale-monotonicity",
+        "name": "Monotonicity of the Smooth Rescale Function",
+        "description": "Proves g_A(z) is monotonically non-decreasing on all of R"
+      },
+      {
+        "label": "lem-sigma-patch-derivative-bound",
+        "name": "Derivative bound for σ'_reg",
+        "description": "Establishes Lipschitz constant for regularized standard deviation"
+      },
+      {
+        "label": "lem-lipschitz-variance-functional",
+        "name": "Lipschitz bound for the variance functional",
+        "description": "Proves variance functional is Lipschitz continuous"
+      }
+    ],
+    "theorems": [
+      {
+        "label": "thm-rescale-function-lipschitz",
+        "name": "Global Lipschitz Continuity of the Smooth Rescale Function",
+        "description": "Main result: L_{g_A} = L_P ≈ 1.0054",
+        "key_result": true
+      },
+      {
+        "label": "thm-canonical-logistic-validity",
+        "name": "The Canonical Logistic Function is a Valid Rescale Function",
+        "description": "Proves logistic function satisfies all axioms with L_{g_A} = 1/2"
+      }
+    ],
+    "corollaries": [
+      {
+        "label": "cor-chain-rule-sigma-reg-var",
+        "name": "Chain-rule bound for σ'_reg ∘ Var",
+        "description": "Lipschitz bound for composite standardization-variance map"
+      },
+      {
+        "label": "cor-closed-form-lipschitz-composite",
+        "name": "Closed-form bound for L_{g_A∘z} (empirical aggregator)",
+        "description": "Explicit Lipschitz constant for full composite map"
+      }
+    ],
+    "remarks": [
+      {
+        "label": "rem-pchip-construction",
+        "name": "PCHIP/PCHIM Construction Remark",
+        "description": "Notes connection to standard monotone cubic Hermite interpolation"
+      }
+    ]
+  },
+  "key_mathematical_results": {
+    "main_theorem": "thm-rescale-function-lipschitz",
+    "lipschitz_constant": "L_P ≈ 1.0054",
+    "alternative_function": "Canonical logistic with L_{g_A} = 0.5",
+    "proof_technique": "Fritsch-Carlson/Hyman monotone interpolation"
+  },
+  "cross_references": [
+    "def-statistical-properties-measurement",
+    "lem-empirical-aggregator-properties",
+    "lem-sigma-reg-derivative-bounds"
+  ]
+}

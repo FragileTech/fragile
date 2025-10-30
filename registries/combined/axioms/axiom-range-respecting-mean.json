@@ -1,0 +1,22 @@
+{
+  "label": "axiom-range-respecting-mean",
+  "statement": "For any finite collection of inputs $\\{v_i\\}$, the aggregator’s mean output $\\mu$ satisfies\n\n$$\n\\min_i v_i \\;\\le\\; \\mu \\;\\le\\; \\max_i v_i.\n$$\n\nThis property holds for empirical means and is assumed for any user‑chosen mean‑type aggregator in this framework.",
+  "mathematical_expression": "For any finite collection of inputs $\\{v_i\\}$, the aggregator’s mean output $\\mu$ satisfies\n\n$$\n\\min_i v_i \\;\\le\\; \\mu \\;\\le\\; \\max_i v_i.\n$$\n\nThis property holds for empirical means and is assumed for any user‑chosen mean‑type aggregator in this framework.",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Range Respecting Mean",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-range-respecting-mean",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

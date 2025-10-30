@@ -6,20 +6,20 @@ Tests MathematicalDocument and EnrichedEntities containers.
 
 import pytest
 
-from fragile.proofs.llm import (
-    MathematicalDocument,
-    EnrichedEntities,
-)
 from fragile.proofs.core import (
     Axiom,
     DefinitionBox,
-    TheoremBox,
-    ProofBox,
-    TheoremOutputType,
     MathematicalObject,
     ObjectType,
     Parameter,
     ParameterType,
+    ProofBox,
+    TheoremBox,
+    TheoremOutputType,
+)
+from fragile.proofs.llm import (
+    EnrichedEntities,
+    MathematicalDocument,
 )
 from fragile.proofs.staging_types import (
     RawAxiom,
@@ -27,7 +27,7 @@ from fragile.proofs.staging_types import (
     RawTheorem,
     StagingDocument,
 )
-from fragile.proofs.sympy import DualStatement
+from fragile.proofs.sympy_integration.dual_representation import DualExpr, DualStatement
 
 
 class TestEnrichedEntities:
@@ -52,24 +52,18 @@ class TestEnrichedEntities:
             label="def-test",
             term="Test Term",
             formal_statement=DualStatement(
-                latex="Test definition",
-                natural_language="Test",
-                sympy_expr=None,
-                paper_context=None
-            )
+                lhs=DualExpr(latex="x"), relation="=", rhs=DualExpr(latex="\\text{test value}")
+            ),
         )
 
         # Create a simple theorem
         theorem = TheoremBox(
-            label="thm-test",
-            name="Test Theorem",
-            output_type=TheoremOutputType.PROPERTY
+            label="thm-test", name="Test Theorem", output_type=TheoremOutputType.PROPERTY
         )
 
         # Create enriched entities
         entities = EnrichedEntities(
-            definitions={"def-test": definition},
-            theorems={"thm-test": theorem}
+            definitions={"def-test": definition}, theorems={"thm-test": theorem}
         )
 
         assert len(entities.definitions) == 1
@@ -83,16 +77,11 @@ class TestEnrichedEntities:
             label="def-test",
             term="Test",
             formal_statement=DualStatement(
-                latex="Test",
-                natural_language="Test",
-                sympy_expr=None,
-                paper_context=None
-            )
+                lhs=DualExpr(latex="x"), relation="=", rhs=DualExpr(latex="\\text{test}")
+            ),
         )
 
-        entities = EnrichedEntities(
-            definitions={"def-test": definition}
-        )
+        entities = EnrichedEntities(definitions={"def-test": definition})
 
         summary = entities.get_summary()
         assert "Enriched Entities" in summary
@@ -112,10 +101,7 @@ class TestMathematicalDocument:
 
     def test_mathematical_document_creation_minimal(self):
         """Test creating MathematicalDocument with minimal fields."""
-        doc = MathematicalDocument(
-            document_id="test_doc",
-            chapter="1_euclidean_gas"
-        )
+        doc = MathematicalDocument(document_id="test_doc", chapter="1_euclidean_gas")
 
         assert doc.document_id == "test_doc"
         assert doc.chapter == "1_euclidean_gas"
@@ -126,10 +112,7 @@ class TestMathematicalDocument:
 
     def test_mathematical_document_add_staging_document(self):
         """Test adding staging documents."""
-        doc = MathematicalDocument(
-            document_id="test",
-            chapter="1_euclidean_gas"
-        )
+        doc = MathematicalDocument(document_id="test", chapter="1_euclidean_gas")
 
         # Create a staging document
         raw_axiom = RawAxiom(
@@ -137,7 +120,7 @@ class TestMathematicalDocument:
             label_text="test",
             name="Test",
             core_assumption_text="Test",
-            source_section="§1"
+            source_section="§1",
         )
 
         staging = StagingDocument(
@@ -149,7 +132,7 @@ class TestMathematicalDocument:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
 
         # Add staging document
@@ -160,30 +143,20 @@ class TestMathematicalDocument:
 
     def test_mathematical_document_add_enriched_entities(self):
         """Test adding enriched entities."""
-        doc = MathematicalDocument(
-            document_id="test",
-            chapter="1_euclidean_gas"
-        )
+        doc = MathematicalDocument(document_id="test", chapter="1_euclidean_gas")
 
         # Create and add definition
         definition = DefinitionBox(
             label="def-test",
             term="Test",
             formal_statement=DualStatement(
-                latex="Test",
-                natural_language="Test",
-                sympy_expr=None,
-                paper_context=None
-            )
+                lhs=DualExpr(latex="x"), relation="=", rhs=DualExpr(latex="\\text{test}")
+            ),
         )
         doc = doc.add_enriched_definition(definition)
 
         # Create and add theorem
-        theorem = TheoremBox(
-            label="thm-test",
-            name="Test",
-            output_type=TheoremOutputType.PROPERTY
-        )
+        theorem = TheoremBox(label="thm-test", name="Test", output_type=TheoremOutputType.PROPERTY)
         doc = doc.add_enriched_theorem(theorem)
 
         # Create and add axiom
@@ -191,7 +164,7 @@ class TestMathematicalDocument:
             label="axiom-test",
             statement="Test axiom",
             mathematical_expression="Test",
-            foundational_framework="Test"
+            foundational_framework="Test",
         )
         doc = doc.add_enriched_axiom(axiom)
 
@@ -202,10 +175,7 @@ class TestMathematicalDocument:
 
     def test_mathematical_document_enrichment_rate(self):
         """Test enrichment rate calculation."""
-        doc = MathematicalDocument(
-            document_id="test",
-            chapter="1_euclidean_gas"
-        )
+        doc = MathematicalDocument(document_id="test", chapter="1_euclidean_gas")
 
         # Add raw entities (10 total)
         raw_axioms = [
@@ -214,7 +184,7 @@ class TestMathematicalDocument:
                 label_text=f"axiom-{i}",
                 name=f"Axiom {i}",
                 core_assumption_text="Test",
-                source_section="§1"
+                source_section="§1",
             )
             for i in range(10)
         ]
@@ -228,7 +198,7 @@ class TestMathematicalDocument:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
         doc = doc.add_staging_document(staging)
 
@@ -238,7 +208,7 @@ class TestMathematicalDocument:
                 label=f"axiom-{i}",
                 statement="Test",
                 mathematical_expression="Test",
-                foundational_framework="Test"
+                foundational_framework="Test",
             )
             doc = doc.add_enriched_axiom(axiom)
 
@@ -250,9 +220,7 @@ class TestMathematicalDocument:
     def test_mathematical_document_get_summary(self):
         """Test get_summary() method."""
         doc = MathematicalDocument(
-            document_id="01_framework",
-            chapter="1_euclidean_gas",
-            file_path="/path/to/file.md"
+            document_id="01_framework", chapter="1_euclidean_gas", file_path="/path/to/file.md"
         )
 
         # Add some data
@@ -265,7 +233,7 @@ class TestMathematicalDocument:
             citations=[],
             equations=[],
             parameters=[],
-            remarks=[]
+            remarks=[],
         )
         doc = doc.add_staging_document(staging)
 
@@ -278,28 +246,20 @@ class TestMathematicalDocument:
 
     def test_mathematical_document_lookup_methods(self):
         """Test entity lookup methods."""
-        doc = MathematicalDocument(
-            document_id="test",
-            chapter="1_euclidean_gas"
-        )
+        doc = MathematicalDocument(document_id="test", chapter="1_euclidean_gas")
 
         # Add entities
         definition = DefinitionBox(
             label="def-walker",
             term="Walker",
             formal_statement=DualStatement(
-                latex="Test",
-                natural_language="Test",
-                sympy_expr=None,
-                paper_context=None
-            )
+                lhs=DualExpr(latex="w"), relation="=", rhs=DualExpr(latex="(x, v, s)")
+            ),
         )
         doc = doc.add_enriched_definition(definition)
 
         theorem = TheoremBox(
-            label="thm-convergence",
-            name="Convergence",
-            output_type=TheoremOutputType.ASYMPTOTIC
+            label="thm-convergence", name="Convergence", output_type=TheoremOutputType.CONVERGENCE
         )
         doc = doc.add_enriched_theorem(theorem)
 
@@ -307,7 +267,7 @@ class TestMathematicalDocument:
             label="axiom-bounded",
             statement="Test",
             mathematical_expression="Test",
-            foundational_framework="Test"
+            foundational_framework="Test",
         )
         doc = doc.add_enriched_axiom(axiom)
 
@@ -326,19 +286,15 @@ class TestMathematicalDocument:
 
     def test_mathematical_document_add_multiple_staging(self):
         """Test adding multiple staging documents."""
-        doc = MathematicalDocument(
-            document_id="test",
-            chapter="1_euclidean_gas"
-        )
+        doc = MathematicalDocument(document_id="test", chapter="1_euclidean_gas")
 
         # Add three staging documents
         for i in range(3):
             raw_def = RawDefinition(
                 temp_id=f"raw-def-{i:03d}",
-                label_text=f"def-{i}",
-                term=f"Term {i}",
-                statement_text="Test",
-                source_section=f"§{i}"
+                term_being_defined=f"Term {i}",
+                full_text="Test",
+                source_section=f"§{i}",
             )
             staging = StagingDocument(
                 section_id=f"§{i}",
@@ -349,7 +305,7 @@ class TestMathematicalDocument:
                 citations=[],
                 equations=[],
                 parameters=[],
-                remarks=[]
+                remarks=[],
             )
             doc = doc.add_staging_document(staging)
 
@@ -358,21 +314,15 @@ class TestMathematicalDocument:
 
     def test_mathematical_document_immutability(self):
         """Test that MathematicalDocument uses immutable pattern."""
-        doc = MathematicalDocument(
-            document_id="test",
-            chapter="1_euclidean_gas"
-        )
+        doc = MathematicalDocument(document_id="test", chapter="1_euclidean_gas")
 
         # Adding entities returns new instance
         definition = DefinitionBox(
             label="def-test",
             term="Test",
             formal_statement=DualStatement(
-                latex="Test",
-                natural_language="Test",
-                sympy_expr=None,
-                paper_context=None
-            )
+                lhs=DualExpr(latex="x"), relation="=", rhs=DualExpr(latex="\\text{test}")
+            ),
         )
 
         doc2 = doc.add_enriched_definition(definition)
@@ -384,16 +334,13 @@ class TestMathematicalDocument:
 
     def test_mathematical_document_add_enriched_object(self):
         """Test adding enriched mathematical object."""
-        doc = MathematicalDocument(
-            document_id="test",
-            chapter="1_euclidean_gas"
-        )
+        doc = MathematicalDocument(document_id="test", chapter="1_euclidean_gas")
 
         obj = MathematicalObject(
             label="obj-walker",
             name="Walker",
             mathematical_expression="w = (x, v, s)",
-            object_type=ObjectType.TUPLE
+            object_type=ObjectType.STRUCTURE,
         )
 
         doc = doc.add_enriched_object(obj)
@@ -403,16 +350,10 @@ class TestMathematicalDocument:
 
     def test_mathematical_document_add_enriched_parameter(self):
         """Test adding enriched parameter."""
-        doc = MathematicalDocument(
-            document_id="test",
-            chapter="1_euclidean_gas"
-        )
+        doc = MathematicalDocument(document_id="test", chapter="1_euclidean_gas")
 
         param = Parameter(
-            label="param-epsilon",
-            name="Epsilon",
-            symbol="ε",
-            parameter_type=ParameterType.REGULARIZATION
+            label="param-epsilon", name="Epsilon", symbol="ε", parameter_type=ParameterType.REAL
         )
 
         doc = doc.add_enriched_parameter(param)
@@ -422,32 +363,27 @@ class TestMathematicalDocument:
 
     def test_mathematical_document_add_enriched_proof(self):
         """Test adding enriched proof."""
-        doc = MathematicalDocument(
-            document_id="test",
-            chapter="1_euclidean_gas"
-        )
+        doc = MathematicalDocument(document_id="test", chapter="1_euclidean_gas")
 
         from fragile.proofs.core import (
-            ProofStep,
-            ProofStepType,
-            ProofStepStatus,
             DirectDerivation,
+            ProofStep,
+            ProofStepStatus,
+            ProofStepType,
         )
 
         step = ProofStep(
             step_id="step-1",
-            step_number=1,
-            description="Test step",
-            justification="Test",
-            step_type=ProofStepType.DIRECT,
+            natural_language_description="Test step",
+            step_type=ProofStepType.DIRECT_DERIVATION,
             status=ProofStepStatus.EXPANDED,
             inputs=[],
             outputs=[],
             derivation=DirectDerivation(
-                from_properties=[],
-                conclusion="Test",
-                reasoning="Test"
-            )
+                mathematical_content="Test derivation",
+                techniques=[],
+                verification_status="verified",
+            ),
         )
 
         proof = ProofBox(
@@ -457,7 +393,7 @@ class TestMathematicalDocument:
             inputs=[],
             outputs=[],
             strategy="Test",
-            steps=[step]
+            steps=[step],
         )
 
         doc = doc.add_enriched_proof(proof)

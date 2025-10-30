@@ -1,0 +1,30 @@
+{
+  "label": "obj-expected-distance-error-coefficients",
+  "name": "Expected Distance Error Coefficients",
+  "statement_type": "object",
+  "mathematical_expression": "The coefficients that appear in the deterministic bound on the change of the expected raw distance vector between two swarm states.",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "coefficients",
+    "error-bound",
+    "distance",
+    "continuity"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-expected-distance-error-coefficients",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "10.2.7",
+    "line_range": [
+      2592,
+      2596
+    ],
+    "directive_label": "obj-expected-distance-error-coefficients",
+    "equation": null,
+    "url_fragment": null
+  }
+}

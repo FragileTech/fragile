@@ -1,0 +1,68 @@
+{
+  "label": "thm-standardization-value-error-mean-square",
+  "name": "Bounding the Expected Squared Value Error",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-aggregator-lipschitz-constants",
+    "obj-raw-value-operator",
+    "obj-standardization-total-value-error-coefficient"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity"
+  ],
+  "input_parameters": [
+    "param-F-V-ms"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "Let $\\mathcal{S}_1$ be a fixed swarm state. Let $V$ be a raw value operator that is mean-square continuous, such that $\\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)$ for some deterministic bounding function $F_{V,ms}$.\n\nThe expected squared value error is bounded as follows:\n\n$$\nE_{V,ms}^2(\\mathcal{S}_1, \\mathcal{S}_2) \\le C_{V,\\text{total}}(\\mathcal{S}_1) \\cdot F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)\n$$\n\nwhere $C_{V,\\text{total}}(\\mathcal{S}_1)$ is the **Total Value Error Coefficient**, a deterministic constant derived from the axiomatic properties of the aggregation operator and the global parameters, as formally defined in def-value-error-coefficients.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": {
+    "label": "thm-standardization-value-error-mean-square",
+    "name": "Bounding the Expected Squared Value Error",
+    "statement": "Let $\\mathcal{S}_1$ be a fixed swarm state. Let $V$ be a raw value operator that is mean-square continuous, such that $\\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)$ for some deterministic bounding function $F_{V,ms}$.\n\nThe expected squared value error is bounded as follows:\n\n$$\nE_{V,ms}^2(\\mathcal{S}_1, \\mathcal{S}_2) \\le C_{V,\\text{total}}(\\mathcal{S}_1) \\cdot F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)\n$$\n\nwhere $C_{V,\\text{total}}(\\mathcal{S}_1)$ is the **Total Value Error Coefficient**, a deterministic constant derived from the axiomatic properties of the aggregation operator and the global parameters, as formally defined in def-value-error-coefficients.",
+    "proof_sketch": "From the algebraic decomposition, the squared error is bounded by $3(\\|\\Delta_{\\text{direct}}\\|_2^2 + \\|\\Delta_{\\text{mean}}\\|_2^2 + \\|\\Delta_{\\text{fluc}}\\|_2^2)$. Each component is bounded deterministically by a term proportional to $\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2$. Taking the expectation and using the mean-square continuity axiom for raw values yields the result.",
+    "source_section": "12",
+    "source_document": "01_fragile_gas_framework.md",
+    "dependencies": [
+      "def-value-error-coefficients",
+      "lem-stats-value-continuity"
+    ],
+    "tags": [
+      "mean-square",
+      "continuity",
+      "value-error",
+      "expectation"
+    ],
+    "input_objects": [
+      "obj-aggregator-lipschitz-constants",
+      "obj-raw-value-operator",
+      "obj-standardization-total-value-error-coefficient"
+    ],
+    "input_axioms": [
+      "axiom-raw-value-mean-square-continuity"
+    ],
+    "input_parameters": [
+      "param-F-V-ms"
+    ],
+    "output_type": "Bound",
+    "relations_established": [
+      "Value error in standardization bounded in mean-square"
+    ],
+    "statement_type": "theorem"
+  }
+}

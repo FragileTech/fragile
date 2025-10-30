@@ -2,9 +2,17 @@
   "label": "lem-sub-lem-probabilistic-bound-perturbation-displacement-reproof",
   "name": "Probabilistic Bound on Total Perturbation-Induced Displacement",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "lem-sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-sub-lem-probabilistic-bound-perturbation-displacement-reproof"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -17,26 +25,22 @@
   "input_parameters": [
     "param-failure-probability-delta"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-perturbation-operator": [
-      "prop-bounded-second-moment"
+      "attr-bounded-second-moment"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [
-    {
-      "label": "prop-probabilistic-bound-on-total-displacement",
-      "expression": "\\exists B(\\delta) > 0 \\text{ s.t. } P(D_{total} > B(\\delta)) \\le \\delta",
-      "object_label": "obj-n-particle-displacement-metric",
-      "established_by": "lem-sub-lem-probabilistic-bound-perturbation-displacement-reproof",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Literal, Optional, Tuple
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -131,21 +131,23 @@ class ReviewIssue(BaseModel):
 
     # Description
     title: str = Field(..., min_length=1, description="Brief descriptive title")
-    problem: str = Field(..., min_length=1, description="Clear description of what is wrong or missing")
-    mechanism: Optional[str] = Field(
+    problem: str = Field(
+        ..., min_length=1, description="Clear description of what is wrong or missing"
+    )
+    mechanism: str | None = Field(
         None, description="WHY this fails - precise mechanism of the error"
     )
-    evidence: Optional[str] = Field(
+    evidence: str | None = Field(
         None,
         description="Quoted passage, counterexample, or calculation demonstrating the issue",
     )
 
     # Impact and fix
-    impact: List[str] = Field(
+    impact: list[str] = Field(
         default_factory=list,
         description="Affected objects/theorems/properties (labels)",
     )
-    suggested_fix: Optional[str] = Field(
+    suggested_fix: str | None = Field(
         None, description="Concrete suggestion for how to fix this issue"
     )
 
@@ -156,11 +158,11 @@ class ReviewIssue(BaseModel):
         le=1.0,
         description="How clear/actionable the fix is (0=unclear, 1=very clear)",
     )
-    framework_references: List[str] = Field(
+    framework_references: list[str] = Field(
         default_factory=list,
         description="References to framework docs (e.g., 'lem-gronwall-inequality' from glossary.md)",
     )
-    validation_failure: Optional[Dict[str, Any]] = Field(
+    validation_failure: dict[str, Any] | None = Field(
         None, description="Details if this is from automated validation"
     )
 
@@ -185,11 +187,11 @@ class ReviewIssue(BaseModel):
               issue.severity == ReviewSeverity.major ||
               issue.severity == ReviewSeverity.validation_failure
         """
-        return self.severity in (
+        return self.severity in {
             ReviewSeverity.CRITICAL,
             ReviewSeverity.MAJOR,
             ReviewSeverity.VALIDATION_FAILURE,
-        )
+        }
 
     # Pure function: Get severity weight
     def get_severity_weight(self) -> float:
@@ -241,16 +243,14 @@ class LLMResponse(BaseModel):
     result: IssueResolution = Field(..., description="How issue was resolved")
 
     # Details
-    implementation_notes: Optional[str] = Field(
-        None, description="Notes on how issue was fixed"
-    )
-    rejection_reason: Optional[str] = Field(
+    implementation_notes: str | None = Field(None, description="Notes on how issue was fixed")
+    rejection_reason: str | None = Field(
         None, description="Why fix was rejected (if result=rejected)"
     )
 
     # Metadata
     timestamp: datetime = Field(..., description="When response was recorded")
-    llm_agent: Optional[str] = Field(
+    llm_agent: str | None = Field(
         None, description="Which agent implemented the fix (e.g., 'claude', 'human')"
     )
 
@@ -291,14 +291,12 @@ class ValidationResult(BaseModel):
         description="Validator name (e.g., 'dataflow', 'sympy', 'framework-checker')",
     )
     passed: bool = Field(..., description="Whether validation passed")
-    errors: List[str] = Field(
+    errors: list[str] = Field(
         default_factory=list, description="Error messages if validation failed"
     )
-    warnings: List[str] = Field(
-        default_factory=list, description="Non-fatal warnings"
-    )
+    warnings: list[str] = Field(default_factory=list, description="Non-fatal warnings")
     timestamp: datetime = Field(..., description="When validation was performed")
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Validator-specific metadata (e.g., SymPy simplification results)",
     )
@@ -319,7 +317,7 @@ class ValidationResult(BaseModel):
         """
         if not self.passed:
             return ReviewSeverity.VALIDATION_FAILURE
-        elif self.warnings:
+        if self.warnings:
             return ReviewSeverity.SUGGESTION
         return ReviewSeverity.SUGGESTION  # No issues
 
@@ -373,18 +371,14 @@ class Review(BaseModel):
     source: ReviewSource = Field(..., description="Source of this review")
 
     # Review content
-    issues: List[ReviewIssue] = Field(default_factory=list, description="Issues identified")
-    strengths: List[str] = Field(
-        default_factory=list, description="Positive aspects identified"
-    )
+    issues: list[ReviewIssue] = Field(default_factory=list, description="Issues identified")
+    strengths: list[str] = Field(default_factory=list, description="Positive aspects identified")
     overall_assessment: str = Field(
         ..., min_length=1, description="Summary assessment of the object"
     )
 
     # Scores (0-10 scale)
-    rigor_score: float = Field(
-        ..., ge=0.0, le=10.0, description="Mathematical rigor score (1-10)"
-    )
+    rigor_score: float = Field(..., ge=0.0, le=10.0, description="Mathematical rigor score (1-10)")
     soundness_score: float = Field(
         ..., ge=0.0, le=10.0, description="Logical soundness score (1-10)"
     )
@@ -413,24 +407,22 @@ class Review(BaseModel):
     )
 
     # Validation integration
-    validation_results: List[ValidationResult] = Field(
+    validation_results: list[ValidationResult] = Field(
         default_factory=list, description="Automated validation results"
     )
-    validation_passed: bool = Field(
-        ..., description="Whether all automated validations passed"
-    )
+    validation_passed: bool = Field(..., description="Whether all automated validations passed")
 
     # Iteration tracking
-    previous_review_id: Optional[str] = Field(
+    previous_review_id: str | None = Field(
         None,
         pattern=r"^review-[a-z0-9-]+-iter\d+-[a-z0-9.-]+$",
         description="Previous review in iteration chain",
     )
-    addresses_issues: List[str] = Field(
+    addresses_issues: list[str] = Field(
         default_factory=list,
         description="Issue IDs from previous iteration that this addresses",
     )
-    llm_responses: List[LLMResponse] = Field(
+    llm_responses: list[LLMResponse] = Field(
         default_factory=list,
         description="LLM responses to issues from previous iteration",
     )
@@ -465,8 +457,7 @@ class Review(BaseModel):
             return ReviewStatus.NEEDS_MAJOR_REVISION
 
         has_minor = any(
-            i.severity in (ReviewSeverity.MINOR, ReviewSeverity.SUGGESTION)
-            for i in self.issues
+            i.severity in {ReviewSeverity.MINOR, ReviewSeverity.SUGGESTION} for i in self.issues
         )
         if has_minor:
             return ReviewStatus.NEEDS_MINOR_REVISION
@@ -474,7 +465,7 @@ class Review(BaseModel):
         return ReviewStatus.READY
 
     # Pure function: Get issues by severity
-    def get_issues_by_severity(self, severity: ReviewSeverity) -> List[ReviewIssue]:
+    def get_issues_by_severity(self, severity: ReviewSeverity) -> list[ReviewIssue]:
         """
         Pure function: Filter issues by severity.
 
@@ -485,7 +476,7 @@ class Review(BaseModel):
         return [i for i in self.issues if i.severity == severity]
 
     # Pure function: Get blocking issues
-    def get_blocking_issues(self) -> List[ReviewIssue]:
+    def get_blocking_issues(self) -> list[ReviewIssue]:
         """
         Pure function: Get all blocking issues.
 
@@ -565,29 +556,29 @@ class ReviewComparison(BaseModel):
     review_b: Review = Field(..., description="Second review (e.g., Codex)")
 
     # Comparison results
-    consensus_issues: List[ReviewIssue] = Field(
+    consensus_issues: list[ReviewIssue] = Field(
         default_factory=list,
         description="Issues identified by both reviewers (high confidence)",
     )
-    discrepancies: List[Tuple[ReviewIssue, ReviewIssue]] = Field(
+    discrepancies: list[tuple[ReviewIssue, ReviewIssue]] = Field(
         default_factory=list,
         description="Contradictory findings requiring manual verification",
     )
-    unique_to_a: List[ReviewIssue] = Field(
+    unique_to_a: list[ReviewIssue] = Field(
         default_factory=list, description="Issues only in review A"
     )
-    unique_to_b: List[ReviewIssue] = Field(
+    unique_to_b: list[ReviewIssue] = Field(
         default_factory=list, description="Issues only in review B"
     )
 
     # Confidence weights
-    confidence_weights: Dict[str, float] = Field(
+    confidence_weights: dict[str, float] = Field(
         default_factory=dict,
         description="Confidence weights (consensus=1.0, unique=0.5, discrepancy=0.0)",
     )
 
     # Pure function: Get all high-confidence issues
-    def get_high_confidence_issues(self) -> List[ReviewIssue]:
+    def get_high_confidence_issues(self) -> list[ReviewIssue]:
         """
         Pure function: Get all high-confidence issues (consensus only).
 
@@ -598,7 +589,7 @@ class ReviewComparison(BaseModel):
         return self.consensus_issues
 
     # Pure function: Get all medium-confidence issues
-    def get_medium_confidence_issues(self) -> List[ReviewIssue]:
+    def get_medium_confidence_issues(self) -> list[ReviewIssue]:
         """
         Pure function: Get all medium-confidence issues (unique to either reviewer).
 
@@ -619,6 +610,5 @@ class ReviewComparison(BaseModel):
               (rc.unique_to_a.length + rc.unique_to_b.length) <= 2
         """
         return (
-            len(self.discrepancies) == 0
-            and (len(self.unique_to_a) + len(self.unique_to_b)) <= 2
+            len(self.discrepancies) == 0 and (len(self.unique_to_a) + len(self.unique_to_b)) <= 2
         )

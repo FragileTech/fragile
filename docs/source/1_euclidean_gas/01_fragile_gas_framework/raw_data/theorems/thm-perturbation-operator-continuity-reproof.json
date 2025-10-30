@@ -1,0 +1,49 @@
+{
+  "label": "thm-perturbation-operator-continuity-reproof",
+  "name": "Probabilistic Continuity of the Perturbation Operator",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "13.2.5",
+    "section_name": null,
+    "directive_label": "thm-perturbation-operator-continuity-reproof",
+    "equation": null,
+    "line_range": [
+      4095,
+      4105
+    ],
+    "url_fragment": "#thm-perturbation-operator-continuity-reproof"
+  },
+  "input_objects": [
+    "obj-stochastic-fluctuation-bound",
+    "obj-perturbation-constants",
+    "obj-mean-displacement-bound",
+    "obj-perturbation-measure",
+    "obj-perturbation-operator",
+    "obj-alg-distance",
+    "obj-n-particle-displacement-metric"
+  ],
+  "input_axioms": [
+    "axiom-def-axiom-bounded-second-moment-perturbation",
+    "def-axiom-bounded-second-moment-perturbation"
+  ],
+  "input_parameters": [
+    "param-failure-probability-delta"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Continuity",
+  "attributes_added": [
+    {
+      "label": "attr-probabilistic-continuity",
+      "expression": "P(D^2(\\mathcal{S}'_1, \\mathcal{S}'_2) \\le B(\\delta) \\cdot d_{alg}(\\mathcal{S}_1, \\mathcal{S}_2)) \\ge 1 - \\delta",
+      "object_label": "obj-perturbation-operator"
+    }
+  ],
+  "relations_established": [
+    "Perturbation operator is probabilistically continuous"
+  ]
+}

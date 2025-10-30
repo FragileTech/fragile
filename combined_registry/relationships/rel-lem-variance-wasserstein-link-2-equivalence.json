@@ -6,12 +6,20 @@
   "target_object": "obj-structural-variance",
   "established_by": "lem-variance-wasserstein-link",
   "expression": "c_link⁺ = 2 (N-uniform)",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "04_wasserstein_contraction"
+  "source": {
+    "document_id": "04_wasserstein_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+    "section": null,
+    "directive_label": "lem-variance-wasserstein-link",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-variance-wasserstein-link"
+  },
+  "chapter": null,
+  "document": null
 }

@@ -16,8 +16,6 @@ Can be used standalone or integrated into visualization dashboards.
 
 from __future__ import annotations
 
-from typing import Sequence
-
 import holoviews as hv
 from holoviews import dim
 import numpy as np
@@ -422,8 +420,8 @@ class GasVisualizer(param.Parameterized):
         # Determine what metrics need computation based on display settings and usage
         needs_fitness = (
             any(m in self.enabled_histograms for m in ("fitness", "distance", "reward"))
-            or self.color_metric in ("fitness", "distance", "reward")
-            or self.size_metric in ("fitness", "distance", "reward")
+            or self.color_metric in {"fitness", "distance", "reward"}
+            or self.size_metric in {"fitness", "distance", "reward"}
         )
         needs_hessian = "hessian" in self.enabled_histograms
         needs_forces = "forces" in self.enabled_histograms or self.show_force_vectors

@@ -1,0 +1,25 @@
+{
+  "label": "obj-revival-state",
+  "name": "Revival State",
+  "statement_type": "object",
+  "mathematical_expression": "A swarm state $\\mathcal{S}_t$ with exactly one alive walker, characterized by $|\\mathcal{A}(\\mathcal{S}_t)| = 1$. This represents the critical boundary condition where the swarm is at the brink of extinction with only a single survivor remaining.",
+  "object_type": "set",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-revival-state",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.1.1",
+    "line_range": [
+      1030,
+      1033
+    ],
+    "directive_label": "obj-revival-state",
+    "equation": null,
+    "url_fragment": null
+  }
+}

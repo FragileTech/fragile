@@ -1,0 +1,27 @@
+{
+  "label": "obj-distance-to-companion-measurement",
+  "name": "Distance-to-Companion Measurement",
+  "mathematical_expression": "Distance-to-Companion Measurement",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "distance",
+    "companion",
+    "measurement",
+    "stochastic",
+    "operator"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-distance-to-companion-measurement",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": null
+}

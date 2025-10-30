@@ -1,0 +1,269 @@
+{
+  "raw_data/definitions/def-swarm-aggregation-operator-axiomatic.json": {
+    "label": "def-swarm-aggregation-operator-axiomatic",
+    "type": "definition",
+    "content": "A **Swarm Aggregation Operator**, denoted $M$, is a function that maps a swarm state $\\mathcal{S}$ and a raw value vector $\\mathbf{v}$ (defined on the alive set $\\mathcal{A}(\\mathcal{S})$) to a probability measure $\\mu_{\\mathbf{v}}$ on $\\mathbb{R}$.\n**Signature:** $M: \\Sigma_N \\times \\mathbb{R}^{|\\mathcal{A}(\\mathcal{S})|} \\to \\mathcal{P}(\\mathbb{R})$\nFor the operator to be valid, it must satisfy the foundational axioms for aggregators defined in Section 2.3.4. Furthermore, the user must provide proofs and explicit functions for the following continuity and structural properties.\n1.  **Value Continuity (Lipschitz):** For a fixed swarm structure $\\mathcal{S}$, the moment functions must be Lipschitz continuous with respect to the L2-norm of the input value vector $\\mathbf{v}$. The user must provide the **Value Lipschitz Functions**, $L_{\\mu,M}(\\mathcal{S})$ and $L_{m_2,M}(\\mathcal{S})$, such that for any two value vectors $\\mathbf{v}_1, \\mathbf{v}_2$:\n$$\n\n|\\mu(\\mathcal{S}, \\mathbf{v}_1) - \\mu(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\mu,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2\n\n$$\n$$\n|m_2(\\mathcal{S}, \\mathbf{v}_1) - m_2(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{m_2,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2\n$$\n\n2.  **Structural Continuity (Quadratic):** For a fixed value vector $\\mathbf{v}$, the change in the moment functions due to a change in the swarm's alive set must be bounded. The user must provide the **Structural Continuity Functions**, $L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2)$ and $L_{m_2,S}(\\mathcal{S}_1, \\mathcal{S}_2)$, which may depend on both the initial and final swarm states. These functions must satisfy the following inequalities for any two swarms $\\mathcal{S}_1, \\mathcal{S}_2$:\n\n$$\n|\\mu(\\mathcal{S}_1, \\mathbf{v}) - \\mu(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2\n$$\n\n$$\n|m_2(\\mathcal{S}_1, \\mathbf{v}) - m_2(\\mathcal{S}_2, \\mathbf{v})| \\le L_{m_2,S}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2\n$$\n*Note: The structural continuity is defined with respect to the squared L2-norm of the status change vector. For notational convenience in subsequent sections, we define the **total number of status changes** between two swarms as $n_c := \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2 = \\sum_{j=1}^N (s_{1,j} - s_{2,j})^2$. This quadratic form is a natural choice because the error in common aggregators (like the empirical mean) is directly proportional to the number of added or removed data points, not its square root.*\n:::{hint}\nWhy quadratic dependence on status changes? When a walker dies or revives, it's like suddenly adding or removing a data point from your dataset. The resulting error in statistics (like the mean) jumps discontinuously. The quadratic form $n_c$ counts these discontinuous jumps, making it the natural measure for how much the aggregated statistics can change.",
+    "start_line": 1273,
+    "end_line": 1300,
+    "section": "§7"
+  },
+  "raw_data/definitions/def-swarm-update-procedure.json": {
+    "label": "def-swarm-update-procedure",
+    "type": "definition",
+    "name": "Swarm Update Procedure",
+    "section": "18",
+    "subsection": "",
+    "source_file": "01_fragile_gas_framework.md",
+    "source_lines": "4627-5086",
+    "extraction_date": "2025-10-27",
+    "status": "extracted"
+  },
+  "raw_data/definitions/def-total-expected-cloning-action.json": {
+    "label": "def-total-expected-cloning-action",
+    "term": "Total Expected Cloning Action",
+    "type": "definition",
+    "statement": "The **Total Expected Cloning Action** for a walker $i$, denoted $\\overline{P}_{\\text{clone}}(\\mathcal{S})_i$, is the probability that walker $i$ will be assigned the \"Clone\" action, given the swarm state $\\mathcal{S}$. It is the expectation of the **Conditional Expected Cloning Action** (Def. 15.2.3) taken over the probability distribution of the raw distance vector $\\mathbf{d} \\sim \\mathbf{d}(\\mathcal{S})$.\n\nLet $\\mathbf{r}(\\mathcal{S})$ be the deterministic raw reward vector for state $\\mathcal{S}$, and let $\\mathbf{V}(\\mathbf{r}, \\mathbf{d})$ be the fitness potential vector generated from a specific realization of the raw measurement vectors. The total expected action is:\n\n$$\n\\overline{P}_{\\text{clone}}(\\mathcal{S})_i := \\mathbb{E}_{\\mathbf{d} \\sim \\mathbf{d}(\\mathcal{S})} \\left[ P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V}(\\mathbf{r}(\\mathcal{S}), \\mathbf{d}))_i \\right]\n$$\n\nThis quantity is a deterministic function of the input swarm state $\\mathcal{S}$ and is the central object for the continuity analysis of the cloning stage.",
+    "dependencies": [
+      "def-expected-cloning-action"
+    ],
+    "tags": [
+      "cloning",
+      "probability",
+      "expectation",
+      "continuity"
+    ],
+    "context": "Section 16: The Cloning Transition Measure, subsection 15.2.1",
+    "source_file": "01_fragile_gas_framework.md",
+    "line_number": 4284,
+    "extraction_date": "2025-10-27T21:43:09.486087"
+  },
+  "raw_data/definitions/def-value-error-coefficients.json": {
+    "label": "def-value-error-coefficients",
+    "name": "Value Error Coefficients",
+    "type": "definition",
+    "content": "Let $\\mathcal{S}$ be a fixed swarm state with alive set $\\mathcal{A}$ of size $k = |\\mathcal{A}|$, and let $M$ be the chosen **Swarm Aggregation Operator**. The coefficients for the value error bounds are defined as follows:\n\n1. **The Direct Shift Coefficient ($C_{V,\\text{direct}}$):**\n\n$$\nC_{V,\\text{direct}} := \\frac{1}{\\sigma'^2_{\\min,\\text{bound}}}\n$$\n\n2. **The Mean Shift Coefficient ($C_{V,\\mu}(\\mathcal{S})$):**\n\n$$\nC_{V,\\mu}(\\mathcal{S}) := \\frac{k \\cdot (L_{\\mu,M}(\\mathcal{S}))^2}{\\sigma'^2_{\\min,\\text{bound}}}\n$$\n\n3. **The Statistical Fluctuation Coefficient ($C_{V,\\sigma}(\\mathcal{S})$):**\n\n$$\nC_{V,\\sigma}(\\mathcal{S}) := k \\left( \\frac{2V_{\\max}}{\\sigma'_{\\min,\\text{bound}}} \\right)^2 \\left( \\frac{L_{\\sigma',M}(\\mathcal{S})}{\\sigma'_{\\min,\\text{bound}}} \\right)^2\n$$\n\n4. **The Total Value Error Coefficient ($C_{V,\\text{total}}(\\mathcal{S})$):** The composite coefficient that bounds the total squared error.\n\n$$\nC_{V,\\text{total}}(\\mathcal{S}) := 3 \\cdot \\left( C_{V,\\text{direct}} + C_{V,\\mu}(\\mathcal{S}) + C_{V,\\sigma}(\\mathcal{S}) \\right)\n$$\n\nwhere $L_{\\mu,M}(\\mathcal{S})$ and $L_{\\sigma',M}(\\mathcal{S})$ are the value Lipschitz functions for the aggregator's mean and regularized standard deviation, respectively.",
+    "source_section": "12",
+    "source_document": "01_fragile_gas_framework.md",
+    "dependencies": [
+      "def-swarm-aggregation-operator-axiomatic",
+      "def-statistical-properties-measurement",
+      "lem-stats-value-continuity"
+    ],
+    "tags": [
+      "error-analysis",
+      "coefficients",
+      "continuity",
+      "value-error"
+    ]
+  },
+  "raw_data/definitions/def-w2-output-metric.json": {
+    "label": "def-w2-output-metric",
+    "type": "definition",
+    "name": "Wasserstein-2 on the output space (quotient)",
+    "section": "18",
+    "subsection": "17.2.4.4",
+    "source_file": "01_fragile_gas_framework.md",
+    "source_lines": "4627-5086",
+    "extraction_date": "2025-10-27",
+    "status": "extracted"
+  },
+  "raw_data/lemmas/lem-boundary-heat-kernel.json": {
+    "label": "lem-boundary-heat-kernel",
+    "name": "Heat-kernel death probability is Lipschitz with constant ≲ 1/σ",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-perturbation-constants",
+      "obj-perturbation-measure",
+      "obj-algorithmic-space-generic",
+      "obj-smoothed-gaussian-measure",
+      "obj-boundary-regularity-constants",
+      "obj-alg-distance"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [
+      [
+        "lem-validation-heat-kernel",
+        "lem-boundary-heat-kernel"
+      ]
+    ],
+    "output_type": "General Result",
+    "attributes_added": [],
+    "relations_established": [
+      "Lipschitz constant bounded by C_d'*Per(E)/sigma",
+      "Heat-kernel smoothed probability P_sigma(x) is Lipschitz continuous",
+      "In algorithmic metric: L_death <= (Per(phi(E))/sigma)*L_phi"
+    ],
+    "natural_language_statement": "Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter and let $p_{\\sigma^2}$ be the heat kernel at scale $\\sigma$. Define $P_\\sigma(x)=\\int \\chi_E(y)\\,p_{\\sigma^2}(x,\\mathrm dy)$. Then $|P_\\sigma(x)-P_\\sigma(y)| \\le C_d'\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y)$, with a constant $C_d'$ depending on dimension. Consequently $L_{\\text{death}}\\lesssim (\\mathrm{Per}(\\varphi(E))/\\sigma)\\,L_\\varphi$ in the algorithmic metric.",
+    "assumptions": [
+      "$E=\\mathcal{X}_{\\mathrm{invalid}}$ has finite perimeter",
+      "$p_{\\sigma^2}$ is heat kernel at scale $\\sigma$"
+    ],
+    "conclusion": "$|P_\\sigma(x)-P_\\sigma(y)| \\le C_d'\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y)$",
+    "equation_label": null,
+    "uses_definitions": [
+      "def-perturbation-measure"
+    ],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-boundary-uniform-ball.json": {
+    "label": "lem-boundary-uniform-ball",
+    "name": "Uniform-ball death probability is Lipschitz under finite perimeter",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-perturbation-measure",
+      "obj-algorithmic-space-generic",
+      "obj-boundary-regularity-constants",
+      "obj-alg-distance"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [
+      [
+        "lem-validation-uniform-ball",
+        "lem-boundary-uniform-ball"
+      ]
+    ],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Uniform ball death probability P_sigma(x) is Lipschitz continuous",
+      "Lipschitz bound: |P_sigma(x) - P_sigma(y)| <= C_d*Per(E)/sigma*d_X(x,y)"
+    ],
+    "natural_language_statement": "Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter (BV boundary) and let $\\mathcal P_\\sigma(x,\\cdot)$ be the uniform law on $B(x,\\sigma)$. Define $P_\\sigma(x) := \\mathcal P_\\sigma(x, E) = \\frac{1}{\\mathrm{Vol}(B_\\sigma)}\\int \\mathbb 1_E(y)\\,\\mathbb 1_{B_\\sigma}(y-x)\\,\\mathrm dy$. Then there exists a constant $C_d>0$ depending only on the dimension such that for all $x,y\\in\\mathcal X$, $|P_\\sigma(x)-P_\\sigma(y)| \\le C_d\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y)$.",
+    "assumptions": [
+      "$E=\\mathcal{X}_{\\mathrm{invalid}}$ has finite perimeter (BV boundary)",
+      "$\\mathcal P_\\sigma(x,\\cdot)$ is uniform law on $B(x,\\sigma)$"
+    ],
+    "conclusion": "$|P_\\sigma(x)-P_\\sigma(y)| \\le C_d\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y)$",
+    "equation_label": null,
+    "uses_definitions": [
+      "def-perturbation-measure"
+    ],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-bounded-differences-favg.json": {
+    "label": "lem-bounded-differences-favg",
+    "name": "Bounded differences for $f_{\\text{avg}}$",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-algorithmic-space-generic",
+      "obj-perturbation-measure",
+      "obj-alg-distance"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Applies to normalized functional f_avg = (1/N)Delta_pert^2(S_in)",
+      "Establishes McDiarmid bounded-difference constants c_i = D_Y^2/N"
+    ],
+    "natural_language_statement": "Under the Axiom of Bounded Algorithmic Diameter, for the normalized functional $f_{\\text{avg}} := \\frac{1}{N}\\,\\Delta_{\\text{pert}}^2(\\mathcal{S}_{\\text{in}}) = \\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal{Y}}\\!\\big(\\varphi(x'_{\\text{out},i}),\\varphi(x_{\\text{in},i})\\big)^2$, the McDiarmid bounded‑difference constants may be taken as $c_i=D_{\\mathcal{Y}}^2/N$ for all $i$.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-cloning-probability-lipschitz.json": {
+    "label": "lem-cloning-probability-lipschitz",
+    "name": "Lipschitz Continuity of the Conditional Cloning Probability Function",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-cloning-probability-lipschitz-constants",
+      "obj-potential-bounds",
+      "def-alive-set-potential-operator"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Lipschitz Continuity",
+    "attributes_added": [],
+    "relations_established": [
+      "Lipschitz constants: L_{pi,c} = 1/(p_max*epsilon_clone), L_{pi,i} = (V_pot,max + epsilon_clone)/(p_max*epsilon_clone^2)",
+      "Conditional cloning probability pi(v_c, v_i) is Lipschitz continuous"
+    ],
+    "natural_language_statement": "The **Conditional Cloning Probability Function** $\\pi(v_c, v_i)$ is Lipschitz continuous with respect to its two inputs. For any two pairs of potentials $(v_{c1}, v_{i1})$ and $(v_{c2}, v_{i2})$:\n\n$$\n|\\pi(v_{c1}, v_{i1}) - \\pi(v_{c2}, v_{i2})| \\le L_{\\pi,c}|v_{c1} - v_{c2}| + L_{\\pi,i}|v_{i1} - v_{i2}|\n$$\n\nwhere the **Cloning Probability Lipschitz Constants** can be chosen uniformly over both alive and dead walkers by the worst‑case (dead‑walker) bounds:\n\n- **Companion Potential Lipschitz Constant ($L_{\\pi,c}$):**\n$$\nL_{\\pi,c} := \\frac{1}{p_{\\max} \\cdot \\varepsilon_{\\text{clone}}}\n$$\n\n- **Walker Potential Lipschitz Constant ($L_{\\pi,i}$):**\n$$\nL_{\\pi,i} := \\frac{V_{\\text{pot,max}} + \\varepsilon_{\\text{clone}}}{p_{\\max} \\cdot \\varepsilon_{\\text{clone}}^{\\,2}}\n$$",
+    "assumptions": [],
+    "conclusion": "The cloning probability function is Lipschitz continuous with explicit constants",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-component-potential-lipschitz.json": {
+    "label": "lem-component-potential-lipschitz",
+    "name": "Lipschitz Continuity of the Fitness Potential Function",
+    "statement_type": "lemma",
+    "source": {
+      "document": "01_fragile_gas_framework.md",
+      "section": "13. Fitness potential operator",
+      "subsection": "12.2.2. Lemma: Lipschitz Continuity of the Fitness Potential Function"
+    },
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-rescale-lipschitz-constants",
+      "obj-potential-bounds",
+      "def-alive-set-potential-operator"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Lipschitz Continuity",
+    "attributes_added": [],
+    "relations_established": [
+      "Lipschitz constants L_{F,r} and L_{F,d} are finite and state-independent",
+      "Component-wise potential function F(z_r, z_d) = (g_A(z_d) + eta)^beta*(g_A(z_r) + eta)^alpha is Lipschitz"
+    ],
+    "natural_language_statement": "Let the component-wise potential function be defined as $F(z_r, z_d) := (g_A(z_d) + \\eta)^{\\beta} \\cdot (g_A(z_r) + \\eta)^{\\alpha}$. This function is Lipschitz continuous with respect to its Z-score inputs. For any two pairs of Z-scores $(z_{r1}, z_{d1})$ and $(z_{r2}, z_{d2})$: $|F(z_{r1}, z_{d1}) - F(z_{r2}, z_{d2})| \\le L_{F,r}|z_{r1} - z_{r2}| + L_{F,d}|z_{d1} - z_{d2}|$ where the Lipschitz constants $L_{F,r}$ and $L_{F,d}$ are finite, state-independent constants.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  }
+}

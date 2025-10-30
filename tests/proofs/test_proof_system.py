@@ -4,11 +4,12 @@ Comprehensive tests for fragile.proofs.core.proof_system.
 Tests ProofBox, ProofStep, dataflow validation, and ProofEngine.
 """
 
-import pytest
 from pydantic import ValidationError
+import pytest
 
 from fragile.proofs.core.proof_system import (
     AssumptionReference,
+    AttributeReference,
     DirectDerivation,
     LemmaApplication,
     ProofBox,
@@ -19,17 +20,16 @@ from fragile.proofs.core.proof_system import (
     ProofStep,
     ProofStepStatus,
     ProofStepType,
-    PropertyReference,
     SubProofReference,
 )
 
 
-class TestPropertyReference:
-    """Test PropertyReference type."""
+class TestAttributeReference:
+    """Test AttributeReference type."""
 
     def test_minimal_property_reference(self):
         """Test minimal property reference."""
-        prop_ref = PropertyReference(
+        prop_ref = AttributeReference(
             object_id="obj-test",
             property_id="prop-test",
             property_statement="Test property",
@@ -39,7 +39,7 @@ class TestPropertyReference:
 
     def test_property_reference_with_expression(self):
         """Test property reference with mathematical expression."""
-        prop_ref = PropertyReference(
+        prop_ref = AttributeReference(
             object_id="obj-function",
             property_id="prop-lipschitz",
             property_statement=r"Function is Lipschitz: |\nabla f(x)| \leq L",
@@ -65,7 +65,7 @@ class TestProofInputOutput:
 
     def test_proof_input(self):
         """Test ProofInput creation."""
-        prop_ref = PropertyReference(
+        prop_ref = AttributeReference(
             object_id="obj-test",
             property_id="prop-test",
             property_statement="Test",
@@ -79,7 +79,7 @@ class TestProofInputOutput:
 
     def test_proof_output(self):
         """Test ProofOutput creation."""
-        prop_ref = PropertyReference(
+        prop_ref = AttributeReference(
             object_id="obj-test",
             property_id="prop-new",
             property_statement="New property",
@@ -109,13 +109,21 @@ class TestProofStep:
 
     def test_sketched_step(self):
         """Test SKETCHED proof step."""
-        prop_in = PropertyReference(object_id="obj-a", property_id="prop-1", property_statement="Property 1")
-        prop_out = PropertyReference(object_id="obj-a", property_id="prop-2", property_statement="Property 2")
+        prop_in = AttributeReference(
+            object_id="obj-a", property_id="prop-1", property_statement="Property 1"
+        )
+        prop_out = AttributeReference(
+            object_id="obj-a", property_id="prop-2", property_statement="Property 2"
+        )
 
         step = ProofStep(
             step_id="step-1",
-            description="Establish well-posedness",
-            inputs=[ProofInput(object_id="obj-a", required_properties=[prop_in], required_assumptions=[])],
+            natural_language_description="Establish well-posedness",
+            inputs=[
+                ProofInput(
+                    object_id="obj-a", required_properties=[prop_in], required_assumptions=[]
+                )
+            ],
             outputs=[ProofOutput(object_id="obj-a", properties_established=[prop_out])],
             step_type=ProofStepType.DIRECT_DERIVATION,
             derivation=DirectDerivation(mathematical_content="To be filled", techniques=[]),
@@ -125,8 +133,12 @@ class TestProofStep:
 
     def test_expanded_step(self):
         """Test EXPANDED proof step with full derivation."""
-        prop_in = PropertyReference(object_id="obj-a", property_id="prop-1", property_statement="Property 1")
-        prop_out = PropertyReference(object_id="obj-a", property_id="prop-2", property_statement="Property 2")
+        prop_in = AttributeReference(
+            object_id="obj-a", property_id="prop-1", property_statement="Property 1"
+        )
+        prop_out = AttributeReference(
+            object_id="obj-a", property_id="prop-2", property_statement="Property 2"
+        )
 
         derivation = DirectDerivation(
             mathematical_content="Full mathematical derivation here...",
@@ -135,8 +147,12 @@ class TestProofStep:
 
         step = ProofStep(
             step_id="step-1",
-            description="Full derivation",
-            inputs=[ProofInput(object_id="obj-a", required_properties=[prop_in], required_assumptions=[])],
+            natural_language_description="Full derivation",
+            inputs=[
+                ProofInput(
+                    object_id="obj-a", required_properties=[prop_in], required_assumptions=[]
+                )
+            ],
             outputs=[ProofOutput(object_id="obj-a", properties_established=[prop_out])],
             step_type=ProofStepType.DIRECT_DERIVATION,
             derivation=derivation,
@@ -149,11 +165,13 @@ class TestProofStep:
         """Test step with SubProofReference."""
         step = ProofStep(
             step_id="step-1",
-            description="Defer to technical lemma",
+            natural_language_description="Defer to technical lemma",
             inputs=[],
             outputs=[],
             step_type=ProofStepType.SUB_PROOF,
-            derivation=SubProofReference(proof_id="proof-lem-technical", proof_label="Technical Lemma"),
+            derivation=SubProofReference(
+                proof_id="proof-lem-technical", proof_label="Technical Lemma"
+            ),
             status=ProofStepStatus.SKETCHED,
         )
         assert step.step_type == ProofStepType.SUB_PROOF
@@ -163,7 +181,7 @@ class TestProofStep:
         """Test step with LemmaApplication."""
         step = ProofStep(
             step_id="step-1",
-            description="Apply Sznitman coupling lemma",
+            natural_language_description="Apply Sznitman coupling lemma",
             inputs=[],
             outputs=[],
             step_type=ProofStepType.LEMMA_APPLICATION,
@@ -178,13 +196,21 @@ class TestProofBox:
 
     def test_minimal_proof(self):
         """Test minimal proof creation."""
-        prop_in = PropertyReference(object_id="obj-a", property_id="prop-1", property_statement="Input property")
-        prop_out = PropertyReference(object_id="obj-a", property_id="prop-2", property_statement="Output property")
+        prop_in = AttributeReference(
+            object_id="obj-a", property_id="prop-1", property_statement="Input property"
+        )
+        prop_out = AttributeReference(
+            object_id="obj-a", property_id="prop-2", property_statement="Output property"
+        )
 
         step = ProofStep(
             step_id="step-1",
-            description="Single step proof",
-            inputs=[ProofInput(object_id="obj-a", required_properties=[prop_in], required_assumptions=[])],
+            natural_language_description="Single step proof",
+            inputs=[
+                ProofInput(
+                    object_id="obj-a", required_properties=[prop_in], required_assumptions=[]
+                )
+            ],
             outputs=[ProofOutput(object_id="obj-a", properties_established=[prop_out])],
             step_type=ProofStepType.DIRECT_DERIVATION,
             derivation=DirectDerivation(mathematical_content="Proof content", techniques=[]),
@@ -195,7 +221,11 @@ class TestProofBox:
             proof_id="proof-thm-simple",
             label="Simple Proof",
             proves="thm-simple",
-            inputs=[ProofInput(object_id="obj-a", required_properties=[prop_in], required_assumptions=[])],
+            inputs=[
+                ProofInput(
+                    object_id="obj-a", required_properties=[prop_in], required_assumptions=[]
+                )
+            ],
             outputs=[ProofOutput(object_id="obj-a", properties_established=[prop_out])],
             strategy="Single-step direct derivation",
             steps=[step],
@@ -210,18 +240,20 @@ class TestProofBox:
         # Main proof step referencing sub-proof
         main_step = ProofStep(
             step_id="step-1",
-            description="Use technical lemma",
+            natural_language_description="Use technical lemma",
             inputs=[],
             outputs=[],
             step_type=ProofStepType.SUB_PROOF,
-            derivation=SubProofReference(proof_id="proof-lem-technical", proof_label="proof-lem-technical"),
+            derivation=SubProofReference(
+                proof_id="proof-lem-technical", proof_label="proof-lem-technical"
+            ),
             status=ProofStepStatus.EXPANDED,
         )
 
         # Sub-proof
         sub_step = ProofStep(
             step_id="step-1",
-            description="Prove technical result",
+            natural_language_description="Prove technical result",
             inputs=[],
             outputs=[],
             step_type=ProofStepType.DIRECT_DERIVATION,
@@ -257,13 +289,19 @@ class TestProofBox:
     def test_proof_dataflow_validation(self):
         """Test proof dataflow validation."""
         # Create proof with valid dataflow
-        prop1 = PropertyReference(object_id="obj-a", property_id="prop-1", property_statement="Property 1")
-        prop2 = PropertyReference(object_id="obj-a", property_id="prop-2", property_statement="Property 2")
+        prop1 = AttributeReference(
+            object_id="obj-a", property_id="prop-1", property_statement="Property 1"
+        )
+        prop2 = AttributeReference(
+            object_id="obj-a", property_id="prop-2", property_statement="Property 2"
+        )
 
         step = ProofStep(
             step_id="step-1",
-            description="Transform prop-1 to prop-2",
-            inputs=[ProofInput(object_id="obj-a", required_properties=[prop1], required_assumptions=[])],
+            natural_language_description="Transform prop-1 to prop-2",
+            inputs=[
+                ProofInput(object_id="obj-a", required_properties=[prop1], required_assumptions=[])
+            ],
             outputs=[ProofOutput(object_id="obj-a", properties_established=[prop2])],
             step_type=ProofStepType.DIRECT_DERIVATION,
             derivation=DirectDerivation(mathematical_content="Transform", techniques=[]),
@@ -274,7 +312,9 @@ class TestProofBox:
             proof_id="proof-test",
             label="Test",
             proves="thm-test",
-            inputs=[ProofInput(object_id="obj-a", required_properties=[prop1], required_assumptions=[])],
+            inputs=[
+                ProofInput(object_id="obj-a", required_properties=[prop1], required_assumptions=[])
+            ],
             outputs=[ProofOutput(object_id="obj-a", properties_established=[prop2])],
             strategy="Single step",
             steps=[step],
@@ -293,13 +333,19 @@ class TestProofEngine:
         """Test registering proof with engine."""
         engine = ProofEngine()
 
-        prop1 = PropertyReference(object_id="obj-a", property_id="prop-1", property_statement="Property 1")
-        prop2 = PropertyReference(object_id="obj-a", property_id="prop-2", property_statement="Property 2")
+        prop1 = AttributeReference(
+            object_id="obj-a", property_id="prop-1", property_statement="Property 1"
+        )
+        prop2 = AttributeReference(
+            object_id="obj-a", property_id="prop-2", property_statement="Property 2"
+        )
 
         step = ProofStep(
             step_id="step-1",
-            description="Test step",
-            inputs=[ProofInput(object_id="obj-a", required_properties=[prop1], required_assumptions=[])],
+            natural_language_description="Test step",
+            inputs=[
+                ProofInput(object_id="obj-a", required_properties=[prop1], required_assumptions=[])
+            ],
             outputs=[ProofOutput(object_id="obj-a", properties_established=[prop2])],
             step_type=ProofStepType.DIRECT_DERIVATION,
             derivation=DirectDerivation(mathematical_content="Test", techniques=[]),
@@ -310,7 +356,9 @@ class TestProofEngine:
             proof_id="proof-test",
             label="Test",
             proves="thm-test",
-            inputs=[ProofInput(object_id="obj-a", required_properties=[prop1], required_assumptions=[])],
+            inputs=[
+                ProofInput(object_id="obj-a", required_properties=[prop1], required_assumptions=[])
+            ],
             outputs=[ProofOutput(object_id="obj-a", properties_established=[prop2])],
             strategy="Test",
             steps=[step],
@@ -326,7 +374,7 @@ class TestProofEngine:
 
         step = ProofStep(
             step_id="step-1",
-            description="Needs expansion",
+            natural_language_description="Needs expansion",
             inputs=[],
             outputs=[],
             step_type=ProofStepType.DIRECT_DERIVATION,
@@ -359,7 +407,7 @@ class TestProofImmutability:
         """Test ProofBox is mutable (for expansion)."""
         step = ProofStep(
             step_id="step-1",
-            description="Test",
+            natural_language_description="Test",
             inputs=[],
             outputs=[],
             step_type=ProofStepType.DIRECT_DERIVATION,
@@ -385,7 +433,7 @@ class TestProofImmutability:
         """Test ProofStep is NOT frozen (can be modified for expansion)."""
         step = ProofStep(
             step_id="step-1",
-            description="Test",
+            natural_language_description="Test",
             inputs=[],
             outputs=[],
             step_type=ProofStepType.DIRECT_DERIVATION,

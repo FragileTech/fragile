@@ -1,0 +1,22 @@
+{
+  "label": "axiom-bounded-algorithmic-diameter",
+  "statement": "- The algorithmic space $(\\mathcal{Y}, d_{\\mathcal{Y}})$ is Polish (complete, separable metric space).\n- Its diameter is finite: $D_{\\mathcal{Y}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\mathcal{Y}) < \\infty$.\n\nThese conditions ensure Wasserstein metrics $W_p$ on probability measures over $(\\mathcal{Y}, d_{\\mathcal{Y}})$ are well‑posed and that all per‑walker squared displacements are bounded by $D_{\\mathcal{Y}}^2$.",
+  "mathematical_expression": "- The algorithmic space $(\\mathcal{Y}, d_{\\mathcal{Y}})$ is Polish (complete, separable metric space).\n- Its diameter is finite: $D_{\\mathcal{Y}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\mathcal{Y}) < \\infty$.\n\nThese conditions ensure Wasserstein metrics $W_p$ on probability measures over $(\\mathcal{Y}, d_{\\mathcal{Y}})$ are well‑posed and that all per‑walker squared displacements are bounded by $D_{\\mathcal{Y}}^2$.",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Bounded Algorithmic Diameter",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-bounded-algorithmic-diameter",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

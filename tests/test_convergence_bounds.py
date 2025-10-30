@@ -10,8 +10,9 @@ Test strategy:
 
 """
 
-import pytest
 import numpy as np
+import pytest
+
 from fragile import convergence_bounds as cb
 
 
@@ -242,7 +243,7 @@ class TestGeometricGasBounds:
         delta_sq = 0.01
 
         # Euclidean case
-        C_LSI_eucl = cb.C_LSI_euclidean(gamma, kappa_conf, kappa_W, delta_sq)
+        cb.C_LSI_euclidean(gamma, kappa_conf, kappa_W, delta_sq)
 
         # Geometric case with anisotropy
         c_min_val = 0.1
@@ -579,7 +580,6 @@ class TestIntegration:
         # Parameters
         gamma = 1.0
         lambda_alg = 1.0
-        sigma_v = 0.1
         tau = 0.01
         lambda_min = 1.0
         delta_f_boundary = 0.5

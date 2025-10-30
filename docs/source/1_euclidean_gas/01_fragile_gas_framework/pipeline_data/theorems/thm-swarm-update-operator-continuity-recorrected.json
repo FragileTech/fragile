@@ -1,0 +1,39 @@
+{
+  "label": "thm-swarm-update-operator-continuity-recorrected",
+  "name": "Continuity of the Swarm Update Operator",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "section_name": null,
+    "directive_label": "thm-swarm-update-operator-continuity-recorrected",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-swarm-update-operator-continuity-recorrected"
+  },
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm-update-procedure",
+    "obj-composite-continuity-coeffs-recorrected"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

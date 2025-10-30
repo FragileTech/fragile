@@ -4,5 +4,11 @@
   "mathematical_expression": "\\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal Y}\\!\\big(\\varphi(x_{1,i}),\\varphi(x_{2,i})\\big)^2\\;\\le\\; r_{\\mathrm{pos}},",
   "foundational_framework": "Euclidean Gas",
   "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "document": "01_fragile_gas_framework",
+  "name": null,
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": null
 }

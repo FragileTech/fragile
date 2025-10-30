@@ -1,0 +1,15 @@
+{
+  "label": "rel-perturbation-operator-probabilistic-continuity-other",
+  "relationship_type": "other",
+  "bidirectional": false,
+  "source_object": "obj-perturbation-operator",
+  "target_object": "obj-n-particle-displacement-metric",
+  "established_by": "thm-perturbation-operator-continuity",
+  "expression": "Perturbation operator is probabilistically continuous in N-particle displacement metric",
+  "attributes": [],
+  "tags": [],
+  "timestamp": null,
+  "source": null,
+  "chapter": null,
+  "document": null
+}

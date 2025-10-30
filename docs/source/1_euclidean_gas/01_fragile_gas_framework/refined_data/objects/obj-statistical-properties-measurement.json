@@ -1,0 +1,32 @@
+{
+  "label": "obj-statistical-properties-measurement",
+  "name": "Statistical Properties Measurement",
+  "mathematical_expression": "\\sigma'_{\\text{reg}}(V) := \\sqrt{V + \\sigma'^2_{\\min}}",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "aggregation",
+    "measure-theory",
+    "measurement",
+    "operator",
+    "particle-system",
+    "properties",
+    "statistical"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-statistical-properties-measurement",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "11.1.2",
+    "line_range": [
+      2789,
+      2820
+    ],
+    "directive_label": "obj-statistical-properties-measurement",
+    "equation": null,
+    "url_fragment": null
+  }
+}

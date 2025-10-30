@@ -1,0 +1,51 @@
+{
+  "label": "thm-asymptotic-std-dev-structural-continuity",
+  "name": "Asymptotic Behavior of the Structural Continuity for the Regularized Standard Deviation",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "12",
+    "directive_label": "thm-asymptotic-std-dev-structural-continuity",
+    "equation": null,
+    "line_range": [
+      2971,
+      3023
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-statistical-properties-measurement",
+    "obj-standardization-lower-bound"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-swarm-size",
+    "param-value-max",
+    "param-std-regularization"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lem-stats-structural-continuity"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "This theorem establishes the asymptotic behavior of the structural continuity for the regularized standard deviation. It shows that for a large swarm, the rate at which the standard deviation changes with structural perturbations is governed by the worst-case (i.e., largest) structural growth exponent of the swarm aggregation operator's mean and second moment. Essentially, the less stable of the two moments dictates the overall stability of the standard deviation.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [
+    "def-swarm-aggregation-operator-axiomatic",
+    "def-statistical-properties-measurement"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

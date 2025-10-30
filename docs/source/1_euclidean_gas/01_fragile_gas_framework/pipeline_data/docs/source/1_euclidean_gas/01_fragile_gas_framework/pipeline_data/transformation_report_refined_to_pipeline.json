@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-01-28",
+  "source_directory": "docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data",
+  "target_directory": "docs/source/1_euclidean_gas/01_fragile_gas_framework/pipeline_data",
+  "statistics": {
+    "total_files": 0,
+    "converted": 0,
+    "failed": 0,
+    "skipped": 0
+  },
+  "entity_counts": {
+    "axioms": 0,
+    "objects": 0,
+    "theorems": 0,
+    "parameters": 0
+  }
+}

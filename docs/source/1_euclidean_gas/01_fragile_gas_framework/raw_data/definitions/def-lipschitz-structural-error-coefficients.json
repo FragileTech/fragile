@@ -1,0 +1,31 @@
+{
+  "label": "def-lipschitz-structural-error-coefficients",
+  "name": "Structural Error Coefficients",
+  "type": "definition",
+  "content": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with alive sets $\\mathcal{A}_1$ and $\\mathcal{A}_2$, of sizes $k_1:=|\\mathcal{A}_1|$ and $k_2:=|\\mathcal{A}_2|$. Let $k_{\\text{stable}}:=|\\mathcal{A}_1\\cap\\mathcal{A}_2|$. Let\n\n$$\n\\sigma'_{\\min,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}\n$$\n\nbe a uniform lower bound on the regularized standard deviation. The coefficients for the structural error bounds are defined as follows:\n\n1. **The Direct Structural Error Coefficient ($C_{S,\\text{direct}}$):** The coefficient of the term linear in $n_c$.\n\n$$\nC_{S,\\text{direct}} := \\left( \\frac{2V_{\\max}}{\\sigma'_{\\min,\\text{bound}}} \\right)^2\n$$\n\n2. **The Indirect Structural Error Coefficient ($C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2)$):** The coefficient of the term quadratic in $n_c$. This coefficient bounds the error for the stable walkers.\n\n$$\nC_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) := 2 k_{\\text{stable}} \\frac{(L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2))^2}{\\sigma'^{2}_{\\min,\\text{bound}}} + 2 k_1 \\left(\\frac{2V_{\\max}}{\\sigma'_{\\min,\\text{bound}}}\\right)^2 \\frac{(L_{\\sigma',S}(\\mathcal{S}_1, \\mathcal{S}_2))^2}{\\sigma'^{2}_{\\min,\\text{bound}}}\n$$\n\nwhere $L_{\\mu,S}$ and $L_{\\sigma',S}$ are the structural continuity functions for the aggregator's mean and regularized standard deviation, as defined in lem-stats-structural-continuity.",
+  "source_section": "12",
+  "source_document": "01_fragile_gas_framework.md",
+  "dependencies": [
+    "lem-stats-structural-continuity",
+    "def-statistical-properties-measurement"
+  ],
+  "tags": [
+    "error-analysis",
+    "coefficients",
+    "continuity",
+    "structural-error"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "12",
+    "section_name": null,
+    "directive_label": "def-lipschitz-structural-error-coefficients",
+    "equation": null,
+    "line_range": [
+      3628,
+      3652
+    ],
+    "url_fragment": "#def-lipschitz-structural-error-coefficients"
+  }
+}

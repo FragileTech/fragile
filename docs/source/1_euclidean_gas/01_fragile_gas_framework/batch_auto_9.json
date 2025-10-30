@@ -1,0 +1,1012 @@
+{
+  "raw_data/objects/obj-standardization-total-value-error-coefficient.json": {
+    "label": "obj-standardization-total-value-error-coefficient",
+    "name": "Total Value Error Coefficient for Standardization",
+    "mathematical_expression": "Total coefficient controlling mean-square value error in standardization operator under canonical empirical aggregator with regularized standard deviation.",
+    "object_type": "structure",
+    "current_attributes": [],
+    "attribute_history": [],
+    "tags": [],
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "definition_label": "def-standardization-total-value-error-coefficient"
+  },
+  "raw_data/objects/obj-status-update-operator.json": {
+    "label": "obj-status-update-operator",
+    "name": "Status Update Operator",
+    "mathematical_expression": "Mathematical object: Status Update Operator",
+    "object_type": "operator",
+    "current_attributes": [],
+    "attribute_history": [],
+    "tags": [
+      "operator",
+      "status-update",
+      "deterministic",
+      "swarm-dynamics"
+    ],
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "definition_label": "def-status-update-operator"
+  },
+  "raw_data/objects/obj-stochastic-fluctuation-bound.json": {
+    "label": "obj-stochastic-fluctuation-bound",
+    "name": "Stochastic Fluctuation Bound",
+    "mathematical_expression": "A high-probability bound on the deviation of the total squared displacement from its mean, derived from McDiarmid's inequality.",
+    "object_type": "structure",
+    "current_attributes": [],
+    "attribute_history": [],
+    "tags": [
+      "bound",
+      "perturbation",
+      "concentration",
+      "fluctuation"
+    ],
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "definition_label": "def-stochastic-fluctuation-bound"
+  },
+  "raw_data/objects/obj-swarm-potential-assembly-operator.json": {
+    "label": "obj-swarm-potential-assembly-operator",
+    "name": "Swarm Potential Assembly Operator",
+    "mathematical_expression": "The **Swarm Potential Assembly Operator**, denoted $A_{\\text{pot}}$, is a deterministic function that maps the potential vector of the alive set to the full N-dimensional fitness potential vector for the entire swarm.",
+    "object_type": "operator",
+    "current_attributes": [],
+    "attribute_history": [],
+    "tags": [
+      "fitness-potential",
+      "operator",
+      "assembly",
+      "swarm"
+    ],
+    "source": {
+      "document": "01_fragile_gas_framework.md",
+      "section": "13. Fitness potential operator",
+      "document_id": "01_fragile_gas_framework",
+      "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md"
+    },
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "definition_label": "def-swarm-potential-assembly-operator"
+  },
+  "raw_data/object_fix_report.json": {
+    "total_files": 39,
+    "valid_objects": 39,
+    "fixed_objects": 24,
+    "invalid_objects": 0,
+    "objects": [
+      {
+        "file": "obj-aggregator-lipschitz-constants.json",
+        "label": "obj-aggregator-lipschitz-constants",
+        "name": "Empirical Aggregator Lipschitz Constants",
+        "object_type": "structure",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-alg-distance.json",
+        "label": "obj-alg-distance",
+        "name": "Algorithmic Distance",
+        "object_type": "function",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-algorithmic-cemetery-extension.json",
+        "label": "obj-algorithmic-cemetery-extension",
+        "name": "Algorithmic Space with Cemetery Point",
+        "object_type": "space",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-algorithmic-space-generic.json",
+        "label": "obj-algorithmic-space-generic",
+        "name": "Algorithmic Space",
+        "object_type": "space",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-alive-set-potential-operator.json",
+        "label": "obj-alive-set-potential-operator",
+        "name": "Rescaled Potential Operator for the Alive Set",
+        "object_type": "operator",
+        "corrections": [
+          "Converted definition label to object label: obj-alive-set-potential-operator",
+          "Constructed mathematical_expression from other fields",
+          "Inferred object_type: operator",
+          "Added missing document_id: 01_fragile_gas_framework",
+          "Added missing file_path: docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+          "Removed invalid field: subsection"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-asymmetric-rescale-function.json",
+        "label": "obj-asymmetric-rescale-function",
+        "name": "Smooth Piecewise Rescale Function",
+        "object_type": "function",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-boundary-regularity-constants.json",
+        "label": "obj-boundary-regularity-constants",
+        "name": "Boundary Regularity Constants",
+        "object_type": "structure",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-canonical-fragile-swarm.json",
+        "label": "obj-canonical-fragile-swarm",
+        "name": "Canonical Fragile Swarm",
+        "object_type": "set",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "Inferred object_type: set"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-canonical-logistic-rescale-function.json",
+        "label": "obj-canonical-logistic-rescale-function",
+        "name": "Canonical Logistic Rescale Function",
+        "object_type": "function",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-cemetery-state-measure.json",
+        "label": "obj-cemetery-state-measure",
+        "name": "Cemetery State Measure",
+        "object_type": "measure",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-cloning-measure.json",
+        "label": "obj-cloning-measure",
+        "name": "Cloning Measure",
+        "object_type": "measure",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-cloning-probability-lipschitz-constants.json",
+        "label": "obj-cloning-probability-lipschitz-constants",
+        "name": "Cloning Probability Lipschitz Constants",
+        "object_type": "structure",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-companion-selection-measure.json",
+        "label": "obj-companion-selection-measure",
+        "name": "Companion Selection Measure",
+        "object_type": "measure",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-continuity-constants-table.json",
+        "label": "obj-continuity-constants-table",
+        "name": "Continuity Constants Table",
+        "object_type": "structure",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-cubic-patch-polynomial.json",
+        "label": "obj-cubic-patch-polynomial",
+        "name": "Cubic Polynomial Patch",
+        "object_type": "function",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-distance-measurement-ms-constants.json",
+        "label": "obj-distance-measurement-ms-constants",
+        "name": "Distance Measurement Mean-Square Constants",
+        "object_type": "structure",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-distance-positional-measures.json",
+        "label": "obj-distance-positional-measures",
+        "name": "Distance Between Positional Measures",
+        "object_type": "function",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-distance-to-cemetery-state.json",
+        "label": "obj-distance-to-cemetery-state",
+        "name": "Distance to Cemetery State",
+        "object_type": "function",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-expected-distance-error-coefficients.json",
+        "label": "obj-expected-distance-error-coefficients",
+        "name": "Expected Distance Error Coefficients",
+        "object_type": "structure",
+        "corrections": [
+          "Generated label from filename: obj-expected-distance-error-coefficients",
+          "Constructed mathematical_expression from other fields"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-fragile-gas-algorithm.json",
+        "label": "obj-fragile-gas-algorithm",
+        "name": "Fragile Gas Algorithm",
+        "object_type": "set",
+        "corrections": [
+          "Converted definition label to object label: obj-fragile-gas-algorithm",
+          "Used 'term' field as name",
+          "Constructed mathematical_expression from other fields",
+          "Converted string source to SourceLocation structure"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-fragile-swarm-instantiation.json",
+        "label": "obj-fragile-swarm-instantiation",
+        "name": "Fragile Swarm Instantiation",
+        "object_type": "set",
+        "corrections": [
+          "Converted definition label to object label: obj-fragile-swarm-instantiation",
+          "Used 'term' field as name",
+          "Constructed mathematical_expression from other fields",
+          "Converted string source to SourceLocation structure"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-mean-displacement-bound.json",
+        "label": "obj-mean-displacement-bound",
+        "name": "Mean Displacement Bound",
+        "object_type": "structure",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "Inferred object_type: structure"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-one-step-ms-continuity-coefficients.json",
+        "label": "obj-one-step-ms-continuity-coefficients",
+        "name": "One-Step Mean-Square Continuity Coefficients",
+        "object_type": "structure",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-perturbation-constants.json",
+        "label": "obj-perturbation-constants",
+        "name": "Perturbation Stage Constants",
+        "object_type": "structure",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-perturbation-measure.json",
+        "label": "obj-perturbation-measure",
+        "name": "Perturbation Measure",
+        "object_type": "measure",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-potential-bounds.json",
+        "label": "obj-potential-bounds",
+        "name": "Fitness Potential Bounds",
+        "object_type": "structure",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-raw-value-operator.json",
+        "label": "obj-raw-value-operator",
+        "name": "Raw Value Operator",
+        "object_type": "operator",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-rescale-lipschitz-constants.json",
+        "label": "obj-rescale-lipschitz-constants",
+        "name": "Rescale Function Lipschitz Constants",
+        "object_type": "structure",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-revival-score-ratio.json",
+        "label": "obj-revival-score-ratio",
+        "name": "Revival Score Ratio",
+        "object_type": "set",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "Inferred object_type: set",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-revival-state.json",
+        "label": "obj-revival-state",
+        "name": "Revival State",
+        "object_type": "set",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "Inferred object_type: set",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-reward-measurement.json",
+        "label": "obj-reward-measurement",
+        "name": "Reward Measurement",
+        "object_type": "measure",
+        "corrections": [
+          "Added missing document_id: 01_fragile_gas_framework",
+          "Converted line_number to line_range",
+          "Removed invalid field: subsection"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-smoothed-gaussian-measure.json",
+        "label": "obj-smoothed-gaussian-measure",
+        "name": "Smoothed Gaussian Measure",
+        "object_type": "measure",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-standardization-lower-bound.json",
+        "label": "obj-standardization-lower-bound",
+        "name": "Standardization Standard Deviation Lower Bound",
+        "object_type": "structure",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-standardization-total-value-error-coefficient.json",
+        "label": "obj-standardization-total-value-error-coefficient",
+        "name": "Total Value Error Coefficient for Standardization",
+        "object_type": "structure",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-status-update-operator.json",
+        "label": "obj-status-update-operator",
+        "name": "Status Update Operator",
+        "object_type": "operator",
+        "corrections": [
+          "Converted definition label to object label: obj-status-update-operator",
+          "Constructed mathematical_expression from other fields",
+          "Inferred object_type: operator"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-stochastic-fluctuation-bound.json",
+        "label": "obj-stochastic-fluctuation-bound",
+        "name": "Stochastic Fluctuation Bound",
+        "object_type": "structure",
+        "corrections": [
+          "Constructed mathematical_expression from other fields",
+          "Inferred object_type: structure"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-swarm-aggregation-operator-axiomatic.json",
+        "label": "obj-swarm-aggregation-operator-axiomatic",
+        "name": "Swarm Aggregation Operator",
+        "object_type": "operator",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-swarm-potential-assembly-operator.json",
+        "label": "obj-swarm-potential-assembly-operator",
+        "name": "Swarm Potential Assembly Operator",
+        "object_type": "operator",
+        "corrections": [
+          "Converted definition label to object label: obj-swarm-potential-assembly-operator",
+          "Constructed mathematical_expression from other fields",
+          "Inferred object_type: operator",
+          "Added missing document_id: 01_fragile_gas_framework",
+          "Added missing file_path: docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+          "Removed invalid field: subsection"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "raw-obj-001.json",
+        "label": "obj-raw-obj-001",
+        "name": "Swarm Update Operator",
+        "object_type": "operator",
+        "corrections": [
+          "Generated label from filename: obj-raw-obj-001",
+          "Constructed mathematical_expression from other fields",
+          "Inferred object_type: operator",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      }
+    ]
+  },
+  "raw_data/object_refinement_report.json": {
+    "total_files": 39,
+    "valid_objects": 34,
+    "invalid_objects": 5,
+    "corrected_objects": 23,
+    "objects": [
+      {
+        "file": "obj-aggregator-lipschitz-constants.json",
+        "label": "obj-aggregator-lipschitz-constants",
+        "name": "Empirical Aggregator Lipschitz Constants",
+        "object_type": "operator",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-alg-distance.json",
+        "label": "obj-alg-distance",
+        "name": "Algorithmic Distance",
+        "object_type": "function",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-algorithmic-cemetery-extension.json",
+        "label": "obj-algorithmic-cemetery-extension",
+        "name": "Algorithmic Space with Cemetery Point",
+        "object_type": "space",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-algorithmic-space-generic.json",
+        "label": "obj-algorithmic-space-generic",
+        "name": "Algorithmic Space",
+        "object_type": "space",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-alive-set-potential-operator.json",
+        "label": "obj-alive-set-potential-operator",
+        "name": "Rescaled Potential Operator for the Alive Set",
+        "object_type": "operator",
+        "corrections": [
+          "Converted definition label to object label: obj-alive-set-potential-operator",
+          "ERROR: Missing mathematical_expression",
+          "Inferred object_type: operator"
+        ],
+        "validation_errors": [
+          "  - source.document_id: Field required",
+          "  - source.file_path: Field required"
+        ],
+        "status": "invalid"
+      },
+      {
+        "file": "obj-asymmetric-rescale-function.json",
+        "label": "obj-asymmetric-rescale-function",
+        "name": "Smooth Piecewise Rescale Function",
+        "object_type": "function",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-boundary-regularity-constants.json",
+        "label": "obj-boundary-regularity-constants",
+        "name": "Boundary Regularity Constants",
+        "object_type": "structure",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-canonical-fragile-swarm.json",
+        "label": "obj-canonical-fragile-swarm",
+        "name": "Canonical Fragile Swarm",
+        "object_type": "set",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "Inferred object_type: set"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-canonical-logistic-rescale-function.json",
+        "label": "obj-canonical-logistic-rescale-function",
+        "name": "Canonical Logistic Rescale Function",
+        "object_type": "function",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-cemetery-state-measure.json",
+        "label": "obj-cemetery-state-measure",
+        "name": "Cemetery State Measure",
+        "object_type": "measure",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-cloning-measure.json",
+        "label": "obj-cloning-measure",
+        "name": "Cloning Measure",
+        "object_type": "measure",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-cloning-probability-lipschitz-constants.json",
+        "label": "obj-cloning-probability-lipschitz-constants",
+        "name": "Cloning Probability Lipschitz Constants",
+        "object_type": "measure",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-companion-selection-measure.json",
+        "label": "obj-companion-selection-measure",
+        "name": "Companion Selection Measure",
+        "object_type": "measure",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-continuity-constants-table.json",
+        "label": "obj-continuity-constants-table",
+        "name": "Continuity Constants Table",
+        "object_type": "structure",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-cubic-patch-polynomial.json",
+        "label": "obj-cubic-patch-polynomial",
+        "name": "Cubic Polynomial Patch",
+        "object_type": "function",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-distance-measurement-ms-constants.json",
+        "label": "obj-distance-measurement-ms-constants",
+        "name": "Distance Measurement Mean-Square Constants",
+        "object_type": "measure",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-distance-positional-measures.json",
+        "label": "obj-distance-positional-measures",
+        "name": "Distance Between Positional Measures",
+        "object_type": "function",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-distance-to-cemetery-state.json",
+        "label": "obj-distance-to-cemetery-state",
+        "name": "Distance to Cemetery State",
+        "object_type": "function",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-expected-distance-error-coefficients.json",
+        "label": "obj-expected-distance-error-coefficients",
+        "name": "Expected Distance Error Coefficients",
+        "object_type": "structure",
+        "corrections": [
+          "Generated label from filename: obj-expected-distance-error-coefficients",
+          "ERROR: Missing mathematical_expression"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-fragile-gas-algorithm.json",
+        "label": "obj-fragile-gas-algorithm",
+        "name": "Fragile Gas Algorithm",
+        "object_type": "set",
+        "corrections": [
+          "Converted definition label to object label: obj-fragile-gas-algorithm",
+          "Used 'term' field as name",
+          "Used 'formal_statement' as mathematical_expression"
+        ],
+        "validation_errors": [
+          "  - source: Input should be a valid dictionary or instance of SourceLocation"
+        ],
+        "status": "invalid"
+      },
+      {
+        "file": "obj-fragile-swarm-instantiation.json",
+        "label": "obj-fragile-swarm-instantiation",
+        "name": "Fragile Swarm Instantiation",
+        "object_type": "set",
+        "corrections": [
+          "Converted definition label to object label: obj-fragile-swarm-instantiation",
+          "Used 'term' field as name",
+          "Used 'formal_statement' as mathematical_expression"
+        ],
+        "validation_errors": [
+          "  - source: Input should be a valid dictionary or instance of SourceLocation"
+        ],
+        "status": "invalid"
+      },
+      {
+        "file": "obj-mean-displacement-bound.json",
+        "label": "obj-mean-displacement-bound",
+        "name": "Mean Displacement Bound",
+        "object_type": "structure",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "Inferred object_type: structure"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-one-step-ms-continuity-coefficients.json",
+        "label": "obj-one-step-ms-continuity-coefficients",
+        "name": "One-Step Mean-Square Continuity Coefficients",
+        "object_type": "structure",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-perturbation-constants.json",
+        "label": "obj-perturbation-constants",
+        "name": "Perturbation Stage Constants",
+        "object_type": "structure",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-perturbation-measure.json",
+        "label": "obj-perturbation-measure",
+        "name": "Perturbation Measure",
+        "object_type": "measure",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-potential-bounds.json",
+        "label": "obj-potential-bounds",
+        "name": "Fitness Potential Bounds",
+        "object_type": "structure",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-raw-value-operator.json",
+        "label": "obj-raw-value-operator",
+        "name": "Raw Value Operator",
+        "object_type": "operator",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-rescale-lipschitz-constants.json",
+        "label": "obj-rescale-lipschitz-constants",
+        "name": "Rescale Function Lipschitz Constants",
+        "object_type": "function",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-revival-score-ratio.json",
+        "label": "obj-revival-score-ratio",
+        "name": "Revival Score Ratio",
+        "object_type": "set",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "Inferred object_type: set",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-revival-state.json",
+        "label": "obj-revival-state",
+        "name": "Revival State",
+        "object_type": "set",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "Inferred object_type: set",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-reward-measurement.json",
+        "label": "obj-reward-measurement",
+        "name": "Reward Measurement",
+        "object_type": "measure",
+        "corrections": [],
+        "validation_errors": [
+          "  - source.document_id: Field required"
+        ],
+        "status": "invalid"
+      },
+      {
+        "file": "obj-smoothed-gaussian-measure.json",
+        "label": "obj-smoothed-gaussian-measure",
+        "name": "Smoothed Gaussian Measure",
+        "object_type": "measure",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-standardization-lower-bound.json",
+        "label": "obj-standardization-lower-bound",
+        "name": "Standardization Standard Deviation Lower Bound",
+        "object_type": "structure",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-standardization-total-value-error-coefficient.json",
+        "label": "obj-standardization-total-value-error-coefficient",
+        "name": "Total Value Error Coefficient for Standardization",
+        "object_type": "structure",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-status-update-operator.json",
+        "label": "obj-status-update-operator",
+        "name": "Status Update Operator",
+        "object_type": "operator",
+        "corrections": [
+          "Converted definition label to object label: obj-status-update-operator",
+          "ERROR: Missing mathematical_expression",
+          "Inferred object_type: operator"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-stochastic-fluctuation-bound.json",
+        "label": "obj-stochastic-fluctuation-bound",
+        "name": "Stochastic Fluctuation Bound",
+        "object_type": "structure",
+        "corrections": [
+          "ERROR: Missing mathematical_expression",
+          "Inferred object_type: structure"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-swarm-aggregation-operator-axiomatic.json",
+        "label": "obj-swarm-aggregation-operator-axiomatic",
+        "name": "Swarm Aggregation Operator",
+        "object_type": "operator",
+        "corrections": [],
+        "validation_errors": [],
+        "status": "valid"
+      },
+      {
+        "file": "obj-swarm-potential-assembly-operator.json",
+        "label": "obj-swarm-potential-assembly-operator",
+        "name": "Swarm Potential Assembly Operator",
+        "object_type": "operator",
+        "corrections": [
+          "Converted definition label to object label: obj-swarm-potential-assembly-operator",
+          "ERROR: Missing mathematical_expression",
+          "Inferred object_type: operator"
+        ],
+        "validation_errors": [
+          "  - source.document_id: Field required",
+          "  - source.file_path: Field required"
+        ],
+        "status": "invalid"
+      },
+      {
+        "file": "raw-obj-001.json",
+        "label": "obj-raw-obj-001",
+        "name": "Swarm Update Operator",
+        "object_type": "operator",
+        "corrections": [
+          "Generated label from filename: obj-raw-obj-001",
+          "Used 'description' as mathematical_expression",
+          "Inferred object_type: operator",
+          "No tags found, using empty list"
+        ],
+        "validation_errors": [],
+        "status": "valid"
+      }
+    ]
+  },
+  "raw_data/parameters/param-epsilon-std.json": {
+    "label": "param-epsilon-std",
+    "name": "Standardization Error Parameter",
+    "symbol": "\\varepsilon_{\\text{std}}",
+    "parameter_type": "real",
+    "constraints": "\\varepsilon_{\\text{std}} \\ge 0",
+    "default_value": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework"
+  },
+  "raw_data/parameters/param-f-v-ms.json": {
+    "label": "param-f-v-ms",
+    "name": "Expected Squared Value Error Bound",
+    "symbol": "F_{V,ms}",
+    "parameter_type": "symbolic",
+    "constraints": "F_{V,ms}: \\Sigma_N \\times \\Sigma_N \\to \\mathbb{R}_+, must satisfy \\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+    "default_value": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework"
+  },
+  "raw_data/parameters/param-kappa-revival.json": {
+    "label": "param-kappa-revival",
+    "name": "Revival Guarantee Parameter",
+    "symbol": "\\kappa_{\\text{revival}}",
+    "parameter_type": "real",
+    "constraints": "\\kappa_{\\text{revival}} > 0",
+    "default_value": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework"
+  },
+  "raw_data/parameters/param-kappa-variance.json": {
+    "label": "param-kappa-variance",
+    "name": "Maximum Measurement Variance",
+    "symbol": "\\kappa^2_{\\text{variance}}",
+    "parameter_type": "real",
+    "constraints": "\\kappa^2_{\\text{variance}} \\ge 0",
+    "default_value": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework"
+  }
+}

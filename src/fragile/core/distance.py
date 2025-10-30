@@ -100,9 +100,7 @@ def compute_periodic_distance_matrix(
     dx_wrapped = dx - L * torch.round(dx / L)
 
     # Compute Euclidean distance from wrapped displacement
-    distances = torch.norm(dx_wrapped, dim=-1, p=2)
-
-    return distances
+    return torch.norm(dx_wrapped, dim=-1, p=2)
 
 
 def compute_periodic_distance_pairwise(

@@ -1,0 +1,32 @@
+{
+  "label": "obj-algorithmic-cemetery-extension",
+  "name": "Algorithmic Cemetery Extension",
+  "mathematical_expression": "\\mathcal{Y}^{\\dagger}:=\\mathcal{Y}\\cup\\{\\dagger\\}",
+  "object_type": "space",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "algorithmic",
+    "cemetery",
+    "extension",
+    "metric",
+    "wasserstein",
+    "particle-system",
+    "absorption"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-algorithmic-cemetery-extension",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "6.4",
+    "line_range": [
+      2109,
+      2118
+    ],
+    "directive_label": "obj-algorithmic-cemetery-extension",
+    "equation": null,
+    "url_fragment": null
+  }
+}

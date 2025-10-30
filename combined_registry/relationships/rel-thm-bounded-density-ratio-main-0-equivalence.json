@@ -6,12 +6,20 @@
   "target_object": "obj-cloning-operator",
   "established_by": "thm-bounded-density-ratio-main",
   "expression": "M = C_hypo(M_0, T_0, …)/(c_σ_x,R c_mass) with T_0 = O(κ_QSD^{-1})",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+  "source": {
+    "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+    "section": null,
+    "directive_label": "thm-bounded-density-ratio-main",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-bounded-density-ratio-main"
+  },
+  "chapter": null,
+  "document": null
 }

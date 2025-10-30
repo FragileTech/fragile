@@ -1,0 +1,8 @@
+{
+  "label": "cor-chain-rule-sigma-reg-var",
+  "name": "Chain-rule bound for \u03c3'_reg \u2218 Var",
+  "statement_type": "corollary",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "output_type": "Bound"
+}

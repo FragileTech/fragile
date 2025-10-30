@@ -2,9 +2,17 @@
   "label": "lem-sx-implies-variance",
   "name": "Structural Positional Error and Internal Variance",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning",
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "lem-sx-implies-variance",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-sx-implies-variance"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -15,7 +23,7 @@
   "input_parameters": [
     "R_spread"
   ],
-  "properties_required": {},
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [
@@ -25,7 +33,7 @@
     ]
   ],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-lem-sx-implies-variance-0-approximation",
@@ -35,14 +43,29 @@
       "target_object": "obj-barycentres-and-centered-vectors",
       "established_by": "lem-sx-implies-variance",
       "expression": "V_x,struct <= 2(Var_1(x) + Var_2(x))",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "03_cloning"
+      "source": {
+        "document_id": "03_cloning",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+        "section": null,
+        "directive_label": "lem-sx-implies-variance",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-sx-implies-variance"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

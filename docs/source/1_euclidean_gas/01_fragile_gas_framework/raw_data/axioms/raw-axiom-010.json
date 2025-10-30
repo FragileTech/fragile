@@ -1,0 +1,20 @@
+{
+  "temp_id": "raw-axiom-010",
+  "label_text": "def-axiom-sufficient-amplification",
+  "axiom_name": "Sufficient Amplification",
+  "statement": "*   **Core Assumption:** The dynamics weights must be configured to actively process measurement signals.\n*   **Axiomatic Parameter ($\\kappa_{\\text{amplification}}$ - The Amplification Strength):** The user must provide the dynamics weights $\\alpha$ and $\\beta$, from which the amplification strength is defined as:\n\n\n\n$$\n\\kappa_{\\text{amplification}} := \\alpha + \\beta\n$$\n\n*   **Condition:** The user must ensure **$\\kappa_{\\text{amplification}}$ > 0**.\n*   **Failure Mode Analysis:** If **$\\kappa_{",
+  "source_section": "§3",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "3",
+    "section_name": null,
+    "directive_label": "def-axiom-sufficient-amplification",
+    "equation": null,
+    "line_range": [
+      840,
+      854
+    ],
+    "url_fragment": "#def-axiom-sufficient-amplification"
+  }
+}

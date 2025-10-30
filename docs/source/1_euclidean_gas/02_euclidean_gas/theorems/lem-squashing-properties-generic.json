@@ -2,74 +2,26 @@
   "label": "lem-squashing-properties-generic",
   "name": "Properties of smooth radial squashing maps",
   "statement_type": "lemma",
-  "source": {
-    "document_id": "02_euclidean_gas",
-    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-    "section": "§3.3",
-    "line_range": [420, 445]
-  },
-  "input_objects": [
-    "obj-euclidean-space"
-  ],
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
   "input_axioms": [],
-  "input_parameters": [
-    "param-dimension",
-    "param-generic-positive-constant"
-  ],
+  "input_parameters": [],
   "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "attributes_added": [
-    {
-      "label": "attr-lipschitz",
-      "expression": "\\psi_C is 1-Lipschitz on \\mathbb{R}^d, i.e., \\|\\psi_C(z) - \\psi_C(z')\\| \\le \\|z - z'\\| for all z, z' \\in \\mathbb{R}^d",
-      "object_label": "obj-squashing-map",
-      "established_by": "lem-squashing-properties-generic",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "§3.3",
-        "directive_label": "lem-squashing-properties-generic",
-        "line_range": [425, 425]
-      }
-    },
-    {
-      "label": "attr-smooth",
-      "expression": "\\psi_C \\in C^{\\infty}(\\mathbb{R}^d \\setminus \\{0\\}), i.e., C^\\infty away from the origin",
-      "object_label": "obj-squashing-map",
-      "established_by": "lem-squashing-properties-generic",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "§3.3",
-        "directive_label": "lem-squashing-properties-generic",
-        "line_range": [426, 426]
-      }
-    },
-    {
-      "label": "attr-bounded-image",
-      "expression": "\\psi_C(\\mathbb{R}^d) \\subset B(0,C), i.e., the image is contained in the open ball of radius C",
-      "object_label": "obj-squashing-map",
-      "established_by": "lem-squashing-properties-generic",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "§3.3",
-        "directive_label": "lem-squashing-properties-generic",
-        "line_range": [427, 427]
-      }
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

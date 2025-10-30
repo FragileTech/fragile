@@ -9,8 +9,8 @@ Agent: Math Verifier v1.0
 This module validates the quadratic identity used in expected distance change calculation.
 """
 
-import sympy
-from sympy import symbols, expand, simplify
+from sympy import expand, simplify, symbols
+
 
 def test_quadratic_identity_distance_change():
     """
@@ -20,14 +20,14 @@ def test_quadratic_identity_distance_change():
     # 1. Symbol Definitions
     # Use scalar components for a concrete verification
     # For vectors in R^d, we use component notation
-    a1, a2, a3 = symbols('a1 a2 a3', real=True)
-    b1, b2, b3 = symbols('b1 b2 b3', real=True)
-    c1, c2, c3 = symbols('c1 c2 c3', real=True)
+    a1, a2, a3 = symbols("a1 a2 a3", real=True)
+    b1, b2, b3 = symbols("b1 b2 b3", real=True)
+    c1, c2, c3 = symbols("c1 c2 c3", real=True)
 
     # Define squared norm and inner product using components
     def squared_norm_3d(v1, v2, v3, u1, u2, u3):
         """Compute ||v - u||^2"""
-        return (v1 - u1)**2 + (v2 - u2)**2 + (v3 - u3)**2
+        return (v1 - u1) ** 2 + (v2 - u2) ** 2 + (v3 - u3) ** 2
 
     def inner_product_3d(v1, v2, v3, u1, u2, u3):
         """Compute ⟨v, u⟩"""
@@ -42,8 +42,12 @@ def test_quadratic_identity_distance_change():
 
     # Then compute ⟨a-b, b-c⟩
     inner_ab_bc = inner_product_3d(
-        a1 - b1, a2 - b2, a3 - b3,  # a - b
-        b1 - c1, b2 - c2, b3 - c3   # b - c
+        a1 - b1,
+        a2 - b2,
+        a3 - b3,  # a - b
+        b1 - c1,
+        b2 - c2,
+        b3 - c3,  # b - c
     )
 
     rhs = norm_ab_sq + 2 * inner_ab_bc
@@ -56,12 +60,14 @@ def test_quadratic_identity_distance_change():
     simplified_difference = simplify(difference)
 
     # 5. Assert the result
-    assert simplified_difference == 0, f"Verification failed! Difference is not zero: {simplified_difference}"
+    assert (
+        simplified_difference == 0
+    ), f"Verification failed! Difference is not zero: {simplified_difference}"
 
     print("✅ Algebraic identity verified successfully.")
-    print(f"   Source: docs/source/1_euclidean_gas/04_wasserstein_contraction.md, line 657")
-    print(f"   Identity: ||a-c||² - ||b-c||² = ||a-b||² + 2⟨a-b, b-c⟩")
-    print(f"   Verified in R³ (generalizes to arbitrary dimension)")
+    print("   Source: docs/source/1_euclidean_gas/04_wasserstein_contraction.md, line 657")
+    print("   Identity: ||a-c||² - ||b-c||² = ||a-b||² + 2⟨a-b, b-c⟩")
+    print("   Verified in R³ (generalizes to arbitrary dimension)")
     print(f"   Simplified difference: {simplified_difference} (equals 0 ✓)")
 
 
@@ -85,11 +91,12 @@ def run_all_validations():
             print(f"✗ {test.__name__} ERROR: {e}")
             failed += 1
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"VALIDATION SUMMARY: {passed} passed, {failed} failed")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     return passed, failed
+
 
 if __name__ == "__main__":
     run_all_validations()

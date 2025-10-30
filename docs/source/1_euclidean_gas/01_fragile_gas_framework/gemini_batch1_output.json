@@ -1,0 +1,355 @@
+[
+  {
+    "source_file": "raw_data/axioms/axiom-def-axiom-rescale-function.json",
+    "output_file": "refined_data/axioms/axiom-well-behaved-rescale-function.json",
+    "refined_content": {
+      "label": "axiom-well-behaved-rescale-function",
+      "name": "Axiom of a Well-Behaved Rescale Function",
+      "entity_type": "axiom",
+      "statement_type": "AxiomBox",
+      "natural_language_statement": "Any function chosen for the rescale transformation must be C1 smooth, monotonically non-decreasing, uniformly bounded, and globally Lipschitz continuous.",
+      "description": "This axiom establishes the fundamental properties required for any rescale function used within the Fragile framework. These conditions are crucial for ensuring the stability and mathematical consistency of the fitness potential and cloning dynamics. The user of the framework is responsible for verifying that their chosen rescale function complies with these four conditions.",
+      "assumptions_hypotheses": [
+        {"property": "C1 Smoothness", "description": "The function $g_A(z)$ must be continuously differentiable on its entire domain $\\mathbb{R}$."},
+        {"property": "Monotonicity", "description": "The function must be monotonically non-decreasing, meaning its first derivative is non-negative for all inputs: $g'_A(z) \\ge 0 \\quad \\forall z \\in \\mathbb{R}$."},
+        {"property": "Uniform Boundedness", "description": "The function's range must be a bounded interval $(0, g_{A,\\max}]$ for some finite constant $g_{A,\\max} > 0$."},
+        {"property": "Global Lipschitz Continuity", "description": "The function must be globally Lipschitz continuous, which for a C1 function means its first derivative is uniformly bounded: $\\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty$."}
+      ],
+      "conclusion_main_result": null,
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "lemma_dag_edges": [],
+      "internal_lemmas": [],
+      "source_location": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": "9. Rescale Transformation",
+        "subsection": null,
+        "directive_label": "def-axiom-rescale-function"
+      },
+      "relations": [
+        {"formula": "g'_A(z) \\ge 0 \\quad \\forall z \\in \\mathbb{R}", "description": "Monotonicity condition: Ensures that a higher standardized score does not result in a lower fitness potential component."},
+        {"formula": "\\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty", "description": "Global Lipschitz continuity condition: Ensures that small changes in standardized scores are not pathologically amplified, which is critical for the continuity of the Fitness Potential Operator."}
+      ],
+      "proof_status": "n/a",
+      "raw_fallback": {}
+    },
+    "issues": ["Original label 'def-axiom-rescale-function' is invalid for an axiom. Corrected to 'axiom-well-behaved-rescale-function'."],
+    "status": "success"
+  },
+  {
+    "source_file": "raw_data/corollaries/cor-chain-rule-sigma-reg-var.json",
+    "output_file": "refined_data/theorems/cor-chain-rule-sigma-reg-var.json",
+    "refined_content": {
+      "label": "cor-chain-rule-sigma-reg-var",
+      "name": "Chain-rule bound for σ'_reg ∘ Var",
+      "entity_type": "corollary",
+      "statement_type": "TheoremBox",
+      "output_type": "Bound",
+      "natural_language_statement": "The composite map of the regularized sigma derivative and the variance functional (σ'_reg ∘ Var) is Lipschitz, and its Lipschitz constant is bounded by the product of the Lipschitz constant of σ'_reg and a term depending on the Lipschitz constants of the mean and second moment aggregators.",
+      "description": "This corollary provides a specific Lipschitz bound for the composite function σ'_reg ∘ Var, which is a component in the analysis of the overall fitness potential's continuity. It applies the chain rule for Lipschitz functions to combine bounds from previous lemmas.",
+      "assumptions_hypotheses": [
+        "The conditions of lem-lipschitz-variance-functional hold.",
+        "The conditions of lem-sigma-patch-derivative-bound hold.",
+        "Using the empirical aggregator from §6.2.2.a."
+      ],
+      "conclusion_main_result": "The composite map σ'_reg ∘ Var is Lipschitz with a constant $L_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}} \\le \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}$.",
+      "input_objects": [
+        "obj-rescale-lipschitz-constants",
+        "obj-potential-bounds",
+        "obj-aggregator-lipschitz-constants"
+      ],
+      "input_axioms": [],
+      "input_parameters": ["k", "V_max"],
+      "lemma_dag_edges": [
+        {"source": "cor-chain-rule-sigma-reg-var", "target": "lem-lipschitz-variance-functional"},
+        {"source": "cor-chain-rule-sigma-reg-var", "target": "lem-sigma-patch-derivative-bound"},
+        {"source": "cor-chain-rule-sigma-reg-var", "target": "lem-empirical-aggregator-properties"}
+      ],
+      "internal_lemmas": [],
+      "source_location": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": "9. Rescale Transformation",
+        "subsection": "8.2.2.10",
+        "directive_label": "cor-chain-rule-sigma-reg-var"
+      },
+      "relations": [
+        {"formula": "L_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}} \\le L_{\\sigma'_{\\text{reg}}} ( L_{m_2,M}+2 V_{\\max} L_{\\mu,M})", "description": "General chain-rule bound for the composite map's Lipschitz constant."},
+        {"formula": "L_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}} \\le \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}", "description": "Specific bound when using the empirical aggregator, where $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$."}
+      ],
+      "proof_status": "verified",
+      "raw_fallback": {}
+    },
+    "issues": [],
+    "status": "success"
+  },
+  {
+    "source_file": "raw_data/corollaries/cor-closed-form-lipschitz-composite.json",
+    "output_file": "refined_data/theorems/cor-closed-form-lipschitz-composite.json",
+    "refined_content": {
+      "label": "cor-closed-form-lipschitz-composite",
+      "name": "Closed-form bound for L_{g_A∘z} (empirical aggregator)",
+      "entity_type": "corollary",
+      "statement_type": "TheoremBox",
+      "output_type": "Bound",
+      "natural_language_statement": "For the empirical aggregator, the composite map for the standardized score, g_A ∘ z, is globally Lipschitz. Its Lipschitz constant has a closed-form bound that depends on the properties of the cubic patch, the regularized standardization, walker velocities, and the number of walkers.",
+      "description": "This corollary provides the final closed-form Lipschitz bound for the entire standardization and rescaling pipeline (g_A ∘ z) when using the empirical aggregator. This is a key result for proving the continuity of the fitness potential operator.",
+      "assumptions_hypotheses": [
+        "The number of active walkers is $k=|\\mathcal A(\\mathcal S)|$.",
+        "Walker velocities are bounded: $|v_i| \\le V_{\\max}$.",
+        "The empirical aggregator from §6.2.2.a is used.",
+        "The regularized standardization and piecewise rescale from §8.2.2 are used."
+      ],
+      "conclusion_main_result": "The composite map $g_A \\circ z$ is globally Lipschitz with constant $L_{g_A\\circ z} \\le \\max\\{\\,L_P,\\,1\\,\\} \\cdot \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}$.",
+      "input_objects": [
+        "obj-rescale-lipschitz-constants",
+        "obj-potential-bounds",
+        "obj-aggregator-lipschitz-constants",
+        "obj-cubic-patch-polynomial"
+      ],
+      "input_axioms": ["axiom-well-behaved-rescale-function"],
+      "input_parameters": ["k", "V_max", "L_P", "L_sigma'_reg"],
+      "lemma_dag_edges": [
+        { "source": "cor-closed-form-lipschitz-composite", "target": "cor-chain-rule-sigma-reg-var" },
+        { "source": "cor-closed-form-lipschitz-composite", "target": "thm-rescale-function-lipschitz" },
+        { "source": "cor-closed-form-lipschitz-composite", "target": "lem-empirical-aggregator-properties" }
+      ],
+      "internal_lemmas": [],
+      "source_location": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": "9. Rescale Transformation",
+        "subsection": "8.2.2.10",
+        "directive_label": "cor-closed-form-lipschitz-composite"
+      },
+      "relations": [
+        {"formula": "L_{g_A\\circ z} \\le \\max\\{\\,L_P,\\,1\\,\\} \\cdot \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}", "description": "Establishes a global Lipschitz bound for the composite map g_A ∘ z under the specified conditions."}
+      ],
+      "proof_status": "verified",
+      "raw_fallback": {}
+    },
+    "issues": [],
+    "status": "success"
+  },
+  {
+    "source_file": "raw_data/corollaries/cor-pipeline-continuity-margin-stability.json",
+    "output_file": "refined_data/theorems/cor-pipeline-continuity-margin-stability.json",
+    "refined_content": {
+      "label": "cor-pipeline-continuity-margin-stability",
+      "name": "Pipeline Continuity Under Margin-Based Status Stability",
+      "entity_type": "corollary",
+      "statement_type": "TheoremBox",
+      "output_type": "Continuity",
+      "natural_language_statement": "Assuming the Axiom of Margin-Based Status Stability, the deterministic component of the fitness potential operator's continuity bound converges to zero as the input swarms and velocity vectors converge.",
+      "description": "This corollary shows that the Axiom of Margin-Based Status Stability is a sufficient condition to ensure the continuity of the fitness potential operator. It does so by guaranteeing that for sufficiently small perturbations of the swarm, there are no status changes (e.g., a walker becoming a companion or vice-versa), which eliminates the primary source of discontinuity.",
+      "assumptions_hypotheses": [
+        "The Axiom of Margin-Based Status Stability (def-axiom-margin-stability) holds."
+      ],
+      "conclusion_main_result": "The deterministic bound $F_{\\text{pot,det}}$ from the Deterministic Continuity theorem converges to 0 as the input displacements go to 0. For small enough displacements ($d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2 \\le r_{\\mathrm{status}}$), the number of status changes $n_c=0$, and the unstable term in the continuity bound vanishes exactly.",
+      "input_objects": [
+        "obj-algorithmic-space-generic",
+        "def-swarm-potential-assembly-operator",
+        "def-status-update-operator",
+        "obj-alg-distance"
+      ],
+      "input_axioms": ["def-axiom-margin-stability"],
+      "input_parameters": ["r_status"],
+      "lemma_dag_edges": [
+        { "source": "cor-pipeline-continuity-margin-stability", "target": "thm-deterministic-potential-continuity" },
+        { "source": "cor-pipeline-continuity-margin-stability", "target": "def-axiom-margin-stability" }
+      ],
+      "internal_lemmas": [],
+      "source_location": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": "13. Fitness potential operator",
+        "subsection": "12.3.3 Corollary: Pipeline Continuity Under Margin-Based Status Stability",
+        "directive_label": "cor-pipeline-continuity-margin-stability"
+      },
+      "relations": [
+        {"formula": "F_{\\text{pot,det}}(...) \\xrightarrow[displacements \\to 0]{} 0", "description": "The deterministic continuity bound vanishes as inputs converge."},
+        {"formula": "d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2 \\le r_{\\mathrm{status}} \\implies n_c=0", "description": "If the squared displacement is within the status stability radius, the number of status changes is zero, eliminating the discontinuity."}
+      ],
+      "proof_status": "sketched",
+      "raw_fallback": {}
+    },
+    "issues": [],
+    "status": "success"
+  },
+  {
+    "source_file": "raw_data/definitions/def-algorithmic-cemetery-extension.json",
+    "output_file": "refined_data/definitions/def-algorithmic-cemetery-extension.json",
+    "refined_content": {
+      "label": "def-algorithmic-cemetery-extension",
+      "name": "Algorithmic Cemetery Extension",
+      "entity_type": "definition",
+      "statement_type": "DefinitionBox",
+      "natural_language_statement": "The algorithmic space is extended to include a 'cemetery' point, denoted by a dagger, which represents the state of a dead walker. The distance from any valid point in the original space to this cemetery point is defined as a constant.",
+      "description": "This definition formalizes the concept of a 'dead' walker by extending the metric space of walker states. By adding a unique cemetery point, we can canonically define the distance to a swarm of dead walkers (the cemetery law), which simplifies the analysis of swarm death and stability. The Wasserstein distance between any living swarm and the cemetery law becomes a fixed constant.",
+      "formal_statement": "Define the extended space $\\mathcal{Y}^{\\dagger} := \\mathcal{Y} \\cup \\{\\dagger\\}$ with a metric $d_\\dagger$ such that for $y_1, y_2 \\in \\mathcal{Y}$, $d_\\dagger(y_1, y_2) = d_{\\mathcal{Y}}(y_1, y_2)$, and for any $y \\in \\mathcal{Y}$, $d_\\dagger(y, \\dagger) = D_{\\mathrm{valid}}$.",
+      "input_objects": ["obj-algorithmic-space-generic"],
+      "input_axioms": [],
+      "input_parameters": ["D_valid"],
+      "source_location": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": "7. The Cemetery of Dead Walkers",
+        "subsection": null,
+        "directive_label": "def-algorithmic-cemetery-extension"
+      },
+      "relations": [
+        {"formula": "W_p(\\nu, \\delta_{\\dagger}) = D_{\\mathrm{valid}}", "description": "The p-Wasserstein distance between the law of any living swarm, ν, and the cemetery law (a Dirac measure at the cemetery point), is equal to the constant $D_{\\mathrm{valid}}$."}
+      ],
+      "proof_status": "n/a",
+      "raw_fallback": {}
+    },
+    "issues": [],
+    "status": "success"
+  },
+  {
+    "source_file": "raw_data/definitions/def-asymmetric-rescale-function.json",
+    "output_file": "refined_data/definitions/def-asymmetric-rescale-function.json",
+    "refined_content": {
+      "label": "def-asymmetric-rescale-function",
+      "name": "Smooth Piecewise Rescale Function",
+      "entity_type": "definition",
+      "statement_type": "DefinitionBox",
+      "natural_language_statement": "A specific, well-behaved rescale function is defined as a smooth, piecewise combination of an exponential function, a logarithmic function, a constant saturation value, and a unique cubic polynomial that patches them together to ensure C1 smoothness.",
+      "description": "This definition provides a concrete example of a rescale function that satisfies the Axiom of a Well-Behaved Rescale Function. It is constructed in four parts to provide different behaviors for low, medium, and high standardized scores, while maintaining continuous differentiability everywhere. The cubic patch is essential for smoothly connecting the growth phase to the saturation phase.",
+      "formal_statement": "The Smooth Piecewise Rescale Function $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ is defined as: ...",
+      "input_objects": ["obj-cubic-patch-polynomial"],
+      "input_axioms": ["axiom-well-behaved-rescale-function"],
+      "input_parameters": ["z_max"],
+      "source_location": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": "9. Rescale Transformation",
+        "subsection": "8.2.1 Definition of the Asymmetric Rescale Function",
+        "directive_label": "def-asymmetric-rescale-function"
+      },
+      "relations": [],
+      "proof_status": "n/a",
+      "raw_fallback": {}
+    },
+    "issues": [],
+    "status": "success"
+  },
+  {
+    "source_file": "raw_data/definitions/def-canonical-logistic-rescale-function-example.json",
+    "output_file": "refined_data/definitions/def-canonical-logistic-rescale-function-example.json",
+    "refined_content": {
+      "label": "def-canonical-logistic-rescale-function-example",
+      "name": "Canonical Logistic Rescale Function",
+      "entity_type": "definition",
+      "statement_type": "DefinitionBox",
+      "natural_language_statement": "A simple, well-behaved rescale function is defined using a scaled logistic (sigmoid) function.",
+      "description": "This definition provides a second concrete example of a valid rescale function. The logistic function is a canonical choice as it is smooth, monotonic, and naturally bounded, thus satisfying the Axiom of a Well-Behaved Rescale Function.",
+      "formal_statement": "The Canonical Logistic Rescale Function $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ is defined as: $g_A(z) := \\frac{2}{1 + e^{-z}}$",
+      "input_objects": [],
+      "input_axioms": ["axiom-well-behaved-rescale-function"],
+      "input_parameters": [],
+      "source_location": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": "9. Rescale Transformation",
+        "subsection": "8.3.1. Definition: Canonical Logistic Rescale Function",
+        "directive_label": "def-canonical-logistic-rescale-function-example"
+      },
+      "relations": [],
+      "proof_status": "n/a",
+      "raw_fallback": {}
+    },
+    "issues": [],
+    "status": "success"
+  },
+  {
+    "source_file": "raw_data/definitions/def-cemetery-state-measure.json",
+    "output_file": "refined_data/definitions/def-cemetery-state-measure.json",
+    "refined_content": {
+      "label": "def-cemetery-state-measure",
+      "name": "Cemetery State Measure",
+      "entity_type": "definition",
+      "statement_type": "DefinitionBox",
+      "natural_language_statement": "The distributional representation of a swarm is defined. If the swarm is active, it is its empirical or smoothed measure. If the swarm is empty (all walkers are dead), its representation is the unique Cemetery State Measure.",
+      "description": "This definition assigns a formal mathematical object to a swarm that has no living walkers. By defining a unique 'Cemetery State Measure' for any empty swarm, we ensure that the distributional representation map is well-defined for all possible swarms, which is crucial for continuity arguments.",
+      "formal_statement": "Let $\\mathcal{S}$ be a swarm. Its distributional representation, $\\mu_{\\mathcal{S}}$, is: ...",
+      "input_objects": ["def-algorithmic-cemetery-extension"],
+      "input_axioms": [],
+      "input_parameters": [],
+      "source_location": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": "7. The Cemetery of Dead Walkers",
+        "subsection": null,
+        "directive_label": "def-cemetery-state-measure"
+      },
+      "relations": [],
+      "proof_status": "n/a",
+      "raw_fallback": {}
+    },
+    "issues": [],
+    "status": "success"
+  },
+  {
+    "source_file": "raw_data/definitions/def-cloning-measure.json",
+    "output_file": "refined_data/definitions/def-cloning-measure.json",
+    "refined_content": {
+      "label": "def-cloning-measure",
+      "name": "Cloning Measure",
+      "entity_type": "definition",
+      "statement_type": "DefinitionBox",
+      "natural_language_statement": "The Cloning Measure is a valid noise measure that defines the probability distribution for the displacement of a newly created walker during the cloning process.",
+      "description": "This defines the source of stochasticity in the cloning step. For a given noise scale δ, the cloning measure Q_δ(x, ⋅) is a probability kernel that describes where a new walker, cloned from a parent at state x, might be placed.",
+      "formal_statement": "For a given cloning noise scale $\\delta > 0$, the Cloning Measure, $\\mathcal{Q}_\\delta(x, \\cdot)$, is a Valid Noise Measure according to Definition 2.3.",
+      "input_objects": ["def-valid-noise-measure"],
+      "input_axioms": [],
+      "input_parameters": ["delta"],
+      "source_location": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": "2. Algorithmic Framework",
+        "subsection": "2.3 Noise Measures",
+        "directive_label": "def-cloning-measure"
+      },
+      "relations": [],
+      "proof_status": "n/a",
+      "raw_fallback": {}
+    },
+    "issues": ["Source location inferred from context and related definitions."],
+    "status": "success"
+  },
+  {
+    "source_file": "raw_data/definitions/def-cloning-operator-continuity-coeffs-recorrected.json",
+    "output_file": "refined_data/definitions/def-cloning-operator-continuity-coeffs-recorrected.json",
+    "refined_content": {
+      "label": "def-cloning-operator-continuity-coeffs-recorrected",
+      "name": "Cloning Operator Continuity Coefficients",
+      "entity_type": "definition",
+      "statement_type": "DefinitionBox",
+      "natural_language_statement": "This defines the three state-dependent coefficients that appear in the continuity bound for the Cloning Transition Operator.",
+      "description": "These coefficients break down the error propagation through the cloning operator. The Lipschitz factor captures linear error propagation, the Hölder factor captures complex non-linearities arising from status changes, and the stochastic offset represents the baseline noise inherent to the operator.",
+      "formal_statement": "The coefficients in the continuity bound for the Cloning Transition Operator are: ...",
+      "input_objects": [],
+      "input_axioms": [],
+      "input_parameters": [],
+      "lemma_dag_edges": [
+        { "source": "def-cloning-operator-continuity-coeffs-recorrected", "target": "thm-cloning-transition-operator-continuity-recorrected" }
+      ],
+      "internal_lemmas": [],
+      "source_location": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": "16. The Cloning Transition Measure",
+        "subsection": "15.2.8.1 Definition: Cloning Operator Continuity Coefficients",
+        "directive_label": "def-cloning-operator-continuity-coeffs-recorrected"
+      },
+      "relations": [],
+      "proof_status": "n/a",
+      "raw_fallback": {}
+    },
+    "issues": [],
+    "status": "success"
+  }
+]

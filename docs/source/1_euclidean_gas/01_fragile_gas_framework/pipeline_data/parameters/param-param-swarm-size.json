@@ -1,0 +1,8 @@
+{
+  "label": "param-param-swarm-size",
+  "name": "param-swarm-size",
+  "symbol": "param-swarm-size",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

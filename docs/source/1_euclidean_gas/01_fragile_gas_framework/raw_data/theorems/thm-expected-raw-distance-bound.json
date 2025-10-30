@@ -1,0 +1,56 @@
+{
+  "theorem_id": "thm-expected-raw-distance-bound",
+  "label": "thm-expected-raw-distance-bound",
+  "title": "Bound on the Expected Raw Distance Vector Change",
+  "statement_type": "theorem",
+  "statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, with $|\\mathcal{A}(\\mathcal{S}_1)| = k_1 \\ge 2$. Let $\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$ be the $N$-dimensional vector of expected raw distances.\n\nThe squared Euclidean distance between the expected raw distance vectors of the two swarms is deterministically bounded by a function of the displacement components:",
+  "formal_statement": "$$\n\\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] - \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_2)] \\|_2^2 \\le C_{\\text{pos},d} \\cdot \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + C_{\\text{status},d}^{(1)} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{\\text{status},d}^{(2)}(k_1) \\cdot n_c^2(\\mathcal{S}_1, \\mathcal{S}_2)\n$$\n\nwhere the **Expected Distance Error Coefficients** are defined as:\n- $C_{\\text{pos},d} := 12$\n- $C_{\\text{status},d}^{(1)} := D_{\\mathcal{Y}}^2$\n- $C_{\\text{status},d}^{(2)}(k_1) := \\frac{8 k_1 D_{\\mathcal{Y}}^2}{(k_1 - 1)^2}$",
+  "proof_sketch": "1. Decompose the total error into stable and unstable walker contributions using thm-total-expected-distance-error-decomposition.\n2. Bound the unstable walker error using lem-total-squared-error-unstable: $E^2_{\\text{unstable}} \\le D_{\\mathcal{Y}}^2 \\cdot n_c$.\n3. Bound the stable walker error using lem-total-squared-error-stable: $E^2_{\\text{stable}} \\le 12 \\cdot \\Delta_{\\text{pos}}^2 + \\frac{8 k_1 D_{\\mathcal{Y}}^2}{(k_1 - 1)^2} \\cdot n_c^2$.\n4. Combine the two bounds and formalize by naming the coefficients.",
+  "proof_status": "complete",
+  "dependencies": [
+    "thm-total-expected-distance-error-decomposition",
+    "lem-total-squared-error-unstable",
+    "lem-total-squared-error-stable",
+    "def-displacement-components"
+  ],
+  "used_in": [
+    "thm-distance-operator-mean-square-continuity"
+  ],
+  "tags": [
+    "continuity",
+    "distance",
+    "expected-value",
+    "error-bound",
+    "displacement"
+  ],
+  "importance": "major",
+  "notes": "This theorem consolidates the error bounds from preceding lemmas to establish a deterministic bound on the change of the expected raw distance vector. This bound serves as the deterministic part of the continuity axiom for the distance operator. The bound becomes singular as k_1 approaches 1, reflecting the fundamental discontinuity in the diversity measurement.",
+  "input_objects": [
+    "obj-alg-distance",
+    "obj-distance-measurement-ms-constants"
+  ],
+  "input_axioms": [
+    "axiom-bounded-measurement-variance"
+  ],
+  "input_parameters": [
+    "param-kappa-variance"
+  ],
+  "output_type": "Bound",
+  "relations_established": [
+    "Expected raw distance is bounded"
+  ],
+  "name": "Expected Raw Distance Bound",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "10.2.7",
+    "section_name": null,
+    "directive_label": "thm-expected-raw-distance-bound",
+    "equation": null,
+    "line_range": [
+      2583,
+      2596
+    ],
+    "url_fragment": "#thm-expected-raw-distance-bound"
+  }
+}

@@ -4,27 +4,27 @@ Comprehensive tests for fragile.proofs.registry.
 Tests MathematicalRegistry, reference system, and storage.
 """
 
-import tempfile
 from pathlib import Path
+import tempfile
 
-import pytest
 from pydantic import ValidationError
+import pytest
 
 from fragile.proofs import (
+    Attribute,
     CombinedTagQuery,
-    MathematicalObject,
-    MathematicalRegistry,
-    ObjectType,
-    Property,
-    Relationship,
-    RelationType,
-    TagQuery,
-    TheoremBox,
-    TheoremOutputType,
     create_simple_object,
     create_simple_theorem,
     load_registry_from_directory,
+    MathematicalObject,
+    MathematicalRegistry,
+    ObjectType,
+    Relationship,
+    RelationType,
     save_registry_to_directory,
+    TagQuery,
+    TheoremBox,
+    TheoremOutputType,
 )
 
 

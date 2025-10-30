@@ -15,7 +15,6 @@ from __future__ import annotations
 import holoviews as hv
 import panel as pn
 
-from fragile.core.benchmarks import prepare_benchmark_for_explorer
 from fragile.experiments.convergence import ConvergencePanel
 from fragile.experiments.gas_config_panel import GasConfigPanel
 from fragile.experiments.n_particle_swarm import GasVisualizer
@@ -132,7 +131,9 @@ def create_app(dims: int = 2, n_gaussians: int = 3, bounds_extent: float = 6.0):
                 n_cells=gas_config.viz_n_cells,
             )
             # Update visualizer's background
-            visualizer.update_benchmark(gas_config.potential, rich_background, gas_config.mode_points)
+            visualizer.update_benchmark(
+                gas_config.potential, rich_background, gas_config.mode_points
+            )
         except Exception as e:
             print(f"Error updating benchmark visualization: {e}")
 

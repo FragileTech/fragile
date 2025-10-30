@@ -285,7 +285,7 @@ integrator={self.integrator}
 
         """
         # Get benchmark
-        benchmark = self._get_benchmark()
+        self._get_benchmark()
 
         # NOTE: This method returns parameters but cannot construct
         # KineticOperator or CloneOperator directly because those require

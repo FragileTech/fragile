@@ -1,0 +1,8 @@
+{
+  "label": "param-param-lipschitz-constant",
+  "name": "param-lipschitz-constant",
+  "symbol": "param-lipschitz-constant",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

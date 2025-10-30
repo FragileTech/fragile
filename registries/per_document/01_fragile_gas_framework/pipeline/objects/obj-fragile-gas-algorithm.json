@@ -1,0 +1,28 @@
+{
+  "label": "obj-fragile-gas-algorithm",
+  "name": "Fragile Gas Algorithm",
+  "mathematical_expression": "Fragile Gas Algorithm",
+  "object_type": "set",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "algorithm",
+    "execution",
+    "markov-chain",
+    "temporal-evolution",
+    "swarm-update",
+    "trajectory"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "Section 19.2 (lines 5100-5120)",
+    "directive_label": null,
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": null
+}

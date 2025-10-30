@@ -18,17 +18,15 @@ Version: 1.0.0
 
 from __future__ import annotations
 
-import json
 from datetime import datetime
+import json
 from pathlib import Path
-from typing import Dict, List, Optional, Set
 
 from fragile.proofs.core.review_system import (
     Review,
     ReviewComparison,
     ReviewIssue,
     ReviewSeverity,
-    ReviewSource,
     ReviewStatus,
 )
 
@@ -60,7 +58,7 @@ class ReviewRegistry:
           ...
     """
 
-    _instance: Optional[ReviewRegistry] = None
+    _instance: ReviewRegistry | None = None
 
     def __new__(cls) -> ReviewRegistry:
         """Singleton pattern: ensure only one instance exists."""
@@ -71,8 +69,8 @@ class ReviewRegistry:
 
     def _initialize(self) -> None:
         """Initialize registry storage."""
-        self._reviews: Dict[str, List[Review]] = {}  # object_id → List[Review]
-        self._review_by_id: Dict[str, Review] = {}  # review_id → Review
+        self._reviews: dict[str, list[Review]] = {}  # object_id → List[Review]
+        self._review_by_id: dict[str, Review] = {}  # review_id → Review
 
     # ==========================================================================
     # STORAGE OPERATIONS
@@ -111,7 +109,7 @@ class ReviewRegistry:
     # BASIC QUERIES
     # ==========================================================================
 
-    def get_latest_review(self, object_id: str) -> Optional[Review]:
+    def get_latest_review(self, object_id: str) -> Review | None:
         """
         Total function: Get most recent review for object.
 
@@ -129,7 +127,7 @@ class ReviewRegistry:
             return None
         return self._reviews[object_id][-1]
 
-    def get_review_history(self, object_id: str) -> List[Review]:
+    def get_review_history(self, object_id: str) -> list[Review]:
         """
         Total function: Get complete review history for object (chronological).
 
@@ -141,7 +139,7 @@ class ReviewRegistry:
         """
         return self._reviews.get(object_id, [])
 
-    def get_review_by_id(self, review_id: str) -> Optional[Review]:
+    def get_review_by_id(self, review_id: str) -> Review | None:
         """
         Total function: Get review by its unique ID.
 
@@ -169,7 +167,7 @@ class ReviewRegistry:
     # ISSUE QUERIES
     # ==========================================================================
 
-    def get_unresolved_issues(self, object_id: str) -> List[ReviewIssue]:
+    def get_unresolved_issues(self, object_id: str) -> list[ReviewIssue]:
         """
         Total function: Get all unresolved issues for object.
 
@@ -194,7 +192,7 @@ class ReviewRegistry:
         addressed_ids = {r.issue_id for r in latest.llm_responses if r.implemented}
         return [i for i in latest.issues if i.id not in addressed_ids]
 
-    def get_blocking_issues(self, object_id: str) -> List[ReviewIssue]:
+    def get_blocking_issues(self, object_id: str) -> list[ReviewIssue]:
         """
         Total function: Get all blocking issues for object (from latest review).
 
@@ -215,7 +213,7 @@ class ReviewRegistry:
 
     def get_issues_by_severity(
         self, object_id: str, severity: ReviewSeverity
-    ) -> List[ReviewIssue]:
+    ) -> list[ReviewIssue]:
         """
         Total function: Get issues of specific severity for object (from latest review).
 
@@ -257,7 +255,7 @@ class ReviewRegistry:
             return ReviewStatus.NOT_REVIEWED
         return latest.get_status()
 
-    def get_objects_by_status(self, status: ReviewStatus) -> List[str]:
+    def get_objects_by_status(self, status: ReviewStatus) -> list[str]:
         """
         Total function: Get all object IDs with given status.
 
@@ -278,7 +276,7 @@ class ReviewRegistry:
                 result.append(obj_id)
         return result
 
-    def get_ready_objects(self) -> List[str]:
+    def get_ready_objects(self) -> list[str]:
         """
         Total function: Get all object IDs ready for publication.
 
@@ -286,7 +284,7 @@ class ReviewRegistry:
         """
         return self.get_objects_by_status(ReviewStatus.READY)
 
-    def get_blocked_objects(self) -> List[str]:
+    def get_blocked_objects(self) -> list[str]:
         """
         Total function: Get all object IDs blocked by critical issues.
 
@@ -298,7 +296,7 @@ class ReviewRegistry:
     # COMPARISON QUERIES
     # ==========================================================================
 
-    def compare_reviews(self, review_a_id: str, review_b_id: str) -> Optional[ReviewComparison]:
+    def compare_reviews(self, review_a_id: str, review_b_id: str) -> ReviewComparison | None:
         """
         Total function: Compare two reviews (for dual review analysis).
 
@@ -340,24 +338,24 @@ class ReviewRegistry:
         4. Unmatched issues → unique
         """
         # Build issue maps by location
-        issues_a_by_loc: Dict[str, List[ReviewIssue]] = {}
+        issues_a_by_loc: dict[str, list[ReviewIssue]] = {}
         for issue in review_a.issues:
             if issue.location not in issues_a_by_loc:
                 issues_a_by_loc[issue.location] = []
             issues_a_by_loc[issue.location].append(issue)
 
-        issues_b_by_loc: Dict[str, List[ReviewIssue]] = {}
+        issues_b_by_loc: dict[str, list[ReviewIssue]] = {}
         for issue in review_b.issues:
             if issue.location not in issues_b_by_loc:
                 issues_b_by_loc[issue.location] = []
             issues_b_by_loc[issue.location].append(issue)
 
-        consensus: List[ReviewIssue] = []
-        discrepancies: List[Tuple[ReviewIssue, ReviewIssue]] = []
-        unique_to_a: List[ReviewIssue] = []
-        unique_to_b: List[ReviewIssue] = []
+        consensus: list[ReviewIssue] = []
+        discrepancies: list[Tuple[ReviewIssue, ReviewIssue]] = []
+        unique_to_a: list[ReviewIssue] = []
+        unique_to_b: list[ReviewIssue] = []
 
-        matched_b: Set[str] = set()
+        matched_b: set[str] = set()
 
         # Find consensus and discrepancies
         for loc, issues_a in issues_a_by_loc.items():
@@ -379,12 +377,11 @@ class ReviewRegistry:
                         matched_b.add(issue_b.id)
                         matched = True
                         break
-                    else:
-                        # Same location, different severity = discrepancy
-                        discrepancies.append((issue_a, issue_b))
-                        matched_b.add(issue_b.id)
-                        matched = True
-                        break
+                    # Same location, different severity = discrepancy
+                    discrepancies.append((issue_a, issue_b))
+                    matched_b.add(issue_b.id)
+                    matched = True
+                    break
 
                 if not matched:
                     unique_to_a.append(issue_a)
@@ -417,7 +414,7 @@ class ReviewRegistry:
     # ITERATION ANALYSIS
     # ==========================================================================
 
-    def get_improvement_trajectory(self, object_id: str) -> List[Dict[str, float]]:
+    def get_improvement_trajectory(self, object_id: str) -> list[dict[str, float]]:
         """
         Total function: Get improvement metrics across iterations.
 
@@ -445,15 +442,13 @@ class ReviewRegistry:
         trajectory = []
 
         for review in history:
-            trajectory.append(
-                {
-                    "iteration": review.iteration,
-                    "avg_score": review.get_average_score(),
-                    "blocking_count": review.blocking_issue_count,
-                    "total_issues": len(review.issues),
-                    "timestamp": review.timestamp.isoformat(),
-                }
-            )
+            trajectory.append({
+                "iteration": review.iteration,
+                "avg_score": review.get_average_score(),
+                "blocking_count": review.blocking_issue_count,
+                "total_issues": len(review.issues),
+                "timestamp": review.timestamp.isoformat(),
+            })
 
         return trajectory
 
@@ -524,7 +519,7 @@ class ReviewRegistry:
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
 
-        for obj_id, reviews_data in data["reviews_by_object"].items():
+        for reviews_data in data["reviews_by_object"].values():
             for review_data in reviews_data:
                 # Convert timestamp strings to datetime
                 review_data["timestamp"] = datetime.fromisoformat(review_data["timestamp"])
@@ -540,7 +535,7 @@ class ReviewRegistry:
     # STATISTICS
     # ==========================================================================
 
-    def get_statistics(self) -> Dict[str, any]:
+    def get_statistics(self) -> dict[str, any]:
         """
         Total function: Get registry statistics.
 

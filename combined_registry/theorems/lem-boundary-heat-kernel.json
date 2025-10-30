@@ -2,9 +2,17 @@
   "label": "lem-boundary-heat-kernel",
   "name": "Heat‑kernel death probability is Lipschitz with constant $\\lesssim 1/\\sigma$",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "lem-boundary-heat-kernel",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-boundary-heat-kernel"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -19,26 +27,22 @@
   "input_parameters": [
     "param-sigma"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-alive-dead-sets": [
-      "prop-finite-perimeter"
+      "attr-finite-perimeter"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [
-    {
-      "label": "prop-lipschitz-continuous-with-bound",
-      "expression": "\\mathrm{Lip}(P_\\sigma) \\lesssim 1/\\sigma",
-      "object_label": "obj-cloning-probability-function",
-      "established_by": "lem-boundary-heat-kernel",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

@@ -1,0 +1,10 @@
+{
+  "label": "param-param-v-pot-max",
+  "name": "param-V-pot-max",
+  "symbol": "param-V-pot-max",
+  "parameter_type": "real",
+  "constraints": null,
+  "default_value": null,
+  "chapter": null,
+  "document": null
+}

@@ -1,0 +1,21 @@
+{
+  "temp_id": "raw-param-003",
+  "symbol": "p_worst-case",
+  "meaning": "worst-case probability parameter",
+  "full_text": "We reframe every stability assumption as a quantifiable **Axiomatic Parameter** (e.g., $\\kappa_{\\text{revival}}$, $L_R$, $p_{\\text{worst-case}}$)",
+  "scope": "global",
+  "source_section": "§1-introduction",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "1",
+    "section_name": null,
+    "directive_label": null,
+    "equation": null,
+    "line_range": [
+      23,
+      23
+    ],
+    "url_fragment": null
+  }
+}

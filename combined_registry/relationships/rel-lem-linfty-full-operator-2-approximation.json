@@ -6,12 +6,20 @@
   "target_object": "obj-kinetic-operator",
   "established_by": "lem-linfty-full-operator",
   "expression": "||f(T)||_∞ ≤ C_kin(T) M_0 + ∫_0^T C_kin(T−s)[||f(s)||_∞ + C_revival] ds",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+  "source": {
+    "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+    "section": null,
+    "directive_label": "lem-linfty-full-operator",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-linfty-full-operator"
+  },
+  "chapter": null,
+  "document": null
 }

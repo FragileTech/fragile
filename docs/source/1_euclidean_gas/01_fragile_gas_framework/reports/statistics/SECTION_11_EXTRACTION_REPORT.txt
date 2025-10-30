@@ -1,0 +1,175 @@
+================================================================================
+SECTION 11 EXTRACTION REPORT
+================================================================================
+
+Source Document: docs/source/1_euclidean_gas/01_fragile_gas_framework.md
+Section: 11. Distance-to-Companion Measurement
+Line Range: 2140-2750 (611 lines)
+Extraction Date: 2025-10-27
+Extraction Method: Manual (API key not available for automated extraction)
+
+================================================================================
+ENTITIES EXTRACTED
+================================================================================
+
+Total Entities: 14
+
+DEFINITIONS (1):
+  1. def-distance-to-companion-measurement
+     - Defines the two-stage sampling process for measuring distance to companions
+     - Includes raw distance vector operator definition
+
+THEOREMS (12):
+
+  Single-Walker Error Bounds (3):
+  2. lem-single-walker-positional-error
+     - Bounds error from positional displacement
+  3. lem-single-walker-structural-error
+     - Bounds error from companion set changes
+  4. lem-single-walker-own-status-error
+     - Bounds error when walker's own status changes
+
+  Total Error Decomposition (1):
+  5. thm-total-expected-distance-error-decomposition
+     - Partitions total error into stable and unstable walker contributions
+
+  Stable Walker Error Analysis (4):
+  6. lem-total-squared-error-stable
+     - Main bound for stable walkers
+  7. sub-lem-stable-walker-error-decomposition
+     - Decomposes stable walker error into positional and structural components
+  8. sub-lem-stable-positional-error-bound
+     - Bounds positional error component
+  9. sub-lem-stable-structural-error-bound
+     - Bounds structural error component
+
+  Unstable Walker Error Analysis (1):
+  10. lem-total-squared-error-unstable
+      - Bounds total error from walkers whose status changes
+
+  Main Continuity Results (3):
+  11. thm-expected-raw-distance-bound
+      - Deterministic bound on expected raw distance vector change
+      - Introduces Expected Distance Error Coefficients
+  12. thm-expected-raw-distance-k1
+      - Proves discontinuity at k=1 (single walker case)
+  13. thm-distance-operator-satisfies-bounded-variance-axiom
+      - Verifies bounded variance axiom compliance
+  14. thm-distance-operator-mean-square-continuity
+      - Main result: derives explicit bound function F_{d,ms}
+
+OBJECTS (1):
+  15. obj-expected-distance-error-coefficients
+      - Defines C_{pos,d}, C_{status,d}^{(1)}, C_{status,d}^{(2)}(k_1)
+
+================================================================================
+OUTPUT FILES
+================================================================================
+
+Directory: docs/source/1_euclidean_gas/01_fragile_gas_framework/
+
+definitions/
+  - def-distance-to-companion-measurement.json
+
+theorems/
+  - lem-single-walker-positional-error.json
+  - lem-single-walker-structural-error.json
+  - lem-single-walker-own-status-error.json
+  - thm-total-expected-distance-error-decomposition.json
+  - lem-total-squared-error-unstable.json
+  - lem-total-squared-error-stable.json
+  - sub-lem-stable-walker-error-decomposition.json
+  - sub-lem-stable-positional-error-bound.json
+  - sub-lem-stable-structural-error-bound.json
+  - thm-expected-raw-distance-bound.json
+  - thm-expected-raw-distance-k1.json
+  - thm-distance-operator-satisfies-bounded-variance-axiom.json
+  - thm-distance-operator-mean-square-continuity.json
+
+objects/
+  - obj-expected-distance-error-coefficients.json
+
+statistics/
+  - section_11_statistics.json
+
+================================================================================
+SECTION SUMMARY
+================================================================================
+
+Section 11 establishes the continuity properties of the distance-to-companion
+measurement operator through a two-stage analysis:
+
+PART 1: Continuity of Expected Raw Distance Vector (k ≥ 2 regime)
+- Decomposes error into positional and structural components
+- Separates analysis for stable walkers (status unchanged) and unstable 
+  walkers (status changed)
+- Derives deterministic bound with explicit coefficients
+- Identifies singularity at k=1
+
+PART 2: Mean-Square Continuity of Sampled Raw Distance Vector
+- Proves the operator satisfies the Bounded Variance Axiom
+- Combines variance bound with expected value bound
+- Derives explicit bound function F_{d,ms} for standardization operator analysis
+
+KEY MATHEMATICAL INSIGHTS:
+
+1. Error Decomposition Strategy:
+   - Positional error: Due to walker displacement
+   - Structural error: Due to companion set changes
+   - Own-status error: Due to walker's status change
+
+2. Singularity at k=1:
+   - Coefficient C_{status,d}^{(2)}(k_1) ~ 1/(k_1-1)^2
+   - Reflects fundamental discontinuity in diversity measurement
+   - When k=1, expected distance vector becomes deterministically zero
+
+3. Variance Analysis:
+   - Uniform bound κ²_variance = N·D_Y²
+   - Independent of swarm configuration
+   - Critical for mean-square continuity
+
+4. Technical Tools:
+   - Reverse triangle inequality for metric spaces
+   - Jensen's inequality for expectation
+   - Double summation analysis for companion averaging
+   - Elementary inequality (a+b)² ≤ 2a² + 2b²
+
+================================================================================
+KEY RESULTS
+================================================================================
+
+Main Theorem (thm-distance-operator-mean-square-continuity):
+  E[||d(S₁) - d(S₂)||₂²] ≤ F_{d,ms}(S₁, S₂)
+
+where:
+  F_{d,ms} = 6N·D_Y² + 3(C_{pos,d}·Δ_{pos}² + C_{status,d}^{(1)}·n_c + C_{status,d}^{(2)}(k₁)·n_c²)
+
+with coefficients:
+  C_{pos,d} = 12
+  C_{status,d}^{(1)} = D_Y²
+  C_{status,d}^{(2)}(k₁) = 8k₁D_Y²/(k₁-1)²
+
+Discontinuity Result (thm-expected-raw-distance-k1):
+  |A(S)| = 1 ⟹ E[d(S)] = 0
+
+This provides the critical input for the standardization operator continuity
+analysis in subsequent sections.
+
+================================================================================
+DEPENDENCIES
+================================================================================
+
+Referenced (but not defined in this section):
+- def-companion-selection-measure
+- def-raw-value-operator
+- def-displacement-components
+- axiom-bounded-measurement-variance
+- axiom-raw-value-mean-square-continuity
+- thm-total-error-status-bound
+
+Will be used by:
+- Standardization operator continuity analysis
+- Cloning operator analysis
+- Overall algorithm stability proofs
+
+================================================================================

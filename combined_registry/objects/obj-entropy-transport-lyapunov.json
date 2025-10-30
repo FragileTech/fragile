@@ -3,10 +3,19 @@
   "name": "Entropy-Transport Lyapunov Function",
   "mathematical_expression": "V(\\mu) := D_{\\text{KL}}(\\mu \\| \\pi) + c \\cdot W_2^2(\\mu, \\pi)",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence"
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "obj-entropy-transport-lyapunov",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-entropy-transport-lyapunov"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

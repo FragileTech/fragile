@@ -1,0 +1,66 @@
+{
+  "source_file": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+  "section": "Section 7 (Swarm Measuring)",
+  "lines": "1242-1480",
+  "processing_stage": "manual_extraction",
+  "entities_extracted": {
+    "definitions": 5,
+    "lemmas": 2,
+    "proofs": 2,
+    "remarks": 1
+  },
+  "extraction_time": "2025-10-27T21:39:46.346367",
+  "directives": [
+    {
+      "label": "def-swarm-aggregation-operator-axiomatic",
+      "type": "definition",
+      "lines": "1273-1300"
+    },
+    {
+      "label": "unlabeled-lemma-72",
+      "type": "lemma",
+      "lines": "1313-1328"
+    },
+    {
+      "label": "unlabeled-proof-88",
+      "type": "proof",
+      "lines": "1329-1338"
+    },
+    {
+      "label": "lem-empirical-aggregator-properties",
+      "type": "lemma",
+      "lines": "1340-1355"
+    },
+    {
+      "label": "unlabeled-proof-134",
+      "type": "proof",
+      "lines": "1375-1425"
+    },
+    {
+      "label": "def-smoothed-gaussian-measure",
+      "type": "definition",
+      "lines": "1428-1439"
+    },
+    {
+      "label": "def-algorithmic-cemetery-extension",
+      "type": "definition",
+      "lines": "1442-1451"
+    },
+    {
+      "label": "unlabeled-remark-211",
+      "type": "remark",
+      "lines": "1452-1454"
+    },
+    {
+      "label": "def-cemetery-state-measure",
+      "type": "definition",
+      "lines": "1455-1461"
+    },
+    {
+      "label": "def-distance-to-cemetery-state",
+      "type": "definition",
+      "lines": "1462-1480"
+    }
+  ],
+  "total_entities": 10
+}

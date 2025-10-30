@@ -3,13 +3,22 @@
   "name": "Discrete Status-Change Metric",
   "mathematical_expression": "d_{\\text{status}}(\\mathcal{S}_1, \\mathcal{S}_2) := n_c(\\mathcal{S}_1, \\mathcal{S}_2)",
   "object_type": "set",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle",
     "swarm"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence"
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "obj-status-metric",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-status-metric"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

@@ -1,0 +1,93 @@
+{
+  "label": "thm-mean-square-standardization-error",
+  "name": "Asymptotic Behavior of the Mean-Square Standardization Error",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§11.3.3",
+    "directive_label": "thm-mean-square-standardization-error",
+    "equation": null,
+    "line_range": [
+      887,
+      907
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-lipschitz-value-error-coefficients",
+    "obj-raw-value-operator",
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-standardization-total-value-error-coefficient",
+    "obj-standardization-operator-n-dimensional",
+    "obj-lipschitz-structural-error-coefficients",
+    "obj-components-mean-square-standardization-error",
+    "obj-standardization-lower-bound"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity"
+  ],
+  "input_parameters": [
+    "param-F-V-ms"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    {
+      "label": "rel-standardization-error-decomposition-other",
+      "relationship_type": "OTHER",
+      "bidirectional": false,
+      "source_object": "obj-standardization-operator-n-dimensional",
+      "target_object": "obj-components-mean-square-standardization-error",
+      "established_by": "thm-mean-square-standardization-error",
+      "expression": "\\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2] \\in O(E_{V,ms}^2(k_1)) + O(E_{S,ms}^2(k_1))",
+      "attributes": [
+        {
+          "label": "normal-operation-regime",
+          "expression": "E^2_{V,ms} \\in O(1), \\text{ structural error negligible}",
+          "description": "Under low attrition, error is constant with respect to swarm size"
+        },
+        {
+          "label": "catastrophic-collapse-regime",
+          "expression": "E^2_{S,ms} \\in O(k_1), \\text{ error grows linearly}",
+          "description": "During high attrition events, error grows linearly with swarm size"
+        },
+        {
+          "label": "regularization-sensitivity",
+          "expression": "O(\\varepsilon_{\\text{std}}^{-6})",
+          "description": "Extreme sensitivity to regularization parameter"
+        }
+      ],
+      "tags": [
+        "mean-square-continuity",
+        "error-decomposition",
+        "asymptotic-behavior",
+        "regime-dependent"
+      ],
+      "timestamp": null
+    }
+  ],
+  "natural_language_statement": "This theorem establishes that the total expected mean-square error of the N-Dimensional Standardization Operator is bounded by the sum of the expected squared value error and the expected squared structural error. Under normal operation with low walker attrition, this error is constant and dominated by the value error. However, during catastrophic collapse events with high attrition, the error grows linearly with swarm size, dominated by the structural error.",
+  "assumptions": [
+    "The number of alive walkers, k_1 = |A(S_1)|, is large",
+    "The continuity of the raw value operator holds in the mean-square sense, as per axiom-raw-value-mean-square-continuity"
+  ],
+  "conclusion": "\\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2] \\in O(E_{V,ms}^2(k_1)) + O(E_{S,ms}^2(k_1))",
+  "equation_label": null,
+  "uses_definitions": [
+    "obj-standardization-operator-n-dimensional",
+    "obj-components-mean-square-standardization-error",
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-raw-value-operator"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

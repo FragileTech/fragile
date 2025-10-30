@@ -4,9 +4,12 @@
   "mathematical_expression": "C_{V,\\mathrm{direct}}^{\\mathrm{sq}}(\\mathcal S) := \\frac{1}{\\sigma_{\\min,\\mathrm{patch}}^2}",
   "object_type": "function",
   "current_attributes": [],
-  "property_history": [],
+  "attribute_history": [],
   "tags": [
     "swarm"
   ],
-  "source": null
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

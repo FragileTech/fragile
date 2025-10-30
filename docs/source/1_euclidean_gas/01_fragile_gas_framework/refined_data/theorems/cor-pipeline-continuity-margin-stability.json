@@ -1,0 +1,55 @@
+{
+  "label": "cor-pipeline-continuity-margin-stability",
+  "name": "Pipeline Continuity Under Margin-Based Status Stability",
+  "entity_type": "corollary",
+  "statement_type": "TheoremBox",
+  "output_type": "Convergence",
+  "natural_language_statement": "Assuming the Axiom of Margin-Based Status Stability, the deterministic component of the fitness potential operator's continuity bound converges to zero as the input swarms and velocity vectors converge.",
+  "description": "This corollary shows that the Axiom of Margin-Based Status Stability is a sufficient condition to ensure the continuity of the fitness potential operator. It does so by guaranteeing that for sufficiently small perturbations of the swarm, there are no status changes (e.g., a walker becoming a companion or vice-versa), which eliminates the primary source of discontinuity.",
+  "assumptions_hypotheses": [
+    "The Axiom of Margin-Based Status Stability (def-axiom-margin-stability) holds."
+  ],
+  "conclusion_main_result": "The deterministic bound $F_{\\text{pot,det}}$ from the Deterministic Continuity theorem converges to 0 as the input displacements go to 0. For small enough displacements ($d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2 \\le r_{\\mathrm{status}}$), the number of status changes $n_c=0$, and the unstable term in the continuity bound vanishes exactly.",
+  "input_objects": [
+    "obj-algorithmic-space-generic",
+    "def-swarm-potential-assembly-operator",
+    "obj-status-update-operator",
+    "obj-alg-distance"
+  ],
+  "input_axioms": [
+    "def-axiom-margin-stability"
+  ],
+  "input_parameters": [
+    "r_status"
+  ],
+  "lemma_dag_edges": [
+    [
+      "cor-pipeline-continuity-margin-stability",
+      "thm-deterministic-potential-continuity"
+    ],
+    [
+      "cor-pipeline-continuity-margin-stability",
+      "def-axiom-margin-stability"
+    ]
+  ],
+  "internal_lemmas": [],
+  "relations": [
+    {
+      "formula": "F_{\\text{pot,det}}(...) \\xrightarrow[displacements \\to 0]{} 0",
+      "description": "The deterministic continuity bound vanishes as inputs converge."
+    },
+    {
+      "formula": "d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2 \\le r_{\\mathrm{status}} \\implies n_c=0",
+      "description": "If the squared displacement is within the status stability radius, the number of status changes is zero, eliminating the discontinuity."
+    }
+  ],
+  "proof_status": "sketched",
+  "raw_fallback": {},
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "13. Fitness potential operator",
+    "subsection": "12.3.3 Corollary: Pipeline Continuity Under Margin-Based Status Stability",
+    "directive_label": "cor-pipeline-continuity-margin-stability"
+  }
+}

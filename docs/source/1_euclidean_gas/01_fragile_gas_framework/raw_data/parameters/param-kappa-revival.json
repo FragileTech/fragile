@@ -1,0 +1,20 @@
+{
+  "label": "param-kappa-revival",
+  "name": "Revival Guarantee Parameter",
+  "symbol": "\\kappa_{\\text{revival}}",
+  "parameter_type": "real",
+  "constraints": "\\kappa_{\\text{revival}} > 0",
+  "default_value": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "section_name": null,
+    "directive_label": "param-kappa-revival",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

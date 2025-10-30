@@ -1,0 +1,147 @@
+{
+  "label": "axiom-instep-independence",
+  "statement": "Fix a time $t$ and swarm state $\\mathcal S_t$. For each walker $i\\in\\{1,\\dots,N\\}$, let\n\n$$\nX_i \\;:=\\;\\big(U_i^{\\mathrm{comp}},\\,U_i^{\\mathrm{pert}},\\,U_i^{\\mathrm{status}},\\,U_i^{\\mathrm{clone}}\\big)\n$$\n\nbe the collection of random inputs used by walker $i$ during the next update (companion selection, perturbation noise, status/death draw, cloning/parent draw). **Conditional on $\\mathcal S_t$, the vectors $X_1,\\dots,X_N$ are independent**, and the components inside each $X_i$ are mutually independent.",
+  "mathematical_expression": "X_i \\;:=\\;\\big(U_i^{\\mathrm{comp}},\\,U_i^{\\mathrm{pert}},\\,U_i^{\\mathrm{status}},\\,U_i^{\\mathrm{clone}}\\big) \\text{ with } X_1,\\dots,X_N \\text{ independent conditional on } \\mathcal S_t",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Assumption A: In-Step Independence",
+  "core_assumption": {
+    "lhs": {
+      "latex": "X_1, \\dots, X_N",
+      "sympy": null,
+      "parse_status": "opaque",
+      "parse_error": "Random variable independence is a probabilistic property not directly representable in SymPy"
+    },
+    "relation": "⟹",
+    "rhs": {
+      "latex": "\\text{independent conditional on } \\mathcal{S}_t",
+      "sympy": null,
+      "parse_status": "opaque",
+      "parse_error": "Conditional independence is a probabilistic concept"
+    },
+    "assumptions": {
+      "real": null,
+      "positive": null,
+      "negative": null,
+      "zero": null,
+      "nonzero": null,
+      "integer": null,
+      "rational": null,
+      "complex": null,
+      "finite": null,
+      "infinite": null,
+      "even": null,
+      "odd": null,
+      "prime": null,
+      "symmetric": null,
+      "hermitian": null,
+      "orthogonal": null,
+      "unitary": null,
+      "spd": null,
+      "invertible": null,
+      "bounded": null,
+      "continuous": null,
+      "differentiable": null,
+      "lipschitz": null,
+      "measurable": null,
+      "integrable": null,
+      "custom": {}
+    },
+    "context": "For each walker i ∈ {1, …, N}, conditional on the swarm state at time t"
+  },
+  "parameters": [
+    {
+      "symbol": "X_i",
+      "description": "Collection of all random inputs used by walker i during a single update step",
+      "constraints": "X_i := (U_i^{comp}, U_i^{pert}, U_i^{status}, U_i^{clone})"
+    },
+    {
+      "symbol": "U_i^{\\mathrm{comp}}",
+      "description": "Random variable for companion selection for walker i",
+      "constraints": "U_i^{comp} ∼ Uniform(0,1), mapped through per-walker CDF of companion selection measure 𝔹_i(𝒮_t)"
+    },
+    {
+      "symbol": "U_i^{\\mathrm{pert}}",
+      "description": "Random perturbation noise applied to walker i during the perturbation step",
+      "constraints": "U_i^{pert} ∼ P_σ (perturbation noise measure with scale σ > 0)"
+    },
+    {
+      "symbol": "U_i^{\\mathrm{status}}",
+      "description": "Random draw determining status update (death/survival) for walker i",
+      "constraints": "U_i^{status} ∼ Uniform(0,1), compared against death probability p_death,i"
+    },
+    {
+      "symbol": "U_i^{\\mathrm{clone}}",
+      "description": "Random threshold for cloning decision for walker i",
+      "constraints": "U_i^{clone} ∼ Uniform(0, p_max), compared against cloning score S_i"
+    },
+    {
+      "symbol": "N",
+      "description": "Total number of walkers in the swarm",
+      "constraints": "N ≥ 2, N ∈ ℕ"
+    },
+    {
+      "symbol": "i",
+      "description": "Walker index",
+      "constraints": "i ∈ {1, …, N}"
+    }
+  ],
+  "condition": {
+    "lhs": {
+      "latex": "\\mathcal{S}_t",
+      "sympy": null,
+      "parse_status": "opaque",
+      "parse_error": "Swarm state is a complex structural object"
+    },
+    "relation": "∈",
+    "rhs": {
+      "latex": "\\Sigma_N^{\\mathrm{alive}}",
+      "sympy": null,
+      "parse_status": "opaque",
+      "parse_error": "State space subset definition"
+    },
+    "assumptions": {
+      "real": null,
+      "positive": null,
+      "negative": null,
+      "zero": null,
+      "nonzero": null,
+      "integer": null,
+      "rational": null,
+      "complex": null,
+      "finite": null,
+      "infinite": null,
+      "even": null,
+      "odd": null,
+      "prime": null,
+      "symmetric": null,
+      "hermitian": null,
+      "orthogonal": null,
+      "unitary": null,
+      "spd": null,
+      "invertible": null,
+      "bounded": null,
+      "continuous": null,
+      "differentiable": null,
+      "lipschitz": null,
+      "measurable": null,
+      "integrable": null,
+      "custom": {}
+    },
+    "context": "Swarm state is in the alive subset (at least one walker alive)"
+  },
+  "failure_mode_analysis": "**Violation of In-Step Independence destroys concentration bounds and probabilistic continuity guarantees.**\n\nWhen this axiom is violated, the following mathematical tools become unavailable:\n\n1. **McDiarmid's Inequality**: The perturbation operator continuity proof (Section 14) relies on McDiarmid's bounded differences inequality to establish concentration of the empirical displacement around its expectation. This requires that the random perturbations ξ_1, …, ξ_N are independent conditional on the swarm state. If systematic resampling or shared random seeds are used across walkers, the independence condition fails and McDiarmid cannot be applied.\n\n2. **Product Measure Structure**: The cloning transition measure continuity analysis (Section 15.2) requires that companion selections and cloning thresholds are drawn independently for each walker. If companion indices are sampled with systematic resampling (using a single shared uniform variate), the within-step dependence creates correlations that invalidate the product measure structure assumed in the proof.\n\n3. **Concentration Failure**: Without independence, the variance of aggregate quantities (e.g., total displacement, mean fitness) can grow arbitrarily depending on the correlation structure. This makes it impossible to bound tail probabilities, leading to:\n   - Unpredictable measurement noise\n   - Loss of N-uniform stability (measurement error could grow with swarm size)\n   - Potential for cascading failures where correlated random draws cause mass death events\n\n**Practical Implementation Failure Modes:**\n- Using a single PRNG stream for all walkers instead of per-walker streams\n- Systematic resampling in companion selection (single uniform for all draws)\n- Shared noise vectors across walkers (e.g., broadcasting the same ξ to all positions)\n- Time-correlated random seeds (e.g., seeding with wall-clock time within a step)\n\n**Diagnostic Indicators:**\n- Swarm exhibits synchronized behavior (all walkers move in lockstep)\n- Variance of aggregate statistics is much smaller or larger than predicted by theory\n- McDiarmid tail bounds are violated empirically (outlier events too frequent)\n- Companion selection produces identical companions for multiple walkers unexpectedly\n\n**Remediation:**\nImplement counter-based PRNGs (e.g., Random123 Philox/Threefry) to derive independent, reproducible per-walker streams keyed by (global_seed, t, i, stage). This ensures:\n- Each walker has an independent random stream\n- Reproducibility across runs with fixed seed\n- No accidental correlation from sequential PRNG calls\n- Explicit enforcement of the axiom in code structure\n\n**Theoretical Impact:**\nIf independence is violated, the analysis must be redone using:\n- Dependent-variables concentration inequalities (e.g., Azuma-Hoeffding for martingale differences)\n- Coupling arguments that explicitly account for correlation structure\n- Worst-case bounds that don't rely on concentration (much weaker guarantees)\n\nThe axiom is therefore **foundational for quantitative stability analysis** - without it, only qualitative statements about long-term behavior remain available.",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "3. Axiomatic Foundations",
+    "directive_label": "def-assumption-instep-independence",
+    "equation": null,
+    "line_range": [
+      551,
+      572
+    ],
+    "url_fragment": "#assumption-a-in-step-independence"
+  }
+}

@@ -10,21 +10,20 @@ Demonstrates:
 6. Self-contained theorems (internal assumption discharge)
 """
 
-import sys
 from pathlib import Path
+import sys
+
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from fragile.proofs import (
     Axiom,
-    MathematicalObject,
+    create_simple_object,
     ObjectType,
-    PipelineState,
     Property,
     TheoremBox,
     TheoremOutputType,
-    create_simple_object,
 )
 
 
@@ -104,7 +103,7 @@ def main() -> None:
     objects_dict = {"obj-swarm": obj_swarm}
     is_conditional = thm_energy.is_conditional(objects_dict)
     print(f"  Is Conditional? {is_conditional}")
-    print(f"  Reason: No properties required → UNCONDITIONAL")
+    print("  Reason: No properties required → UNCONDITIONAL")
     print()
 
     # ==========================================================================
@@ -156,10 +155,10 @@ def main() -> None:
     missing_before = thm_convergence.compute_conditionality(objects_dict_v2)
     is_conditional_before = thm_convergence.is_conditional(objects_dict_v2)
 
-    print(f"  Conditionality Check (BEFORE proving property):")
+    print("  Conditionality Check (BEFORE proving property):")
     print(f"    Is Conditional? {is_conditional_before}")
     print(f"    Missing Properties: {missing_before}")
-    print(f"    Reason: obj-swarm missing 'prop-bounded-variance'")
+    print("    Reason: obj-swarm missing 'prop-bounded-variance'")
     print()
 
     # ==========================================================================
@@ -208,16 +207,16 @@ def main() -> None:
     missing_after = thm_convergence.compute_conditionality(objects_dict_v3)
     is_conditional_after = thm_convergence.is_conditional(objects_dict_v3)
 
-    print(f"  Conditionality Check (AFTER proving property):")
+    print("  Conditionality Check (AFTER proving property):")
     print(f"    Is Conditional? {is_conditional_after}")
     print(f"    Missing Properties: {missing_after}")
-    print(f"    Result: NOW UNCONDITIONAL! ✨")
+    print("    Result: NOW UNCONDITIONAL! ✨")
     print()
 
-    print(f"  Explanation:")
-    print(f"    - Required: prop-bounded-variance")
+    print("  Explanation:")
+    print("    - Required: prop-bounded-variance")
     print(f"    - Object has: {list(obj_swarm_v3.get_property_labels())}")
-    print(f"    - All requirements satisfied → Automatic upgrade!")
+    print("    - All requirements satisfied → Automatic upgrade!")
     print()
 
     # ==========================================================================
@@ -265,9 +264,9 @@ def main() -> None:
     # Check BEFORE execution
     objects_initial = {"obj-potential": obj_new}
     missing_initial = thm_self_contained.compute_conditionality(objects_initial)
-    print(f"  Conditionality (BEFORE execution):")
+    print("  Conditionality (BEFORE execution):")
     print(f"    Missing: {missing_initial}")
-    print(f"    Status: CONDITIONAL")
+    print("    Status: CONDITIONAL")
     print()
 
     # Simulate execution: add ALL properties (including the required one!)
@@ -277,10 +276,10 @@ def main() -> None:
 
     objects_final = {"obj-potential": obj_updated}
     missing_final = thm_self_contained.compute_conditionality(objects_final)
-    print(f"  Conditionality (AFTER execution):")
+    print("  Conditionality (AFTER execution):")
     print(f"    Missing: {missing_final}")
-    print(f"    Status: UNCONDITIONAL ✨")
-    print(f"    Reason: Theorem proved its own assumption internally!")
+    print("    Status: UNCONDITIONAL ✨")
+    print("    Reason: Theorem proved its own assumption internally!")
     print()
 
     # ==========================================================================

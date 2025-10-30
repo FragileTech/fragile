@@ -1,0 +1,92 @@
+{
+  "label": "thm-lipschitz-structural-error-bound",
+  "name": "Bounding the Squared Structural Error",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "11.3.5",
+    "directive_label": "thm-lipschitz-structural-error-bound",
+    "line_range": [3577, 3615]
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-standardization-operator-n-dimensional",
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-statistical-properties-measurement",
+    "obj-lipschitz-structural-error-coefficients"
+  ],
+  "input_axioms": [
+    "axiom-bounded-variance-production",
+    "axiom-range-respecting-mean"
+  ],
+  "input_parameters": [
+    "V_max",
+    "sigma_prime_min_bound",
+    "n_c",
+    "epsilon_std",
+    "kappa_var_min"
+  ],
+  "attributes_required": {
+    "obj-statistical-properties-measurement": [
+      "structural-continuity"
+    ],
+    "obj-standardization-operator-n-dimensional": [
+      "bounded-z-score"
+    ],
+    "obj-swarm-aggregation-operator-axiomatic": [
+      "range-respecting-mean"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "This theorem establishes a deterministic upper bound on the squared structural error, which measures the change in the output of the N-Dimensional Standardization Operator when the set of active walkers changes but the raw input values remain fixed. The bound shows that the error grows as a combination of linear and quadratic terms with respect to the number of walkers that change their status, demonstrating that the operator has Holder-type continuity with respect to changes in the swarm structure. The linear component arises from walkers whose alive/dead status changes directly, while the quadratic component arises from stable walkers affected by changes in the swarm's statistical moments (mean and regularized standard deviation).",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [
+    "def-lipschitz-structural-error-coefficients",
+    "def-statistical-properties-measurement",
+    "def-n-dimensional-standardization-operator"
+  ],
+  "validation_errors": [],
+  "raw_fallback": {
+    "label": "thm-lipschitz-structural-error-bound",
+    "name": "Bounding the Squared Structural Error",
+    "statement": "Let $\\mathbf{v}$ be a fixed raw value vector. Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. The squared structural error, $E_S^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}) = \\|z(\\mathcal{S}_1, \\mathbf{v}, M) - z(\\mathcal{S}_2, \\mathbf{v}, M)\\|_2^2$, is deterministically bounded as follows:\n\n$$\nE_{S}^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}) \\le C_{S,\\text{direct}} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2\n$$\n\nwhere $C_{S,\\text{direct}}$ and $C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2)$ are the **Structural Error Coefficients**, which are deterministic, finite coefficients formally defined in def-lipschitz-structural-error-coefficients. The presence of the $n_c^2$ term confirms that the error is not linearly proportional to the number of status changes.",
+    "proof_sketch": "The proof decomposes the total structural error vector into two orthogonal components: a \"direct\" error from walkers whose status changes (bounded linearly in $n_c$), and an \"indirect\" error affecting walkers whose status is stable (bounded quadratically in $n_c$ through the change in statistical moments). The structural continuity functions for the mean and regularized standard deviation are used to establish the bounds.",
+    "source_section": "12",
+    "source_document": "01_fragile_gas_framework.md",
+    "dependencies": [
+      "def-lipschitz-structural-error-coefficients",
+      "lem-stats-structural-continuity",
+      "thm-z-score-norm-bound"
+    ],
+    "tags": [
+      "holder",
+      "structural-error",
+      "continuity",
+      "deterministic",
+      "quadratic"
+    ],
+    "input_objects": [
+      "obj-standardization-total-value-error-coefficient",
+      "obj-aggregator-lipschitz-constants",
+      "obj-swarm-aggregation-operator-axiomatic"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "output_type": "Bound",
+    "relations_established": [
+      "Structural error component is Lipschitz bounded"
+    ],
+    "statement_type": "theorem"
+  }
+}

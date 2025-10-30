@@ -1,0 +1,8 @@
+{
+  "label": "param-param-bm-bound",
+  "name": "param-bm-bound",
+  "symbol": "param-bm-bound",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

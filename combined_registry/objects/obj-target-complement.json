@@ -3,13 +3,22 @@
   "name": "Target Set and Complement",
   "mathematical_expression": "I_k(\\varepsilon) := U_k \\cap H_k(\\varepsilon)",
   "object_type": "space",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle",
     "swarm"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "04_wasserstein_contraction"
+  "source": {
+    "document_id": "04_wasserstein_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+    "section": null,
+    "directive_label": "obj-target-complement",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-target-complement"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

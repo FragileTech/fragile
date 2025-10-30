@@ -6,12 +6,20 @@
   "target_object": "obj-inelastic-collision-update",
   "established_by": "thm-velocity-variance-bounded-expansion",
   "expression": "rel-cloning-expands-velocity-variance-bounded",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning"
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "thm-velocity-variance-bounded-expansion",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-velocity-variance-bounded-expansion"
+  },
+  "chapter": null,
+  "document": null
 }

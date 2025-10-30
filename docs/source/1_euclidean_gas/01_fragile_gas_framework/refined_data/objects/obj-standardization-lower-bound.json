@@ -1,0 +1,25 @@
+{
+  "label": "obj-standardization-lower-bound",
+  "name": "Standardization Standard Deviation Lower Bound",
+  "statement_type": "object",
+  "mathematical_expression": "Uniform lower bound on smoothed standard deviation used in standardization operator, preventing division by zero and controlling sensitivity.",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-standardization-lower-bound",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "B",
+    "line_range": [
+      602,
+      603
+    ],
+    "directive_label": "obj-standardization-lower-bound",
+    "equation": null,
+    "url_fragment": null
+  }
+}

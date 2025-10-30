@@ -1,0 +1,467 @@
+{
+  "source_file": "/home/guillem/fragile/docs/source/1_euclidean_gas/02_euclidean_gas.md",
+  "total_directives": 30,
+  "counts_by_type": {
+    "algorithm": 1,
+    "lemma": 21,
+    "theorem": 4,
+    "definition": 3,
+    "axiom": 1
+  },
+  "directives": [
+    {
+      "type": "algorithm",
+      "label": "alg-euclidean-gas",
+      "title": "Euclidean Gas Update",
+      "content": "Given a swarm state $\\mathcal S_t=(w_1,\\dots,w_N)$ with walkers $w_i=(x_i,v_i,s_i)$, the Euclidean Gas performs one update as follows:\n\n1.  **Cemetery check.** If all walkers are dead (no alive indice...",
+      "math_expression_count": 24,
+      "first_math": "\\begin{aligned}\n& \\textbf{Input:} \\mathcal S_t = \\{(x_i^{(t)}, v_i^{(t)}, s_i^{(t)})\\}_{i=1}^N\\text{; and parameters } \\alpha, \\beta, \\varepsilon_{\\mathrm{std}}, \\eta, \\tau, p_{\\max}, \\varepsilon_{\\mathrm{clone}}, \\sigma_x, \\alpha_{\\text{restitution}}, \\sigma_v, \\\\\n& \\qquad \\sigma'_{\\mathrm{patch}}, g_A, \\mathbb C_i, Q_{\\delta}, \\Psi_{\\mathrm{kin,BAOAB}}. \\\\\n& \\textbf{If } |\\mathcal A_t| = 0: \\textbf{ return } \\delta_{\\mathcal S_t} \\quad \\text{\\# Cemetery absorption} \\\\\n\\\\\n& \\underline{\\text{Stage 2a: Raw vectors on alive set}} \\\\\n& \\dots \\quad \\text{\\# Unchanged} \\\\\n\\\\\n& \\underline{\\text{Stage 2b: Patched standardisation}} \\\\\n& \\dots \\quad \\text{\\# Unchanged} \\\\\n\\\\\n& \\underline{\\text{Stage 2c: Logistic rescale of components}} \\\\\n& \\dots \\quad \\text{\\# Unchanged} \\\\\n\\\\\n& \\underline{\\text{Stage 2d: Assemble full vectors with floors}} \\\\\n& \\dots \\quad \\text{\\# Unchanged} \\\\\n\\\\\n& \\underline{\\text{Stage 3: Cloning transition}} \\\\\n& \\dots \\quad \\text{\\# Unchanged logic, produces } (x_i^{(t+\\frac{1}{2})}, v_i^{(t+\\frac{1}{2})}) \\\\\n\\\\\n& \\underline{\\text{Stage 4: Langevin perturbation and status refresh}} \\\\\n& \\mathcal S_{\\mathrm{pert}} \\sim \\Psi_{\\mathrm{kin,BAOAB}}(\\{(x_i^{(t+\\frac{1}{2})}, v_i^{(t+\\frac{1}{2})})\\}, \\cdot) \\quad \\text{\\# BAOAB Langevin step with velocity capping} \\\\\n& \\textbf{For each } i = 1..N: \\\\\n& \\quad (x_i^{(t+1)}, v_i^{(t+1)}) \\leftarrow \\text{draw from kinetic step output} \\\\\n& \\quad s_i^{(t+1)} \\leftarrow \\mathbf 1_{\\mathcal X_{\\mathrm{valid}}}(x_i^{(t+1)}) \\\\\n& \\textbf{Return } \\mathcal S_{t+1}\n\\end{aligned}",
+      "cross_refs": [
+        "def-statistical-properties-measurement",
+        "def-canonical-logistic-rescale-function-example"
+      ],
+      "line_range": [
+        155,
+        202
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-squashing-properties-generic",
+      "title": "Properties of smooth radial squashing maps",
+      "content": "For any constant $C>0$ define $\\psi_C: \\mathbb R^d\\to B(0,C)$ by $\\psi_C(z):=C\\,z/(C+\\|z\\|)$. The map $\\psi_C$ satisfies:\n\n1. $\\psi_C$ is $1$-Lipschitz on $\\mathbb R^d$.\n2. $\\psi_C\\in C^{\\infty}(\\math...",
+      "math_expression_count": 27,
+      "first_math": "D\\psi_C(z)=\\frac{C}{C+\\|z\\|}I-\\frac{C}{(C+\\|z\\|)^2}\\,\\frac{z z^{\\top}}{\\|z\\|}.",
+      "cross_refs": [],
+      "line_range": [
+        420,
+        446
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-projection-lipschitz",
+      "title": "Lipschitz continuity of the projection $\\varphi$",
+      "content": "For $(x,v),(x',v')\\in\\mathbb R^d\\times\\mathbb R^d$ the projection $\\varphi(x,v)=(\\psi_x(x),\\psi_v(v))$ satisfies\n\n$$\nd_{\\mathcal Y}^{\\mathrm{Sasaki}}\\bigl(\\varphi(x,v),\\varphi(x',v')\\bigr)\\le L_{\\varp...",
+      "math_expression_count": 12,
+      "first_math": "d_{\\mathcal Y}^{\\mathrm{Sasaki}}\\bigl(\\varphi(x,v),\\varphi(x',v')\\bigr)\\le L_{\\varphi}\\,\\sqrt{\\|x-x'\\|^2+\\lambda_v\\|v-v'\\|^2},",
+      "cross_refs": [
+        "lem-squashing-properties-generic"
+      ],
+      "line_range": [
+        449,
+        485
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-sasaki-kinetic-lipschitz",
+      "title": "Lipschitz property of the kinetic flow",
+      "content": "For $(x,v),(x',v')\\in\\mathcal X\\times\\mathcal V_{\\mathrm{alg}}$ and any $\\xi_v,\\xi_x\\in\\mathbb R^d$ define\n\n$$\n\\Phi_{x,v}(\\xi_v,\\xi_x):=x+\\tau\\psi_v\\big(v+\\tfrac{\\tau}{m}F(x)-\\gamma_{\\mathrm{fric}}\\ta...",
+      "math_expression_count": 26,
+      "first_math": "\\Phi_{x,v}(\\xi_v,\\xi_x):=x+\\tau\\psi_v\\big(v+\\tfrac{\\tau}{m}F(x)-\\gamma_{\\mathrm{fric}}\\tau(v-u(x))+\\sqrt{\\sigma_v^2\\tau}\\,\\xi_v\\big)+\\sqrt{\\tau}\\,\\sigma_x\\,\\xi_x.",
+      "cross_refs": [
+        "lem-squashing-properties-generic"
+      ],
+      "line_range": [
+        557,
+        613
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-euclidean-boundary-holder",
+      "title": "H\u00f6lder continuity of the death probability",
+      "content": "```{dropdown} Proof\n:::{prf:proof}\nFix $(x,v),(x',v')\\in\\mathcal X\\times\\mathcal V_{\\mathrm{alg}}$ and set $\\Delta:=d_{\\mathcal Y}^{\\mathrm{Sasaki}}((x,v),(x',v'))$. Let $C$ be any compact subset of $...",
+      "math_expression_count": 51,
+      "first_math": "\\Phi_{x,v}(\\xi_v,\\xi_x):=x+\\tau\\psi_v\\Big(v+\\frac{\\tau}{m}F(x)-\\gamma_{\\mathrm{fric}}\\tau\\big(v-u(x)\\big)+\\sqrt{\\sigma_v^2\\tau}\\,\\xi_v\\Big)+\\sqrt{\\tau}\\,\\sigma_x\\,\\xi_x.",
+      "cross_refs": [
+        "lem-euclidean-geometric-consistency",
+        "lem-sasaki-kinetic-lipschitz",
+        "lem-euclidean-geometric-consistency"
+      ],
+      "line_range": [
+        614,
+        729
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-euclidean-reward-regularity",
+      "title": "Reward regularity in the Sasaki metric",
+      "content": "The reward function $R(x,v)=R_{\\mathrm{pos}}(x)-\\lambda_{\\mathrm{vel}}\\|v\\|^2$ is continuous on $(\\mathcal Y,d_{\\mathcal Y}^{\\mathrm{Sasaki}})$ and therefore satisfies the Axiom of Reward Regularity (...",
+      "math_expression_count": 27,
+      "first_math": "\\psi_C^{-1}(y)=\\frac{C}{1-\\|y\\|/C}\\,y\\qquad(\\|y\\|<C).",
+      "cross_refs": [
+        "def-axiom-reward-regularity"
+      ],
+      "line_range": [
+        736,
+        762
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-euclidean-richness",
+      "title": "Environmental richness with a kinetic regularizer",
+      "content": "The reward $R(x,v)=R_{\\mathrm{pos}}(x)-\\lambda_{\\mathrm{vel}}\\|v\\|^2$ with $\\lambda_{\\mathrm{vel}}>0$ satisfies the Axiom of Environmental Richness ({prf:ref}`def-axiom-environmental-richness`).\n\n```{...",
+      "math_expression_count": 26,
+      "first_math": "\\delta:=\\min\\Big\\{\\frac{r}{\\sqrt{\\lambda_v}},\\,\\frac{V_{\\mathrm{alg}}}{2}\\Big\\}>0.",
+      "cross_refs": [
+        "def-axiom-environmental-richness"
+      ],
+      "line_range": [
+        763,
+        791
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-euclidean-perturb-moment",
+      "title": "Perturbation second moment in the Sasaki metric",
+      "content": "```{dropdown} Proof\n:::{prf:proof}\nIntroduce the uncapped velocity update\n\n$$\n\\tilde v:=v+\\frac{\\tau}{m}F(x)-\\gamma_{\\mathrm{fric}}\\tau\\big(v-u(x)\\big)+\\sqrt{\\sigma_v^2\\tau}\\,\\xi_v,\\qquad \\xi_v\\sim\\ma...",
+      "math_expression_count": 25,
+      "first_math": "\\tilde v:=v+\\frac{\\tau}{m}F(x)-\\gamma_{\\mathrm{fric}}\\tau\\big(v-u(x)\\big)+\\sqrt{\\sigma_v^2\\tau}\\,\\xi_v,\\qquad \\xi_v\\sim\\mathcal N(0,I_d).",
+      "cross_refs": [
+        "lem-squashing-properties-generic"
+      ],
+      "line_range": [
+        803,
+        891
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-euclidean-geometric-consistency",
+      "title": "Geometric consistency under the capped kinetic kernel",
+      "content": "```{dropdown} Proof\n:::{prf:proof}\nBecause $\\mathcal X_{\\mathrm{valid}}$ is compact and $F$ and $u$ are continuous, the drift and anisotropy envelopes appearing in the Axiom of Geometric Consistency a...",
+      "math_expression_count": 55,
+      "first_math": "F_C:=\\sup_{x\\in C}\\|F(x)\\|,\\qquad u_C:=\\sup_{x\\in C}\\|u(x)\\|,",
+      "cross_refs": [
+        "def-axiom-geometric-consistency",
+        "def-axiom-geometric-consistency"
+      ],
+      "line_range": [
+        894,
+        1027
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-sasaki-single-walker-positional-error",
+      "title": "Single-walker positional error bound in the Sasaki metric",
+      "content": "Let $\\mathcal S_1$ and $\\mathcal S_2$ be two swarm states. For a given walker $i$ that is alive in swarm $\\mathcal S_1$ ($s_{1,i}=1$), let $\\mathbb C_i(\\mathcal S_1)$ be its companion selection measur...",
+      "math_expression_count": 21,
+      "first_math": "\\left| \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{1,i}), \\varphi(w_{1,c})) \\right] - \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{2,i}), \\varphi(w_{2,c})) \\right] \\right| \\le d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{1,i}), \\varphi(w_{2,i})) + \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{1,c}), \\varphi(w_{2,c})) \\right]",
+      "cross_refs": [],
+      "line_range": [
+        1058,
+        1111
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-sasaki-single-walker-structural-error",
+      "title": "Single-walker structural error bound in the Sasaki metric",
+      "content": "Let $i\\in\\mathcal A_{\\mathrm{stable}}$ and keep the second swarm\u2019s capped positions fixed. Let the initial swarm have at least two alive walkers, $k_1=|\\mathcal A(\\mathcal S_1)| \\ge 2$. The absolute e...",
+      "math_expression_count": 22,
+      "first_math": "\\left| \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{2,i}), \\varphi(w_{2,c})) \\right] - \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_2)} \\left[ d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{2,i}), \\varphi(w_{2,c})) \\right] \\right| \\le \\frac{2 D_{\\mathcal Y}}{k_1-1} \\cdot n_c(\\mathcal S_1, \\mathcal S_2)",
+      "cross_refs": [
+        "thm-total-error-status-bound",
+        "thm-total-error-status-bound"
+      ],
+      "line_range": [
+        1112,
+        1151
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-sasaki-total-squared-error-stable",
+      "title": "Mean-square error on stable walkers (Sasaki)",
+      "content": "Let $\\mathcal S_1,\\mathcal S_2$ be swarms with alive sets $\\mathcal A_r$ and let $\\mathbf d^{(r)}$ denote the expected raw distance vector produced by the measurement operator on $\\mathcal S_r$. Write...",
+      "math_expression_count": 18,
+      "first_math": "\\sum_{i\\in\\mathcal A_{\\mathrm{stable}}}\\big|d^{(1)}_i-d^{(2)}_i\\big|^2\\le C_{\\mathrm{pos}}^{\\mathrm{Sasaki}}(k_1,k_{\\mathrm{stable}})\\,\\Delta_{\\mathrm{pos,Sasaki}}^2(\\mathcal S_1,\\mathcal S_2),",
+      "cross_refs": [
+        "lem-sasaki-single-walker-positional-error"
+      ],
+      "line_range": [
+        1152,
+        1187
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-sasaki-distance-ms",
+      "title": "Mean-square continuity of the distance measurement (Sasaki)",
+      "content": "Let $\\mathbf d^{(r)}$ be the expected raw distance vectors of swarms $\\mathcal S_r$. With $k_{\\min}:=\\max\\{1,\\min(k_1,k_2)\\}$, $k_{\\mathrm{stable}}:=|\\mathcal A_{\\mathrm{stable}}|$, and alive-differen...",
+      "math_expression_count": 13,
+      "first_math": "F_{d,ms}^{\\mathrm{Sasaki}}(\\Delta_{\\mathrm{pos}}^2,n_c):=C_{\\mathrm{pos}}^{\\mathrm{Sasaki}}(k_1,k_{\\mathrm{stable}})\\,\\Delta_{\\mathrm{pos}}^2+4k_{\\mathrm{stable}}\\frac{D_{\\mathcal Y}^2}{\\max\\{1,k_1-1\\}^2}\\,n_c^2+4D_{\\mathcal Y}^2 n_c.",
+      "cross_refs": [
+        "lem-sasaki-total-squared-error-stable",
+        "lem-sasaki-single-walker-structural-error"
+      ],
+      "line_range": [
+        1188,
+        1211
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-sasaki-aggregator-value",
+      "title": "Value continuity of the empirical moments",
+      "content": "Fix a swarm $\\mathcal S$ with alive index set $\\mathcal A(\\mathcal S)$ of size $k\\ge 1$. Let $\\mathbf v_1,\\mathbf v_2\\in\\mathbb R^k$ be two scalar value vectors whose components satisfy $|v_{j,i}|\\le ...",
+      "math_expression_count": 8,
+      "first_math": "|\\mu(\\mathcal S,\\mathbf v_1)-\\mu(\\mathcal S,\\mathbf v_2)|\\le \\frac{1}{\\sqrt{k}}\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2,\\qquad|m_2(\\mathcal S,\\mathbf v_1)-m_2(\\mathcal S,\\mathbf v_2)|\\le \\frac{2V_{\\max}}{\\sqrt{k}}\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2.",
+      "cross_refs": [],
+      "line_range": [
+        1224,
+        1240
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-sasaki-aggregator-structural",
+      "title": "Structural continuity of the empirical moments",
+      "content": "Let $\\mathcal S_r=((x_{r,i},v_{r,i},s_{r,i}))_{i=1}^N$ with alive counts $k_r\\ge 1$ and let $\\mathbf v$ be a scalar vector on the union of alive indices satisfying $|v_i|\\le V_{\\max}$. Set $k_{\\min}:=...",
+      "math_expression_count": 11,
+      "first_math": "|\\mu(\\mathcal S_1,\\mathbf v)-\\mu(\\mathcal S_2,\\mathbf v)|\\le \\frac{3V_{\\max}}{k_{\\min}}\\,n_c,\\qquad|m_2(\\mathcal S_1,\\mathbf v)-m_2(\\mathcal S_2,\\mathbf v)|\\le \\frac{3V_{\\max}^2}{k_{\\min}}\\,n_c.",
+      "cross_refs": [],
+      "line_range": [
+        1241,
+        1257
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-sasaki-aggregator-lipschitz",
+      "title": "Lipschitz data for the Sasaki empirical aggregators",
+      "content": "For reward vectors take $V_{\\max}=V_{\\mathrm{max}}^{(R)}$; for distance vectors take $V_{\\max}=V_{\\mathrm{max}}^{(d)}$. The empirical mean and second moment satisfy the aggregator axioms with\n\n$$\nL_{\\...",
+      "math_expression_count": 7,
+      "first_math": "L_{\\mu,M}^{\\mathrm{Sasaki}}(k)=\\frac{1}{\\sqrt{k}},\\qquad L_{m_2,M}^{\\mathrm{Sasaki}}(k)=\\frac{2V_{\\max}}{\\sqrt{k}},",
+      "cross_refs": [
+        "lem-sasaki-aggregator-value",
+        "lem-sasaki-aggregator-structural"
+      ],
+      "line_range": [
+        1258,
+        1279
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-sasaki-standardization-constants",
+      "title": "Standardization constants (Sasaki geometry)",
+      "content": "Let $\\sigma_{\\min,\\mathrm{patch}}:=\\sqrt{\\kappa_{\\mathrm{var,min}}+\\varepsilon_{\\mathrm{std}}^2}$ be the uniform lower bound on the regularized standard deviation, and let $L_{\\sigma'_{\\mathrm{patch}}...",
+      "math_expression_count": 11,
+      "first_math": "C_{V,\\mathrm{direct}} := \\frac{1}{\\sigma_{\\min,\\mathrm{patch}}}",
+      "cross_refs": [
+        "lem-sigma-patch-lipschitz"
+      ],
+      "line_range": [
+        1287,
+        1329
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-sasaki-value-error-decomposition",
+      "title": "Decomposition of the Value Error",
+      "content": "Let $\\mathcal S$ be a fixed swarm state with alive set $\\mathcal A$ of size $k$. Let $\\mathbf r_1$ and $\\mathbf r_2$ be two raw value vectors for the alive set. Let $(\\mu_1, \\sigma'_1)$ and $(\\mu_2, \\...",
+      "math_expression_count": 23,
+      "first_math": "\\Delta\\mathbf{z} = \\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + \\Delta_{\\text{denom}}",
+      "cross_refs": [],
+      "line_range": [
+        1349,
+        1418
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-sasaki-direct-shift-bound-sq",
+      "title": "Bound on the Squared Direct Shift Component",
+      "content": "Let $\\mathcal S$ be a fixed swarm state. Let $\\mathbf r_1$ and $\\mathbf r_2$ be two raw value vectors for the alive set. The squared Euclidean norm of the direct shift error component, $\\Delta_{\\text{...",
+      "math_expression_count": 16,
+      "first_math": "\\|\\Delta_{\\text{direct}}\\|_2^2 \\le \\frac{1}{\\sigma_{\\min,\\mathrm{patch}}^2} \\cdot \\|\\mathbf r_1 - \\mathbf r_2\\|_2^2",
+      "cross_refs": [
+        "def-statistical-properties-measurement"
+      ],
+      "line_range": [
+        1421,
+        1468
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-sasaki-mean-shift-bound-sq",
+      "title": "Bound on the Squared Mean Shift Component",
+      "content": "Let $\\mathcal S$ be a fixed swarm state with alive set $\\mathcal A$ of size $k \\ge 1$. Let $\\mathbf r_1$ and $\\mathbf r_2$ be two raw value vectors. The squared Euclidean norm of the mean shift error ...",
+      "math_expression_count": 16,
+      "first_math": "\\|\\Delta_{\\text{mean}}\\|_2^2 \\le \\frac{k \\cdot (L_{\\mu,M}^{\\mathrm{Sasaki}}(k))^2}{\\sigma_{\\min,\\mathrm{patch}}^2} \\cdot \\|\\mathbf r_1 - \\mathbf r_2\\|_2^2",
+      "cross_refs": [
+        "lem-sasaki-aggregator-lipschitz",
+        "lem-sasaki-aggregator-value"
+      ],
+      "line_range": [
+        1471,
+        1521
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-sasaki-denom-shift-bound-sq",
+      "title": "Bounding the Squared Denominator Shift Component",
+      "content": "Let $\\mathcal S$ be a fixed swarm state with alive set $\\mathcal A$ of size $k \\ge 1$. Let $\\mathbf r_1$ and $\\mathbf r_2$ be two raw value vectors with components bounded by $V_{\\max}^{(R)}$. The squ...",
+      "math_expression_count": 16,
+      "first_math": "\\|\\Delta_{\\text{denom}}\\|_2^2 \\le k \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2 \\left( \\frac{L_{\\sigma',M}^{\\mathrm{Sasaki}}(k)}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2 \\cdot \\|\\mathbf r_1 - \\mathbf r_2\\|_2^2",
+      "cross_refs": [
+        "thm-z-score-norm-bound",
+        "lem-stats-value-continuity"
+      ],
+      "line_range": [
+        1524,
+        1585
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-sasaki-standardization-constants-sq",
+      "title": "Value Error Coefficients (Squared Form)",
+      "content": "Let $\\mathcal S$ be a fixed swarm state with alive set $\\mathcal A$ of size $k \\ge 1$, and let $M$ be the chosen **Swarm Aggregation Operator**. The coefficients for the bounds on the squared value er...",
+      "math_expression_count": 16,
+      "first_math": "C_{V,\\mathrm{direct}}^{\\mathrm{sq}}(\\mathcal S) := \\frac{1}{\\sigma_{\\min,\\mathrm{patch}}^2}",
+      "cross_refs": [],
+      "line_range": [
+        1646,
+        1677
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-sasaki-standardization-structural-sq",
+      "title": "Structural Continuity of Patched Standardization (Sasaki)",
+      "content": "For general swarms $\\mathcal S_1,\\mathcal S_2$ with alive counts $k_r\\ge 1$, the squared L2-norm of the output error of the standardization operator is bounded by a function of the number of status ch...",
+      "math_expression_count": 6,
+      "first_math": "\\|z(\\mathcal S_1)-z(\\mathcal S_2)\\|_2^2 \\le C_{S,\\mathrm{direct}}^{\\mathrm{sq}}(\\mathcal S_1, \\mathcal S_2) \\cdot n_c(\\mathcal S_1, \\mathcal S_2) + C_{S,\\mathrm{indirect}}^{\\mathrm{sq}}(\\mathcal S_1, \\mathcal S_2) \\cdot n_c(\\mathcal S_1, \\mathcal S_2)^2",
+      "cross_refs": [
+        "def-sasaki-structural-coeffs-sq"
+      ],
+      "line_range": [
+        1680,
+        1692
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-sasaki-structural-error-decomposition",
+      "title": "Decomposition of the Structural Error",
+      "content": "Let $\\mathbf r_2$ be a fixed raw value vector. Let $\\mathcal S_1$ and $\\mathcal S_2$ be two swarm states. Let $\\mathbf z_1 = z(\\mathcal S_1, \\mathbf r_2)$ and $\\mathbf z_2 = z(\\mathcal S_2, \\mathbf r_...",
+      "math_expression_count": 35,
+      "first_math": "\\Delta\\mathbf{z} = \\Delta_{\\text{direct}} + \\Delta_{\\text{indirect}}",
+      "cross_refs": [],
+      "line_range": [
+        1695,
+        1748
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-sasaki-direct-structural-error-sq",
+      "title": "Bound on the Squared Direct Structural Error",
+      "content": "Let $\\mathbf r_2$ be a fixed raw value vector with components bounded by $V_{\\max}^{(R)}$. The squared Euclidean norm of the direct structural error component, $\\|\\Delta_{\\text{direct}}\\|_2^2$, is bou...",
+      "math_expression_count": 28,
+      "first_math": "\\|\\Delta_{\\text{direct}}\\|_2^2 \\le \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2 \\cdot n_c(\\mathcal S_1, \\mathcal S_2)",
+      "cross_refs": [
+        "thm-z-score-norm-bound"
+      ],
+      "line_range": [
+        1751,
+        1802
+      ]
+    },
+    {
+      "type": "lemma",
+      "label": "lem-sasaki-indirect-structural-error-sq",
+      "title": "Bound on the Squared Indirect Structural Error",
+      "content": "Let $\\mathbf r_2$ be a fixed raw value vector. Let $\\mathcal S_1$ and $\\mathcal S_2$ be two swarm states. The squared Euclidean norm of the indirect structural error component, $\\|\\Delta_{\\text{indire...",
+      "math_expression_count": 27,
+      "first_math": "\\|\\Delta_{\\text{indirect}}\\|_2^2 \\le C_{S,\\mathrm{indirect}}^{\\mathrm{sq}}(\\mathcal S_1, \\mathcal S_2) \\cdot n_c(\\mathcal S_1, \\mathcal S_2)^2",
+      "cross_refs": [
+        "def-sasaki-structural-coeffs-sq",
+        "lem-sasaki-aggregator-structural",
+        "lem-stats-structural-continuity"
+      ],
+      "line_range": [
+        1805,
+        1892
+      ]
+    },
+    {
+      "type": "definition",
+      "label": "def-sasaki-structural-coeffs-sq",
+      "title": "Structural Error Coefficients (Squared Form)",
+      "content": "Let $\\mathcal S_1$ and $\\mathcal S_2$ be two swarm states with alive sets $\\mathcal A_1$ and $\\mathcal A_2$, of sizes $k_1:=|\\mathcal A_1|$ and $k_2:=|\\mathcal A_2|$. Let $k_{\\mathrm{stable}}:=|\\mathc...",
+      "math_expression_count": 13,
+      "first_math": "C_{S,\\mathrm{direct}}^{\\mathrm{sq}} := \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2",
+      "cross_refs": [],
+      "line_range": [
+        1935,
+        1952
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-sasaki-standardization-composite-sq",
+      "title": "Composite Continuity of the Patched Standardization Operator (Sasaki)",
+      "content": "The N-dimensional standardization operator $z(\\mathcal S)$, when applied to the reward vector, is continuous with respect to the dispersion metric. For any two swarms $\\mathcal S_1, \\mathcal S_2$ with...",
+      "math_expression_count": 34,
+      "first_math": "\\|z(\\mathcal S_1)-z(\\mathcal S_2)\\|_2^2 \\le L_{z,L}^2(\\mathcal S_1,\\mathcal S_2) \\cdot d_{\\mathrm{Disp},\\mathcal Y}^{\\mathrm{Sasaki}}(\\mathcal S_1, \\mathcal S_2)^2 + L_{z,H}^2(\\mathcal S_1,\\mathcal S_2) \\cdot d_{\\mathrm{Disp},\\mathcal Y}^{\\mathrm{Sasaki}}(\\mathcal S_1, \\mathcal S_2)^4",
+      "cross_refs": [
+        "thm-sasaki-standardization-value",
+        "thm-sasaki-standardization-structural-sq",
+        "thm-rescale-function-lipschitz",
+        "thm-sasaki-standardization-composite-sq",
+        "thm-sasaki-standardization-composite-sq"
+      ],
+      "line_range": [
+        1957,
+        2056
+      ]
+    },
+    {
+      "type": "axiom",
+      "label": "axiom-non-deceptive",
+      "title": "Axiom of Non-Deceptive Landscapes",
+      "content": "The environment $(X_{\\mathrm{valid}}, R_{\\mathrm{pos}})$ is **non-deceptive** if there exist constants $\\kappa_{\\mathrm{grad}} > 0$ and $L_{\\mathrm{grad}} > 0$ such that for any two points $x, y \\in X...",
+      "math_expression_count": 11,
+      "first_math": "\\frac{1}{\\|x-y\\|} \\int_{0}^{\\|x-y\\|} \\big\\|\\nabla R_{\\mathrm{pos}}\\big(x + t\\tfrac{y-x}{\\|y-x\\|}\\big)\\big\\|^2 dt \\ge \\kappa_{\\mathrm{grad}}.",
+      "cross_refs": [],
+      "line_range": [
+        2084,
+        2096
+      ]
+    },
+    {
+      "type": "theorem",
+      "label": "thm-euclidean-feller",
+      "title": "Feller continuity of $\\Psi_{\\mathcal F_{\\mathrm{EG}}}$",
+      "content": "```{dropdown} Proof\n:::{prf:proof}\nWrite the single-step operator as the composition of the cemetery check (Stage 1), the measurement and potential pipeline (Stage 2), the Clone/Persist gate (Stage 3)...",
+      "math_expression_count": 17,
+      "first_math": "\\Sigma_N",
+      "cross_refs": [
+        "lem-sasaki-single-walker-positional-error",
+        "thm-sasaki-distance-ms",
+        "lem-sasaki-aggregator-lipschitz",
+        "thm-sasaki-standardization-value",
+        "thm-sasaki-standardization-structural",
+        "lem-squashing-properties-generic",
+        "lem-euclidean-perturb-moment",
+        "lem-euclidean-boundary-holder"
+      ],
+      "line_range": [
+        2262,
+        2280
+      ]
+    }
+  ]
+}

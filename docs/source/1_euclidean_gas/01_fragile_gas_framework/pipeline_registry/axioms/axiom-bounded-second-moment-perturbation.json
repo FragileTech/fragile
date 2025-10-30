@@ -1,0 +1,22 @@
+{
+  "label": "axiom-bounded-second-moment-perturbation",
+  "statement": "The expectation of the squared displacement caused by the Perturbation Measure, after being projected into the Algorithmic Space, is uniformly bounded across all possible starting positions.",
+  "mathematical_expression": "M_{\\text{pert}}^2 \\ge \\sup_{x_{\\text{in}} \\in \\mathcal{X}} \\mathbb{E}[Y], \\quad \\text{where } Y := d_{\\mathcal{Y}}(\\varphi(x_{\\text{out}}), \\varphi(x_{\\text{in}}))^2 \\text{ and } x_{\\text{out}} \\sim \\mathcal{P}_\\sigma(x_{\\text{in}}, \\cdot)",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of Bounded Second Moment of Perturbation",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "14",
+    "directive_label": "axiom-bounded-second-moment-perturbation",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

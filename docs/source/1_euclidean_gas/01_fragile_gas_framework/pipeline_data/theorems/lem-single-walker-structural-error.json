@@ -1,0 +1,34 @@
+{
+  "label": "lem-single-walker-structural-error",
+  "name": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with alive sets $\\mathcal{A}_1$ and $...",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-aggregator-lipschitz-constants",
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-distance-measurement-ms-constants",
+    "obj-companion-selection-measure"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Bounds structural error in expected distance for walker i due to companion selection measure change"
+  ],
+  "natural_language_statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with alive sets $\\mathcal{A}_1$ and $\\mathcal{A}_2$. Let walker $i$ be alive in both swarms ($i \\in \\mathcal{A}_1 \\cap \\mathcal{A}_2$), and let the initial swarm have at least two alive walkers, $k_1=|\\mathcal{A}_1| \\ge 2$. Let the walker positions $\\mathbf{x}_2$ from the second swarm be fixed for the analysis. Let $n_c$ be the total number of status changes in the swarm.\n\nThe absolute error in the expected distance for walker $i$ due to the change in the companion selection measure is bounded by:",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

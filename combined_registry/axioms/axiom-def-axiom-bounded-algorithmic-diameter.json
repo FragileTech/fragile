@@ -4,5 +4,11 @@
   "mathematical_expression": "(\\mathcal{Y}, d_{\\mathcal{Y}})",
   "foundational_framework": "Euclidean Gas",
   "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "document": "01_fragile_gas_framework",
+  "name": null,
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": null
 }

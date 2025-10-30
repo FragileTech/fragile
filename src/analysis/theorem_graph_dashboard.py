@@ -21,8 +21,6 @@ Usage:
     panel serve src/analysis/theorem_graph_dashboard.py --show
 """
 
-from pathlib import Path
-
 import holoviews as hv
 import networkx as nx
 import numpy as np
@@ -35,12 +33,13 @@ from analysis.load_math_schema import (
 )
 from analysis.render_math_json import MathDocumentRenderer, RenderOptions
 from fragile.shaolin.graph import (
-    InteractiveGraph,
     create_graphviz_layout,
     edges_as_df,
+    InteractiveGraph,
     nodes_as_df,
     select_index,
 )
+
 
 hv.extension("bokeh")
 pn.extension()
@@ -132,6 +131,7 @@ class TheoremGraphDashboard:
         else:
             # Create empty edges dataframe with proper columns
             import pandas as pd
+
             self.df_edges_full = pd.DataFrame(columns=["source", "target"])
 
         # Convert categorical columns to categorical dtype
@@ -143,12 +143,16 @@ class TheoremGraphDashboard:
         # Add category column (for axioms, empty for others)
         if "category" not in self.df_nodes_full.columns:
             self.df_nodes_full["category"] = ""
-        self.df_nodes_full["category"] = self.df_nodes_full["category"].fillna("").astype("category")
+        self.df_nodes_full["category"] = (
+            self.df_nodes_full["category"].fillna("").astype("category")
+        )
 
         # Add importance column (for theorems/lemmas/propositions, empty for others)
         if "importance" not in self.df_nodes_full.columns:
             self.df_nodes_full["importance"] = ""
-        self.df_nodes_full["importance"] = self.df_nodes_full["importance"].fillna("").astype("category")
+        self.df_nodes_full["importance"] = (
+            self.df_nodes_full["importance"].fillna("").astype("category")
+        )
 
         # Get all unique values for filters
         self.unique_values = get_all_unique_values(self.full_graph)
@@ -179,7 +183,7 @@ class TheoremGraphDashboard:
         all_categories = self.unique_values["categories"]
         self.category_filter = pn.widgets.MultiChoice(
             name="Axiom Category",
-            options=all_categories if all_categories else ["(no categories)"],
+            options=all_categories or ["(no categories)"],
             value=all_categories,
             width=280,
             description="Filter axioms by category",
@@ -189,7 +193,7 @@ class TheoremGraphDashboard:
         all_importance = self.unique_values["importance_levels"]
         self.importance_filter = pn.widgets.MultiChoice(
             name="Importance Level",
-            options=all_importance if all_importance else ["(no importance levels)"],
+            options=all_importance or ["(no importance levels)"],
             value=all_importance,
             width=280,
             description="Filter theorems/lemmas by importance",
@@ -199,7 +203,7 @@ class TheoremGraphDashboard:
         all_tags = self.unique_values["tags"]
         self.tags_filter = pn.widgets.MultiChoice(
             name="Tags",
-            options=all_tags if all_tags else ["(no tags)"],
+            options=all_tags or ["(no tags)"],
             value=[],  # Start empty - show all by default
             width=280,
             description="Filter by tags (shows nodes with ANY selected tag)",
@@ -330,7 +334,7 @@ class TheoremGraphDashboard:
         # Compute new layout
         print(f"Computing {layout_name} layout (this may take 2-5 seconds)...")
 
-        if layout_name in ["dot", "neato", "fdp", "sfdp", "circo", "twopi"]:
+        if layout_name in {"dot", "neato", "fdp", "sfdp", "circo", "twopi"}:
             # Graphviz layouts
             layout = create_graphviz_layout(
                 self.full_graph,
@@ -426,13 +430,11 @@ class TheoremGraphDashboard:
             if isinstance(sample, list):
                 # Convert lists to comma-separated strings
                 df_nodes[col] = df_nodes[col].apply(
-                    lambda x: ', '.join(str(i) for i in x) if isinstance(x, list) else x
+                    lambda x: ", ".join(str(i) for i in x) if isinstance(x, list) else x
                 )
             elif isinstance(sample, dict):
                 # Convert dicts to string representation
-                df_nodes[col] = df_nodes[col].apply(
-                    lambda x: str(x) if isinstance(x, dict) else x
-                )
+                df_nodes[col] = df_nodes[col].apply(lambda x: str(x) if isinstance(x, dict) else x)
 
         # Define columns to ignore (filter to only existing columns)
         ignore_cols_candidates = (
@@ -539,6 +541,7 @@ Use the controls below to customize how directive properties are displayed:
         except Exception as e:
             print(f"ERROR in _on_node_select: {e}")
             import traceback
+
             traceback.print_exc()
             return pn.pane.Markdown(
                 f"**Error displaying node details**\n\n```\n{e}\n```",
@@ -552,12 +555,11 @@ Use the controls below to customize how directive properties are displayed:
         """
         if self.node_details_view is not None:
             return self.node_details_view
-        else:
-            return pn.pane.Markdown(
-                "**Click a node to see details**\n\n"
-                "*Tip: Click on any directive in the graph above*",
-                width=480,
-            )
+        return pn.pane.Markdown(
+            "**Click a node to see details**\n\n"
+            "*Tip: Click on any directive in the graph above*",
+            width=480,
+        )
 
     def _render_node_details(self, node_label: str):
         """Render node details using render_math_json renderer.
@@ -605,6 +607,7 @@ Use the controls below to customize how directive properties are displayed:
         except Exception as e:
             print(f"ERROR in _render_node_details: {e}")
             import traceback
+
             traceback.print_exc()
             return pn.pane.Markdown(
                 f"**Error rendering node details**\n\n```\n{e}\n```",
@@ -620,7 +623,6 @@ Use the controls below to customize how directive properties are displayed:
         include_deps: bool,
     ) -> pn.pane.Markdown:
         """Format graph statistics showing visible/total counts."""
-        import pandas as pd
 
         # Compute which nodes are visible
         alpha = self._compute_node_alpha(types, categories, importance_levels, tags, include_deps)
@@ -631,9 +633,7 @@ Use the controls below to customize how directive properties are displayed:
         visible_nodes = len(visible_indices)
         total_edges = self.full_graph.number_of_edges()
         visible_edges = sum(
-            1
-            for u, v in self.full_graph.edges()
-            if u in visible_indices and v in visible_indices
+            1 for u, v in self.full_graph.edges() if u in visible_indices and v in visible_indices
         )
 
         # Count by type
@@ -653,30 +653,34 @@ Use the controls below to customize how directive properties are displayed:
                 category = self.full_graph.nodes[node].get("category", "uncategorized")
                 category_counts_total[category] = category_counts_total.get(category, 0) + 1
                 if node in visible_indices:
-                    category_counts_visible[category] = category_counts_visible.get(category, 0) + 1
+                    category_counts_visible[category] = (
+                        category_counts_visible.get(category, 0) + 1
+                    )
 
         # Count by importance (for theorems/lemmas/propositions)
         importance_counts_visible = {}
         importance_counts_total = {}
         for node in self.full_graph.nodes():
-            if self.full_graph.nodes[node].get("type") in ["theorem", "lemma", "proposition"]:
+            if self.full_graph.nodes[node].get("type") in {"theorem", "lemma", "proposition"}:
                 importance = self.full_graph.nodes[node].get("importance", "unspecified")
-                importance_counts_total[importance] = importance_counts_total.get(importance, 0) + 1
+                importance_counts_total[importance] = (
+                    importance_counts_total.get(importance, 0) + 1
+                )
                 if node in visible_indices:
-                    importance_counts_visible[importance] = importance_counts_visible.get(
-                        importance, 0
-                    ) + 1
+                    importance_counts_visible[importance] = (
+                        importance_counts_visible.get(importance, 0) + 1
+                    )
 
         # Format markdown
         md = f"""
 ## Document Statistics
 
 ### Document Info
-**Title**: {self.metadata.get('title', 'Untitled')}
+**Title**: {self.metadata.get("title", "Untitled")}
 
-**Document ID**: `{self.metadata.get('document_id', 'unknown')}`
+**Document ID**: `{self.metadata.get("document_id", "unknown")}`
 
-**Version**: {self.metadata.get('version', 'unknown')}
+**Version**: {self.metadata.get("version", "unknown")}
 
 ---
 
@@ -704,12 +708,12 @@ Use the controls below to customize how directive properties are displayed:
 
         if importance_counts_total:
             md += "\n---\n\n### By Importance Level\n"
-            for importance, count in sorted(importance_counts_visible.items(), key=lambda x: -x[1]):
+            for importance, count in sorted(
+                importance_counts_visible.items(), key=lambda x: -x[1]
+            ):
                 total = importance_counts_total.get(importance, 0)
                 color = IMPORTANCE_COLORS.get(importance, "#95a5a6")
-                md += (
-                    f'- <span style="color:{color}">**{importance}**</span>: {count} / {total}\n'
-                )
+                md += f'- <span style="color:{color}">**{importance}**</span>: {count} / {total}\n'
 
         return pn.pane.Markdown(md, width=480)
 
@@ -796,15 +800,13 @@ Use the controls below to customize how directive properties are displayed:
         ]
 
         # Create template
-        template = pn.template.FastListTemplate(
+        return pn.template.FastListTemplate(
             title=f"Mathematical Documentation: {self.metadata.get('document_id', 'Unknown')}",
             sidebar=sidebar_content,
             main=main_content,
             accent_base_color="#3498db",
             header_background="#2c3e50",
         )
-
-        return template
 
 
 def main():

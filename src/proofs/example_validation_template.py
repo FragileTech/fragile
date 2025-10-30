@@ -36,16 +36,13 @@ STRUCTURE:
 """
 
 from sympy import (
-    symbols,      # Define symbolic variables
-    simplify,     # Algebraic simplification
-    expand,       # Expand products
-    factor,       # Factor expressions
-    log, exp,     # Logarithmic and exponential functions
-    sqrt,         # Square root
-    diff,         # Differentiation
-    Matrix,       # Linear algebra
+    diff,  # Differentiation
+    exp,
+    expand,  # Expand products
+    log,  # Logarithmic and exponential functions
+    simplify,  # Algebraic simplification
+    symbols,  # Define symbolic variables
 )
-import pytest
 
 
 # ========================================
@@ -56,25 +53,26 @@ import pytest
 # multiple validation functions. Adjust assumptions based on context.
 
 # Common parameters
-SIGMA, GAMMA, TAU = symbols('sigma gamma tau', positive=True, real=True)
-EPSILON, KAPPA = symbols('epsilon kappa', positive=True, real=True)
-LAMBDA_V = symbols('lambda_v', positive=True, real=True)
+SIGMA, GAMMA, TAU = symbols("sigma gamma tau", positive=True, real=True)
+EPSILON, KAPPA = symbols("epsilon kappa", positive=True, real=True)
+LAMBDA_V = symbols("lambda_v", positive=True, real=True)
 
 # Fractions and weights
-ALPHA, BETA = symbols('alpha beta', positive=True, real=True)
-F_H, F_L = symbols('f_H f_L', positive=True, real=True)
+ALPHA, BETA = symbols("alpha beta", positive=True, real=True)
+F_H, F_L = symbols("f_H f_L", positive=True, real=True)
 
 # Means and variances
-MU_H, MU_L, MU_V = symbols('mu_H mu_L mu_V', real=True)
-VAR_X, VAR_V = symbols('Var_x Var_v', positive=True, real=True)
+MU_H, MU_L, MU_V = symbols("mu_H mu_L mu_V", real=True)
+VAR_X, VAR_V = symbols("Var_x Var_v", positive=True, real=True)
 
 # Bounds
-V_MAX, V_MIN = symbols('V_max V_min', positive=True, real=True)
+V_MAX, V_MIN = symbols("V_max V_min", positive=True, real=True)
 
 
 # ========================================
 # VALIDATION FUNCTIONS
 # ========================================
+
 
 def test_example_variance_decomposition():
     """
@@ -87,8 +85,8 @@ def test_example_variance_decomposition():
     """
 
     # Define symbols
-    f_H, f_L = symbols('f_H f_L', positive=True, real=True)
-    mu_H, mu_L = symbols('mu_H mu_L', real=True)
+    f_H, f_L = symbols("f_H f_L", positive=True, real=True)
+    mu_H, mu_L = symbols("mu_H mu_L", real=True)
 
     # Constraint: f_H + f_L = 1
     # We'll apply by substituting f_L = 1 - f_H
@@ -97,10 +95,10 @@ def test_example_variance_decomposition():
     mu_V = f_H * mu_H + f_L * mu_L
 
     # Between-group variance definition
-    Var_B_def = f_H * (mu_H - mu_V)**2 + f_L * (mu_L - mu_V)**2
+    Var_B_def = f_H * (mu_H - mu_V) ** 2 + f_L * (mu_L - mu_V) ** 2
 
     # Claimed form
-    Var_B_claimed = f_H * f_L * (mu_H - mu_L)**2
+    Var_B_claimed = f_H * f_L * (mu_H - mu_L) ** 2
 
     # Expand definition
     Var_B_expanded = expand(Var_B_def.subs(mu_V, f_H * mu_H + f_L * mu_L))
@@ -110,8 +108,9 @@ def test_example_variance_decomposition():
     difference_constrained = difference.subs(f_L, 1 - f_H)
 
     # Verify equality
-    assert simplify(difference_constrained) == 0, \
-        f"Variance decomposition failed: diff = {simplify(difference_constrained)}"
+    assert (
+        simplify(difference_constrained) == 0
+    ), f"Variance decomposition failed: diff = {simplify(difference_constrained)}"
 
     print("✓ Law of Total Variance decomposition verified")
 
@@ -126,7 +125,7 @@ def test_example_logarithmic_identity():
     Category: Logarithmic Bounds
     """
 
-    V_max, kappa = symbols('V_max kappa', positive=True, real=True)
+    V_max, kappa = symbols("V_max kappa", positive=True, real=True)
 
     # LHS: difference of logarithms
     lhs = log(V_max) - log(V_max - kappa)
@@ -135,8 +134,9 @@ def test_example_logarithmic_identity():
     middle = log(V_max / (V_max - kappa))
 
     # Verify first transformation
-    assert simplify(lhs - middle) == 0, \
-        f"Log difference transformation failed: {simplify(lhs - middle)}"
+    assert (
+        simplify(lhs - middle) == 0
+    ), f"Log difference transformation failed: {simplify(lhs - middle)}"
 
     # RHS: ln(1 + x) form
     rhs = log(1 + kappa / (V_max - kappa))
@@ -147,8 +147,7 @@ def test_example_logarithmic_identity():
     assert ratio_check == 0, f"Ratio conversion failed: {ratio_check}"
 
     # Final verification
-    assert simplify(lhs - rhs) == 0, \
-        f"Logarithmic identity failed: diff = {simplify(lhs - rhs)}"
+    assert simplify(lhs - rhs) == 0, f"Logarithmic identity failed: diff = {simplify(lhs - rhs)}"
 
     print("✓ Logarithmic identity verified: ln(a) - ln(b) = ln(1 + (a-b)/b)")
 
@@ -165,8 +164,8 @@ def test_example_quadratic_form_expansion():
     """
 
     # Define variables
-    a_x, a_v, b_x, b_v = symbols('a_x a_v b_x b_v', real=True)
-    lambda_v, b_coeff = symbols('lambda_v b', positive=True, real=True)
+    a_x, a_v, b_x, b_v = symbols("a_x a_v b_x b_v", real=True)
+    lambda_v, b_coeff = symbols("lambda_v b", positive=True, real=True)
 
     # Hypocoercive quadratic form
     def q(dx, dv):
@@ -176,8 +175,7 @@ def test_example_quadratic_form_expansion():
     # Bilinear form: 2⟨a, b⟩_q
     def bilinear(ax, av, bx, bv):
         """2⟨a, b⟩_q for hypocoercive metric"""
-        return 2 * (ax * bx + lambda_v * av * bv +
-                    b_coeff * (ax * bv + av * bx))
+        return 2 * (ax * bx + lambda_v * av * bv + b_coeff * (ax * bv + av * bx))
 
     # Left-hand side: q(a + b)
     lhs = q(a_x + b_x, a_v + b_v)
@@ -189,8 +187,7 @@ def test_example_quadratic_form_expansion():
 
     # Verify expansion
     difference = simplify(lhs_expanded - rhs_expanded)
-    assert difference == 0, \
-        f"Quadratic form expansion failed: diff = {difference}"
+    assert difference == 0, f"Quadratic form expansion failed: diff = {difference}"
 
     print("✓ Quadratic form expansion verified: q(a+b) = q(a) + q(b) + 2⟨a,b⟩")
 
@@ -205,7 +202,7 @@ def test_example_derivative_verification():
     Category: Logistic Functions
     """
 
-    z = symbols('z', real=True)
+    z = symbols("z", real=True)
 
     # Logistic function
     g = 2 / (1 + exp(-z))
@@ -214,18 +211,16 @@ def test_example_derivative_verification():
     g_prime = diff(g, z)
 
     # Claimed derivative form
-    g_prime_claimed = 2 * exp(-z) / (1 + exp(-z))**2
+    g_prime_claimed = 2 * exp(-z) / (1 + exp(-z)) ** 2
 
     # Verify
     difference = simplify(g_prime - g_prime_claimed)
-    assert difference == 0, \
-        f"Logistic derivative failed: diff = {difference}"
+    assert difference == 0, f"Logistic derivative failed: diff = {difference}"
 
     # Also verify alternative form: g'(z) = g(z) * (1 - g(z)/2)
     g_prime_alt = g * (1 - g / 2)
     difference_alt = simplify(g_prime - g_prime_alt)
-    assert difference_alt == 0, \
-        f"Alternative form failed: diff = {difference_alt}"
+    assert difference_alt == 0, f"Alternative form failed: diff = {difference_alt}"
 
     print("✓ Logistic derivative verified (both forms)")
 
@@ -240,14 +235,14 @@ def test_example_simple_algebraic_identity():
     Category: Simple Identities
     """
 
-    a, b = symbols('a b', real=True)
+    a, b = symbols("a b", real=True)
 
     # LHS: square of sum
-    lhs = (a + b)**2
+    lhs = (a + b) ** 2
     lhs_expanded = expand(lhs)
 
     # RHS: expanded form
-    rhs = a**2 + 2*a*b + b**2
+    rhs = a**2 + 2 * a * b + b**2
 
     # Verify
     difference = simplify(lhs_expanded - rhs)
@@ -260,6 +255,7 @@ def test_example_simple_algebraic_identity():
 # EDGE CASE VALIDATION EXAMPLES
 # ========================================
 
+
 def test_example_constraint_application():
     """
     Example: How to apply constraints in validation
@@ -269,7 +265,7 @@ def test_example_constraint_application():
     Source: EXAMPLE (template)
     """
 
-    f_H, f_L = symbols('f_H f_L', positive=True, real=True)
+    f_H, f_L = symbols("f_H f_L", positive=True, real=True)
 
     # Expression involving both f_H and f_L
     expr = f_H * f_L * (f_H + f_L)
@@ -280,8 +276,7 @@ def test_example_constraint_application():
     expr_constrained = expr.subs(f_L, 1 - f_H)
     expected = f_H * (1 - f_H)
 
-    assert simplify(expr_constrained - expected) == 0, \
-        "Constraint application failed"
+    assert simplify(expr_constrained - expected) == 0, "Constraint application failed"
 
     print("✓ Constraint application verified")
 
@@ -295,10 +290,10 @@ def test_example_special_value_check():
     Source: EXAMPLE (template)
     """
 
-    x = symbols('x', real=True)
+    x = symbols("x", real=True)
 
     # Identity: (x - 1)² + 2x = x² + 1
-    lhs = (x - 1)**2 + 2*x
+    lhs = (x - 1) ** 2 + 2 * x
     rhs = x**2 + 1
 
     # Verify symbolically
@@ -309,8 +304,7 @@ def test_example_special_value_check():
     for val in special_values:
         lhs_val = lhs.subs(x, val)
         rhs_val = rhs.subs(x, val)
-        assert lhs_val == rhs_val, \
-            f"Identity failed at x={val}: {lhs_val} ≠ {rhs_val}"
+        assert lhs_val == rhs_val, f"Identity failed at x={val}: {lhs_val} ≠ {rhs_val}"
 
     print("✓ Identity verified symbolically and at special values")
 
@@ -318,6 +312,7 @@ def test_example_special_value_check():
 # ========================================
 # TEST RUNNER
 # ========================================
+
 
 def run_all_validations():
     """
@@ -341,9 +336,9 @@ def run_all_validations():
     failed = 0
     errors = []
 
-    print("="*60)
+    print("=" * 60)
     print("RUNNING SYMBOLIC VALIDATION TESTS")
-    print("="*60)
+    print("=" * 60)
     print()
 
     for test in tests:
@@ -362,13 +357,13 @@ def run_all_validations():
             errors.append((test.__name__, str(e)))
 
     print()
-    print("="*60)
-    print(f"VALIDATION SUMMARY")
-    print("="*60)
+    print("=" * 60)
+    print("VALIDATION SUMMARY")
+    print("=" * 60)
     print(f"Total Tests:  {len(tests)}")
-    print(f"Passed:       {passed} ({passed/len(tests)*100:.1f}%)")
+    print(f"Passed:       {passed} ({passed / len(tests) * 100:.1f}%)")
     print(f"Failed:       {failed}")
-    print("="*60)
+    print("=" * 60)
 
     if errors:
         print()
@@ -401,4 +396,5 @@ if __name__ == "__main__":
 
     # Exit with appropriate code
     import sys
+
     sys.exit(0 if failed == 0 else 1)

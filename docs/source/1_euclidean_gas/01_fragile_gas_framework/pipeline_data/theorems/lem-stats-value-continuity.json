@@ -1,0 +1,35 @@
+{
+  "label": "lem-stats-value-continuity",
+  "name": "Value Continuity of Statistical Properties",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-standardization-lower-bound",
+    "obj-aggregator-lipschitz-constants",
+    "obj-potential-bounds",
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-rescale-lipschitz-constants"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [
+    "Mean and regularized standard deviation are Lipschitz continuous with respect to raw value vector"
+  ],
+  "natural_language_statement": "Let $\\mathcal{S}$ be a fixed swarm state with alive set $\\mathcal{A}$ of size $k = |\\mathcal{A}| \\geq 1$. Let $\\mathbf{v}_1$ and $\\mathbf{v}_2$ be two raw value vectors, with components bounded by $V_{\\max}$. The mean $\\mu(\\mathcal{S}, \\mathbf{v})$ and regularized standard deviation $\\sigma'(\\mathcal{S}, \\mathbf{v})$ are Lipschitz continuous with respect to the raw value vector $\\mathbf{v}$.\n\n$$\n|\\mu(\\mathcal{S}, \\mathbf{v}_1) - \\mu(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\mu,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2\n$$\n\n$$\n|\\sigma'(\\mathcal{S}, \\mathbf{v}_1) - \\sigma'(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\sigma',M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2\n$$\n\nwhere $L_{\\mu,M}$ is the axiomatic value Lipschitz function for the mean from def-swarm-aggregation-operator-axiomatic, and $L_{\\sigma',M}$ is the derived Lipschitz constant for the regularized standard deviation, given by:\n\n$$\n\\boxed{\nL_{\\sigma',M}(\\mathcal{S}) := L_{\\sigma'_{\\text{reg}}} \\cdot \\left( L_{m_2,M}(\\mathcal{S}) + 2V_{\\max}L_{\\mu,M}(\\mathcal{S}) \\right)\n}\n$$\n\nand $L_{\\sigma'_{\\text{reg}}} = \\frac{1}{2\\sigma'_{\\min}}$ is the finite, global Lipschitz constant of the Regularized Standard Deviation Function from lem-sigma-reg-derivative-bounds.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

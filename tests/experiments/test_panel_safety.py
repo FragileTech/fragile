@@ -4,6 +4,7 @@ These tests ensure that HoloViews objects returned from rendering methods
 do not have disallowed attributes that cause Panel errors like:
 "String 'repr_markdown' is in the disallowed list of attribute names"
 """
+
 import inspect
 
 import holoviews as hv
@@ -18,6 +19,7 @@ from fragile.core.euclidean_gas import EuclideanGas
 from fragile.core.fitness import FitnessOperator
 from fragile.core.kinetic_operator import KineticOperator
 from fragile.experiments.gas_visualization_dashboard import ConvergencePanel, GasVisualizer
+
 
 # Initialize HoloViews for testing
 hv.extension("bokeh")
@@ -128,7 +130,7 @@ def test_histogram_rendering_normal(test_simulation):
     # Check that enabled panes are visible and disabled ones are hidden
     for metric, pane in visualizer.histogram_panes.items():
         assert check_object_safe(pane), f"{metric} pane has disallowed attributes: {type(pane)}"
-        if metric in ["fitness", "reward"]:
+        if metric in {"fitness", "reward"}:
             assert pane.visible, f"{metric} pane should be visible when enabled"
         else:
             assert not pane.visible, f"{metric} pane should be hidden when disabled"
@@ -147,7 +149,9 @@ def test_convergence_panel_plot_pane_initial(test_simulation):
     # Check initial state - plot_pane is now a Column, check its objects
     assert isinstance(panel.plot_pane.objects, list), "plot_pane.objects should be a list"
     for obj in panel.plot_pane.objects:
-        assert check_object_safe(obj), f"Initial plot pane object has disallowed attributes: {type(obj)}"
+        assert check_object_safe(
+            obj
+        ), f"Initial plot pane object has disallowed attributes: {type(obj)}"
 
 
 def test_convergence_panel_plot_pane_computed(test_simulation):
@@ -167,7 +171,9 @@ def test_convergence_panel_plot_pane_computed(test_simulation):
     # Check after computation - plot_pane is now a Column, check its objects
     assert isinstance(panel.plot_pane.objects, list), "plot_pane.objects should be a list"
     for obj in panel.plot_pane.objects:
-        assert check_object_safe(obj), f"Computed plot pane object has disallowed attributes: {type(obj)}"
+        assert check_object_safe(
+            obj
+        ), f"Computed plot pane object has disallowed attributes: {type(obj)}"
 
 
 def test_histogram_streaming_architecture(test_simulation):
@@ -183,20 +189,39 @@ def test_histogram_streaming_architecture(test_simulation):
 
     # Verify streaming architecture components exist
     assert hasattr(visualizer, "histogram_panes"), "Should have histogram_panes dictionary"
-    assert hasattr(visualizer, "_update_histogram_streams"), "Should have _update_histogram_streams method"
-    assert not hasattr(visualizer, "_render_histograms"), "_render_histograms should not exist (replaced by streaming)"
+    assert hasattr(
+        visualizer, "_update_histogram_streams"
+    ), "Should have _update_histogram_streams method"
+    assert not hasattr(
+        visualizer, "_render_histograms"
+    ), "_render_histograms should not exist (replaced by streaming)"
 
     # Verify Shaolin Histogram instances exist (replaced old manual streams)
-    assert hasattr(visualizer, "histogram_fitness"), "Should have histogram_fitness Shaolin Histogram"
-    assert hasattr(visualizer, "histogram_distance"), "Should have histogram_distance Shaolin Histogram"
-    assert hasattr(visualizer, "histogram_reward"), "Should have histogram_reward Shaolin Histogram"
-    assert hasattr(visualizer, "histogram_hessian"), "Should have histogram_hessian Shaolin Histogram"
-    assert hasattr(visualizer, "histogram_forces"), "Should have histogram_forces Shaolin Histogram"
-    assert hasattr(visualizer, "histogram_velocity"), "Should have histogram_velocity Shaolin Histogram"
+    assert hasattr(
+        visualizer, "histogram_fitness"
+    ), "Should have histogram_fitness Shaolin Histogram"
+    assert hasattr(
+        visualizer, "histogram_distance"
+    ), "Should have histogram_distance Shaolin Histogram"
+    assert hasattr(
+        visualizer, "histogram_reward"
+    ), "Should have histogram_reward Shaolin Histogram"
+    assert hasattr(
+        visualizer, "histogram_hessian"
+    ), "Should have histogram_hessian Shaolin Histogram"
+    assert hasattr(
+        visualizer, "histogram_forces"
+    ), "Should have histogram_forces Shaolin Histogram"
+    assert hasattr(
+        visualizer, "histogram_velocity"
+    ), "Should have histogram_velocity Shaolin Histogram"
 
     # Verify they are Shaolin Histogram instances
     from fragile.shaolin.stream_plots import Histogram
-    assert isinstance(visualizer.histogram_fitness, Histogram), "histogram_fitness should be Shaolin Histogram"
+
+    assert isinstance(
+        visualizer.histogram_fitness, Histogram
+    ), "histogram_fitness should be Shaolin Histogram"
 
 
 def test_no_hv_text_in_convergence_update(test_simulation):

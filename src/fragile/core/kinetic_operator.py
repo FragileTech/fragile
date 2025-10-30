@@ -483,7 +483,7 @@ class KineticOperator(PanelModel):
         if not self.use_viscous_coupling or self.nu == 0.0:
             return torch.zeros_like(v)
 
-        N, d = x.shape
+        _N, _d = x.shape
 
         # Compute pairwise distances
         # With PBC: use minimum image convention (wrapping)
@@ -514,9 +514,7 @@ class KineticOperator(PanelModel):
 
         # Compute weighted sum: F_visc_i = ν * ∑_j w_ij * (v_j - v_i)
         # This is a batched matrix-vector product
-        viscous_force = self.nu * torch.einsum("ij,ijd->id", weights, v_diff)  # [N, d]
-
-        return viscous_force
+        return self.nu * torch.einsum("ij,ijd->id", weights, v_diff)  # [N, d]
 
     def _compute_diffusion_tensor(
         self,

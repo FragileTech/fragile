@@ -22,19 +22,17 @@ old_docs/source/13_fractal_set_new/04c_test_cases.md §1.2-§1.6
 - Exponential relaxation (no propagation)
 """
 
-import holoviews as hv
 import numpy as np
-import torch
 from pydantic import BaseModel, Field
+import torch
 from torch import Tensor
 
 from fragile.experiments.gauge.observables import (
-    ObservablesConfig,
     bin_by_distance,
     compute_collective_fields,
     compute_field_gradients,
     fit_exponential_decay,
-    plot_field_configuration,
+    ObservablesConfig,
 )
 
 
@@ -51,9 +49,7 @@ class LocalityTestsConfig(BaseModel):
     r_max: float = Field(default=0.5, gt=0, description="Max distance for correlation")
     n_bins: int = Field(default=50, gt=0, description="Number of distance bins")
     k_neighbors: int = Field(default=5, gt=0, description="Neighbors for gradient")
-    perturbation_magnitude: float = Field(
-        default=0.01, gt=0, description="Perturbation magnitude"
-    )
+    perturbation_magnitude: float = Field(default=0.01, gt=0, description="Perturbation magnitude")
 
 
 def test_spatial_correlation(
@@ -199,9 +195,7 @@ def test_field_gradients(
     d_prime = fields["d_prime"]
 
     # Compute gradients
-    gradients = compute_field_gradients(
-        positions, d_prime, alive, test_config.k_neighbors
-    )
+    gradients = compute_field_gradients(positions, d_prime, alive, test_config.k_neighbors)
 
     # Statistics
     grad_alive = gradients[alive]
@@ -274,11 +268,10 @@ def test_perturbation_response(
 
     Example:
         >>> results = test_perturbation_response(
-        ...     positions, velocities, rewards, companions, alive,
-        ...     perturb_idx=50, rho=0.05
+        ...     positions, velocities, rewards, companions, alive, perturb_idx=50, rho=0.05
         ... )
         >>> print(f"Response range: {results['response_range']:.4f}")
-        >>> print(f"Expected: ~{3*0.05:.4f}")
+        >>> print(f"Expected: ~{3 * 0.05:.4f}")
     """
     if obs_config is None:
         obs_config = ObservablesConfig()
@@ -306,9 +299,7 @@ def test_perturbation_response(
     delta_d_prime = torch.abs(d_prime_perturbed - d_prime_baseline)
 
     # Compute distances from perturbed walker
-    distances = torch.sqrt(
-        ((positions - positions[perturb_idx]) ** 2).sum(dim=1)
-    )
+    distances = torch.sqrt(((positions - positions[perturb_idx]) ** 2).sum(dim=1))
 
     # Estimate response range (distance where Δd' drops to 1/e of max)
     delta_max = delta_d_prime[alive].max().item()
@@ -452,23 +443,23 @@ def generate_locality_report(
     test_1b = results["test_1b"]
     test_1c = results["test_1c"]
 
-    report = f"""
+    return f"""
 ================================================================================
 LOCALITY TESTS REPORT
 ================================================================================
 
 Configuration:
-  ρ (localization scale): {rho if rho is not None else '∞ (mean-field)'}
+  ρ (localization scale): {rho if rho is not None else "∞ (mean-field)"}
 
-Overall Verdict: {summary['verdict'].upper()}
+Overall Verdict: {summary["verdict"].upper()}
 
 --------------------------------------------------------------------------------
 Test 1A: Spatial Correlation Function
 --------------------------------------------------------------------------------
-  Verdict: {test_1a['verdict']}
-  Correlation length (ξ): {test_1a['xi']:.6f}
-  Expected (ρ): {rho if rho is not None else 'N/A'}
-  Fit quality (R²): {test_1a['r_squared']:.4f}
+  Verdict: {test_1a["verdict"]}
+  Correlation length (ξ): {test_1a["xi"]:.6f}
+  Expected (ρ): {rho if rho is not None else "N/A"}
+  Fit quality (R²): {test_1a["r_squared"]:.4f}
 
   Interpretation:
     {_interpret_correlation_test(test_1a, rho)}
@@ -476,10 +467,10 @@ Test 1A: Spatial Correlation Function
 --------------------------------------------------------------------------------
 Test 1B: Field Gradient Magnitude
 --------------------------------------------------------------------------------
-  Verdict: {test_1b['verdict']}
-  Mean |∇d'|: {test_1b['mean']:.4f}
-  Expected scale: {test_1b['expected_scale']:.4f}
-  Std |∇d'|: {test_1b['std']:.4f}
+  Verdict: {test_1b["verdict"]}
+  Mean |∇d'|: {test_1b["mean"]:.4f}
+  Expected scale: {test_1b["expected_scale"]:.4f}
+  Std |∇d'|: {test_1b["std"]:.4f}
 
   Interpretation:
     {_interpret_gradient_test(test_1b, rho)}
@@ -487,10 +478,10 @@ Test 1B: Field Gradient Magnitude
 --------------------------------------------------------------------------------
 Test 1C: Perturbation Response
 --------------------------------------------------------------------------------
-  Verdict: {test_1c['verdict']}
-  Response range: {test_1c['response_range']:.6f}
-  Expected (3ρ): {3*rho if rho is not None else 'N/A'}
-  Perturbed walker: {test_1c['perturb_idx']}
+  Verdict: {test_1c["verdict"]}
+  Response range: {test_1c["response_range"]:.6f}
+  Expected (3ρ): {3 * rho if rho is not None else "N/A"}
+  Perturbed walker: {test_1c["perturb_idx"]}
 
   Interpretation:
     {_interpret_perturbation_test(test_1c, rho)}
@@ -503,7 +494,6 @@ CONCLUSION
 
 ================================================================================
 """
-    return report
 
 
 def _interpret_correlation_test(test_1a: dict, rho: float | None) -> str:
@@ -512,13 +502,10 @@ def _interpret_correlation_test(test_1a: dict, rho: float | None) -> str:
         ratio = test_1a["xi"] / rho if rho > 0 else 0
         if 0.5 < ratio < 2.0:
             return f"✓ Correlation length ξ ≈ ρ (ratio: {ratio:.2f}). Local field structure confirmed."
-        else:
-            return f"✗ Correlation length ξ ≠ ρ (ratio: {ratio:.2f}). Does not match local regime."
-    else:
-        if test_1a["xi"] > test_1a.get("r_max", 0.5):
-            return "✓ Large correlation length. Consistent with mean-field regime."
-        else:
-            return "✗ Finite correlation length in mean-field regime (unexpected)."
+        return f"✗ Correlation length ξ ≠ ρ (ratio: {ratio:.2f}). Does not match local regime."
+    if test_1a["xi"] > test_1a.get("r_max", 0.5):
+        return "✓ Large correlation length. Consistent with mean-field regime."
+    return "✗ Finite correlation length in mean-field regime (unexpected)."
 
 
 def _interpret_gradient_test(test_1b: dict, rho: float | None) -> str:
@@ -527,13 +514,10 @@ def _interpret_gradient_test(test_1b: dict, rho: float | None) -> str:
         ratio = test_1b["mean"] / test_1b["expected_scale"]
         if 0.1 < ratio < 10.0:
             return f"✓ Gradient magnitude |∇d'| ~ 1/ρ (ratio: {ratio:.2f}). Local field confirmed."
-        else:
-            return f"✗ Gradient magnitude deviates from 1/ρ (ratio: {ratio:.2f})."
-    else:
-        if test_1b["mean"] < 1.0:
-            return "✓ Weak gradients. Consistent with mean-field regime."
-        else:
-            return "✗ Strong gradients in mean-field regime (unexpected)."
+        return f"✗ Gradient magnitude deviates from 1/ρ (ratio: {ratio:.2f})."
+    if test_1b["mean"] < 1.0:
+        return "✓ Weak gradients. Consistent with mean-field regime."
+    return "✗ Strong gradients in mean-field regime (unexpected)."
 
 
 def _interpret_perturbation_test(test_1c: dict, rho: float | None) -> str:
@@ -543,28 +527,24 @@ def _interpret_perturbation_test(test_1c: dict, rho: float | None) -> str:
         ratio = test_1c["response_range"] / expected
         if 0.5 < ratio < 2.0:
             return f"✓ Response localized within ~3ρ (ratio: {ratio:.2f}). Local field confirmed."
-        else:
-            return f"✗ Response range differs from 3ρ (ratio: {ratio:.2f})."
-    else:
-        if test_1c["response_range"] > 0.5:
-            return "✓ Long-range response. Consistent with mean-field regime."
-        else:
-            return "✗ Short-range response in mean-field regime (unexpected)."
+        return f"✗ Response range differs from 3ρ (ratio: {ratio:.2f})."
+    if test_1c["response_range"] > 0.5:
+        return "✓ Long-range response. Consistent with mean-field regime."
+    return "✗ Short-range response in mean-field regime (unexpected)."
 
 
 def _generate_conclusion(summary: dict, rho: float | None) -> str:
     """Generate conclusion text."""
     if summary["verdict"] == "local":
         return f"""The collective field d'_i exhibits LOCAL FIELD THEORY structure:
-  - Correlation length ξ ≈ ρ = {rho if rho is not None else 'N/A'}
+  - Correlation length ξ ≈ ρ = {rho if rho is not None else "N/A"}
   - Field gradients |∇d'| ~ O(1/ρ)
   - Perturbation response localized within ~3ρ
 
 This supports the interpretation of d'_i as a genuine local field rather than
 a mean-field auxiliary variable. Gauge covariance test (Test 1D) should be
 performed to determine if local GAUGE theory applies."""
-    else:
-        return f"""The collective field d'_i exhibits MEAN-FIELD structure:
+    return """The collective field d'_i exhibits MEAN-FIELD structure:
   - Flat or very long-range correlations
   - Weak field gradients
   - Non-local perturbation response

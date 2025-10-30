@@ -1,0 +1,137 @@
+{
+  "label": "axiom-bounded-algorithmic-diameter",
+  "statement": "- The algorithmic space $(\\mathcal{Y}, d_{\\mathcal{Y}})$ is Polish (complete, separable metric space).\n- Its diameter is finite: $D_{\\mathcal{Y}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\mathcal{Y}) < \\infty$.\n\nThese conditions ensure Wasserstein metrics $W_p$ on probability measures over $(\\mathcal{Y}, d_{\\mathcal{Y}})$ are well‑posed and that all per‑walker squared displacements are bounded by $D_{\\mathcal{Y}}^2$.",
+  "mathematical_expression": "- The algorithmic space $(\\mathcal{Y}, d_{\\mathcal{Y}})$ is Polish (complete, separable metric space).\n- Its diameter is finite: $D_{\\mathcal{Y}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\mathcal{Y}) < \\infty$.\n\nThese conditions ensure Wasserstein metrics $W_p$ on probability measures over $(\\mathcal{Y}, d_{\\mathcal{Y}})$ are well‑posed and that all per‑walker squared displacements are bounded by $D_{\\mathcal{Y}}^2$.",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Bounded Algorithmic Diameter",
+  "core_assumption": "The algorithmic space is a complete, separable, bounded metric space that enables well-posed optimal transport theory and ensures all walker displacements are uniformly bounded. This foundational regularity property guarantees that Wasserstein metrics exist and are finite on measures with finite second moments, which is essential for all stability and convergence analysis in the framework.",
+  "parameters": {
+    "mathcal_Y": {
+      "symbol": "$\\mathcal{Y}$",
+      "description": "Algorithmic space - a bounded subset of $\\mathbb{R}^m$ with Euclidean metric $d_{\\mathcal{Y}}(y,y') = \\|y-y'\\|_2$",
+      "type": "metric_space",
+      "properties": ["Polish", "bounded", "separable", "complete"],
+      "reference": "§1.4, line 311"
+    },
+    "d_mathcal_Y": {
+      "symbol": "$d_{\\mathcal{Y}}$",
+      "description": "Euclidean metric on the algorithmic space",
+      "type": "metric",
+      "expression": "$d_{\\mathcal{Y}}(y,y') = \\|y-y'\\|_2$",
+      "reference": "§1.4, line 311"
+    },
+    "D_mathcal_Y": {
+      "symbol": "$D_{\\mathcal{Y}}$",
+      "description": "Diameter of the algorithmic space - the supremum of distances between any two points",
+      "type": "environmental_constant",
+      "expression": "$D_{\\mathcal{Y}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\mathcal{Y}) = \\sup_{y_1, y_2 \\in \\mathcal{Y}} d_{\\mathcal{Y}}(y_1, y_2)$",
+      "constraint": "$D_{\\mathcal{Y}} < \\infty$",
+      "role": "Bounds all per-walker squared displacements by $D_{\\mathcal{Y}}^2$ and serves as the McDiarmid bounded-difference constant",
+      "reference": "§1.4, line 311; §2.2.3, line 805"
+    },
+    "varphi": {
+      "symbol": "$\\varphi$",
+      "description": "Lipschitz projection map from state space to algorithmic space",
+      "type": "projection_map",
+      "signature": "$\\varphi: \\mathcal{X} \\to \\mathcal{Y}$",
+      "properties": ["Lipschitz continuous"],
+      "lipschitz_constant": "$L_{\\varphi}$",
+      "reference": "§1.4, line 312"
+    },
+    "m": {
+      "symbol": "$m$",
+      "description": "Ambient dimension of the algorithmic space",
+      "type": "dimension",
+      "constraint": "$m \\in \\mathbb{N}$",
+      "reference": "§1.4, line 311"
+    },
+    "lambda_m": {
+      "symbol": "$\\lambda_m$",
+      "description": "m-dimensional Lebesgue measure on the algorithmic space",
+      "type": "reference_measure",
+      "reference": "§1.4, line 311"
+    }
+  },
+  "condition": "This axiom applies universally to all Fragile Gas algorithms operating in the framework. It is a **foundational environmental axiom** that must hold throughout the entire execution. The axiom is invoked whenever:\n\n1. **Wasserstein metrics** $W_p$ are used on probability measures over the swarm configuration space\n2. **Finite second moments** need to be guaranteed for optimal transport theory\n3. **McDiarmid's inequality** is applied to concentration of measure results (§13.2.3)\n4. **Polishness** of the quotient state space $\\overline{\\Sigma}_N$ is required (Lemma {prf:ref}`lem-polishness-and-w2`)\n5. **Uniform boundedness** of per-walker displacements is needed for stability analysis",
+  "failure_mode_analysis": {
+    "violation_type": "fundamental_framework_breakdown",
+    "failure_scenarios": [
+      {
+        "scenario": "Unbounded diameter ($D_{\\mathcal{Y}} = \\infty$)",
+        "consequences": [
+          "Wasserstein metrics $W_p$ may not be well-defined on probability measures",
+          "Per-walker squared displacements $d_{\\mathcal{Y}}(\\varphi(x_i), \\varphi(x'_i))^2$ are unbounded",
+          "McDiarmid bounded-difference constants become infinite, invalidating concentration inequalities",
+          "Finite second moment condition fails, breaking optimal transport theory",
+          "All stability bounds that depend on $D_{\\mathcal{Y}}^2$ become vacuous"
+        ],
+        "affected_results": [
+          "Lemma {prf:ref}`lem-polishness-and-w2`: Wasserstein-2 well-posedness",
+          "Lemma (§13.2.3.0): McDiarmid bounded differences",
+          "All concentration inequalities in §13.2.3 (perturbation displacement bounds)"
+        ]
+      },
+      {
+        "scenario": "Non-Polish space (incomplete or non-separable)",
+        "consequences": [
+          "Kolmogorov quotient $\\overline{\\Sigma}_N$ may fail to be Polish",
+          "Standard optimal transport theory (e.g., Santambrogio) does not apply",
+          "Existence and uniqueness of optimal couplings is not guaranteed",
+          "Descriptive set theory machinery (Kechris, Theorem 5.5) breaks down",
+          "Product topology on $(\\mathcal{Y} \\times \\{0,1\\})^N$ loses key properties"
+        ],
+        "affected_results": [
+          "Lemma {prf:ref}`lem-polishness-and-w2`: Polish quotient construction fails",
+          "All Wasserstein contraction arguments throughout the framework"
+        ]
+      }
+    ],
+    "cascade_effects": "Violation of this axiom is **catastrophic** for the entire framework. Almost all convergence results rely on Wasserstein metrics being well-posed. Without boundedness, the fundamental displacement pseudometric $d_{\\text{Disp},\\mathcal{Y}}$ loses its role as a contractive metric, and the entire stability analysis collapses. This is not a 'soft' assumption that can be relaxed - it is a hard requirement for the mathematical machinery.",
+    "detection": "In practice, this axiom is enforced by construction: $\\mathcal{Y}$ is defined as a bounded subset of $\\mathbb{R}^m$ (line 311), so $D_{\\mathcal{Y}} < \\infty$ is automatic. Polishness follows from $\\mathcal{Y} \\subset \\mathbb{R}^m$ being a Borel set with the Euclidean metric.",
+    "mitigation": "If working in an unbounded state space, one must either:\n1. **Compactify**: Restrict to a bounded subdomain or use a compactification\n2. **Weighted metrics**: Introduce exponential weights to render Wasserstein metrics finite\n3. **Alternative theory**: Develop a completely different stability framework without optimal transport (not recommended)"
+  },
+  "related_entities": {
+    "depends_on": [
+      "def-n-particle-displacement-metric",
+      "def-metric-quotient",
+      "def-ambient-euclidean",
+      "def-valid-state-space"
+    ],
+    "enables": [
+      "lem-polishness-and-w2",
+      "thm-mcdiarmids-inequality"
+    ],
+    "referenced_by": [
+      "lem-polishness-and-w2",
+      "sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+      "def-displacement-components"
+    ]
+  },
+  "framework_role": "This axiom is one of the **Structural & Environmental Axioms** (§2.2) that define the foundational geometric structure of the algorithm's operating environment. It sits alongside other environmental axioms like Reward Regularity and Boundary Regularity, establishing the 'laws of physics' for the swarm dynamics. It is **non-negotiable** and **universally required** for all results in the framework.",
+  "theoretical_justification": "The Polish property ensures the space has 'enough structure' for measure theory (completeness, separability). Boundedness ensures all distances are finite and controlled. Together, these properties guarantee that optimal transport theory applies: optimal couplings exist, Wasserstein metrics metrize weak convergence, and contraction arguments work as expected. This is standard in modern probability theory (see Villani, Santambrogio, Kechris).",
+  "implementation_note": "In code, this axiom is satisfied by defining $\\mathcal{Y}$ as a compact subset of $\\mathbb{R}^m$ (e.g., a hypercube or ball). The projection map $\\varphi: \\mathcal{X} \\to \\mathcal{Y}$ ensures all walker positions map into this bounded domain. No runtime checks are needed if $\\mathcal{Y}$ is designed correctly at initialization.",
+  "tags": [
+    "foundational",
+    "environmental",
+    "structural",
+    "polish-space",
+    "optimal-transport",
+    "wasserstein",
+    "bounded-diameter",
+    "algorithmic-space",
+    "measure-theory",
+    "metric-geometry",
+    "non-negotiable"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§2.2.3 Axiom of Bounded Algorithmic Diameter",
+    "directive_label": "def-axiom-bounded-algorithmic-diameter",
+    "equation": null,
+    "line_range": [801, 808],
+    "url_fragment": "#def-axiom-bounded-algorithmic-diameter"
+  }
+}

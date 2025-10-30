@@ -1,0 +1,8 @@
+{
+  "label": "param-sigma-min",
+  "name": "sigma_min",
+  "symbol": "sigma_min",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

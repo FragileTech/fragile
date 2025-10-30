@@ -1,0 +1,50 @@
+{
+  "temp_id": "raw-cor-002",
+  "label": "cor-closed-form-lipschitz-composite",
+  "label_text": "Corollary: Closed‑form bound for L_{g_A∘z} (empirical aggregator)",
+  "name": "Closed‑form bound for L_{g_A∘z} (empirical aggregator)",
+  "statement_type": "corollary",
+  "statement": "Let $k=|\\mathcal A(\\mathcal S)|$ and assume $|v_i|\\le V_{\\max}$. For the empirical aggregator of §6.2.2.a (see lem-empirical-aggregator-properties) with the regularized standardization and piecewise rescale of §8.2.2, the composite map $g_A\\circ z$ is globally Lipschitz with\n$$\n\\boxed{\\;L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}\\;}\n$$\nwhere $L_P=\\|P'\\|_\\infty$ is the uniform derivative bound of the cubic patch from §8.2.2.5.",
+  "full_statement_text": "Let $k=|\\mathcal A(\\mathcal S)|$ and assume $|v_i|\\le V_{\\max}$. For the empirical aggregator of §6.2.2.a (see lem-empirical-aggregator-properties) with the regularized standardization and piecewise rescale of §8.2.2, the composite map $g_A\\circ z$ is globally Lipschitz with\n$$\n\\boxed{\\;L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}\\;}\n$$\nwhere $L_P=\\|P'\\|_\\infty$ is the uniform derivative bound of the cubic patch from §8.2.2.5.",
+  "context_before": null,
+  "conclusion_formula_latex": "L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}",
+  "equation_label": null,
+  "explicit_definition_references": [
+    "lem-empirical-aggregator-properties"
+  ],
+  "explicit_theorem_references": [
+    "cor-chain-rule-sigma-reg-var",
+    "thm-rescale-function-lipschitz"
+  ],
+  "source_section": "9. Rescale Transformation",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "9",
+    "section_name": null,
+    "directive_label": "cor-closed-form-lipschitz-composite",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "has_proof": true,
+  "depends_on": [
+    "cor-chain-rule-sigma-reg-var",
+    "thm-rescale-function-lipschitz"
+  ],
+  "input_objects": [
+    "obj-rescale-lipschitz-constants",
+    "obj-potential-bounds",
+    "obj-aggregator-lipschitz-constants",
+    "obj-cubic-patch-polynomial"
+  ],
+  "input_axioms": [
+    "axiom-rescale-function"
+  ],
+  "input_parameters": [],
+  "output_type": "Lipschitz Bound",
+  "relations_established": [
+    "Establishes global Lipschitz bound for composite map g_A o z",
+    "Bound: L_{g_A o z} <= max{L_P, 1} * (2L_{sigma'_reg}V_max)/sqrt(k)"
+  ]
+}

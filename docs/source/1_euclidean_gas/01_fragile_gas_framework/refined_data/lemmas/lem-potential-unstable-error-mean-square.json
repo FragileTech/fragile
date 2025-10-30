@@ -1,0 +1,36 @@
+{
+  "label": "lem-potential-unstable-error-mean-square",
+  "name": "Bounding the Expected Error from Unstable Walkers",
+  "statement_type": "lemma",
+  "source": {
+    "document": "01_fragile_gas_framework.md",
+    "section": "13. Fitness potential operator",
+    "subsection": "12.2.4. Sub-Lemma: Bounding the Expected Error from Unstable Walkers"
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-potential-bounds",
+    "obj-distance-to-cemetery-state"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Mean-square error in potential for unstable walkers bounded by status changes"
+  ],
+  "natural_language_statement": "The expected squared error component from walkers changing their survival status is bounded deterministically by the number of status changes: $E_{\\text{unstable,ms}}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\mathbb{E}\\left[\\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |V_{1,i} - V_{2,i}|^2\\right] \\le V_{\\text{pot,max}}^2 \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)$",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

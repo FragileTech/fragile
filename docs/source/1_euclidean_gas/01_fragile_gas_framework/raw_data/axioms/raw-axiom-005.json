@@ -1,0 +1,20 @@
+{
+  "temp_id": "raw-axiom-005",
+  "label_text": "def-axiom-environmental-richness",
+  "axiom_name": "Environmental Richness",
+  "statement": "*   **Core Assumption:** The reward function $R$ must not be pathologically flat at a user-defined minimum length scale. The algorithm requires a guaranteed level of reward variation to learn.\n*   **Axiomatic Parameters:** The user must provide two parameters that quantify the learnability of the reward landscape:\n    1.  **$r_{\\min}$ > 0 (The Minimum Richness Scale):** The minimum radius in the algorithmic space above which the reward function is guaranteed to exhibit variance. This parameter q",
+  "source_section": "§3",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "3",
+    "section_name": null,
+    "directive_label": "def-axiom-environmental-richness",
+    "equation": null,
+    "line_range": [
+      741,
+      759
+    ],
+    "url_fragment": "#def-axiom-environmental-richness"
+  }
+}

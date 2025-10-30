@@ -2,184 +2,26 @@
   "label": "lem-sasaki-structural-error-decomposition",
   "name": "Decomposition of the Structural Error",
   "statement_type": "lemma",
-  "source": {
-    "document_id": "02_euclidean_gas",
-    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-    "section": "2.3.6.1",
-    "directive_label": "lem-sasaki-structural-error-decomposition",
-    "line_range": [1695, 1747]
-  },
-  "input_objects": [
-    "obj-swarm-state",
-    "obj-raw-value-vector",
-    "obj-standardization-operator",
-    "obj-alive-set",
-    "obj-unstable-set",
-    "obj-stable-set",
-    "obj-dead-set"
-  ],
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
   "input_axioms": [],
-  "input_parameters": [
-    "param-N"
-  ],
-  "attributes_required": {
-    "obj-swarm-state": [
-      "attr-has-alive-set",
-      "attr-has-status-vector"
-    ],
-    "obj-raw-value-vector": [
-      "attr-fixed",
-      "prop-N-dimensional"
-    ],
-    "obj-standardization-operator": [
-      "attr-preserves-dead-zero"
-    ],
-    "obj-alive-set": [
-      "attr-defined-for-swarm"
-    ]
-  },
+  "input_parameters": [],
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
-  "output_type": "Decomposition",
-  "attributes_added": [
-    {
-      "label": "attr-structural-error-orthogonal-decomposition",
-      "expression": "\\Delta\\mathbf{z} = \\Delta_{\\text{direct}} + \\Delta_{\\text{indirect}}",
-      "object_label": "obj-structural-error-vector",
-      "established_by": "lem-sasaki-structural-error-decomposition",
-      "timestamp": null,
-      "can_be_refined": false,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "2.3.6.1",
-        "directive_label": "lem-sasaki-structural-error-decomposition",
-        "line_range": [1702, 1704]
-      }
-    },
-    {
-      "label": "attr-direct-indirect-orthogonal",
-      "expression": "\\Delta_{\\text{direct}} \\cdot \\Delta_{\\text{indirect}} = 0",
-      "object_label": "obj-structural-error-vector",
-      "established_by": "lem-sasaki-structural-error-decomposition",
-      "timestamp": null,
-      "can_be_refined": false,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "2.3.6.1",
-        "directive_label": "lem-sasaki-structural-error-decomposition",
-        "line_range": [1733, 1734]
-      }
-    },
-    {
-      "label": "attr-squared-norm-additive",
-      "expression": "\\|\\Delta\\mathbf{z}\\|_2^2 = \\|\\Delta_{\\text{direct}}\\|_2^2 + \\|\\Delta_{\\text{indirect}}\\|_2^2",
-      "object_label": "obj-structural-error-vector",
-      "established_by": "lem-sasaki-structural-error-decomposition",
-      "timestamp": null,
-      "can_be_refined": false,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "2.3.6.1",
-        "directive_label": "lem-sasaki-structural-error-decomposition",
-        "line_range": [1713, 1715]
-      }
-    },
-    {
-      "label": "attr-direct-error-unstable-support",
-      "expression": "(\\Delta_{\\text{direct}})_i \\neq 0 \\iff i \\in \\mathcal{A}_{\\text{unstable}}",
-      "object_label": "obj-direct-error-vector",
-      "established_by": "lem-sasaki-structural-error-decomposition",
-      "timestamp": null,
-      "can_be_refined": false,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "2.3.6.1",
-        "directive_label": "lem-sasaki-structural-error-decomposition",
-        "line_range": [1707, 1709]
-      }
-    },
-    {
-      "label": "attr-indirect-error-stable-support",
-      "expression": "(\\Delta_{\\text{indirect}})_i \\neq 0 \\iff i \\in \\mathcal{A}_{\\text{stable}}",
-      "object_label": "obj-indirect-error-vector",
-      "established_by": "lem-sasaki-structural-error-decomposition",
-      "timestamp": null,
-      "can_be_refined": false,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "2.3.6.1",
-        "directive_label": "lem-sasaki-structural-error-decomposition",
-        "line_range": [1707, 1710]
-      }
-    },
-    {
-      "label": "attr-dead-error-zero",
-      "expression": "i \\in \\mathcal{D}_{\\text{stable}} \\implies z_{1,i} = z_{2,i} = 0",
-      "object_label": "obj-standardization-operator",
-      "established_by": "lem-sasaki-structural-error-decomposition",
-      "timestamp": null,
-      "can_be_refined": false,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "2.3.6.1",
-        "directive_label": "lem-sasaki-structural-error-decomposition",
-        "line_range": [1728, 1728]
-      }
-    }
-  ],
-  "relations_established": [
-    {
-      "label": "rel-structural-error-direct-indirect-other",
-      "relationship_type": "other",
-      "bidirectional": false,
-      "source_object": "obj-structural-error-vector",
-      "target_object": "obj-direct-error-vector",
-      "established_by": "lem-sasaki-structural-error-decomposition",
-      "expression": "\\Delta\\mathbf{z} = \\Delta_{\\text{direct}} + \\Delta_{\\text{indirect}}",
-      "properties": [
-        {
-          "label": "orthogonality",
-          "expression": "\\Delta_{\\text{direct}} \\cdot \\Delta_{\\text{indirect}} = 0",
-          "description": "Error components have disjoint support"
-        },
-        {
-          "label": "partition-basis",
-          "expression": "\\{1, ..., N\\} = \\mathcal{A}_{\\text{unstable}} \\cup \\mathcal{A}_{\\text{stable}} \\cup \\mathcal{D}_{\\text{stable}}",
-          "description": "Index partition defines orthogonal decomposition"
-        },
-        {
-          "label": "norm-additivity",
-          "expression": "\\|\\Delta\\mathbf{z}\\|_2^2 = \\|\\Delta_{\\text{direct}}\\|_2^2 + \\|\\Delta_{\\text{indirect}}\\|_2^2",
-          "description": "Pythagorean theorem for orthogonal vectors"
-        }
-      ],
-      "tags": [
-        "structural-error",
-        "orthogonal-decomposition",
-        "standardization",
-        "index-partition"
-      ],
-      "timestamp": null,
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "2.3.6.1",
-        "directive_label": "lem-sasaki-structural-error-decomposition",
-        "line_range": [1695, 1747]
-      }
-    }
-  ]
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

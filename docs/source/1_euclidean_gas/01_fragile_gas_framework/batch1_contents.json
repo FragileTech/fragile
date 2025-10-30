@@ -1,0 +1,215 @@
+{
+  "raw_data/axioms/axiom-def-axiom-rescale-function.json": {
+    "label": "def-axiom-rescale-function",
+    "name": "Axiom of a Well-Behaved Rescale Function",
+    "statement": "Any function $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ chosen for the rescale transformation must satisfy the following properties to be considered valid within the Fragile framework. The user is responsible for proving that their chosen function complies with these conditions.\n\n1. **$C^1$ Smoothness:** The function $g_A(z)$ must be continuously differentiable on its entire domain $\\mathbb{R}$. This ensures that the fitness potential is a smooth function of the standardized scores, which is critical for the stability of the cloning dynamics.\n\n2. **Monotonicity:** The function must be monotonically non-decreasing. This is equivalent to its first derivative being non-negative for all inputs:\n$$\ng'_A(z) \\ge 0 \\quad \\forall z \\in \\mathbb{R}\n$$\nThis property is essential to guarantee that a higher (better) standardized score never results in a lower fitness potential component.\n\n3. **Uniform Boundedness:** The function's range must be a bounded interval $(0, g_{A,\\max}]$ for some finite constant $g_{A,\\max} > 0$. This prevents the fitness potential from becoming infinite, which is a non-negotiable requirement for the stability of the selection and cloning operators.\n\n4. **Global Lipschitz Continuity:** The function must be globally Lipschitz continuous. For a $C^1$ function, this is equivalent to its first derivative being uniformly bounded. There must exist a finite constant $L_{g_A}$, the Lipschitz constant, such that:\n$$\n\\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty\n$$\nThis property is the cornerstone for proving the mean-square continuity of the composite Fitness Potential Operator, as it ensures that small changes in the standardized scores cannot be pathologically amplified.\n\n**Framework Application:** Any function satisfying these four conditions can be used as a rescale function. The subsequent sections provide two distinct examples of valid functions: an asymmetric piecewise function and a canonical logistic function, along with proofs that they satisfy this axiom. The specific choice of function and its corresponding constants, $g_{A,\\max}$ and $L_{g_A}$, will affect the quantitative continuity bounds of the full system.",
+    "section": "9. Rescale Transformation",
+    "type": "axiom"
+  },
+  "raw_data/corollaries/cor-chain-rule-sigma-reg-var.json": {
+    "temp_id": "raw-cor-001",
+    "label": "cor-chain-rule-sigma-reg-var",
+    "label_text": "Corollary: Chain\u2011rule bound for \u03c3'_reg \u2218 Var",
+    "name": "Chain\u2011rule bound for \u03c3'_reg \u2218 Var",
+    "statement_type": "corollary",
+    "statement": "Under the conditions of the lemma and \u00a78.2.2.9, the composite map \u03c3'_{text{reg}}\u2218Var is Lipschitz with\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( L_{m_2,M}+2 V_{\\max} L_{\\mu,M}\\Big).\n$$\nIn particular, for the empirical aggregator of \u00a76.2.2.a (see lem-empirical-aggregator-properties), $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$, hence\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( \\tfrac{2 V_{\\max}}{\\sqrt{k}} + 2 V_{\\max}\\,\\tfrac{1}{\\sqrt{k}}\\Big)\n\\;=\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}.\n$$",
+    "full_statement_text": "Under the conditions of the lemma and \u00a78.2.2.9, the composite map \u03c3'_{text{reg}}\u2218Var is Lipschitz with\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( L_{m_2,M}+2 V_{\\max} L_{\\mu,M}\\Big).\n$$\nIn particular, for the empirical aggregator of \u00a76.2.2.a (see lem-empirical-aggregator-properties), $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$, hence\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( \\tfrac{2 V_{\\max}}{\\sqrt{k}} + 2 V_{\\max}\\,\\tfrac{1}{\\sqrt{k}}\\Big)\n\\;=\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}.\n$$",
+    "context_before": null,
+    "conclusion_formula_latex": "L_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}",
+    "equation_label": null,
+    "explicit_definition_references": [
+      "lem-empirical-aggregator-properties"
+    ],
+    "explicit_theorem_references": [
+      "lem-lipschitz-variance-functional",
+      "lem-sigma-patch-derivative-bound"
+    ],
+    "source_section": "9. Rescale Transformation",
+    "source": {
+      "document": "01_fragile_gas_framework.md",
+      "section": "9. Rescale Transformation",
+      "subsection": "8.2.2.10"
+    },
+    "depends_on": [
+      "lem-lipschitz-variance-functional",
+      "lem-sigma-patch-derivative-bound"
+    ],
+    "input_objects": [
+      "obj-rescale-lipschitz-constants",
+      "obj-potential-bounds",
+      "obj-aggregator-lipschitz-constants"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "output_type": "Lipschitz Bound",
+    "relations_established": [
+      "Provides Lipschitz bound for composite map sigma'_reg o Var",
+      "Chain rule bound: L_{sigma'_reg o Var} <= L_{sigma'_reg}(L_{m2,M} + 2V_max*L_{mu,M})"
+    ]
+  },
+  "raw_data/corollaries/cor-closed-form-lipschitz-composite.json": {
+    "temp_id": "raw-cor-002",
+    "label": "cor-closed-form-lipschitz-composite",
+    "label_text": "Corollary: Closed\u2011form bound for L_{g_A\u2218z} (empirical aggregator)",
+    "name": "Closed\u2011form bound for L_{g_A\u2218z} (empirical aggregator)",
+    "statement_type": "corollary",
+    "statement": "Let $k=|\\mathcal A(\\mathcal S)|$ and assume $|v_i|\\le V_{\\max}$. For the empirical aggregator of \u00a76.2.2.a (see lem-empirical-aggregator-properties) with the regularized standardization and piecewise rescale of \u00a78.2.2, the composite map $g_A\\circ z$ is globally Lipschitz with\n$$\n\\boxed{\\;L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}\\;}\n$$\nwhere $L_P=\\|P'\\|_\\infty$ is the uniform derivative bound of the cubic patch from \u00a78.2.2.5.",
+    "full_statement_text": "Let $k=|\\mathcal A(\\mathcal S)|$ and assume $|v_i|\\le V_{\\max}$. For the empirical aggregator of \u00a76.2.2.a (see lem-empirical-aggregator-properties) with the regularized standardization and piecewise rescale of \u00a78.2.2, the composite map $g_A\\circ z$ is globally Lipschitz with\n$$\n\\boxed{\\;L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}\\;}\n$$\nwhere $L_P=\\|P'\\|_\\infty$ is the uniform derivative bound of the cubic patch from \u00a78.2.2.5.",
+    "context_before": null,
+    "conclusion_formula_latex": "L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}",
+    "equation_label": null,
+    "explicit_definition_references": [
+      "lem-empirical-aggregator-properties"
+    ],
+    "explicit_theorem_references": [
+      "cor-chain-rule-sigma-reg-var",
+      "thm-rescale-function-lipschitz"
+    ],
+    "source_section": "9. Rescale Transformation",
+    "source": {
+      "document": "01_fragile_gas_framework.md",
+      "section": "9. Rescale Transformation",
+      "subsection": "8.2.2.10"
+    },
+    "has_proof": true,
+    "depends_on": [
+      "cor-chain-rule-sigma-reg-var",
+      "thm-rescale-function-lipschitz"
+    ],
+    "input_objects": [
+      "obj-rescale-lipschitz-constants",
+      "obj-potential-bounds",
+      "obj-aggregator-lipschitz-constants",
+      "obj-cubic-patch-polynomial"
+    ],
+    "input_axioms": [
+      "axiom-rescale-function"
+    ],
+    "input_parameters": [],
+    "output_type": "Lipschitz Bound",
+    "relations_established": [
+      "Establishes global Lipschitz bound for composite map g_A o z",
+      "Bound: L_{g_A o z} <= max{L_P, 1} * (2L_{sigma'_reg}V_max)/sqrt(k)"
+    ]
+  },
+  "raw_data/corollaries/cor-pipeline-continuity-margin-stability.json": {
+    "temp_id": "raw-cor-003",
+    "label": "cor-pipeline-continuity-margin-stability",
+    "label_text": "Corollary: Pipeline Continuity Under Margin-Based Status Stability",
+    "name": "Pipeline Continuity Under Margin-Based Status Stability",
+    "statement_type": "corollary",
+    "statement": "Assume the **Axiom of Margin-Based Status Stability**. Then for all inputs $(\\mathcal{S}_1, \\mathbf{v}_{r1}, \\mathbf{v}_{d1})$ and $(\\mathcal{S}_2, \\mathbf{v}_{r2}, \\mathbf{v}_{d2})$, the deterministic bound $F_{\\text{pot,det}}$ in the Deterministic Continuity theorem satisfies: $F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2}) \\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0$. Moreover, for $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2\\le r_{\\mathrm{status}}$ we have $n_c=0$ and the unstable term vanishes exactly; the remaining terms are controlled by the deterministic continuity of the patched standardization operator and the Lipschitz continuity of the potential map $F$.",
+    "full_statement_text": "Assume the **Axiom of Margin-Based Status Stability** ([](#def-axiom-margin-stability)). Then for all inputs $(\\mathcal{S}_1, \\mathbf{v}_{r1}, \\mathbf{v}_{d1})$ and $(\\mathcal{S}_2, \\mathbf{v}_{r2}, \\mathbf{v}_{d2})$, the deterministic bound $F_{\\text{pot,det}}$ in [](#thm-deterministic-potential-continuity) satisfies\n$$\n\nF_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})\n\\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0.\n\n$$\nMoreover, for $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2\\le r_{\\mathrm{status}}$ we have $n_c=0$ and the unstable term vanishes exactly; the remaining terms are controlled by the deterministic continuity of the patched standardization operator and the Lipschitz continuity of the potential map $F$.",
+    "context_before": null,
+    "conclusion_formula_latex": "F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})\\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0",
+    "equation_label": null,
+    "explicit_definition_references": [
+      "def-axiom-margin-stability"
+    ],
+    "explicit_theorem_references": [
+      "thm-deterministic-potential-continuity"
+    ],
+    "source_section": "13. Fitness potential operator",
+    "source": {
+      "document": "01_fragile_gas_framework.md",
+      "section": "13. Fitness potential operator",
+      "subsection": "12.3.3 Corollary: Pipeline Continuity Under Margin-Based Status Stability"
+    },
+    "has_proof": false,
+    "proof_sketch": "This corollary follows directly from the theorem by invoking the Axiom of Margin-Based Status Stability, which guarantees that status changes are bounded when swarm displacement is small. Under this axiom, when displacement is within the margin radius, the number of status changes $n_c=0$, eliminating the unstable term. The remaining stable term vanishes continuously as the inputs converge.",
+    "depends_on": [
+      "thm-deterministic-potential-continuity",
+      "def-axiom-margin-stability"
+    ],
+    "input_objects": [
+      "obj-algorithmic-space-generic",
+      "def-swarm-potential-assembly-operator",
+      "def-status-update-operator",
+      "obj-alg-distance"
+    ],
+    "input_axioms": [
+      "def-axiom-margin-stability"
+    ],
+    "input_parameters": [],
+    "output_type": "Continuity",
+    "relations_established": [
+      "For d_Disp^2 <= r_status: unstable term vanishes (n_c = 0)",
+      "Under Axiom of Margin-Based Status Stability, deterministic bound F_pot,det -> 0 as inputs converge"
+    ],
+    "tags": [
+      "fitness-potential",
+      "continuity",
+      "margin-stability",
+      "corollary"
+    ]
+  },
+  "raw_data/definitions/def-algorithmic-cemetery-extension.json": {
+    "label": "def-algorithmic-cemetery-extension",
+    "type": "definition",
+    "content": "Define $\\mathcal{Y}^{\\dagger}:=\\mathcal{Y}\\cup\\{\\dagger\\}$ with metric $d_\\dagger$ given by\n$$\n\nd_\\dagger(y_1,y_2)=d_{\\mathcal{Y}}(y_1,y_2),\\quad d_\\dagger(y,\\dagger)=D_{\\mathrm{valid}}\\quad \\text{for all }y\\in\\mathcal{Y}.\n\n$$\nIdentifying a dead walker with the point $\\dagger$ makes the Wasserstein distance to the cemetery law canonical: for any living swarm law $\\nu$ and the cemetery $\\delta_{\\dagger}$ we have $W_p(\\nu,\\delta_{\\dagger})=D_{\\mathrm{valid}}$.",
+    "start_line": 1442,
+    "end_line": 1451,
+    "section": "\u00a77"
+  },
+  "raw_data/definitions/def-asymmetric-rescale-function.json": {
+    "label": "def-asymmetric-rescale-function",
+    "name": "Smooth Piecewise Rescale Function",
+    "statement": "The rescale function is parameterized by the **Rescale Saturation Threshold ($z_{\\max}$)**, which defines the upper saturation limit. For the function to be well-posed with distinct segments, this parameter must satisfy the constraint $z_{\\max} > 1$.\n\nThe **Smooth Piecewise Rescale Function** $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ is defined as:\n$$\ng_A(z) :=\n\\begin{cases}\n\\exp(z), & z \\le 0 \\\\\n\\log(1 + z) + 1, & 0 < z < z_{\\max} - 1 \\\\\nP(z), & z_{\\max} - 1 \\le z \\le z_{\\max} \\\\\n\\log(1 + z_{\\max}) + 1, & z > z_{\\max}\n\\end{cases}\n$$\n\nThe function $P(z)$ is a unique cubic polynomial defined on the interval $[z_{\\max}-1, z_{\\max}]$. It serves as a $C^1$ (continuously differentiable) patch that smoothly connects the logarithmic curve to the constant saturation value. Its four coefficients are uniquely determined by solving for the following four boundary conditions:\n1. **Match Value at Start:** $P(z_{\\max}-1) = \\log(z_{\\max}) + 1$\n2. **Match Slope at Start:** $P'(z_{\\max}-1) = 1 / z_{\\max}$\n3. **Match Value at End:** $P(z_{\\max}) = \\log(1 + z_{\\max}) + 1$\n4. **Match Slope at End:** $P'(z_{\\max}) = 0$\n\nThis construction ensures that $g_A(z)$ is continuously differentiable across its entire domain.",
+    "section": "9. Rescale Transformation",
+    "subsection": "8.2.1 Definition of the Asymmetric Rescale Function",
+    "type": "definition"
+  },
+  "raw_data/definitions/def-canonical-logistic-rescale-function-example.json": {
+    "label": "def-canonical-logistic-rescale-function-example",
+    "name": "Canonical Logistic Rescale Function",
+    "statement": "The **Canonical Logistic Rescale Function** $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ is defined as:\n$$\ng_A(z) := \\frac{2}{1 + e^{-z}}\n$$",
+    "section": "9. Rescale Transformation",
+    "subsection": "8.3.1. Definition: Canonical Logistic Rescale Function",
+    "type": "definition"
+  },
+  "raw_data/definitions/def-cemetery-state-measure.json": {
+    "label": "def-cemetery-state-measure",
+    "type": "definition",
+    "content": "Let $\\mathcal{S}$ be a swarm. Its distributional representation, denoted $\\mu_{\\mathcal{S}}$, is defined as:\n1.  If $|\\mathcal{A}(\\mathcal{S})| > 0$, $\\mu_{\\mathcal{S}}$ is the empirical or smoothed measure as defined in 5.1 and 5.2 (i.e., $\\mu_{\\mathcal{S}} = \\nu_{\\mathcal{S}}$ or $\\mu_{\\mathcal{S}} = \\tilde{\\nu}_{\\mathcal{S}, \\ell}$).\n2.  If $|\\mathcal{A}(\\mathcal{S})| = 0$, its representation is the unique **Cemetery State Measure**, denoted $\\mu_{\\mathcal{S}} := \\nu_{\\emptyset}$.\nThe Cemetery State Measure $\\nu_{\\emptyset}$ is an abstract object that does not have a density on $\\mathcal{Y}$. Its properties are defined entirely by its interaction with the distance functions used in the swarm metrics.",
+    "start_line": 1455,
+    "end_line": 1461,
+    "section": "\u00a77"
+  },
+  "raw_data/definitions/def-cloning-measure.json": {
+    "label": "def-cloning-measure",
+    "term": "Cloning Measure",
+    "formal_statement": null,
+    "applies_to_object_type": "measure",
+    "parameters": [],
+    "source": null,
+    "natural_language_description": "For a given cloning noise scale $\\delta > 0$, the **Cloning Measure**, $\\mathcal{Q}_\\delta(x, \\cdot)$, is a **Valid Noise Measure** according to Definition 2.3. It governs the displacement for newly created walkers during the cloning step.",
+    "tags": [
+      "noise",
+      "cloning",
+      "algorithmic",
+      "displacement"
+    ],
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/definitions/def-cloning-operator-continuity-coeffs-recorrected.json": {
+    "label": "def-cloning-operator-continuity-coeffs-recorrected",
+    "term": "Cloning Operator Continuity Coefficients",
+    "type": "definition",
+    "statement": "The state-dependent functions in the continuity bound for the Cloning Transition Operator are defined as follows:\n\n1. **The Cloning Lipschitz Amplification Factor ($C_{\\text{clone},L}(\\mathcal{S}_1, \\mathcal{S}_2)$):** The coefficient of the term that is linear in the input squared displacement, $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^2$. This term primarily captures the propagation of the positional component of the input displacement.\n\n2. **The Cloning H\u00f6lder Amplification Factor ($C_{\\text{clone},H}(\\mathcal{S}_1, \\mathcal{S}_2)$):** The coefficient of the H\u00f6lder term, $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)$. This term arises from the complex, non-linear error propagation originating from the **Distance-to-Companion Measurement**, specifically from the component of its error bound that is quadratic in the number of status changes.\n\n3. **The Cloning Stochastic Offset ($K_{\\text{clone}}(\\mathcal{S}_1, \\mathcal{S}_2)$):** A state-dependent term that is independent of the input displacement. It represents the baseline displacement introduced by the operator's intrinsic stochasticity, which exists even if the two input swarms are identical.",
+    "dependencies": [
+      "thm-cloning-transition-operator-continuity-recorrected"
+    ],
+    "tags": [
+      "cloning",
+      "continuity",
+      "coefficients"
+    ],
+    "context": "Section 16: The Cloning Transition Measure, subsection 15.2.8.1",
+    "source_file": "01_fragile_gas_framework.md",
+    "line_number": 4447,
+    "extraction_date": "2025-10-27T21:43:09.486090"
+  }
+}

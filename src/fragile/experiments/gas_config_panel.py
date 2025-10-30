@@ -388,9 +388,12 @@ class GasConfigPanel(param.Parameterized):
         # Visualization controls
         viz_controls = pn.Column(
             pn.pane.Markdown("#### Visualization Options"),
-            self._build_param_panel(
-                ["show_optimum", "show_density", "show_contours", "viz_n_cells"]
-            ),
+            self._build_param_panel([
+                "show_optimum",
+                "show_density",
+                "show_contours",
+                "viz_n_cells",
+            ]),
             sizing_mode="stretch_width",
         )
 
@@ -457,9 +460,12 @@ class GasConfigPanel(param.Parameterized):
         )
 
         # === Initialization Panel ===
-        init_panel = self._build_param_panel(
-            ["init_offset", "init_spread", "init_velocity_scale", "bounds_extent"]
-        )
+        init_panel = self._build_param_panel([
+            "init_offset",
+            "init_spread",
+            "init_velocity_scale",
+            "bounds_extent",
+        ])
 
         # === Accordion Organization ===
         accordion = pn.Accordion(

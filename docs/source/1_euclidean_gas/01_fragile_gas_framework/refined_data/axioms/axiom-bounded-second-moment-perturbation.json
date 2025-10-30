@@ -1,0 +1,214 @@
+{
+  "label": "axiom-bounded-second-moment-perturbation",
+  "statement": "The expectation of the squared displacement caused by the Perturbation Measure, after being projected into the Algorithmic Space, is uniformly bounded across all possible starting positions.",
+  "mathematical_expression": "\\sup_{x_{\\text{in}} \\in \\mathcal{X}} \\mathbb{E}[d_{\\mathcal{Y}}(\\varphi(x_{\\text{out}}), \\varphi(x_{\\text{in}}))^2] \\le M_{\\text{pert}}^2, \\quad \\text{where } x_{\\text{out}} \\sim \\mathcal{P}_\\sigma(x_{\\text{in}}, \\cdot)",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of Bounded Second Moment of Perturbation",
+  "core_assumption": "The Perturbation Measure induces random displacements that are statistically bounded in expectation. This ensures walkers do not experience infinite displacement on average, which is essential for the continuity of the Perturbation Operator and the well-posedness of the algorithm's probabilistic dynamics. The axiom provides a uniform bound on the mean squared displacement in the algorithmic space, enabling concentration-of-measure arguments (via McDiarmid's inequality) to control fluctuations around this mean.",
+  "parameters": {
+    "M_pert_squared": {
+      "symbol": "M_{\\text{pert}}^2",
+      "name": "Maximum Expected Squared Displacement",
+      "type": "non-negative constant",
+      "unit": "squared algorithmic distance",
+      "description": "An upper bound on the expectation of the squared displacement in the algorithmic space after one application of the Perturbation Measure. This constant must be provided by the user based on their choice of perturbation measure and projection map.",
+      "role": "Controls the mean displacement bound B_M(N) = N * M_pert^2, which quantifies the deterministic component of the total perturbation-induced displacement.",
+      "canonical_value": "For Gaussian perturbation with covariance sigma^2 * I in R^d with identity projection: M_pert^2 = d * sigma^2",
+      "depends_on": [
+        "sigma (perturbation noise scale)",
+        "varphi (projection map)",
+        "d_Y (algorithmic metric)",
+        "d (ambient dimension)"
+      ]
+    },
+    "x_in": {
+      "symbol": "x_{\\text{in}}",
+      "name": "Initial Walker Position",
+      "type": "element of state space",
+      "description": "Any starting position in the state space X from which perturbation is applied. The axiom requires the bound to hold uniformly over all possible starting positions."
+    },
+    "x_out": {
+      "symbol": "x_{\\text{out}}",
+      "name": "Perturbed Walker Position",
+      "type": "random element of state space",
+      "description": "The output position after applying the Perturbation Measure, sampled as x_out ~ P_sigma(x_in, ·)"
+    },
+    "P_sigma": {
+      "symbol": "\\mathcal{P}_\\sigma",
+      "name": "Perturbation Measure",
+      "type": "transition kernel",
+      "description": "A Valid Noise Measure that governs the random displacement during the perturbation step. Examples include Gaussian (heat kernel) or uniform ball measures.",
+      "reference": "def-perturbation-measure"
+    },
+    "varphi": {
+      "symbol": "\\varphi",
+      "name": "Projection Map",
+      "type": "Lipschitz continuous function",
+      "description": "Maps from state space X to algorithmic space Y. The displacement is measured after projection into algorithmic space.",
+      "lipschitz_constant": "L_varphi",
+      "signature": "varphi: X -> Y"
+    },
+    "d_Y": {
+      "symbol": "d_{\\mathcal{Y}}",
+      "name": "Algorithmic Metric",
+      "type": "metric on algorithmic space",
+      "description": "The metric on the algorithmic space Y (typically Euclidean). Displacement is measured using this metric after projection."
+    },
+    "Y_random_variable": {
+      "symbol": "Y",
+      "name": "Squared Displacement Random Variable",
+      "type": "non-negative random variable",
+      "description": "The squared distance in algorithmic space between projected initial and perturbed positions: Y := d_Y(varphi(x_out), varphi(x_in))^2"
+    },
+    "sigma": {
+      "symbol": "\\sigma",
+      "name": "Perturbation Noise Scale",
+      "type": "positive real parameter",
+      "description": "Controls the magnitude of random displacements during perturbation. Larger sigma allows more exploration but increases M_pert^2.",
+      "role": "Directly influences M_pert^2 through the noise measure's variance structure."
+    }
+  },
+  "condition": "The supremum of the expected squared displacement over all starting positions must be bounded above by M_pert^2. This must hold uniformly across all x_in in the state space X.",
+  "failure_mode_analysis": {
+    "violation_condition": "The axiom is violated if sup_{x_in ∈ X} E[Y] = ∞, meaning there exist starting positions from which the expected squared displacement is unbounded.",
+    "immediate_consequences": [
+      "Loss of probabilistic continuity: The Perturbation Operator fails to be continuous with respect to the N-Particle Displacement Metric, invalidating Theorem thm-perturbation-operator-continuity-reproof.",
+      "Breakdown of concentration bounds: McDiarmid's inequality cannot be applied because the mean displacement bound B_M(N) = N * M_pert^2 diverges.",
+      "Unpredictable walker trajectories: Individual walkers could be displaced by arbitrarily large distances on average, making algorithm behavior non-analyzable."
+    ],
+    "cascading_failures": [
+      "Swarm Update Operator continuity fails: The one-step mean-square continuity bound (Section 17) requires bounded perturbation fluctuations. Violation propagates through the operator composition.",
+      "Convergence proofs invalid: All long-term convergence results (e.g., QSD convergence, KL-divergence decay) rely on bounded operator continuity constants.",
+      "No finite-time guarantees: Probabilistic error bounds for finite-time performance become meaningless without concentration inequalities."
+    ],
+    "diagnostic_indicators": [
+      "Heavy-tailed noise distribution: If the perturbation measure has infinite second moment (e.g., Cauchy distribution), the axiom cannot be satisfied.",
+      "Unbounded projection: If the projection map varphi maps X to an unbounded subset of Y, displacements can grow without bound.",
+      "Pathological state space geometry: If X has regions where local geometry is highly irregular (e.g., cusps, singularities), perturbations may induce unbounded projected displacements."
+    ],
+    "mitigation_strategies": [
+      "Use noise measures with bounded support: Examples include uniform ball measures with radius sigma, which satisfy M_pert^2 <= L_varphi^2 * sigma^2.",
+      "Use Gaussian noise with identity projection: For X = R^d with varphi = identity, Gaussian perturbation with covariance sigma^2 * I yields M_pert^2 = d * sigma^2.",
+      "Verify projection map properties: Ensure varphi is Lipschitz continuous with finite constant L_varphi and maps to a bounded subset of Y.",
+      "Truncate heavy-tailed distributions: If the desired noise distribution has heavy tails, truncate or clip it to ensure finite second moment."
+    ],
+    "related_axioms": [
+      "def-axiom-boundary-regularity: Boundary Regularity Axiom also constrains the perturbation measure, requiring Hölder continuity of death probability. Both axioms jointly validate a noise measure.",
+      "def-axiom-bounded-algorithmic-diameter: Bounded diameter D_Y < ∞ ensures all displacements are trivially bounded above by D_Y, providing a fallback bound.",
+      "def-axiom-non-degenerate-noise: Requires sigma > 0, ensuring non-trivial exploration. Together with bounded second moment, this constrains sigma to a feasible range."
+    ],
+    "practical_impact": "This axiom is critical for numerical stability and theoretical tractability. In practice, it ensures that the algorithm's exploration does not degenerate into random, unbounded jumps that would make learning impossible. The constant M_pert^2 directly enters the one-step continuity bound as K_Psi ~ M_pert^2, so larger M_pert^2 increases the 'noise floor' in the convergence analysis."
+  },
+  "framework_application": {
+    "purpose": "Provides a uniform bound on the mean of the random displacement induced by perturbation. This bound is essential for concentration-of-measure arguments.",
+    "technique": "The fluctuations around this mean are bounded using McDiarmid's inequality for functions of independent inputs (per Assumption A: In-Step Independence). Bounded differences hold with constants c_i = D_Y^2 / N since each per-walker squared displacement lies in [0, D_Y^2] (by bounded diameter axiom).",
+    "mathematical_tools": [
+      "McDiarmid's inequality (Bounded Differences Inequality)",
+      "Concentration of measure",
+      "Law of large numbers for bounded random variables"
+    ],
+    "derived_quantities": {
+      "mean_displacement_bound": {
+        "symbol": "B_M(N)",
+        "expression": "N * M_pert^2",
+        "description": "Deterministic upper bound on total expected squared displacement for a swarm of size N",
+        "reference": "def-perturbation-fluctuation-bounds-reproof"
+      },
+      "stochastic_fluctuation_bound": {
+        "symbol": "B_S(N, delta')",
+        "expression": "D_Y^2 * sqrt((N/2) * ln(2/delta'))",
+        "description": "High-probability bound on deviation of total squared displacement from its mean, for failure probability delta'",
+        "reference": "def-perturbation-fluctuation-bounds-reproof"
+      }
+    },
+    "key_theorems_dependent": [
+      "sub-lem-probabilistic-bound-perturbation-displacement-reproof: Directly invokes this axiom to bound total perturbation-induced displacement",
+      "thm-perturbation-operator-continuity-reproof: Establishes probabilistic continuity of Perturbation Operator using M_pert^2",
+      "Section 17 one-step continuity: Composes perturbation continuity into full Swarm Update Operator bound"
+    ]
+  },
+  "validation_examples": {
+    "heat_kernel": {
+      "noise_measure": "Gaussian (heat kernel) with covariance sigma^2 * I",
+      "state_space": "Polish metric measure space with canonical heat kernel p_t(x, ·)",
+      "verification": "The definition of valid state space requires heat kernel has uniformly bounded second moment: sup_{x ∈ X} E_{x' ~ p_t(x, ·)}[d_Y(varphi(x'), varphi(x))^2] <= M_pert^2. This directly satisfies the axiom.",
+      "reference": "Section 4.2.1, Lemma: Validation of the Heat Kernel"
+    },
+    "uniform_ball": {
+      "noise_measure": "Uniform probability measure over ball of radius sigma centered at x",
+      "state_space": "Euclidean space or Riemannian manifold",
+      "verification": "Sample x' is drawn from B(x, sigma). Displacement bounded: d_X(x', x) <= sigma. Expected squared projected displacement: E[d_Y(varphi(x'), varphi(x))^2] <= L_varphi^2 * sigma^2. Supremum over x_in also bounded, satisfying axiom.",
+      "reference": "Section 4.2.2, Lemma: Validation of the Uniform Ball Measure"
+    },
+    "canonical_fragile_swarm": {
+      "noise_measure": "Gaussian with covariance sigma^2 * I in R^d",
+      "projection_map": "Identity map (varphi = id)",
+      "calculation": "E[||xi||^2] = d * sigma^2, so M_pert^2 = L_varphi^2 * E[||xi||^2] = 1 * d * sigma^2 = d * sigma^2",
+      "mean_displacement_bound": "B_M(N) = N * d * sigma^2",
+      "reference": "Section 20.5, Table of canonical constants"
+    }
+  },
+  "cross_references": {
+    "prerequisite_definitions": [
+      "def-perturbation-measure: Defines the perturbation measure P_sigma",
+      "def-valid-state-space: Requires existence of valid noise satisfying this axiom",
+      "def-valid-noise-measure: Formal definition of what constitutes a valid noise measure",
+      "def-projection-map: Defines the projection varphi: X -> Y (implied in §2.2.3)",
+      "def-algorithmic-space: Defines the space Y and metric d_Y (§6)",
+      "def-axiom-bounded-algorithmic-diameter: Ensures D_Y < ∞ for fallback bound"
+    ],
+    "related_axioms": [
+      "def-axiom-boundary-regularity: Companion axiom that also constrains noise measure properties",
+      "def-axiom-boundary-smoothness: Ensures boundary is C^1 submanifold, supporting boundary regularity",
+      "def-axiom-non-degenerate-noise: Requires sigma > 0, complementing this axiom's upper bound",
+      "def-assumption-instep-independence: Enables McDiarmid's inequality application for concentration bounds"
+    ],
+    "dependent_lemmas": [
+      "sub-lem-perturbation-positional-bound-reproof: Bounds output positional displacement",
+      "sub-lem-probabilistic-bound-perturbation-displacement-reproof: Applies McDiarmid to bound total displacement",
+      "lem-empirical-aggregator-properties: Aggregator properties rely on bounded perturbations"
+    ],
+    "dependent_theorems": [
+      "thm-perturbation-operator-continuity-reproof: Main continuity result for Perturbation Operator",
+      "thm-mcdiarmids-inequality: Concentration inequality used in proof structure"
+    ],
+    "dependent_definitions": [
+      "def-perturbation-fluctuation-bounds-reproof: Defines B_M(N) and B_S(N, delta') using M_pert^2",
+      "def-perturbation-operator: Formal definition of operator whose continuity depends on this axiom"
+    ],
+    "applications": [
+      "Section 13.2: Continuity of the Perturbation Operator",
+      "Section 17: One-step mean-square continuity of Swarm Update Operator",
+      "Section 20: Canonical constants table includes M_pert^2 and derived bounds"
+    ]
+  },
+  "tags": [
+    "axiom",
+    "perturbation",
+    "noise-measure",
+    "continuity",
+    "concentration",
+    "probabilistic-bound",
+    "operator-theory",
+    "mcdiarmid",
+    "second-moment",
+    "displacement"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "13.2.1",
+    "section_title": "Axiomatic Requirement: Bounded Second Moment of Perturbation",
+    "directive_label": "def-axiom-bounded-second-moment-perturbation",
+    "directive_type": "prf:axiom",
+    "equation": null,
+    "line_range": [
+      3962,
+      3975
+    ],
+    "url_fragment": "#axiom-bounded-second-moment-perturbation",
+    "context": "Part of Section 13: Perturbation Operator, which establishes probabilistic continuity of the perturbation step. This axiom is the foundational requirement enabling all subsequent continuity analysis."
+  }
+}

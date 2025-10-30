@@ -2,9 +2,17 @@
   "label": "lem-polishness-and-w2",
   "name": "Polishness of the quotient state space and $W_2$",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "lem-polishness-and-w2",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-polishness-and-w2"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -17,26 +25,22 @@
   "input_parameters": [
     "param-n"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-swarm-and-state-space": [
-      "prop-is-polish"
+      "attr-is-polish"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [
-    {
-      "label": "prop-is-polish",
-      "expression": "The space (\\overline{\\Sigma}_N, \\overline d_{\\text{Disp},\\mathcal{Y}}) is Polish.",
-      "object_label": "obj-metric-quotient",
-      "established_by": "lem-polishness-and-w2",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

@@ -2,9 +2,17 @@
   "label": "thm-main-contraction-full",
   "name": "Wasserstein-2 Contraction (Cluster-Based)",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "04_wasserstein_contraction",
+  "source": {
+    "document_id": "04_wasserstein_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+    "section": null,
+    "directive_label": "thm-main-contraction-full",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-main-contraction-full"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -28,7 +36,7 @@
     "c_geom",
     "c_sep"
   ],
-  "properties_required": {
+  "attributes_required": {
     "swarms": [
       "Separation regime: L > D_min(ε)",
       "High structural error: V_struct > R²_spread",
@@ -74,7 +82,7 @@
     ]
   ],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-main-contraction-full-0-approximation",
@@ -84,14 +92,22 @@
       "target_object": "obj-target-complement",
       "established_by": "thm-main-contraction-full",
       "expression": "W_2²(Ψ_clone(μ_1), Ψ_clone(μ_2)) ≤ (1 - κ_W) W_2²(μ_1, μ_2) + C_W",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "04_wasserstein_contraction"
+      "source": {
+        "document_id": "04_wasserstein_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+        "section": null,
+        "directive_label": "thm-main-contraction-full",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-main-contraction-full"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-main-contraction-full-1-equivalence",
@@ -101,14 +117,22 @@
       "target_object": "obj-target-complement",
       "established_by": "thm-main-contraction-full",
       "expression": "κ_W = (1/2) · f_UH(ε) · p_u(ε) · c_align(ε) · c_geom",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "04_wasserstein_contraction"
+      "source": {
+        "document_id": "04_wasserstein_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+        "section": null,
+        "directive_label": "thm-main-contraction-full",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-main-contraction-full"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-main-contraction-full-2-equivalence",
@@ -118,14 +142,22 @@
       "target_object": "obj-target-complement",
       "established_by": "thm-main-contraction-full",
       "expression": "Alternate form: κ_W = (1/2) · f_UH(ε) · p_u(ε) · c_geom · c_sep(ε)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "04_wasserstein_contraction"
+      "source": {
+        "document_id": "04_wasserstein_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+        "section": null,
+        "directive_label": "thm-main-contraction-full",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-main-contraction-full"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-main-contraction-full-3-other",
@@ -135,14 +167,22 @@
       "target_object": "obj-target-complement",
       "established_by": "thm-main-contraction-full",
       "expression": "All constants N-uniform and explicitly computable",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "04_wasserstein_contraction"
+      "source": {
+        "document_id": "04_wasserstein_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+        "section": null,
+        "directive_label": "thm-main-contraction-full",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-main-contraction-full"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-main-contraction-full-4-other",
@@ -152,14 +192,29 @@
       "target_object": "obj-target-complement",
       "established_by": "thm-main-contraction-full",
       "expression": "Foundation for mean-field limit and propagation of chaos",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "04_wasserstein_contraction"
+      "source": {
+        "document_id": "04_wasserstein_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+        "section": null,
+        "directive_label": "thm-main-contraction-full",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-main-contraction-full"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

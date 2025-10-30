@@ -1,226 +1,109 @@
-# Agent System Status
+# Agent Implementation Status
 
-**Last Verified**: 2025-10-26
-**All Systems**: ✅ OPERATIONAL
-**Parallel Execution**: ✅ ENABLED (all agents registered globally)
+**Last Updated**: October 27, 2025
 
 ---
 
-## Available Agents (5)
+## Claude Code Agents (Task Tool)
 
-| Agent | Lines | Status | Global | Parallel | Color | Output Location |
-|-------|-------|--------|--------|----------|-------|-----------------|
-| **document-parser** | 456 | ✅ Ready | ✅ | ✅ | 🔵 Cyan | `docs/source/.../data/` |
-| **math-reviewer** | 939 | ✅ Ready | ✅ | ✅ | 🔵 Blue | `docs/source/.../reviewer/` |
-| **math-verifier** | 1115 | ✅ Ready | ✅ | ✅ | 🟠 Orange | `docs/source/.../verifier/` + `src/proofs/` |
-| **proof-sketcher** | 1025 | ✅ Ready | ✅ | ✅ | 🟢 Green | `docs/source/.../sketcher/` |
-| **theorem-prover** | 1426 | ✅ Ready | ✅ | ✅ | 🟣 Purple | `docs/source/.../proofs/` |
+All agents below are registered as Claude Code sub-agents and can be invoked via the Task tool.
 
-**Global**: Registered in `~/.claude/agents/` (available via `@agent-` calls)
-**Parallel**: Can run multiple instances simultaneously
+### Mathematical Proof Pipeline
 
----
+#### 1. proof-sketcher
+**Status**: ✅ **READY**
+**Type**: Proof Strategy Generator
+**Invocation**: `Use the proof-sketcher agent to generate proof sketches for <theorem>`
+**Models**: Gemini 2.5 Pro + GPT-5 (pinned)
+**Output**: `sketcher/sketch_{timestamp}_proof_{filename}.md`
 
-## MCP Server Status
+#### 2. theorem-prover
+**Status**: ✅ **READY**
+**Type**: Proof Expander
+**Invocation**: `Use the theorem-prover agent to expand proof sketch <file>`
+**Models**: Gemini 2.5 Pro + GPT-5 (pinned)
+**Output**: `proofs/proof_{timestamp}_{theorem_label}.md`
+**Rigor**: Annals of Mathematics standard
 
-| Server | Status | Purpose |
-|--------|--------|---------|
-| `mcp__gemini-cli__ask-gemini` | ✅ Authorized | Gemini 2.5 Pro API access |
-| `mcp__codex__codex` | ✅ Authorized | GPT-5 Codex API access |
+#### 3. math-reviewer
+**Status**: ✅ **READY**
+**Type**: Document Reviewer
+**Invocation**: `Use the math-reviewer agent to review <document>`
+**Models**: Gemini 2.5 Pro + Codex (pinned)
+**Output**: `reviewer/review_{timestamp}_{filename}.md`
 
----
-
-## Quick Invocation Reference
-
-**PARALLEL EXECUTION** (NEW): Use `@agent-` mentions:
-
-### Via `@agent-` Mentions (Parallel-Ready)
-```
-@agent-math-reviewer review docs/source/1_euclidean_gas/03_cloning.md
-Depth: thorough
-```
-
-**Run Multiple in Parallel**:
-```
-Launch 3 agents:
-1. @agent-math-reviewer review doc1.md
-2. @agent-proof-sketcher sketch thm-A
-3. @agent-math-verifier validate doc2.md
-```
+#### 4. math-verifier
+**Status**: ✅ **READY**
+**Type**: Symbolic Validator
+**Invocation**: `Use the math-verifier agent to validate <document>`
+**Models**: Gemini 2.5 Pro + GPT-5 (pinned)
+**Output**: Validation scripts + verification report
+**Engine**: sympy
 
 ---
 
-**ALTERNATIVE**: Use slash commands (sequential):
+### Document Processing Pipeline
 
-### Document Parser
-```
-/parse_doc docs/source/1_euclidean_gas/03_cloning.md
-Mode: both
-```
+#### 5. document-parser
+**Status**: ✅ **READY** (Python CLI + Task tool)
+**Type**: Raw Extractor (Stage 1)
+**Invocation (Task)**: `Use the document-parser agent to extract <document>`
+**Invocation (CLI)**: `python -m fragile.proofs.pipeline extract <document>`
+**Implementation**: `src/fragile/agents/raw_document_parser.py`
+**Input**: MyST markdown documents
+**Output**: `raw_data/` directory with JSON files
 
-### Proof Sketcher
-```
-/proof_sketch thm-kl-convergence-euclidean
-Document: docs/source/1_euclidean_gas/09_kl_convergence.md
-```
+#### 6. cross-referencer
+**Status**: ✅ **READY**
+**Type**: Relationship Analyzer (Stage 1.5)
+**Invocation**: `Use the cross-referencer agent to analyze <document_dir>`
+**Input**: document-parser output
+**Output**: Enhanced JSON + `relationships/` directory
 
-### Math Verifier
-```
-/math_verify docs/source/1_euclidean_gas/03_cloning.md
-Depth: thorough
-```
-
-### Theorem Prover
-```
-/prove docs/source/1_euclidean_gas/sketcher/sketch_20251024_1530_proof_09_kl_convergence.md
-```
-
-### Math Reviewer
-```
-/math_review docs/source/2_geometric_gas/20_geometric_gas_cinf_regularity_full.md
-Depth: thorough
-Focus: Non-circularity, k-uniformity
-```
+#### 7. document-refiner
+**Status**: ✅ **READY** (specification complete, implementation pending)
+**Type**: Semantic Enricher (Stage 2)
+**Invocation**: `Use the document-refiner agent to refine <raw_data_dir>`
+**Input**: `raw_data/` from document-parser
+**Output**: `refined_data/` with enriched JSON
 
 ---
 
-**Alternative** (verbose, manual loading):
-```
-Load the [agent-name] agent from .claude/agents/[agent-name].md
-[task description]
-```
+## Removed/Deprecated
+
+### math_document_parser.py
+**Status**: ❌ **DEPRECATED** (moved to `.deprecated`)
+**Reason**: Mixed Stage 1/2 logic, replaced by two-stage pipeline
 
 ---
 
-## Parallel Execution Example
+## Usage Examples
 
-All agents support parallel execution:
-
-```
-Launch 3 agents in parallel:
-
-1. Load math-reviewer → Review docs/source/1_euclidean_gas/03_cloning.md
-2. Load proof-sketcher → Sketch thm-keystone-lemma
-3. Load math-verifier → Validate docs/source/1_euclidean_gas/04_convergence.md
-```
-
----
-
-## Agent Workflow Pipeline
-
-**Recommended workflow for new theorems**:
-
-```
-1. Proof Sketcher    → Generate strategy (3-7 steps)
-2. Math Verifier     → Validate algebra in strategy
-3. Theorem Prover    → Expand to complete proof
-4. Math Verifier     → Validate proof algebra
-5. Math Reviewer     → Semantic validation (final QC)
-```
-
-**For existing documents**:
-
-```
-1. Math Verifier     → Check computational correctness
-2. Math Reviewer     → Semantic + logic review
-```
-
----
-
-## Verification Tests
-
-Run these to verify agents are working:
-
-### Test 1: Document Parser
-```
-Load document-parser agent.
-
-Parse: docs/source/1_euclidean_gas/03_cloning.md
-Mode: sketch
-```
-Expected: Creates `docs/source/1_euclidean_gas/03_cloning/data/extraction_inventory.json`
-
-### Test 2: Math Reviewer
-```
-Load math-reviewer agent.
-
-Review: docs/source/1_euclidean_gas/03_cloning.md
-Depth: quick
-```
-Expected: Creates `docs/source/1_euclidean_gas/reviewer/review_{timestamp}_03_cloning.md`
-
-### Test 3: Math Verifier
-```
-Load math-verifier agent.
-
-Validate: docs/source/1_euclidean_gas/03_cloning.md
-Depth: quick
-```
-Expected: Creates validation scripts in `src/proofs/03_cloning/` and report in `verifier/`
-
-### Test 4: Proof Sketcher
-```
-Load proof-sketcher agent.
-
-Sketch proof for: thm-keystone-lemma
-Document: docs/source/1_euclidean_gas/03_cloning.md
-Depth: quick
-```
-Expected: Creates `sketcher/sketch_{timestamp}_proof_03_cloning.md`
-
-### Test 5: Theorem Prover
-(Requires proof sketch from Test 4 first)
-```
-Load theorem-prover agent.
-
-Expand proof sketch: [path from Test 4]
-```
-Expected: Creates `proofs/proof_{timestamp}_thm_keystone_lemma.md`
-
----
-
-## Configuration Files
-
-| File | Purpose | Status |
-|------|---------|--------|
-| `.claude/agents/document-parser.md` | Agent prompt | ✅ 450 lines |
-| `.claude/agents/math-reviewer.md` | Agent prompt | ✅ 933 lines |
-| `.claude/agents/math-verifier.md` | Agent prompt | ✅ 1109 lines |
-| `.claude/agents/proof-sketcher.md` | Agent prompt | ✅ 1019 lines |
-| `.claude/agents/theorem-prover.md` | Agent prompt | ✅ 1420 lines |
-| `.claude/agents/README.md` | Comprehensive guide | ✅ 930 lines |
-| `.claude/agents/QUICKSTART.md` | Quick reference | ✅ 267 lines |
-| `.claude/settings.local.json` | Permissions | ✅ Configured |
-
----
-
-## Common Issues
-
-### "Agent not found"
-**Solution**: Use exact path:
-```
-Load the math-reviewer agent from .claude/agents/math-reviewer.md
-```
-
-### "MCP server unavailable"
-**Check**: Run `grep mcp__gemini /home/guillem/fragile/.claude/settings.local.json`
-**Status**: ✅ Both servers authorized
-
-### "Document not found"
-**Solution**: Use absolute path or verify file exists:
+### Proof Development Workflow
 ```bash
-ls -lh docs/source/path/to/document.md
+# 1. Generate proof sketch
+Task: Use the proof-sketcher agent to sketch proof for theorem thm-kl-convergence in docs/source/1_euclidean_gas/09_kl_convergence.md
+
+# 2. Expand to full proof
+Task: Use the theorem-prover agent to expand the generated sketch
+
+# 3. Review the proof
+Task: Use the math-reviewer agent to review the proof document
+
+# 4. Validate algebra
+Task: Use the math-verifier agent to validate algebraic steps
 ```
 
----
+### Document Processing Workflow
+```bash
+# 1. Extract raw data (Task tool OR Python CLI)
+Task: Use the document-parser agent to extract docs/source/1_euclidean_gas/03_cloning.md
+# OR
+python -m fragile.proofs.pipeline extract docs/source/1_euclidean_gas/03_cloning.md
 
-## Documentation
+# 2. Discover relationships
+Task: Use the cross-referencer agent to analyze docs/source/1_euclidean_gas/03_cloning
 
-- **Full Guide**: `.claude/agents/README.md`
-- **Quick Start**: `.claude/agents/QUICKSTART.md`
-- **Framework Integration**: `CLAUDE.md` § Mathematical Proofing
-- **Agent Definitions**: `.claude/agents/{agent-name}.md`
-
----
-
-**Status Summary**: ✅ All 5 agents operational and ready for use
+# 3. Enrich with semantics
+Task: Use the document-refiner agent to refine docs/source/1_euclidean_gas/03_cloning/raw_data
+```

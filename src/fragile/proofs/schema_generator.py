@@ -20,22 +20,23 @@ Version: 1.0.0
 
 from __future__ import annotations
 
+from datetime import datetime
 import importlib
 import inspect
 import json
-import sys
-from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Type, get_args, get_origin
+import sys
+from typing import Any, get_args, get_origin
 
 from pydantic import BaseModel
+
 
 # =============================================================================
 # MODEL DISCOVERY
 # =============================================================================
 
 
-def discover_all_models() -> Dict[str, List[Type[BaseModel]]]:
+def discover_all_models() -> dict[str, list[type[BaseModel]]]:
     """
     Discover all Pydantic models in fragile.proofs module.
 
@@ -52,7 +53,13 @@ def discover_all_models() -> Dict[str, List[Type[BaseModel]]]:
     # Import all submodules
     submodules = {
         "core": ["pipeline_types", "proof_system", "proof_integration"],
-        "sympy": ["expressions", "dual_representation", "validation", "proof_integration", "object_extensions"],
+        "sympy": [
+            "expressions",
+            "dual_representation",
+            "validation",
+            "proof_integration",
+            "object_extensions",
+        ],
         "registry": ["reference_system", "registry", "storage"],
         "relationships": ["graphs"],
     }
@@ -75,12 +82,12 @@ def discover_all_models() -> Dict[str, List[Type[BaseModel]]]:
     return models_by_module
 
 
-def get_model_name(model: Type[BaseModel]) -> str:
+def get_model_name(model: type[BaseModel]) -> str:
     """Get the full qualified name of a model."""
     return model.__name__
 
 
-def get_model_module(model: Type[BaseModel]) -> str:
+def get_model_module(model: type[BaseModel]) -> str:
     """Get the module path of a model."""
     return model.__module__
 
@@ -90,7 +97,7 @@ def get_model_module(model: Type[BaseModel]) -> str:
 # =============================================================================
 
 
-def extract_field_dependencies(model: Type[BaseModel]) -> Set[str]:
+def extract_field_dependencies(model: type[BaseModel]) -> set[str]:
     """
     Extract dependencies from model fields.
 
@@ -98,14 +105,14 @@ def extract_field_dependencies(model: Type[BaseModel]) -> Set[str]:
     """
     dependencies = set()
 
-    for field_name, field_info in model.model_fields.items():
+    for field_info in model.model_fields.values():
         annotation = field_info.annotation
         _extract_dependencies_from_annotation(annotation, dependencies)
 
     return dependencies
 
 
-def _extract_dependencies_from_annotation(annotation: Any, dependencies: Set[str]) -> None:
+def _extract_dependencies_from_annotation(annotation: Any, dependencies: set[str]) -> None:
     """Recursively extract dependencies from type annotation."""
     # Handle None
     if annotation is None or annotation is type(None):
@@ -129,7 +136,7 @@ def _extract_dependencies_from_annotation(annotation: Any, dependencies: Set[str
             pass
 
 
-def build_dependency_graph(models: List[Type[BaseModel]]) -> Dict[str, List[str]]:
+def build_dependency_graph(models: list[type[BaseModel]]) -> dict[str, list[str]]:
     """
     Build dependency graph showing which models reference which.
 
@@ -141,12 +148,12 @@ def build_dependency_graph(models: List[Type[BaseModel]]) -> Dict[str, List[str]
     for model in models:
         model_name = get_model_name(model)
         dependencies = extract_field_dependencies(model)
-        graph[model_name] = sorted(list(dependencies))
+        graph[model_name] = sorted(dependencies)
 
     return graph
 
 
-def build_inverse_dependency_graph(graph: Dict[str, List[str]]) -> Dict[str, List[str]]:
+def build_inverse_dependency_graph(graph: dict[str, list[str]]) -> dict[str, list[str]]:
     """
     Build inverse dependency graph (what uses this model).
 
@@ -167,7 +174,7 @@ def build_inverse_dependency_graph(graph: Dict[str, List[str]]) -> Dict[str, Lis
     return inverse
 
 
-def topological_sort_models(graph: Dict[str, List[str]]) -> List[str]:
+def topological_sort_models(graph: dict[str, list[str]]) -> list[str]:
     """
     Topologically sort models by dependencies (primitives first).
 
@@ -175,7 +182,7 @@ def topological_sort_models(graph: Dict[str, List[str]]) -> List[str]:
         List of model names in dependency order
     """
     # Kahn's algorithm for topological sort
-    in_degree = {name: 0 for name in graph.keys()}
+    in_degree = dict.fromkeys(graph.keys(), 0)
 
     for dependencies in graph.values():
         for dep in dependencies:
@@ -205,7 +212,7 @@ def topological_sort_models(graph: Dict[str, List[str]]) -> List[str]:
 # =============================================================================
 
 
-def generate_example_instance(model: Type[BaseModel]) -> Optional[Dict[str, Any]]:
+def generate_example_instance(model: type[BaseModel]) -> dict[str, Any] | None:
     """
     Generate a valid example instance of a Pydantic model.
 
@@ -227,7 +234,9 @@ def generate_example_instance(model: Type[BaseModel]) -> Optional[Dict[str, Any]
             instance = model.model_validate(example_data)
             return instance.model_dump(mode="json")
         except Exception as e:
-            print(f"Warning: Could not generate example for {model.__name__}: {e}", file=sys.stderr)
+            print(
+                f"Warning: Could not generate example for {model.__name__}: {e}", file=sys.stderr
+            )
             return None
 
 
@@ -281,7 +290,7 @@ def _get_minimal_value(annotation: Any) -> Any:
 # =============================================================================
 
 
-def extract_model_metadata(model: Type[BaseModel]) -> Dict[str, Any]:
+def extract_model_metadata(model: type[BaseModel]) -> dict[str, Any]:
     """
     Extract comprehensive metadata from a Pydantic model.
 
@@ -297,7 +306,7 @@ def extract_model_metadata(model: Type[BaseModel]) -> Dict[str, Any]:
     }
 
 
-def _extract_field_metadata(model: Type[BaseModel]) -> Dict[str, Any]:
+def _extract_field_metadata(model: type[BaseModel]) -> dict[str, Any]:
     """Extract metadata for all fields in a model."""
     field_metadata = {}
 
@@ -317,7 +326,7 @@ def _extract_field_metadata(model: Type[BaseModel]) -> Dict[str, Any]:
 # =============================================================================
 
 
-def link_to_glossary(model: Type[BaseModel], glossary_path: Path) -> List[str]:
+def link_to_glossary(model: type[BaseModel], glossary_path: Path) -> list[str]:
     """
     Find cross-references to this model in docs/glossary.md.
 
@@ -330,7 +339,7 @@ def link_to_glossary(model: Type[BaseModel], glossary_path: Path) -> List[str]:
     references = []
 
     try:
-        with open(glossary_path, "r") as f:
+        with open(glossary_path, encoding="utf-8") as f:
             content = f.read()
 
         # Search for mentions of the model name
@@ -361,9 +370,9 @@ def link_to_glossary(model: Type[BaseModel], glossary_path: Path) -> List[str]:
 
 
 def generate_complete_schema(
-    output_path: Optional[Path] = None,
+    output_path: Path | None = None,
     include_examples: bool = True,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Generate complete LLM-optimized schema JSON.
 
@@ -397,7 +406,7 @@ def generate_complete_schema(
     dep_graph = build_dependency_graph(unique_models)
     inverse_graph = build_inverse_dependency_graph(dep_graph)
     sorted_names = topological_sort_models(dep_graph)
-    print(f"✓ Dependency graph built")
+    print("✓ Dependency graph built")
 
     print("📝 Extracting metadata...")
     schemas_by_dependency = {}
@@ -405,7 +414,7 @@ def generate_complete_schema(
 
     # Group by dependency level
     dependency_levels = {}
-    for i, name in enumerate(sorted_names):
+    for name in sorted_names:
         # Find the model
         model = next((m for m in unique_models if get_model_name(m) == name), None)
         if model is None:
@@ -496,7 +505,14 @@ def generate_complete_schema(
             "create_compositional_proof": {
                 "description": "Multi-step proof with sub-proofs and property-level dataflow",
                 "code_example": "See examples/proof_system_example.py - complete hierarchical proof structure",
-                "schema_refs": ["ProofBox", "ProofStep", "DirectDerivation", "SubProofReference", "ProofInput", "ProofOutput"],
+                "schema_refs": [
+                    "ProofBox",
+                    "ProofStep",
+                    "DirectDerivation",
+                    "SubProofReference",
+                    "ProofInput",
+                    "ProofOutput",
+                ],
             },
             "validate_and_submit": {
                 "description": "Validate proof against theorem, submit for dual review, implement fixes",
@@ -538,9 +554,9 @@ def generate_complete_schema(
     # Write to file if path provided
     if output_path is not None:
         print(f"💾 Writing schema to {output_path}...")
-        with open(output_path, "w") as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(schema, f, indent=2)
-        print(f"✓ Schema written successfully")
+        print("✓ Schema written successfully")
 
     return schema
 
@@ -551,9 +567,9 @@ def generate_complete_schema(
 
 
 def generate_proof_schema(
-    output_path: Optional[Path] = None,
+    output_path: Path | None = None,
     include_examples: bool = True,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Generate focused schema for rigorous proof writing.
 
@@ -584,28 +600,50 @@ def generate_proof_schema(
     # Define whitelist of models for rigorous proofs
     proof_models_whitelist = {
         # Core proof types (10)
-        "ProofBox", "ProofStep", "ProofInput", "ProofOutput",
-        "PropertyReference", "AssumptionReference",
-        "DirectDerivation", "SubProofReference", "LemmaApplication",
-        "ProofStepType", "ProofStepStatus",
-
+        "ProofBox",
+        "ProofStep",
+        "ProofInput",
+        "ProofOutput",
+        "PropertyReference",
+        "AssumptionReference",
+        "DirectDerivation",
+        "SubProofReference",
+        "LemmaApplication",
+        "ProofStepType",
+        "ProofStepStatus",
         # Mathematical objects (8)
-        "MathematicalObject", "Property", "PropertyEvent", "PropertyRefinement",
-        "TheoremBox", "Relationship", "RelationshipProperty", "Axiom",
-
+        "MathematicalObject",
+        "Property",
+        "PropertyEvent",
+        "PropertyRefinement",
+        "TheoremBox",
+        "Relationship",
+        "RelationshipProperty",
+        "Axiom",
         # SymPy validation system (9) - CRITICAL for rigorous proofs
-        "DualExpr", "DualStatement", "SymPyContext",
-        "SymPyValidator", "ValidationResult", "ValidationIssue",
-        "Transformation", "SymbolDeclaration", "PluginRegistry",
-
+        "DualExpr",
+        "DualStatement",
+        "SymPyContext",
+        "SymPyValidator",
+        "ValidationResult",
+        "ValidationIssue",
+        "Transformation",
+        "SymbolDeclaration",
+        "PluginRegistry",
         # Integration utilities (3)
-        "ProofValidationResult", "ProofTheoremMismatch", "ProofExpansionRequest",
-
+        "ProofValidationResult",
+        "ProofTheoremMismatch",
+        "ProofExpansionRequest",
         # Supporting types and enums
-        "Ok", "Err",
-        "ObjectType", "TheoremOutputType", "RelationType",
-        "PropertyEventType", "RefinementType",
-        "ValidationStatus", "TransformationType",
+        "Ok",
+        "Err",
+        "ObjectType",
+        "TheoremOutputType",
+        "RelationType",
+        "PropertyEventType",
+        "RefinementType",
+        "ValidationStatus",
+        "TransformationType",
     }
 
     # Filter schemas
@@ -624,7 +662,8 @@ def generate_proof_schema(
             "task_focus": "rigorous_proofs",
             "quality_standard": "Top-tier journal (Annals of Mathematics, JAMS)",
             "total_schemas": sum(len(models) for models in filtered_schemas.values()),
-            "excluded_from_full": complete_schema["metadata"]["total_schemas"] - sum(len(models) for models in filtered_schemas.values()),
+            "excluded_from_full": complete_schema["metadata"]["total_schemas"]
+            - sum(len(models) for models in filtered_schemas.values()),
         },
         "task_guide": {
             "objective": "Create rigorous, publishable mathematical proofs with full validation",
@@ -764,9 +803,9 @@ def generate_proof_schema(
     # Write to file if path provided
     if output_path is not None:
         print(f"💾 Writing rigorous proof schema to {output_path}...")
-        with open(output_path, "w") as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(schema, f, indent=2)
-        print(f"✓ Rigorous proof schema written successfully")
+        print("✓ Rigorous proof schema written successfully")
         print(f"  Models included: {schema['metadata']['total_schemas']}")
         print(f"  Models excluded: {schema['metadata']['excluded_from_full']}")
 
@@ -774,9 +813,9 @@ def generate_proof_schema(
 
 
 def generate_sketch_schema(
-    output_path: Optional[Path] = None,
+    output_path: Path | None = None,
     include_examples: bool = True,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Generate focused schema for proof sketch writing.
 
@@ -808,25 +847,37 @@ def generate_sketch_schema(
     # Define whitelist of models for proof sketches
     sketch_models_whitelist = {
         # Core proof types (10) - SAME as rigorous
-        "ProofBox", "ProofStep", "ProofInput", "ProofOutput",
-        "PropertyReference", "AssumptionReference",
-        "DirectDerivation", "SubProofReference", "LemmaApplication",
-        "ProofStepType", "ProofStepStatus",
-
+        "ProofBox",
+        "ProofStep",
+        "ProofInput",
+        "ProofOutput",
+        "PropertyReference",
+        "AssumptionReference",
+        "DirectDerivation",
+        "SubProofReference",
+        "LemmaApplication",
+        "ProofStepType",
+        "ProofStepStatus",
         # Mathematical objects (7) - lighter than rigorous
-        "MathematicalObject", "Property", "PropertyEvent",
-        "TheoremBox", "Relationship", "Axiom", "Parameter",
+        "MathematicalObject",
+        "Property",
+        "PropertyEvent",
+        "TheoremBox",
+        "Relationship",
+        "Axiom",
+        "Parameter",
         # EXCLUDED: PropertyRefinement, RelationshipProperty (less detail needed)
-
         # Integration utilities (2) - focused on expansion workflow
         "ProofValidationResult",  # Basic structural validation
         "ProofExpansionRequest",  # KEY for sketch → rigorous workflow!
         # EXCLUDED: ProofTheoremMismatch (less relevant for sketches)
-
         # Supporting types and enums (4)
-        "Ok", "Err",
-        "ProofStepType", "ProofStepStatus",
-        "ObjectType", "TheoremOutputType",
+        "Ok",
+        "Err",
+        "ProofStepType",
+        "ProofStepStatus",
+        "ObjectType",
+        "TheoremOutputType",
         # NO SymPy validation enums!
     }
 
@@ -846,7 +897,8 @@ def generate_sketch_schema(
             "task_focus": "proof_sketches",
             "quality_standard": "Correct structure, clear strategy, valid dataflow (no full derivations required)",
             "total_schemas": sum(len(models) for models in filtered_schemas.values()),
-            "excluded_from_full": complete_schema["metadata"]["total_schemas"] - sum(len(models) for models in filtered_schemas.values()),
+            "excluded_from_full": complete_schema["metadata"]["total_schemas"]
+            - sum(len(models) for models in filtered_schemas.values()),
         },
         "task_guide": {
             "objective": "Create proof sketches outlining strategy and structure without full mathematical derivation",
@@ -981,12 +1033,12 @@ def generate_sketch_schema(
     # Write to file if path provided
     if output_path is not None:
         print(f"💾 Writing proof sketch schema to {output_path}...")
-        with open(output_path, "w") as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(schema, f, indent=2)
-        print(f"✓ Proof sketch schema written successfully")
+        print("✓ Proof sketch schema written successfully")
         print(f"  Models included: {schema['metadata']['total_schemas']}")
         print(f"  Models excluded: {schema['metadata']['excluded_from_full']}")
-        print(f"  Key difference: NO SymPy validation system (sketches focus on structure)")
+        print("  Key difference: NO SymPy validation system (sketches focus on structure)")
 
     return schema
 
@@ -1094,16 +1146,22 @@ Output files:
         print("=" * 80)
         print("ALL SCHEMAS GENERATED")
         print("=" * 80)
-        print(f"📄 llm_schemas.json:  {full_schema['metadata']['total_schemas']} models, "
-              f"{(base_dir / 'llm_schemas.json').stat().st_size / 1024:.1f} KB")
-        print(f"📄 llm_proof.json:    {proof_schema['metadata']['total_schemas']} models, "
-              f"{(base_dir / 'llm_proof.json').stat().st_size / 1024:.1f} KB (rigorous proofs)")
-        print(f"📄 llm_sketch.json:   {sketch_schema['metadata']['total_schemas']} models, "
-              f"{(base_dir / 'llm_sketch.json').stat().st_size / 1024:.1f} KB (proof sketches)")
+        print(
+            f"📄 llm_schemas.json:  {full_schema['metadata']['total_schemas']} models, "
+            f"{(base_dir / 'llm_schemas.json').stat().st_size / 1024:.1f} KB"
+        )
+        print(
+            f"📄 llm_proof.json:    {proof_schema['metadata']['total_schemas']} models, "
+            f"{(base_dir / 'llm_proof.json').stat().st_size / 1024:.1f} KB (rigorous proofs)"
+        )
+        print(
+            f"📄 llm_sketch.json:   {sketch_schema['metadata']['total_schemas']} models, "
+            f"{(base_dir / 'llm_sketch.json').stat().st_size / 1024:.1f} KB (proof sketches)"
+        )
 
     elif args.proof:
         # Generate proof schema only
-        output_path = args.output if args.output else base_dir / "llm_proof.json"
+        output_path = args.output or base_dir / "llm_proof.json"
         schema = generate_proof_schema(
             output_path=output_path,
             include_examples=not args.no_examples,
@@ -1121,7 +1179,7 @@ Output files:
 
     elif args.sketch:
         # Generate sketch schema only
-        output_path = args.output if args.output else base_dir / "llm_sketch.json"
+        output_path = args.output or base_dir / "llm_sketch.json"
         schema = generate_sketch_schema(
             output_path=output_path,
             include_examples=not args.no_examples,
@@ -1139,7 +1197,7 @@ Output files:
 
     else:
         # Generate full schema (default)
-        output_path = args.output if args.output else base_dir / "llm_schemas.json"
+        output_path = args.output or base_dir / "llm_schemas.json"
         schema = generate_complete_schema(
             output_path=output_path,
             include_examples=not args.no_examples,

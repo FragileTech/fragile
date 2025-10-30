@@ -1,0 +1,30 @@
+{
+  "label": "obj-companion-selection-measure",
+  "name": "Companion Selection Measure",
+  "mathematical_expression": "For each walker $i \\in \\{1, \\dots, N\\}$ in a swarm $\\mathcal{S}$ with alive set $\\mathcal{A}$, the **Companion Selection Measure**, $\\mathbb{C}_i(\\mathcal{S})$, is a **uniform discrete probability measure** over a support set $S_i \\subseteq \\{1, \\dots, N\\}$ of valid companion indices. The support set is defined as:\n* If walker $i$ is alive ($i \\in \\mathcal{A}$) and there is at least one other alive walker ($|\\mathcal{A}| \\ge 2$), the support set is all other alive walkers: $S_i := \\mathcal{A} \\setminus \\{i\\}$.\n* If walker $i$ is dead ($i \\notin \\mathcal{A}$) and the alive set is not empty ($|\\mathcal{A}| \\ge 1$), the support set is all alive walkers: $S_i := \\mathcal{A}$.\n* If walker $i$ is the only one alive ($|\\mathcal{A}| = 1$ and $\\mathcal{A} = \\{i\\}$), it is its own companion: $S_i := \\{i\\}$.\n* If the swarm is empty ($|\\mathcal{A}|=0$), the support set is empty: $S_i := \\emptyset$.\n\nThe measure is defined as $\\mathbb{C}_i(\\mathcal{S})(\\{j\\}) = 1/|S_i|$ if $j \\in S_i$ and $|S_i|>0$, and 0 otherwise. The expectation of any function $f$ under this measure is $\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S})}[f(j)] = \\frac{1}{|S_i|} \\sum_{j \\in S_i} f(j).",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "companion-selection",
+    "probability-measure",
+    "swarm",
+    "discrete"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-companion-selection-measure",
+  "statement_type": "object",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "7.1",
+    "line_range": [
+      2167,
+      2182
+    ],
+    "directive_label": "obj-companion-selection-measure",
+    "equation": null,
+    "url_fragment": null
+  }
+}

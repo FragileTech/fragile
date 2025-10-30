@@ -2,149 +2,26 @@
   "label": "lem-sasaki-single-walker-positional-error",
   "name": "Single-walker positional error bound in the Sasaki metric",
   "statement_type": "lemma",
-  "source": {
-    "document_id": "02_euclidean_gas",
-    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-    "section": "2.3.3 Continuity of the Expected Raw Distance Vector",
-    "directive_label": "lem-sasaki-single-walker-positional-error",
-    "line_range": [1058, 1109]
-  },
-  "input_objects": [
-    "obj-swarm-state",
-    "obj-companion-selection-measure",
-    "obj-sasaki-metric",
-    "obj-projection-map"
-  ],
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
   "input_axioms": [],
-  "input_parameters": [
-    "param-N",
-    "param-d"
-  ],
-  "attributes_required": {
-    "obj-swarm-state": [
-      "attr-two-swarm-states"
-    ],
-    "obj-companion-selection-measure": [
-      "attr-defined-for-alive-walker"
-    ],
-    "obj-sasaki-metric": [
-      "attr-metric-space-structure"
-    ],
-    "obj-projection-map": [
-      "attr-maps-walker-to-algorithmic-space"
-    ]
-  },
+  "input_parameters": [],
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
-  "output_type": "Relation",
+  "output_type": "Property",
   "attributes_added": [],
-  "relations_established": [
-    {
-      "label": "rel-expected-distance-error-positional-displacement-approximation",
-      "relationship_type": "approximation",
-      "bidirectional": false,
-      "source_object": "obj-expected-distance-difference",
-      "target_object": "obj-positional-displacement-bound",
-      "established_by": "lem-sasaki-single-walker-positional-error",
-      "expression": "\\left| \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{1,i}), \\varphi(w_{1,c})) \\right] - \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{2,i}), \\varphi(w_{2,c})) \\right] \\right| \\le d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{1,i}), \\varphi(w_{2,i})) + \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{1,c}), \\varphi(w_{2,c})) \\right]",
-      "properties": [
-        {
-          "label": "error-bound-type",
-          "expression": "\\text{Absolute error bound}",
-          "description": "The relationship provides an upper bound on the absolute error in expected distances"
-        },
-        {
-          "label": "error-components",
-          "expression": "\\text{Own displacement} + \\text{Average companion displacement}",
-          "description": "The bound decomposes into walker's own displacement and average displacement of potential companions"
-        }
-      ],
-      "tags": [
-        "euclidean-gas",
-        "sasaki-metric",
-        "continuity",
-        "distance-measurement",
-        "error-bound"
-      ]
-    }
-  ],
-  "proof_structure": {
-    "strategy": "Apply metric inequalities and probability theory to decompose and bound the absolute error",
-    "steps": [
-      {
-        "step_number": 1,
-        "description": "Apply Linearity of Expectation",
-        "input_properties": [
-          "attr-companion-selection-measure-fixed"
-        ],
-        "output_properties": [
-          "attr-combined-expectation-form"
-        ],
-        "technique": "Linearity of expectation",
-        "expression": "\\Delta_{\\mathrm{pos},i} = \\left| \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{1,i}), \\varphi(w_{1,c})) - d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{2,i}), \\varphi(w_{2,c})) \\right] \\right|"
-      },
-      {
-        "step_number": 2,
-        "description": "Apply Jensen's Inequality",
-        "input_properties": [
-          "attr-absolute-value-convex"
-        ],
-        "output_properties": [
-          "attr-upper-bound-via-jensen"
-        ],
-        "technique": "Jensen's inequality for convex function f(x) = |x|",
-        "expression": "\\Delta_{\\mathrm{pos},i} \\le \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ \\left| d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{1,i}), \\varphi(w_{1,c})) - d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{2,i}), \\varphi(w_{2,c})) \\right| \\right]",
-        "references": []
-      },
-      {
-        "step_number": 3,
-        "description": "Apply the Reverse Triangle Inequality",
-        "input_properties": [
-          "attr-sasaki-metric-structure"
-        ],
-        "output_properties": [
-          "attr-distance-difference-bound"
-        ],
-        "technique": "Reverse triangle inequality in metric space: |d(a,b) - d(c,d)| ≤ d(a,c) + d(b,d)",
-        "expression": "\\left| d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{1,i}), \\varphi(w_{1,c})) - d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{2,i}), \\varphi(w_{2,c})) \\right| \\le d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{1,i}), \\varphi(w_{2,i})) + d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{1,c}), \\varphi(w_{2,c}))",
-        "references": []
-      },
-      {
-        "step_number": 4,
-        "description": "Finalize the Bound",
-        "input_properties": [
-          "attr-distance-difference-bound"
-        ],
-        "output_properties": [
-          "attr-final-error-bound"
-        ],
-        "technique": "Substitute inequality into expectation and apply linearity",
-        "expression": "\\Delta_{\\mathrm{pos},i} \\le \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{1,i}), \\varphi(w_{2,i})) + d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{1,c}), \\varphi(w_{2,c})) \\right] = d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{1,i}), \\varphi(w_{2,i})) + \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{1,c}), \\varphi(w_{2,c})) \\right]",
-        "references": []
-      }
-    ],
-    "dependencies": [],
-    "assumptions": [
-      "Walker i is alive in swarm S_1 (s_{1,i} = 1)",
-      "Companion selection measure C_i(S_1) is well-defined",
-      "Sasaki metric d_Y^{Sasaki} is a valid metric on algorithmic space Y",
-      "Projection map φ maps walkers to algorithmic space"
-    ]
-  },
-  "mathematical_context": {
-    "role": "Establishes single-walker error bound for continuity analysis of distance measurement operator in Sasaki geometry",
-    "used_by": [
-      "lem-sasaki-total-squared-error-stable",
-      "thm-sasaki-distance-ms"
-    ],
-    "tags": [
-      "euclidean-gas",
-      "sasaki-metric",
-      "continuity",
-      "distance-measurement",
-      "error-analysis",
-      "companion-selection"
-    ]
-  }
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

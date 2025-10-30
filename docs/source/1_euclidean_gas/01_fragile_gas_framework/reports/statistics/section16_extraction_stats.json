@@ -1,0 +1,25 @@
+{
+  "extraction_date": "2025-10-27T21:51:10.619423",
+  "source_file": "01_fragile_gas_framework.md",
+  "section": "16 - The Cloning Transition Measure",
+  "line_range": {
+    "start": 4214,
+    "end": 4554,
+    "total": 340
+  },
+  "entities_extracted": {
+    "definitions": 6,
+    "lemmas": 4,
+    "theorems": 4,
+    "proofs": 8,
+    "remarks": 2,
+    "axioms": 0,
+    "equations": 0,
+    "parameters": 0,
+    "citations": 0
+  },
+  "total_entities": 24,
+  "extraction_method": "manual_structured_parsing",
+  "output_format": "individual_json_files",
+  "output_directory": "docs/source/1_euclidean_gas/01_fragile_gas_framework"
+}

@@ -2,9 +2,17 @@
   "label": "thm-mean-field-limit-informal",
   "name": "Mean-Field Limit (Informal Statement)",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "07_mean_field",
+  "source": {
+    "document_id": "07_mean_field",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/07_mean_field.md",
+    "section": null,
+    "directive_label": "thm-mean-field-limit-informal",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-mean-field-limit-informal"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -22,27 +30,23 @@
     "param-tau",
     "param-alpha"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-killing-operator": [
-      "prop-exit-rate-pointwise-limit",
-      "prop-expected-killing-fraction-convergence"
+      "attr-exit-rate-pointwise-limit",
+      "attr-expected-killing-fraction-convergence"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Convergence",
-  "properties_added": [
-    {
-      "label": "prop-empirical-to-meanfield-convergence",
-      "expression": "f_N^τ(t,·,·) ⇒ f(t,·,·) weakly as N→∞, τ→0 with τ = O(N^{−α}), α>0",
-      "object_label": "obj-phase-space-density",
-      "established_by": "thm-mean-field-limit-informal",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

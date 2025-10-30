@@ -1,0 +1,467 @@
+=== FILE: axiom-boundary-regularity.json ===
+{
+  "label": "axiom-boundary-regularity",
+  "statement": "*   **Core Assumption:** The marginal probability of a single walker becoming invalid after the perturbation and status update stages must be a smooth (Hölder continuous) function of the initial N-particle swarm state. This axiom applies to any valid noise measure, including those with state-dependent coupling between walkers.\n\n*   **Axiomatic Parameters:** The user must provide the constants that bound this relationship, derived from their choice of **Noise Measure**, **Valid Domain**, and **Pr",
+  "mathematical_expression": "*   **Core Assumption:** The marginal probability of a single walker becoming invalid after the perturbation and status update stages must be a smooth (Hölder continuous) function of the initial N-particle swarm state. This axiom applies to any valid noise measure, including those with state-dependent coupling between walkers.\n\n*   **Axiomatic Parameters:** The user must provide the constants that bound this relationship, derived from their choice of **Noise Measure**, **Valid Domain**, and **Pr",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Boundary Regularity",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-boundary-regularity",
+    "line_range": null
+  }
+}
+=== FILE: axiom-boundary-smoothness.json ===
+{
+  "label": "axiom-boundary-smoothness",
+  "statement": "*   **Core Assumption:** The boundary of the valid domain, $\\partial \\mathcal{X}_{\\mathrm{valid}}$, must be a $(d-1)$‑dimensional continuously differentiable ($C^1$) submanifold of the $d$‑dimensional state space $\\mathcal{X}$.\n\n*   **Rationale:** This is the standard condition in geometric measure theory ensuring the boundary has Lebesgue measure zero in the ambient space. It is a critical prerequisite for proving that $\\partial \\mathcal{X}_{\\mathrm{valid}}$ is a null set for any absolutely con",
+  "mathematical_expression": "*   **Core Assumption:** The boundary of the valid domain, $\\partial \\mathcal{X}_{\\mathrm{valid}}$, must be a $(d-1)$‑dimensional continuously differentiable ($C^1$) submanifold of the $d$‑dimensional state space $\\mathcal{X}$.\n\n*   **Rationale:** This is the standard condition in geometric measure theory ensuring the boundary has Lebesgue measure zero in the ambient space. It is a critical prerequisite for proving that $\\partial \\mathcal{X}_{\\mathrm{valid}}$ is a null set for any absolutely con",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Boundary Smoothness",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-boundary-smoothness",
+    "line_range": null
+  }
+}
+=== FILE: axiom-bounded-algorithmic-diameter.json ===
+{
+  "label": "axiom-bounded-algorithmic-diameter",
+  "statement": "- The algorithmic space $(\\mathcal{Y}, d_{\\mathcal{Y}})$ is Polish (complete, separable metric space).\n- Its diameter is finite: $D_{\\mathcal{Y}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\mathcal{Y}) < \\infty$.\n\nThese conditions ensure Wasserstein metrics $W_p$ on probability measures over $(\\mathcal{Y}, d_{\\mathcal{Y}})$ are well‑posed and that all per‑walker squared displacements are bounded by $D_{\\mathcal{Y}}^2$.",
+  "mathematical_expression": "- The algorithmic space $(\\mathcal{Y}, d_{\\mathcal{Y}})$ is Polish (complete, separable metric space).\n- Its diameter is finite: $D_{\\mathcal{Y}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\mathcal{Y}) < \\infty$.\n\nThese conditions ensure Wasserstein metrics $W_p$ on probability measures over $(\\mathcal{Y}, d_{\\mathcal{Y}})$ are well‑posed and that all per‑walker squared displacements are bounded by $D_{\\mathcal{Y}}^2$.",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Bounded Algorithmic Diameter",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-bounded-algorithmic-diameter",
+    "line_range": null
+  }
+}
+=== FILE: axiom-bounded-deviation-variance.json ===
+{
+  "label": "axiom-bounded-deviation-variance",
+  "statement": "*   **Core Assumption:** The sum of squared deviations of the raw input values from the aggregator's computed mean must be controllably related to the variance computed by the aggregator itself. This prevents aggregators from producing statistical moments that are pathologically decoupled from the input data.\n*   **Axiomatic Parameter ($\\kappa_{\\text{var}}$ - The Variance Deviation Factor):** The user must provide a constant $\\kappa_{\\text{var}} \\geq 1$ that bounds this relationship.\n*   **Condi",
+  "mathematical_expression": "*   **Core Assumption:** The sum of squared deviations of the raw input values from the aggregator's computed mean must be controllably related to the variance computed by the aggregator itself. This prevents aggregators from producing statistical moments that are pathologically decoupled from the input data.\n*   **Axiomatic Parameter ($\\kappa_{\\text{var}}$ - The Variance Deviation Factor):** The user must provide a constant $\\kappa_{\\text{var}} \\geq 1$ that bounds this relationship.\n*   **Condi",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Bounded Deviation Variance",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-bounded-deviation-variance",
+    "line_range": null
+  }
+}
+=== FILE: axiom-bounded-measurement-variance.json ===
+{
+  "label": "axiom-bounded-measurement-variance",
+  "statement": "Axiom of Bounded Measurement Variance",
+  "mathematical_expression": "\\mathbb{E}[\\|\\mathbf{v} - \\mathbb{E}[\\mathbf{v}]\\|_2^2] \\le \\kappa^2_{\\text{variance}}",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas/01_fragile_gas_framework",
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of Bounded Measurement Variance",
+  "core_assumption": null,
+  "parameters": [
+    {
+      "symbol": "\\kappa^2_{\\text{variance}}",
+      "description": "The Maximum Measurement Variance - constant that provides a uniform upper bound on the expected squared deviation of a sampled raw value vector from its mean",
+      "constraints": "\\kappa^2_{\\text{variance}} \\ge 0"
+    },
+    {
+      "symbol": "\\mathcal{S} \\in \\Sigma_N",
+      "description": "Any swarm state",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathbf{v} \\sim V(\\mathcal{S})",
+      "description": "Sampled raw value vector",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathbb{E}[\\mathbf{v}]",
+      "description": "Expectation of the raw value vector",
+      "constraints": null
+    }
+  ],
+  "condition": null,
+  "failure_mode_analysis": "If this axiom is violated, the raw measurement process could have an unbounded variance. This would allow for rare but arbitrarily large measurement errors, causing the expected squared error to be infinite. This would break the mean-square continuity of the operator, leading to unstable swarm behavior.",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-bounded-measurement-variance",
+    "line_range": null
+  }
+}
+=== FILE: axiom-bounded-relative-collapse.json ===
+{
+  "label": "axiom-bounded-relative-collapse",
+  "statement": "*   **Core Assumption:** The scaling analysis for structural error is valid only for transitions that are not catastrophically large relative to the initial swarm size.\n*   **Axiomatic Parameter ($c_{\\min}$ - The Relative Collapse Tolerance):** The user must provide a constant $c_{\\min} \\in (0, 1]$ that defines the minimum fraction of the swarm that must survive a transition for the structural growth exponent analysis to be considered valid.\n*   **Condition:** A transition from a swarm $S_1$ to ",
+  "mathematical_expression": "*   **Core Assumption:** The scaling analysis for structural error is valid only for transitions that are not catastrophically large relative to the initial swarm size.\n*   **Axiomatic Parameter ($c_{\\min}$ - The Relative Collapse Tolerance):** The user must provide a constant $c_{\\min} \\in (0, 1]$ that defines the minimum fraction of the swarm that must survive a transition for the structural growth exponent analysis to be considered valid.\n*   **Condition:** A transition from a swarm $S_1$ to ",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Bounded Relative Collapse",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-bounded-relative-collapse",
+    "line_range": null
+  }
+}
+=== FILE: axiom-bounded-second-moment-perturbation.json ===
+{
+  "label": "axiom-bounded-second-moment-perturbation",
+  "statement": "The expectation of the squared displacement caused by the **Perturbation Measure**, after being projected into the **Algorithmic Space**, is uniformly bounded across all possible starting positions.",
+  "mathematical_expression": "The expectation of the squared displacement caused by the **Perturbation Measure**, after being projected into the **Algorithmic Space**, is uniformly bounded across all possible starting positions.",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of Bounded Second Moment of Perturbation",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-bounded-second-moment-perturbation",
+    "line_range": null
+  }
+}
+=== FILE: axiom-bounded-variance-production.json ===
+{
+  "label": "axiom-bounded-variance-production",
+  "statement": "*   **Core Assumption:** The variance of the measure produced by the aggregation operator must itself be bounded by a function of the input value range. This prevents an aggregator from creating arbitrarily large variance from bounded inputs.\n*   **Axiomatic Parameter ($\\kappa_{\\text{range}}$ - The Range-to-Variance Factor):** The user must provide a constant $\\kappa_{\\text{range}} \\geq 0$.\n*   **Condition:** For any swarm $S$ and any value vector $v$ with components bounded by $V_{\\max}$, the a",
+  "mathematical_expression": "*   **Core Assumption:** The variance of the measure produced by the aggregation operator must itself be bounded by a function of the input value range. This prevents an aggregator from creating arbitrarily large variance from bounded inputs.\n*   **Axiomatic Parameter ($\\kappa_{\\text{range}}$ - The Range-to-Variance Factor):** The user must provide a constant $\\kappa_{\\text{range}} \\geq 0$.\n*   **Condition:** For any swarm $S$ and any value vector $v$ with components bounded by $V_{\\max}$, the a",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Bounded Variance Production",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-bounded-variance-production",
+    "line_range": null
+  }
+}
+=== FILE: axiom-environmental-richness.json ===
+{
+  "label": "axiom-environmental-richness",
+  "statement": "*   **Core Assumption:** The reward function $R$ must not be pathologically flat at a user-defined minimum length scale. The algorithm requires a guaranteed level of reward variation to learn.\n*   **Axiomatic Parameters:** The user must provide two parameters that quantify the learnability of the reward landscape:\n    1.  **$r_{\\min}$ > 0 (The Minimum Richness Scale):** The minimum radius in the algorithmic space above which the reward function is guaranteed to exhibit variance. This parameter q",
+  "mathematical_expression": "*   **Core Assumption:** The reward function $R$ must not be pathologically flat at a user-defined minimum length scale. The algorithm requires a guaranteed level of reward variation to learn.\n*   **Axiomatic Parameters:** The user must provide two parameters that quantify the learnability of the reward landscape:\n    1.  **$r_{\\min}$ > 0 (The Minimum Richness Scale):** The minimum radius in the algorithmic space above which the reward function is guaranteed to exhibit variance. This parameter q",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Environmental Richness",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-environmental-richness",
+    "line_range": null
+  }
+}
+=== FILE: axiom-geometric-consistency.json ===
+{
+  "label": "axiom-geometric-consistency",
+  "statement": "*   **Core Assumption:** The algorithmic noise should be unbiased and isotropic, unless intentionally designed otherwise.\n*   **Axiomatic Parameters (Practical Proxies):**\n    1.  **$\\kappa_{\\text{drift}}$ (Anomalous Drift):** The maximum magnitude of any local drift introduced by the noise measure:\n\n\n\n$$\n\\kappa_{\\text{drift}} := \\sup_{x \\in \\mathcal{X}} \\|\\mathbb{E}_{x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)}[x' - x]\\|\n$$\n\n    2.  **$\\kappa_{\\text{anisotropy}}$ (Diffusion Anisotropy):** The maximum ",
+  "mathematical_expression": "*   **Core Assumption:** The algorithmic noise should be unbiased and isotropic, unless intentionally designed otherwise.\n*   **Axiomatic Parameters (Practical Proxies):**\n    1.  **$\\kappa_{\\text{drift}}$ (Anomalous Drift):** The maximum magnitude of any local drift introduced by the noise measure:\n\n\n\n$$\n\\kappa_{\\text{drift}} := \\sup_{x \\in \\mathcal{X}} \\|\\mathbb{E}_{x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)}[x' - x]\\|\n$$\n\n    2.  **$\\kappa_{\\text{anisotropy}}$ (Diffusion Anisotropy):** The maximum ",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Geometric Consistency",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-geometric-consistency",
+    "line_range": null
+  }
+}
+=== FILE: axiom-guaranteed-revival.json ===
+{
+  "label": "axiom-guaranteed-revival",
+  "statement": "*   **Core Assumption:** The cloning score generated by a dead walker must be guaranteed to exceed the maximum possible random threshold, $p_{\\max}$.\n*   **Axiomatic Parameter ($\\kappa_{\\text{revival}}$ - The Revival Score Ratio):** The user must provide the value of the revival score ratio, computed from their chosen parameters:\n\n\n\n$$\n\\kappa_{\\text{revival}} := \\frac{\\eta^{\\alpha+\\beta}}{\\varepsilon_{\\text{clone}} \\cdot p_{\\max}}\n$$\n\n*   **Condition:** For the axiom to be satisfied, the user mu",
+  "mathematical_expression": "*   **Core Assumption:** The cloning score generated by a dead walker must be guaranteed to exceed the maximum possible random threshold, $p_{\\max}$.\n*   **Axiomatic Parameter ($\\kappa_{\\text{revival}}$ - The Revival Score Ratio):** The user must provide the value of the revival score ratio, computed from their chosen parameters:\n\n\n\n$$\n\\kappa_{\\text{revival}} := \\frac{\\eta^{\\alpha+\\beta}}{\\varepsilon_{\\text{clone}} \\cdot p_{\\max}}\n$$\n\n*   **Condition:** For the axiom to be satisfied, the user mu",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Guaranteed Revival",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-guaranteed-revival",
+    "line_range": null
+  }
+}
+=== FILE: axiom-instep-independence.json ===
+{
+  "label": "axiom-instep-independence",
+  "statement": "Fix a time $t$ and swarm state $\\mathcal S_t$. For each walker $i\\in\\{1,\\dots,N\\}$, let\n\n$$\nX_i \\;:=\\;\\big(U_i^{\\mathrm{comp}},\\,U_i^{\\mathrm{pert}},\\,U_i^{\\mathrm{status}},\\,U_i^{\\mathrm{clone}}\\big)\n$$\n\nbe the collection of random inputs used by walker $i$ during the next update (companion selection, perturbation noise, status/death draw, cloning/parent draw). **Conditional on $\\mathcal S_t$, the vectors $X_1,\\dots,X_N$ are independent**, and the components inside each $X_i$ are mutually independent.",
+  "mathematical_expression": "X_i \\;:=\\;\\big(U_i^{\\mathrm{comp}},\\,U_i^{\\mathrm{pert}},\\,U_i^{\\mathrm{status}},\\,U_i^{\\mathrm{clone}}\\big) \\text{ with } X_1,\\dots,X_N \\text{ independent conditional on } \\mathcal S_t",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Assumption A: In-Step Independence",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-instep-independence",
+    "line_range": null
+  }
+}
+=== FILE: axiom-margin-stability.json ===
+{
+  "label": "axiom-margin-stability",
+  "statement": "There exists a uniform margin $r_{\\mathrm{pos}}>0$ such that for any two swarms $\\mathcal{S}_1,\\mathcal{S}_2\\in\\Sigma_N$ with\n\n$$\n\\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal Y}\\!\\big(\\varphi(x_{1,i}),\\varphi(x_{2,i})\\big)^2\\;\\le\\; r_{\\mathrm{pos}},\n$$\n\nthe alive/dead decisions are invariant under the status update:\n\n$$\nn_c(\\mathcal{S}_1,\\mathcal{S}_2)=0.\n$$\n\nIn words, sufficiently small positional perturbations (average squared displacement) cannot flip any walker’s status; the alive/dead decision has a",
+  "mathematical_expression": "There exists a uniform margin $r_{\\mathrm{pos}}>0$ such that for any two swarms $\\mathcal{S}_1,\\mathcal{S}_2\\in\\Sigma_N$ with\n\n$$\n\\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal Y}\\!\\big(\\varphi(x_{1,i}),\\varphi(x_{2,i})\\big)^2\\;\\le\\; r_{\\mathrm{pos}},\n$$\n\nthe alive/dead decisions are invariant under the status update:\n\n$$\nn_c(\\mathcal{S}_1,\\mathcal{S}_2)=0.\n$$\n\nIn words, sufficiently small positional perturbations (average squared displacement) cannot flip any walker’s status; the alive/dead decision has a",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Margin Stability",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-margin-stability",
+    "line_range": null
+  }
+}
+=== FILE: axiom-non-degenerate-noise.json ===
+{
+  "label": "axiom-non-degenerate-noise",
+  "statement": "*   **Core Assumption:** The **Perturbation** and **Cloning** measures must not be the Dirac delta measure.\n*   **Axiomatic Parameters ($\\sigma$, $\\delta$ - The Noise Scales):** The user provides these parameters directly.\n*   **Condition:** The user must ensure **$\\sigma > 0$** and **$\\delta > 0$**.\n*   **Failure Mode Analysis:** If **$\\sigma = 0$** and **$\\delta = 0$**, the swarm cannot introduce new positions into the system, leading to a complete loss of exploration and eventual collapse to ",
+  "mathematical_expression": "*   **Core Assumption:** The **Perturbation** and **Cloning** measures must not be the Dirac delta measure.\n*   **Axiomatic Parameters ($\\sigma$, $\\delta$ - The Noise Scales):** The user provides these parameters directly.\n*   **Condition:** The user must ensure **$\\sigma > 0$** and **$\\delta > 0$**.\n*   **Failure Mode Analysis:** If **$\\sigma = 0$** and **$\\delta = 0$**, the swarm cannot introduce new positions into the system, leading to a complete loss of exploration and eventual collapse to ",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Non Degenerate Noise",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-non-degenerate-noise",
+    "line_range": null
+  }
+}
+=== FILE: axiom-projection-compatibility.json ===
+{
+  "label": "axiom-projection-compatibility",
+  "statement": "Projection compatibility: There exists a function $R_{\\mathcal Y}:\\varphi(\\mathcal X)\\to\\mathbb R$ such that $R = R_{\\mathcal Y}\\circ\\varphi$ on $\\mathcal X$. Equivalently, if $\\varphi(x)=\\varphi(x')$ then $R(x)=R(x')$.",
+  "mathematical_expression": "R = R_{\\mathcal Y}\\circ\\varphi \\text{ on } \\mathcal X \\text{, i.e., } \\varphi(x)=\\varphi(x') \\Rightarrow R(x)=R(x')",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of Projection Compatibility",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-projection-compatibility",
+    "line_range": null
+  }
+}
+=== FILE: axiom-range-respecting-mean.json ===
+{
+  "label": "axiom-range-respecting-mean",
+  "statement": "For any finite collection of inputs $\\{v_i\\}$, the aggregator’s mean output $\\mu$ satisfies\n\n$$\n\\min_i v_i \\;\\le\\; \\mu \\;\\le\\; \\max_i v_i.\n$$\n\nThis property holds for empirical means and is assumed for any user‑chosen mean‑type aggregator in this framework.",
+  "mathematical_expression": "For any finite collection of inputs $\\{v_i\\}$, the aggregator’s mean output $\\mu$ satisfies\n\n$$\n\\min_i v_i \\;\\le\\; \\mu \\;\\le\\; \\max_i v_i.\n$$\n\nThis property holds for empirical means and is assumed for any user‑chosen mean‑type aggregator in this framework.",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Range Respecting Mean",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-range-respecting-mean",
+    "line_range": null
+  }
+}
+=== FILE: axiom-raw-value-mean-square-continuity.json ===
+{
+  "label": "axiom-raw-value-mean-square-continuity",
+  "statement": "Axiom of Mean-Square Continuity for Raw Values",
+  "mathematical_expression": "\\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas/01_fragile_gas_framework",
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of Mean-Square Continuity for Raw Values",
+  "core_assumption": null,
+  "parameters": [
+    {
+      "symbol": "V",
+      "description": "Raw Value Operator",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathcal{S}_1, \\mathcal{S}_2",
+      "description": "Two swarm states",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathbf{v}_1 \\sim V(\\mathcal{S}_1)",
+      "description": "Independently sampled raw value vector from state 1",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathbf{v}_2 \\sim V(\\mathcal{S}_2)",
+      "description": "Independently sampled raw value vector from state 2",
+      "constraints": null
+    },
+    {
+      "symbol": "F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "description": "Expected Squared Value Error Bound - explicit, deterministic bounding function",
+      "constraints": "Must be provided by user for their chosen operator V"
+    }
+  ],
+  "condition": null,
+  "failure_mode_analysis": "If an operator violates this axiom, the expected error introduced at the measurement stage can be unbounded. This would lead to a breakdown of continuity in the standardization and cloning decisions, resulting in chaotic and unstable swarm behavior.",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-raw-value-mean-square-continuity",
+    "line_range": null
+  }
+}
+=== FILE: axiom-rescale-function.json ===
+{
+  "label": "axiom-rescale-function",
+  "statement": "Axiom of a Well-Behaved Rescale Function",
+  "mathematical_expression": "g_A: \\mathbb{R} \\to \\mathbb{R}_{>0} \\text{ with: } (1) \\text{ } C^1 \\text{ smoothness}, (2) \\text{ } g'_A(z) \\ge 0 \\text{ } \\forall z, (3) \\text{ range } (0, g_{A,\\max}], (4) \\text{ } \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of a Well-Behaved Rescale Function",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": "Violating any property makes the algorithm unpredictable or unstable: (1) Smoothness prevents discontinuous jumps in fitness, (2) Monotonicity ensures logical ordering (better → higher fitness), (3) Boundedness prevents infinite fitness that breaks probability calculations, (4) Lipschitz continuity ensures small input changes cause proportional output changes",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-rescale-function",
+    "line_range": null
+  }
+}
+=== FILE: axiom-reward-regularity.json ===
+{
+  "label": "axiom-reward-regularity",
+  "statement": "*   **Core Assumption:** The reward function, when viewed in the algorithmic space, must be Hölder continuous.\n\n*   **Axiomatic Parameters:** The user must provide the constants that bound the reward function's smoothness:\n    1.  **$L_{R,\\mathcal{Y}} > 0$ (The Reward Volatility Factor):** The Hölder constant of the reward function in the algorithmic space.\n    2.  **$\\alpha_R \\in (0, 1]$ (The Reward Smoothing Exponent):** The Hölder exponent for the reward function on $(\\mathcal{Y},d_{\\mathcal{",
+  "mathematical_expression": "*   **Core Assumption:** The reward function, when viewed in the algorithmic space, must be Hölder continuous.\n\n*   **Axiomatic Parameters:** The user must provide the constants that bound the reward function's smoothness:\n    1.  **$L_{R,\\mathcal{Y}} > 0$ (The Reward Volatility Factor):** The Hölder constant of the reward function in the algorithmic space.\n    2.  **$\\alpha_R \\in (0, 1]$ (The Reward Smoothing Exponent):** The Hölder exponent for the reward function on $(\\mathcal{Y},d_{\\mathcal{",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Reward Regularity",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-reward-regularity",
+    "line_range": null
+  }
+}
+=== FILE: axiom-sufficient-amplification.json ===
+{
+  "label": "axiom-sufficient-amplification",
+  "statement": "*   **Core Assumption:** The dynamics weights must be configured to actively process measurement signals.\n*   **Axiomatic Parameter ($\\kappa_{\\text{amplification}}$ - The Amplification Strength):** The user must provide the dynamics weights $\\alpha$ and $\\beta$, from which the amplification strength is defined as:\n\n\n\n$$\n\\kappa_{\\text{amplification}} := \\alpha + \\beta\n$$\n\n*   **Condition:** The user must ensure **$\\kappa_{\\text{amplification}}$ > 0**.\n*   **Failure Mode Analysis:** If **$\\kappa_{",
+  "mathematical_expression": "*   **Core Assumption:** The dynamics weights must be configured to actively process measurement signals.\n*   **Axiomatic Parameter ($\\kappa_{\\text{amplification}}$ - The Amplification Strength):** The user must provide the dynamics weights $\\alpha$ and $\\beta$, from which the amplification strength is defined as:\n\n\n\n$$\n\\kappa_{\\text{amplification}} := \\alpha + \\beta\n$$\n\n*   **Condition:** The user must ensure **$\\kappa_{\\text{amplification}}$ > 0**.\n*   **Failure Mode Analysis:** If **$\\kappa_{",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Sufficient Amplification",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-sufficient-amplification",
+    "line_range": null
+  }
+}

@@ -2,9 +2,17 @@
   "label": "thm-killing-rate-consistency",
   "name": "Consistency of the Interior Killing Rate Approximation",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "07_mean_field",
+  "source": {
+    "document_id": "07_mean_field",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/07_mean_field.md",
+    "section": null,
+    "directive_label": "thm-killing-rate-consistency",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-killing-rate-consistency"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -23,7 +31,7 @@
     "param-sigma-v",
     "param-delta"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-mean-field-phase-space": [
       "asmp-domain-regularity"
     ],
@@ -38,27 +46,13 @@
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Convergence",
-  "properties_added": [
-    {
-      "label": "prop-exit-rate-pointwise-limit",
-      "expression": "lim_{τ→0} τ^{-1} p_exit(x,v,τ) = c(x,v) with c(x,v) = ((v·n_x(x))^+)/d(x) · 1_{d(x)<δ}",
-      "object_label": "obj-killing-operator",
-      "established_by": "thm-killing-rate-consistency",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "prop-expected-killing-fraction-convergence",
-      "expression": "lim_{τ→0} τ^{-1} K_discrete(τ) = K_continuous; |τ^{-1}K_discrete(τ) − K_continuous| ≤ C(√τ + ||f^τ − f||_{L^1})",
-      "object_label": "obj-killing-operator",
-      "established_by": "thm-killing-rate-consistency",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

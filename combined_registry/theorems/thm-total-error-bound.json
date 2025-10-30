@@ -2,9 +2,17 @@
   "label": "thm-total-error-bound",
   "name": "Total Error Bound: Mean-Field O(1/√N) + Discretization O(Δt/N)",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "12_quantitative_error_bounds",
+  "source": {
+    "document_id": "12_quantitative_error_bounds",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+    "section": null,
+    "directive_label": "thm-total-error-bound",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-total-error-bound"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [],
@@ -16,12 +24,12 @@
     "N",
     "Delta_t"
   ],
-  "properties_required": {},
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-total-error-bound-0-other",
@@ -31,14 +39,22 @@
       "target_object": "obj-unknown",
       "established_by": "thm-total-error-bound",
       "expression": "mean-field-dominates-for-large-n",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "12_quantitative_error_bounds"
+      "source": {
+        "document_id": "12_quantitative_error_bounds",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+        "section": null,
+        "directive_label": "thm-total-error-bound",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-total-error-bound"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-total-error-bound-1-other",
@@ -48,14 +64,22 @@
       "target_object": "obj-unknown",
       "established_by": "thm-total-error-bound",
       "expression": "discretization-negligible-for-large-n",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "12_quantitative_error_bounds"
+      "source": {
+        "document_id": "12_quantitative_error_bounds",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+        "section": null,
+        "directive_label": "thm-total-error-bound",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-total-error-bound"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-total-error-bound-2-reduction",
@@ -65,14 +89,29 @@
       "target_object": "obj-unknown",
       "established_by": "thm-total-error-bound",
       "expression": "simple-n-scaling-reduces-both-errors",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "12_quantitative_error_bounds"
+      "source": {
+        "document_id": "12_quantitative_error_bounds",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+        "section": null,
+        "directive_label": "thm-total-error-bound",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-total-error-bound"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

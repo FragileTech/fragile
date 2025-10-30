@@ -1,0 +1,77 @@
+{
+  "label": "axiom-bounded-measurement-variance",
+  "type": "axiom",
+  "name": "Axiom of Bounded Measurement Variance",
+  "statement": "Axiom of Bounded Measurement Variance",
+  "mathematical_expression": "\\mathbb{E}[\\|\\mathbf{v} - \\mathbb{E}[\\mathbf{v}]\\|_2^2] \\le \\kappa^2_{\\text{variance}}",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas/01_fragile_gas_framework",
+  "document": "01_fragile_gas_framework.md",
+  "core_assumption": "The variance of the raw value measurement process, summed over all N walkers, must be uniformly bounded across all possible swarm states. This axiom prevents the stochastic noise from having pathologically heavy tails that would make the expectation of the squared error diverge.",
+  "parameters": [
+    {
+      "symbol": "\\kappa^2_{\\text{variance}}",
+      "description": "The Maximum Measurement Variance - constant that provides a uniform upper bound on the expected squared deviation of a sampled raw value vector from its mean",
+      "constraints": "\\kappa^2_{\\text{variance}} \\ge 0"
+    },
+    {
+      "symbol": "\\mathcal{S} \\in \\Sigma_N",
+      "description": "Any swarm state",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathbf{v} \\sim V(\\mathcal{S})",
+      "description": "Sampled raw value vector",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathbb{E}[\\mathbf{v}]",
+      "description": "Expectation of the raw value vector",
+      "constraints": null
+    }
+  ],
+  "condition": "For any swarm state \\mathcal{S} \\in \\Sigma_N, let \\mathbf{v} \\sim V(\\mathcal{S}) be a sampled raw value vector and let \\mathbb{E}[\\mathbf{v}] be its expectation. The operator must satisfy: \\mathbb{E}[\\|\\mathbf{v} - \\mathbb{E}[\\mathbf{v}]\\|_2^2] \\le \\kappa^2_{\\text{variance}}",
+  "failure_mode_analysis": "If this axiom is violated, the raw measurement process could have an unbounded variance. This would allow for rare but arbitrarily large measurement errors, causing the expected squared error to be infinite. This would break the mean-square continuity of the operator, leading to unstable swarm behavior.",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "9.3",
+    "section_name": null,
+    "directive_label": "axiom-bounded-measurement-variance",
+    "equation": null,
+    "line_range": [
+      2126,
+      2139
+    ],
+    "url_fragment": "#axiom-bounded-measurement-variance"
+  },
+  "context": {
+    "motivation": "A common and effective strategy to prove that an operator satisfies the Axiom of Mean-Square Continuity is to decompose the total expected squared error into a bound on the change of the operator's mean and a bound on its variance. This axiom provides a powerful tool for establishing the variance bound part of the proof.",
+    "role": "Key ingredient for proving that a stochastic operator is mean-square continuous. Allows the framework to bound the stochastic fluctuations around the mean, isolating the remaining analytical challenge to bounding the change in the mean itself."
+  },
+  "tags": [
+    "axiom",
+    "variance",
+    "bounded",
+    "measurement",
+    "raw-value",
+    "continuity-tool",
+    "stochastic",
+    "section-10"
+  ],
+  "relations": {
+    "applies_to": [
+      "def-raw-value-operator"
+    ],
+    "introduces": [
+      "\\kappa^2_{\\text{variance}}"
+    ],
+    "supports": [
+      "axiom-raw-value-mean-square-continuity"
+    ],
+    "required_for": [
+      "thm-distance-operator-satisfies-bounded-variance-axiom",
+      "thm-distance-operator-mean-square-continuity"
+    ]
+  }
+}

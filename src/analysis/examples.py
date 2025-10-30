@@ -6,14 +6,13 @@ This script demonstrates different ways to use and customize the dashboard.
 """
 
 import networkx as nx
-import panel as pn
 
 from analysis.theorem_graph_dashboard import (
-    TheoremGraphDashboard,
     build_networkx_graph,
     compute_graph_statistics,
     filter_graph,
     load_graph_data,
+    TheoremGraphDashboard,
 )
 
 
@@ -91,7 +90,7 @@ def example_3_chapter_analysis():
         print(f"  Theorems: {stats['total_nodes']}")
         print(f"  Avg Rigor: {stats['avg_rigor']}/10")
         print(f"  Avg Strategy: {stats['avg_strategy']}/10")
-        print(f"  By recommendation:")
+        print("  By recommendation:")
         for rec, count in sorted(stats["by_recommendation"].items()):
             print(f"    - {rec}: {count}")
 
@@ -114,7 +113,7 @@ def example_4_find_proof_gaps():
     for node, attrs in G.nodes(data=True):
         if (
             attrs["status"] == "needs_proof"
-            and attrs["type"] in ["Theorem", "Lemma"]
+            and attrs["type"] in {"Theorem", "Lemma"}
             and len(reverse_deps.get(node, [])) > 0
         ):
             gaps.append((node, attrs, len(reverse_deps.get(node, []))))

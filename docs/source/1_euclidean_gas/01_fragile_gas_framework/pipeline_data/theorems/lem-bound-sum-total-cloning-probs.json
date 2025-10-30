@@ -1,0 +1,32 @@
+{
+  "label": "lem-bound-sum-total-cloning-probs",
+  "name": "Bounding the Sum of Total Cloning Probabilities",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-potential-bounds",
+    "obj-cloning-probability-lipschitz-constants"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Sum of total cloning probabilities is bounded"
+  ],
+  "natural_language_statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. Let $V_{\\text{in}} := d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^2$ be the initial squared displacement.\n\nThe sum of the **Total Expected Cloning Probabilities**, $\\sum_{i=1}^N (\\overline{P}_{\\text{clone}}(\\mathcal{S}_1)_i + \\overline{P}_{\\text{clone}}(\\mathcal{S}_2)_i)$, is bounded by a sum of a linear term, a Hölder term, and a constant offset of the initial displacement:\n\n$$\n\\sum_{i=1}^N \\left( \\overline{P}_{\\text{clone}}(\\mathcal{S}_1)_i + \\overline{P}_{\\text{clone}}(\\mathcal{S}_2)_i \\right) \\le C_P(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot V_{\\text{in}} + H_P(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot \\sqrt{V_{\\text{in}}} + K_P(\\mathcal{S}_1, \\mathcal{S}_2)\n$$\n\nwhere $C_P$, $H_P$, and $K_P$ are finite, state-dependent, non-negative coefficients.",
+  "assumptions": [],
+  "conclusion": "Sum of cloning probabilities bounded by polynomial function of displacement",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

@@ -29,7 +29,7 @@ Maps to Lean:
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -91,33 +91,33 @@ class ResolutionContext(BaseModel):
     """
 
     # Entity storage (temp_id → entity)
-    definitions: Dict[str, RawDefinition] = Field(default_factory=dict)
-    theorems: Dict[str, RawTheorem] = Field(default_factory=dict)
-    proofs: Dict[str, RawProof] = Field(default_factory=dict)
-    equations: Dict[str, RawEquation] = Field(default_factory=dict)
-    parameters: Dict[str, RawParameter] = Field(default_factory=dict)
-    remarks: Dict[str, RawRemark] = Field(default_factory=dict)
-    citations: Dict[str, RawCitation] = Field(default_factory=dict)
+    definitions: dict[str, RawDefinition] = Field(default_factory=dict)
+    theorems: dict[str, RawTheorem] = Field(default_factory=dict)
+    proofs: dict[str, RawProof] = Field(default_factory=dict)
+    equations: dict[str, RawEquation] = Field(default_factory=dict)
+    parameters: dict[str, RawParameter] = Field(default_factory=dict)
+    remarks: dict[str, RawRemark] = Field(default_factory=dict)
+    citations: dict[str, RawCitation] = Field(default_factory=dict)
 
     # Reverse lookups (for fast resolution)
-    label_text_to_theorem: Dict[str, str] = Field(default_factory=dict)
+    label_text_to_theorem: dict[str, str] = Field(default_factory=dict)
     # Maps "Theorem 2.1" → "raw-thm-001"
 
-    term_to_definition: Dict[str, str] = Field(default_factory=dict)
+    term_to_definition: dict[str, str] = Field(default_factory=dict)
     # Maps "Walker State" → "raw-def-001"
 
-    equation_label_to_id: Dict[str, str] = Field(default_factory=dict)
+    equation_label_to_id: dict[str, str] = Field(default_factory=dict)
     # Maps "(2.3)" → "raw-eq-001"
 
-    symbol_to_parameter: Dict[str, str] = Field(default_factory=dict)
+    symbol_to_parameter: dict[str, str] = Field(default_factory=dict)
     # Maps "γ" → "raw-param-001"
 
     # Ambiguous references (to be resolved manually or by LLM)
-    ambiguous_references: List[AmbiguousReference] = Field(default_factory=list)
+    ambiguous_references: list[AmbiguousReference] = Field(default_factory=list)
 
     # Metadata
-    document_id: Optional[str] = None
-    source_file: Optional[str] = None
+    document_id: str | None = None
+    source_file: str | None = None
 
     # =============================================================================
     # ADDING ENTITIES
@@ -182,7 +182,7 @@ class ResolutionContext(BaseModel):
     # RESOLUTION METHODS
     # =============================================================================
 
-    def resolve_theorem_reference(self, label_text: str) -> Optional[str]:
+    def resolve_theorem_reference(self, label_text: str) -> str | None:
         """
         Resolve theorem reference (e.g., "Theorem 2.1") to temp_id.
 
@@ -194,7 +194,7 @@ class ResolutionContext(BaseModel):
         """
         return self.label_text_to_theorem.get(label_text)
 
-    def resolve_definition_reference(self, term: str) -> Optional[str]:
+    def resolve_definition_reference(self, term: str) -> str | None:
         """
         Resolve definition reference by term name.
 
@@ -206,7 +206,7 @@ class ResolutionContext(BaseModel):
         """
         return self.term_to_definition.get(term.lower())
 
-    def resolve_equation_reference(self, equation_label: str) -> Optional[str]:
+    def resolve_equation_reference(self, equation_label: str) -> str | None:
         """
         Resolve equation reference (e.g., "(2.3)") to temp_id.
 
@@ -218,7 +218,7 @@ class ResolutionContext(BaseModel):
         """
         return self.equation_label_to_id.get(equation_label)
 
-    def resolve_parameter_reference(self, symbol: str) -> Optional[str]:
+    def resolve_parameter_reference(self, symbol: str) -> str | None:
         """
         Resolve parameter reference by symbol.
 
@@ -230,7 +230,7 @@ class ResolutionContext(BaseModel):
         """
         return self.symbol_to_parameter.get(symbol)
 
-    def find_proof_for_theorem(self, theorem_label_text: str) -> Optional[RawProof]:
+    def find_proof_for_theorem(self, theorem_label_text: str) -> RawProof | None:
         """
         Find the proof for a given theorem.
 
@@ -249,31 +249,31 @@ class ResolutionContext(BaseModel):
     # ENTITY RETRIEVAL
     # =============================================================================
 
-    def get_definition(self, temp_id: str) -> Optional[RawDefinition]:
+    def get_definition(self, temp_id: str) -> RawDefinition | None:
         """Get definition by temp_id."""
         return self.definitions.get(temp_id)
 
-    def get_theorem(self, temp_id: str) -> Optional[RawTheorem]:
+    def get_theorem(self, temp_id: str) -> RawTheorem | None:
         """Get theorem by temp_id."""
         return self.theorems.get(temp_id)
 
-    def get_proof(self, temp_id: str) -> Optional[RawProof]:
+    def get_proof(self, temp_id: str) -> RawProof | None:
         """Get proof by temp_id."""
         return self.proofs.get(temp_id)
 
-    def get_equation(self, temp_id: str) -> Optional[RawEquation]:
+    def get_equation(self, temp_id: str) -> RawEquation | None:
         """Get equation by temp_id."""
         return self.equations.get(temp_id)
 
-    def get_parameter(self, temp_id: str) -> Optional[RawParameter]:
+    def get_parameter(self, temp_id: str) -> RawParameter | None:
         """Get parameter by temp_id."""
         return self.parameters.get(temp_id)
 
-    def get_remark(self, temp_id: str) -> Optional[RawRemark]:
+    def get_remark(self, temp_id: str) -> RawRemark | None:
         """Get remark by temp_id."""
         return self.remarks.get(temp_id)
 
-    def get_citation(self, key: str) -> Optional[RawCitation]:
+    def get_citation(self, key: str) -> RawCitation | None:
         """Get citation by key."""
         return self.citations.get(key)
 
@@ -285,7 +285,7 @@ class ResolutionContext(BaseModel):
         self,
         reference_text: str,
         context: str,
-        candidates: List[str],
+        candidates: list[str],
         entity_type: str,
     ) -> None:
         """
@@ -306,7 +306,7 @@ class ResolutionContext(BaseModel):
             )
         )
 
-    def get_ambiguous_references(self) -> List[AmbiguousReference]:
+    def get_ambiguous_references(self) -> list[AmbiguousReference]:
         """Get all ambiguous references for manual resolution."""
         return self.ambiguous_references
 
@@ -314,7 +314,7 @@ class ResolutionContext(BaseModel):
     # STATISTICS
     # =============================================================================
 
-    def get_stats(self) -> Dict[str, int]:
+    def get_stats(self) -> dict[str, int]:
         """Get statistics on extracted entities."""
         return {
             "definitions": len(self.definitions),
@@ -342,17 +342,17 @@ class AmbiguousReference(BaseModel):
         ...     reference_text="the main theorem",
         ...     context="By the main theorem, we have...",
         ...     candidates=["raw-thm-001", "raw-thm-005"],
-        ...     entity_type="theorem"
+        ...     entity_type="theorem",
         ... )
     """
 
     reference_text: str = Field(..., description="The ambiguous reference text")
     context: str = Field(..., description="Surrounding context for disambiguation")
-    candidates: List[str] = Field(
+    candidates: list[str] = Field(
         default_factory=list, description="Possible temp_ids it could refer to"
     )
     entity_type: str = Field(..., description="Type of entity (theorem, definition, etc.)")
-    resolved_id: Optional[str] = Field(None, description="Resolved temp_id (once determined)")
+    resolved_id: str | None = Field(None, description="Resolved temp_id (once determined)")
 
 
 # =============================================================================
@@ -405,9 +405,9 @@ class EnrichmentError(Exception):
         self,
         error_type: ErrorType,
         message: str,
-        entity_id: Optional[str] = None,
-        raw_data: Optional[Dict[str, Any]] = None,
-        context: Optional[Dict[str, Any]] = None,
+        entity_id: str | None = None,
+        raw_data: dict[str, Any] | None = None,
+        context: dict[str, Any] | None = None,
     ):
         """
         Initialize EnrichmentError.
@@ -432,7 +432,7 @@ class EnrichmentError(Exception):
             f"message='{self.message}', entity_id={self.entity_id})"
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for logging."""
         return {
             "error_type": self.error_type.value,
@@ -442,7 +442,7 @@ class EnrichmentError(Exception):
             "context": self.context,
         }
 
-    def to_info(self) -> "EnrichmentErrorInfo":
+    def to_info(self) -> EnrichmentErrorInfo:
         """
         Convert exception to serializable EnrichmentErrorInfo model.
 
@@ -459,8 +459,8 @@ class EnrichmentError(Exception):
             error_type=self.error_type,
             message=self.message,
             entity_id=self.entity_id,
-            raw_data=self.raw_data if self.raw_data else None,
-            context=self.context if self.context else None,
+            raw_data=self.raw_data or None,
+            context=self.context or None,
         )
 
 
@@ -477,15 +477,14 @@ class ValidationResult(BaseModel):
 
     Examples:
         >>> result = ValidationResult(
-        ...     is_valid=False,
-        ...     errors=["Missing source location", "Invalid label format"]
+        ...     is_valid=False, errors=["Missing source location", "Invalid label format"]
         ... )
     """
 
     is_valid: bool = Field(..., description="Whether validation passed")
-    errors: List[str] = Field(default_factory=list, description="Validation error messages")
-    warnings: List[str] = Field(default_factory=list, description="Non-critical warnings")
-    entity_id: Optional[str] = Field(None, description="Entity being validated")
+    errors: list[str] = Field(default_factory=list, description="Validation error messages")
+    warnings: list[str] = Field(default_factory=list, description="Non-critical warnings")
+    entity_id: str | None = Field(None, description="Entity being validated")
 
 
 # =============================================================================
@@ -513,9 +512,9 @@ class EnrichmentErrorInfo(BaseModel):
 
     error_type: ErrorType = Field(..., description="Classification of the error")
     message: str = Field(..., description="Human-readable error description")
-    entity_id: Optional[str] = Field(None, description="Temp ID of the entity being enriched")
-    raw_data: Optional[Dict[str, Any]] = Field(None, description="Original raw entity data")
-    context: Optional[Dict[str, Any]] = Field(None, description="Additional error context")
+    entity_id: str | None = Field(None, description="Temp ID of the entity being enriched")
+    raw_data: dict[str, Any] | None = Field(None, description="Original raw entity data")
+    context: dict[str, Any] | None = Field(None, description="Additional error context")
 
     model_config = ConfigDict(frozen=True)
 
@@ -526,15 +525,12 @@ class EntityEnrichmentStatus(BaseModel):
 
     Examples:
         >>> status = EntityEnrichmentStatus(
-        ...     temp_id="raw-thm-001",
-        ...     status=EnrichmentStatus.COMPLETED
+        ...     temp_id="raw-thm-001", status=EnrichmentStatus.COMPLETED
         ... )
     """
 
     temp_id: str = Field(..., description="Entity temp ID")
     status: EnrichmentStatus = Field(default=EnrichmentStatus.PENDING)
-    error: Optional[EnrichmentErrorInfo] = Field(None, description="Error information if failed")
+    error: EnrichmentErrorInfo | None = Field(None, description="Error information if failed")
     attempts: int = Field(default=0, description="Number of enrichment attempts")
-    enriched_label: Optional[str] = Field(
-        None, description="Final label if successfully enriched"
-    )
+    enriched_label: str | None = Field(None, description="Final label if successfully enriched")

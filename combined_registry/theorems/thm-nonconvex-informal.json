@@ -2,9 +2,17 @@
   "label": "thm-nonconvex-informal",
   "name": "Exponential KL Convergence for Non-Convex Fitness (Informal)",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence",
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "thm-nonconvex-informal",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-nonconvex-informal"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -12,7 +20,7 @@
   ],
   "input_axioms": [],
   "input_parameters": [],
-  "properties_required": {
+  "attributes_required": {
     "non-log-concave": [
       "Target not necessarily log-concave"
     ]
@@ -21,7 +29,7 @@
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-nonconvex-informal-0-other",
@@ -31,14 +39,29 @@
       "target_object": "obj-total-operator",
       "established_by": "thm-nonconvex-informal",
       "expression": "Extension beyond log-concavity (heuristic)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-nonconvex-informal",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-nonconvex-informal"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

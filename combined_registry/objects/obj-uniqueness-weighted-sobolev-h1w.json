@@ -3,10 +3,19 @@
   "name": "Weighted Sobolev Space $H^1_w(\\Omega)$",
   "mathematical_expression": "\\|\\rho\\|_{H^1_w}^2 := \\int_{\\Omega} \\left[\\rho(z)^2 + \\|\\nabla_z \\rho(z)\\|^2\\right] w(z) \\, dz < \\infty",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "08_propagation_chaos"
+  "source": {
+    "document_id": "08_propagation_chaos",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/08_propagation_chaos.md",
+    "section": null,
+    "directive_label": "obj-uniqueness-weighted-sobolev-h1w",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-uniqueness-weighted-sobolev-h1w"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

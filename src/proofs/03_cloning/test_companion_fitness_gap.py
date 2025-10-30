@@ -1,5 +1,6 @@
 import sympy
 
+
 def test_companion_fitness_gap_algebra():
     """
     Verify: mu_comp_i - V_k_i = (k/(k-1)) * (mu_V_k - V_k_i)
@@ -9,9 +10,9 @@ def test_companion_fitness_gap_algebra():
     # k: Number of alive walkers (positive integer, k >= 2)
     # mu_V_k: Mean fitness (real)
     # V_k_i: Individual walker fitness (real)
-    k = sympy.Symbol('k', integer=True, positive=True)
-    mu_V_k = sympy.Symbol('mu_V_k', real=True)
-    V_k_i = sympy.Symbol('V_k_i', real=True)
+    k = sympy.Symbol("k", integer=True, positive=True)
+    mu_V_k = sympy.Symbol("mu_V_k", real=True)
+    V_k_i = sympy.Symbol("V_k_i", real=True)
 
     # 2. Define mu_comp_i based on the given identity
     # mu_comp_i = (1/(k-1)) * (k * mu_V_k - V_k_i)
@@ -35,11 +36,14 @@ def test_companion_fitness_gap_algebra():
 
     # The simplification should result in 0 if the identity is correct.
     # We add an assertion to make this a formal test.
-    assert simplified_difference == 0, f"Validation failed! Expected 0, got {simplified_difference}"
+    assert (
+        simplified_difference == 0
+    ), f"Validation failed! Expected 0, got {simplified_difference}"
 
     print("\nAlgebraic identity successfully verified.")
     print(f"LHS simplified: {sympy.simplify(lhs)}")
     print(f"RHS simplified: {sympy.simplify(rhs)}")
+
 
 # Execute the validation function
 if __name__ == "__main__":

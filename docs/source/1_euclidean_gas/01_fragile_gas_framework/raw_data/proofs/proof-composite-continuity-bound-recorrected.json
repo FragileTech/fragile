@@ -1,0 +1,45 @@
+{
+  "label": "proof-composite-continuity-bound-recorrected",
+  "type": "proof",
+  "proves": "thm-swarm-update-operator-continuity-recorrected",
+  "name": "Proof of the Composite Continuity Bound",
+  "full_text": "The proof establishes the final continuity bound by sequentially composing the bounds for the underlying operators. The strategy is to first state the bounds on the final expected displacement in terms of the intermediate (cloning) displacement, and then substitute the bound for the intermediate displacement in terms of the initial displacement.\n\nLet $V_{\\text{in}} := d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^2$ be the initial squared displacement. Let $\\mathcal{S}_{1,\\text{clone}}$ and $\\mathcal{S}_{2,\\text{clone}}$ be the intermediate swarms after the cloning stage, and let $\\mathcal{S}'_1$ and $\\mathcal{S}'_2$ be the final output swarms.\n\n1. **Bound the Final Displacement in Terms of the Intermediate State.**\n   The expected final displacement, $\\mathbb{E}[d_{\\text{out}}^2] = \\mathbb{E}[d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}'_1, \\mathcal{S}'_2)^2]$, is decomposed into its positional and status components:\n   $$\\mathbb{E}[d_{\\text{out}}^2] = \\frac{1}{N}\\mathbb{E}[\\Delta_{\\text{pos,final}}^2] + \\frac{\\lambda_{\\mathrm{status}}}{N} \\mathbb{E}[n_{c,\\text{final}}]$$\n   We substitute the bounds for these two terms from the preceding lemmas:\n   - From [](#lem-final-positional-displacement-bound), the positional component is bounded unconditionally: $\\mathbb{E}[\\Delta_{\\text{pos,final}}^2] \\le 3 \\cdot \\mathbb{E}[\\Delta_{\\text{pos,clone}}^2] + K_{\\text{pert}}(\\delta)$.\n   - From [](#lem-final-status-change-bound), the status component is bounded: $\\mathbb{E}[n_{c,\\text{final}}] \\le K_{\\text{status},\\text{var}} + C_{\\text{status},H} \\left( \\mathbb{E}[\\Delta_{\\text{pos,clone}}^2] \\right)^{\\alpha_B}$.\n   \n   The intermediate swarms have all walkers set to \"alive\", so their displacement metric is purely positional: $V_{\\text{clone}} = d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_{1,\\text{clone}}, \\mathcal{S}_{2,\\text{clone}})^2 = \\frac{1}{N}\\Delta_{\\text{pos,clone}}^2$. Thus, $\\mathbb{E}[\\Delta_{\\text{pos,clone}}^2] = N \\cdot \\mathbb{E}[V_{\\text{clone}}]$. Substituting this relation yields a bound in terms of the expected intermediate displacement metric, $\\mathbb{E}[V_{\\text{clone}}]$:\n   $$\\mathbb{E}[d_{\\text{out}}^2] \\le 3 \\mathbb{E}[V_{\\text{clone}}] + \\frac{K_{\\text{pert}}}{N} + \\frac{\\lambda_{\\mathrm{status}}}{N}K_{\\text{status},\\text{var}} + \\lambda_{\\mathrm{status}} C_{\\text{status},H} \\left(\\mathbb{E}[V_{\\text{clone}}]\\right)^{\\alpha_B}$$\n\n2. **Bound the Intermediate Displacement in Terms of the Initial State.**\n   From the **Mean-Square Continuity of the Cloning Transition Operator** ([](#thm-cloning-transition-operator-continuity-recorrected)), the expected intermediate displacement is bounded by a function of the initial displacement, $V_{\\text{in}}$:\n   $$\\mathbb{E}[V_{\\text{clone}}] \\le C_{\\text{clone},L}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot V_{\\text{in}} + C_{\\text{clone},H}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot \\sqrt{V_{\\text{in}}} + K_{\\text{clone}}(\\mathcal{S}_1, \\mathcal{S}_2)$$\n\n3. **Final Composition and Simplification.**\n   We substitute the bound from Step 2 into the inequality from Step 1. This results in a complex expression containing terms with exponents $1, 1/2, \\alpha_B, \\alpha_B/2$ of $V_{\\text{in}}$. The expression contains a sum of multiple Hölder terms. For example, the term $(C_{\\text{clone},L}V_{\\text{in}} + C_{\\text{clone},H}\\sqrt{V_{\\text{in}}} + K_{\\text{clone}})^{\\alpha_B}$ can be bounded. By [](#lem-subadditivity-power), for any $\\alpha\\in(0,1]$ and nonnegative $a,b,c$, we have $(a+b+c)^{\\alpha} \\le a^{\\alpha} + b^{\\alpha} + c^{\\alpha}$. Applying this with $\\alpha=\\alpha_B$ gives:\n   $$(\\dots)^{\\alpha_B} \\le (C_{\\text{clone},L}V_{\\text{in}})^{\\alpha_B} + (C_{\\text{clone},H}\\sqrt{V_{\\text{in}}})^{\\alpha_B} + (K_{\\text{clone}})^{\\alpha_B}$$\n   The full expression for $\\mathbb{E}[d_{\\text{out}}^2]$ is therefore bounded by a sum of terms of the form $A_1 V_{\\text{in}} + A_2 \\sqrt{V_{\\text{in}}} + A_3 (V_{\\text{in}})^{\\alpha_B} + A_4 (V_{\\text{in}})^{\\alpha_B/2} + K$, where the coefficients $A_k$ and $K$ are non-negative, state-dependent functions.\n\n4. **Unify the Hölder Terms (case split in $V_{\\text{in}}$).**\n   We now have a bound that is a sum of multiple terms with different exponents: $1, 1/2, \\alpha_B,$ and $\\alpha_B/2$. We apply the corrected global unification from **Sub-Lemma 17.2.4.3**, which distinguishes between the regimes $V_{\\text{in}}\\in[0,1]$ and $V_{\\text{in}}\\ge 1$.\n   - For $V_{\\text{in}}\\in[0,1]$, every sub-linear power is $\\le 1$ and can be absorbed into a constant.\n   - For $V_{\\text{in}}\\ge 1$, we bound all sub-linear powers by the largest among them. In our case, among $\\{1/2,\\ \\alpha_B,\\ \\alpha_B/2\\}$ the largest is $\\alpha_H^{\\mathrm{global}} := \\max(1/2,\\ \\alpha_B)$.\n   \n   Keeping the linear term in $V_{\\text{in}}$ separate, the sub-linear terms are aggregated into a single composite term proportional to $(V_{\\text{in}})^{\\alpha_H^{\\mathrm{global}}}$, plus an additive constant.\n   - The term linear in $V_{\\text{in}}$ defines the composite Lipschitz coefficient $C_{\\Psi,L}$.\n   - The aggregated sub-linear contribution, unified by the largest sub-linear exponent $\\alpha_H^{\\mathrm{global}}$, defines the composite Hölder coefficient $C_{\\Psi,H}$.\n   - All constant terms are collected into the composite offset $K_{\\Psi}$.\n   \n   This yields the final form of the inequality as stated in the theorem, with the case distinction implicitly handled by the sub-lemma.\n\n**Q.E.D.**",
+  "proof_structure": [
+    "Bound final displacement in terms of intermediate state",
+    "Bound intermediate displacement in terms of initial state",
+    "Final composition and simplification",
+    "Unify Hölder terms with case split"
+  ],
+  "key_techniques": [
+    "sequential composition of bounds",
+    "subadditivity of fractional powers",
+    "case analysis for unification",
+    "metric decomposition"
+  ],
+  "dependencies": [
+    "lem-final-positional-displacement-bound",
+    "lem-final-status-change-bound",
+    "thm-cloning-transition-operator-continuity-recorrected",
+    "lem-subadditivity-power",
+    "sub-lem-unify-holder-terms"
+  ],
+  "section": "18",
+  "subsection": "17.2.4.2",
+  "source_file": "01_fragile_gas_framework.md",
+  "source_lines": "4867-4935",
+  "extraction_date": "2025-10-28",
+  "status": "complete",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17.2.4.2",
+    "section_name": null,
+    "directive_label": "proof-composite-continuity-bound-recorrected",
+    "equation": null,
+    "line_range": [
+      4881,
+      4881
+    ],
+    "url_fragment": null
+  }
+}

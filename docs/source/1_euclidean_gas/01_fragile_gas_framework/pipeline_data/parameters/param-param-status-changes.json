@@ -1,0 +1,8 @@
+{
+  "label": "param-param-status-changes",
+  "name": "param-status-changes",
+  "symbol": "param-status-changes",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

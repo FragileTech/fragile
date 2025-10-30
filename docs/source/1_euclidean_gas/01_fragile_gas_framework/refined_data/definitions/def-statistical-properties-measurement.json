@@ -1,0 +1,49 @@
+{
+  "label": "def-statistical-properties-measurement",
+  "name": "Statistical Properties Measurement",
+  "entity_type": "definition",
+  "statement_type": "DefinitionBox",
+  "natural_language_statement": "Let $\\mathbf{v}_{\\mathcal{A}}$ be the vector of raw scalar values for the alive set $\\mathcal{A}_t$. Let $\\mu_{\\mathbf{v}} = M(\\mathcal{S}_t; \\mathbf{v}_{\\mathcal{A}})$ be the **Swarm Aggregation Measure** for these values. The **Statistical Properties Measurement** extracts the effective mean and a smoothed, regularized standard deviation from this measure:\n\n- **Mean:** $\\mu_{\\mathcal{A}} := \\mathbb{E}[\\mu_{\\mathbf{v}}]$\n- **Regularized Standard Deviation:** $\\sigma'_{\\mathcal{A}} := \\sigma'_{\\text{reg}}(\\operatorname{Var}[\\mu_{\\mathbf{v}}])$\n\nwhere $\\sigma'_{\\text{reg}}: \\mathbb{R}_{\\ge 0} \\to \\mathbb{R}_{>0}$ is the **Regularized Standard Deviation**. This $C^\\infty$ replacement for the square-root prevents pathological sensitivity near zero variance while maintaining smooth behavior everywhere. It is defined as:\n\n$$\n\\sigma'_{\\text{reg}}(V) := \\sqrt{V + \\sigma'^2_{\\min}}\n$$\n\nwhere $\\sigma'_{\\min} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2} > 0$ is the **regularization parameter** combining the variance floor threshold $\\kappa_{\\text{var,min}} > 0$ and the numerical stability parameter $\\varepsilon_{\\text{std}} > 0$.\n\n**Properties:**\n1. **$C^\\infty$ Regularity:** The function is infinitely differentiable on $[0, \\infty)$ as a composition of smooth functions.\n2. **Positive Lower Bound:** $\\sigma'_{\\text{reg}}(V) \\ge \\sigma'_{\\min} > 0$ for all $V \\ge 0$, preventing division by zero.\n3. **Asymptotic Behavior:** For large $V \\gg \\sigma'^2_{\\min}$, the regularized function closely approximates the natural square root: $\\sigma'_{\\text{reg}}(V) \\approx \\sqrt{V} + \\frac{\\sigma'^2_{\\min}}{2\\sqrt{V}}$.\n4. **Monotonicity:** The function is strictly increasing, with $\\sigma'_{\\text{reg}}(0) = \\sigma'_{\\min}$ and $\\lim_{V \\to \\infty} \\sigma'_{\\text{reg}}(V) = \\infty$.",
+  "input_objects": [
+    "def-swarm-aggregation-operator-axiomatic"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "kappa_var_min",
+    "epsilon_std",
+    "sigma_min"
+  ],
+  "lemma_dag_edges": [],
+  "internal_lemmas": [],
+  "relations": [],
+  "proof_status": "n/a",
+  "raw_fallback": {
+    "label": "def-statistical-properties-measurement",
+    "name": "Statistical Properties Measurement",
+    "type": "definition",
+    "content": "Let $\\mathbf{v}_{\\mathcal{A}}$ be the vector of raw scalar values for the alive set $\\mathcal{A}_t$. Let $\\mu_{\\mathbf{v}} = M(\\mathcal{S}_t; \\mathbf{v}_{\\mathcal{A}})$ be the **Swarm Aggregation Measure** for these values. The **Statistical Properties Measurement** extracts the effective mean and a smoothed, regularized standard deviation from this measure:\n\n- **Mean:** $\\mu_{\\mathcal{A}} := \\mathbb{E}[\\mu_{\\mathbf{v}}]$\n- **Regularized Standard Deviation:** $\\sigma'_{\\mathcal{A}} := \\sigma'_{\\text{reg}}(\\operatorname{Var}[\\mu_{\\mathbf{v}}])$\n\nwhere $\\sigma'_{\\text{reg}}: \\mathbb{R}_{\\ge 0} \\to \\mathbb{R}_{>0}$ is the **Regularized Standard Deviation**. This $C^\\infty$ replacement for the square-root prevents pathological sensitivity near zero variance while maintaining smooth behavior everywhere. It is defined as:\n\n$$\n\\sigma'_{\\text{reg}}(V) := \\sqrt{V + \\sigma'^2_{\\min}}\n$$\n\nwhere $\\sigma'_{\\min} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2} > 0$ is the **regularization parameter** combining the variance floor threshold $\\kappa_{\\text{var,min}} > 0$ and the numerical stability parameter $\\varepsilon_{\\text{std}} > 0$.\n\n**Properties:**\n1. **$C^\\infty$ Regularity:** The function is infinitely differentiable on $[0, \\infty)$ as a composition of smooth functions.\n2. **Positive Lower Bound:** $\\sigma'_{\\text{reg}}(V) \\ge \\sigma'_{\\min} > 0$ for all $V \\ge 0$, preventing division by zero.\n3. **Asymptotic Behavior:** For large $V \\gg \\sigma'^2_{\\min}$, the regularized function closely approximates the natural square root: $\\sigma'_{\\text{reg}}(V) \\approx \\sqrt{V} + \\frac{\\sigma'^2_{\\min}}{2\\sqrt{V}}$.\n4. **Monotonicity:** The function is strictly increasing, with $\\sigma'_{\\text{reg}}(0) = \\sigma'_{\\min}$ and $\\lim_{V \\to \\infty} \\sigma'_{\\text{reg}}(V) = \\infty$.",
+    "source_section": "12",
+    "source_document": "01_fragile_gas_framework.md",
+    "dependencies": [
+      "def-swarm-aggregation-operator-axiomatic"
+    ],
+    "parameters": [
+      "kappa_var_min",
+      "epsilon_std",
+      "sigma_min"
+    ],
+    "tags": [
+      "standardization",
+      "statistics",
+      "regularization",
+      "variance"
+    ]
+  },
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "12",
+    "subsection": null,
+    "directive_label": "def-statistical-properties-measurement"
+  }
+}

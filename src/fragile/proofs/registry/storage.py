@@ -30,23 +30,22 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Type, TypeVar, Union
+from typing import Any, TypeVar
 
 from pydantic import BaseModel
 
 from fragile.proofs.core.pipeline_types import (
+    Attribute,
     Axiom,
     MathematicalObject,
     Parameter,
-    Attribute,
     Relationship,
     TheoremBox,
 )
 from fragile.proofs.registry.reference_system import (
-    UnresolvedReference,
-    create_reference_id,
     extract_id_from_label,
 )
+
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -104,7 +103,7 @@ class StorageConfig(BaseModel):
 # =============================================================================
 
 
-def serialize_to_dict(obj: Any, use_references: bool = True) -> Dict[str, Any]:
+def serialize_to_dict(obj: Any, use_references: bool = True) -> dict[str, Any]:
     """
     Serialize Pydantic model to dictionary.
 
@@ -145,16 +144,18 @@ def _replace_objects_with_references(data: Any, is_root: bool = True) -> Any:
                 # Replace with reference
                 return {"$ref": data["label"]}
         # Recursively process dictionary values (not root anymore)
-        return {key: _replace_objects_with_references(value, is_root=False) for key, value in data.items()}
-    elif isinstance(data, list):
+        return {
+            key: _replace_objects_with_references(value, is_root=False)
+            for key, value in data.items()
+        }
+    if isinstance(data, list):
         # Recursively process list items (not root anymore)
         return [_replace_objects_with_references(item, is_root=False) for item in data]
-    else:
-        # Primitive value, return as-is
-        return data
+    # Primitive value, return as-is
+    return data
 
 
-def deserialize_from_dict(data: Dict[str, Any], model_class: Type[T]) -> T:
+def deserialize_from_dict(data: dict[str, Any], model_class: type[T]) -> T:
     """
     Deserialize dictionary to Pydantic model.
 
@@ -200,7 +201,7 @@ def save_object_to_file(obj: Any, file_path: Path, config: StorageConfig) -> Non
             json.dump(data, f, ensure_ascii=False)
 
 
-def load_object_from_file(file_path: Path, model_class: Type[T]) -> T:
+def load_object_from_file(file_path: Path, model_class: type[T]) -> T:
     """
     Load object from JSON file.
 
@@ -214,7 +215,7 @@ def load_object_from_file(file_path: Path, model_class: Type[T]) -> T:
           let data := Json.parse json
           pure (deserialize_from_dict data T)
     """
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         data = json.load(f)
 
     return deserialize_from_dict(data, model_class)
@@ -239,7 +240,7 @@ class RegistryStorage:
 
     def __init__(self, config: StorageConfig):
         self.config = config
-        self._cache: Dict[str, Any] = {}  # Cache for loaded objects
+        self._cache: dict[str, Any] = {}  # Cache for loaded objects
 
     def save_registry(self, registry: Any) -> None:
         """
@@ -262,7 +263,7 @@ class RegistryStorage:
         self._save_index(registry)
 
     def _save_collection(
-        self, objects: List[Any], type_prefix: str, model_class: Type[BaseModel]
+        self, objects: list[Any], type_prefix: str, model_class: type[BaseModel]
     ) -> None:
         """Save collection of objects to subdirectory."""
         if not objects:
@@ -290,7 +291,7 @@ class RegistryStorage:
         with open(index_path, "w", encoding="utf-8") as f:
             json.dump(index_data, f, indent=self.config.indent, ensure_ascii=False)
 
-    def load_registry(self, registry_class: Type[Any]) -> Any:
+    def load_registry(self, registry_class: type[Any]) -> Any:
         """
         Load registry from directory.
 
@@ -311,7 +312,7 @@ class RegistryStorage:
 
         return registry
 
-    def _load_collection(self, registry: Any, type_prefix: str, model_class: Type[T]) -> None:
+    def _load_collection(self, registry: Any, type_prefix: str, model_class: type[T]) -> None:
         """Load collection of objects from subdirectory."""
         subdir = self.config.get_subdir(type_prefix)
 
@@ -326,7 +327,7 @@ class RegistryStorage:
             except Exception as e:
                 print(f"Warning: Failed to load {file_path}: {e}")
 
-    def get_object(self, object_id: str, model_class: Type[T]) -> Optional[T]:
+    def get_object(self, object_id: str, model_class: type[T]) -> T | None:
         """
         Lazy load object by ID.
 
@@ -365,7 +366,7 @@ class RegistryStorage:
 # =============================================================================
 
 
-def save_registry_to_directory(registry: Any, directory: Union[str, Path]) -> None:
+def save_registry_to_directory(registry: Any, directory: str | Path) -> None:
     """
     Convenience function: Save registry to directory.
 
@@ -376,7 +377,7 @@ def save_registry_to_directory(registry: Any, directory: Union[str, Path]) -> No
     storage.save_registry(registry)
 
 
-def load_registry_from_directory(registry_class: Type[Any], directory: Union[str, Path]) -> Any:
+def load_registry_from_directory(registry_class: type[Any], directory: str | Path) -> Any:
     """
     Convenience function: Load registry from directory.
 

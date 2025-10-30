@@ -1,0 +1,20 @@
+{
+  "temp_id": "raw-axiom-013",
+  "label_text": "def-axiom-bounded-deviation-variance",
+  "axiom_name": "Bounded Deviation Variance",
+  "statement": "*   **Core Assumption:** The sum of squared deviations of the raw input values from the aggregator's computed mean must be controllably related to the variance computed by the aggregator itself. This prevents aggregators from producing statistical moments that are pathologically decoupled from the input data.\n*   **Axiomatic Parameter ($\\kappa_{\\text{var}}$ - The Variance Deviation Factor):** The user must provide a constant $\\kappa_{\\text{var}} \\geq 1$ that bounds this relationship.\n*   **Condi",
+  "source_section": "§3",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "3",
+    "section_name": null,
+    "directive_label": "def-axiom-bounded-deviation-variance",
+    "equation": null,
+    "line_range": [
+      927,
+      941
+    ],
+    "url_fragment": "#def-axiom-bounded-deviation-variance"
+  }
+}

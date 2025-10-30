@@ -1,0 +1,155 @@
+{
+  "label": "thm-k1-revival-state",
+  "name": "Theorem of Guaranteed Revival from a Single Survivor",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§16.1",
+    "directive_label": "thm-k1-revival-state",
+    "equation": null,
+    "line_range": [4565, 4626],
+    "url_fragment": "#thm-k1-revival-state"
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-revival-state",
+    "obj-companion-selection-measure",
+    "obj-cloning-measure",
+    "obj-revival-score-ratio",
+    "obj-swarm-potential-assembly-operator",
+    "obj-distance-to-cemetery-state"
+  ],
+  "input_axioms": [
+    "def-axiom-guaranteed-revival"
+  ],
+  "input_parameters": [
+    "param-kappa-revival",
+    "param-epsilon-clone",
+    "param-p-max",
+    "param-eta",
+    "param-alpha",
+    "param-beta",
+    "param-v-pot-min",
+    "param-n"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "Let a swarm state have exactly one alive walker (the revival state condition |A(S_t)| = 1). If the Axiom of Guaranteed Revival holds (revival score ratio κ_revival > 1), then with probability 1: (1) The single survivor persists without cloning, maintaining its position x_j^{t+0.5} = x_j^t. (2) All dead walkers are assigned the Clone action and revive by sampling from the cloning measure Q_δ centered on the survivor's position. (3) The entire swarm becomes alive at the intermediate state S_{t+0.5} with |A(S_{t+0.5})| = N, isolating the extinction risk to the final perturbation phase where all N revived walkers could simultaneously enter invalid states.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [
+    "def-companion-selection-measure",
+    "def-cloning-score-function",
+    "def-cloning-measure",
+    "def-swarm-update-procedure",
+    "def-axiom-guaranteed-revival",
+    "def-stochastic-threshold-cloning"
+  ],
+  "validation_errors": [],
+  "raw_fallback": {
+    "label": "thm-k1-revival-state",
+    "name": "Theorem of Guaranteed Revival from a Single Survivor",
+    "status": "extracted",
+    "statement": "Let $\\mathcal{S}_t$ be a swarm state with exactly one alive walker, such that $|\\mathcal{A}(\\mathcal{S}_t)| = 1$. Let the index of this single survivor be $j$, so $\\mathcal{A}(\\mathcal{S}_t) = \\{j\\}$. Assume the **Axiom of Guaranteed Revival** holds, such that the revival score ratio $\\kappa_{\\text{revival}} > 1$. Then, the one-step transition $\\mathcal{S}_t \\to \\mathcal{S}_{t+1}$ is characterized by the following three properties with probability 1:\n\n1. **Survivor Persistence:** The single alive walker $j$ will be assigned the \"Persist\" action. Its intermediate position will be its current position, $x_j^{(t+0.5)} = x_j^{(t)}$. Its subsequent evolution is that of a single, persistent random walker for the remainder of the timestep.\n\n2. **Dead Walker Revival:** Every dead walker $i \\in \\mathcal{D}(\\mathcal{S}_t)$ (for $i \\neq j$) will be assigned the \"Clone\" action. Its intermediate position $x_i^{(t+0.5)}$ will be sampled from the **Cloning Measure** centered on the survivor's position, $\\mathcal{Q}_\\delta(x_j^{(t)}, \\cdot)$.\n\n3. **Swarm Revival and Failure Condition:** The swarm is guaranteed to enter the intermediate state $\\mathcal{S}_{t+0.5}$ with all $N$ walkers alive ($|\\mathcal{A}(\\mathcal{S}_{t+0.5})| = N$). The risk of swarm extinction ($|\\mathcal{A}(\\mathcal{S}_{t+1})|=0$) is therefore isolated to the single, simultaneous event where all $N$ walkers in the revived intermediate swarm independently move to an invalid state during the final perturbation and status update phase.",
+    "assumptions": [
+      {
+        "latex": "$|\\mathcal{A}(\\mathcal{S}_t)| = 1$",
+        "natural_language": "The swarm state at time t has exactly one alive walker (revival state condition)."
+      },
+      {
+        "latex": "$\\mathcal{A}(\\mathcal{S}_t) = \\{j\\}$",
+        "natural_language": "The single alive walker has index j."
+      },
+      {
+        "latex": "$\\kappa_{\\text{revival}} > 1$",
+        "natural_language": "The revival score ratio, as defined in the Axiom of Guaranteed Revival, is greater than 1."
+      },
+      {
+        "latex": "$\\kappa_{\\text{revival}} := \\frac{\\eta^{\\alpha+\\beta}}{\\varepsilon_{\\text{clone}} \\cdot p_{\\max}}$",
+        "natural_language": "The revival score ratio is defined as the minimum fitness potential divided by the cloning regularization parameter times the maximum threshold."
+      },
+      {
+        "latex": "$V_{\\text{pot,min}} = \\eta^{\\alpha+\\beta}$",
+        "natural_language": "The minimum fitness potential for any alive walker is bounded below by eta to the power alpha plus beta."
+      }
+    ],
+    "conclusion": {
+      "latex": "$P(x_j^{(t+0.5)} = x_j^{(t)} \\cap \\forall i \\in \\mathcal{D}(\\mathcal{S}_t): a_i = \\text{Clone} \\cap |\\mathcal{A}(\\mathcal{S}_{t+0.5})|=N) = 1$",
+      "natural_language": "With probability 1, the survivor maintains its position, every dead walker is assigned the Clone action, and the intermediate swarm state has all N walkers alive."
+    },
+    "depends_on": [
+      "def-axiom-guaranteed-revival",
+      "def-companion-selection-measure",
+      "def-cloning-score-function",
+      "lem-potential-boundedness"
+    ],
+    "parameters": {
+      "kappa_revival": {
+        "symbol": "$\\kappa_{\\text{revival}}$",
+        "description": "Revival score ratio",
+        "constraint": "> 1"
+      },
+      "epsilon_clone": {
+        "symbol": "$\\varepsilon_{\\text{clone}}$",
+        "description": "Cloning regularization parameter"
+      },
+      "p_max": {
+        "symbol": "$p_{\\max}$",
+        "description": "Maximum cloning probability threshold",
+        "constraint": "> 0"
+      },
+      "eta": {
+        "symbol": "$\\eta$",
+        "description": "Rescale lower bound"
+      },
+      "alpha": {
+        "symbol": "$\\alpha$",
+        "description": "Exploitation weight for reward"
+      },
+      "beta": {
+        "symbol": "$\\beta$",
+        "description": "Exploitation weight for diversity"
+      },
+      "V_pot_min": {
+        "symbol": "$V_{\\text{pot,min}}$",
+        "description": "Minimum fitness potential",
+        "value": "$\\eta^{\\alpha+\\beta}$"
+      }
+    },
+    "key_equations": [
+      {
+        "label": "survivor-cloning-score",
+        "equation": "$S_j = S(V_j, V_j) = \\frac{V_j - V_j}{V_j + \\varepsilon_{\\text{clone}}} = 0$",
+        "description": "Cloning score for survivor (comparing to itself)"
+      },
+      {
+        "label": "dead-walker-cloning-score",
+        "equation": "$S_i = S(V_j, 0) = \\frac{V_j}{\\varepsilon_{\\text{clone}}}$",
+        "description": "Cloning score for dead walker"
+      },
+      {
+        "label": "guaranteed-revival-condition",
+        "equation": "$\\frac{\\eta^{\\alpha+\\beta}}{\\varepsilon_{\\text{clone}}} > p_{\\max}$",
+        "description": "Condition ensuring dead walker score exceeds maximum threshold"
+      },
+      {
+        "label": "score-threshold-inequality",
+        "equation": "$S_i \\ge \\frac{\\eta^{\\alpha+\\beta}}{\\varepsilon_{\\text{clone}}} > p_{\\max} \\ge T_{\\text{clone}}$",
+        "description": "Chain of inequalities guaranteeing revival"
+      }
+    ],
+    "intuition": "The Phoenix Theorem: When only one walker remains alive, the cloning mechanism becomes deterministic. The survivor compares itself to itself (score = 0, no cloning), while all dead walkers get infinite scores relative to their zero fitness (guaranteed cloning). This ensures the swarm can always resurrect from a single survivor.",
+    "physical_interpretation": "Near-extinction recovery mechanism: one survivor is enough to rebuild the entire swarm in a single step. The system has a built-in 'phoenix effect' that prevents gradual extinction.",
+    "proof_strategy": "Analyze cloning decisions deterministically: (1) show survivor gets score 0 and persists, (2) show all dead walkers get scores exceeding maximum threshold and clone, (3) conclude all N walkers are alive at intermediate state."
+  }
+}

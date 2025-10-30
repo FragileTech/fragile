@@ -1,0 +1,50 @@
+{
+  "label": "thm-expected-cloning-action-continuity",
+  "name": "Continuity of the Conditional Expected Cloning Action",
+  "statement": "The **Conditional Expected Cloning Action** is continuous with respect to changes in both the swarm structure and the fitness potential vector. For any two states $(\\mathcal{S}_1, \\mathbf{V}_1)$ and $(\\mathcal{S}_2, \\mathbf{V}_2)$, with $k_1 = |\\mathcal{A}(\\mathcal{S}_1)| > 0$, the change in the conditional expected action for any walker $i$ is bounded:\n\n$$\n|P_{\\text{clone}}(\\mathcal{S}_1, \\mathbf{V}_1)_i - P_{\\text{clone}}(\\mathcal{S}_2, \\mathbf{V}_2)_i| \\le C_{\\text{struct}}^{(\\pi)}(k_1) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{\\text{val}}^{(\\pi)} \\cdot \\left( \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)}[|V_{1,c} - V_{2,c}|] + |V_{1,i} - V_{2,i}| \\right)\n$$\n\nwhere the coefficients are:\n- $C_{\\text{struct}}^{(\\pi)}(k_1) := \\frac{2}{\\max(1, k_1-1)}$ (from structural change)\n- $C_{\\text{val}}^{(\\pi)} := \\max(L_{\\pi,c}, L_{\\pi,i})$ (from potential vector change)",
+  "hypotheses": [
+    "Two states with swarm structure and potential vectors",
+    "$k_1 = |\\mathcal{A}(\\mathcal{S}_1)| > 0$"
+  ],
+  "conclusion": "Conditional expected cloning action is continuous in both structure and values",
+  "proof_technique": "Decomposition into structural and value components using triangle inequality",
+  "dependencies": [
+    "def-expected-cloning-action",
+    "lem-cloning-probability-lipschitz",
+    "thm-total-error-status-bound"
+  ],
+  "tags": [
+    "cloning",
+    "continuity",
+    "expectation"
+  ],
+  "context": "Section 16: The Cloning Transition Measure, subsection 15.2.3",
+  "source_file": "01_fragile_gas_framework.md",
+  "line_number": 4349,
+  "extraction_date": "2025-10-27T21:45:04.113258",
+  "input_objects": [
+    "obj-companion-selection-measure",
+    "obj-cloning-probability-lipschitz-constants",
+    "obj-distance-measurement-ms-constants"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "output_type": "Bound",
+  "relations_established": [
+    "Expected cloning action is continuous with respect to swarm state"
+  ],
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.3",
+    "section_name": null,
+    "directive_label": "thm-expected-cloning-action-continuity",
+    "equation": null,
+    "line_range": [
+      4359,
+      4370
+    ],
+    "url_fragment": "#thm-expected-cloning-action-continuity"
+  }
+}

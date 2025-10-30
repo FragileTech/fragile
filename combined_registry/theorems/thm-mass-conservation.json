@@ -2,9 +2,17 @@
   "label": "thm-mass-conservation",
   "name": "Total Mass Conservation and Population Dynamics",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "07_mean_field",
+  "source": {
+    "document_id": "07_mean_field",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/07_mean_field.md",
+    "section": null,
+    "directive_label": "thm-mass-conservation",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-mass-conservation"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -20,42 +28,28 @@
     "param-lambda-rev",
     "param-lambda-revive"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-transport-operator": [
-      "prop-mass-conservation-transport"
+      "attr-mass-conservation-transport"
     ],
     "obj-revival-operator": [
-      "prop-revival-integral-equals-lambda-md"
+      "attr-revival-integral-equals-lambda-md"
     ],
     "obj-cloning-generator": [
-      "prop-cloning-mass-neutrality"
+      "attr-cloning-mass-neutrality"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [
-    {
-      "label": "prop-total-population-mass-conservation",
-      "expression": "d/dt [m_a(t) + m_d(t)] = 0",
-      "object_label": "obj-mean-field-phase-space",
-      "established_by": "thm-mass-conservation",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "prop-alive-mass-balance",
-      "expression": "d/dt m_a(t) = λ_rev m_d(t) − ∫_Ω c(z) f(t,z) dz",
-      "object_label": "obj-phase-space-density",
-      "established_by": "thm-mass-conservation",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

@@ -1,0 +1,59 @@
+{
+  "label": "cor-closed-form-lipschitz-composite",
+  "name": "Closed-form bound for L_{g_A∘z} (empirical aggregator)",
+  "entity_type": "corollary",
+  "statement_type": "TheoremBox",
+  "output_type": "Bound",
+  "natural_language_statement": "For the empirical aggregator, the composite map for the standardized score, g_A ∘ z, is globally Lipschitz. Its Lipschitz constant has a closed-form bound that depends on the properties of the cubic patch, the regularized standardization, walker velocities, and the number of walkers.",
+  "description": "This corollary provides the final closed-form Lipschitz bound for the entire standardization and rescaling pipeline (g_A ∘ z) when using the empirical aggregator. This is a key result for proving the continuity of the fitness potential operator.",
+  "assumptions_hypotheses": [
+    "The number of active walkers is $k=|\\mathcal A(\\mathcal S)|$.",
+    "Walker velocities are bounded: $|v_i| \\le V_{\\max}$.",
+    "The empirical aggregator from §6.2.2.a is used.",
+    "The regularized standardization and piecewise rescale from §8.2.2 are used."
+  ],
+  "conclusion_main_result": "The composite map $g_A \\circ z$ is globally Lipschitz with constant $L_{g_A\\circ z} \\le \\max\\{\\,L_P,\\,1\\,\\} \\cdot \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}$.",
+  "input_objects": [
+    "obj-standardization-operator-n-dimensional",
+    "obj-asymmetric-rescale-function"
+  ],
+  "input_axioms": [
+    "def-axiom-rescale-function"
+  ],
+  "input_parameters": [
+    "k",
+    "V_max",
+    "L_P",
+    "L_sigma'_reg"
+  ],
+  "lemma_dag_edges": [
+    [
+      "cor-closed-form-lipschitz-composite",
+      "cor-chain-rule-sigma-reg-var"
+    ],
+    [
+      "cor-closed-form-lipschitz-composite",
+      "thm-rescale-function-lipschitz"
+    ],
+    [
+      "cor-closed-form-lipschitz-composite",
+      "lem-empirical-aggregator-properties"
+    ]
+  ],
+  "internal_lemmas": [],
+  "relations": [
+    {
+      "formula": "L_{g_A\\circ z} \\le \\max\\{\\,L_P,\\,1\\,\\} \\cdot \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}",
+      "description": "Establishes a global Lipschitz bound for the composite map g_A ∘ z under the specified conditions."
+    }
+  ],
+  "proof_status": "verified",
+  "raw_fallback": {},
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "9. Rescale Transformation",
+    "subsection": "8.2.2.10",
+    "directive_label": "cor-closed-form-lipschitz-composite"
+  }
+}

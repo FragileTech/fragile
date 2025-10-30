@@ -3,14 +3,23 @@
   "name": "Mean-Field Z-Scores",
   "mathematical_expression": "\\widetilde{r}[f](z,t) := \\frac{R(z) - \\mu_R[f](t)}{\\widehat{\\sigma}_R[f](t)}, \\qquad \\widetilde{d}[f](z,z_c,t) := \\frac{d_{\\mathcal{Y}}(\\varphi(z),\\varphi(z_c)) - \\mu_D[f](t)}{\\widehat{\\sigma}_D[f](t)}",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle",
     "swarm",
     "mean-field"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "07_mean_field"
+  "source": {
+    "document_id": "07_mean_field",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/07_mean_field.md",
+    "section": null,
+    "directive_label": "obj-mean-field-z-scores",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-mean-field-z-scores"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

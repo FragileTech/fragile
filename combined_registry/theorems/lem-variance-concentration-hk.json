@@ -2,9 +2,17 @@
   "label": "lem-variance-concentration-hk",
   "name": "**(Variance Concentration in the High-Error Set)**",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning",
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "lem-variance-concentration-hk",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-variance-concentration-hk"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -17,7 +25,7 @@
     "epsilon_O",
     "c_H"
   ],
-  "properties_required": {},
+  "attributes_required": {},
   "internal_lemmas": [
     "lem-outlier-cluster-fraction-lower-bound"
   ],
@@ -29,7 +37,7 @@
     ]
   ],
   "output_type": "Existence",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-lem-variance-concentration-hk-0-approximation",
@@ -39,14 +47,29 @@
       "target_object": "obj-barycentres-and-centered-vectors",
       "established_by": "lem-variance-concentration-hk",
       "expression": "sum_{i in H_k} ||delta_x,k,i||^2 >= c_H * sum_{i in A_k} ||delta_x,k,i||^2",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "03_cloning"
+      "source": {
+        "document_id": "03_cloning",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+        "section": null,
+        "directive_label": "lem-variance-concentration-hk",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-variance-concentration-hk"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

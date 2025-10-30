@@ -1,0 +1,43 @@
+{
+  "label": "proof-thm-expected-cloning-action-continuity",
+  "proves": "thm-expected-cloning-action-continuity",
+  "type": "proof",
+  "proof_text": "The proof decomposes the total error into a structural component and a value component using the triangle inequality:\n$|E_1[π_1] - E_2[π_2]| \\leq |E_1[π_1] - E_1[π_2]| + |E_1[π_2] - E_2[π_2]|$.\n\n1. **Bound the Value Error Component:** The first term is the error from the change in potentials for a fixed companion measure. Using Jensen's inequality and the Lipschitz continuity of $\\pi$ (lem-cloning-probability-lipschitz), this is bounded by $C_{val}^{(π)}$ times the sum of the expected companion potential change and the walker's own potential change.\n\n2. **Bound the Structural Error Component:** The second term is the error from the change in the companion measure for a fixed potential vector. We apply the **Total Error Bound in Terms of Status Changes (thm-total-error-status-bound)**. The function being evaluated is bounded by $M_f=1$. The size of the initial companion set is at least $max(1, k_1-1)$. This gives the bound $C_{\\text{struct}}^{(π)}(k_1) \\cdot n_c$.\n\nSumming the two bounds gives the final result.",
+  "proof_structure": [
+    "Decompose error using triangle inequality",
+    "Bound value error using Lipschitz continuity",
+    "Bound structural error using status change theorem",
+    "Sum components"
+  ],
+  "key_techniques": [
+    "triangle inequality",
+    "Jensen's inequality",
+    "Lipschitz continuity"
+  ],
+  "dependencies": [
+    "lem-cloning-probability-lipschitz",
+    "thm-total-error-status-bound"
+  ],
+  "tags": [
+    "cloning",
+    "continuity",
+    "proof"
+  ],
+  "context": "Section 16: The Cloning Transition Measure, subsection 15.2.3",
+  "source_file": "01_fragile_gas_framework.md",
+  "line_number": 4361,
+  "extraction_date": "2025-10-27T21:50:09.741085",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.3",
+    "section_name": null,
+    "directive_label": "proof-thm-expected-cloning-action-continuity",
+    "equation": null,
+    "line_range": [
+      4371,
+      4379
+    ],
+    "url_fragment": null
+  }
+}

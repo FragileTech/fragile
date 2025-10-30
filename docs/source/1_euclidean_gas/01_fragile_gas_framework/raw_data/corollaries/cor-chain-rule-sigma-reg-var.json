@@ -1,0 +1,46 @@
+{
+  "temp_id": "raw-cor-001",
+  "label": "cor-chain-rule-sigma-reg-var",
+  "label_text": "Corollary: Chain‑rule bound for σ'_reg ∘ Var",
+  "name": "Chain‑rule bound for σ'_reg ∘ Var",
+  "statement_type": "corollary",
+  "statement": "Under the conditions of the lemma and §8.2.2.9, the composite map σ'_{text{reg}}∘Var is Lipschitz with\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( L_{m_2,M}+2 V_{\\max} L_{\\mu,M}\\Big).\n$$\nIn particular, for the empirical aggregator of §6.2.2.a (see lem-empirical-aggregator-properties), $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$, hence\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( \\tfrac{2 V_{\\max}}{\\sqrt{k}} + 2 V_{\\max}\\,\\tfrac{1}{\\sqrt{k}}\\Big)\n\\;=\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}.\n$$",
+  "full_statement_text": "Under the conditions of the lemma and §8.2.2.9, the composite map σ'_{text{reg}}∘Var is Lipschitz with\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( L_{m_2,M}+2 V_{\\max} L_{\\mu,M}\\Big).\n$$\nIn particular, for the empirical aggregator of §6.2.2.a (see lem-empirical-aggregator-properties), $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$, hence\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( \\tfrac{2 V_{\\max}}{\\sqrt{k}} + 2 V_{\\max}\\,\\tfrac{1}{\\sqrt{k}}\\Big)\n\\;=\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}.\n$$",
+  "context_before": null,
+  "conclusion_formula_latex": "L_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}",
+  "equation_label": null,
+  "explicit_definition_references": [
+    "lem-empirical-aggregator-properties"
+  ],
+  "explicit_theorem_references": [
+    "lem-lipschitz-variance-functional",
+    "lem-sigma-patch-derivative-bound"
+  ],
+  "source_section": "9. Rescale Transformation",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "9",
+    "section_name": null,
+    "directive_label": "cor-chain-rule-sigma-reg-var",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "depends_on": [
+    "lem-lipschitz-variance-functional",
+    "lem-sigma-patch-derivative-bound"
+  ],
+  "input_objects": [
+    "obj-rescale-lipschitz-constants",
+    "obj-potential-bounds",
+    "obj-aggregator-lipschitz-constants"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "output_type": "Lipschitz Bound",
+  "relations_established": [
+    "Provides Lipschitz bound for composite map sigma'_reg o Var",
+    "Chain rule bound: L_{sigma'_reg o Var} <= L_{sigma'_reg}(L_{m2,M} + 2V_max*L_{mu,M})"
+  ]
+}

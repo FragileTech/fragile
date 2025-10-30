@@ -2,9 +2,17 @@
   "label": "thm-positional-variance-bounded-expansion",
   "name": "Bounded Positional Variance Expansion Under Kinetics",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "05_kinetic_contraction",
+  "source": {
+    "document_id": "05_kinetic_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+    "section": null,
+    "directive_label": "thm-positional-variance-bounded-expansion",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-positional-variance-bounded-expansion"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -23,7 +31,7 @@
     "sigma_max",
     "tau"
   ],
-  "properties_required": {
+  "attributes_required": {
     "variance-bounds": [
       "uniform-from-synergistic-framework"
     ],
@@ -41,7 +49,7 @@
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-positional-variance-bounded-expansion-0-approximation",
@@ -51,14 +59,22 @@
       "target_object": "obj-positional-variance-recall",
       "established_by": "thm-positional-variance-bounded-expansion",
       "expression": "thermal-noise-causes-bounded-diffusion",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "05_kinetic_contraction"
+      "source": {
+        "document_id": "05_kinetic_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+        "section": null,
+        "directive_label": "thm-positional-variance-bounded-expansion",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-positional-variance-bounded-expansion"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-positional-variance-bounded-expansion-1-other",
@@ -68,14 +84,29 @@
       "target_object": "obj-positional-variance-recall",
       "established_by": "thm-positional-variance-bounded-expansion",
       "expression": "overcome-by-cloning-contraction",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "05_kinetic_contraction"
+      "source": {
+        "document_id": "05_kinetic_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+        "section": null,
+        "directive_label": "thm-positional-variance-bounded-expansion",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-positional-variance-bounded-expansion"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

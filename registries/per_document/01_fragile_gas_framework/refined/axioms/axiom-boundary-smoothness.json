@@ -1,0 +1,346 @@
+{
+  "label": "axiom-boundary-smoothness",
+  "name": "Axiom of Boundary Smoothness",
+  "statement": "The boundary of the valid domain must be a $(d-1)$-dimensional $C^1$ submanifold to ensure it has Lebesgue measure zero in the ambient space.",
+  "mathematical_expression": "$$\\partial \\mathcal{X}_{\\mathrm{valid}} \\text{ is a } C^1 \\text{ submanifold of } \\mathcal{X} \\text{ with dimension } (d-1)$$",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "core_assumption": "The boundary of the valid domain, $\\partial \\mathcal{X}_{\\mathrm{valid}}$, must be a $(d-1)$-dimensional continuously differentiable ($C^1$) submanifold of the $d$-dimensional state space $\\mathcal{X}$. This is the standard condition in geometric measure theory ensuring the boundary has Lebesgue measure zero in the ambient space: $\\mu_{\\mathcal{X}}(\\partial \\mathcal{X}_{\\mathrm{valid}}) = 0$. This geometric regularity is a critical prerequisite for proving that $\\partial \\mathcal{X}_{\\mathrm{valid}}$ is a null set for any absolutely continuous perturbation kernel, which enables the validation of the Axiom of Boundary Regularity and ensures continuity of the death probability function.",
+  "parameters": [
+    {
+      "symbol": "d",
+      "name": "State Space Dimension",
+      "description": "The dimension of the ambient state space $\\mathcal{X} \\subset \\mathbb{R}^d$. This is a fixed foundational parameter determining the dimensionality of the walker position space.",
+      "type": "environmental",
+      "constraints": "$d \\in \\mathbb{N}$, $d \\geq 1$",
+      "role": "Defines the ambient dimension in which the boundary is embedded. The boundary must have codimension 1 (dimension $d-1$) to be a proper hypersurface with measure-theoretic null property.",
+      "typical_values": "$d = 2$ (planar systems), $d = 3$ (spatial systems), $d \\geq 10$ (high-dimensional optimization problems)"
+    },
+    {
+      "symbol": "\\mathcal{X}",
+      "name": "State Space",
+      "description": "The state space in which walkers evolve, equipped with metric $d_{\\mathcal{X}}$ and reference measure $\\mu_{\\mathcal{X}}$ (typically Lebesgue measure $\\lambda_d$ for Euclidean spaces).",
+      "type": "environmental",
+      "constraints": "$\\mathcal{X} \\subset \\mathbb{R}^d$ must be a Valid State Space (def-valid-state-space): Polish metric space, equipped with reference measure, supports valid noise measures",
+      "role": "The ambient space containing the boundary. Its metric and measure structure determine what geometric regularity conditions are meaningful and enforceable.",
+      "related_definitions": ["def-valid-state-space", "def-ambient-euclidean"]
+    },
+    {
+      "symbol": "\\mathcal{X}_{\\mathrm{valid}}",
+      "name": "Valid Domain",
+      "description": "The subset of the state space $\\mathcal{X}$ where walkers are considered alive. Walkers with positions $x \\in \\mathcal{X}_{\\mathrm{valid}}$ have status $s=1$ (alive), while walkers outside this domain have status $s=0$ (dead).",
+      "type": "environmental",
+      "constraints": "$\\mathcal{X}_{\\mathrm{valid}} \\subset \\mathcal{X}$ is a measurable set with $C^1$ boundary $\\partial \\mathcal{X}_{\\mathrm{valid}}$",
+      "role": "Defines the alive/dead partition of state space. The region whose boundary regularity this axiom constrains. Typically chosen as a bounded domain with smooth boundary for practical implementations.",
+      "related_definitions": ["def-valid-state-space", "def-alive-dead-sets"]
+    },
+    {
+      "symbol": "\\partial \\mathcal{X}_{\\mathrm{valid}}",
+      "name": "Boundary of Valid Domain",
+      "description": "The topological boundary of the valid domain: $\\partial \\mathcal{X}_{\\mathrm{valid}} = \\overline{\\mathcal{X}_{\\mathrm{valid}}} \\cap \\overline{\\mathcal{X} \\setminus \\mathcal{X}_{\\mathrm{valid}}}$, consisting of all points that are limit points of both $\\mathcal{X}_{\\mathrm{valid}}$ and its complement.",
+      "type": "geometric",
+      "constraints": "Must be a $(d-1)$-dimensional $C^1$ submanifold of $\\mathcal{X}$, implying local differentiable parameterizations exist and boundary normals are continuous",
+      "role": "The primary object whose geometric regularity this axiom directly constrains. Smooth boundary structure ensures: (1) Lebesgue measure zero, (2) well-defined surface integrals, (3) continuous death probability function, (4) applicability of geometric measure theory.",
+      "measure_theoretic_property": "$\\mu_{\\mathcal{X}}(\\partial \\mathcal{X}_{\\mathrm{valid}}) = 0$ (null set property)"
+    },
+    {
+      "symbol": "C^1",
+      "name": "Continuously Differentiable Regularity Class",
+      "description": "The smoothness class requiring existence and continuity of first derivatives. For manifolds, means transition maps between coordinate charts are continuously differentiable.",
+      "type": "smoothness_specification",
+      "mathematical_meaning": "For boundary points, local parameterizations $\\phi: U \\subset \\mathbb{R}^{d-1} \\to \\partial \\mathcal{X}_{\\mathrm{valid}}$ exist with $\\phi \\in C^1(U)$ and continuous boundary normal vectors $\\nu(x) = \\nabla F(x) / \\|\\nabla F(x)\\|$ for level-set representation $F$",
+      "role": "Minimal smoothness requirement ensuring measure-theoretic null property while being weak enough to accommodate many practical geometries. Stronger than Lipschitz (which allows corners), weaker than $C^2$ (which requires curvature regularity)."
+    },
+    {
+      "symbol": "\\mu_{\\mathcal{X}}",
+      "name": "Reference Measure on State Space",
+      "description": "The reference measure on $\\mathcal{X}$ with respect to which null sets are defined. For Euclidean spaces, this is Lebesgue measure $\\lambda_d$; for Riemannian manifolds, this is the volume measure.",
+      "type": "measure",
+      "role": "Defines the notion of 'measure zero' that is the key consequence of $C^1$ boundary regularity. Absolutely continuous perturbation kernels are defined with respect to this measure.",
+      "related_axioms": ["def-ambient-euclidean", "def-axiom-bounded-second-moment-perturbation"]
+    }
+  ],
+  "condition": "This axiom applies to any Fragile Gas instantiation operating on a state space $\\mathcal{X}$ with a valid domain $\\mathcal{X}_{\\mathrm{valid}} \\subset \\mathcal{X}$. The boundary smoothness condition is satisfied when:\n\n1. **Local Manifold Structure**: Near each boundary point $x \\in \\partial \\mathcal{X}_{\\mathrm{valid}}$, there exists a neighborhood and a continuously differentiable coordinate chart making the boundary look locally like $\\mathbb{R}^{d-1}$ embedded in $\\mathbb{R}^d$.\n\n2. **Level Set Characterization** (sufficient condition): The boundary can be expressed as $\\partial \\mathcal{X}_{\\mathrm{valid}} = \\{x \\in \\mathcal{X} : F(x) = 0\\}$ for some $F \\in C^1(\\mathcal{X})$ with $\\nabla F(x) \\neq 0$ for all $x \\in \\partial \\mathcal{X}_{\\mathrm{valid}}$ (non-vanishing gradient condition).\n\n3. **Measure-Theoretic Consequence**: As a result of codimension-1 $C^1$ regularity, the boundary satisfies $\\mu_{\\mathcal{X}}(\\partial \\mathcal{X}_{\\mathrm{valid}}) = 0$ (Lebesgue measure zero in ambient space).\n\n4. **Absolute Continuity Compatibility**: For any absolutely continuous perturbation kernel $\\mathcal{P}_\\sigma(x, \\cdot) \\ll \\mu_{\\mathcal{X}}$, the probability of landing on the boundary is zero: $\\mathcal{P}_\\sigma(x, \\partial \\mathcal{X}_{\\mathrm{valid}}) = 0$ for all $x \\in \\mathcal{X}$.\n\nThe condition must hold globally across the entire boundary, not just locally at most points.",
+  "failure_mode_analysis": {
+    "violation_scenario": "The boundary $\\partial \\mathcal{X}_{\\mathrm{valid}}$ fails to be a $C^1$ submanifold if it contains singularities, corners, cusps, self-intersections, or exhibits fractal/space-filling structure.",
+    "pathological_examples": [
+      {
+        "type": "Fractal Boundary",
+        "description": "Boundaries with self-similar structure at all scales, such as Koch snowflake, Sierpiński gasket boundaries, or Cantor-set-based constructions",
+        "hausdorff_dimension": "Typically $> d-1$, potentially equal to $d$",
+        "lebesgue_measure": "Can have positive $d$-dimensional Lebesgue measure, violating null-set requirement",
+        "consequence": "Non-zero probability of landing on boundary; death probability function discontinuous"
+      },
+      {
+        "type": "Space-Filling Curve Boundary",
+        "description": "Boundaries constructed from space-filling curves (Peano curve, Hilbert curve) that densely fill regions of dimension $d$",
+        "hausdorff_dimension": "$d$ (full ambient dimension)",
+        "lebesgue_measure": "Positive measure",
+        "consequence": "Boundary is not a proper hypersurface; measure-theoretic foundations collapse"
+      },
+      {
+        "type": "Corner Singularities",
+        "description": "Non-differentiable points such as corners of polygons/polyhedra, cusps, or kinks where boundary normal is discontinuous or undefined",
+        "example": "Rectangle boundary in $\\mathbb{R}^2$ (4 corner points), cube boundary in $\\mathbb{R}^3$ (edges and vertices)",
+        "lebesgue_measure": "Finite set of singularities has measure zero, but $C^1$ regularity fails pointwise",
+        "consequence": "Cannot define continuous normal vector field; boundary integrals with normal derivatives ill-defined; $C^1$ manifold structure violated"
+      },
+      {
+        "type": "Self-Intersecting Boundary",
+        "description": "Boundaries that intersect themselves, such as figure-eight curves in 2D or Klein bottle embeddings",
+        "topological_issue": "Not a proper manifold (fails Hausdorff condition at intersection points)",
+        "consequence": "Manifold structure undefined; no consistent orientation or normal vectors at intersections"
+      },
+      {
+        "type": "Boundary with Isolated Accumulation Points",
+        "description": "Boundaries consisting of infinitely many disjoint smooth components accumulating at a limit point",
+        "example": "Union of circles with radii $1/n$ centered at $(1/n, 0)$ for $n \\in \\mathbb{N}$, accumulating at origin",
+        "consequence": "No smooth structure at accumulation points; limiting behavior discontinuous"
+      }
+    ],
+    "immediate_consequences": [
+      {
+        "mathematical": "The boundary $\\partial \\mathcal{X}_{\\mathrm{valid}}$ may have positive $d$-dimensional Lebesgue measure: $\\mu_{\\mathcal{X}}(\\partial \\mathcal{X}_{\\mathrm{valid}}) > 0$",
+        "impact": "critical",
+        "mechanism": "Without codimension-1 smooth structure, boundary can 'thicken' to have full-dimensional measure"
+      },
+      {
+        "mathematical": "Perturbation kernels with densities can assign non-zero probability to boundary: $\\mathcal{P}_\\sigma(x, \\partial \\mathcal{X}_{\\mathrm{valid}}) > 0$",
+        "impact": "critical",
+        "mechanism": "Absolutely continuous measures cannot distinguish sets of positive measure from their boundaries"
+      },
+      {
+        "mathematical": "Death probability function $P(s_{\\mathrm{out},i}=0 | \\mathcal{S})$ loses continuity in swarm state $\\mathcal{S}$",
+        "impact": "critical",
+        "mechanism": "Integral $\\int_{\\mathcal{X} \\setminus \\mathcal{X}_{\\mathrm{valid}}} \\mathcal{P}_\\sigma(x_i, dy)$ depends discontinuously on $x_i$ near singular boundary points"
+      },
+      {
+        "mathematical": "Surface integrals $\\int_{\\partial \\mathcal{X}_{\\mathrm{valid}}} g(y) \\, d\\sigma(y)$ become ill-defined without proper $(d-1)$-dimensional surface measure $d\\sigma$",
+        "impact": "high",
+        "mechanism": "Surface measure requires smooth tangent space structure; singularities prevent construction of consistent measure"
+      },
+      {
+        "mathematical": "Boundary normal vectors $\\nu(x)$ are undefined or discontinuous at singular points",
+        "impact": "high",
+        "mechanism": "$C^1$ regularity needed for continuous normal vector field via $\\nu(x) = \\nabla F(x) / \\|\\nabla F(x)\\|$"
+      }
+    ],
+    "cascading_failures": [
+      {
+        "failed_axiom": "Axiom of Boundary Regularity (def-axiom-boundary-regularity)",
+        "mechanism": "Hölder continuity bound $|P(s_{\\mathrm{out},i}=0 | \\mathcal{S}_1) - P(s_{\\mathrm{out},i}=0 | \\mathcal{S}_2)| \\leq L_{\\mathrm{death}} \\cdot d_{\\mathrm{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^{\\alpha_B}$ requires death probability to be continuous; this fails at boundary singularities",
+        "impact": "The boundary instability factor $L_{\\mathrm{death}}$ becomes infinite or undefined"
+      },
+      {
+        "failed_property": "Feller property of kernel $\\mathcal{K}_{\\mathrm{status}} \\circ \\mathcal{K}_{\\mathrm{pert}}$",
+        "mechanism": "Feller kernels map continuous functions to continuous functions; discontinuous death probability violates this",
+        "impact": "Markov process loses strong continuity properties needed for convergence analysis"
+      },
+      {
+        "failed_operator": "Status Update Operator $\\Psi_{\\mathrm{status}}$",
+        "mechanism": "Operator defined by $s_{\\mathrm{out},i} = \\mathbb{1}_{x_i \\in \\mathcal{X}_{\\mathrm{valid}}}$ has discontinuous expectation near irregular boundary",
+        "impact": "Loss of Hölder continuity established in Section 15"
+      },
+      {
+        "failed_theorem": "Swarm Update Operator $\\Psi_{\\mathcal{F}}$ Wasserstein Continuity (Section 18)",
+        "mechanism": "Composition of operators inherits discontinuities; $W_2$ continuity bound depends on all component operators being continuous",
+        "impact": "Cannot establish uniform continuity bounds; convergence theorems in companion documents (03_cloning.md, 04_convergence.md) become invalid"
+      },
+      {
+        "failed_analysis": "Quasi-Stationary Distribution (QSD) Convergence",
+        "mechanism": "QSD existence and uniqueness proofs (Keystone Principle) require Feller property and continuous generator",
+        "impact": "Cannot prove exponential convergence to QSD; long-term algorithmic behavior becomes unpredictable"
+      }
+    ],
+    "system_level_impact": {
+      "stability": "Catastrophic failure of continuity-based stability analysis. Small perturbations in swarm configuration can cause discontinuous jumps in death probability, leading to unpredictable mass death events.",
+      "predictability": "System becomes analytically intractable. Cannot bound worst-case behavior or provide convergence guarantees.",
+      "implementation": "Numerical implementations become unstable near boundaries due to measure-theoretic ambiguities. Walkers exhibit non-reproducible death patterns.",
+      "theory": "Foundational measure-theoretic and probabilistic arguments throughout framework become invalid. Most theorems require re-proof or cannot be salvaged."
+    },
+    "diagnostic_indicators": [
+      "Death probability $P(s_{\\mathrm{out},i}=0 | \\mathcal{S})$ exhibits discontinuous jumps as walkers approach boundary",
+      "Empirical measurements of boundary instability factor $L_{\\mathrm{death}}$ diverge or vary wildly across boundary regions",
+      "Walkers near boundary exhibit non-reproducible death patterns (same position, different outcomes across runs due to numerical precision)",
+      "High variance in alive-set cardinality $|\\mathcal{A}_t|$ when swarm operates near boundaries",
+      "Boundary integrals in theoretical calculations diverge or are numerically unstable",
+      "Visual inspection reveals corners, cusps, or fractal structure in boundary $\\partial \\mathcal{X}_{\\mathrm{valid}}$",
+      "Measure-theoretic tests: $\\mu_{\\mathcal{X}}(\\partial \\mathcal{X}_{\\mathrm{valid}})$ estimated as positive via fine-scale grid sampling"
+    ],
+    "mitigation_strategies": [
+      {
+        "strategy": "Smooth Boundary Approximation",
+        "description": "Replace irregular boundaries with $C^1$ or $C^\\infty$ approximations using spline fitting, polynomial patches, or mollification techniques",
+        "implementation": "For polygonal boundaries: replace sharp corners with circular arcs (fillet operation) or polynomial blending (Bézier curves); for fractal boundaries: replace with smooth envelope curve; for cusps: use tangent-continuous splines",
+        "tradeoff": "Slight change in original domain geometry; must ensure approximation error is acceptable for application",
+        "effectiveness": "High - directly addresses root cause by restoring $C^1$ regularity"
+      },
+      {
+        "strategy": "Boundary Buffer Zones (Soft Boundaries)",
+        "description": "Replace hard constraint $x \\in \\mathcal{X}_{\\mathrm{valid}}$ (binary alive/dead) with smooth transition region where death probability varies continuously",
+        "implementation": "Define soft death probability $p_{\\mathrm{death}}(x) = \\phi(d(x, \\partial \\mathcal{X}_{\\mathrm{valid}}))$ where $\\phi : \\mathbb{R}_{\\geq 0} \\to [0,1]$ is smooth (e.g., sigmoid, polynomial). Set $p_{\\mathrm{death}}(x) \\approx 0$ for $d(x, \\partial \\mathcal{X}_{\\mathrm{valid}}) > \\epsilon_{\\mathrm{buffer}}$ and $p_{\\mathrm{death}}(x) \\approx 1$ for $d(x, \\partial \\mathcal{X}_{\\mathrm{valid}}) < -\\epsilon_{\\mathrm{buffer}}$",
+        "tradeoff": "No longer a binary alive/dead partition; stochastic death in buffer zone changes algorithmic behavior",
+        "effectiveness": "High - smooths discontinuity while maintaining approximate boundary constraint"
+      },
+      {
+        "strategy": "Domain Restriction to Safe Interior",
+        "description": "Operate on strictly interior subdomain with guaranteed distance from irregular boundary",
+        "implementation": "Define $\\mathcal{X}_{\\mathrm{interior}} = \\{x \\in \\mathcal{X}_{\\mathrm{valid}} : d(x, \\partial \\mathcal{X}_{\\mathrm{valid}}) > \\epsilon_{\\mathrm{safe}}\\}$ with $\\epsilon_{\\mathrm{safe}} > 0$. Ensure $\\epsilon_{\\mathrm{safe}} \\gg \\sigma$ (perturbation noise scale) to prevent walkers from reaching original boundary",
+        "tradeoff": "Reduces effective search space; may exclude important regions near boundary",
+        "effectiveness": "Moderate - avoids problem but limits exploration"
+      },
+      {
+        "strategy": "Increased Perturbation Noise",
+        "description": "Use larger noise scale $\\sigma$ to smooth out boundary irregularities through kernel convolution",
+        "implementation": "Set $\\sigma \\gg \\epsilon_{\\mathrm{boundary}}$ where $\\epsilon_{\\mathrm{boundary}}$ is characteristic length scale of boundary roughness. Heat kernel $\\mathcal{P}_\\sigma(x, dy) = (2\\pi\\sigma^2)^{-d/2} \\exp(-\\|y-x\\|^2/(2\\sigma^2)) dy$ acts as mollifier",
+        "tradeoff": "Larger noise reduces fine-scale resolution; may obscure small-scale reward features",
+        "effectiveness": "Moderate - ameliorates but doesn't eliminate problem; works best for high-frequency boundary roughness"
+      },
+      {
+        "strategy": "Periodic Boundary Conditions",
+        "description": "Eliminate boundaries entirely by using periodic topology (torus)",
+        "implementation": "For $\\mathcal{X} = \\mathbb{R}^d$, identify points modulo lattice: $x \\sim x + L \\mathbb{Z}^d$ for period $L > 0$. State space becomes $\\mathcal{X} = \\mathbb{T}^d$ (flat torus) with no boundary",
+        "tradeoff": "Only applicable to problems where periodic structure makes sense; changes problem topology fundamentally",
+        "effectiveness": "Perfect - no boundary means axiom trivially satisfied; but only works for specific problem classes"
+      },
+      {
+        "strategy": "Implicit Boundary Regularization via Reflecting Diffusion",
+        "description": "Replace hard killing boundary with reflecting boundary conditions for perturbation operator",
+        "implementation": "Define perturbation $\\mathcal{P}_\\sigma$ as reflecting Brownian motion: when walkers reach $\\partial \\mathcal{X}_{\\mathrm{valid}}$, reflect along boundary normal. Requires only continuous (not $C^1$) boundary",
+        "tradeoff": "Changes dynamics; reflecting boundary behaves differently than killing boundary; harder to implement for complex geometries",
+        "effectiveness": "Moderate - weakens regularity requirement but fundamentally changes algorithmic behavior"
+      }
+    ],
+    "related_axioms": [
+      {
+        "label": "axiom-boundary-regularity",
+        "relationship": "direct_prerequisite",
+        "description": "Boundary Smoothness is the geometric prerequisite for validating Boundary Regularity's Hölder continuity requirement"
+      },
+      {
+        "label": "def-axiom-bounded-second-moment-perturbation",
+        "relationship": "supporting",
+        "description": "Smooth boundary ensures perturbation kernel integrals are well-defined and finite"
+      },
+      {
+        "label": "def-valid-state-space",
+        "relationship": "validates",
+        "description": "Boundary Smoothness is one of the requirements for a Valid State Space"
+      }
+    ]
+  },
+  "framework_relationships": {
+    "prerequisite_for": [
+      "axiom-boundary-regularity"
+    ],
+    "validates": [
+      "def-valid-state-space"
+    ],
+    "supports": [
+      {
+        "property": "Feller property of kernel $\\mathcal{K}_{\\mathrm{status}} \\circ \\mathcal{K}_{\\mathrm{pert}}$",
+        "mechanism": "Smooth boundary ensures death probability is continuous function of walker position"
+      },
+      {
+        "property": "Wasserstein continuity of Swarm Update Operator $\\Psi_{\\mathcal{F}}$",
+        "mechanism": "Component operator continuity composes to global continuity"
+      },
+      {
+        "property": "QSD existence and uniqueness",
+        "mechanism": "Feller property prerequisite for Keystone Principle and convergence analysis"
+      },
+      {
+        "property": "Well-defined boundary integrals",
+        "mechanism": "$C^1$ structure provides $(d-1)$-dimensional surface measure for integration"
+      }
+    ],
+    "related_axioms": [
+      "axiom-boundary-regularity",
+      "def-axiom-bounded-second-moment-perturbation",
+      "def-valid-state-space"
+    ],
+    "related_definitions": [
+      "def-swarm-and-state-space",
+      "def-walker",
+      "def-alive-dead-sets",
+      "def-ambient-euclidean"
+    ]
+  },
+  "validation_strategy": {
+    "theoretical_verification": {
+      "approach": "For given $\\mathcal{X}_{\\mathrm{valid}}$, verify boundary $\\partial \\mathcal{X}_{\\mathrm{valid}}$ admits local $C^1$ coordinate charts or can be expressed as level set of smooth function with non-vanishing gradient",
+      "level_set_method": "If $\\partial \\mathcal{X}_{\\mathrm{valid}} = \\{x : F(x) = 0\\}$ for $F \\in C^1$, verify $\\nabla F(x) \\neq 0$ for all $x \\in \\partial \\mathcal{X}_{\\mathrm{valid}}$ (implicit function theorem ensures manifold structure)",
+      "parameterization_method": "Construct explicit $C^1$ parameterizations $\\phi_i : U_i \\subset \\mathbb{R}^{d-1} \\to \\partial \\mathcal{X}_{\\mathrm{valid}}$ covering boundary, verify transition maps $\\phi_j^{-1} \\circ \\phi_i$ are $C^1$"
+    },
+    "computational_verification": {
+      "simple_geometries": "For standard domains (balls, boxes with smoothed corners, smooth convex sets), $C^1$ regularity is obvious by construction or well-known results",
+      "complex_domains": "For complex implicit surfaces or meshes:\n  1. Check for singular points: compute $\\nabla F$ and verify it never vanishes on boundary\n  2. Visual inspection: look for corners, cusps, self-intersections\n  3. Mesh quality: if boundary represented as mesh, check all faces have consistent normal vectors (no sharp edges)",
+      "measure_estimation": "Estimate $\\mu_{\\mathcal{X}}(\\partial \\mathcal{X}_{\\mathrm{valid}})$ via fine-scale sampling: should be zero (or below numerical precision)"
+    },
+    "canonical_example": {
+      "domain": "For Canonical Fragile Swarm (Euclidean space), typical choice: $\\mathcal{X}_{\\mathrm{valid}} = B_d(0, R)$ (ball of radius $R$ centered at origin)",
+      "boundary": "$\\partial \\mathcal{X}_{\\mathrm{valid}} = S^{d-1} = \\{x \\in \\mathbb{R}^d : \\|x\\|_2 = R\\}$ (unit $(d-1)$-sphere scaled by $R$)",
+      "regularity": "Sphere is smooth manifold with $C^\\infty$ regularity (hence trivially $C^1$)",
+      "level_set": "Level set of $F(x) = \\|x\\|_2^2 - R^2$ with $\\nabla F(x) = 2x \\neq 0$ for $x \\in S^{d-1}$",
+      "measure": "$\\lambda_d(S^{d-1}) = 0$ (standard result; $(d-1)$-dimensional object has zero $d$-dimensional measure)"
+    }
+  },
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.1.3",
+    "directive_label": "def-axiom-boundary-smoothness",
+    "equation": null,
+    "line_range": [704, 715],
+    "url_fragment": "#axiom-of-boundary-smoothness"
+  },
+  "tags": [
+    "axiom",
+    "viability",
+    "geometric",
+    "boundary",
+    "measure-theory",
+    "regularity",
+    "foundational",
+    "topology",
+    "differential-geometry"
+  ],
+  "cross_references": {
+    "depends_on": [
+      "def-valid-state-space",
+      "def-ambient-euclidean"
+    ],
+    "prerequisite_for": [
+      "def-axiom-boundary-regularity"
+    ],
+    "related_definitions": [
+      "def-swarm-and-state-space",
+      "def-walker",
+      "def-alive-dead-sets"
+    ],
+    "related_theorems": [],
+    "related_lemmas": [
+      "lem-boundary-uniform-ball",
+      "lem-boundary-heat-kernel"
+    ]
+  },
+  "pedagogical_notes": {
+    "intuition": "Imagine the valid region is like a country, and the boundary is like its border. A 'smooth' border (like a gentle curve) has zero area—it's just a line in 2D or a surface in 3D. But a 'fractal' border (like a coastline with infinite detail at all scales) could have positive area, meaning walkers might get 'stuck' exactly on the boundary with non-zero probability. Mathematically, we need the boundary to be a nice, smooth curve/surface so that the probability of landing exactly on it is zero under continuous noise. This keeps our death probability calculations clean and continuous—small changes in walker positions lead to small changes in death probability, not sudden jumps.",
+    "why_c1_suffices": "The $C^1$ (continuously differentiable) condition is precisely calibrated: it's strong enough to guarantee Lebesgue measure zero via the implicit function theorem and Sard's theorem (regularity theory), but weak enough to allow many practical geometries without requiring $C^2$ smoothness (curvature regularity) or $C^\\infty$ (infinite differentiability). This makes it a practical standard.",
+    "measure_theory_connection": "A $(d-1)$-dimensional smooth submanifold of $\\mathbb{R}^d$ has Hausdorff dimension exactly $d-1$. By standard results in geometric measure theory, this implies it has $d$-dimensional Lebesgue measure zero: $\\lambda_d(\\partial \\mathcal{X}_{\\mathrm{valid}}) = 0$. This is the key property that makes integration against absolutely continuous kernels (like Gaussian noise) well-behaved—the boundary contributes nothing to the integral.",
+    "physical_analogy": "Think of walkers as particles undergoing diffusion (random walks). If the boundary is smooth, particles approaching it from nearby positions have similar probabilities of crossing it (continuity). If the boundary has corners or fractal structure, nearby particles can have wildly different crossing probabilities (discontinuity), making the system unpredictable.",
+    "historical_context": "The requirement for $C^1$ boundary regularity is standard in PDE theory (especially for elliptic and parabolic equations with boundary conditions) and in geometric measure theory. It appears in classical results like the Gauss-Green theorem, divergence theorem with boundary integrals, and regularity theory for weak solutions."
+  },
+  "metadata": {
+    "enrichment_date": "2025-10-28",
+    "enrichment_version": "2.0",
+    "framework_version": "1.0",
+    "axiom_class": "geometric_regularity",
+    "axiom_category": "viability",
+    "criticality": "FOUNDATIONAL",
+    "structural_role": "Geometric prerequisite for measure-theoretic continuity analysis",
+    "mathematical_depth": "Differential geometry, measure theory, topology",
+    "implementation_impact": "High - domain geometry design is critical for practical deployments"
+  }
+}

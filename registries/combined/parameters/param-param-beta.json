@@ -1,0 +1,10 @@
+{
+  "label": "param-param-beta",
+  "name": "param-beta",
+  "symbol": "param-beta",
+  "parameter_type": "real",
+  "constraints": null,
+  "default_value": null,
+  "chapter": null,
+  "document": null
+}

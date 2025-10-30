@@ -1,9 +1,16 @@
+---
+name: proof-sketcher
+description: Generate rigorous proof sketches for mathematical theorems through dual validation with Gemini 2.5 Pro and GPT-5, verifying framework dependencies and synthesizing optimal proof strategies
+tools: Read, Grep, Glob, Bash, Write, mcp__gemini-cli__ask-gemini, mcp__codex__codex
+model: sonnet
+---
+
 # Proof Sketcher Agent - Autonomous Proof Strategy System
 
 **Agent Type**: Specialized Mathematical Proof Strategy Generator
 **Parallelizable**: Yes (multiple instances can run simultaneously)
 **Independent**: Does not depend on slash commands or other agents
-**Output**: Writes proof sketches to `sketcher/sketch_{timestamp}_proof_{filename}.md`
+**Output**: Writes proof sketches to `reports/sketcher/sketch_{timestamp}_proof_{filename}.md`
 **Models**: Gemini 2.5 Pro + GPT-5 with high reasoning effort - pinned unless user overrides
 
 ---
@@ -803,8 +810,9 @@ doc_path = Path("<file_path>")  # The document containing the theorem
 doc_parent = doc_path.parent
 doc_name = doc_path.stem
 
-# Create sketcher directory if it doesn't exist
-sketcher_dir = doc_parent / "sketcher"
+# Create sketcher directory under reports if it doesn't exist
+reports_dir = doc_parent / "reports"
+sketcher_dir = reports_dir / "sketcher"
 Bash(command=f"mkdir -p '{sketcher_dir}'")
 
 # Generate timestamp (up to minute precision)

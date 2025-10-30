@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 import torch
 from torch import Tensor
 
+
 if TYPE_CHECKING:
     from fragile.bounds import TorchBounds
     from fragile.core.euclidean_gas import SwarmState
@@ -32,18 +33,35 @@ class VectorizedHistoryRecorder:
 
     Example:
         >>> recorder = VectorizedHistoryRecorder(
-        ...     N=50, d=2, n_recorded=11,
-        ...     device="cpu", dtype=torch.float64,
-        ...     record_gradients=False, record_hessians_diag=False
+        ...     N=50,
+        ...     d=2,
+        ...     n_recorded=11,
+        ...     device="cpu",
+        ...     dtype=torch.float64,
+        ...     record_gradients=False,
+        ...     record_hessians_diag=False,
         ... )
         >>> recorder.record_initial_state(state, n_alive=50)
-        >>> for t in range(1, n_steps+1):
+        >>> for t in range(1, n_steps + 1):
         ...     # ... execute step ...
-        ...     recorder.record_step(state_before, state_cloned, state_final,
-        ...                         info, step_time, grad_fitness, hess_fitness)
-        >>> history = recorder.build(n_steps=100, record_every=10,
-        ...                          terminated_early=False, final_step=100,
-        ...                          total_time=1.5, init_time=0.1, bounds=None)
+        ...     recorder.record_step(
+        ...         state_before,
+        ...         state_cloned,
+        ...         state_final,
+        ...         info,
+        ...         step_time,
+        ...         grad_fitness,
+        ...         hess_fitness,
+        ...     )
+        >>> history = recorder.build(
+        ...     n_steps=100,
+        ...     record_every=10,
+        ...     terminated_early=False,
+        ...     final_step=100,
+        ...     total_time=1.5,
+        ...     init_time=0.1,
+        ...     bounds=None,
+        ... )
 
     Reference: Replaces inline recording logic in euclidean_gas.py:472-778
     """

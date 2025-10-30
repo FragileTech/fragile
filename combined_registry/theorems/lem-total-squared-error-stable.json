@@ -2,9 +2,17 @@
   "label": "lem-total-squared-error-stable",
   "name": "Bound on the Total Squared Error for Stable Walkers",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "lem-total-squared-error-stable",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-total-squared-error-stable"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -21,29 +29,25 @@
     "axiom-def-axiom-margin-stability"
   ],
   "input_parameters": [],
-  "properties_required": {
+  "attributes_required": {
     "obj-swarm-and-state-space": [
-      "prop-has-at-least-two-walkers"
+      "attr-has-at-least-two-walkers"
     ],
     "obj-walker": [
-      "prop-is-stable"
+      "attr-is-stable"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [
-    {
-      "label": "prop-total-squared-error-bound-for-stable-walkers",
-      "expression": "E_{d \\sim D_{raw}}[d^2] \\le C_{pos} \\cdot \\Delta_{pos}^2 + C_{struct} \\cdot \\Delta_{struct}^2",
-      "object_label": "obj-components-mean-square-standardization-error",
-      "established_by": "lem-total-squared-error-stable",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

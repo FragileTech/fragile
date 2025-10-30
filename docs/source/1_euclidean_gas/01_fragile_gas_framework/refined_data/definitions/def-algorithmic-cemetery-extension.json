@@ -1,0 +1,31 @@
+{
+  "label": "def-algorithmic-cemetery-extension",
+  "name": "Algorithmic Cemetery Extension",
+  "entity_type": "definition",
+  "statement_type": "DefinitionBox",
+  "natural_language_statement": "The algorithmic space is extended to include a 'cemetery' point, denoted by a dagger, which represents the state of a dead walker. The distance from any valid point in the original space to this cemetery point is defined as a constant.",
+  "description": "This definition formalizes the concept of a 'dead' walker by extending the metric space of walker states. By adding a unique cemetery point, we can canonically define the distance to a swarm of dead walkers (the cemetery law), which simplifies the analysis of swarm death and stability. The Wasserstein distance between any living swarm and the cemetery law becomes a fixed constant.",
+  "formal_statement": "Define the extended space $\\mathcal{Y}^{\\dagger} := \\mathcal{Y} \\cup \\{\\dagger\\}$ with a metric $d_\\dagger$ such that for $y_1, y_2 \\in \\mathcal{Y}$, $d_\\dagger(y_1, y_2) = d_{\\mathcal{Y}}(y_1, y_2)$, and for any $y \\in \\mathcal{Y}$, $d_\\dagger(y, \\dagger) = D_{\\mathrm{valid}}$.",
+  "input_objects": [
+    "obj-algorithmic-space-generic"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "D_valid"
+  ],
+  "relations": [
+    {
+      "formula": "W_p(\\nu, \\delta_{\\dagger}) = D_{\\mathrm{valid}}",
+      "description": "The p-Wasserstein distance between the law of any living swarm, ν, and the cemetery law (a Dirac measure at the cemetery point), is equal to the constant $D_{\\mathrm{valid}}$."
+    }
+  ],
+  "proof_status": "n/a",
+  "raw_fallback": {},
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "7. The Cemetery of Dead Walkers",
+    "subsection": null,
+    "directive_label": "def-algorithmic-cemetery-extension"
+  }
+}

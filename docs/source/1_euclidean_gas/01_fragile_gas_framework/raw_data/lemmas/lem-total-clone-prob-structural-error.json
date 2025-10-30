@@ -1,0 +1,44 @@
+{
+  "label": "lem-total-clone-prob-structural-error",
+  "name": "Bounding the Structural Component of Cloning Probability Error",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.5",
+    "section_name": null,
+    "directive_label": "lem-total-clone-prob-structural-error",
+    "equation": null,
+    "line_range": [
+      4404,
+      4416
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-companion-selection-measure",
+    "obj-cloning-probability-lipschitz-constants"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Bounds structural component of cloning probability error by number of status changes"
+  ],
+  "natural_language_statement": "Let $E_{\\text{struct}}^{(\\overline{P})}$ be the structural error component from **thm-total-expected-cloning-action-continuity**. It is deterministically bounded by the number of status changes between the swarms:\n\n$$\nE_{\\text{struct}}^{(\\overline{P})}(\\mathcal{S}_1, \\mathcal{S}_2) \\le C_{\\text{struct}}^{(\\pi)}(k_1) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)\n$$",
+  "assumptions": [],
+  "conclusion": "Structural error bounded by status changes",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

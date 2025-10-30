@@ -1,0 +1,29 @@
+{
+  "label": "def-smoothed-gaussian-measure",
+  "name": "Def Smoothed Gaussian Measure",
+  "entity_type": "definition",
+  "statement_type": "DefinitionBox",
+  "natural_language_statement": "The creation of a smoothed measure requires a key analytical parameter:\n*   **Smoothed Measure Kernel Scale ($\\ell$):** The length scale (standard deviation), $\\ell > 0$, of the Gaussian kernel used for smoothing. A larger $\\ell$ results in a smoother, less detailed density estimate.\nLet $K_\\ell(y, y')$ be a Gaussian kernel with length scale $\\ell$. The **smoothed Gaussian measure**, denoted $\\tilde{\\nu}_{\\mathcal{S}, \\ell}$, is the probability measure whose density is given by:\n$$\n\n\\tilde{\\rho}_{\\mathcal{S}, \\ell}(y) := \\frac{1}{|\\mathcal{A}(\\mathcal{S})|} \\sum_{i \\in \\mathcal{A}(\\mathcal{S})} K_\\ell(y, \\varphi(x_i))\n\n$$\nThis representation provides a smooth, differentiable approximation of the swarm's distribution in the algorithmic space and is the foundation for the $d_{\\Sigma_N, L_2}$ distance.",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "lemma_dag_edges": [],
+  "internal_lemmas": [],
+  "relations": [],
+  "proof_status": "n/a",
+  "raw_fallback": {
+    "label": "def-smoothed-gaussian-measure",
+    "type": "definition",
+    "content": "The creation of a smoothed measure requires a key analytical parameter:\n*   **Smoothed Measure Kernel Scale ($\\ell$):** The length scale (standard deviation), $\\ell > 0$, of the Gaussian kernel used for smoothing. A larger $\\ell$ results in a smoother, less detailed density estimate.\nLet $K_\\ell(y, y')$ be a Gaussian kernel with length scale $\\ell$. The **smoothed Gaussian measure**, denoted $\\tilde{\\nu}_{\\mathcal{S}, \\ell}$, is the probability measure whose density is given by:\n$$\n\n\\tilde{\\rho}_{\\mathcal{S}, \\ell}(y) := \\frac{1}{|\\mathcal{A}(\\mathcal{S})|} \\sum_{i \\in \\mathcal{A}(\\mathcal{S})} K_\\ell(y, \\varphi(x_i))\n\n$$\nThis representation provides a smooth, differentiable approximation of the swarm's distribution in the algorithmic space and is the foundation for the $d_{\\Sigma_N, L_2}$ distance.",
+    "start_line": 1428,
+    "end_line": 1439,
+    "section": "§7"
+  },
+  "source": {
+    "document_id": null,
+    "file_path": null,
+    "section": "§7",
+    "subsection": null,
+    "directive_label": "def-smoothed-gaussian-measure"
+  }
+}

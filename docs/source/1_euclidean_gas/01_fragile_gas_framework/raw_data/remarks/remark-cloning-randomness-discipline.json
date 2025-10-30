@@ -1,0 +1,19 @@
+{
+  "temp_id": "raw-remark-007",
+  "remark_type": "note",
+  "full_text": "For each walker $i$, independently sample the cloning companion index $c_{\\text{clone}}(i)\\sim \\mathbb C_i(\\mathcal S)$ (with replacement) using an independent uniform $U_i^{\\mathrm{comp}}$.\n\nIndependently for each walker, draw the threshold $T_{\\text{clone},i}\\sim \\mathrm{Unif}(0,p_{\\max})$ using an independent uniform $U_i^{\\mathrm{clone}}$.\n\nThese choices ensure per‑walker independence in the cloning stage, consistent with Assumption A and the sampling policy in §7.1.1. Systematic resampling schemes that reuse a shared uniform are excluded from McDiarmid‑based analysis.",
+  "source_section": "§16 The Cloning Transition Measure",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "16",
+    "section_name": null,
+    "directive_label": null,
+    "equation": null,
+    "line_range": [
+      4281,
+      4283
+    ],
+    "url_fragment": null
+  }
+}

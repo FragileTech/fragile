@@ -1,0 +1,25 @@
+{
+  "label": "def-w2-output-metric",
+  "name": "Wasserstein-2 on the output space (quotient)",
+  "statement_type": "definition",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "source": {
+    "source_file": "01_fragile_gas_framework.md",
+    "source_lines": "4627-5086",
+    "section": "18",
+    "subsection": "17.2.4.4"
+  },
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "natural_language_statement": "Defines the Wasserstein-2 metric on the quotient space of outputs.",
+  "assumptions": [],
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null,
+  "extraction_date": "2025-10-27",
+  "status": "extracted"
+}

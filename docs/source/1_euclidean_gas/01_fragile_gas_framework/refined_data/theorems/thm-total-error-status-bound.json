@@ -1,0 +1,75 @@
+{
+  "label": "thm-total-error-status-bound",
+  "name": "Total Error Bound in Terms of Status Changes",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-companion-selection-measure",
+    "obj-distance-measurement-ms-constants"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, and for a given walker $i$, let $S_1$ and $S_2$ be its companion support sets, with $|S_1| > 0$. Let the status of each potential companion $j$ be given by $s_{1,j}$ and $s_{2,j}$ in the respective swarms. Let $f_j = f(x_{2,j})$ be a function bounded by $M_f$. Let $n_c$ be the total number of status changes in the swarm.\nThe total error $E = |\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_1)}[f_j] - \\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_2)}[f_j]|$ is bounded by:",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": {
+    "label": "thm-total-error-status-bound",
+    "name": "Total Error Bound in Terms of Status Changes",
+    "statement_type": "theorem",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "unproven",
+    "input_objects": [
+      "obj-companion-selection-measure",
+      "obj-distance-measurement-ms-constants"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [
+      "lem-set-difference-bound",
+      "lem-normalization-difference-bound"
+    ],
+    "internal_propositions": [],
+    "lemma_dag_edges": [
+      [
+        "lem-set-difference-bound",
+        "thm-total-error-status-bound"
+      ],
+      [
+        "lem-normalization-difference-bound",
+        "thm-total-error-status-bound"
+      ]
+    ],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Total error from status changes is bounded"
+    ],
+    "natural_language_statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, and for a given walker $i$, let $S_1$ and $S_2$ be its companion support sets, with $|S_1| > 0$. Let the status of each potential companion $j$ be given by $s_{1,j}$ and $s_{2,j}$ in the respective swarms. Let $f_j = f(x_{2,j})$ be a function bounded by $M_f$. Let $n_c$ be the total number of status changes in the swarm.\nThe total error $E = |\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_1)}[f_j] - \\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_2)}[f_j]|$ is bounded by:",
+    "assumptions": [],
+    "conclusion": null,
+    "equation_label": null,
+    "uses_definitions": [
+      "def-companion-selection-measure"
+    ],
+    "validation_errors": [],
+    "raw_fallback": null
+  }
+}

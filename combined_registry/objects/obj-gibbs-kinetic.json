@@ -3,10 +3,19 @@
   "name": "Target Gibbs Measure for Kinetic Dynamics",
   "mathematical_expression": "d\\pi_{\\text{kin}}(x, v) = Z^{-1} \\exp\\left(-\\frac{U(x) + \\frac{1}{2}|v|^2}{\\theta}\\right) dx \\, dv",
   "object_type": "measure",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence"
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "obj-gibbs-kinetic",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-gibbs-kinetic"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

@@ -1,0 +1,9 @@
+{
+  "01_fragile_gas_framework": {
+    "total": 220,
+    "fixed": 220,
+    "already_valid": 0,
+    "failed": 0,
+    "total_fixes": 558
+  }
+}

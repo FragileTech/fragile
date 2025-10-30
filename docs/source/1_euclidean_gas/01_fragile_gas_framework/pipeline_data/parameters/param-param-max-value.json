@@ -1,0 +1,8 @@
+{
+  "label": "param-param-max-value",
+  "name": "param-max-value",
+  "symbol": "param-max-value",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

@@ -3,10 +3,19 @@
   "name": "Metric quotient of $(\\Sigma_N, d_{\\text{Disp},\\mathcal{Y}})$",
   "mathematical_expression": "\\overline d_{\\text{Disp},\\mathcal{Y}}\\big([\\mathcal{S}_1],[\\mathcal{S}_2]\\big):= d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),",
   "object_type": "set",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "obj-metric-quotient",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-metric-quotient"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

@@ -9,21 +9,21 @@ Demonstrates:
 5. ID naming system validation
 """
 
-import sys
 from pathlib import Path
+import sys
+
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from fragile.proofs import (
-    MathematicalObject,
+    create_simple_object,
     ObjectType,
     Relationship,
     RelationshipProperty,
     RelationType,
     TheoremBox,
     TheoremOutputType,
-    create_simple_object,
 )
 
 
@@ -81,13 +81,13 @@ def main() -> None:
             RelationshipProperty(
                 label="approx-error-N",
                 expression="O(N^{-1/d})",
-                description="Approximation error depends on number of particles"
+                description="Approximation error depends on number of particles",
             ),
             RelationshipProperty(
                 label="convergence-rate-exponential",
                 expression="‖μ_N(t) - μ_∞(t)‖ ≤ C·e^(-λt)",
-                description="Exponential convergence to continuous limit"
-            )
+                description="Exponential convergence to continuous limit",
+            ),
         ],
         tags=["mean-field", "discrete-continuous", "convergence"],
     )
@@ -98,7 +98,7 @@ def main() -> None:
     print(f"  Source: {rel_equivalence.source_object}")
     print(f"  Target: {rel_equivalence.target_object}")
     print(f"  Expression: {rel_equivalence.expression}")
-    print(f"  Properties:")
+    print("  Properties:")
     for prop in rel_equivalence.properties:
         print(f"    - {prop.label}: {prop.expression}")
     print()
@@ -109,7 +109,7 @@ def main() -> None:
     print("STEP 3: Create Directed Relationship (Embedding)")
     print("-" * 70)
 
-    obj_particles = create_simple_object(
+    create_simple_object(
         label="obj-particle-configuration",
         name="Particle Configuration Space",
         expr="X_N = (ℝ^d)^N",
@@ -117,7 +117,7 @@ def main() -> None:
         tags=["discrete", "configuration-space", "particle"],
     )
 
-    obj_fluid = create_simple_object(
+    create_simple_object(
         label="obj-velocity-field",
         name="Velocity Field Space",
         expr="V = {v: ℝ^d → ℝ^d | v smooth}",
@@ -137,7 +137,7 @@ def main() -> None:
             RelationshipProperty(
                 label="kernel-type",
                 expression="K(x) = (2πh)^{-d/2} exp(-|x|^2/(2h))",
-                description="Gaussian kernel for embedding"
+                description="Gaussian kernel for embedding",
             )
         ],
         tags=["embedding", "particle-continuum", "kernel-method"],
@@ -170,7 +170,9 @@ def main() -> None:
     print(f"  Relations Established: {len(thm_equivalence.relations_established)}")
     for rel in thm_equivalence.relations_established:
         print(f"    - {rel.label}")
-        print(f"      {rel.source_object} {('↔' if rel.is_symmetric() else '→')} {rel.target_object}")
+        print(
+            f"      {rel.source_object} {('↔' if rel.is_symmetric() else '→')} {rel.target_object}"
+        )
     print()
 
     # ==========================================================================
@@ -206,7 +208,7 @@ def main() -> None:
                 target_object="obj-test2",
                 bidirectional=True,
                 established_by="thm-test",
-                expression="test"
+                expression="test",
             )
             print("    ERROR: Should have raised ValueError!")
         except ValueError as e:

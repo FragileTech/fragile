@@ -7,4 +7,5 @@ dependency graph.
 
 from analysis.theorem_graph_dashboard import TheoremGraphDashboard
 
+
 __all__ = ["TheoremGraphDashboard"]

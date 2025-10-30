@@ -1,0 +1,34 @@
+{
+  "label": "lem-bounded-differences-favg",
+  "name": "Bounded differences for $f_{\\text{avg}}$",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-algorithmic-space-generic",
+    "obj-perturbation-measure",
+    "obj-alg-distance"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Applies to normalized functional f_avg = (1/N)Delta_pert^2(S_in)",
+    "Establishes McDiarmid bounded-difference constants c_i = D_Y^2/N"
+  ],
+  "natural_language_statement": "Under the Axiom of Bounded Algorithmic Diameter, for the normalized functional $f_{\\text{avg}} := \\frac{1}{N}\\,\\Delta_{\\text{pert}}^2(\\mathcal{S}_{\\text{in}}) = \\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal{Y}}\\!\\big(\\varphi(x'_{\\text{out},i}),\\varphi(x_{\\text{in},i})\\big)^2$, the McDiarmid bounded‑difference constants may be taken as $c_i=D_{\\mathcal{Y}}^2/N$ for all $i$.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

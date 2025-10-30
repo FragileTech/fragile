@@ -2,9 +2,17 @@
   "label": "thm-inter-swarm-contraction-kinetic",
   "name": "Inter-Swarm Error Contraction Under Kinetic Operator",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "05_kinetic_contraction",
+  "source": {
+    "document_id": "05_kinetic_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+    "section": null,
+    "directive_label": "thm-inter-swarm-contraction-kinetic",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-inter-swarm-contraction-kinetic"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -30,7 +38,7 @@
     "lambda_v",
     "b"
   ],
-  "properties_required": {
+  "attributes_required": {
     "potential": [
       "coercivity"
     ],
@@ -60,7 +68,7 @@
     ]
   ],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-inter-swarm-contraction-kinetic-0-other",
@@ -70,14 +78,22 @@
       "target_object": "obj-hypocoercive-norm",
       "established_by": "thm-inter-swarm-contraction-kinetic",
       "expression": "kinetic-operator-contracts-inter-swarm-error",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "05_kinetic_contraction"
+      "source": {
+        "document_id": "05_kinetic_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+        "section": null,
+        "directive_label": "thm-inter-swarm-contraction-kinetic",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-inter-swarm-contraction-kinetic"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-inter-swarm-contraction-kinetic-1-other",
@@ -87,14 +103,29 @@
       "target_object": "obj-hypocoercive-norm",
       "established_by": "thm-inter-swarm-contraction-kinetic",
       "expression": "complements-cloning-expansion",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "05_kinetic_contraction"
+      "source": {
+        "document_id": "05_kinetic_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+        "section": null,
+        "directive_label": "thm-inter-swarm-contraction-kinetic",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-inter-swarm-contraction-kinetic"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

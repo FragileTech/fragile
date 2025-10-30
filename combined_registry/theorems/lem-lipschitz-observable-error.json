@@ -2,9 +2,17 @@
   "label": "lem-lipschitz-observable-error",
   "name": "Lipschitz Observable Error via Kantorovich-Rubinstein",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "12_quantitative_error_bounds",
+  "source": {
+    "document_id": "12_quantitative_error_bounds",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+    "section": null,
+    "directive_label": "lem-lipschitz-observable-error",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-lipschitz-observable-error"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -18,22 +26,22 @@
     "C_W",
     "N"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-nu-n-qsd": [
-      "prop-exchangeable"
+      "attr-exchangeable"
     ],
     "obj-rho-0": [
-      "prop-finite-second-moment"
+      "attr-finite-second-moment"
     ]
   },
   "internal_lemmas": [
-    "prop-empirical-wasserstein-concentration",
-    "prop-finite-second-moment-meanfield"
+    "attr-empirical-wasserstein-concentration",
+    "attr-finite-second-moment-meanfield"
   ],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-lem-lipschitz-observable-error-0-other",
@@ -43,14 +51,22 @@
       "target_object": "obj-nu-n-qsd",
       "established_by": "lem-lipschitz-observable-error",
       "expression": "kantorovich-rubinstein-duality",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "12_quantitative_error_bounds"
+      "source": {
+        "document_id": "12_quantitative_error_bounds",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+        "section": null,
+        "directive_label": "lem-lipschitz-observable-error",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-lipschitz-observable-error"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-lem-lipschitz-observable-error-1-other",
@@ -60,14 +76,29 @@
       "target_object": "obj-nu-n-qsd",
       "established_by": "lem-lipschitz-observable-error",
       "expression": "observable-error-via-w1-distance",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "12_quantitative_error_bounds"
+      "source": {
+        "document_id": "12_quantitative_error_bounds",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+        "section": null,
+        "directive_label": "lem-lipschitz-observable-error",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-lipschitz-observable-error"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

@@ -2,9 +2,17 @@
   "label": "lem-log-concave-yang-mills",
   "name": "Log-Concavity for Pure Yang-Mills Vacuum",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence",
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "lem-log-concave-yang-mills",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-log-concave-yang-mills"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -14,7 +22,7 @@
     "ax-qsd-log-concave"
   ],
   "input_parameters": [],
-  "properties_required": {
+  "attributes_required": {
     "log-concave": [
       "π_QSD is log-concave"
     ]
@@ -23,7 +31,7 @@
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-lem-log-concave-yang-mills-0-other",
@@ -33,14 +41,29 @@
       "target_object": "obj-qsd",
       "established_by": "lem-log-concave-yang-mills",
       "expression": "Gradient estimates under log-concavity",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "lem-log-concave-yang-mills",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-log-concave-yang-mills"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

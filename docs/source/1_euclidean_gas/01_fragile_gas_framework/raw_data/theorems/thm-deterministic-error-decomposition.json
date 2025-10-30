@@ -1,0 +1,39 @@
+{
+  "label": "thm-deterministic-error-decomposition",
+  "name": "Decomposition of the Total Standardization Error",
+  "statement": "Let $z(\\mathcal{S}, \\mathbf{v}, M)$ be the N-Dimensional Standardization Operator. Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, and let $\\mathbf{v}_1$ and $\\mathbf{v}_2$ be two corresponding N-dimensional raw value vectors. Let the output standardized vectors be $\\mathbf{z}_1 = z(\\mathcal{S}_1, \\mathbf{v}_1, M)$ and $\\mathbf{z}_2 = z(\\mathcal{S}_2, \\mathbf{v}_2, M)$.\n\nThe total squared Euclidean error between the output vectors is bounded by the sum of two fundamental error components:\n\n$$\n\\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2 \\le 2 \\cdot E_{V}^2(\\mathcal{S}_1; \\mathbf{v}_1, \\mathbf{v}_2) + 2 \\cdot E_{S}^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}_2)\n$$\n\nwhere the error components are defined as:\n\n1. **The Squared Value Error ($E_V^2$):** The deterministic squared error arising from the change in the raw value vector (from $\\mathbf{v}_1$ to $\\mathbf{v}_2$) while holding the swarm's structure fixed at $\\mathcal{S}_1$.\n\n$$\nE_{V}^2(\\mathcal{S}_1; \\mathbf{v}_1, \\mathbf{v}_2) := \\| \\mathbf{z}(\\mathcal{S}_1, \\mathbf{v}_1, M) - \\mathbf{z}(\\mathcal{S}_1, \\mathbf{v}_2, M) \\|_2^2\n$$\n\n2. **The Squared Structural Error ($E_S^2$):** The deterministic squared error arising from the change in the swarm's structure (from $\\mathcal{S}_1$ to $\\mathcal{S}_2$) while using the fixed raw value vector $\\mathbf{v}_2$.\n\n$$\nE_{S}^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}_2) := \\| \\mathbf{z}(\\mathcal{S}_1, \\mathbf{v}_2, M) - \\mathbf{z}(\\mathcal{S}_2, \\mathbf{v}_2, M) \\|_2^2\n$$",
+  "proof_sketch": "The proof follows from decomposing the total error using an intermediate vector $\\mathbf{z}_{\\text{inter}} := z(\\mathcal{S}_1, \\mathbf{v}_2, M)$ and applying the triangle inequality with the elementary inequality $\\|A+B\\|_2^2 \\leq 2(\\|A\\|_2^2 + \\|B\\|_2^2)$.",
+  "source_section": "12",
+  "source_document": "01_fragile_gas_framework.md",
+  "dependencies": [
+    "def-standardization-operator-n-dimensional"
+  ],
+  "tags": [
+    "error-decomposition",
+    "continuity",
+    "deterministic"
+  ],
+  "input_objects": [
+    "obj-distance-measurement-ms-constants"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "output_type": "Bound",
+  "relations_established": [
+    "Deterministic distance error decomposes into sum of single-walker errors"
+  ],
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "12",
+    "section_name": null,
+    "directive_label": "thm-deterministic-error-decomposition",
+    "equation": null,
+    "line_range": [
+      3398,
+      3420
+    ],
+    "url_fragment": "#thm-deterministic-error-decomposition"
+  }
+}

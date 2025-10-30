@@ -3,12 +3,21 @@
   "name": "The Hypocoercive Norm",
   "mathematical_expression": "\\|\\!(\\Delta x, \\Delta v)\\!\\|_h^2 := \\|\\Delta x\\|^2 + \\lambda_v \\|\\Delta v\\|^2 + b \\langle \\Delta x, \\Delta v \\rangle",
   "object_type": "measure",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "swarm"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "05_kinetic_contraction"
+  "source": {
+    "document_id": "05_kinetic_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+    "section": null,
+    "directive_label": "obj-hypocoercive-norm",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-hypocoercive-norm"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

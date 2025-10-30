@@ -2,110 +2,26 @@
   "label": "lem-euclidean-boundary-holder",
   "name": "Hölder continuity of the death probability",
   "statement_type": "lemma",
-  "source": {
-    "file": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-    "line_start": 614,
-    "line_end": 729
-  },
-  "input_objects": [
-    "obj-kinetic-flow-map",
-    "obj-valid-domain",
-    "obj-force-field",
-    "obj-anisotropy-field",
-    "obj-squashing-map"
-  ],
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
   "input_axioms": [],
-  "input_parameters": [
-    "param-dimension",
-    "param-tau",
-    "param-mass",
-    "param-gamma-fric",
-    "param-sigma-v",
-    "param-sigma-x",
-    "param-v-alg"
-  ],
-  "attributes_required": {
-    "obj-kinetic-flow-map": [
-      "attr-lipschitz"
-    ],
-    "obj-valid-domain": [
-      "attr-compact",
-      "attr-c1-boundary"
-    ],
-    "obj-force-field": [
-      "attr-lipschitz"
-    ],
-    "obj-anisotropy-field": [
-      "attr-lipschitz"
-    ],
-    "obj-squashing-map": [
-      "attr-lipschitz"
-    ]
-  },
-  "internal_lemmas": [
-    "lem-euclidean-geometric-consistency",
-    "lem-sasaki-kinetic-lipschitz"
-  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
   "internal_propositions": [],
-  "lemma_dag_edges": [
-    ["lem-sasaki-kinetic-lipschitz", "lem-euclidean-boundary-holder"],
-    ["lem-euclidean-geometric-consistency", "lem-euclidean-boundary-holder"]
-  ],
+  "lemma_dag_edges": [],
   "output_type": "Property",
-  "attributes_added": [
-    {
-      "label": "attr-holder-continuous",
-      "expression": "The death probability function $p_{\\mathrm{dead}}(x,v)$ is locally Hölder continuous with exponent $\\alpha_B^{\\mathrm{Sasaki}}=1$ and constant $L_{\\mathrm{death}}^{\\mathrm{Sasaki}}(C):=2\\big(p_{\\mathrm{aff}}+\\rho_*(C)q_{\\mathrm{dir}}(C)\\big)C_{\\partial}L_{\\mathrm{flow}}$, where:\n- $p_{\\mathrm{aff}}=\\frac{1}{(2\\pi\\tau(\\sigma_v^2\\tau^2+\\sigma_x^2))^{d/2}}$ is the supremum density for the uncapped Gaussian update\n- $\\rho_*(C)$ is the probability of velocity capping on compact set $C$ (from lem-euclidean-geometric-consistency)\n- $q_{\\mathrm{dir}}(C)=\\frac{\\exp(M_{\\mathrm{kin}}(C)^2/(2\\sigma_v^2\\tau))}{(2\\pi\\sigma_v^2\\tau)^{d/2}}(2\\sigma_v^2\\tau)^{d/2}\\Gamma\\big(\\frac{d}{2},\\frac{V_{\\mathrm{alg}}^2}{4\\sigma_v^2\\tau}\\big)$ is the directional density bound under capping\n- $C_{\\partial}=\\sup_{0<\\varepsilon\\le\\varepsilon_{\\mathrm{tube}}}\\frac{\\operatorname{Vol}(N_\\varepsilon(\\partial\\mathcal X_{\\mathrm{valid}}))}{\\varepsilon}$ is the tubular neighborhood volume constant\n- $L_{\\mathrm{flow}}=1+\\frac{\\tau^2}{m}L_F+\\gamma_{\\mathrm{fric}}\\tau^2L_u+\\frac{\\tau(1+\\gamma_{\\mathrm{fric}}\\tau)}{\\sqrt{\\lambda_v}}$ is the Lipschitz constant of the kinetic flow map\n\nThe bound states: $|p_{\\mathrm{dead}}(x,v)-p_{\\mathrm{dead}}(x',v')|\\le L_{\\mathrm{death}}^{\\mathrm{Sasaki}}(C)\\,d_{\\mathcal Y}^{\\mathrm{Sasaki}}((x,v),(x',v'))$ for all $(x,v),(x',v')\\in C\\times\\mathcal V_{\\mathrm{alg}}$.",
-      "object_label": "obj-death-probability-function",
-      "established_by": "lem-euclidean-boundary-holder",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": {
-        "file": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "line_start": 714,
-        "line_end": 726
-      }
-    }
-  ],
+  "attributes_added": [],
   "relations_established": [],
-  "proof_strategy": {
-    "main_approach": "Tubular neighborhood volume bound combined with Gaussian tail estimates",
-    "key_steps": [
-      "Use Lipschitz property of kinetic flow map (lem-sasaki-kinetic-lipschitz) to bound position differences",
-      "Apply tubular neighborhood theorem (Federer 69, §4.18) to bound volume of $\\varepsilon$-neighborhood of boundary",
-      "Split analysis into uncapped ($\\|\\tilde v\\|\\le V_{\\mathrm{alg}}$) and capped ($\\|\\tilde v\\|>V_{\\mathrm{alg}}$) regimes",
-      "Bound uncapped regime using Gaussian density supremum $p_{\\mathrm{aff}}$",
-      "Bound capped regime using directional density $q_{\\mathrm{dir}}(C)$ and capping probability $\\rho_*(C)$ from lem-euclidean-geometric-consistency",
-      "Combine bounds to obtain Hölder constant $L_{\\mathrm{death}}^{\\mathrm{Sasaki}}(C)$"
-    ],
-    "techniques": [
-      "Tubular neighborhood volume estimates",
-      "Gaussian tail bounds",
-      "Velocity capping analysis",
-      "Lipschitz flow map composition"
-    ]
-  },
-  "dependencies": {
-    "theorems": [
-      "lem-sasaki-kinetic-lipschitz",
-      "lem-euclidean-geometric-consistency"
-    ],
-    "external_references": [
-      "Federer 69, §4.18 (tubular neighborhood theorem)"
-    ]
-  },
-  "validation_notes": {
-    "axiom_verified": [
-      "def-axiom-boundary-regularity",
-      "def-axiom-boundary-smoothness"
-    ],
-    "constants_defined": [
-      "L_death^Sasaki(C)",
-      "alpha_B^Sasaki = 1",
-      "p_aff",
-      "q_dir(C)",
-      "C_partial"
-    ]
-  }
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

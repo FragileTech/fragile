@@ -1,0 +1,330 @@
+{
+  "raw_data/lemmas/lem-stats-structural-continuity.json": {
+    "label": "lem-stats-structural-continuity",
+    "name": "Structural Continuity of Statistical Properties",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-standardization-lower-bound",
+      "obj-aggregator-lipschitz-constants",
+      "obj-potential-bounds",
+      "obj-swarm-aggregation-operator-axiomatic",
+      "obj-rescale-lipschitz-constants"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Lipschitz Continuity",
+    "attributes_added": [],
+    "relations_established": [
+      "Mean and regularized standard deviation are continuous with respect to swarm structure changes"
+    ],
+    "natural_language_statement": "Let $\\mathbf{v}$ be a fixed raw value vector. Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. The mean $\\mu(\\mathcal{S}, \\mathbf{v})$ and regularized standard deviation $\\sigma'(\\mathcal{S}, \\mathbf{v})$ are continuous with respect to changes in the swarm structure.\n\n$$\n|\\mu(\\mathcal{S}_1, \\mathbf{v}) - \\mu(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2\n$$\n\n$$\n|\\sigma'(\\mathcal{S}_1, \\mathbf{v}) - \\sigma'(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\sigma',S}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2\n$$\n\nwhere $L_{\\mu,S}$ is the axiomatic structural continuity function for the mean from def-swarm-aggregation-operator-axiomatic, and $L_{\\sigma',S}$ is the derived structural continuity function for the regularized standard deviation, given by:\n\n$$\n\\boxed{\nL_{\\sigma',S}(\\mathcal{S}_1, \\mathcal{S}_2) := L_{\\sigma'_{\\text{reg}}} \\cdot \\left( L_{m_2,S}(\\mathcal{S}_1, \\mathcal{S}_2) + 2V_{\\max}L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2) \\right)\n}\n$$",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-stats-value-continuity.json": {
+    "label": "lem-stats-value-continuity",
+    "name": "Value Continuity of Statistical Properties",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-standardization-lower-bound",
+      "obj-aggregator-lipschitz-constants",
+      "obj-potential-bounds",
+      "obj-swarm-aggregation-operator-axiomatic",
+      "obj-rescale-lipschitz-constants"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Lipschitz Continuity",
+    "attributes_added": [],
+    "relations_established": [
+      "Mean and regularized standard deviation are Lipschitz continuous with respect to raw value vector"
+    ],
+    "natural_language_statement": "Let $\\mathcal{S}$ be a fixed swarm state with alive set $\\mathcal{A}$ of size $k = |\\mathcal{A}| \\geq 1$. Let $\\mathbf{v}_1$ and $\\mathbf{v}_2$ be two raw value vectors, with components bounded by $V_{\\max}$. The mean $\\mu(\\mathcal{S}, \\mathbf{v})$ and regularized standard deviation $\\sigma'(\\mathcal{S}, \\mathbf{v})$ are Lipschitz continuous with respect to the raw value vector $\\mathbf{v}$.\n\n$$\n|\\mu(\\mathcal{S}, \\mathbf{v}_1) - \\mu(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\mu,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2\n$$\n\n$$\n|\\sigma'(\\mathcal{S}, \\mathbf{v}_1) - \\sigma'(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\sigma',M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2\n$$\n\nwhere $L_{\\mu,M}$ is the axiomatic value Lipschitz function for the mean from def-swarm-aggregation-operator-axiomatic, and $L_{\\sigma',M}$ is the derived Lipschitz constant for the regularized standard deviation, given by:\n\n$$\n\\boxed{\nL_{\\sigma',M}(\\mathcal{S}) := L_{\\sigma'_{\\text{reg}}} \\cdot \\left( L_{m_2,M}(\\mathcal{S}) + 2V_{\\max}L_{\\mu,M}(\\mathcal{S}) \\right)\n}\n$$\n\nand $L_{\\sigma'_{\\text{reg}}} = \\frac{1}{2\\sigma'_{\\min}}$ is the finite, global Lipschitz constant of the Regularized Standard Deviation Function from lem-sigma-reg-derivative-bounds.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-subadditivity-power.json": {
+    "label": "lem-subadditivity-power",
+    "name": "Subadditivity of Fractional Powers",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "General Result",
+    "attributes_added": [],
+    "relations_established": [
+      "Subadditivity property for fractional powers with 0 < α ≤ 1"
+    ],
+    "natural_language_statement": "For α ∈ (0, 1], the function t ↦ t^α is subadditive: (a + b)^α ≤ a^α + b^α for all a, b ≥ 0.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-total-clone-prob-structural-error.json": {
+    "label": "lem-total-clone-prob-structural-error",
+    "name": "Bounding the Structural Component of Cloning Probability Error",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-companion-selection-measure",
+      "obj-cloning-probability-lipschitz-constants"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Bounds structural component of cloning probability error by number of status changes"
+    ],
+    "natural_language_statement": "Let $E_{\\text{struct}}^{(\\overline{P})}$ be the structural error component from **thm-total-expected-cloning-action-continuity**. It is deterministically bounded by the number of status changes between the swarms:\n\n$$\nE_{\\text{struct}}^{(\\overline{P})}(\\mathcal{S}_1, \\mathcal{S}_2) \\le C_{\\text{struct}}^{(\\pi)}(k_1) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)\n$$",
+    "assumptions": [],
+    "conclusion": "Structural error bounded by status changes",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-total-clone-prob-value-error.json": {
+    "label": "lem-total-clone-prob-value-error",
+    "name": "Bounding the Value Component of Cloning Probability Error",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-distance-measurement-ms-constants",
+      "obj-cloning-probability-lipschitz-constants",
+      "obj-potential-bounds"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Bounds value component of cloning probability error"
+    ],
+    "natural_language_statement": "Let $E_{\\text{val}}^{(\\overline{P})}$ be the value error component from **thm-total-expected-cloning-action-continuity**. It is deterministically bounded as follows:\n\n$$\nE_{\\text{val}}^{(\\overline{P})}(\\mathcal{S}_1, \\mathcal{S}_2) \\le C_{\\text{val}}^{(\\pi)} \\sqrt{2N \\cdot F_{\\text{pot}}(\\mathcal{S}_1, \\mathcal{S}_2)}\n$$\n\nwhere $F_{\\text{pot}}$ is the **Expected Squared Potential Error Bound**.",
+    "assumptions": [],
+    "conclusion": "Value error bounded by expected potential error",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-total-squared-error-stable.json": {
+    "label": "lem-total-squared-error-stable",
+    "name": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with $|\\mathcal{A}(\\mathcal{S}_1)|=k_...",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "complete",
+    "input_objects": [
+      "obj-distance-measurement-ms-constants",
+      "obj-companion-selection-measure",
+      "obj-alg-distance"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Total squared error from stable walkers is bounded"
+    ],
+    "natural_language_statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with $|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2$. The total squared error in the expected raw distance from the set of stable walkers, $\\mathcal{A}_{\\text{stable}} = \\mathcal{A}(\\mathcal{S}_1) \\cap \\mathcal{A}(\\mathcal{S}_2)$, is bounded as follows:",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-total-squared-error-unstable.json": {
+    "label": "lem-total-squared-error-unstable",
+    "name": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "complete",
+    "input_objects": [
+      "obj-distance-measurement-ms-constants",
+      "obj-alg-distance",
+      "obj-distance-to-cemetery-state"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Total squared error from unstable walkers bounded by status changes"
+    ],
+    "natural_language_statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. The total squared error in the expected raw distance from the set of unstable walkers, $\\mathcal{A}_{\\text{unstable}}$, is bounded by the total number of status changes:",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-validation-heat-kernel.json": {
+    "label": "lem-validation-heat-kernel",
+    "name": "Validation of the Heat Kernel",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-perturbation-measure",
+      "obj-smoothed-gaussian-measure",
+      "obj-boundary-regularity-constants"
+    ],
+    "input_axioms": [
+      "def-axiom-bounded-second-moment-perturbation",
+      "def-axiom-boundary-regularity"
+    ],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Heat kernel satisfies boundary regularity conditions"
+    ],
+    "natural_language_statement": "If the state space $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu)$ is a Polish metric measure space with a canonical heat kernel $p_t(x, \\cdot)$ that has a uniformly bounded second moment, then defining the perturbation noise measure as $\\mathcal{P}_\\sigma(x, \\cdot) := p_{\\sigma^2}(x, \\cdot)$ satisfies the required axioms, provided the boundary of the valid set $\\mathcal{X}_{\\mathrm{valid}}$ is sufficiently regular.",
+    "assumptions": [
+      "Polish metric measure space $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu)$",
+      "Heat kernel $p_t(x, \\cdot)$ with uniformly bounded second moment",
+      "Sufficiently regular boundary of $\\mathcal{X}_{\\mathrm{valid}}$"
+    ],
+    "conclusion": "$\\mathcal{P}_\\sigma(x, \\cdot) := p_{\\sigma^2}(x, \\cdot)$ satisfies Axiom of Bounded Second Moment of Perturbation and Axiom of Boundary Regularity",
+    "equation_label": null,
+    "uses_definitions": [
+      "def-perturbation-measure",
+      "def-valid-noise-measure"
+    ],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-validation-uniform-ball.json": {
+    "label": "lem-validation-uniform-ball",
+    "name": "Validation of the Uniform Ball Measure",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-perturbation-measure",
+      "obj-smoothed-gaussian-measure",
+      "obj-boundary-regularity-constants"
+    ],
+    "input_axioms": [
+      "def-axiom-bounded-second-moment-perturbation",
+      "def-axiom-boundary-regularity"
+    ],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Lipschitz Continuity",
+    "attributes_added": [],
+    "relations_established": [
+      "Uniform ball distribution satisfies boundary regularity conditions"
+    ],
+    "natural_language_statement": "Let the noise measure $\\mathcal{P}_\\sigma(x, \\cdot)$ be defined as the uniform probability measure over a ball of radius $\\sigma$ centered at $x$ in the state space $\\mathcal{X}$. This measure satisfies the required axioms, provided the boundary of the valid set is sufficiently regular. In particular, the death-probability map is continuous under mild assumptions; to claim a global Lipschitz modulus with respect to $d_{\\text{Disp},\\mathcal{Y}}$, assume $\\mathcal{X}_{\\mathrm{valid}}$ has Lipschitz boundary or finite perimeter so that boundary layer estimates apply.",
+    "assumptions": [
+      "Uniform probability measure over ball $B(x, \\sigma)$",
+      "Sufficiently regular boundary (Lipschitz or finite perimeter)"
+    ],
+    "conclusion": "The uniform ball measure satisfies the required axioms with Lipschitz bound $L_{\\text{death}} \\le C_{\\text{perim}}/\\sigma$",
+    "equation_label": null,
+    "uses_definitions": [
+      "def-perturbation-measure",
+      "def-valid-noise-measure"
+    ],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/objects/obj-aggregator-lipschitz-constants.json": {
+    "label": "obj-aggregator-lipschitz-constants",
+    "name": "Empirical Aggregator Lipschitz Constants",
+    "mathematical_expression": "Collection of Lipschitz constants for empirical moment aggregators under canonical empirical aggregator with regularized standard deviation.",
+    "object_type": "structure",
+    "current_attributes": [],
+    "attribute_history": [],
+    "tags": [],
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "definition_label": "def-aggregator-lipschitz-constants"
+  }
+}

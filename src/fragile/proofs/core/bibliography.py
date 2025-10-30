@@ -24,8 +24,6 @@ Maps to Lean:
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional
-
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -43,7 +41,7 @@ class Citation(BaseModel):
         ...     authors=["Han, R.", "Slepčev, D."],
         ...     title="Stochastic dynamics on hypergraphs",
         ...     journal="Journal of Functional Analysis",
-        ...     year=2016
+        ...     year=2016,
         ... )
         >>> citation.key
         'han2016'
@@ -61,47 +59,39 @@ class Citation(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     # The key used for in-text citations, e.g., 'han2016' or '[16]'
-    key: str = Field(
-        ...,
-        description="The citation key used to reference this entry in the text."
-    )
+    key: str = Field(..., description="The citation key used to reference this entry in the text.")
 
     # Parsed fields for easier access
-    authors: List[str] = Field(
-        default_factory=list,
-        description="List of author names as they appear in the citation."
+    authors: list[str] = Field(
+        default_factory=list, description="List of author names as they appear in the citation."
     )
 
-    title: Optional[str] = Field(
-        None,
-        description="The title of the cited work."
+    title: str | None = Field(None, description="The title of the cited work.")
+
+    journal: str | None = Field(
+        None, description="The journal or venue where the work was published."
     )
 
-    journal: Optional[str] = Field(
-        None,
-        description="The journal or venue where the work was published."
-    )
-
-    year: Optional[int] = Field(
+    year: int | None = Field(
         None,
         description="The publication year.",
         ge=1900,  # Sanity check: no papers before 1900
-        le=2100   # Sanity check: no papers from far future
+        le=2100,  # Sanity check: no papers from far future
     )
 
     # Store the original entry for perfect reconstruction
-    bibtex_entry: Optional[str] = Field(
+    bibtex_entry: str | None = Field(
         None,
         description="The full, original BibTeX entry for the reference. "
-                   "Preserves all fields and formatting from the source."
+        "Preserves all fields and formatting from the source.",
     )
 
     # Additional optional fields for richer metadata
-    volume: Optional[str] = Field(None, description="Journal volume number.")
-    pages: Optional[str] = Field(None, description="Page range, e.g., '123-145'.")
-    doi: Optional[str] = Field(None, description="Digital Object Identifier.")
-    url: Optional[str] = Field(None, description="URL to the paper.")
-    arxiv_id: Optional[str] = Field(None, description="arXiv identifier, e.g., '1234.5678'.")
+    volume: str | None = Field(None, description="Journal volume number.")
+    pages: str | None = Field(None, description="Page range, e.g., '123-145'.")
+    doi: str | None = Field(None, description="Digital Object Identifier.")
+    url: str | None = Field(None, description="URL to the paper.")
+    arxiv_id: str | None = Field(None, description="arXiv identifier, e.g., '1234.5678'.")
 
 
 class Bibliography(BaseModel):
@@ -113,14 +103,16 @@ class Bibliography(BaseModel):
     fast retrieval during proof verification and cross-referencing.
 
     Examples:
-        >>> bib = Bibliography(entries={
-        ...     "han2016": Citation(
-        ...         key="han2016",
-        ...         authors=["Han, R.", "Slepčev, D."],
-        ...         title="Stochastic dynamics on hypergraphs",
-        ...         year=2016
-        ...     )
-        ... })
+        >>> bib = Bibliography(
+        ...     entries={
+        ...         "han2016": Citation(
+        ...             key="han2016",
+        ...             authors=["Han, R.", "Slepčev, D."],
+        ...             title="Stochastic dynamics on hypergraphs",
+        ...             year=2016,
+        ...         )
+        ...     }
+        ... )
         >>> citation = bib.get_citation("han2016")
         >>> citation.year
         2016
@@ -135,14 +127,14 @@ class Bibliography(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    entries: Dict[str, Citation] = Field(
+    entries: dict[str, Citation] = Field(
         default_factory=dict,
         description="A mapping from citation key to Citation object. "
-                   "Keys should match the 'key' field in each Citation."
+        "Keys should match the 'key' field in each Citation.",
     )
 
     # Pure function: Get citation by key
-    def get_citation(self, key: str) -> Optional[Citation]:
+    def get_citation(self, key: str) -> Citation | None:
         """
         Total function: Retrieves a citation by its key.
 
@@ -176,7 +168,7 @@ class Bibliography(BaseModel):
         return key in self.entries
 
     # Pure function: Add citation (returns new Bibliography)
-    def add_citation(self, citation: Citation) -> "Bibliography":
+    def add_citation(self, citation: Citation) -> Bibliography:
         """
         Pure function: Add a citation to the bibliography (immutable update).
 
@@ -195,7 +187,7 @@ class Bibliography(BaseModel):
         return self.model_copy(update={"entries": new_entries})
 
     # Pure function: Get all citation keys
-    def get_all_keys(self) -> List[str]:
+    def get_all_keys(self) -> list[str]:
         """
         Pure function: Get a list of all citation keys in the bibliography.
 

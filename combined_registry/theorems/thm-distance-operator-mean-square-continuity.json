@@ -2,31 +2,65 @@
   "label": "thm-distance-operator-mean-square-continuity",
   "name": "Mean-Square Continuity of the Distance Operator",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§10.3.2",
+    "section_name": null,
+    "directive_label": "thm-distance-operator-mean-square-continuity",
+    "equation": null,
+    "line_range": [
+      2688,
+      2750
+    ],
+    "url_fragment": "#thm-distance-operator-mean-square-continuity"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
     "obj-distance-to-companion-measurement",
-    "obj-swarm-and-state-space",
-    "obj-alive-dead-sets"
+    "obj-swarm-state",
+    "obj-alive-set-potential-operator",
+    "obj-raw-value-operator"
   ],
   "input_axioms": [
-    "axiom-raw-value-mean-square-continuity"
+    "axiom-raw-value-mean-square-continuity",
+    "axiom-bounded-measurement-variance"
   ],
   "input_parameters": [
-    "param-n"
+    "param-N",
+    "param-D-Y",
+    "param-k",
+    "param-n-c",
+    "param-delta-pos"
   ],
-  "properties_required": {},
-  "internal_lemmas": [],
+  "attributes_required": {
+    "obj-swarm-state": [
+      "attr-alive-set-size-ge-2"
+    ]
+  },
+  "internal_lemmas": [
+    "thm-distance-operator-satisfies-bounded-variance-axiom",
+    "thm-expected-raw-distance-bound"
+  ],
   "internal_propositions": [],
-  "lemma_dag_edges": [],
-  "output_type": "Property",
-  "properties_added": [
+  "lemma_dag_edges": [
+    [
+      "thm-distance-operator-satisfies-bounded-variance-axiom",
+      "thm-distance-operator-mean-square-continuity"
+    ],
+    [
+      "thm-expected-raw-distance-bound",
+      "thm-distance-operator-mean-square-continuity"
+    ]
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
     {
-      "label": "prop-mean-square-continuous",
-      "expression": "\\mathbb{E}[\\|d(\\mathcal{S}_1) - d(\\mathcal{S}_2)\\|^2] \\text{ is bounded}",
+      "label": "attr-mean-square-continuous",
+      "expression": "\\mathbb{E}[\\|\\mathbf{d}(\\mathcal{S}_1) - \\mathbf{d}(\\mathcal{S}_2)\\|_2^2] \\leq F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
       "object_label": "obj-distance-to-companion-measurement",
       "established_by": "thm-distance-operator-mean-square-continuity",
       "timestamp": null,
@@ -35,5 +69,12 @@
       "source": null
     }
   ],
-  "relations_established": []
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

@@ -1,9 +1,16 @@
+---
+name: math-verifier
+description: Validate algebraic manipulations through symbolic computation using sympy, generating executable validation scripts and pytest-compatible tests
+tools: Read, Grep, Glob, Bash, Write, mcp__gemini-cli__ask-gemini, mcp__codex__codex
+model: sonnet
+---
+
 # Math Verifier Agent - Autonomous Symbolic Validation System
 
 **Agent Type**: Specialized Algebraic Validation via Symbolic Computation
 **Parallelizable**: Yes (multiple instances can run simultaneously)
 **Independent**: Does not depend on slash commands or other agents
-**Output**: Writes validation scripts to `src/proofs/{doc_name}/{theorem_label}.py` and reports to `verifier/verification_{timestamp}_{filename}.md`
+**Output**: Writes validation scripts to `src/fragile/proofs/{doc_name}/{theorem_label}.py` and reports to `reports/verifier/verification_{timestamp}_{filename}.md`
 **Models**: Gemini 2.5 Pro + GPT-5 with high reasoning effort - pinned unless user overrides
 **Validation Engine**: sympy (Python symbolic mathematics library)
 
@@ -899,8 +906,9 @@ doc_path = Path("<file_path>")
 doc_parent = doc_path.parent
 doc_name = doc_path.stem
 
-# Create verifier directory if it doesn't exist
-verifier_dir = doc_parent / "verifier"
+# Create verifier directory under reports if it doesn't exist
+reports_dir = doc_parent / "reports"
+verifier_dir = reports_dir / "verifier"
 Bash(command=f"mkdir -p '{verifier_dir}'")
 
 # Generate timestamp (up to minute precision)

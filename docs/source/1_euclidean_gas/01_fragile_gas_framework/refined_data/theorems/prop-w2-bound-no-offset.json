@@ -1,0 +1,45 @@
+{
+  "label": "prop-w2-bound-no-offset",
+  "name": "W2 continuity bound without offset (for k≥2)",
+  "statement_type": "proposition",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17.2.4.4",
+    "directive_label": "prop-w2-bound-no-offset",
+    "line_range": [4992, 5023]
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm-update-procedure",
+    "obj-w2-output-metric",
+    "obj-n-particle-displacement-metric"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "sub-lem-unify-holder-terms"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    ["sub-lem-unify-holder-terms", "prop-w2-bound-no-offset"]
+  ],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "For two input swarms S₁, S₂ in the N-particle quotient state space with k₁=|A(S₁)|≥2, the Wasserstein-2 distance between the output distributions of the Swarm Update Operator Ψ is bounded by a Lipschitz term plus a Hölder term, with no additive constant offset. In particular, W₂(Ψ(S,·),Ψ(S,·))=0 and the bound is compatible with continuity at zero displacement.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [
+    "def-w2-output-metric",
+    "def-swarm-update-procedure",
+    "def-composite-continuity-coeffs-recorrected"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

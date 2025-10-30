@@ -2,9 +2,17 @@
   "label": "lem-strict-positivity-cloning",
   "name": "Strict Positivity After Cloning",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence_bounded_density_rigorous_proof",
+  "source": {
+    "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+    "section": null,
+    "directive_label": "lem-strict-positivity-cloning",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-strict-positivity-cloning"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -21,7 +29,7 @@
     "eta",
     "d"
   ],
-  "properties_required": {
+  "attributes_required": {
     "gaussian-convolution": [
       "ρ_post = ∫ G_σ_x(x−y) w(y) ρ_pre(y) dy"
     ],
@@ -43,7 +51,7 @@
     ]
   ],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-lem-strict-positivity-cloning-0-approximation",
@@ -53,14 +61,29 @@
       "target_object": "obj-state-space",
       "established_by": "lem-strict-positivity-cloning",
       "expression": "ρ_post(x) ≥ η ∫ G_σ_x(x−y) ρ_pre(y) dy ≥ η c_σ_x,R ||ρ_pre||_{L^1}",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+      "source": {
+        "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+        "section": null,
+        "directive_label": "lem-strict-positivity-cloning",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-strict-positivity-cloning"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

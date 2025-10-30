@@ -6,12 +6,20 @@
   "target_object": "obj-target-complement",
   "established_by": "lem-cross-swarm-distance",
   "expression": "D_II ≈ L² + Var_x(I_1) + Var_x(I_2) + O(L·R_I)",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "04_wasserstein_contraction"
+  "source": {
+    "document_id": "04_wasserstein_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+    "section": null,
+    "directive_label": "lem-cross-swarm-distance",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-cross-swarm-distance"
+  },
+  "chapter": null,
+  "document": null
 }

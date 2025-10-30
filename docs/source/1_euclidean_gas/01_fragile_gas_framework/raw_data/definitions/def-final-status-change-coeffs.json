@@ -1,0 +1,24 @@
+{
+  "label": "def-final-status-change-coeffs",
+  "type": "definition",
+  "name": "Final Status Change Bound Coefficients",
+  "section": "18",
+  "subsection": "17.2.3.1",
+  "source_file": "01_fragile_gas_framework.md",
+  "source_lines": "4627-5086",
+  "extraction_date": "2025-10-27",
+  "status": "extracted",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17.2.2",
+    "section_name": null,
+    "directive_label": "def-final-status-change-coeffs",
+    "equation": null,
+    "line_range": [
+      4728,
+      4753
+    ],
+    "url_fragment": null
+  }
+}

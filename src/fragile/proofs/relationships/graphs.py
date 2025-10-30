@@ -17,11 +17,10 @@ Version: 1.0.0
 from __future__ import annotations
 
 from collections import defaultdict, deque
-from typing import Dict, List, Optional, Set, Tuple
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from fragile.proofs.core.pipeline_types import Relationship, RelationType
+from fragile.proofs.core.pipeline_types import RelationType
 
 
 # =============================================================================
@@ -44,7 +43,7 @@ class GraphNode(BaseModel):
 
     id: str = Field(..., min_length=1, description="Object ID")
     node_type: str = Field(..., description="Object type (e.g., 'MathematicalObject')")
-    tags: List[str] = Field(default_factory=list, description="Object tags")
+    tags: list[str] = Field(default_factory=list, description="Object tags")
 
 
 class GraphEdge(BaseModel):
@@ -98,10 +97,10 @@ class RelationshipGraph:
     """
 
     def __init__(self):
-        self.nodes: Dict[str, GraphNode] = {}
-        self.edges: List[GraphEdge] = []
-        self._adjacency: Dict[str, List[GraphEdge]] = defaultdict(list)
-        self._reverse_adjacency: Dict[str, List[GraphEdge]] = defaultdict(list)
+        self.nodes: dict[str, GraphNode] = {}
+        self.edges: list[GraphEdge] = []
+        self._adjacency: dict[str, list[GraphEdge]] = defaultdict(list)
+        self._reverse_adjacency: dict[str, list[GraphEdge]] = defaultdict(list)
 
     def add_node(self, node: GraphNode) -> None:
         """Add node to graph."""
@@ -123,7 +122,7 @@ class RelationshipGraph:
             self._adjacency[edge.target].append(reverse_edge)
             self._reverse_adjacency[edge.source].append(reverse_edge)
 
-    def get_neighbors(self, node_id: str) -> List[str]:
+    def get_neighbors(self, node_id: str) -> list[str]:
         """
         Get all neighbor node IDs (outgoing edges).
 
@@ -131,7 +130,7 @@ class RelationshipGraph:
         """
         return [edge.target for edge in self._adjacency.get(node_id, [])]
 
-    def get_incoming_neighbors(self, node_id: str) -> List[str]:
+    def get_incoming_neighbors(self, node_id: str) -> list[str]:
         """
         Get all nodes with incoming edges to this node.
 
@@ -139,11 +138,11 @@ class RelationshipGraph:
         """
         return [edge.source for edge in self._reverse_adjacency.get(node_id, [])]
 
-    def get_edges_from(self, node_id: str) -> List[GraphEdge]:
+    def get_edges_from(self, node_id: str) -> list[GraphEdge]:
         """Get all outgoing edges from node."""
         return self._adjacency.get(node_id, [])
 
-    def get_edges_to(self, node_id: str) -> List[GraphEdge]:
+    def get_edges_to(self, node_id: str) -> list[GraphEdge]:
         """Get all incoming edges to node."""
         return self._reverse_adjacency.get(node_id, [])
 
@@ -163,7 +162,7 @@ class RelationshipGraph:
         """Get number of edges (not counting reverse edges)."""
         return len(self.edges)
 
-    def get_connected_component(self, start_node: str) -> Set[str]:
+    def get_connected_component(self, start_node: str) -> set[str]:
         """
         Get all nodes in the connected component containing start_node.
 
@@ -193,7 +192,7 @@ class RelationshipGraph:
 
         return visited
 
-    def find_path(self, source: str, target: str) -> Optional[List[str]]:
+    def find_path(self, source: str, target: str) -> list[str] | None:
         """
         Find shortest path from source to target using BFS.
 
@@ -217,15 +216,15 @@ class RelationshipGraph:
 
             for neighbor in self.get_neighbors(current):
                 if neighbor == target:
-                    return path + [neighbor]
+                    return [*path, neighbor]
 
                 if neighbor not in visited:
                     visited.add(neighbor)
-                    queue.append((neighbor, path + [neighbor]))
+                    queue.append((neighbor, [*path, neighbor]))
 
         return None
 
-    def get_subgraph(self, node_ids: Set[str]) -> RelationshipGraph:
+    def get_subgraph(self, node_ids: set[str]) -> RelationshipGraph:
         """
         Extract subgraph containing only specified nodes.
 
@@ -264,8 +263,8 @@ class LineagePath(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    nodes: List[str] = Field(..., min_items=1, description="Node IDs in path")
-    edges: List[GraphEdge] = Field(default_factory=list, description="Edges in path")
+    nodes: list[str] = Field(..., min_items=1, description="Node IDs in path")
+    edges: list[GraphEdge] = Field(default_factory=list, description="Edges in path")
 
     def length(self) -> int:
         """Get path length (number of edges)."""
@@ -293,7 +292,7 @@ class ObjectLineage:
     def __init__(self, graph: RelationshipGraph):
         self.graph = graph
 
-    def trace_lineage(self, node_id: str, max_depth: Optional[int] = None) -> List[LineagePath]:
+    def trace_lineage(self, node_id: str, max_depth: int | None = None) -> list[LineagePath]:
         """
         Trace all lineage paths from node.
 
@@ -314,11 +313,11 @@ class ObjectLineage:
     def _dfs_lineage(
         self,
         current: str,
-        path_nodes: List[str],
-        path_edges: List[GraphEdge],
-        results: List[LineagePath],
+        path_nodes: list[str],
+        path_edges: list[GraphEdge],
+        results: list[LineagePath],
         max_depth: int,
-        visited: Set[str],
+        visited: set[str],
     ) -> None:
         """DFS helper for lineage tracing."""
         if len(path_edges) >= max_depth:
@@ -339,8 +338,8 @@ class ObjectLineage:
                     # Recurse
                     self._dfs_lineage(
                         edge.target,
-                        path_nodes + [edge.target],
-                        path_edges + [edge],
+                        [*path_nodes, edge.target],
+                        [*path_edges, edge],
                         results,
                         max_depth,
                         visited.copy(),
@@ -350,7 +349,7 @@ class ObjectLineage:
         if len(path_nodes) > 1:
             results.append(LineagePath(nodes=path_nodes.copy(), edges=path_edges.copy()))
 
-    def get_ancestors(self, node_id: str, max_depth: Optional[int] = None) -> Set[str]:
+    def get_ancestors(self, node_id: str, max_depth: int | None = None) -> set[str]:
         """
         Get all ancestor nodes (nodes that derive current node).
 
@@ -377,7 +376,7 @@ class ObjectLineage:
 
         return ancestors
 
-    def get_descendants(self, node_id: str, max_depth: Optional[int] = None) -> Set[str]:
+    def get_descendants(self, node_id: str, max_depth: int | None = None) -> set[str]:
         """
         Get all descendant nodes (nodes derived from current node).
 
@@ -422,7 +421,7 @@ class EquivalenceClass(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    members: List[str] = Field(..., min_items=1, description="Object IDs in equivalence class")
+    members: list[str] = Field(..., min_items=1, description="Object IDs in equivalence class")
     representative: str = Field(..., description="Representative element")
 
     def size(self) -> int:
@@ -448,7 +447,7 @@ class EquivalenceClassifier:
     def __init__(self, graph: RelationshipGraph):
         self.graph = graph
 
-    def compute_equivalence_classes(self) -> List[EquivalenceClass]:
+    def compute_equivalence_classes(self) -> list[EquivalenceClass]:
         """
         Compute all equivalence classes.
 
@@ -459,8 +458,8 @@ class EquivalenceClassifier:
               union_find classifier.graph equivalence_edges
         """
         # Initialize Union-Find structure
-        parent: Dict[str, str] = {}
-        rank: Dict[str, int] = {}
+        parent: dict[str, str] = {}
+        rank: dict[str, int] = {}
 
         # Initialize each node as its own parent
         for node_id in self.graph.nodes:
@@ -496,7 +495,7 @@ class EquivalenceClassifier:
                 union(edge.source, edge.target)
 
         # Group nodes by root
-        classes: Dict[str, List[str]] = defaultdict(list)
+        classes: dict[str, list[str]] = defaultdict(list)
         for node_id in self.graph.nodes:
             root = find(node_id)
             classes[root].append(node_id)
@@ -509,7 +508,7 @@ class EquivalenceClassifier:
 
         return result
 
-    def get_equivalence_class(self, node_id: str) -> Optional[EquivalenceClass]:
+    def get_equivalence_class(self, node_id: str) -> EquivalenceClass | None:
         """Get equivalence class containing node."""
         classes = self.compute_equivalence_classes()
         for eq_class in classes:
@@ -549,11 +548,11 @@ class TheoremNode(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     theorem_id: str = Field(..., description="Theorem ID")
-    input_objects: List[str] = Field(default_factory=list, description="Input object IDs")
-    output_objects: List[str] = Field(
+    input_objects: list[str] = Field(default_factory=list, description="Input object IDs")
+    output_objects: list[str] = Field(
         default_factory=list, description="Output/derived object IDs"
     )
-    relations_established: List[str] = Field(
+    relations_established: list[str] = Field(
         default_factory=list, description="Relationship IDs established"
     )
 
@@ -575,13 +574,13 @@ class FrameworkFlow:
 
     def __init__(self, relationship_graph: RelationshipGraph):
         self.relationship_graph = relationship_graph
-        self.theorem_nodes: Dict[str, TheoremNode] = {}
+        self.theorem_nodes: dict[str, TheoremNode] = {}
 
     def add_theorem(self, theorem_node: TheoremNode) -> None:
         """Add theorem to framework flow."""
         self.theorem_nodes[theorem_node.theorem_id] = theorem_node
 
-    def get_establishing_theorems(self, relationship_id: str) -> List[str]:
+    def get_establishing_theorems(self, relationship_id: str) -> list[str]:
         """
         Get all theorems that establish a given relationship.
 
@@ -593,7 +592,7 @@ class FrameworkFlow:
                 results.append(thm_id)
         return results
 
-    def get_theorems_for_object(self, object_id: str) -> List[str]:
+    def get_theorems_for_object(self, object_id: str) -> list[str]:
         """
         Get all theorems that involve an object (input or output).
 
@@ -605,7 +604,7 @@ class FrameworkFlow:
                 results.append(thm_id)
         return results
 
-    def get_theorem_dependencies(self, theorem_id: str) -> Set[str]:
+    def get_theorem_dependencies(self, theorem_id: str) -> set[str]:
         """
         Get all theorems that this theorem depends on (transitively).
 
@@ -627,7 +626,7 @@ class FrameworkFlow:
 
         return dependencies
 
-    def get_framework_layers(self) -> List[Set[str]]:
+    def get_framework_layers(self) -> list[set[str]]:
         """
         Compute layered structure of theorems.
 
@@ -639,11 +638,13 @@ class FrameworkFlow:
         Returns: List of sets, where each set contains theorem IDs at that layer.
         """
         # Compute dependencies for all theorems
-        dependencies = {thm_id: self.get_theorem_dependencies(thm_id) for thm_id in self.theorem_nodes}
+        dependencies = {
+            thm_id: self.get_theorem_dependencies(thm_id) for thm_id in self.theorem_nodes
+        }
 
         # Assign layers
-        layers: List[Set[str]] = []
-        assigned: Set[str] = set()
+        layers: list[set[str]] = []
+        assigned: set[str] = set()
 
         while len(assigned) < len(self.theorem_nodes):
             # Find theorems whose dependencies are all assigned

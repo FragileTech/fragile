@@ -3,14 +3,23 @@
   "name": "The Coupled State Space",
   "mathematical_expression": "S_1 = \\left( (x_{1,1}, v_{1,1}, s_{1,1}), \\dots, (x_{1,N}, v_{1,N}, s_{1,N}) \\right) \\in \\Sigma_N,",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "euclidean-gas",
     "swarm",
     "convergence"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning"
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "obj-coupled-state-space",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-coupled-state-space"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

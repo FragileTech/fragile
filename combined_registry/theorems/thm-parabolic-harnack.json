@@ -2,9 +2,17 @@
   "label": "thm-parabolic-harnack",
   "name": "Parabolic Harnack Inequality for Kinetic Operators",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence_bounded_density_rigorous_proof",
+  "source": {
+    "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+    "section": null,
+    "directive_label": "thm-parabolic-harnack",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-parabolic-harnack"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -23,7 +31,7 @@
     "d",
     "C_h"
   ],
-  "properties_required": {
+  "attributes_required": {
     "hypoellipticity": [
       "Hörmander bracket condition holds (lem-hormander-bracket)"
     ],
@@ -45,7 +53,7 @@
     ]
   ],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-parabolic-harnack-0-approximation",
@@ -55,14 +63,22 @@
       "target_object": "obj-langevin-dynamics",
       "established_by": "thm-parabolic-harnack",
       "expression": "sup_{Q_{R/2}^−} u ≤ C_H (inf_{Q_{R/2}^+} u + R² C_h)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+      "source": {
+        "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+        "section": null,
+        "directive_label": "thm-parabolic-harnack",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-parabolic-harnack"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-parabolic-harnack-1-other",
@@ -72,14 +88,29 @@
       "target_object": "obj-langevin-dynamics",
       "established_by": "thm-parabolic-harnack",
       "expression": "Constants depend on (γ, σ_v, ||F||_Lip, d)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+      "source": {
+        "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+        "section": null,
+        "directive_label": "thm-parabolic-harnack",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-parabolic-harnack"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

@@ -1,0 +1,326 @@
+====================================================================================================
+COMPREHENSIVE SOURCE LOCATION DIAGNOSTIC REPORT
+====================================================================================================
+
+Total files analyzed: 217
+  ✓ Valid (OK):           194 (89.4%)
+  ⚠ Medium issues:          1 (0.5%)
+  ✗ High severity:          1 (0.5%)
+  ✗✗ CRITICAL (no line_range):  21 (9.7%)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+ISSUES BY TYPE:
+────────────────────────────────────────────────────────────────────────────────────────────────────
+  MISSING          33 issues
+  INVALID           1 issues
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+ISSUES BY FIELD:
+────────────────────────────────────────────────────────────────────────────────────────────────────
+  line_range            22 issues
+  section               12 issues
+
+
+====================================================================================================
+CRITICAL: Files without line_range (21 files)
+====================================================================================================
+
+File: raw-axiom-007.json
+  Label: axiom-7
+  Type: unknown
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: cor-chain-rule-sigma-reg-var.json
+  Label: cor-chain-rule-sigma-reg-var
+  Type: corollary
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: cor-closed-form-lipschitz-composite.json
+  Label: cor-closed-form-lipschitz-composite
+  Type: corollary
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: cor-pipeline-continuity-margin-stability.json
+  Label: cor-pipeline-continuity-margin-stability
+  Type: corollary
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: def-distance-to-companion-measurement.json
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: lem-bounded-differences-favg.json
+  Label: lem-bounded-differences-favg
+  Type: lemma
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: lem-empirical-moments-lipschitz.json
+  Label: lem-empirical-moments-lipschitz
+  Type: lemma
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: param-epsilon-std.json
+  Label: param-epsilon-std
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: param-f-v-ms.json
+  Label: param-f-v-ms
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: param-kappa-revival.json
+  Label: param-kappa-revival
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: param-kappa-variance.json
+  Label: param-kappa-variance
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: param-l-phi.json
+  Label: param-l-phi
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: param-p-worst-case.json
+  Label: param-p-worst-case
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: raw-param-005.json
+  Type: unknown
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: proof-lem-empirical-moments-lipschitz.json
+  Label: proof-lem-empirical-moments-lipschitz
+  Type: unknown
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: unlabeled-proof-134.json
+  Label: unlabeled-proof-134
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: unlabeled-proof-88.json
+  Label: unlabeled-proof-88
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: remark-cemetery-convention.json
+  Type: unknown
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: remark-cloning-scope-companion-convention.json
+  Type: unknown
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: remark-extinction-risk-shift.json
+  Type: unknown
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File: remark-phoenix-effect.json
+  Type: unknown
+
+  ✗✗ line_range: MISSING
+     Problem: line_range is MISSING (REQUIRED)
+     Fix: Use directive matching or text search
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+====================================================================================================
+HIGH SEVERITY: Invalid formats (1 files)
+====================================================================================================
+
+File: obj-continuity-constants-table.json
+  Label: obj-continuity-constants-table
+  Type: unknown
+
+  ✗ line_range: INVALID
+     Problem: end must be >= start, got start=5400, end=5289
+     Current: [5400, 5289]
+     Fix: Swap or fix: [5289, 5400]
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+====================================================================================================
+MEDIUM: Missing optional fields (1 files)
+====================================================================================================
+
+File: param-n.json
+  Label: param-n
+  Type: unknown
+
+  ✗ section: MISSING
+     Problem: section is missing (REQUIRED)
+     Fix: Extract from line_range if available
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+====================================================================================================
+SUMMARY OF FIXES NEEDED
+====================================================================================================
+
+1. CRITICAL: Find line_range for 21 files
+   Use: scripts/enrich_line_ranges_from_directives.py
+   Or:  scripts/aggressive_text_matching.py
+   Or:  scripts/handle_special_cases.py
+
+3. HIGH: Fix 1 invalid formats
+   Use: scripts/normalize_section_format.py --batch DIR
+
+5. MEDIUM: Add 1 missing optional fields
+   Extract sections: scripts/extract_sections_from_markdown.py
+
+====================================================================================================
+Valid files: 194/217 (89.4%)
+Files needing fixes: 23/217 (10.6%)
+====================================================================================================

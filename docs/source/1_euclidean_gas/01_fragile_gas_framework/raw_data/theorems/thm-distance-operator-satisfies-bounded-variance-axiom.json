@@ -1,0 +1,51 @@
+{
+  "theorem_id": "thm-distance-operator-satisfies-bounded-variance-axiom",
+  "label": "thm-distance-operator-satisfies-bounded-variance-axiom",
+  "title": "The Distance Operator Satisfies the Bounded Variance Axiom",
+  "statement_type": "theorem",
+  "statement": "The **Distance-to-Companion Measurement** operator ($V=d$) satisfies the **Axiom of Bounded Measurement Variance**. Its maximum measurement variance is deterministically bounded by:",
+  "formal_statement": "$$\n\\kappa^2_{\\text{variance}} = N \\cdot D_{\\mathcal{Y}}^2\n$$\n\nwhere $N$ is the total number of walkers and $D_{\\mathcal{Y}}$ is the diameter of the algorithmic space.",
+  "proof_sketch": "1. Decompose the total variance: By linearity of expectation, the total variance is the sum of individual walker variances.\n2. Bound the variance of a single component:\n   - If walker i is dead: variance is 0 (distance is deterministically 0)\n   - If walker i is alive: The distance is bounded on $[0, D_{\\mathcal{Y}}]$, so $\\text{Var}(d_i) \\le \\mathbb{E}[d_i^2] \\le D_{\\mathcal{Y}}^2$\n3. Sum over all N walkers: Each term is bounded by $D_{\\mathcal{Y}}^2$, so the total is bounded by $N \\cdot D_{\\mathcal{Y}}^2$.",
+  "proof_status": "complete",
+  "dependencies": [
+    "axiom-bounded-measurement-variance"
+  ],
+  "used_in": [
+    "thm-distance-operator-mean-square-continuity"
+  ],
+  "tags": [
+    "variance",
+    "distance",
+    "axiom-verification",
+    "bounded-measurement"
+  ],
+  "importance": "foundational",
+  "notes": "This theorem verifies that the distance-to-companion operator satisfies the foundational axiom for bounded variance, which is a prerequisite for establishing mean-square continuity. The bound is uniform across all swarm states.",
+  "input_objects": [
+    "obj-distance-measurement-ms-constants"
+  ],
+  "input_axioms": [
+    "axiom-bounded-measurement-variance"
+  ],
+  "input_parameters": [
+    "param-kappa-variance"
+  ],
+  "output_type": "Bound",
+  "relations_established": [
+    "Distance operator satisfies Axiom of Bounded Measurement Variance"
+  ],
+  "name": "Distance Operator Satisfies Bounded Variance Axiom",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "10.3.1",
+    "section_name": null,
+    "directive_label": "thm-distance-operator-satisfies-bounded-variance-axiom",
+    "equation": null,
+    "line_range": [
+      2650,
+      2659
+    ],
+    "url_fragment": "#thm-distance-operator-satisfies-bounded-variance-axiom"
+  }
+}

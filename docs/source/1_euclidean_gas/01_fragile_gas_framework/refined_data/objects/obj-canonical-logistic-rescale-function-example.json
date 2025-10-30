@@ -1,0 +1,31 @@
+{
+  "label": "obj-canonical-logistic-rescale-function-example",
+  "name": "Canonical Logistic Rescale Function",
+  "mathematical_expression": "g_A(z) := \\frac{2}{1 + e^{-z}}",
+  "object_type": "function",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "canonical",
+    "example",
+    "function",
+    "logistic",
+    "rescale",
+    "standardization"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-canonical-logistic-rescale-function-example",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "8.3.1",
+    "line_range": [
+      2071,
+      2071
+    ],
+    "directive_label": "obj-canonical-logistic-rescale-function-example",
+    "equation": null,
+    "url_fragment": null
+  }
+}

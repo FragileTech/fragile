@@ -1,0 +1,58 @@
+{
+  "label": "thm-distance-operator-satisfies-bounded-variance-axiom",
+  "name": "Distance Operator Satisfies Bounded Variance Axiom",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": null,
+    "file_path": null,
+    "section": "10.3.1",
+    "directive_label": null,
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "verified",
+  "input_objects": [
+    "obj-distance-to-companion-measurement",
+    "obj-algorithmic-space"
+  ],
+  "input_axioms": [
+    "axiom-bounded-measurement-variance"
+  ],
+  "input_parameters": [
+    "param-swarm-size",
+    "param-algorithmic-diameter"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    {
+      "label": "rel-distance-operator-satisfies-bounded-variance-axiom",
+      "relationship_type": "other",
+      "source_object": "obj-distance-to-companion-measurement",
+      "target_object": "axiom-bounded-measurement-variance",
+      "bidirectional": false,
+      "established_by": "thm-distance-operator-satisfies-bounded-variance-axiom",
+      "expression": "Distance operator satisfies Axiom of Bounded Measurement Variance with κ²_variance = N · D_Y²",
+      "properties": []
+    }
+  ],
+  "natural_language_statement": "This theorem verifies that the 'Distance-to-Companion Measurement' operator complies with the 'Axiom of Bounded Measurement Variance'. It establishes that the total variance of the distance measurements across all walkers is strictly bounded from above. The maximum possible variance is given by the product of the number of walkers (N) and the squared diameter of the algorithmic space (D_Y^2).",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [
+    "def-distance-to-companion-measurement",
+    "def-raw-value-operator",
+    "def-axiom-of-bounded-measurement-variance"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

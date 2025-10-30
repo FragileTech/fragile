@@ -4,5 +4,11 @@
   "mathematical_expression": "\\text{Var}[M(\\mathcal{S}, \\mathbf{v})] \\le \\kappa_{\\text{range}} \\cdot V_{\\max}^2",
   "foundational_framework": "Euclidean Gas",
   "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "document": "01_fragile_gas_framework",
+  "name": null,
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": null
 }

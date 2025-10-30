@@ -4,5 +4,11 @@
   "mathematical_expression": "g'_A(z) \\ge 0 \\quad \\forall z \\in \\mathbb{R}",
   "foundational_framework": "Euclidean Gas",
   "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "document": "01_fragile_gas_framework",
+  "name": null,
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": null
 }

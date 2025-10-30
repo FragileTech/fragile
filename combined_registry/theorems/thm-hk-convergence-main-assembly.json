@@ -2,9 +2,17 @@
   "label": "thm-hk-convergence-main-assembly",
   "name": "Conditional Exponential HK-Convergence of the Fragile Gas",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence",
+  "source": {
+    "document_id": "11_hk_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+    "section": null,
+    "directive_label": "thm-hk-convergence-main-assembly",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-hk-convergence-main-assembly"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -43,28 +51,28 @@
     "param-hypocoercive-coupling",
     "param-density-bound-M"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-empirical-measure": [
-      "prop-sub-probability-measure"
+      "attr-sub-probability-measure"
     ],
     "obj-qsd": [
-      "prop-quasi-stationary",
-      "prop-gibbs-structure",
-      "prop-smooth-density"
+      "attr-quasi-stationary",
+      "attr-gibbs-structure",
+      "attr-smooth-density"
     ],
     "obj-kinetic-operator": [
-      "prop-langevin-dynamics",
-      "prop-hypocoercive"
+      "attr-langevin-dynamics",
+      "attr-hypocoercive"
     ],
     "obj-cloning-operator": [
-      "prop-gaussian-regularization",
-      "prop-fitness-weighted"
+      "attr-gaussian-regularization",
+      "attr-fitness-weighted"
     ],
     "obj-normalized-measure": [
-      "prop-probability-measure"
+      "attr-probability-measure"
     ],
     "obj-density-ratio": [
-      "prop-uniformly-bounded"
+      "attr-uniformly-bounded"
     ]
   },
   "internal_lemmas": [
@@ -73,7 +81,7 @@
     "lem-kinetic-hellinger-contraction"
   ],
   "internal_propositions": [
-    "prop-killing-rate-continuous"
+    "attr-killing-rate-continuous"
   ],
   "lemma_dag_edges": [
     [
@@ -89,12 +97,12 @@
       "thm-hk-convergence-main-assembly"
     ],
     [
-      "prop-killing-rate-continuous",
+      "attr-killing-rate-continuous",
       "lem-mass-contraction-revival-death"
     ]
   ],
   "output_type": "Convergence",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-hk-convergence-main-assembly-0-approximation",
@@ -104,14 +112,22 @@
       "target_object": "obj-qsd",
       "established_by": "thm-hk-convergence-main-assembly",
       "expression": "rel-hk-exponential-bound",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence"
+      "source": {
+        "document_id": "11_hk_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+        "section": null,
+        "directive_label": "thm-hk-convergence-main-assembly",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-hk-convergence-main-assembly"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-hk-convergence-main-assembly-1-other",
@@ -121,14 +137,22 @@
       "target_object": "obj-qsd",
       "established_by": "thm-hk-convergence-main-assembly",
       "expression": "rel-hellinger-contraction-coupling",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence"
+      "source": {
+        "document_id": "11_hk_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+        "section": null,
+        "directive_label": "thm-hk-convergence-main-assembly",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-hk-convergence-main-assembly"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-hk-convergence-main-assembly-2-other",
@@ -138,14 +162,22 @@
       "target_object": "obj-qsd",
       "established_by": "thm-hk-convergence-main-assembly",
       "expression": "rel-wasserstein-contraction-coupling",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence"
+      "source": {
+        "document_id": "11_hk_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+        "section": null,
+        "directive_label": "thm-hk-convergence-main-assembly",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-hk-convergence-main-assembly"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-hk-convergence-main-assembly-3-other",
@@ -155,14 +187,22 @@
       "target_object": "obj-qsd",
       "established_by": "thm-hk-convergence-main-assembly",
       "expression": "rel-mass-shape-convergence",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence"
+      "source": {
+        "document_id": "11_hk_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+        "section": null,
+        "directive_label": "thm-hk-convergence-main-assembly",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-hk-convergence-main-assembly"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-hk-convergence-main-assembly-4-other",
@@ -172,14 +212,22 @@
       "target_object": "obj-qsd",
       "established_by": "thm-hk-convergence-main-assembly",
       "expression": "rel-error-accumulation",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence"
+      "source": {
+        "document_id": "11_hk_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+        "section": null,
+        "directive_label": "thm-hk-convergence-main-assembly",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-hk-convergence-main-assembly"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-hk-convergence-main-assembly-5-other",
@@ -189,14 +237,29 @@
       "target_object": "obj-qsd",
       "established_by": "thm-hk-convergence-main-assembly",
       "expression": "rel-rate-bottleneck-analysis",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence"
+      "source": {
+        "document_id": "11_hk_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+        "section": null,
+        "directive_label": "thm-hk-convergence-main-assembly",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-hk-convergence-main-assembly"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

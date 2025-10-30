@@ -1,0 +1,51 @@
+{
+  "label": "thm-mcdiarmids-inequality",
+  "name": "McDiarmid's Inequality (Bounded Differences Inequality)",
+  "statement_type": "theorem",
+  "statement": "Let $X_1, X_2, \\dots, X_N$ be a set of independent random variables. Let $f$ be a function of these variables, $f(X_1, \\dots, X_N)$, that satisfies the **bounded differences property**. This means that for each variable $i \\in \\{1, \\dots, N\\}$, there exists a constant $c_i$ such that if only the $i$-th variable is changed, the function's value cannot change by more than $c_i$:\n$$\\sup_{x_1, \\dots, x_N, x'_i} |f(x_1, \\dots, x_i, \\dots, x_N) - f(x_1, \\dots, x'_i, \\dots, x_N)| \\le c_i$$\nThen for any $t > 0$, the probability that the function's value deviates from its expected value by more than $t$ is bounded by:\n$$P(|f(X_1, \\dots, X_N) - \\mathbb{E}[f(X_1, \\dots, X_N)]| \\ge t) \\le 2\\exp\\left(\\frac{-2t^2}{\\sum_{i=1}^N c_i^2}\\right)$$",
+  "source_section": "14. The Perturbation Operator",
+  "subsection": "13.2.3.1. McDiarmid's Inequality (Bounded Differences Inequality)",
+  "source_document": "01_fragile_gas_framework.md",
+  "line_range": [
+    4014,
+    4028
+  ],
+  "tags": [
+    "theorem",
+    "concentration",
+    "probability",
+    "bounded-differences",
+    "external"
+  ],
+  "external_reference": "Boucheron–Lugosi–Massart",
+  "used_by": [
+    "sub-lem-probabilistic-bound-perturbation-displacement-reproof"
+  ],
+  "conditions": [
+    "Independent random variables",
+    "Bounded differences property"
+  ],
+  "key_technique": "Concentration of measure for functions of independent variables",
+  "input_objects": [
+    "obj-stochastic-fluctuation-bound"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "output_type": "Bound",
+  "relations_established": [
+    "McDiarmid's inequality provides concentration bound for perturbation displacement"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "14",
+    "section_name": null,
+    "directive_label": "thm-mcdiarmids-inequality",
+    "equation": null,
+    "line_range": [
+      4024,
+      4038
+    ],
+    "url_fragment": "#thm-mcdiarmids-inequality"
+  }
+}

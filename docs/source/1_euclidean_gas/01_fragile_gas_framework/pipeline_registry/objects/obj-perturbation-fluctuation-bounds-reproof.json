@@ -1,0 +1,26 @@
+{
+  "label": "obj-perturbation-fluctuation-bounds-reproof",
+  "name": "Perturbation Fluctuation Bounds",
+  "mathematical_expression": "Perturbation Fluctuation Bounds",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "perturbation",
+    "bound",
+    "concentration",
+    "fluctuation"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "14. The Perturbation Operator",
+    "directive_label": "def-perturbation-fluctuation-bounds-reproof",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": null
+}

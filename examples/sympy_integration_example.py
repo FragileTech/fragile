@@ -18,29 +18,26 @@ Expected output:
 - Validation results and diagnostics
 """
 
-import sys
 from pathlib import Path
+import sys
+
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from fragile.proofs import ObjectType
 from fragile.proofs import (
     AssumptionSet,
-    DualExpr,
-    DualStatement,
-    MathematicalObjectWithSymPy,
-    PropertyWithSymPy,
-    SymPyValidator,
-    SymbolExpr,
-    ValidationStatus,
-    create_dual_expr_from_latex,
     create_dual_expr_from_sympy,
     create_object_with_symbols,
     create_property_with_dual_expr,
     differentiate_expr,
+    DualExpr,
+    DualStatement,
     expand_expr,
+    ObjectType,
     simplify_expr,
+    SymbolExpr,
+    SymPyValidator,
 )
 
 
@@ -183,7 +180,7 @@ def main():
         strict_mode=False,  # Allow LLM fallback
     )
 
-    print(f"\n✓ Created validator")
+    print("\n✓ Created validator")
     print(f"  Strict mode: {validator.strict_mode}")
     print(f"  Symbol context: {list(validator.context.symbols.keys())}")
 
@@ -195,7 +192,7 @@ def main():
     print(f"  Can validate: {result.can_validate}")
 
     if result.issues:
-        print(f"  Issues:")
+        print("  Issues:")
         for issue in result.issues:
             print(f"    - [{issue.severity}] {issue.message}")
 
@@ -227,7 +224,7 @@ def main():
     )
 
     result_opaque = validator.validate_statement(opaque_statement)
-    print(f"\n✓ Validated opaque statement")
+    print("\n✓ Validated opaque statement")
     print(f"  Status: {result_opaque.status.value}")
     print(f"  Is valid: {result_opaque.is_valid} (allows LLM proof)")
     print(f"  Message: {result_opaque.issues[0].message if result_opaque.issues else 'No issues'}")

@@ -6,67 +6,86 @@ This version performs ultra-detailed proof analysis to capture ALL dependencies,
 including subtle implicit uses, notation dependencies, and logical prerequisites.
 """
 
-import re
-import json
-from pathlib import Path
-from typing import Dict, List, Set, Tuple, Optional
-from dataclasses import dataclass, field, asdict
 from collections import defaultdict
+from dataclasses import asdict, dataclass, field
+import json
+import operator
+from pathlib import Path
+import re
+from typing import Dict, List, Optional, Set, Tuple
+
 
 @dataclass
 class Dependency:
     """Represents a single dependency relationship"""
+
     target_label: str
     reference_type: str
     context: str
-    line_in_proof: Optional[int] = None
-    evidence: Optional[str] = None
+    line_in_proof: int | None = None
+    evidence: str | None = None
     critical: bool = True
+
 
 @dataclass
 class ProofStep:
     """A single step in a proof"""
+
     step_number: int
     content: str
-    inputs_used: List[str] = field(default_factory=list)
+    inputs_used: list[str] = field(default_factory=list)
     output_established: str = ""
     justification: str = ""
+
 
 @dataclass
 class DirectiveInfo:
     """Complete information about a MyST directive"""
+
     label: str
     type: str
     title: str
     content: str
-    line_range: Tuple[int, int]
+    line_range: tuple[int, int]
     math_expression_count: int
     first_math: str
 
     # Dependency tracking
-    explicit_deps: List[Dependency] = field(default_factory=list)
-    implicit_deps: List[Dependency] = field(default_factory=list)
-    assumptions: List[Dependency] = field(default_factory=list)
-    standard_math: List[Dependency] = field(default_factory=list)
-    missing_references: List[Dict] = field(default_factory=list)
+    explicit_deps: list[Dependency] = field(default_factory=list)
+    implicit_deps: list[Dependency] = field(default_factory=list)
+    assumptions: list[Dependency] = field(default_factory=list)
+    standard_math: list[Dependency] = field(default_factory=list)
+    missing_references: list[dict] = field(default_factory=list)
 
     # Proof analysis
-    proof_steps: List[ProofStep] = field(default_factory=list)
-    proof_inputs: List[str] = field(default_factory=list)
-    proof_outputs: List[str] = field(default_factory=list)
+    proof_steps: list[ProofStep] = field(default_factory=list)
+    proof_inputs: list[str] = field(default_factory=list)
+    proof_outputs: list[str] = field(default_factory=list)
 
-    def dependency_summary(self) -> Dict:
-        total = len(self.explicit_deps) + len(self.implicit_deps) + len(self.assumptions) + len(self.standard_math)
-        critical = sum(1 for d in self.explicit_deps + self.implicit_deps + self.assumptions if d.critical)
-        external = sum(1 for d in self.explicit_deps + self.implicit_deps + self.assumptions
-                      if "framework" in d.target_label or d.target_label.startswith('def-') or d.target_label.startswith('axiom-'))
+    def dependency_summary(self) -> dict:
+        total = (
+            len(self.explicit_deps)
+            + len(self.implicit_deps)
+            + len(self.assumptions)
+            + len(self.standard_math)
+        )
+        critical = sum(
+            1 for d in self.explicit_deps + self.implicit_deps + self.assumptions if d.critical
+        )
+        external = sum(
+            1
+            for d in self.explicit_deps + self.implicit_deps + self.assumptions
+            if "framework" in d.target_label
+            or d.target_label.startswith("def-")
+            or d.target_label.startswith("axiom-")
+        )
 
         return {
             "total_dependencies": total,
             "critical_dependencies": critical,
             "external_framework_dependencies": external,
             "missing_references": len(self.missing_references),
-            "proof_steps_analyzed": len(self.proof_steps)
+            "proof_steps_analyzed": len(self.proof_steps),
         }
 
 
@@ -75,57 +94,57 @@ class EnhancedDependencyAnalyzer:
 
     # Comprehensive mapping of implicit notation to definitions
     NOTATION_TO_DEFINITION = {
-        r'd_\{\\mathcal Y\}\^\{\\mathrm\{Sasaki\}\}': 'sasaki-metric-definition',
-        r'\\psi_x': 'lem-squashing-properties-generic',
-        r'\\psi_v': 'lem-squashing-properties-generic',
-        r'\\varphi': 'lem-projection-lipschitz',
-        r'd_\{\\text\{alg\}\}': 'algorithmic-distance-definition',
-        r'R_\{\\mathrm\{pos\}\}': 'reward-function-definition',
-        r'V_\{\\text\{fit\}\}': 'potential-vector-definition',
-        r"\\sigma'_\{\\min,\\mathrm\{patch\}\}": 'def-sasaki-standardization-constants',
-        r'L_R\^\{\\mathrm\{Sasaki\}\}': 'lem-euclidean-reward-regularity',
-        r'L_\{\\varphi\}': 'lem-projection-lipschitz',
-        r'L_\{\\mathrm\{flow\}\}': 'lem-sasaki-kinetic-lipschitz',
-        r'\\kappa_\{\\mathrm\{drift\}\}': 'lem-euclidean-geometric-consistency',
-        r'\\kappa_\{\\mathrm\{anisotropy\}\}': 'lem-euclidean-geometric-consistency',
-        r'C_x\^\{\\(\\mathrm\{pert\}\\)\}': 'lem-euclidean-perturb-moment',
-        r'F_\{d,ms\}': 'thm-sasaki-distance-ms',
+        r"d_\{\\mathcal Y\}\^\{\\mathrm\{Sasaki\}\}": "sasaki-metric-definition",
+        r"\\psi_x": "lem-squashing-properties-generic",
+        r"\\psi_v": "lem-squashing-properties-generic",
+        r"\\varphi": "lem-projection-lipschitz",
+        r"d_\{\\text\{alg\}\}": "algorithmic-distance-definition",
+        r"R_\{\\mathrm\{pos\}\}": "reward-function-definition",
+        r"V_\{\\text\{fit\}\}": "potential-vector-definition",
+        r"\\sigma'_\{\\min,\\mathrm\{patch\}\}": "def-sasaki-standardization-constants",
+        r"L_R\^\{\\mathrm\{Sasaki\}\}": "lem-euclidean-reward-regularity",
+        r"L_\{\\varphi\}": "lem-projection-lipschitz",
+        r"L_\{\\mathrm\{flow\}\}": "lem-sasaki-kinetic-lipschitz",
+        r"\\kappa_\{\\mathrm\{drift\}\}": "lem-euclidean-geometric-consistency",
+        r"\\kappa_\{\\mathrm\{anisotropy\}\}": "lem-euclidean-geometric-consistency",
+        r"C_x\^\{\\(\\mathrm\{pert\}\\)\}": "lem-euclidean-perturb-moment",
+        r"F_\{d,ms\}": "thm-sasaki-distance-ms",
     }
 
     # Common proof phrases and their implicit dependencies
     PROOF_PHRASES = {
-        r'Lemma.*shows': 'references-previous-lemma',
-        r'Theorem.*gives': 'references-previous-theorem',
-        r'Definition.*supplies': 'references-definition',
-        r'(?:By|From|Using) (?:the )?Axiom of ([A-Z][a-z]+(?: [A-Z][a-z]+)*)': 'axiom',
-        r'(?:by|from) compactness': 'compactness-axiom',
-        r'(?:by|since).*bounded': 'boundedness-assumption',
-        r'(?:by|from) continuity': 'continuity-assumption',
-        r'Lipschitz (?:continuity|constant|bound)': 'lipschitz-property',
-        r'(?:mean|apply|use|invoke) the triangle inequality': 'triangle-inequality',
-        r'Cauchy-?Schwarz': 'cauchy-schwarz',
-        r"Jensen'?s inequality": 'jensen-inequality',
-        r"H[öo]lder'?s inequality": 'holder-inequality',
-        r"Markov'?s inequality": 'markov-inequality',
-        r'dominated convergence': 'dominated-convergence-theorem',
-        r'Fubini': 'fubini-theorem',
-        r'mean[- ]value (?:theorem|inequality)': 'mean-value-theorem',
-        r'(?:by|from) definition': 'definition-usage',
-        r'(?:as|by) construction': 'construction-usage',
-        r'combining.*(bound|inequality|estimate)': 'bound-composition',
-        r'substituting': 'substitution-step',
-        r'taking expectations': 'expectation-operation',
-        r'(?:apply|using) (?:the )?chain rule': 'chain-rule',
+        r"Lemma.*shows": "references-previous-lemma",
+        r"Theorem.*gives": "references-previous-theorem",
+        r"Definition.*supplies": "references-definition",
+        r"(?:By|From|Using) (?:the )?Axiom of ([A-Z][a-z]+(?: [A-Z][a-z]+)*)": "axiom",
+        r"(?:by|from) compactness": "compactness-axiom",
+        r"(?:by|since).*bounded": "boundedness-assumption",
+        r"(?:by|from) continuity": "continuity-assumption",
+        r"Lipschitz (?:continuity|constant|bound)": "lipschitz-property",
+        r"(?:mean|apply|use|invoke) the triangle inequality": "triangle-inequality",
+        r"Cauchy-?Schwarz": "cauchy-schwarz",
+        r"Jensen'?s inequality": "jensen-inequality",
+        r"H[öo]lder'?s inequality": "holder-inequality",
+        r"Markov'?s inequality": "markov-inequality",
+        r"dominated convergence": "dominated-convergence-theorem",
+        r"Fubini": "fubini-theorem",
+        r"mean[- ]value (?:theorem|inequality)": "mean-value-theorem",
+        r"(?:by|from) definition": "definition-usage",
+        r"(?:as|by) construction": "construction-usage",
+        r"combining.*(bound|inequality|estimate)": "bound-composition",
+        r"substituting": "substitution-step",
+        r"taking expectations": "expectation-operation",
+        r"(?:apply|using) (?:the )?chain rule": "chain-rule",
     }
 
     def __init__(self, doc_path: Path):
         self.doc_path = doc_path
         self.lines = doc_path.read_text().splitlines()
-        self.directives: Dict[str, DirectiveInfo] = {}
+        self.directives: dict[str, DirectiveInfo] = {}
         self.dependency_graph = {"nodes": [], "edges": []}
         self.all_labels = set()  # Track all labels in document
 
-    def extract_all_directives(self) -> Dict:
+    def extract_all_directives(self) -> dict:
         """Phase 1: Extract all MyST directives with enhanced parsing"""
         print("Phase 1: Extracting MyST directives...")
 
@@ -136,7 +155,10 @@ class EnhancedDependencyAnalyzer:
 
         for i, line in enumerate(self.lines, 1):
             # Detect directive start
-            if match := re.match(r'^:::+\{prf:(definition|theorem|lemma|proposition|corollary|axiom|proof|algorithm)\}', line):
+            if match := re.match(
+                r"^:::+\{prf:(definition|theorem|lemma|proposition|corollary|axiom|proof|algorithm)\}",
+                line,
+            ):
                 directive_type = match.group(1)
                 directive_start = i
                 current_directive = {"type": directive_type, "lines": [], "content_lines": []}
@@ -148,20 +170,20 @@ class EnhancedDependencyAnalyzer:
                 current_directive["lines"].append((i, line))
 
                 # Track content (skip dropdown wrappers)
-                if not re.match(r'```\{dropdown\}', line) and not line.strip() == '```':
+                if not re.match(r"```\{dropdown\}", line) and not line.strip() == "```":
                     current_directive["content_lines"].append(line)
 
                 # Extract label
-                if match := re.match(r'^:label:\s+(\S+)', line):
+                if match := re.match(r"^:label:\s+(\S+)", line):
                     current_directive["label"] = match.group(1)
                     self.all_labels.add(match.group(1))
 
                 # Detect directive end (properly handle nested braces)
-                if '```{' in line or '::::{' in line:
+                if "```{" in line or "::::{" in line:
                     brace_depth += 1
-                elif brace_depth > 0 and ('```' in line or '::::' in line):
+                elif brace_depth > 0 and ("```" in line or "::::" in line):
                     brace_depth -= 1
-                elif brace_depth == 0 and re.match(r'^:::+\s*$', line):
+                elif brace_depth == 0 and re.match(r"^:::+\s*$", line):
                     # Process completed directive
                     if "label" in current_directive or current_directive["type"] == "proof":
                         self._process_directive(current_directive, directive_start, i)
@@ -172,7 +194,7 @@ class EnhancedDependencyAnalyzer:
         print(f"  Tracked {len(self.all_labels)} total labels")
         return {"total_directives": len(self.directives), "all_labels": len(self.all_labels)}
 
-    def _process_directive(self, directive_dict: Dict, start_line: int, end_line: int):
+    def _process_directive(self, directive_dict: dict, start_line: int, end_line: int):
         """Process a single directive with enhanced metadata extraction"""
         content_lines = directive_dict["content_lines"]
         content = "\n".join(content_lines)
@@ -181,22 +203,26 @@ class EnhancedDependencyAnalyzer:
         title = ""
         for line in content_lines:
             line_stripped = line.strip()
-            if line_stripped and not line_stripped.startswith(":") and not line_stripped.startswith("$"):
+            if (
+                line_stripped
+                and not line_stripped.startswith(":")
+                and not line_stripped.startswith("$")
+            ):
                 # Remove markdown formatting
-                title = re.sub(r'\*\*([^*]+)\*\*', r'\1', line_stripped)
-                title = re.sub(r'\$([^$]+)\$', r'[math]', title)
+                title = re.sub(r"\*\*([^*]+)\*\*", r"\1", line_stripped)
+                title = re.sub(r"\$([^$]+)\$", r"[math]", title)
                 break
 
         # Count math expressions (better pattern)
-        display_math = len(re.findall(r'\$\$[^$]+\$\$', content, re.DOTALL))
-        inline_math = len(re.findall(r'(?<!\$)\$(?!\$)[^$]+\$(?!\$)', content))
+        display_math = len(re.findall(r"\$\$[^$]+\$\$", content, re.DOTALL))
+        inline_math = len(re.findall(r"(?<!\$)\$(?!\$)[^$]+\$(?!\$)", content))
         math_count = display_math + inline_math
 
         # Extract first non-trivial math expression
         first_math = ""
-        if match := re.search(r'\$\$\s*([^$]+?)\s*\$\$', content, re.DOTALL):
+        if match := re.search(r"\$\$\s*([^$]+?)\s*\$\$", content, re.DOTALL):
             first_math = match.group(1).strip()[:150]
-        elif match := re.search(r'(?<!\$)\$([^$]+?)\$(?!\$)', content):
+        elif match := re.search(r"(?<!\$)\$([^$]+?)\$(?!\$)", content):
             first_math = match.group(1).strip()[:100]
 
         label = directive_dict.get("label", f"unlabeled-{start_line}")
@@ -208,7 +234,7 @@ class EnhancedDependencyAnalyzer:
             content=content,
             line_range=(start_line, end_line),
             math_expression_count=math_count,
-            first_math=first_math
+            first_math=first_math,
         )
 
         self.directives[label] = info
@@ -248,31 +274,36 @@ class EnhancedDependencyAnalyzer:
         """Extract all {prf:ref}`label` cross-references"""
         content = directive.content
 
-        for match in re.finditer(r'\{prf:ref\}`([^`]+)`', content):
+        for match in re.finditer(r"\{prf:ref\}`([^`]+)`", content):
             target = match.group(1)
 
             # Get surrounding context (within sentence)
-            context_start = max(0, content.rfind('.', 0, match.start()) + 1)
-            context_end = content.find('.', match.end())
+            context_start = max(0, content.rfind(".", 0, match.start()) + 1)
+            context_end = content.find(".", match.end())
             if context_end == -1:
                 context_end = min(len(content), match.end() + 200)
             context = content[context_start:context_end].strip()
 
             # Determine usage type from context
             usage_type = "general"
-            if any(word in context.lower() for word in ["lemma", "theorem", "shows", "proves", "establishes"]):
+            if any(
+                word in context.lower()
+                for word in ["lemma", "theorem", "shows", "proves", "establishes"]
+            ):
                 usage_type = "proof-dependency"
             elif any(word in context.lower() for word in ["definition", "defined", "denote"]):
                 usage_type = "definition-use"
             elif any(word in context.lower() for word in ["axiom", "assumption", "hypothesis"]):
                 usage_type = "axiom-use"
 
-            directive.explicit_deps.append(Dependency(
-                target_label=target,
-                reference_type=f"prf:ref ({usage_type})",
-                context=context[:300],
-                critical=True
-            ))
+            directive.explicit_deps.append(
+                Dependency(
+                    target_label=target,
+                    reference_type=f"prf:ref ({usage_type})",
+                    context=context[:300],
+                    critical=True,
+                )
+            )
 
     def _analyze_associated_proof(self, directive: DirectiveInfo):
         """Find and analyze the proof associated with a theorem/lemma"""
@@ -280,21 +311,20 @@ class EnhancedDependencyAnalyzer:
         proof_start_line = directive.line_range[1]
         proof_content_lines = []
         in_proof = False
-        proof_line_start = 0
 
         for i in range(proof_start_line, min(proof_start_line + 500, len(self.lines))):
             line = self.lines[i]
 
-            if re.match(r'^:::+\{prf:proof\}', line):
+            if re.match(r"^:::+\{prf:proof\}", line):
                 in_proof = True
-                proof_line_start = i + 1
+                i + 1
                 continue
 
             if in_proof:
-                if re.match(r'^:::+\s*$', line):
+                if re.match(r"^:::+\s*$", line):
                     break
                 # Skip dropdown wrappers
-                if not re.match(r'```\{dropdown\}', line) and line.strip() != '```':
+                if not re.match(r"```\{dropdown\}", line) and line.strip() != "```":
                     proof_content_lines.append((i + 1, line))
 
         if not proof_content_lines:
@@ -307,11 +337,13 @@ class EnhancedDependencyAnalyzer:
         self._extract_proof_phrases(directive, proof_content)
         self._extract_proof_dependencies(directive, proof_content, proof_content_lines)
 
-    def _analyze_proof_structure(self, directive: DirectiveInfo, proof_content: str, proof_lines: List[Tuple[int, str]]):
+    def _analyze_proof_structure(
+        self, directive: DirectiveInfo, proof_content: str, proof_lines: list[tuple[int, str]]
+    ):
         """Analyze proof structure and extract steps"""
 
         # Pattern 1: Numbered steps (Step 1:, 1., etc.)
-        step_pattern = r'(?:^|\n)\s*(?:\*\*)?(?:Step\s+)?(\d+)(?:\.|\:)?\s*(?:\*\*)?\s*([^\n]+)'
+        step_pattern = r"(?:^|\n)\s*(?:\*\*)?(?:Step\s+)?(\d+)(?:\.|\:)?\s*(?:\*\*)?\s*([^\n]+)"
 
         for match in re.finditer(step_pattern, proof_content, re.MULTILINE):
             step_num = int(match.group(1))
@@ -325,15 +357,17 @@ class EnhancedDependencyAnalyzer:
 
             # Analyze step for dependencies
             step_deps = []
-            for ref_match in re.finditer(r'\{prf:ref\}`([^`]+)`', step_content):
+            for ref_match in re.finditer(r"\{prf:ref\}`([^`]+)`", step_content):
                 step_deps.append(ref_match.group(1))
 
-            directive.proof_steps.append(ProofStep(
-                step_number=step_num,
-                content=step_title + " " + step_content[:200],
-                inputs_used=step_deps,
-                justification=f"Line {proof_lines[0][0] + match.start() // 80}"
-            ))
+            directive.proof_steps.append(
+                ProofStep(
+                    step_number=step_num,
+                    content=step_title + " " + step_content[:200],
+                    inputs_used=step_deps,
+                    justification=f"Line {proof_lines[0][0] + match.start() // 80}",
+                )
+            )
 
     def _extract_proof_phrases(self, directive: DirectiveInfo, proof_content: str):
         """Extract dependencies from proof phrases"""
@@ -345,56 +379,85 @@ class EnhancedDependencyAnalyzer:
                 context_end = min(len(proof_content), match.end() + 100)
                 context = proof_content[context_start:context_end]
 
-                if dep_type == 'axiom':
+                if dep_type == "axiom":
                     # Extract axiom name
                     axiom_name = match.group(1)
                     target = f"axiom-{axiom_name.lower().replace(' ', '-')}"
                 else:
                     target = dep_type
 
-                directive.assumptions.append(Dependency(
-                    target_label=target,
-                    reference_type=dep_type,
-                    context=context.strip(),
-                    evidence=f"Proof phrase: {match.group(0)}",
-                    critical=(dep_type in ['axiom', 'references-previous-lemma', 'references-previous-theorem'])
-                ))
+                directive.assumptions.append(
+                    Dependency(
+                        target_label=target,
+                        reference_type=dep_type,
+                        context=context.strip(),
+                        evidence=f"Proof phrase: {match.group(0)}",
+                        critical=(
+                            dep_type
+                            in {
+                                "axiom",
+                                "references-previous-lemma",
+                                "references-previous-theorem",
+                            }
+                        ),
+                    )
+                )
 
-    def _extract_proof_dependencies(self, directive: DirectiveInfo, proof_content: str, proof_lines: List[Tuple[int, str]]):
+    def _extract_proof_dependencies(
+        self, directive: DirectiveInfo, proof_content: str, proof_lines: list[tuple[int, str]]
+    ):
         """Extract all types of dependencies from proof"""
 
         # Pattern 1: "Lemma X.Y.Z" or "Theorem X.Y.Z" references
-        for match in re.finditer(r'(Lemma|Theorem|Proposition|Corollary)\s+\{prf:ref\}`([^`]+)`', proof_content):
+        for match in re.finditer(
+            r"(Lemma|Theorem|Proposition|Corollary)\s+\{prf:ref\}`([^`]+)`", proof_content
+        ):
             result_type = match.group(1).lower()
             target = match.group(2)
 
-            directive.explicit_deps.append(Dependency(
-                target_label=target,
-                reference_type=f"proof-uses-{result_type}",
-                context=f"Proof invokes {result_type}: {match.group(0)}",
-                critical=True
-            ))
+            directive.explicit_deps.append(
+                Dependency(
+                    target_label=target,
+                    reference_type=f"proof-uses-{result_type}",
+                    context=f"Proof invokes {result_type}: {match.group(0)}",
+                    critical=True,
+                )
+            )
 
         # Pattern 2: Constants from other results
         constant_patterns = [
-            (r'L_\{\\varphi\}', 'lem-projection-lipschitz', 'Lipschitz constant from projection lemma'),
-            (r'L_R', 'lem-euclidean-reward-regularity', 'Lipschitz constant from reward lemma'),
-            (r'L_\{\\mathrm\{flow\}\}', 'lem-sasaki-kinetic-lipschitz', 'Flow Lipschitz constant'),
-            (r'\\kappa_\{\\mathrm\{drift\}\}', 'lem-euclidean-geometric-consistency', 'Drift constant'),
-            (r'\\sigma_\{\\min,\\mathrm\{patch\}\}', 'def-sasaki-standardization-constants', 'Patched std dev constant'),
+            (
+                r"L_\{\\varphi\}",
+                "lem-projection-lipschitz",
+                "Lipschitz constant from projection lemma",
+            ),
+            (r"L_R", "lem-euclidean-reward-regularity", "Lipschitz constant from reward lemma"),
+            (r"L_\{\\mathrm\{flow\}\}", "lem-sasaki-kinetic-lipschitz", "Flow Lipschitz constant"),
+            (
+                r"\\kappa_\{\\mathrm\{drift\}\}",
+                "lem-euclidean-geometric-consistency",
+                "Drift constant",
+            ),
+            (
+                r"\\sigma_\{\\min,\\mathrm\{patch\}\}",
+                "def-sasaki-standardization-constants",
+                "Patched std dev constant",
+            ),
         ]
 
         for pattern, source_label, description in constant_patterns:
             if re.search(pattern, proof_content):
                 # Check if already explicitly referenced
                 if not any(d.target_label == source_label for d in directive.explicit_deps):
-                    directive.implicit_deps.append(Dependency(
-                        target_label=source_label,
-                        reference_type="constant-usage",
-                        context=description,
-                        evidence=f"Uses constant defined in {source_label}",
-                        critical=True
-                    ))
+                    directive.implicit_deps.append(
+                        Dependency(
+                            target_label=source_label,
+                            reference_type="constant-usage",
+                            context=description,
+                            evidence=f"Uses constant defined in {source_label}",
+                            critical=True,
+                        )
+                    )
 
         # Pattern 3: Standard math used
         standard_math_items = [
@@ -408,13 +471,15 @@ class EnhancedDependencyAnalyzer:
         ]
 
         for math_name, math_type in standard_math_items:
-            if re.search(rf'\b{math_name}\b', proof_content, re.IGNORECASE):
-                directive.standard_math.append(Dependency(
-                    target_label=math_type,
-                    reference_type="standard-result",
-                    context=f"Uses {math_name}",
-                    critical=False
-                ))
+            if re.search(rf"\b{math_name}\b", proof_content, re.IGNORECASE):
+                directive.standard_math.append(
+                    Dependency(
+                        target_label=math_type,
+                        reference_type="standard-result",
+                        context=f"Uses {math_name}",
+                        critical=False,
+                    )
+                )
 
     def _infer_implicit_deps_comprehensive(self, directive: DirectiveInfo):
         """Comprehensive inference of implicit dependencies"""
@@ -434,13 +499,15 @@ class EnhancedDependencyAnalyzer:
         for axiom_name, axiom_label in framework_axioms:
             if axiom_name.lower() in content.lower():
                 if not any(d.target_label == axiom_label for d in directive.explicit_deps):
-                    directive.implicit_deps.append(Dependency(
-                        target_label=axiom_label,
-                        reference_type="framework-axiom",
-                        context=f"References {axiom_name}",
-                        evidence=f"Found mention of '{axiom_name}' in content",
-                        critical=True
-                    ))
+                    directive.implicit_deps.append(
+                        Dependency(
+                            target_label=axiom_label,
+                            reference_type="framework-axiom",
+                            context=f"References {axiom_name}",
+                            evidence=f"Found mention of '{axiom_name}' in content",
+                            critical=True,
+                        )
+                    )
 
         # Check for framework definitions
         framework_defs = [
@@ -453,13 +520,15 @@ class EnhancedDependencyAnalyzer:
         for def_phrase, def_label in framework_defs:
             if def_phrase.lower() in content.lower():
                 if not any(d.target_label == def_label for d in directive.explicit_deps):
-                    directive.implicit_deps.append(Dependency(
-                        target_label=def_label,
-                        reference_type="framework-definition",
-                        context=f"Uses {def_phrase}",
-                        evidence=f"Found reference to framework definition",
-                        critical=True
-                    ))
+                    directive.implicit_deps.append(
+                        Dependency(
+                            target_label=def_label,
+                            reference_type="framework-definition",
+                            context=f"Uses {def_phrase}",
+                            evidence="Found reference to framework definition",
+                            critical=True,
+                        )
+                    )
 
     def _detect_notation_dependencies(self, directive: DirectiveInfo):
         """Detect dependencies based on mathematical notation"""
@@ -469,13 +538,15 @@ class EnhancedDependencyAnalyzer:
             if re.search(notation_pattern, content):
                 # Check if already explicitly referenced
                 if not any(d.target_label == source_label for d in directive.explicit_deps):
-                    directive.implicit_deps.append(Dependency(
-                        target_label=source_label,
-                        reference_type="notation-use",
-                        context=f"Uses notation from {source_label}",
-                        evidence=f"Found notation pattern: {notation_pattern}",
-                        critical=True
-                    ))
+                    directive.implicit_deps.append(
+                        Dependency(
+                            target_label=source_label,
+                            reference_type="notation-use",
+                            context=f"Uses notation from {source_label}",
+                            evidence=f"Found notation pattern: {notation_pattern}",
+                            critical=True,
+                        )
+                    )
 
     def build_dependency_graph(self):
         """Build complete dependency graph with enhanced edge detection"""
@@ -484,10 +555,13 @@ class EnhancedDependencyAnalyzer:
         # Create nodes
         for label, directive in self.directives.items():
             node_type = directive.type
-            if directive.type in ["lemma", "theorem", "proposition"]:
+            if directive.type in {"lemma", "theorem", "proposition"}:
                 # Classify by usage
-                num_dependents = sum(1 for d in self.directives.values()
-                                   if any(dep.target_label == label for dep in d.explicit_deps + d.implicit_deps))
+                num_dependents = sum(
+                    1
+                    for d in self.directives.values()
+                    if any(dep.target_label == label for dep in d.explicit_deps + d.implicit_deps)
+                )
                 if num_dependents >= 5:
                     node_type = f"{directive.type} (foundational)"
                 elif num_dependents == 0:
@@ -498,15 +572,14 @@ class EnhancedDependencyAnalyzer:
                 "type": node_type,
                 "title": directive.title,
                 "line_range": directive.line_range,
-                "dependency_count": len(directive.explicit_deps) + len(directive.implicit_deps)
+                "dependency_count": len(directive.explicit_deps) + len(directive.implicit_deps),
             })
 
         # Create edges with deduplication
         edge_set = set()
 
         for label, directive in self.directives.items():
-            all_deps = (directive.explicit_deps + directive.implicit_deps +
-                       directive.assumptions)
+            all_deps = directive.explicit_deps + directive.implicit_deps + directive.assumptions
 
             for dep in all_deps:
                 target = dep.target_label
@@ -536,7 +609,7 @@ class EnhancedDependencyAnalyzer:
                         "edge_type": edge_type,
                         "critical": dep.critical,
                         "reference_type": dep.reference_type,
-                        "context": dep.context[:100] if dep.context else ""
+                        "context": dep.context[:100] if dep.context else "",
                     })
 
         print(f"  Created {len(self.dependency_graph['nodes'])} nodes")
@@ -554,22 +627,20 @@ class EnhancedDependencyAnalyzer:
             "metadata": {
                 "total_lines": len(self.lines),
                 "total_directives": len(self.directives),
-                "directive_types": self._count_directive_types()
+                "directive_types": self._count_directive_types(),
             },
-            "directives": [
-                self._serialize_directive(d) for d in self.directives.values()
-            ],
+            "directives": [self._serialize_directive(d) for d in self.directives.values()],
             "dependency_graph": self.dependency_graph,
-            "analysis": self._compute_analysis_stats()
+            "analysis": self._compute_analysis_stats(),
         }
 
         (output_dir / "deep_dependency_analysis.json").write_text(
-            json.dumps(analysis, indent=2), encoding='utf-8'
+            json.dumps(analysis, indent=2), encoding="utf-8"
         )
 
         # Separate graph file
         (output_dir / "dependency_graph.json").write_text(
-            json.dumps(self.dependency_graph, indent=2), encoding='utf-8'
+            json.dumps(self.dependency_graph, indent=2), encoding="utf-8"
         )
 
         # Human-readable reports
@@ -579,7 +650,7 @@ class EnhancedDependencyAnalyzer:
 
         print(f"✓ Generated outputs in {output_dir}")
 
-    def _serialize_directive(self, directive: DirectiveInfo) -> Dict:
+    def _serialize_directive(self, directive: DirectiveInfo) -> dict:
         """Serialize directive to dict with all information"""
         return {
             "label": directive.label,
@@ -593,24 +664,24 @@ class EnhancedDependencyAnalyzer:
                 "implicit": [asdict(d) for d in directive.implicit_deps],
                 "assumptions": [asdict(d) for d in directive.assumptions],
                 "standard_math": [asdict(d) for d in directive.standard_math],
-                "missing_references": directive.missing_references
+                "missing_references": directive.missing_references,
             },
             "proof_analysis": {
                 "steps": [asdict(step) for step in directive.proof_steps],
                 "inputs": directive.proof_inputs,
-                "outputs": directive.proof_outputs
+                "outputs": directive.proof_outputs,
             },
-            "dependency_summary": directive.dependency_summary()
+            "dependency_summary": directive.dependency_summary(),
         }
 
-    def _count_directive_types(self) -> Dict[str, int]:
+    def _count_directive_types(self) -> dict[str, int]:
         """Count directives by type"""
         counts = defaultdict(int)
         for d in self.directives.values():
             counts[d.type] += 1
         return dict(counts)
 
-    def _compute_analysis_stats(self) -> Dict:
+    def _compute_analysis_stats(self) -> dict:
         """Compute comprehensive analysis statistics"""
         all_targets = defaultdict(int)
 
@@ -619,7 +690,7 @@ class EnhancedDependencyAnalyzer:
                 all_targets[dep.target_label] += 1
 
         # Find most depended-on results
-        most_depended = sorted(all_targets.items(), key=lambda x: x[1], reverse=True)[:15]
+        most_depended = sorted(all_targets.items(), key=operator.itemgetter(1), reverse=True)[:15]
 
         # Find leaf results (not depended on by anything)
         all_sources = set(self.directives.keys())
@@ -636,17 +707,19 @@ class EnhancedDependencyAnalyzer:
                     external_targets.add(dep.target_label)
 
         return {
-            "most_depended_on": [{"label": label, "count": count} for label, count in most_depended],
+            "most_depended_on": [
+                {"label": label, "count": count} for label, count in most_depended
+            ],
             "leaf_results": leaf_results[:20],
             "foundational_results": foundational,
             "total_unique_dependencies": len(all_targets),
             "external_dependencies": list(external_targets),
-            "validation_issues": []
+            "validation_issues": [],
         }
 
     def _generate_missing_references_report(self, output_dir: Path):
         """Generate human-readable report of missing references"""
-        with open(output_dir / "missing_references_report.txt", "w", encoding='utf-8') as f:
+        with open(output_dir / "missing_references_report.txt", "w", encoding="utf-8") as f:
             f.write("MISSING REFERENCES REPORT\n")
             f.write("=" * 80 + "\n\n")
 
@@ -665,13 +738,15 @@ class EnhancedDependencyAnalyzer:
 
     def _generate_critical_path_analysis(self, output_dir: Path):
         """Generate critical dependency paths to main theorems"""
-        with open(output_dir / "critical_path_analysis.txt", "w", encoding='utf-8') as f:
+        with open(output_dir / "critical_path_analysis.txt", "w", encoding="utf-8") as f:
             f.write("CRITICAL PATH ANALYSIS\n")
             f.write("=" * 80 + "\n\n")
 
             # Find main theorems
             main_theorems = [d for d in self.directives.values() if d.type == "theorem"]
-            main_theorems.sort(key=lambda x: len(x.explicit_deps) + len(x.implicit_deps), reverse=True)
+            main_theorems.sort(
+                key=lambda x: len(x.explicit_deps) + len(x.implicit_deps), reverse=True
+            )
 
             for thm in main_theorems[:10]:
                 f.write(f"\n{thm.label}\n")
@@ -691,7 +766,7 @@ class EnhancedDependencyAnalyzer:
 
     def _generate_dependency_summary(self, output_dir: Path):
         """Generate a concise dependency summary"""
-        with open(output_dir / "dependency_summary.txt", "w", encoding='utf-8') as f:
+        with open(output_dir / "dependency_summary.txt", "w", encoding="utf-8") as f:
             f.write("DEPENDENCY SUMMARY\n")
             f.write("=" * 80 + "\n\n")
 
@@ -715,7 +790,9 @@ class EnhancedDependencyAnalyzer:
                 for dep in directive.explicit_deps + directive.implicit_deps:
                     all_targets[dep.target_label] += 1
 
-            for label, count in sorted(all_targets.items(), key=lambda x: x[1], reverse=True)[:10]:
+            for label, count in sorted(
+                all_targets.items(), key=operator.itemgetter(1), reverse=True
+            )[:10]:
                 f.write(f"  {label}: {count} dependencies\n")
 
 
@@ -723,9 +800,9 @@ def main():
     doc_path = Path("/home/guillem/fragile/docs/source/1_euclidean_gas/02_euclidean_gas.md")
     output_dir = Path("/home/guillem/fragile/docs/source/1_euclidean_gas/02_euclidean_gas/data")
 
-    print("="*80)
+    print("=" * 80)
     print("ENHANCED ULTRATHINK DEEP DEPENDENCY EXTRACTION")
-    print("="*80)
+    print("=" * 80)
     print(f"Document: {doc_path.name}")
     print(f"Output: {output_dir}")
     print()
@@ -739,9 +816,9 @@ def main():
     analyzer.generate_outputs(output_dir)
 
     print()
-    print("="*80)
+    print("=" * 80)
     print("ANALYSIS COMPLETE")
-    print("="*80)
+    print("=" * 80)
 
 
 if __name__ == "__main__":

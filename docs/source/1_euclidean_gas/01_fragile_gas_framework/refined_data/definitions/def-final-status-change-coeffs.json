@@ -1,0 +1,33 @@
+{
+  "label": "def-final-status-change-coeffs",
+  "name": "Final Status Change Bound Coefficients",
+  "entity_type": "definition",
+  "statement_type": "DefinitionBox",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "lemma_dag_edges": [],
+  "internal_lemmas": [],
+  "relations": [],
+  "proof_status": "n/a",
+  "raw_fallback": {
+    "label": "def-final-status-change-coeffs",
+    "type": "definition",
+    "name": "Final Status Change Bound Coefficients",
+    "section": "18",
+    "subsection": "17.2.3.1",
+    "source_file": "01_fragile_gas_framework.md",
+    "source_lines": "4627-5086",
+    "extraction_date": "2025-10-27",
+    "status": "extracted"
+  },
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "18",
+    "subsection": "17.2.3.1",
+    "line_start": 4627,
+    "line_end": 5086,
+    "directive_label": "def-final-status-change-coeffs"
+  }
+}

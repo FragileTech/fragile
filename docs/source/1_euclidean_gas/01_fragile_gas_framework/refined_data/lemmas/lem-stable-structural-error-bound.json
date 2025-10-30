@@ -1,0 +1,33 @@
+{
+  "label": "lem-stable-structural-error-bound",
+  "name": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with $|\\mathcal{A}(\\mathcal{S}_1)| = ...",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-companion-selection-measure",
+    "obj-distance-measurement-ms-constants"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Structural error for stable walkers bounded by status changes"
+  ],
+  "natural_language_statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with $|\\mathcal{A}(\\mathcal{S}_1)| = k_1 \\ge 2$. Let $\\mathcal{A}_{\\text{stable}} = \\mathcal{A}(\\mathcal{S}_1) \\cap \\mathcal{A}(\\mathcal{S}_2)$ be the set of stable walkers, and let $\\Delta_{\\text{struct},i}$ be the error in a single walker's expected distance due to structural change.\n\nThe total squared error arising from structural changes for stable walkers is bounded by the square of the total number of status changes in the swarm.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

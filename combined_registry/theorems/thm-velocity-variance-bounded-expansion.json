@@ -2,9 +2,17 @@
   "label": "thm-velocity-variance-bounded-expansion",
   "name": "Bounded Velocity Variance Expansion from Cloning",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning",
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "thm-velocity-variance-bounded-expansion",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-velocity-variance-bounded-expansion"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -20,10 +28,10 @@
     "alpha_restitution",
     "N"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-inelastic-collision-update": [
-      "prop-momentum-conservation",
-      "prop-bounded-velocity-change"
+      "attr-momentum-conservation",
+      "attr-bounded-velocity-change"
     ]
   },
   "internal_lemmas": [
@@ -43,7 +51,7 @@
     ]
   ],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-velocity-variance-bounded-expansion-0-approximation",
@@ -53,14 +61,29 @@
       "target_object": "obj-inelastic-collision-update",
       "established_by": "thm-velocity-variance-bounded-expansion",
       "expression": "rel-cloning-expands-velocity-variance-bounded",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "03_cloning"
+      "source": {
+        "document_id": "03_cloning",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+        "section": null,
+        "directive_label": "thm-velocity-variance-bounded-expansion",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-velocity-variance-bounded-expansion"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

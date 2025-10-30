@@ -24,12 +24,12 @@ Maps to Lean:
       errors : List ErrorLog
 """
 
+from datetime import datetime
 import json
 import logging
-from collections import defaultdict
-from datetime import datetime
+import operator
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -57,7 +57,7 @@ class ErrorLogEntry(BaseModel):
         ...     error_type=ErrorType.PARSE_FAILURE,
         ...     message="Failed to parse LaTeX",
         ...     entity_id="raw-eq-001",
-        ...     context={"latex": "\\frac{1}{x}"}
+        ...     context={"latex": "\\frac{1}{x}"},
         ... )
 
     Maps to Lean:
@@ -73,13 +73,13 @@ class ErrorLogEntry(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now)
     error_type: ErrorType
     message: str
-    entity_id: Optional[str] = None
-    entity_type: Optional[str] = None  # "theorem", "definition", etc.
-    context: Dict[str, Any] = Field(default_factory=dict)
+    entity_id: str | None = None
+    entity_type: str | None = None  # "theorem", "definition", etc.
+    context: dict[str, Any] = Field(default_factory=dict)
     severity: str = Field(default="error")  # "warning", "error", "critical"
     recoverable: bool = Field(default=True)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
         return {
             "timestamp": self.timestamp.isoformat(),
@@ -108,7 +108,7 @@ class ErrorSummary(BaseModel):
         >>> summary = ErrorSummary(
         ...     total_errors=15,
         ...     by_type={ErrorType.PARSE_FAILURE: 10, ErrorType.REFERENCE_UNRESOLVED: 5},
-        ...     by_entity_type={"theorem": 8, "definition": 7}
+        ...     by_entity_type={"theorem": 8, "definition": 7},
         ... )
 
     Maps to Lean:
@@ -121,9 +121,9 @@ class ErrorSummary(BaseModel):
     """
 
     total_errors: int = 0
-    by_type: Dict[ErrorType, int] = Field(default_factory=dict)
-    by_entity_type: Dict[str, int] = Field(default_factory=dict)
-    by_severity: Dict[str, int] = Field(default_factory=dict)
+    by_type: dict[ErrorType, int] = Field(default_factory=dict)
+    by_entity_type: dict[str, int] = Field(default_factory=dict)
+    by_severity: dict[str, int] = Field(default_factory=dict)
     recoverable_count: int = 0
     critical_count: int = 0
 
@@ -153,11 +153,11 @@ class ErrorSummary(BaseModel):
         if entry.severity == "critical":
             self.critical_count += 1
 
-    def get_most_common_error_type(self) -> Optional[ErrorType]:
+    def get_most_common_error_type(self) -> ErrorType | None:
         """Get the most frequently occurring error type."""
         if not self.by_type:
             return None
-        return max(self.by_type.items(), key=lambda x: x[1])[0]
+        return max(self.by_type.items(), key=operator.itemgetter(1))[0]
 
 
 # =============================================================================
@@ -177,7 +177,7 @@ class ValidationReport(BaseModel):
         ...     document_id="03_cloning",
         ...     total_entities_extracted=50,
         ...     successful_enrichments=42,
-        ...     failed_enrichments=8
+        ...     failed_enrichments=8,
         ... )
         >>> report.get_success_rate()
         0.84
@@ -211,20 +211,20 @@ class ValidationReport(BaseModel):
     skipped_enrichments: int = 0
 
     # Error tracking
-    errors: List[ErrorLogEntry] = Field(default_factory=list)
-    warnings: List[str] = Field(default_factory=list)
+    errors: list[ErrorLogEntry] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
     error_summary: ErrorSummary = Field(default_factory=ErrorSummary)
 
     # Timing
-    duration_seconds: Optional[float] = None
+    duration_seconds: float | None = None
 
     def add_error(
         self,
         error_type: ErrorType,
         message: str,
-        entity_id: Optional[str] = None,
-        entity_type: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None,
+        entity_id: str | None = None,
+        entity_type: str | None = None,
+        context: dict[str, Any] | None = None,
         severity: str = "error",
         recoverable: bool = True,
     ) -> None:
@@ -275,7 +275,7 @@ class ValidationReport(BaseModel):
         """Check if any critical errors occurred."""
         return self.error_summary.critical_count > 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
         return {
             "document_id": self.document_id,
@@ -319,7 +319,7 @@ class ErrorLogger:
         ...     ErrorType.PARSE_FAILURE,
         ...     "Failed to parse LaTeX equation",
         ...     entity_id="raw-eq-001",
-        ...     entity_type="equation"
+        ...     entity_type="equation",
         ... )
         >>> logger.log_warning("Missing equation label")
         >>> report = logger.get_report()
@@ -339,7 +339,7 @@ class ErrorLogger:
     def __init__(
         self,
         document_id: str,
-        log_dir: Optional[str] = None,
+        log_dir: str | None = None,
         console_output: bool = True,
         file_output: bool = True,
     ):
@@ -371,9 +371,7 @@ class ErrorLogger:
         if console_output:
             console_handler = logging.StreamHandler()
             console_handler.setLevel(logging.INFO)
-            formatter = logging.Formatter(
-                "[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s"
-            )
+            formatter = logging.Formatter("[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s")
             console_handler.setFormatter(formatter)
             self.logger.addHandler(console_handler)
 
@@ -382,9 +380,7 @@ class ErrorLogger:
             log_file = self.log_dir / f"{document_id}_extraction.log"
             file_handler = logging.FileHandler(log_file, mode="a")
             file_handler.setLevel(logging.DEBUG)
-            formatter = logging.Formatter(
-                "[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s"
-            )
+            formatter = logging.Formatter("[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s")
             file_handler.setFormatter(formatter)
             self.logger.addHandler(file_handler)
 
@@ -398,9 +394,9 @@ class ErrorLogger:
         self,
         error_type: ErrorType,
         message: str,
-        entity_id: Optional[str] = None,
-        entity_type: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None,
+        entity_id: str | None = None,
+        entity_type: str | None = None,
+        context: dict[str, Any] | None = None,
         severity: str = "error",
         recoverable: bool = True,
     ) -> None:
@@ -504,7 +500,7 @@ class ErrorLogger:
         self.report.duration_seconds = (datetime.now() - self.start_time).total_seconds()
         return self.report
 
-    def save_report(self, filename: Optional[str] = None) -> Path:
+    def save_report(self, filename: str | None = None) -> Path:
         """
         Save the validation report to JSON file.
 
@@ -520,7 +516,7 @@ class ErrorLogger:
         report_path = self.log_dir / filename
         report_dict = self.get_report().to_dict()
 
-        with open(report_path, "w") as f:
+        with open(report_path, "w", encoding="utf-8") as f:
             json.dump(report_dict, f, indent=2)
 
         self.log_info(f"Validation report saved to: {report_path}")
@@ -550,7 +546,7 @@ class ErrorLogger:
         if report.error_summary.by_type:
             print("Errors by type:")
             for error_type, count in sorted(
-                report.error_summary.by_type.items(), key=lambda x: x[1], reverse=True
+                report.error_summary.by_type.items(), key=operator.itemgetter(1), reverse=True
             ):
                 print(f"  - {error_type.value}: {count}")
             print()
@@ -559,7 +555,7 @@ class ErrorLogger:
             print("Errors by entity type:")
             for entity_type, count in sorted(
                 report.error_summary.by_entity_type.items(),
-                key=lambda x: x[1],
+                key=operator.itemgetter(1),
                 reverse=True,
             ):
                 print(f"  - {entity_type}: {count}")
@@ -573,9 +569,7 @@ class ErrorLogger:
 # =============================================================================
 
 
-def create_logger_for_document(
-    document_id: str, log_dir: Optional[str] = None
-) -> ErrorLogger:
+def create_logger_for_document(document_id: str, log_dir: str | None = None) -> ErrorLogger:
     """
     Create an ErrorLogger for a document.
 
@@ -591,7 +585,7 @@ def create_logger_for_document(
     return ErrorLogger(document_id, log_dir=log_dir)
 
 
-def merge_reports(reports: List[ValidationReport]) -> ValidationReport:
+def merge_reports(reports: list[ValidationReport]) -> ValidationReport:
     """
     Merge multiple validation reports into one.
 
@@ -604,7 +598,8 @@ def merge_reports(reports: List[ValidationReport]) -> ValidationReport:
         Merged ValidationReport
     """
     if not reports:
-        raise ValueError("Cannot merge empty list of reports")
+        msg = "Cannot merge empty list of reports"
+        raise ValueError(msg)
 
     # Use first report as base
     merged = ValidationReport(document_id=reports[0].document_id)

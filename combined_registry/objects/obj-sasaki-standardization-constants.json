@@ -3,13 +3,14 @@
   "name": "Standardization constants (Sasaki geometry)",
   "mathematical_expression": "C_{V,\\mathrm{direct}} := \\frac{1}{\\sigma_{\\min,\\mathrm{patch}}}",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle",
     "swarm"
   ],
   "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "root"
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

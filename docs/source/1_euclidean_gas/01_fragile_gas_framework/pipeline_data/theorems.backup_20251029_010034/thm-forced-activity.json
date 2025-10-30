@@ -1,0 +1,33 @@
+{
+  "label": "thm-forced-activity",
+  "name": "thm-forced-activity",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": {
+    "temp_id": "raw-thm-003",
+    "label_text": "thm-forced-activity",
+    "statement_type": "theorem",
+    "full_statement_text": "",
+    "source_section": "§3"
+  }
+}

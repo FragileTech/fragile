@@ -1,0 +1,31 @@
+{
+  "entity_type": "definition",
+  "label": "def-cloning-probability-function",
+  "name": "Conditional Cloning Probability Function",
+  "statement": "The **Conditional Cloning Probability Function**, denoted $\\pi: \\mathbb{R}_{\\ge 0} \\times \\mathbb{R}_{\\ge 0} \\to [0, 1]$, maps the fitness potential of a companion ($v_c$) and a primary walker ($v_i$) to the probability that the \"Clone\" action is selected.",
+  "description": "This function defines the probability of a 'Clone' action occurring based on the fitness potentials of two walkers (a companion and a primary walker). It is calculated by comparing the cloning score to a randomly drawn threshold, effectively clipping the normalized score to the valid probability range of [0, 1].",
+  "relations": [
+    {
+      "type": "definition",
+      "formula": "\\pi(v_c, v_i) := P(S(v_c, v_i) > T_{\\text{clone}}) = \\min\\left(1, \\max\\left(0, \\frac{S(v_c, v_i)}{p_{\\max}}\\right)\\right)",
+      "description": "The cloning probability is the probability that the score S(v_c, v_i) exceeds a uniform random threshold T_clone. This is equivalent to clipping the normalized score S(v_c, v_i) / p_max to the interval [0, 1]."
+    }
+  ],
+  "dependencies": {
+    "input_definitions": [
+      "def-cloning-score-function"
+    ]
+  },
+  "tags": [
+    "cloning",
+    "probability",
+    "function"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "16",
+    "subsection": "15.2.2",
+    "line_start": 4297
+  }
+}

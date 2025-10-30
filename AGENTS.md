@@ -572,6 +572,169 @@ Publication Readiness: MAJOR REVISIONS REQUIRED
 
 ---
 
+### 10. Entity Enrichment and Registry Management
+
+**NEW TASK TYPE**: In addition to mathematical document review, you may be asked to assist with **entity enrichment** - transforming extracted mathematical entities into semantically complete, validated structures.
+
+#### 10.1 When This Applies
+
+You will use this section when:
+- User asks to "enrich", "refine", or "complete" entity files
+- Working with files in `registries/per_document/*/pipeline/` or `registries/per_document/*/refined/` directories
+- Validating enriched entities for framework consistency
+- Building centralized registries from refined entities
+
+**DO NOT confuse with document review**:
+- Document review (§ 3): Analyze proofs, theorems, definitions in markdown files for mathematical rigor
+- Entity enrichment (§ 10): Fill semantic fields in structured JSON entity files
+
+#### 10.2 The Extract-then-Enrich Pipeline
+
+The Fragile framework uses a three-stage transformation:
+
+```
+Stage 1: Extraction (document-parser)
+  Input:  MyST markdown with Jupyter Book directives
+  Output: raw/ entities (structural skeleton, ~20-30% complete)
+
+Stage 2: Enrichment (document-refiner) ← YOUR TASK
+  Input:  pipeline/ entities (partially structured)
+  Output: refined/ entities (semantically complete, 95-100%)
+
+Stage 3: Validation (registry building)
+  Input:  refined/ entities
+  Output: Combined registry at registries/combined/
+```
+
+**Your role**: Stage 2 enrichment and validation of enriched entities.
+
+#### 10.3 Entity Types and Enrichment Requirements
+
+**For detailed enrichment specifications, see GEMINI.md § 5.**
+
+Quick reference for critical fields to enrich:
+
+**Axioms (AxiomBox):**
+- `core_assumption` (DualStatement): Extract LHS, relation, RHS from axiom statement
+- `parameters` (List[Parameter]): Identify all symbols with domain, constraints
+- `condition` (DualStatement): Extract conditional clauses
+- `failure_mode_analysis` (string): Comprehensive analysis (min 200 words)
+
+**Mathematical Objects (MathematicalObject):**
+- `definition` (string): Natural language definition (2-3 sentences)
+- `mathematical_properties` (string): Key properties (continuity, boundedness, etc.)
+- `dependencies` (List[str]): All obj-*, axiom-*, thm-* labels referenced
+- `typical_values` (Dict): Typical parameter values or ranges
+
+**Theorems (TheoremBox):**
+- `natural_language_statement` (string): Clear English statement
+- `assumptions` (List[str]): All hypotheses and preconditions
+- `conclusion` (string): The main claim/result
+- `uses_definitions` (List[str]): All def-*, obj-* labels used
+
+#### 10.4 Validation Focus (Your Strength)
+
+**Apply your computational precision to validate:**
+
+1. **Cross-Reference Accuracy:**
+   - All labels in `dependencies`, `input_objects`, `input_axioms` must exist
+   - Verify against `docs/glossary.md` (comprehensive glossary of 741 entries)
+   - Check for broken references (e.g., `obj-lipschitz-*` when should be `obj-value-error-coefficients`)
+
+2. **Mathematical Correctness:**
+   - Inequality directions match semantics (Maximum parameter → ≤, Minimum → ≥)
+   - DualStatement structure matches source (LHS/relation/RHS correctly extracted)
+   - Parameters list is complete (all symbols in axiom are documented)
+
+3. **Schema Compliance:**
+   - JSON matches Pydantic schemas in `src/fragile/proofs/core/math_types.py`
+   - No type mismatches (e.g., string where DualStatement expected)
+   - Required fields are non-null
+
+4. **Directive Label Conventions:**
+   - Axioms: Use `def-axiom-*` or `def-assumption-*` format (NOT `axiom-*`)
+   - Objects: Use `def-*` format in definition_label
+   - Verify consistency with glossary.md conventions
+
+#### 10.5 Common Enrichment Errors (Flag These)
+
+| Error Type | Description | Example | Severity |
+|------------|-------------|---------|----------|
+| **Broken dependency** | References non-existent entity | `obj-lipschitz-value-error` instead of `obj-value-error-coefficients` | CRITICAL |
+| **Wrong directive label** | Missing "def-" prefix | `axiom-boundary-regularity` should be `def-axiom-boundary-regularity` | CRITICAL |
+| **Reversed inequality** | Math expression contradicts parameter semantics | Maximum parameter but uses `>=` (lower bound) | CRITICAL |
+| **Incomplete parameters** | Missing symbols from axiom | Axiom uses σ, γ, β but only σ documented | MAJOR |
+| **Hallucinated reference** | Dependency to nonexistent entity | `thm-convergence-rate` not in glossary.md | CRITICAL |
+| **Type mismatch** | Wrong JSON type for field | String instead of DualStatement | MAJOR |
+| **Vague analysis** | failure_mode_analysis lacks specifics | "This breaks things" (needs mechanism, diagnostics, remediation) | MINOR |
+
+#### 10.6 Batch Review Strategy
+
+When reviewing enriched entities in batches:
+
+1. **Check all entities of same type together** (e.g., 5 axioms)
+2. **Cross-validate dependencies within batch** (do referenced entities exist?)
+3. **Verify mathematical consistency** (inequalities, bounds, constraints)
+4. **Check against glossary.md** (are cross-references valid?)
+5. **Flag systematic errors** (if 3+ entities have same issue, flag as pattern)
+
+**Example batch review output:**
+
+```
+Batch Review: 5 Axioms from 01_fragile_gas_framework
+
+CRITICAL Issues (3):
+1. axiom-boundary-regularity: Missing "def-" prefix in directive_label
+2. axiom-rescale-function: Missing "def-" prefix in directive_label
+3. axiom-bounded-second-moment-perturbation: Reversed inequality (M_pert^2 >= sup should be sup <= M_pert^2)
+
+MAJOR Issues (2):
+1. axiom-instep-independence: Missing parameter N (number of walkers) in parameters list
+2. axiom-sufficient-amplification: Incomplete failure_mode_analysis (only 80 words, needs min 200)
+
+MINOR Issues (1):
+1. axiom-margin-stability: failure_mode_analysis lacks diagnostic indicators
+
+PATTERN DETECTED: Multiple axioms missing "def-" prefix → Systematic fix needed
+
+Recommendation: Apply Python script to fix all directive_label fields, then re-validate
+```
+
+#### 10.7 Integration with Dual Review System
+
+**Entity enrichment uses dual review** (like document review):
+
+1. **Gemini enriches** (generates semantic content)
+2. **You validate** (check computational/technical correctness)
+3. **Claude orchestrates** (applies fixes, resolves discrepancies)
+
+**Your unique value in entity validation:**
+- Precise cross-reference checking (computational graph validation)
+- Schema compliance verification (type system validation)
+- Inequality direction checking (mathematical logic)
+- Dependency graph validation (no circular references)
+
+#### 10.8 Enrichment Workflow Reference
+
+**For complete enrichment instructions, refer to:**
+- `.claude/agents/document-refiner.md` - Detailed enrichment workflow
+- `.claude/skills/refine-entity-type.md` - Entity-specific enrichment skills
+- `GEMINI.md § 5` - Comprehensive enrichment guide (prompt templates, validation checklist)
+- `src/fragile/proofs/core/math_types.py` - Pydantic schemas for all entity types
+
+**Quick validation command:**
+```python
+from fragile.proofs.core.math_types import AxiomBox, MathematicalObject, TheoremBox
+import json
+
+# Validate axiom
+with open("axiom-boundary-regularity.json") as f:
+    data = json.load(f)
+    axiom = AxiomBox(**data)  # Raises ValidationError if invalid
+```
+
+---
+
 ## Framework-Specific Guidance
 
 ### Mathematical Notation Conventions

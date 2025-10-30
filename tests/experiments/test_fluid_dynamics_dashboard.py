@@ -22,8 +22,8 @@ from fragile.core.benchmarks import (
     TaylorGreenVortex,
 )
 from fragile.experiments.fluid_dynamics_dashboard import (
-    FluidDynamicsExplorer,
     create_fluid_dashboard,
+    FluidDynamicsExplorer,
 )
 from fragile.experiments.fluid_utils import (
     FluidFieldComputer,
@@ -117,7 +117,7 @@ class TestTaylorGreenBenchmark:
     def test_initial_conditions_bounds(self, taylor_green_benchmark):
         """Test initial conditions are within bounds."""
         N = 200
-        x_init, v_init = taylor_green_benchmark.get_initial_conditions(
+        x_init, _v_init = taylor_green_benchmark.get_initial_conditions(
             N, torch.device("cpu"), torch.float32
         )
 
@@ -255,7 +255,7 @@ class TestKelvinHelmholtzBenchmark:
     def test_perturbation_present(self, kelvin_helmholtz_benchmark):
         """Test that perturbation is added to trigger instability."""
         N = 200
-        x_init, v_init = kelvin_helmholtz_benchmark.get_initial_conditions(
+        _x_init, v_init = kelvin_helmholtz_benchmark.get_initial_conditions(
             N, torch.device("cpu"), torch.float32
         )
 
@@ -294,9 +294,7 @@ class TestFluidFieldComputer:
         positions, velocities = sample_particle_data
 
         bounds = (-np.pi, np.pi)
-        X, Y, U, V = field_computer.compute_velocity_field(
-            positions, velocities, bounds=bounds
-        )
+        X, Y, _U, _V = field_computer.compute_velocity_field(positions, velocities, bounds=bounds)
 
         # Grid coordinates should be within bounds
         assert X.min() >= bounds[0]
@@ -308,7 +306,7 @@ class TestFluidFieldComputer:
         """Test velocity field is smooth (no NaNs, reasonable values)."""
         positions, velocities = sample_particle_data
 
-        X, Y, U, V = field_computer.compute_velocity_field(
+        _X, _Y, U, V = field_computer.compute_velocity_field(
             positions, velocities, kernel_bandwidth=0.5
         )
 
@@ -364,7 +362,7 @@ class TestFluidFieldComputer:
         """Test density field is non-negative and reasonable."""
         positions, _ = sample_particle_data
 
-        X, Y, density = field_computer.compute_density_field(positions)
+        _X, _Y, density = field_computer.compute_density_field(positions)
 
         # Density should be non-negative
         assert (density >= 0).all()
@@ -396,7 +394,7 @@ class TestValidationMetrics:
             theoretical_value=1.1,
             tolerance=0.1,
             passed=True,
-            description="Test description"
+            description="Test description",
         )
 
         assert metric.metric_name == "Test Metric"
@@ -414,7 +412,7 @@ class TestValidationMetrics:
             theoretical_value=None,
             tolerance=float("inf"),
             passed=True,
-            description="Qualitative check"
+            description="Qualitative check",
         )
 
         assert metric.theoretical_value is None
@@ -443,7 +441,11 @@ class TestFluidDynamicsExplorer:
         explorer = FluidDynamicsExplorer()
 
         # Switch to each benchmark
-        for benchmark_name in ["Taylor-Green Vortex", "Lid-Driven Cavity (Re=100)", "Kelvin-Helmholtz Instability"]:
+        for benchmark_name in [
+            "Taylor-Green Vortex",
+            "Lid-Driven Cavity (Re=100)",
+            "Kelvin-Helmholtz Instability",
+        ]:
             explorer.benchmark_name = benchmark_name
             explorer._update_benchmark()
 
@@ -465,7 +467,6 @@ class TestFluidDynamicsExplorer:
         explorer = FluidDynamicsExplorer()
 
         # Get initial parameters
-        initial_N = explorer.gas_config.N
 
         # Switch benchmark
         explorer.benchmark_name = "Kelvin-Helmholtz Instability"
@@ -473,8 +474,8 @@ class TestFluidDynamicsExplorer:
 
         # Parameters should have been updated (K-H uses more particles)
         # Just check that update mechanism works
-        assert hasattr(explorer, '_recommended_params')
-        assert 'N' in explorer._recommended_params
+        assert hasattr(explorer, "_recommended_params")
+        assert "N" in explorer._recommended_params
 
 
 class TestDashboardSimulation:
@@ -560,11 +561,11 @@ class TestTaylorGreenIntegration:
 
         # Energy should either decay (with viscous coupling) or stay bounded
         E_initial = energies[0]
-        E_final = energies[-1]
+        energies[-1]
         E_max = max(energies)
 
         # Check energy doesn't grow unboundedly (at most 2x initial)
-        assert E_max < 2.0 * E_initial, f"Energy grew too much: {E_max/E_initial:.2f}x initial"
+        assert E_max < 2.0 * E_initial, f"Energy grew too much: {E_max / E_initial:.2f}x initial"
 
         # For Taylor-Green vortex with proper viscous coupling, we should see decay
         # However, the exact dynamics depend on many parameters (nu, gamma, dt, etc.)
@@ -581,17 +582,23 @@ class TestTaylorGreenIntegration:
         explorer._run_simulation()
 
         # Compute validation metrics with params
-        params_dict = {"delta_t": explorer.gas_config.delta_t, "nu": explorer.gas_config.nu, "viscous_length_scale": explorer.gas_config.viscous_length_scale}
-        metrics = explorer.benchmark.compute_validation_metrics(explorer.history, t_idx=25, params=params_dict)
+        params_dict = {
+            "delta_t": explorer.gas_config.delta_t,
+            "nu": explorer.gas_config.nu,
+            "viscous_length_scale": explorer.gas_config.viscous_length_scale,
+        }
+        metrics = explorer.benchmark.compute_validation_metrics(
+            explorer.history, t_idx=25, params=params_dict
+        )
 
         assert len(metrics) > 0, "Should have validation metrics"
 
         # Check metric structure
         metric = metrics[0]
-        assert hasattr(metric, 'metric_name')
-        assert hasattr(metric, 'measured_value')
-        assert hasattr(metric, 'passed')
-        assert isinstance(metric.passed, (bool, np.bool_))
+        assert hasattr(metric, "metric_name")
+        assert hasattr(metric, "measured_value")
+        assert hasattr(metric, "passed")
+        assert isinstance(metric.passed, bool | np.bool_)
 
 
 # ============================================================================
@@ -615,7 +622,7 @@ class TestErrorHandling:
         velocities = torch.randn(5, 2)
 
         # Should still work (with degraded quality)
-        X, Y, U, V = field_computer.compute_velocity_field(
+        X, _Y, U, _V = field_computer.compute_velocity_field(
             positions, velocities, grid_resolution=20
         )
 
@@ -679,7 +686,7 @@ class TestPerformance:
         positions, velocities = sample_particle_data
 
         # Large grid
-        X, Y, U, V = field_computer.compute_velocity_field(
+        X, _Y, U, _V = field_computer.compute_velocity_field(
             positions, velocities, grid_resolution=100
         )
 

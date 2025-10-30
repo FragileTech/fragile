@@ -1,0 +1,10 @@
+{
+  "label": "param-sigma-prime-min-bound",
+  "name": "sigma_prime_min_bound",
+  "symbol": "sigma_prime_min_bound",
+  "parameter_type": "real",
+  "constraints": null,
+  "default_value": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

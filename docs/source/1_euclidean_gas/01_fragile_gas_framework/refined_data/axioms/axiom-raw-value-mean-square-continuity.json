@@ -1,0 +1,48 @@
+{
+  "label": "axiom-raw-value-mean-square-continuity",
+  "statement": "Axiom of Mean-Square Continuity for Raw Values",
+  "mathematical_expression": "\\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas/01_fragile_gas_framework",
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of Mean-Square Continuity for Raw Values",
+  "core_assumption": "Small changes in the system state S should only lead to small, bounded changes in the expected squared difference of raw output values v. This enforces a form of stability on the measurement process, ensuring that the system's outputs do not change erratically in response to minor perturbations of its state.",
+  "parameters": [
+    {
+      "symbol": "V",
+      "description": "Raw Value Operator",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathcal{S}_1, \\mathcal{S}_2",
+      "description": "Two swarm states",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathbf{v}_1 \\sim V(\\mathcal{S}_1)",
+      "description": "Independently sampled raw value vector from state 1",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathbf{v}_2 \\sim V(\\mathcal{S}_2)",
+      "description": "Independently sampled raw value vector from state 2",
+      "constraints": null
+    },
+    {
+      "symbol": "F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "description": "Expected Squared Value Error Bound - explicit, deterministic bounding function",
+      "constraints": "Must be provided by user for their chosen operator V"
+    }
+  ],
+  "condition": "The system states S_1 and S_2 must be valid and comparable states within the system's state space. The expectation is taken over any randomness inherent in the measurement process (e.g., random companion selection).",
+  "failure_mode_analysis": "If an operator violates this axiom, the expected error introduced at the measurement stage can be unbounded. This would make the system's output highly sensitive to small perturbations, rendering predictions and control unreliable. The system could exhibit chaotic behavior where infinitesimally close initial states lead to wildly divergent measurement outcomes, breaking the continuity required for stable learning and adaptation.",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-raw-value-mean-square-continuity",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "label": "rel-thm-closed-form-lipschitz-composite-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-rescale-lipschitz-constants",
+  "target_object": "obj-potential-bounds",
+  "established_by": "thm-closed-form-lipschitz-composite",
+  "expression": "Establishes global Lipschitz bound for composite map g_A o z",
+  "attributes": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "thm-closed-form-lipschitz-composite",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-closed-form-lipschitz-composite"
+  },
+  "chapter": null,
+  "document": null
+}

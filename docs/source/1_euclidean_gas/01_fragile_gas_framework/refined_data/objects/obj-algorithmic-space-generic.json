@@ -1,0 +1,29 @@
+{
+  "label": "obj-algorithmic-space-generic",
+  "name": "Algorithmic Space",
+  "mathematical_expression": "(\\mathcal{Y}, d_{\\mathcal{Y}})",
+  "object_type": "space",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "algorithmic",
+    "generic",
+    "metric",
+    "space"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-algorithmic-space-generic",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "5.1",
+    "line_range": [
+      1894,
+      1898
+    ],
+    "directive_label": "obj-algorithmic-space-generic",
+    "equation": null,
+    "url_fragment": null
+  }
+}

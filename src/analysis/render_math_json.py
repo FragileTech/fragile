@@ -7,11 +7,11 @@ formatted markdown documents suitable for human reading or further processing.
 """
 
 import argparse
-import json
-import sys
 from dataclasses import dataclass
+import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+import sys
+from typing import Any
 
 
 @dataclass
@@ -21,14 +21,14 @@ class RenderOptions:
     jupyter_book: bool = False  # Output Jupyter Book format
     include_graph: bool = True  # Include dependency graph
     graph_format: str = "mermaid"  # "mermaid" or "table"
-    filter_type: Optional[str] = None  # Filter by directive type
-    filter_label: Optional[str] = None  # Filter by label
+    filter_type: str | None = None  # Filter by directive type
+    filter_label: str | None = None  # Filter by label
 
 
 class MathDocumentRenderer:
     """Renders a mathematical document JSON to markdown."""
 
-    def __init__(self, doc: Dict[str, Any], options: RenderOptions = None):
+    def __init__(self, doc: dict[str, Any], options: RenderOptions = None):
         """Initialize renderer with document and options."""
         self.doc = doc
         self.options = options or RenderOptions()
@@ -74,8 +74,7 @@ class MathDocumentRenderer:
 
         # Title
         title = self.metadata.get("title", "Untitled Document")
-        lines.append(f"# {title}")
-        lines.append("")
+        lines.extend((f"# {title}", ""))
 
         # Metadata line
         meta_parts = []
@@ -87,13 +86,11 @@ class MathDocumentRenderer:
             meta_parts.append(f"**Rigor:** {rigor}")
 
         if meta_parts:
-            lines.append(" | ".join(meta_parts))
-            lines.append("")
+            lines.extend((" | ".join(meta_parts), ""))
 
         # Authors
         if authors := self.metadata.get("authors"):
-            lines.append(f"**Authors:** {', '.join(authors)}")
-            lines.append("")
+            lines.extend((f"**Authors:** {', '.join(authors)}", ""))
 
         # Dates
         if date_created := self.metadata.get("date_created"):
@@ -105,20 +102,15 @@ class MathDocumentRenderer:
 
         # Document ID
         if doc_id := self.metadata.get("document_id"):
-            lines.append(f"**Document ID:** `{doc_id}`")
-            lines.append("")
+            lines.extend((f"**Document ID:** `{doc_id}`", ""))
 
         # Abstract
         if abstract := self.metadata.get("abstract"):
-            lines.append("## Abstract")
-            lines.append("")
-            lines.append(abstract)
-            lines.append("")
+            lines.extend(("## Abstract", "", abstract, ""))
 
         # Peer review status
         if peer_review := self.metadata.get("peer_review_status"):
-            lines.append("## Peer Review Status")
-            lines.append("")
+            lines.extend(("## Peer Review Status", ""))
             if gemini := peer_review.get("gemini_review"):
                 status = gemini.get("status", "unknown")
                 lines.append(f"- **Gemini Review:** {status}")
@@ -135,19 +127,16 @@ class MathDocumentRenderer:
 
         # Publication readiness aggregate
         if readiness := self.metadata.get("publication_readiness_aggregate"):
-            lines.append("## Publication Readiness")
-            lines.append("")
+            lines.extend(("## Publication Readiness", ""))
 
             # Overall verdict with badge
             if verdict := readiness.get("overall_verdict"):
                 verdict_badge = self._verdict_badge(verdict)
-                lines.append(f"**Overall Status:** {verdict_badge}")
-                lines.append("")
+                lines.extend((f"**Overall Status:** {verdict_badge}", ""))
 
             # Aggregate scores
             if scores := readiness.get("aggregate_scores"):
-                lines.append("**Aggregate Scores:**")
-                lines.append("")
+                lines.extend(("**Aggregate Scores:**", ""))
                 if rigor := scores.get("rigor"):
                     lines.append(f"- Mathematical Rigor: {rigor:.1f}/10")
                 if soundness := scores.get("soundness"):
@@ -165,8 +154,7 @@ class MathDocumentRenderer:
                 major = summary.get("major_revisions_count", 0)
                 reject = summary.get("reject_count", 0)
 
-                lines.append(f"**Directive Summary:** {reviewed}/{total} reviewed")
-                lines.append("")
+                lines.extend((f"**Directive Summary:** {reviewed}/{total} reviewed", ""))
                 if ready > 0:
                     lines.append(f"- ✅ Ready: {ready}")
                 if minor > 0:
@@ -180,8 +168,10 @@ class MathDocumentRenderer:
             # Blocking issues
             if blocking := readiness.get("blocking_issues"):
                 if blocking:
-                    lines.append(f"**🚫 Blocking Issues:** {len(blocking)} critical issues must be resolved")
-                    lines.append("")
+                    lines.extend((
+                        f"**🚫 Blocking Issues:** {len(blocking)} critical issues must be resolved",
+                        "",
+                    ))
                     for block in blocking[:3]:  # Show first 3
                         directive_label = block.get("directive_label", "unknown")
                         issue = block.get("issue", {})
@@ -194,8 +184,10 @@ class MathDocumentRenderer:
             # Development summary
             if dev_summary := readiness.get("development_summary"):
                 avg_completeness = dev_summary.get("average_completeness", 0)
-                lines.append(f"**Development Maturity:** {avg_completeness:.0f}% average completeness")
-                lines.append("")
+                lines.extend((
+                    f"**Development Maturity:** {avg_completeness:.0f}% average completeness",
+                    "",
+                ))
 
                 stages = []
                 if sketch := dev_summary.get("sketch_count"):
@@ -210,13 +202,11 @@ class MathDocumentRenderer:
                     stages.append(f"Published: {published}")
 
                 if stages:
-                    lines.append("- " + " | ".join(stages))
-                    lines.append("")
+                    lines.extend(("- " + " | ".join(stages), ""))
 
         # Dependencies
         if deps := self.metadata.get("dependencies"):
-            lines.append("## Prerequisites")
-            lines.append("")
+            lines.extend(("## Prerequisites", ""))
             for dep in deps:
                 lines.append(f"- `{dep}`")
             lines.append("")
@@ -232,7 +222,7 @@ class MathDocumentRenderer:
         lines = ["## Table of Contents", ""]
 
         # Group by type
-        by_type: Dict[str, List[Dict]] = {}
+        by_type: dict[str, list[dict]] = {}
         for directive in self.directives:
             dtype = directive.get("type", "unknown")
             by_type.setdefault(dtype, []).append(directive)
@@ -259,15 +249,14 @@ class MathDocumentRenderer:
                 continue
 
             # Section header
-            lines.append(f"### {dtype.title()}s")
-            lines.append("")
+            lines.extend((f"### {dtype.title()}s", ""))
 
             # List items
             for i, directive in enumerate(by_type[dtype], 1):
                 label = directive.get("label", "unlabeled")
                 title = directive.get("title", "Untitled")
                 importance = ""
-                if dtype in ["theorem", "lemma", "proposition"]:
+                if dtype in {"theorem", "lemma", "proposition"}:
                     imp = directive.get("importance", "")
                     if imp == "foundational":
                         importance = " ⭐"
@@ -289,7 +278,7 @@ class MathDocumentRenderer:
             return ""
 
         # Group by type for section headers
-        by_type: Dict[str, List[Dict]] = {}
+        by_type: dict[str, list[dict]] = {}
         for directive in self.directives:
             dtype = directive.get("type", "unknown")
             by_type.setdefault(dtype, []).append(directive)
@@ -316,8 +305,7 @@ class MathDocumentRenderer:
                 continue
 
             # Section header
-            sections.append(f"## {dtype.title()}s")
-            sections.append("")
+            sections.extend((f"## {dtype.title()}s", ""))
 
             # Render each directive
             for directive in by_type[dtype]:
@@ -339,12 +327,11 @@ class MathDocumentRenderer:
 
                 renderer = renderer_map.get(dtype)
                 if renderer:
-                    sections.append(renderer(directive))
-                    sections.append("")
+                    sections.extend((renderer(directive), ""))
 
         return "\n".join(sections)
 
-    def _render_definition(self, d: Dict[str, Any]) -> str:
+    def _render_definition(self, d: dict[str, Any]) -> str:
         """Render a definition directive."""
         lines = []
 
@@ -359,8 +346,7 @@ class MathDocumentRenderer:
 
         # Defined objects
         if defined_objects := d.get("defined_objects"):
-            lines.append("**Defined Objects:**")
-            lines.append("")
+            lines.extend(("**Defined Objects:**", ""))
             for obj in defined_objects:
                 name = obj.get("name", "")
                 symbol = obj.get("symbol", "")
@@ -372,8 +358,7 @@ class MathDocumentRenderer:
                     header += f" ({symbol})"
                 header += f"** [{obj_type}]"
 
-                lines.append(header)
-                lines.append(f"  - {math_def}")
+                lines.extend((header, f"  - {math_def}"))
 
                 # Properties
                 if properties := obj.get("properties"):
@@ -390,8 +375,7 @@ class MathDocumentRenderer:
 
         # Examples
         if examples := d.get("examples"):
-            lines.append("**Examples:**")
-            lines.append("")
+            lines.extend(("**Examples:**", ""))
             for ex in examples:
                 desc = ex.get("description", "")
                 instance = ex.get("instance", "")
@@ -402,19 +386,15 @@ class MathDocumentRenderer:
 
         # Counterexamples
         if counterexamples := d.get("counterexamples"):
-            lines.append("**Counterexamples:**")
-            lines.append("")
+            lines.extend(("**Counterexamples:**", ""))
             for cex in counterexamples:
                 desc = cex.get("description", "")
                 reason = cex.get("reason", "")
-                lines.append(f"- {desc}")
-                lines.append(f"  - Fails because: {reason}")
-                lines.append("")
+                lines.extend((f"- {desc}", f"  - Fails because: {reason}", ""))
 
         # Related concepts
         if related := d.get("related_concepts"):
-            lines.append("**Related Concepts:**")
-            lines.append("")
+            lines.extend(("**Related Concepts:**", ""))
             for ref in related:
                 lines.append(f"- {self._render_cross_reference(ref)}")
             lines.append("")
@@ -422,7 +402,7 @@ class MathDocumentRenderer:
         lines.append("---")
         return "\n".join(lines)
 
-    def _render_axiom(self, d: Dict[str, Any]) -> str:
+    def _render_axiom(self, d: dict[str, Any]) -> str:
         """Render an axiom directive."""
         lines = []
 
@@ -437,10 +417,12 @@ class MathDocumentRenderer:
 
         # Axiomatic parameters
         if params := d.get("axiomatic_parameters"):
-            lines.append("**Axiomatic Parameters:**")
-            lines.append("")
-            lines.append("| Symbol | Description | Type | Conditions | Sensitivity |")
-            lines.append("|--------|-------------|------|------------|-------------|")
+            lines.extend((
+                "**Axiomatic Parameters:**",
+                "",
+                "| Symbol | Description | Type | Conditions | Sensitivity |",
+                "|--------|-------------|------|------------|-------------|",
+            ))
 
             for param in params:
                 symbol = param.get("symbol", "")
@@ -464,20 +446,17 @@ class MathDocumentRenderer:
 
         # Category
         if category := d.get("category"):
-            lines.append(f"**Category:** {category}")
-            lines.append("")
+            lines.extend((f"**Category:** {category}", ""))
 
         # Failure modes
         if failure_modes := d.get("failure_modes"):
-            lines.append("**Failure Modes:**")
-            lines.append("")
+            lines.extend(("**Failure Modes:**", ""))
             for fm in failure_modes:
                 condition = fm.get("condition", "")
                 consequence = fm.get("consequence", "")
                 diagnostic = fm.get("diagnostic", "")
 
-                lines.append(f"- **When:** {condition}")
-                lines.append(f"  - **Consequence:** {consequence}")
+                lines.extend((f"- **When:** {condition}", f"  - **Consequence:** {consequence}"))
                 if diagnostic:
                     lines.append(f"  - **Diagnostic:** {diagnostic}")
                 lines.append("")
@@ -485,19 +464,19 @@ class MathDocumentRenderer:
         lines.append("---")
         return "\n".join(lines)
 
-    def _render_theorem(self, d: Dict[str, Any]) -> str:
+    def _render_theorem(self, d: dict[str, Any]) -> str:
         """Render a theorem directive."""
         return self._render_theorem_like(d, "Theorem")
 
-    def _render_lemma(self, d: Dict[str, Any]) -> str:
+    def _render_lemma(self, d: dict[str, Any]) -> str:
         """Render a lemma directive."""
         return self._render_theorem_like(d, "Lemma")
 
-    def _render_proposition(self, d: Dict[str, Any]) -> str:
+    def _render_proposition(self, d: dict[str, Any]) -> str:
         """Render a proposition directive."""
         return self._render_theorem_like(d, "Proposition")
 
-    def _render_theorem_like(self, d: Dict[str, Any], dtype: str) -> str:
+    def _render_theorem_like(self, d: dict[str, Any], dtype: str) -> str:
         """Render theorem/lemma/proposition (common structure)."""
         lines = []
 
@@ -509,8 +488,10 @@ class MathDocumentRenderer:
         elif importance == "main-result":
             importance_marker = " ★"
 
-        lines.append(f"### {dtype}: {d.get('title', 'Untitled')}{importance_marker}")
-        lines.append(self._render_directive_metadata(d))
+        lines.extend((
+            f"### {dtype}: {d.get('title', 'Untitled')}{importance_marker}",
+            self._render_directive_metadata(d),
+        ))
         if importance:
             lines.append(f"**Importance:** {importance}")
         lines.append("")
@@ -521,8 +502,7 @@ class MathDocumentRenderer:
 
         # Hypotheses
         if hypotheses := d.get("hypotheses"):
-            lines.append("**Hypotheses:**")
-            lines.append("")
+            lines.extend(("**Hypotheses:**", ""))
             for i, hyp in enumerate(hypotheses, 1):
                 hyp_str = self._render_assumption(hyp, number=i)
                 lines.append(hyp_str)
@@ -530,16 +510,13 @@ class MathDocumentRenderer:
 
         # Conclusion
         if conclusion := d.get("conclusion"):
-            lines.append("**Conclusion:**")
-            lines.append("")
+            lines.extend(("**Conclusion:**", ""))
             statement = conclusion.get("statement", "")
-            lines.append(statement)
-            lines.append("")
+            lines.extend((statement, ""))
 
             # Properties established
             if props := conclusion.get("properties_established"):
-                lines.append("**Properties Established:**")
-                lines.append("")
+                lines.extend(("**Properties Established:**", ""))
                 for prop in props:
                     # Handle both string and object formats
                     if isinstance(prop, str):
@@ -551,8 +528,7 @@ class MathDocumentRenderer:
 
             # Quantitative bounds
             if bounds := conclusion.get("quantitative_bounds"):
-                lines.append("**Quantitative Bounds:**")
-                lines.append("")
+                lines.extend(("**Quantitative Bounds:**", ""))
 
                 # Check if this is schema format (dict of bound objects) or custom format (flat dict)
                 # Schema format has keys that map to dicts with "bound", "type", "tightness"
@@ -610,13 +586,12 @@ class MathDocumentRenderer:
 
         # Computational verification
         if comp_ver := d.get("computational_verification"):
-            lines.append(self._render_computational_verification(comp_ver))
-            lines.append("")
+            lines.extend((self._render_computational_verification(comp_ver), ""))
 
         lines.append("---")
         return "\n".join(lines)
 
-    def _render_corollary(self, d: Dict[str, Any]) -> str:
+    def _render_corollary(self, d: dict[str, Any]) -> str:
         """Render a corollary directive."""
         lines = []
 
@@ -631,8 +606,7 @@ class MathDocumentRenderer:
 
         # Follows from
         if follows_from := d.get("follows_from"):
-            lines.append("**Follows From:**")
-            lines.append("")
+            lines.extend(("**Follows From:**", ""))
             for ref in follows_from:
                 lines.append(f"- {self._render_cross_reference(ref)}")
             lines.append("")
@@ -640,10 +614,7 @@ class MathDocumentRenderer:
         # Conclusion
         if conclusion := d.get("conclusion"):
             statement = conclusion.get("statement", "")
-            lines.append("**Statement:**")
-            lines.append("")
-            lines.append(statement)
-            lines.append("")
+            lines.extend(("**Statement:**", "", statement, ""))
 
         # Proof reference
         if proof_ref := d.get("proof_reference"):
@@ -658,19 +629,20 @@ class MathDocumentRenderer:
         lines.append("---")
         return "\n".join(lines)
 
-    def _render_proof(self, d: Dict[str, Any]) -> str:
+    def _render_proof(self, d: dict[str, Any]) -> str:
         """Render a proof directive."""
         lines = []
 
         # Header
-        lines.append(f"### Proof: {d.get('title', 'Untitled')}")
-        lines.append(self._render_directive_metadata(d))
-        lines.append("")
+        lines.extend((
+            f"### Proof: {d.get('title', 'Untitled')}",
+            self._render_directive_metadata(d),
+            "",
+        ))
 
         # Proves
         if proves := d.get("proves"):
-            lines.append(f"**Proves:** {self._render_cross_reference(proves)}")
-            lines.append("")
+            lines.extend((f"**Proves:** {self._render_cross_reference(proves)}", ""))
 
         # Proof type and difficulty
         meta_parts = []
@@ -682,43 +654,33 @@ class MathDocumentRenderer:
             meta_parts.append(f"**Rigor:** {rigor}/10")
 
         if meta_parts:
-            lines.append(" | ".join(meta_parts))
-            lines.append("")
+            lines.extend((" | ".join(meta_parts), ""))
 
         # Strategy
         if strategy := d.get("strategy"):
-            lines.append("**Strategy:**")
-            lines.append("")
-            lines.append(strategy)
-            lines.append("")
+            lines.extend(("**Strategy:**", "", strategy, ""))
 
         # Prerequisites
         if prereqs := d.get("prerequisites"):
-            lines.append("**Prerequisites:**")
-            lines.append("")
+            lines.extend(("**Prerequisites:**", ""))
             for ref in prereqs:
                 lines.append(f"- {self._render_cross_reference(ref)}")
             lines.append("")
 
         # Key insights
         if insights := d.get("key_insights"):
-            lines.append("**Key Insights:**")
-            lines.append("")
+            lines.extend(("**Key Insights:**", ""))
             for insight in insights:
                 lines.append(f"- {insight}")
             lines.append("")
 
         # Proof steps
         if steps := d.get("steps"):
-            lines.append("**Proof:**")
-            lines.append("")
-            lines.append(self._render_proof_steps(steps, level=0))
-            lines.append("")
+            lines.extend(("**Proof:**", "", self._render_proof_steps(steps, level=0), ""))
 
         # Alternative approaches
         if alternatives := d.get("alternative_approaches"):
-            lines.append("**Alternative Approaches:**")
-            lines.append("")
+            lines.extend(("**Alternative Approaches:**", ""))
             for alt in alternatives:
                 desc = alt.get("description", "")
                 adv = alt.get("advantages", "")
@@ -733,7 +695,7 @@ class MathDocumentRenderer:
         lines.append("---")
         return "\n".join(lines)
 
-    def _render_proof_steps(self, steps: List[Dict[str, Any]], level: int = 0) -> str:
+    def _render_proof_steps(self, steps: list[dict[str, Any]], level: int = 0) -> str:
         """Recursively render proof steps with substeps."""
         lines = []
         indent = "  " * level
@@ -742,7 +704,7 @@ class MathDocumentRenderer:
             step_id = step.get("id", "")
             title = step.get("title", "")
             content = step.get("content", "")
-            step_type = step.get("type", "")
+            step.get("type", "")
             techniques = step.get("techniques", [])
 
             # Handle justification: can be string, list, or None
@@ -762,8 +724,7 @@ class MathDocumentRenderer:
             if title:
                 header += f": {title}"
             header += "**"
-            lines.append(header)
-            lines.append("")
+            lines.extend((header, ""))
 
             # Content
             for line in content.split("\n"):
@@ -798,7 +759,7 @@ class MathDocumentRenderer:
 
         return "\n".join(lines)
 
-    def _render_algorithm(self, d: Dict[str, Any]) -> str:
+    def _render_algorithm(self, d: dict[str, Any]) -> str:
         """Render an algorithm directive."""
         lines = []
 
@@ -813,10 +774,12 @@ class MathDocumentRenderer:
 
         # Inputs
         if inputs := d.get("inputs"):
-            lines.append("**Inputs:**")
-            lines.append("")
-            lines.append("| Name | Type | Description | Constraints |")
-            lines.append("|------|------|-------------|-------------|")
+            lines.extend((
+                "**Inputs:**",
+                "",
+                "| Name | Type | Description | Constraints |",
+                "|------|------|-------------|-------------|",
+            ))
 
             for inp in inputs:
                 name = inp.get("name", "")
@@ -831,10 +794,12 @@ class MathDocumentRenderer:
 
         # Outputs
         if outputs := d.get("outputs"):
-            lines.append("**Outputs:**")
-            lines.append("")
-            lines.append("| Name | Type | Description | Guarantees |")
-            lines.append("|------|------|-------------|------------|")
+            lines.extend((
+                "**Outputs:**",
+                "",
+                "| Name | Type | Description | Guarantees |",
+                "|------|------|-------------|------------|",
+            ))
 
             for out in outputs:
                 name = out.get("name", "")
@@ -849,8 +814,7 @@ class MathDocumentRenderer:
 
         # Steps
         if steps := d.get("steps"):
-            lines.append("**Steps:**")
-            lines.append("")
+            lines.extend(("**Steps:**", ""))
 
             for step in steps:
                 step_num = step.get("step_number", "")
@@ -865,9 +829,7 @@ class MathDocumentRenderer:
                     lines.append(f"- {desc}")
 
                 if pseudocode:
-                    lines.append(f"   ```")
-                    lines.append(f"   {pseudocode}")
-                    lines.append(f"   ```")
+                    lines.extend(("   ```", f"   {pseudocode}", "   ```"))
 
                 if math_op:
                     lines.append(f"   - Math: {math_op}")
@@ -879,8 +841,7 @@ class MathDocumentRenderer:
 
         # Overall complexity
         if complexity := d.get("complexity"):
-            lines.append("**Complexity:**")
-            lines.append("")
+            lines.extend(("**Complexity:**", ""))
             if time := complexity.get("time"):
                 lines.append(f"- **Time:** {time}")
             if space := complexity.get("space"):
@@ -893,8 +854,7 @@ class MathDocumentRenderer:
 
         # Implementation
         if impl := d.get("implementation"):
-            lines.append("**Implementation:**")
-            lines.append("")
+            lines.extend(("**Implementation:**", ""))
             if path := impl.get("path"):
                 lines.append(f"- **Code:** `{path}`")
             if lang := impl.get("language"):
@@ -908,7 +868,7 @@ class MathDocumentRenderer:
         lines.append("---")
         return "\n".join(lines)
 
-    def _render_remark(self, d: Dict[str, Any]) -> str:
+    def _render_remark(self, d: dict[str, Any]) -> str:
         """Render a remark directive."""
         lines = []
 
@@ -925,8 +885,7 @@ class MathDocumentRenderer:
 
         # Relates to
         if relates_to := d.get("relates_to"):
-            lines.append("**Relates To:**")
-            lines.append("")
+            lines.extend(("**Relates To:**", ""))
             for ref in relates_to:
                 lines.append(f"- {self._render_cross_reference(ref)}")
             lines.append("")
@@ -934,7 +893,7 @@ class MathDocumentRenderer:
         lines.append("---")
         return "\n".join(lines)
 
-    def _render_observation(self, d: Dict[str, Any]) -> str:
+    def _render_observation(self, d: dict[str, Any]) -> str:
         """Render an observation directive."""
         lines = []
 
@@ -950,8 +909,7 @@ class MathDocumentRenderer:
 
         # Evidence
         if evidence := d.get("evidence"):
-            lines.append("**Evidence:**")
-            lines.append("")
+            lines.extend(("**Evidence:**", ""))
             for ev in evidence:
                 ev_type = ev.get("type", "")
                 desc = ev.get("description", "")
@@ -964,7 +922,7 @@ class MathDocumentRenderer:
         lines.append("---")
         return "\n".join(lines)
 
-    def _render_conjecture(self, d: Dict[str, Any]) -> str:
+    def _render_conjecture(self, d: dict[str, Any]) -> str:
         """Render a conjecture directive."""
         lines = []
 
@@ -980,8 +938,7 @@ class MathDocumentRenderer:
 
         # Evidence
         if evidence := d.get("evidence"):
-            lines.append("**Evidence:**")
-            lines.append("")
+            lines.extend(("**Evidence:**", ""))
             for ev in evidence:
                 ev_type = ev.get("type", "")
                 desc = ev.get("description", "")
@@ -990,16 +947,14 @@ class MathDocumentRenderer:
 
         # Partial results
         if partial := d.get("partial_results"):
-            lines.append("**Partial Results:**")
-            lines.append("")
+            lines.extend(("**Partial Results:**", ""))
             for ref in partial:
                 lines.append(f"- {self._render_cross_reference(ref)}")
             lines.append("")
 
         # Obstacles
         if obstacles := d.get("obstacles"):
-            lines.append("**Known Obstacles:**")
-            lines.append("")
+            lines.extend(("**Known Obstacles:**", ""))
             for obs in obstacles:
                 lines.append(f"- {obs}")
             lines.append("")
@@ -1007,7 +962,7 @@ class MathDocumentRenderer:
         lines.append("---")
         return "\n".join(lines)
 
-    def _render_example(self, d: Dict[str, Any]) -> str:
+    def _render_example(self, d: dict[str, Any]) -> str:
         """Render an example directive."""
         lines = []
 
@@ -1022,37 +977,27 @@ class MathDocumentRenderer:
 
         # Demonstrates
         if demonstrates := d.get("demonstrates"):
-            lines.append("**Demonstrates:**")
-            lines.append("")
+            lines.extend(("**Demonstrates:**", ""))
             for ref in demonstrates:
                 lines.append(f"- {self._render_cross_reference(ref)}")
             lines.append("")
 
         # Setup
         if setup := d.get("setup"):
-            lines.append("**Setup:**")
-            lines.append("")
-            lines.append(setup)
-            lines.append("")
+            lines.extend(("**Setup:**", "", setup, ""))
 
         # Calculation
         if calc := d.get("calculation"):
-            lines.append("**Calculation:**")
-            lines.append("")
-            lines.append(calc)
-            lines.append("")
+            lines.extend(("**Calculation:**", "", calc, ""))
 
         # Conclusion
         if conclusion := d.get("conclusion"):
-            lines.append("**Conclusion:**")
-            lines.append("")
-            lines.append(conclusion)
-            lines.append("")
+            lines.extend(("**Conclusion:**", "", conclusion, ""))
 
         lines.append("---")
         return "\n".join(lines)
 
-    def _render_property(self, d: Dict[str, Any]) -> str:
+    def _render_property(self, d: dict[str, Any]) -> str:
         """Render a property directive."""
         lines = []
 
@@ -1069,8 +1014,7 @@ class MathDocumentRenderer:
 
         # Applies to
         if applies_to := d.get("applies_to"):
-            lines.append("**Applies To:**")
-            lines.append("")
+            lines.extend(("**Applies To:**", ""))
             for ref in applies_to:
                 lines.append(f"- {self._render_cross_reference(ref)}")
             lines.append("")
@@ -1080,7 +1024,7 @@ class MathDocumentRenderer:
 
     # ==================== Utility Renderers ====================
 
-    def _render_directive_metadata(self, d: Dict[str, Any]) -> str:
+    def _render_directive_metadata(self, d: dict[str, Any]) -> str:
         """Render common directive metadata (label, tags, source, review status)."""
         lines = []
 
@@ -1103,22 +1047,19 @@ class MathDocumentRenderer:
 
         # Review scores (if present)
         if peer_review := d.get("peer_review"):
-            lines.append("")
-            lines.append(self._render_review_scores(peer_review))
+            lines.extend(("", self._render_review_scores(peer_review)))
 
         # Development status (if present)
         if dev_status := d.get("development_status"):
-            lines.append("")
-            lines.append(self._render_development_status(dev_status))
+            lines.extend(("", self._render_development_status(dev_status)))
 
         # Sketch linkage (if present)
         if sketch_link := d.get("sketch_linkage"):
-            lines.append("")
-            lines.append(self._render_sketch_linkage(sketch_link))
+            lines.extend(("", self._render_sketch_linkage(sketch_link)))
 
         return "\n".join(lines) if lines else ""
 
-    def _render_cross_reference(self, ref: Dict[str, Any]) -> str:
+    def _render_cross_reference(self, ref: dict[str, Any]) -> str:
         """Render a cross-reference."""
         label = ref.get("label", "unknown")
         ref_type = ref.get("type", "item")
@@ -1144,7 +1085,7 @@ class MathDocumentRenderer:
 
         return result
 
-    def _render_math_property(self, prop: Dict[str, Any], indent: str = "") -> str:
+    def _render_math_property(self, prop: dict[str, Any], indent: str = "") -> str:
         """Render a mathematical property."""
         name = prop.get("name", "")
         statement = prop.get("statement", "")
@@ -1161,7 +1102,7 @@ class MathDocumentRenderer:
 
         return result
 
-    def _render_assumption(self, assumption: Dict[str, Any], number: int = None) -> str:
+    def _render_assumption(self, assumption: dict[str, Any], number: int | None = None) -> str:
         """Render a mathematical assumption."""
         statement = assumption.get("statement", "")
         ass_type = assumption.get("type", "")
@@ -1175,14 +1116,13 @@ class MathDocumentRenderer:
 
         return result
 
-    def _render_computational_verification(self, comp_ver: Dict[str, Any]) -> str:
+    def _render_computational_verification(self, comp_ver: dict[str, Any]) -> str:
         """Render computational verification info."""
         lines = ["**Computational Verification:**", ""]
 
         ver_type = comp_ver.get("type", "")
         status = comp_ver.get("status", "")
-        lines.append(f"- **Type:** {ver_type}")
-        lines.append(f"- **Status:** {status}")
+        lines.extend((f"- **Type:** {ver_type}", f"- **Status:** {status}"))
 
         if script := comp_ver.get("script_path"):
             lines.append(f"- **Script:** `{script}`")
@@ -1212,8 +1152,7 @@ class MathDocumentRenderer:
             return ""
 
         if self.options.graph_format == "mermaid":
-            lines.append("```mermaid")
-            lines.append("graph TD")
+            lines.extend(("```mermaid", "graph TD"))
 
             for edge in edges:
                 from_label = edge.get("from", "")
@@ -1227,8 +1166,10 @@ class MathDocumentRenderer:
             lines.append("```")
 
         else:  # table format
-            lines.append("| From | To | Relationship | Critical |")
-            lines.append("|------|-----|--------------|----------|")
+            lines.extend((
+                "| From | To | Relationship | Critical |",
+                "|------|-----|--------------|----------|",
+            ))
 
             for edge in edges:
                 from_label = edge.get("from", "")
@@ -1238,8 +1179,7 @@ class MathDocumentRenderer:
 
                 lines.append(f"| {from_label} | {to_label} | {rel} | {critical} |")
 
-        lines.append("")
-        lines.append("---")
+        lines.extend(("", "---"))
         return "\n".join(lines)
 
     def _render_notation_index(self) -> str:
@@ -1255,15 +1195,16 @@ class MathDocumentRenderer:
 
         if is_simple_format:
             # Simple format: symbol -> description string
-            lines.append("| Symbol | Description |")
-            lines.append("|--------|-------------|")
+            lines.extend(("| Symbol | Description |", "|--------|-------------|"))
 
             for symbol, desc in sorted(self.notation_index.items()):
                 lines.append(f"| {symbol} | {desc} |")
         else:
             # Schema format: symbol -> object with description, first_use, scope
-            lines.append("| Symbol | Description | First Use | Scope |")
-            lines.append("|--------|-------------|-----------|-------|")
+            lines.extend((
+                "| Symbol | Description | First Use | Scope |",
+                "|--------|-------------|-----------|-------|",
+            ))
 
             for key, notation in sorted(self.notation_index.items()):
                 symbol = notation.get("symbol", "")
@@ -1273,8 +1214,7 @@ class MathDocumentRenderer:
 
                 lines.append(f"| {symbol} | {desc} | {first_use} | {scope} |")
 
-        lines.append("")
-        lines.append("---")
+        lines.extend(("", "---"))
         return "\n".join(lines)
 
     def _render_constants_glossary(self) -> str:
@@ -1284,8 +1224,10 @@ class MathDocumentRenderer:
         if not self.constants_glossary:
             return ""
 
-        lines.append("| Symbol | Value | Description | Dependencies | Used In |")
-        lines.append("|--------|-------|-------------|--------------|---------|")
+        lines.extend((
+            "| Symbol | Value | Description | Dependencies | Used In |",
+            "|--------|-------|-------------|--------------|---------|",
+        ))
 
         for key, constant in sorted(self.constants_glossary.items()):
             symbol = constant.get("symbol", "")
@@ -1300,8 +1242,7 @@ class MathDocumentRenderer:
 
             lines.append(f"| {symbol} | {value} | {desc} | {deps_str} | {used_str} |")
 
-        lines.append("")
-        lines.append("---")
+        lines.extend(("", "---"))
         return "\n".join(lines)
 
     # ==================== Review Rendering Utilities ====================
@@ -1317,7 +1258,7 @@ class MathDocumentRenderer:
         }
         return badges.get(verdict, verdict)
 
-    def _render_review_scores(self, peer_review: Dict[str, Any]) -> str:
+    def _render_review_scores(self, peer_review: dict[str, Any]) -> str:
         """Render dual review analysis section."""
         lines = []
 
@@ -1328,8 +1269,10 @@ class MathDocumentRenderer:
             soundness = gemini.get("soundness", 0)
             consistency = gemini.get("consistency", 0)
             verdict = gemini.get("verdict", "not-reviewed")
-            lines.append(f"- Rigor: {rigor}/10 | Soundness: {soundness}/10 | Consistency: {consistency}/10")
-            lines.append(f"- Verdict: {self._verdict_badge(verdict)}")
+            lines.extend((
+                f"- Rigor: {rigor}/10 | Soundness: {soundness}/10 | Consistency: {consistency}/10",
+                f"- Verdict: {self._verdict_badge(verdict)}",
+            ))
             if issues := gemini.get("issues_identified"):
                 critical = [i for i in issues if i.get("severity") == "critical"]
                 major = [i for i in issues if i.get("severity") == "major"]
@@ -1346,8 +1289,10 @@ class MathDocumentRenderer:
             soundness = codex.get("soundness", 0)
             consistency = codex.get("consistency", 0)
             verdict = codex.get("verdict", "not-reviewed")
-            lines.append(f"- Rigor: {rigor}/10 | Soundness: {soundness}/10 | Consistency: {consistency}/10")
-            lines.append(f"- Verdict: {self._verdict_badge(verdict)}")
+            lines.extend((
+                f"- Rigor: {rigor}/10 | Soundness: {soundness}/10 | Consistency: {consistency}/10",
+                f"- Verdict: {self._verdict_badge(verdict)}",
+            ))
             if issues := codex.get("issues_identified"):
                 critical = [i for i in issues if i.get("severity") == "critical"]
                 major = [i for i in issues if i.get("severity") == "major"]
@@ -1363,26 +1308,33 @@ class MathDocumentRenderer:
             rigor = aggregate.get("rigor", 0)
             soundness = aggregate.get("soundness", 0)
             consistency = aggregate.get("consistency", 0)
-            lines.append(f"- Rigor: {rigor:.1f}/10 | Soundness: {soundness:.1f}/10 | Consistency: {consistency:.1f}/10")
-            lines.append("")
+            lines.extend((
+                f"- Rigor: {rigor:.1f}/10 | Soundness: {soundness:.1f}/10 | Consistency: {consistency:.1f}/10",
+                "",
+            ))
 
         if final_verdict := peer_review.get("final_verdict"):
-            lines.append(f"**Final Verdict:** {self._verdict_badge(final_verdict)}")
-            lines.append("")
+            lines.extend((f"**Final Verdict:** {self._verdict_badge(final_verdict)}", ""))
 
         # Consensus vs discrepancies
         if consensus := peer_review.get("consensus_issues"):
             if consensus:
-                lines.append(f"**Consensus Issues:** {len(consensus)} issues identified by both reviewers")
+                lines.append(
+                    f"**Consensus Issues:** {len(consensus)} issues identified by both reviewers"
+                )
         if discrepancies := peer_review.get("discrepancies"):
             if discrepancies:
-                lines.append(f"⚠️ **Discrepancies:** {len(discrepancies)} contradictory findings (requires manual verification)")
+                lines.append(
+                    f"⚠️ **Discrepancies:** {len(discrepancies)} contradictory findings (requires manual verification)"
+                )
 
         # Blocking issues
         if blocking := peer_review.get("blocking_issues"):
             if blocking:
-                lines.append("")
-                lines.append(f"**🚫 Blocking Issues:** {len(blocking)} critical issues prevent publication")
+                lines.extend((
+                    "",
+                    f"**🚫 Blocking Issues:** {len(blocking)} critical issues prevent publication",
+                ))
                 for issue in blocking[:3]:  # Show first 3
                     title = issue.get("title", "Untitled")
                     severity = issue.get("severity", "unknown")
@@ -1392,7 +1344,7 @@ class MathDocumentRenderer:
 
         return "\n".join(lines)
 
-    def _render_development_status(self, dev_status: Dict[str, Any]) -> str:
+    def _render_development_status(self, dev_status: dict[str, Any]) -> str:
         """Render development status section."""
         lines = []
 
@@ -1427,7 +1379,7 @@ class MathDocumentRenderer:
 
         return "\n".join(lines)
 
-    def _render_sketch_linkage(self, sketch_link: Dict[str, Any]) -> str:
+    def _render_sketch_linkage(self, sketch_link: dict[str, Any]) -> str:
         """Render sketch-to-proof linkage section."""
         lines = []
 
@@ -1456,7 +1408,7 @@ class MathDocumentRenderer:
 # ==================== CLI ====================
 
 
-def validate_document(doc: Dict[str, Any], schema_path: Path) -> None:
+def validate_document(doc: dict[str, Any], schema_path: Path) -> None:
     """Validate document against JSON schema."""
     try:
         import jsonschema
@@ -1467,7 +1419,7 @@ def validate_document(doc: Dict[str, Any], schema_path: Path) -> None:
         )
         return
 
-    with open(schema_path) as f:
+    with open(schema_path, encoding="utf-8") as f:
         schema = json.load(f)
 
     try:
@@ -1504,9 +1456,7 @@ Examples:
 
     parser.add_argument("input_json", type=Path, help="Input JSON file path")
 
-    parser.add_argument(
-        "-o", "--output", type=Path, help="Output markdown file (default: stdout)"
-    )
+    parser.add_argument("-o", "--output", type=Path, help="Output markdown file (default: stdout)")
 
     parser.add_argument(
         "--validate", action="store_true", help="Validate JSON against schema before rendering"
@@ -1567,7 +1517,7 @@ Examples:
 
     # Load JSON
     try:
-        with open(args.input_json) as f:
+        with open(args.input_json, encoding="utf-8") as f:
             doc = json.load(f)
     except json.JSONDecodeError as e:
         print(f"Error: Invalid JSON - {e}", file=sys.stderr)

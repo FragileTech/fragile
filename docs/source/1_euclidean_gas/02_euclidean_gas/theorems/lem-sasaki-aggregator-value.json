@@ -2,63 +2,26 @@
   "label": "lem-sasaki-aggregator-value",
   "name": "Value continuity of the empirical moments",
   "statement_type": "lemma",
-  "source": {
-    "document_id": "02_euclidean_gas",
-    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-    "section": "§2.3.4.1",
-    "directive_label": "lem-sasaki-aggregator-value",
-    "line_range": [1224, 1239]
-  },
-  "input_objects": [
-    "obj-swarm-and-state-space"
-  ],
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
   "input_axioms": [],
-  "input_parameters": [
-    "param-k-alive-count",
-    "param-V-max-value-bound"
-  ],
-  "attributes_required": {
-    "obj-swarm-and-state-space": [
-      "attr-alive-set-nonempty"
-    ]
-  },
+  "input_parameters": [],
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "attributes_added": [
-    {
-      "label": "attr-lipschitz-mean-aggregator-value",
-      "expression": "The empirical mean aggregator $\\mu(\\mathcal{S}, \\mathbf{v})$ is Lipschitz continuous with respect to changes in the value vector: $|\\mu(\\mathcal{S}, \\mathbf{v}_1) - \\mu(\\mathcal{S}, \\mathbf{v}_2)| \\le \\frac{1}{\\sqrt{k}} \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2$ where $k = |\\mathcal{A}(\\mathcal{S})| \\ge 1$ is the number of alive walkers.",
-      "object_label": "obj-swarm-and-state-space",
-      "established_by": "lem-sasaki-aggregator-value",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "§2.3.4.1",
-        "directive_label": "lem-sasaki-aggregator-value",
-        "line_range": [1229, 1231]
-      }
-    },
-    {
-      "label": "attr-lipschitz-second-moment-aggregator-value",
-      "expression": "The empirical second moment aggregator $m_2(\\mathcal{S}, \\mathbf{v})$ is Lipschitz continuous with respect to changes in the value vector: $|m_2(\\mathcal{S}, \\mathbf{v}_1) - m_2(\\mathcal{S}, \\mathbf{v}_2)| \\le \\frac{2V_{\\max}}{\\sqrt{k}} \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2$ where $k = |\\mathcal{A}(\\mathcal{S})| \\ge 1$ and $|v_i| \\le V_{\\max}$ for all components.",
-      "object_label": "obj-swarm-and-state-space",
-      "established_by": "lem-sasaki-aggregator-value",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "§2.3.4.1",
-        "directive_label": "lem-sasaki-aggregator-value",
-        "line_range": [1229, 1231]
-      }
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

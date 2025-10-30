@@ -11,10 +11,10 @@ import torch
 
 from fragile.core.benchmarks import prepare_benchmark_for_explorer
 from fragile.experiments.gas_config_dashboard import GasConfig
-from fragile.experiments.gas_visualization_dashboard import GasVisualizer, create_app
+from fragile.experiments.gas_visualization_dashboard import create_app, GasVisualizer
 from fragile.experiments.interactive_euclidean_gas import (
-    SwarmExplorer,
     create_dashboard,
+    SwarmExplorer,
 )
 
 
@@ -290,7 +290,7 @@ class TestCreateDashboard:
         """Test creating dashboard with custom potential."""
         potential, background, mode_points = test_potential
 
-        explorer, panel = create_dashboard(
+        explorer, _panel = create_dashboard(
             potential=potential,
             background=background,
             mode_points=mode_points,
@@ -302,7 +302,7 @@ class TestCreateDashboard:
 
     def test_create_dashboard_with_explorer_params(self):
         """Test creating dashboard with custom explorer parameters."""
-        explorer, panel = create_dashboard(
+        explorer, _panel = create_dashboard(
             dims=2,
             explorer_params={"N": 20, "n_steps": 50},
         )

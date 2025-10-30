@@ -2,9 +2,17 @@
   "label": "lem-cubic-patch-derivative",
   "name": "Explicit Form of the Polynomial Patch Derivative",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "lem-cubic-patch-derivative",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-cubic-patch-derivative"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -14,22 +22,18 @@
   "input_parameters": [
     "param-z_max"
   ],
-  "properties_required": {},
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [
-    {
-      "label": "prop-explicit-derivative-form",
-      "expression": "P'(z(s)) = 3(\\frac{1}{z_{\\max}} - 2\\log(1 + \\frac{1}{z_{\\max}}))s^2 + 2(3\\log(1 + \\frac{1}{z_{\\max}}) - \\frac{2}{z_{\\max}})s + \\frac{1}{z_{\\max}}",
-      "object_label": "obj-asymmetric-rescale-function",
-      "established_by": "lem-cubic-patch-derivative",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

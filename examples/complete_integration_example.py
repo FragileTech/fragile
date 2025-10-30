@@ -13,15 +13,31 @@ This shows the complete end-to-end pipeline from theorem to verified proof
 with automatic relationship extraction.
 """
 
-import sys
 from pathlib import Path
+import sys
+
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from fragile.proofs import (
+    build_relationship_graph_from_registry,
+    CombinedTagQuery,
+    create_proof_inputs_from_theorem,
+    create_proof_outputs_from_theorem,
+    create_simple_object,
+    DirectDerivation,
+    extract_relationships_from_proof,
+    get_proof_statistics,
     MathematicalObject,
+    MathematicalRegistry,
     ObjectType,
+    print_validation_result,
+    ProofBox,
+    ProofEngine,
+    ProofStep,
+    ProofStepStatus,
+    ProofStepType,
     Property,
     PropertyEvent,
     PropertyEventType,
@@ -29,28 +45,8 @@ from fragile.proofs import (
     RelationType,
     TheoremBox,
     TheoremOutputType,
-    create_simple_object,
-)
-from fragile.proofs import (
-    DirectDerivation,
-    ProofBox,
-    ProofEngine,
-    ProofInput,
-    ProofOutput,
-    ProofStep,
-    ProofStepStatus,
-    ProofStepType,
-    PropertyReference,
-    create_proof_inputs_from_theorem,
-    create_proof_outputs_from_theorem,
-    extract_relationships_from_proof,
-    get_proof_statistics,
-    print_validation_result,
     validate_proof_for_theorem,
 )
-from fragile.proofs import CombinedTagQuery
-from fragile.proofs import MathematicalRegistry
-from fragile.proofs import build_relationship_graph_from_registry
 
 
 def main() -> None:
@@ -173,7 +169,7 @@ def main() -> None:
     print(f"✓ Created theorem: {theorem.name}")
     print(f"  Label: {theorem.label}")
     print(f"  Input objects: {theorem.input_objects}")
-    print(f"  Properties required:")
+    print("  Properties required:")
     for obj, props in theorem.properties_required.items():
         print(f"    {obj}: {props}")
     print(f"  Properties added: {len(theorem.properties_added)}")
@@ -362,7 +358,7 @@ Two-step strategy:
     # Add theorem
     registry.add(theorem)
 
-    print(f"✓ Added to registry:")
+    print("✓ Added to registry:")
     print(f"  Objects: {len(registry.get_all_objects())}")
     print(f"  Relationships: {len(registry.get_all_relationships())}")
     print(f"  Theorems: {len(registry.get_all_theorems())}")
@@ -371,14 +367,14 @@ Two-step strategy:
     # Build relationship graph
     graph = build_relationship_graph_from_registry(registry)
 
-    print(f"✓ Built relationship graph:")
+    print("✓ Built relationship graph:")
     print(f"  Nodes: {graph.node_count()}")
     print(f"  Edges: {graph.edge_count()}")
     print()
 
     # Query connected objects
     connected = graph.get_connected_component("obj-euclidean-gas-discrete")
-    print(f"Objects connected to discrete formulation:")
+    print("Objects connected to discrete formulation:")
     for obj_id in sorted(connected):
         print(f"  - {obj_id}")
     print()
@@ -392,7 +388,7 @@ Two-step strategy:
     engine = ProofEngine()
     engine.register_proof(proof)
 
-    print(f"✓ Registered proof with engine")
+    print("✓ Registered proof with engine")
     print()
 
     # Get expansion requests (should be none since all steps are expanded)
@@ -461,10 +457,12 @@ Two-step strategy:
 
     print("📊 Framework metrics:")
     print(f"  - {len(registry.get_all_objects())} mathematical objects")
-    print(f"  - {sum(len(obj.current_properties) for obj in registry.get_all_objects())} total properties")
+    print(
+        f"  - {sum(len(obj.current_properties) for obj in registry.get_all_objects())} total properties"
+    )
     print(f"  - {len(registry.get_all_relationships())} relationships")
     print(f"  - {len(registry.get_all_theorems())} theorems")
-    print(f"  - 1 complete proof (2 steps, both expanded)")
+    print("  - 1 complete proof (2 steps, both expanded)")
     print(f"  - {graph.node_count()} graph nodes, {graph.edge_count()} edges")
     print()
 

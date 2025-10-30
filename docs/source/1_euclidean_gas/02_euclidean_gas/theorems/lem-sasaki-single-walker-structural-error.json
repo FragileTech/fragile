@@ -2,131 +2,26 @@
   "label": "lem-sasaki-single-walker-structural-error",
   "name": "Single-walker structural error bound in the Sasaki metric",
   "statement_type": "lemma",
-  "source": {
-    "document_id": "02_euclidean_gas",
-    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-    "section": "§4.3 Measurement operator continuity",
-    "directive_label": "lem-sasaki-single-walker-structural-error",
-    "line_range": [1112, 1148],
-    "url_fragment": "#lem-sasaki-single-walker-structural-error"
-  },
-  "input_objects": [
-    "obj-swarm-state",
-    "obj-companion-selection-measure",
-    "obj-sasaki-metric",
-    "obj-projection-map",
-    "obj-algorithmic-space"
-  ],
-  "input_axioms": [
-    "axiom-bounded-algorithmic-diameter"
-  ],
-  "input_parameters": [
-    "param-N",
-    "param-d",
-    "param-lambda-v"
-  ],
-  "attributes_required": {
-    "obj-swarm-state": [
-      "attr-has-alive-set",
-      "attr-has-status-vector"
-    ],
-    "obj-companion-selection-measure": [
-      "attr-uniform-distribution-on-companions",
-      "attr-excludes-self"
-    ],
-    "obj-sasaki-metric": [
-      "attr-couples-position-velocity",
-      "attr-bounded-diameter"
-    ],
-    "obj-projection-map": [
-      "attr-1-lipschitz",
-      "attr-maps-to-bounded-space"
-    ],
-    "obj-algorithmic-space": [
-      "attr-compact",
-      "attr-finite-diameter"
-    ]
-  },
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
-  "output_type": "Relation",
-  "attributes_added": [
-    {
-      "label": "attr-structural-error-bound-sasaki",
-      "expression": "\\left| \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{2,i}), \\varphi(w_{2,c})) \\right] - \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_2)} \\left[ d_{\\mathcal Y}^{\\mathrm{Sasaki}}(\\varphi(w_{2,i}), \\varphi(w_{2,c})) \\right] \\right| \\le \\frac{2 D_{\\mathcal Y}}{k_1-1} \\cdot n_c(\\mathcal S_1, \\mathcal S_2)",
-      "object_label": "obj-companion-selection-measure",
-      "established_by": "lem-sasaki-single-walker-structural-error",
-      "can_be_refined": true,
-      "refinements": []
-    }
-  ],
-  "relations_established": [
-    {
-      "label": "rel-companion-measure-change-structural-error-approximation",
-      "relationship_type": "approximation",
-      "bidirectional": false,
-      "source_object": "obj-companion-selection-measure",
-      "target_object": "obj-companion-selection-measure",
-      "established_by": "lem-sasaki-single-walker-structural-error",
-      "expression": "\\text{Error}(\\mathbb{C}_i(\\mathcal{S}_1), \\mathbb{C}_i(\\mathcal{S}_2)) \\le \\frac{2 D_{\\mathcal Y}}{k_1-1} \\cdot n_c",
-      "properties": [
-        {
-          "label": "error-bound-coefficient",
-          "expression": "\\frac{2 D_{\\mathcal Y}}{k_1-1}",
-          "description": "Error coefficient inversely proportional to alive count minus one"
-        },
-        {
-          "label": "status-change-sensitivity",
-          "expression": "n_c(\\mathcal S_1, \\mathcal S_2) = \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2",
-          "description": "Linear dependence on number of status changes between swarms"
-        },
-        {
-          "label": "diameter-scaling",
-          "expression": "D_{\\mathcal Y}",
-          "description": "Error scales linearly with algorithmic space diameter in Sasaki metric"
-        }
-      ],
-      "tags": [
-        "structural-error",
-        "companion-selection",
-        "sasaki-metric",
-        "status-dependent"
-      ]
-    }
-  ],
-  "depends_on": [
-    "thm-total-error-status-bound"
-  ],
-  "tags": [
-    "euclidean-gas",
-    "sasaki-metric",
-    "measurement-operator",
-    "structural-error",
-    "companion-selection",
-    "status-changes"
-  ],
-  "mathematical_context": {
-    "preconditions": [
-      "Walker i is in the stable alive set: i \\in \\mathcal{A}_{\\mathrm{stable}} = \\mathcal{A}(\\mathcal{S}_1) \\cap \\mathcal{A}(\\mathcal{S}_2)",
-      "Second swarm's capped positions are fixed",
-      "Initial swarm has at least two alive walkers: k_1 = |\\mathcal{A}(\\mathcal{S}_1)| \\ge 2"
-    ],
-    "key_parameters": {
-      "D_Y": "Diameter of algorithmic space under Sasaki metric",
-      "k_1": "Number of alive walkers in first swarm",
-      "n_c": "Number of status changes: n_c(\\mathcal{S}_1, \\mathcal{S}_2) = \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2",
-      "S_1": "Companion support set for walker i in swarm 1: S_1 = \\mathcal{A}_1 \\setminus \\{i\\}",
-      "S_2": "Companion support set for walker i in swarm 2"
-    },
-    "proof_strategy": "Direct application of framework theorem thm-total-error-status-bound",
-    "proof_steps": [
-      "Identify function f(c) := d_Y^Sasaki(φ(w_{2,i}), φ(w_{2,c})) and bound |f(c)| ≤ D_Y",
-      "Identify companion support sets S_1 = A_1 \\ {i} with |S_1| = k_1 - 1 > 0",
-      "Apply thm-total-error-status-bound: Error ≤ (2 M_f / |S_1|) · n_c",
-      "Substitute M_f = D_Y and |S_1| = k_1 - 1 to obtain final bound"
-    ]
-  },
-  "geometric_interpretation": "This lemma quantifies how changes in walker status (alive/dead transitions) between two swarms affect the expected distance measurement for a given walker under the companion selection measure. The error bound has three key features: (1) it scales inversely with the number of available companions (k_1-1), making the measure more stable for larger alive sets; (2) it scales linearly with the number of status changes n_c, reflecting that each status flip can alter the companion distribution; (3) it scales with the diameter D_Y, as this bounds the maximum distance contribution from any companion. The bound is purely algebraic and holds for any metric on the algorithmic space, specialized here to the Sasaki geometry.",
-  "framework_connection": "This lemma is a direct specialization of the framework's general Total Error Bound in Terms of Status Changes (thm-total-error-status-bound) to the Sasaki metric geometry. The framework theorem provides the abstract algebraic bound for any bounded function under companion selection measure changes due to status transitions. This lemma instantiates that bound for the specific function f(c) = d_Y^Sasaki(φ(w_{2,i}), φ(w_{2,c})) measuring Sasaki distances, yielding an explicit structural error bound used in the measurement operator continuity analysis."
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

@@ -3,12 +3,13 @@
   "name": "Value Error Coefficients (Squared Form)",
   "mathematical_expression": "C_{V,\\mathrm{direct}}^{\\mathrm{sq}}(\\mathcal S) := \\frac{1}{\\sigma_{\\min,\\mathrm{patch}}^2}",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "swarm"
   ],
   "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "root"
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

@@ -19,10 +19,10 @@ Maps to Lean:
       ...
 """
 
-import json
 from datetime import datetime
+import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Optional
 
 from fragile.proofs.core.article_system import Article
 
@@ -64,9 +64,9 @@ class ArticleRegistry:
 
     def _initialize(self) -> None:
         """Initialize registry data structures."""
-        self._articles: Dict[str, Article] = {}
-        self._label_to_document: Dict[str, str] = {}  # label → document_id
-        self._tag_index: Dict[str, Set[str]] = {}  # tag → {document_ids}
+        self._articles: dict[str, Article] = {}
+        self._label_to_document: dict[str, str] = {}  # label → document_id
+        self._tag_index: dict[str, set[str]] = {}  # tag → {document_ids}
 
     # ========================================================================
     # REGISTRATION
@@ -98,7 +98,7 @@ class ArticleRegistry:
     # QUERIES
     # ========================================================================
 
-    def get_article(self, document_id: str) -> Optional[Article]:
+    def get_article(self, document_id: str) -> Article | None:
         """
         Get article by document_id.
 
@@ -113,7 +113,7 @@ class ArticleRegistry:
         """
         return self._articles.get(document_id)
 
-    def get_article_for_label(self, label: str) -> Optional[Article]:
+    def get_article_for_label(self, label: str) -> Article | None:
         """
         Get article containing a given label.
 
@@ -131,7 +131,7 @@ class ArticleRegistry:
             return self._articles.get(document_id)
         return None
 
-    def get_document_id_for_label(self, label: str) -> Optional[str]:
+    def get_document_id_for_label(self, label: str) -> str | None:
         """
         Get document_id for a label (fast lookup without full Article).
 
@@ -146,7 +146,7 @@ class ArticleRegistry:
         """
         return self._label_to_document.get(label)
 
-    def get_articles_by_tag(self, tag: str) -> List[Article]:
+    def get_articles_by_tag(self, tag: str) -> list[Article]:
         """
         Get all articles with a given tag.
 
@@ -162,7 +162,7 @@ class ArticleRegistry:
         document_ids = self._tag_index.get(tag, set())
         return [self._articles[doc_id] for doc_id in document_ids if doc_id in self._articles]
 
-    def get_articles_by_chapter(self, chapter: int) -> List[Article]:
+    def get_articles_by_chapter(self, chapter: int) -> list[Article]:
         """
         Get all articles in a chapter.
 
@@ -177,7 +177,7 @@ class ArticleRegistry:
         """
         return [article for article in self._articles.values() if article.chapter == chapter]
 
-    def get_all_articles(self) -> List[Article]:
+    def get_all_articles(self) -> list[Article]:
         """
         Get all registered articles.
 
@@ -189,7 +189,7 @@ class ArticleRegistry:
         """
         return list(self._articles.values())
 
-    def get_all_tags(self) -> List[str]:
+    def get_all_tags(self) -> list[str]:
         """
         Get all unique tags across all articles.
 
@@ -220,7 +220,7 @@ class ArticleRegistry:
     # STATISTICS
     # ========================================================================
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """
         Get registry statistics.
 
@@ -238,9 +238,9 @@ class ArticleRegistry:
             "by_tag": {tag: len(docs) for tag, docs in self._tag_index.items()},
         }
 
-    def _get_chapter_stats(self) -> Dict[int, int]:
+    def _get_chapter_stats(self) -> dict[int, int]:
         """Get article count by chapter."""
-        stats: Dict[int, int] = {}
+        stats: dict[int, int] = {}
         for article in self._articles.values():
             if article.chapter is not None:
                 stats[article.chapter] = stats.get(article.chapter, 0) + 1
@@ -319,8 +319,8 @@ class ArticleRegistry:
         ]
 
         # Group by chapter
-        by_chapter: Dict[int, List[Article]] = {}
-        uncategorized: List[Article] = []
+        by_chapter: dict[int, list[Article]] = {}
+        uncategorized: list[Article] = []
 
         for article in self._articles.values():
             if article.chapter is None:
@@ -332,9 +332,14 @@ class ArticleRegistry:
 
         # Write by chapter
         for chapter in sorted(by_chapter.keys()):
-            chapter_name = "Euclidean Gas" if chapter == 1 else "Geometric Gas" if chapter == 2 else f"Chapter {chapter}"
-            lines.append(f"## Chapter {chapter}: {chapter_name}")
-            lines.append("")
+            chapter_name = (
+                "Euclidean Gas"
+                if chapter == 1
+                else "Geometric Gas"
+                if chapter == 2
+                else f"Chapter {chapter}"
+            )
+            lines.extend((f"## Chapter {chapter}: {chapter_name}", ""))
 
             articles = sorted(by_chapter[chapter], key=lambda a: a.document_id)
             for article in articles:
@@ -342,18 +347,19 @@ class ArticleRegistry:
 
         # Write uncategorized
         if uncategorized:
-            lines.append("## Uncategorized")
-            lines.append("")
+            lines.extend(("## Uncategorized", ""))
             for article in sorted(uncategorized, key=lambda a: a.document_id):
                 lines.extend(self._format_article_entry(article))
 
         return "\n".join(lines)
 
-    def _format_article_entry(self, article: Article) -> List[str]:
+    def _format_article_entry(self, article: Article) -> list[str]:
         """Format a single article entry for the glossary."""
         lines = [f"### {article.title}"]
-        lines.append(f"**Document ID**: `{article.document_id}`")
-        lines.append(f"**File**: `{article.file_path}`")
+        lines.extend((
+            f"**Document ID**: `{article.document_id}`",
+            f"**File**: `{article.file_path}`",
+        ))
 
         if article.tags:
             tags_str = ", ".join(f"`{tag}`" for tag in sorted(article.tags))

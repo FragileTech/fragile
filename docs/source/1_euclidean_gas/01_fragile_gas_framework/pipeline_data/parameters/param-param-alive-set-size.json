@@ -1,0 +1,8 @@
+{
+  "label": "param-param-alive-set-size",
+  "name": "param-alive-set-size",
+  "symbol": "param-alive-set-size",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

@@ -2,144 +2,26 @@
   "label": "lem-euclidean-perturb-moment",
   "name": "Perturbation second moment in the Sasaki metric",
   "statement_type": "lemma",
-  "source": {
-    "document_id": "02_euclidean_gas",
-    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-    "section": "§4.3",
-    "directive_label": "lem-euclidean-perturb-moment",
-    "line_range": [803, 891],
-    "url_fragment": "#lem-euclidean-perturb-moment"
-  },
-  "input_objects": [
-    "obj-sasaki-metric",
-    "obj-algorithmic-space",
-    "obj-squashing-map-position",
-    "obj-squashing-map-velocity",
-    "obj-force-field",
-    "obj-auxiliary-flow-field"
-  ],
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
   "input_axioms": [],
-  "input_parameters": [
-    "param-tau",
-    "param-sigma-x",
-    "param-sigma-v",
-    "param-lambda-v",
-    "param-v-alg",
-    "param-gamma-fric",
-    "param-mass",
-    "param-dimension"
-  ],
-  "attributes_required": {
-    "obj-force-field": [
-      "attr-lipschitz-continuous"
-    ],
-    "obj-auxiliary-flow-field": [
-      "attr-lipschitz-continuous"
-    ],
-    "obj-squashing-map-velocity": [
-      "attr-one-lipschitz",
-      "attr-contractive"
-    ]
-  },
-  "internal_lemmas": [
-    "lem-squashing-properties-generic"
-  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
   "internal_propositions": [],
-  "lemma_dag_edges": [
-    ["lem-squashing-properties-generic", "lem-euclidean-perturb-moment"]
-  ],
+  "lemma_dag_edges": [],
   "output_type": "Property",
-  "attributes_added": [
-    {
-      "label": "attr-bounded-second-moment-sasaki",
-      "expression": "\\mathbb{E}\\left[d_{\\mathcal{Y}}^{\\mathrm{Sasaki}}\\bigl((x,v),(x^+,v^+)\\bigr)^2\\right] \\le C_x^{(\\mathrm{pert})}\\,\\|x\\|^2 + C_v^{(\\mathrm{pert})}\\,\\|v\\|^2 + C_0^{(\\mathrm{pert})}",
-      "object_label": "obj-kinetic-kernel",
-      "established_by": "lem-euclidean-perturb-moment",
-      "timestamp": null,
-      "can_be_refined": false,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "§4.3",
-        "directive_label": "lem-euclidean-perturb-moment",
-        "line_range": [873, 886],
-        "url_fragment": "#lem-euclidean-perturb-moment"
-      }
-    },
-    {
-      "label": "attr-quadratic-growth-control",
-      "expression": "The kinetic perturbation kernel has second moment growing at most quadratically in state norm: C_x^{(\\mathrm{pert})} = 3\\lambda_v A_x^2, C_v^{(\\mathrm{pert})} = 3\\lambda_v A_v^2, C_0^{(\\mathrm{pert})} = 2\\tau^2 V_{\\mathrm{alg}}^2 + 2\\tau\\sigma_x^2 d + 3\\lambda_v A_0^2 + \\lambda_v\\sigma_v^2\\tau d",
-      "object_label": "obj-kinetic-kernel",
-      "established_by": "lem-euclidean-perturb-moment",
-      "timestamp": null,
-      "can_be_refined": false,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "§4.3",
-        "directive_label": "lem-euclidean-perturb-moment",
-        "line_range": [878, 886],
-        "url_fragment": "#lem-euclidean-perturb-moment"
-      }
-    },
-    {
-      "label": "attr-feller-property",
-      "expression": "The capped kinetic kernel composes continuous affine map, 1-Lipschitz projection \\psi_v, and Gaussian with full support, hence is Feller",
-      "object_label": "obj-kinetic-kernel",
-      "established_by": "lem-euclidean-perturb-moment",
-      "timestamp": null,
-      "can_be_refined": false,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "§4.3",
-        "directive_label": "lem-euclidean-perturb-moment",
-        "line_range": [888, 888],
-        "url_fragment": "#lem-euclidean-perturb-moment"
-      }
-    }
-  ],
+  "attributes_added": [],
   "relations_established": [],
-  "tags": [
-    "euclidean-gas",
-    "sasaki-metric",
-    "kinetic-operator",
-    "langevin-dynamics",
-    "moment-bounds",
-    "feller-property",
-    "lyapunov-control"
-  ],
-  "mathematical_content": {
-    "statement": "The capped kinetic kernel (BAOAB velocity update with Gaussian noise followed by squashing projection and Euler position step) satisfies: (1) Quadratic second-moment bound in Sasaki metric with explicit coefficients, (2) Feller property (continuous kernel with full support).",
-    "proof_strategy": "Three-step explicit computation: (1) Bound positional increment using velocity cap, (2) Bound velocity increment using Lipschitz properties of force and flow fields plus squashing contraction, (3) Assemble Sasaki metric and apply Cauchy-Schwarz.",
-    "key_techniques": [
-      "Velocity capping via squashing map",
-      "Lipschitz bounds for force and auxiliary flow",
-      "Gaussian moment calculations",
-      "Cauchy-Schwarz inequality (α+β+γ)² ≤ 3(α²+β²+γ²)",
-      "Sasaki metric decomposition"
-    ],
-    "coefficients": {
-      "A_x": "\\tau\\left(\\frac{L_F}{m} + \\gamma_{\\mathrm{fric}}L_u\\right)",
-      "A_v": "\\gamma_{\\mathrm{fric}}\\tau",
-      "A_0": "\\frac{\\tau}{m}F_0 + \\gamma_{\\mathrm{fric}}\\tau u_0",
-      "C_x_pert": "3\\lambda_v A_x^2",
-      "C_v_pert": "3\\lambda_v A_v^2",
-      "C_0_pert": "2\\tau^2 V_{\\mathrm{alg}}^2 + 2\\tau\\sigma_x^2 d + 3\\lambda_v A_0^2 + \\lambda_v\\sigma_v^2\\tau d"
-    },
-    "dependencies_on_parameters": {
-      "tau": "Time step size - appears in drift coefficients A_x, A_v, A_0 and directly in C_0_pert",
-      "sigma_x": "Positional noise scale - contributes to C_0_pert via 2τσ_x² d term",
-      "sigma_v": "Velocity noise scale - contributes to C_0_pert via λ_v σ_v² τ d term",
-      "lambda_v": "Sasaki metric velocity weight - scales all velocity contributions",
-      "V_alg": "Velocity cap - appears in C_0_pert via 2τ² V_alg² term",
-      "gamma_fric": "Friction coefficient - controls A_v and contributes to A_x, A_0",
-      "m": "Mass parameter - appears in force scaling in A_x and A_0",
-      "d": "Ambient dimension - scales Gaussian noise contributions"
-    },
-    "physical_interpretation": "The lemma establishes Lyapunov-style control for the kinetic perturbation: on unbounded domains, we cannot demand uniform moment bounds, but we can control growth. The quadratic dependence on ‖x‖ and ‖v‖ is sharp (cannot be improved to linear) due to Lipschitz force field. The Feller property ensures continuous dependence on initial conditions, critical for Markov chain convergence theory."
-  }
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

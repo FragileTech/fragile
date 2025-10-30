@@ -1,0 +1,49 @@
+{
+  "label": "thm-global-continuity-patched-standardization",
+  "name": "Global Continuity of the Patched Standardization Operator",
+  "statement": "Let $z(\\mathcal{S}, \\mathbf{v}, M)$ be the N-Dimensional Standardization Operator using the **Regularized Standard Deviation Function** (def-statistical-properties-measurement). Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, and let $\\mathbf{v}_1$ and $\\mathbf{v}_2$ be two corresponding N-dimensional raw value vectors.\n\nThe squared Euclidean error between the output standardized vectors, $\\|z(\\mathcal{S}_1, \\mathbf{v}_1, M) - z(\\mathcal{S}_2, \\mathbf{v}_2, M)\\|_2^2$, is deterministically bounded by a function of the swarm displacement and the raw value difference:\n\n$$\n\\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2 \\le 2 C_{V,\\text{total}}(\\mathcal{S}_1) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2 + 2 C_{S,\\text{direct}} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + 2 C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2\n$$\n\nwhere $C_{V,\\text{total}}$, $C_{S,\\text{direct}}$, and $C_{S,\\text{indirect}}$ are the finite, deterministic coefficients defined in def-value-error-coefficients and def-lipschitz-structural-error-coefficients.",
+  "proof_sketch": "The proof is a direct assembly of the bounds derived in the preceding theorems. From the decomposition of total error, we have $\\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2 \\le 2 E_{V}^2(\\mathcal{S}_1; \\mathbf{v}_1, \\mathbf{v}_2) + 2 E_{S}^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}_2)$. Substituting the bounds for the value error and structural error yields the final inequality.",
+  "source_section": "12",
+  "source_document": "01_fragile_gas_framework.md",
+  "dependencies": [
+    "thm-deterministic-error-decomposition",
+    "thm-lipschitz-value-error-bound",
+    "thm-lipschitz-structural-error-bound",
+    "def-value-error-coefficients",
+    "def-lipschitz-structural-error-coefficients"
+  ],
+  "tags": [
+    "lipschitz",
+    "holder",
+    "continuity",
+    "global",
+    "patched"
+  ],
+  "input_objects": [
+    "obj-rescale-lipschitz-constants",
+    "obj-asymmetric-rescale-function",
+    "obj-cubic-patch-polynomial"
+  ],
+  "input_axioms": [
+    "axiom-rescale-function"
+  ],
+  "input_parameters": [],
+  "output_type": "Bound",
+  "relations_established": [
+    "Patched standardization function is globally continuous and Lipschitz"
+  ],
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "12",
+    "section_name": null,
+    "directive_label": "thm-global-continuity-patched-standardization",
+    "equation": null,
+    "line_range": [
+      3655,
+      3665
+    ],
+    "url_fragment": "#thm-global-continuity-patched-standardization"
+  }
+}

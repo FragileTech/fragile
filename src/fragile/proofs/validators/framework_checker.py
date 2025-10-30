@@ -14,7 +14,6 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Set
 
 from fragile.proofs.core.review_system import ValidationResult
 
@@ -36,7 +35,7 @@ class FrameworkChecker:
     All methods are pure/total functions.
     """
 
-    def __init__(self, glossary_path: Optional[Path] = None):
+    def __init__(self, glossary_path: Path | None = None):
         """
         Initialize framework checker.
 
@@ -60,7 +59,7 @@ class FrameworkChecker:
 
     def _load_glossary(self) -> None:
         """Load glossary and build label index."""
-        self.labels: Set[str] = set()
+        self.labels: set[str] = set()
 
         if not self.glossary_path.exists():
             # Glossary not found - checker will report all references as warnings
@@ -77,7 +76,7 @@ class FrameworkChecker:
         matches = re.findall(pattern, content)
         self.labels = set(matches)
 
-    def validate_references(self, referenced_labels: List[str]) -> ValidationResult:
+    def validate_references(self, referenced_labels: list[str]) -> ValidationResult:
         """
         Total function: Validate that referenced labels exist in framework.
 
@@ -108,7 +107,7 @@ class FrameworkChecker:
             metadata={"glossary_path": str(self.glossary_path), "total_labels": len(self.labels)},
         )
 
-    def get_framework_labels(self) -> Set[str]:
+    def get_framework_labels(self) -> set[str]:
         """
         Pure function: Get all labels in framework glossary.
 

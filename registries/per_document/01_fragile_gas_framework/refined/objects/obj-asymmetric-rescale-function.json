@@ -1,0 +1,33 @@
+{
+  "label": "obj-asymmetric-rescale-function",
+  "name": "Smooth Piecewise Rescale Function",
+  "mathematical_expression": "g_A(z) := \\begin{cases} \\exp(z), & z \\le 0 \\\\ \\log(1 + z) + 1, & 0 < z < z_{\\max} - 1 \\\\ P(z), & z_{\\max} - 1 \\le z \\le z_{\\max} \\\\ \\log(1 + z_{\\max}) + 1, & z > z_{\\max} \\end{cases}",
+  "object_type": "function",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "asymmetric",
+    "continuity",
+    "function",
+    "rescale",
+    "standardization"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "8.2.1",
+    "directive_label": "def-asymmetric-rescale-function",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-asymmetric-rescale-function",
+  "definition": "A function that transforms standardized Z-scores into positive values used for calculating fitness potential. It is constructed from exponential and logarithmic segments that are smoothly joined by a unique cubic polynomial patch, P(z), ensuring the overall function is continuously differentiable.",
+  "mathematical_properties": "The function is C^1 smooth, monotonically non-decreasing, has a uniformly bounded range (0, g_A,max], and is globally Lipschitz continuous with a Lipschitz constant of approximately 1.0054. These properties ensure that the fitness potential is a well-behaved, stable function of the standardized scores.",
+  "dependencies": [],
+  "typical_values": {
+    "z_max": "Must be a value greater than 1 for the piecewise definition to be well-posed."
+  }
+}

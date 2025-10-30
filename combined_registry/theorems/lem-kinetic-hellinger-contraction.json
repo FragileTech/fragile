@@ -2,9 +2,17 @@
   "label": "lem-kinetic-hellinger-contraction",
   "name": "Kinetic Operator Hellinger Contraction",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence",
+  "source": {
+    "document_id": "11_hk_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+    "section": null,
+    "directive_label": "lem-kinetic-hellinger-contraction",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-kinetic-hellinger-contraction"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -28,30 +36,39 @@
     "C_kin",
     "alpha_U"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-empirical-measure": [
-      "prop-normalized-density-bounded",
-      "prop-gaussian-regularization"
+      "attr-normalized-density-bounded",
+      "attr-gaussian-regularization"
     ],
     "obj-kinetic-operator": [
-      "prop-baoab-integrator",
-      "prop-boundary-killing"
+      "attr-baoab-integrator",
+      "attr-boundary-killing"
     ],
     "obj-qsd": [
-      "prop-smooth-density",
-      "prop-positive-lower-bound"
+      "attr-smooth-density",
+      "attr-positive-lower-bound"
     ]
   },
   "internal_lemmas": [
     "lem-mass-convergence",
-    "prop-killing-rate-continuous"
+    "attr-killing-rate-continuous"
   ],
   "internal_propositions": [
-    "prop-killing-rate-continuous"
+    "attr-killing-rate-continuous"
   ],
-  "lemma_dag_edges": [],
+  "lemma_dag_edges": [
+    [
+      "lem-hypoelliptic-density-bound",
+      "lem-kinetic-hellinger-contraction"
+    ],
+    [
+      "lem-gaussian-lower-bound",
+      "lem-kinetic-hellinger-contraction"
+    ]
+  ],
   "output_type": "Contraction",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-hellinger-distance-qsd-approximation",
@@ -61,14 +78,22 @@
       "target_object": "obj-qsd",
       "established_by": "lem-kinetic-hellinger-contraction",
       "expression": "{'type': 'contraction', 'from': 'obj-hellinger-distance', 'to': 'obj-qsd', 'description': 'E[d_H^2(mu_{t+1}, pi_QSD) | mu_t] <= (1 - kappa_kin(M) tau) d_H^2(mu_t, pi_QSD) + C_kin tau^2'}",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-dict"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence"
+      "source": {
+        "document_id": "11_hk_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+        "section": null,
+        "directive_label": "lem-kinetic-hellinger-contraction",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-kinetic-hellinger-contraction"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-kappa-kin-parameters-other",
@@ -78,14 +103,29 @@
       "target_object": "obj-parameters",
       "established_by": "lem-kinetic-hellinger-contraction",
       "expression": "{'type': 'rate_dependence', 'from': 'kappa_kin', 'to': 'parameters', 'description': 'Contraction rate depends on M (density bound), gamma (friction), alpha_U (potential coercivity), hypocoercive coupling'}",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-dict"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence"
+      "source": {
+        "document_id": "11_hk_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+        "section": null,
+        "directive_label": "lem-kinetic-hellinger-contraction",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-kinetic-hellinger-contraction"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

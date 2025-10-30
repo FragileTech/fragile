@@ -4,5 +4,11 @@
   "mathematical_expression": "|R_{\\mathcal{Y}}(y_1) - R_{\\mathcal{Y}}(y_2)| \\le L_{R,\\mathcal{Y}} \\cdot d_{\\mathcal{Y}}(y_1, y_2)^{\\alpha_R}.",
   "foundational_framework": "Euclidean Gas",
   "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "document": "01_fragile_gas_framework",
+  "name": null,
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": null
 }

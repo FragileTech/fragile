@@ -1,0 +1,14 @@
+{
+  "label": "prop-psi-markov-kernel",
+  "type": "proposition",
+  "name": "The Swarm Update defines a Markov kernel",
+  "section": "18",
+  "subsection": "17.2.4.5",
+  "source_file": "01_fragile_gas_framework.md",
+  "source_lines": "4627-5086",
+  "extraction_date": "2025-10-27",
+  "status": "extracted",
+  "statement_type": "proposition",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

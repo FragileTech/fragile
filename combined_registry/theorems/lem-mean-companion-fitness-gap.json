@@ -2,9 +2,17 @@
   "label": "lem-mean-companion-fitness-gap",
   "name": "Lower Bound on Mean Companion Fitness Gap",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning",
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "lem-mean-companion-fitness-gap",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-mean-companion-fitness-gap"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -18,15 +26,22 @@
     "f_F",
     "kappa_V_gap"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-fitness-potential-operator": [
-      "prop-non-degenerate-range"
+      "attr-non-degenerate-range"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

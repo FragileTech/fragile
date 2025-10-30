@@ -2,9 +2,17 @@
   "label": "lem-lie-splitting-weak-error",
   "name": "One-Step Weak Error for Lie Splitting",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "12_quantitative_error_bounds",
+  "source": {
+    "document_id": "12_quantitative_error_bounds",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+    "section": null,
+    "directive_label": "lem-lie-splitting-weak-error",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-lie-splitting-weak-error"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -19,16 +27,16 @@
     "beta",
     "C_chaos"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-test-function-phi": [
-      "prop-c4-regularity"
+      "attr-c4-regularity"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-discrete-operator-continuous-semigroup-other",
@@ -38,14 +46,29 @@
       "target_object": "obj-continuous-semigroup",
       "established_by": "lem-lie-splitting-weak-error",
       "expression": "bound: |E[(T^dt - P^dt)phi(Z)]| <= C_split * ||phi||_C4 * (dt)^2",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-dict"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "12_quantitative_error_bounds"
+      "source": {
+        "document_id": "12_quantitative_error_bounds",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+        "section": null,
+        "directive_label": "lem-lie-splitting-weak-error",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-lie-splitting-weak-error"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

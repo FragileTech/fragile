@@ -1,0 +1,65 @@
+{
+  "section": "20",
+  "section_title": "Canonical Instantiation and Axiom Validation",
+  "source_file": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+  "lines": {
+    "start": 5121,
+    "end": 5139,
+    "total": 19
+  },
+  "extraction_date": "2025-10-27",
+  "entities_extracted": {
+    "objects": 1,
+    "definitions": 0,
+    "theorems": 0,
+    "lemmas": 0,
+    "proofs": 0,
+    "axioms": 0,
+    "parameters": 0,
+    "equations": 0,
+    "remarks": 0,
+    "citations": 0,
+    "total": 1
+  },
+  "files_created": {
+    "objects": [
+      "objects/obj-canonical-fragile-swarm.json"
+    ]
+  },
+  "key_entities": [
+    {
+      "label": "obj-canonical-fragile-swarm",
+      "type": "object",
+      "name": "Canonical Fragile Swarm",
+      "significance": "Existence proof for axiomatic framework; baseline reference implementation"
+    }
+  ],
+  "dependencies_identified": [
+    "lem-empirical-aggregator-properties"
+  ],
+  "tags": [
+    "canonical",
+    "instantiation",
+    "existence-proof",
+    "baseline",
+    "complete-specification"
+  ],
+  "section_characteristics": {
+    "length": "short (19 lines)",
+    "density": "high conceptual density",
+    "importance": "critical for framework validation",
+    "content_type": "foundational definition"
+  },
+  "notes": [
+    "Subsection numbered 19.1 but appears in Section 20 (likely typo)",
+    "Serves as existence proof that axioms are satisfiable",
+    "Provides concrete baseline for custom implementations",
+    "All choices are standard, well-behaved, and verifiable"
+  ],
+  "validation_status": "extracted",
+  "next_steps": [
+    "Use canonical instantiation for axiom-by-axiom validation",
+    "Compute explicit constants in Section 21",
+    "Cross-reference with other framework components"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "label": "obj-distance-measurement-ms-constants",
+  "name": "Distance Measurement Mean-Square Constants",
+  "mathematical_expression": "Collection of constants controlling mean-square continuity bounds for distance-to-companion measurement with empirical companion selection.",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-distance-measurement-ms-constants",
+  "statement_type": "object",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "10.2",
+    "line_range": [
+      2550,
+      2600
+    ],
+    "directive_label": "obj-distance-measurement-ms-constants",
+    "equation": null,
+    "url_fragment": null
+  }
+}

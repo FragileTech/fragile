@@ -2,9 +2,17 @@
   "label": "thm-dobrushin-contraction",
   "name": "Dobrushin Contraction for Euclidean Gas",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence",
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "thm-dobrushin-contraction",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-dobrushin-contraction"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -15,7 +23,7 @@
   "input_parameters": [
     "kappa_W"
   ],
-  "properties_required": {
+  "attributes_required": {
     "coupling": [
       "Markov kernel admits coupling"
     ]
@@ -24,7 +32,7 @@
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-dobrushin-contraction-0-other",
@@ -34,14 +42,29 @@
       "target_object": "obj-dobrushin-coefficient",
       "established_by": "thm-dobrushin-contraction",
       "expression": "Total variation contraction via Dobrushin coefficient",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-dobrushin-contraction",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-dobrushin-contraction"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

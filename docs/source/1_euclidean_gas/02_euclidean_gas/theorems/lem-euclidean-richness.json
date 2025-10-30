@@ -2,59 +2,26 @@
   "label": "lem-euclidean-richness",
   "name": "Environmental richness with a kinetic regularizer",
   "statement_type": "lemma",
-  "source": {
-    "document_id": "02_euclidean_gas",
-    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-    "section": "4.2 Environmental axioms (reward landscape)",
-    "directive_label": "lem-euclidean-richness",
-    "line_range": [763, 790]
-  },
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
   "input_objects": [],
   "input_axioms": [],
-  "input_parameters": [
-    "param-lambda-vel",
-    "param-lambda-v",
-    "param-v-alg",
-    "param-r-min"
-  ],
+  "input_parameters": [],
   "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "attributes_added": [
-    {
-      "label": "attr-environmental-richness",
-      "expression": "For all $(x_0, v_0) \\in \\mathcal{Y}$ and radius $r > 0$, the variance of $R(x,v) = R_{\\mathrm{pos}}(x) - \\lambda_{\\mathrm{vel}}\\|v\\|^2$ on the Sasaki ball $B((x_0,v_0), r)$ satisfies $\\text{Var}(R) \\ge \\sigma_{\\mathrm{rich}}^2(r) := \\lambda_{\\mathrm{vel}}^2 \\delta^4 / 4 > 0$ where $\\delta := \\min\\{r/\\sqrt{\\lambda_v}, V_{\\mathrm{alg}}/2\\}$.",
-      "object_label": "obj-reward-function",
-      "established_by": "lem-euclidean-richness",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "4.2 Environmental axioms (reward landscape)",
-        "directive_label": "lem-euclidean-richness",
-        "line_range": [788, 788]
-      }
-    },
-    {
-      "label": "attr-satisfies-axiom-environmental-richness",
-      "expression": "The reward function $R(x,v) = R_{\\mathrm{pos}}(x) - \\lambda_{\\mathrm{vel}}\\|v\\|^2$ with $\\lambda_{\\mathrm{vel}} > 0$ satisfies the Axiom of Environmental Richness ({prf:ref}`def-axiom-environmental-richness`).",
-      "object_label": "obj-reward-function",
-      "established_by": "lem-euclidean-richness",
-      "timestamp": null,
-      "can_be_refined": false,
-      "refinements": [],
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "4.2 Environmental axioms (reward landscape)",
-        "directive_label": "lem-euclidean-richness",
-        "line_range": [766, 766]
-      }
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

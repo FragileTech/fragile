@@ -14,31 +14,31 @@ This example demonstrates the complete relationship system workflow:
 This is the recommended workflow for using the relationship system.
 """
 
-import sys
 from pathlib import Path
 import shutil
+import sys
+
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from fragile.proofs import (
-    MathematicalObject,
+    build_framework_flow_from_registry,
+    build_relationship_graph_from_registry,
+    CombinedTagQuery,
+    create_simple_object,
+    EquivalenceClassifier,
+    load_registry_from_directory,
+    MathematicalRegistry,
+    ObjectLineage,
     ObjectType,
     Relationship,
     RelationshipProperty,
     RelationType,
+    save_registry_to_directory,
+    TagQuery,
     TheoremBox,
     TheoremOutputType,
-    create_simple_object,
-)
-from fragile.proofs import CombinedTagQuery, TagQuery
-from fragile.proofs import MathematicalRegistry
-from fragile.proofs import load_registry_from_directory, save_registry_to_directory
-from fragile.proofs import (
-    EquivalenceClassifier,
-    ObjectLineage,
-    build_framework_flow_from_registry,
-    build_relationship_graph_from_registry,
 )
 
 
@@ -198,7 +198,7 @@ def main() -> None:
     registry.add_all([rel_mean_field, rel_qsd_convergence, rel_adaptive_extension, rel_geometric])
     registry.add_all([thm_mean_field, thm_convergence, thm_adaptive, thm_geometric])
 
-    print(f"✓ Created framework:")
+    print("✓ Created framework:")
     print(f"  Objects: {len(registry.get_all_objects())}")
     print(f"  Relationships: {len(registry.get_all_relationships())}")
     print(f"  Theorems: {len(registry.get_all_theorems())}")
@@ -259,7 +259,7 @@ def main() -> None:
 
     loaded_registry = load_registry_from_directory(MathematicalRegistry, storage_dir)
 
-    print(f"✓ Loaded from storage:")
+    print("✓ Loaded from storage:")
     print(f"  Objects: {len(loaded_registry.get_all_objects())}")
     print(f"  Relationships: {len(loaded_registry.get_all_relationships())}")
     print(f"  Theorems: {len(loaded_registry.get_all_theorems())}")
@@ -281,14 +281,14 @@ def main() -> None:
 
     graph = build_relationship_graph_from_registry(loaded_registry)
 
-    print(f"✓ Built graph:")
+    print("✓ Built graph:")
     print(f"  Nodes: {graph.node_count()}")
     print(f"  Edges: {graph.edge_count()}")
     print()
 
     # Show connectivity
     component = graph.get_connected_component("obj-euclidean-gas-discrete")
-    print(f"Connected component from 'obj-euclidean-gas-discrete':")
+    print("Connected component from 'obj-euclidean-gas-discrete':")
     print(f"  Size: {len(component)} nodes")
     print(f"  Nodes: {sorted(component)}")
     print()
@@ -324,7 +324,7 @@ def main() -> None:
 
     # Get descendants
     descendants = lineage.get_descendants("obj-euclidean-gas-discrete", max_depth=2)
-    print(f"Descendants of 'obj-euclidean-gas-discrete':")
+    print("Descendants of 'obj-euclidean-gas-discrete':")
     print(f"  Count: {len(descendants)}")
     for desc in sorted(descendants):
         print(f"    → {desc}")
@@ -333,7 +333,7 @@ def main() -> None:
     # Find path
     path = graph.find_path("obj-euclidean-gas-discrete", "obj-quasi-stationary-distribution")
     if path:
-        print(f"Path to QSD:")
+        print("Path to QSD:")
         print(f"  {' → '.join(path)}")
     print()
 
@@ -363,7 +363,7 @@ def main() -> None:
     if deps:
         print(f"  Depends on: {', '.join(sorted(deps))}")
     else:
-        print(f"  No dependencies (base theorem)")
+        print("  No dependencies (base theorem)")
     print()
 
     # ==========================================================================
@@ -380,13 +380,13 @@ def main() -> None:
     print()
 
     print("Objects by type:")
-    for obj_type, count in stats['counts_by_type'].items():
+    for obj_type, count in stats["counts_by_type"].items():
         if count > 0:
             print(f"  - {obj_type}: {count}")
     print()
 
     print("Most used tags:")
-    all_tags = sorted(stats['all_tags'])
+    all_tags = sorted(stats["all_tags"])
     print(f"  {', '.join(all_tags[:10])}")
     if len(all_tags) > 10:
         print(f"  ... and {len(all_tags) - 10} more")

@@ -373,7 +373,245 @@ This is a granular, step-by-step checklist that combines the findings from all p
 
 *   **Use Rich Formatting:** Employ markdown features such as admonitions (`note`, `important`, `warning`), tables, checklists, and code blocks to make your feedback as clear and structured as possible.
 
-## 5. Anti-Hallucination Protocol
+---
+
+## 5. Entity Enrichment and Semantic Completion
+
+### 5.1 Overview: The Extract-then-Enrich Pipeline
+
+The Fragile framework uses a **three-stage data transformation pipeline** to convert mathematical documentation into structured, validated entities:
+
+1. **Stage 1 - Extraction** (`document-parser` agent): Extract raw entities from MyST markdown documents
+   - Input: Markdown files with Jupyter Book directives (`{prf:definition}`, `{prf:theorem}`, etc.)
+   - Output: `raw/` entities with basic structure (label, type, source location)
+   - Completeness: ~20-30% (structural skeleton only)
+
+2. **Stage 2 - Enrichment** (`document-refiner` agent): Fill null fields with semantic meaning
+   - Input: `pipeline/` entities from document-parser (partially structured)
+   - Output: `refined/` entities with complete semantic information
+   - Completeness: 95-100% (publication-ready)
+   - **THIS IS YOUR PRIMARY TASK WHEN ASKED TO "ENRICH" OR "REFINE" ENTITIES**
+
+3. **Stage 3 - Validation**: Registry building and cross-reference validation
+   - Input: `refined/` entities
+   - Output: Centralized registry at `registries/combined/`
+   - Validation: Pydantic schemas + cross-reference checks
+
+**When to Use This Section:**
+- User asks you to "enrich", "refine", or "complete" entity files
+- User requests "semantic enrichment" or "fill missing fields"
+- You're processing files in `registries/per_document/*/pipeline/` directories
+- You're validating enriched entities against Pydantic schemas
+
+### 5.2 Entity-Specific Enrichment Requirements
+
+Each entity type has specific fields that must be enriched from null/empty to semantically meaningful content.
+
+#### 5.2.1 Axioms (AxiomBox)
+
+**Critical Fields to Enrich:**
+
+| Field | Type | Source | Enrichment Method |
+|-------|------|--------|-------------------|
+| `core_assumption` | DualStatement | Document text | Extract LHS, relation, RHS from axiom statement |
+| `parameters` | List[Parameter] | Document text | Identify all symbols/variables used; extract domain, constraints |
+| `condition` | DualStatement | Document text | Extract conditional clauses ("when", "if", "under") |
+| `failure_mode_analysis` | string | LLM enrichment | Analyze what breaks when axiom is violated + diagnostic indicators |
+
+**Example Prompt for Axiom Enrichment:**
+```
+Enrich axiom "{label}" from document {document_id}.
+
+Source text:
+{statement}
+
+Tasks:
+1. Extract core_assumption as DualStatement (LHS, relation, RHS)
+2. List all parameters (symbols) with domain and constraints
+3. Extract condition as DualStatement (if conditional)
+4. Generate failure_mode_analysis covering:
+   - What breaks mathematically when this axiom is violated
+   - Practical implementation failure modes
+   - Diagnostic indicators (how to detect violations)
+   - Remediation strategies
+
+Output as valid JSON matching AxiomBox schema.
+```
+
+**Validation Requirements:**
+- `core_assumption.lhs.latex` and `core_assumption.rhs.latex` must be non-empty
+- `parameters` list must include ALL symbols referenced in the axiom
+- Each parameter must have: symbol, description, constraints
+- `failure_mode_analysis` must be comprehensive (min 200 words)
+
+#### 5.2.2 Mathematical Objects (MathematicalObject)
+
+**Critical Fields to Enrich:**
+
+| Field | Type | Source | Enrichment Method |
+|-------|------|--------|-------------------|
+| `definition` | string | Document text | Extract natural language definition from directive content |
+| `mathematical_properties` | string | Document + LLM | Describe mathematical properties (continuity, boundedness, etc.) |
+| `dependencies` | List[str] | Document | List all obj-*, axiom-*, thm-* labels this object depends on |
+| `typical_values` | Dict | Document | Extract typical parameter values or ranges |
+
+**Example Prompt for Object Enrichment:**
+```
+Enrich object "{label}" from document {document_id}.
+
+Source text:
+{definition_directive_content}
+
+Tasks:
+1. Write clear natural language definition (2-3 sentences)
+2. Describe mathematical_properties:
+   - Continuity, differentiability, boundedness
+   - Domain and range
+   - Key inequalities or bounds
+3. List dependencies: All obj-*, axiom-*, thm-* referenced
+4. Extract typical_values from text or provide standard ranges
+
+Output as valid JSON matching MathematicalObject schema.
+```
+
+**Validation Requirements:**
+- `definition` must be clear and self-contained (understandable without context)
+- `mathematical_properties` must mention key properties relevant to the object's use
+- `dependencies` must contain ONLY labels that exist in the framework (verify against glossary.md)
+- All dependency labels must use correct prefixes: `obj-*`, `axiom-*`, `thm-*` (NOT `def-axiom-*`)
+
+#### 5.2.3 Theorems (TheoremBox)
+
+**Critical Fields to Enrich:**
+
+| Field | Type | Source | Enrichment Method |
+|-------|------|--------|-------------------|
+| `natural_language_statement` | string | Document text | Convert formal statement to clear English |
+| `assumptions` | List[str] | Document text | Extract all hypotheses and preconditions |
+| `conclusion` | string | Document text | Extract the main claim/result |
+| `uses_definitions` | List[str] | Document | List all def-*, obj-* labels used in statement |
+
+**Example Prompt for Theorem Enrichment:**
+```
+Enrich theorem "{label}" from document {document_id}.
+
+Source text:
+{theorem_directive_content}
+
+Tasks:
+1. Write natural_language_statement (2-3 sentences, clear English)
+2. List assumptions: All hypotheses, preconditions, regularity conditions
+3. State conclusion: The main result/claim
+4. List uses_definitions: All def-*, obj-* labels in the statement
+
+Output as valid JSON matching TheoremBox schema.
+```
+
+**Validation Requirements:**
+- `natural_language_statement` must be accessible to mathematicians outside the specific field
+- `assumptions` must be complete (no hidden hypotheses)
+- `conclusion` must be precise and match the formal statement
+- `uses_definitions` must reference definitions actually used in the proof/statement
+
+### 5.3 Enrichment Workflow
+
+**Step-by-Step Process:**
+
+1. **Read Pipeline Entity:**
+   - Locate file in `registries/per_document/{doc_id}/pipeline/{entity_type}/{label}.json`
+   - Identify null/empty fields requiring enrichment
+
+2. **Consult Source Document:**
+   - Find source document using `source.file_path` field
+   - Read relevant section using `source.line_range` or `source.section`
+   - **CRITICAL**: Always check `docs/glossary.md` for existing definitions of related concepts
+
+3. **Generate Enrichment:**
+   - **For straightforward fields** (definition, statement): Extract directly from document
+   - **For complex fields** (failure_mode_analysis, mathematical_properties): Use LLM enrichment
+   - **For dependencies**: Search document for cross-references and verify against glossary.md
+
+4. **Validate Enriched Entity:**
+   - Verify JSON matches Pydantic schema (use `python -c "from fragile.proofs.core.math_types import ..."`)
+   - Check cross-references: All labels in dependencies/uses_definitions must exist
+   - Verify directive labels follow convention: `def-axiom-*` NOT `axiom-*`
+
+5. **Save Refined Entity:**
+   - Write to `registries/per_document/{doc_id}/refined/{entity_type}/{label}.json`
+   - Ensure proper JSON formatting (2-space indent, no trailing commas)
+
+### 5.4 Common Pitfalls and How to Avoid Them
+
+| Pitfall | Problem | Solution | Detection |
+|---------|---------|----------|-----------|
+| **Wrong inequality direction** | Math expression has reversed inequality (e.g., lower bound uses `>=` instead of `<=`) | Carefully read source; check if parameter is "Maximum" (upper bound) or "Minimum" (lower bound) | Semantic mismatch between parameter name and inequality |
+| **Missing "def-" prefix** | Directive label is `axiom-*` but glossary uses `def-axiom-*` | ALWAYS use `def-axiom-*`, `def-assumption-*` format for directive labels | Cross-reference validation fails |
+| **Broken dependencies** | Object references non-existent `obj-lipschitz-*` instead of `obj-value-error-coefficients` | Verify ALL labels against `docs/glossary.md` before writing | Cross-reference validation fails |
+| **Pydantic type mismatch** | Field expects `DualStatement` but gets `string` | Check schema in `src/fragile/proofs/core/math_types.py` | Validation error with type mismatch |
+| **Incomplete failure analysis** | failure_mode_analysis is vague ("this breaks things") | Include: (1) precise mechanism, (2) diagnostic indicators, (3) remediation | Field is too short (<200 words) or lacks specific failure modes |
+| **Hallucinated references** | Dependencies list `thm-nonexistent` | Search glossary.md BEFORE adding to dependencies | Cross-reference validation fails |
+
+### 5.5 Batch Processing Strategy
+
+**Token-Efficient Enrichment (Recommended):**
+
+When enriching multiple entities:
+
+1. **Batch by type**: Process 5 entities of the same type together
+2. **Single prompt**: Send all 5 to LLM in one request
+3. **Systematic application**: Use Python scripts to apply enrichments
+4. **Validate batch**: Check all 5 for schema compliance
+
+**Example Batch Enrichment Prompt:**
+```
+Enrich the following 5 axioms from document "01_fragile_gas_framework":
+
+[Axiom 1: {label, statement}]
+[Axiom 2: {label, statement}]
+[Axiom 3: {label, statement}]
+[Axiom 4: {label, statement}]
+[Axiom 5: {label, statement}]
+
+For each axiom, provide:
+1. core_assumption (DualStatement with LHS, relation, RHS)
+2. parameters (complete list with domain, constraints)
+3. condition (DualStatement if conditional)
+4. failure_mode_analysis (comprehensive, min 200 words each)
+
+Output as valid JSON array matching AxiomBox schema.
+```
+
+### 5.6 Validation Checklist
+
+Before marking an entity as "enriched", verify:
+
+- [ ] All required fields are non-null (check Pydantic schema)
+- [ ] Mathematical expressions use correct LaTeX (no Unicode math symbols)
+- [ ] All cross-references (obj-*, axiom-*, thm-*) exist in glossary.md
+- [ ] Directive labels use correct format (def-axiom-*, def-assumption-*)
+- [ ] Inequality directions match parameter semantics (Maximum → ≤, Minimum → ≥)
+- [ ] Dependencies form acyclic graph (no circular references)
+- [ ] JSON is properly formatted (valid syntax, correct indentation)
+- [ ] failure_mode_analysis (for axioms) is comprehensive and specific
+
+### 5.7 Integration with Review Workflow
+
+**Entity enrichment is complementary to document review:**
+
+- **Document review** (§ 3): Analyze proofs, theorems, definitions for mathematical rigor
+- **Entity enrichment** (§ 5): Fill semantic fields in structured entity JSON files
+
+**Do NOT confuse these tasks:**
+- If user asks to "review the proof", use § 3 SOP (document review)
+- If user asks to "enrich the entities" or "refine the axioms", use § 5 workflow (entity enrichment)
+
+**After enrichment, you may be asked to review:**
+- User: "Review the enriched entities for framework consistency"
+- Response: Check enriched fields against source documents, verify cross-references, validate mathematical correctness of extracted content
+
+---
+
+## 6. Anti-Hallucination Protocol
 
 **CRITICAL REQUIREMENT**: You are working alongside Codex in a dual review system. Your analysis will be **cross-validated** against:
 1. Framework documents (`docs/glossary.md`, source documents)
@@ -400,7 +638,7 @@ This is a granular, step-by-step checklist that combines the findings from all p
 - "This step seems to require {condition} but I'm not certain - please verify"
 - "The bound appears to be O(log k) rather than O(1) - verify the derivation"
 
-## 6. Self-Correction and Ambiguity
+## 7. Self-Correction and Ambiguity
 
 If a user's request is ambiguous or if a document contains a concept that appears to be undefined or contradictory, your primary directive is to **uphold the standard of rigor**. You will:
 
@@ -411,7 +649,7 @@ If a user's request is ambiguous or if a document contains a concept that appear
 
 Your ultimate goal is to ensure the final body of work is mathematically unassailable.
 
-## 7. Output Format Summary
+## 8. Output Format Summary
 
 Your final review must include ALL of the following sections:
 
@@ -433,7 +671,7 @@ Your final review must include ALL of the following sections:
 
 ---
 
-## 8. Model Configuration
+## 9. Model Configuration
 
 **IMPORTANT**: Unless explicitly instructed otherwise, you should be invoked as:
 ```

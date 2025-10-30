@@ -2,9 +2,17 @@
   "label": "lem-barrier-reduction-cloning",
   "name": "Expected Barrier Reduction for Cloned Walker",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning",
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "lem-barrier-reduction-cloning",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-barrier-reduction-cloning"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -20,22 +28,18 @@
     "param-sigma-x",
     "param-swarm-size"
   ],
-  "properties_required": {},
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [
-    {
-      "label": "prop-barrier-reduction-cloning",
-      "expression": "\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid i \\text{ clones}] \\leq \\mathbb{E}[\\varphi_{\\text{barrier}}(x_{c_i})] + C_{\\text{jitter}}",
-      "object_label": "obj-boundary-potential-recall",
-      "established_by": "lem-barrier-reduction-cloning",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

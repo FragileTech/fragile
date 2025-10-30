@@ -1,0 +1,47 @@
+{
+  "label": "lem-stats-structural-continuity",
+  "name": "Structural Continuity of Statistical Properties",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "11.1.3",
+    "section_name": null,
+    "directive_label": "lem-stats-structural-continuity",
+    "equation": null,
+    "line_range": [
+      2895,
+      2914
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-standardization-lower-bound",
+    "obj-aggregator-lipschitz-constants",
+    "obj-potential-bounds",
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-rescale-lipschitz-constants"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Lipschitz Continuity",
+  "attributes_added": [],
+  "relations_established": [
+    "Mean and regularized standard deviation are continuous with respect to swarm structure changes"
+  ],
+  "natural_language_statement": "Let $\\mathbf{v}$ be a fixed raw value vector. Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. The mean $\\mu(\\mathcal{S}, \\mathbf{v})$ and regularized standard deviation $\\sigma'(\\mathcal{S}, \\mathbf{v})$ are continuous with respect to changes in the swarm structure.\n\n$$\n|\\mu(\\mathcal{S}_1, \\mathbf{v}) - \\mu(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2\n$$\n\n$$\n|\\sigma'(\\mathcal{S}_1, \\mathbf{v}) - \\sigma'(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\sigma',S}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2\n$$\n\nwhere $L_{\\mu,S}$ is the axiomatic structural continuity function for the mean from def-swarm-aggregation-operator-axiomatic, and $L_{\\sigma',S}$ is the derived structural continuity function for the regularized standard deviation, given by:\n\n$$\n\\boxed{\nL_{\\sigma',S}(\\mathcal{S}_1, \\mathcal{S}_2) := L_{\\sigma'_{\\text{reg}}} \\cdot \\left( L_{m_2,S}(\\mathcal{S}_1, \\mathcal{S}_2) + 2V_{\\max}L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2) \\right)\n}\n$$",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

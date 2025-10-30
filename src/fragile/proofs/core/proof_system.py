@@ -23,9 +23,10 @@ Version: 1.0.0
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+
 
 if TYPE_CHECKING:
     from fragile.proofs.core.article_system import SourceLocation
@@ -53,8 +54,12 @@ class AttributeReference(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    object_id: str = Field(..., min_length=1, description="Object ID (e.g., 'obj-discrete-system')")
-    property_id: str = Field(..., min_length=1, description="Attribute ID (e.g., 'prop-lipschitz-continuity')")
+    object_id: str = Field(
+        ..., min_length=1, description="Object ID (e.g., 'obj-discrete-system')"
+    )
+    property_id: str = Field(
+        ..., min_length=1, description="Attribute ID (e.g., 'prop-lipschitz-continuity')"
+    )
     property_statement: str = Field(..., description="Mathematical statement of the property")
 
     def __str__(self) -> str:
@@ -81,7 +86,7 @@ class AssumptionReference(BaseModel):
     object_id: str = Field(..., description="Object ID")
     assumption_id: str = Field(..., description="Assumption ID")
     assumption_statement: str = Field(..., description="Mathematical statement of assumption")
-    justification: Optional[str] = Field(None, description="Why this assumption is reasonable")
+    justification: str | None = Field(None, description="Why this assumption is reasonable")
 
     def __str__(self) -> str:
         return f"{self.object_id}::{self.assumption_id} [assumed]"
@@ -104,19 +109,18 @@ class ProofInput(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     object_id: str = Field(..., description="Object ID")
-    required_properties: List[AttributeReference] = Field(
-        default_factory=list,
-        description="Proven properties required"
+    required_properties: list[AttributeReference] = Field(
+        default_factory=list, description="Proven properties required"
     )
-    required_assumptions: List[AssumptionReference] = Field(
-        default_factory=list,
-        description="Assumptions required (make proof conditional)"
+    required_assumptions: list[AssumptionReference] = Field(
+        default_factory=list, description="Assumptions required (make proof conditional)"
     )
 
-    def get_all_property_ids(self) -> Set[str]:
+    def get_all_property_ids(self) -> set[str]:
         """Get all property IDs (proven + assumed)."""
-        return {prop.property_id for prop in self.required_properties} | \
-               {assump.assumption_id for assump in self.required_assumptions}
+        return {prop.property_id for prop in self.required_properties} | {
+            assump.assumption_id for assump in self.required_assumptions
+        }
 
 
 class ProofOutput(BaseModel):
@@ -134,10 +138,8 @@ class ProofOutput(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     object_id: str = Field(..., description="Object ID")
-    properties_established: List[AttributeReference] = Field(
-        ...,
-        min_items=1,
-        description="Properties proven to hold"
+    properties_established: list[AttributeReference] = Field(
+        ..., min_items=1, description="Properties proven to hold"
     )
 
 
@@ -188,17 +190,13 @@ class DirectDerivation(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     mathematical_content: str = Field(
-        ...,
-        description="Full mathematical derivation (LaTeX/markdown)"
+        ..., description="Full mathematical derivation (LaTeX/markdown)"
     )
-    techniques: List[str] = Field(
+    techniques: list[str] = Field(
         default_factory=list,
-        description="Mathematical techniques used (e.g., 'cauchy-schwarz', 'integration-by-parts')"
+        description="Mathematical techniques used (e.g., 'cauchy-schwarz', 'integration-by-parts')",
     )
-    verification_status: Optional[str] = Field(
-        None,
-        description="LLM verification status"
-    )
+    verification_status: str | None = Field(None, description="LLM verification status")
 
 
 class SubProofReference(BaseModel):
@@ -232,14 +230,10 @@ class LemmaApplication(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     lemma_id: str = Field(..., description="ID of lemma/theorem being applied")
-    input_mapping: Dict[str, str] = Field(
-        ...,
-        description="Map from lemma's input IDs to actual object IDs"
+    input_mapping: dict[str, str] = Field(
+        ..., description="Map from lemma's input IDs to actual object IDs"
     )
-    justification: Optional[str] = Field(
-        None,
-        description="Why this lemma applies"
-    )
+    justification: str | None = Field(None, description="Why this lemma applies")
 
 
 class ProofStep(BaseModel):
@@ -264,43 +258,42 @@ class ProofStep(BaseModel):
 
     model_config = ConfigDict(frozen=False)  # Mutable for expansion
 
-    step_id: str = Field(..., pattern=r"^step-[0-9]+(-[0-9]+)*$", description="Hierarchical step ID")
+    step_id: str = Field(
+        ..., pattern=r"^step-[0-9]+(-[0-9]+)*$", description="Hierarchical step ID"
+    )
     natural_language_description: str = Field(
         ...,
         description="What this step accomplishes, preferably in the paper's own words. "
-                   "Should be clear and self-contained."
+        "Should be clear and self-contained.",
     )
 
     # Dataflow specification
-    inputs: List[ProofInput] = Field(..., description="Input objects + properties needed")
-    outputs: List[ProofOutput] = Field(..., description="Output objects + properties produced")
+    inputs: list[ProofInput] = Field(..., description="Input objects + properties needed")
+    outputs: list[ProofOutput] = Field(..., description="Output objects + properties produced")
 
     # Step implementation
     step_type: ProofStepType = Field(..., description="Type of step")
-    derivation: Optional[Union[DirectDerivation, SubProofReference, LemmaApplication]] = Field(
-        None,
-        description="How to derive output from input"
+    derivation: DirectDerivation | SubProofReference | LemmaApplication | None = Field(
+        None, description="How to derive output from input"
     )
 
     # Metadata
     status: ProofStepStatus = Field(
-        default=ProofStepStatus.SKETCHED,
-        description="Current status of this step"
+        default=ProofStepStatus.SKETCHED, description="Current status of this step"
     )
 
     # Citation tracking (NEW - for paper processing)
-    citations: List[str] = Field(
+    citations: list[str] = Field(
         default_factory=list,
         description="A list of bibliographic keys (from the article's Bibliography) cited to justify this step. "
-                   "Enables tracking which external theorems or papers are used in each proof step."
+        "Enables tracking which external theorems or papers are used in each proof step.",
     )
-    estimated_complexity: Optional[str] = Field(
-        None,
-        description="Estimated complexity (simple/moderate/complex)"
+    estimated_complexity: str | None = Field(
+        None, description="Estimated complexity (simple/moderate/complex)"
     )
 
-    @model_validator(mode='after')
-    def validate_derivation(self) -> 'ProofStep':
+    @model_validator(mode="after")
+    def validate_derivation(self) -> ProofStep:
         """Ensure derivation matches step_type."""
         if self.status == ProofStepStatus.EXPANDED:
             if self.derivation is None:
@@ -309,13 +302,19 @@ class ProofStep(BaseModel):
             # Check type consistency
             if self.step_type == ProofStepType.DIRECT_DERIVATION:
                 if not isinstance(self.derivation, DirectDerivation):
-                    raise ValueError(f"Step {self.step_id} has type DIRECT_DERIVATION but derivation is not DirectDerivation")
+                    raise ValueError(
+                        f"Step {self.step_id} has type DIRECT_DERIVATION but derivation is not DirectDerivation"
+                    )
             elif self.step_type == ProofStepType.SUB_PROOF:
                 if not isinstance(self.derivation, SubProofReference):
-                    raise ValueError(f"Step {self.step_id} has type SUB_PROOF but derivation is not SubProofReference")
+                    raise ValueError(
+                        f"Step {self.step_id} has type SUB_PROOF but derivation is not SubProofReference"
+                    )
             elif self.step_type == ProofStepType.LEMMA_APPLICATION:
                 if not isinstance(self.derivation, LemmaApplication):
-                    raise ValueError(f"Step {self.step_id} has type LEMMA_APPLICATION but derivation is not LemmaApplication")
+                    raise ValueError(
+                        f"Step {self.step_id} has type LEMMA_APPLICATION but derivation is not LemmaApplication"
+                    )
 
         return self
 
@@ -325,21 +324,20 @@ class ProofStep(BaseModel):
 
     def is_expanded(self) -> bool:
         """Check if step has been expanded."""
-        return self.status in (ProofStepStatus.EXPANDED, ProofStepStatus.VERIFIED)
+        return self.status in {ProofStepStatus.EXPANDED, ProofStepStatus.VERIFIED}
 
-    def get_required_property_ids(self) -> Set[str]:
+    def get_required_property_ids(self) -> set[str]:
         """Get all property IDs required by this step."""
         result = set()
         for inp in self.inputs:
             result.update(inp.get_all_property_ids())
         return result
 
-    def get_produced_property_ids(self) -> Set[str]:
+    def get_produced_property_ids(self) -> set[str]:
         """Get all property IDs produced by this step."""
         result = set()
         for out in self.outputs:
-            for prop in out.properties_established:
-                result.add(prop.property_id)
+            result.update(prop.property_id for prop in out.properties_established)
         return result
 
 
@@ -380,39 +378,42 @@ class ProofBox(BaseModel):
     proves: str = Field(
         ...,
         pattern=r"^(thm|lem|prop)-[a-z0-9-]+$",
-        description="What theorem/lemma/proposition this proves"
+        description="What theorem/lemma/proposition this proves",
     )
 
     # Proof signature (like a function type)
-    inputs: List[ProofInput] = Field(..., description="Input objects + properties required")
-    outputs: List[ProofOutput] = Field(..., description="Output objects + properties established")
+    inputs: list[ProofInput] = Field(..., description="Input objects + properties required")
+    outputs: list[ProofOutput] = Field(..., description="Output objects + properties established")
 
     # Proof body
     strategy: str = Field(..., description="High-level proof strategy")
-    steps: List[ProofStep] = Field(..., min_items=1, description="Proof steps")
+    steps: list[ProofStep] = Field(..., min_items=1, description="Proof steps")
 
     # Recursive structure
-    sub_proofs: Dict[str, 'ProofBox'] = Field(
-        default_factory=dict,
-        description="Nested sub-proofs (for complex steps)"
+    sub_proofs: dict[str, ProofBox] = Field(
+        default_factory=dict, description="Nested sub-proofs (for complex steps)"
     )
 
     # Metadata
-    proof_type: Optional[str] = Field(None, description="Proof type (direct, contradiction, induction, etc.)")
-    complexity: Optional[str] = Field(None, description="Overall complexity (routine/standard/technical/intricate/deep)")
-    source: Optional["SourceLocation"] = Field(
-        None,
+    proof_type: str | None = Field(
+        None, description="Proof type (direct, contradiction, induction, etc.)"
+    )
+    complexity: str | None = Field(
+        None, description="Overall complexity (routine/standard/technical/intricate/deep)"
+    )
+    source: SourceLocation = Field(
+        ...,
         description="Source location in documentation where this proof is defined",
     )
 
     # Theorem Integration (NEW)
-    theorem: Optional['TheoremBox'] = Field(
+    theorem: TheoremBox | None = Field(
         None,
-        description="Back-reference to theorem this proves (enables bidirectional navigation)"
+        description="Back-reference to theorem this proves (enables bidirectional navigation)",
     )
 
-    @model_validator(mode='after')
-    def validate_against_theorem(self) -> 'ProofBox':
+    @model_validator(mode="after")
+    def validate_against_theorem(self) -> ProofBox:
         """
         Validate proof against theorem if theorem is attached.
 
@@ -437,14 +438,14 @@ class ProofBox(BaseModel):
                 )
         return self
 
-    def get_step(self, step_id: str) -> Optional[ProofStep]:
+    def get_step(self, step_id: str) -> ProofStep | None:
         """Get step by ID."""
         for step in self.steps:
             if step.step_id == step_id:
                 return step
         return None
 
-    def get_sub_proof(self, proof_id: str) -> Optional['ProofBox']:
+    def get_sub_proof(self, proof_id: str) -> ProofBox | None:
         """Get nested sub-proof by ID."""
         return self.sub_proofs.get(proof_id)
 
@@ -452,30 +453,30 @@ class ProofBox(BaseModel):
         """Check if all steps are expanded."""
         return all(step.is_expanded() for step in self.steps)
 
-    def get_sketched_steps(self) -> List[ProofStep]:
+    def get_sketched_steps(self) -> list[ProofStep]:
         """Get all steps that are still sketched (not expanded)."""
         return [step for step in self.steps if step.is_sketched()]
 
-    def get_required_properties(self) -> Dict[str, Set[str]]:
+    def get_required_properties(self) -> dict[str, set[str]]:
         """
         Get all properties required, grouped by object.
 
         Returns: {object_id: {property_id1, property_id2, ...}}
         """
-        result: Dict[str, Set[str]] = {}
+        result: dict[str, set[str]] = {}
         for inp in self.inputs:
             if inp.object_id not in result:
                 result[inp.object_id] = set()
             result[inp.object_id].update(inp.get_all_property_ids())
         return result
 
-    def get_established_properties(self) -> Dict[str, Set[str]]:
+    def get_established_properties(self) -> dict[str, set[str]]:
         """
         Get all properties established, grouped by object.
 
         Returns: {object_id: {property_id1, property_id2, ...}}
         """
-        result: Dict[str, Set[str]] = {}
+        result: dict[str, set[str]] = {}
         for out in self.outputs:
             if out.object_id not in result:
                 result[out.object_id] = set()
@@ -483,7 +484,7 @@ class ProofBox(BaseModel):
                 result[out.object_id].add(prop.property_id)
         return result
 
-    def validate_dataflow(self) -> List[str]:
+    def validate_dataflow(self) -> list[str]:
         """
         Validate that dataflow is consistent.
 
@@ -497,7 +498,7 @@ class ProofBox(BaseModel):
         errors = []
 
         # Track available properties after each step
-        available: Dict[str, Set[str]] = {}
+        available: dict[str, set[str]] = {}
 
         # Initialize with proof inputs
         for inp in self.inputs:
@@ -511,9 +512,7 @@ class ProofBox(BaseModel):
             for inp in step.inputs:
                 required = inp.get_all_property_ids()
                 if inp.object_id not in available:
-                    errors.append(
-                        f"Step {step.step_id}: Object {inp.object_id} not available"
-                    )
+                    errors.append(f"Step {step.step_id}: Object {inp.object_id} not available")
                 else:
                     missing = required - available[inp.object_id]
                     if missing:
@@ -532,9 +531,7 @@ class ProofBox(BaseModel):
         for out in self.outputs:
             required_props = {prop.property_id for prop in out.properties_established}
             if out.object_id not in available:
-                errors.append(
-                    f"Proof output: Object {out.object_id} never produced"
-                )
+                errors.append(f"Proof output: Object {out.object_id} never produced")
             else:
                 missing = required_props - available[out.object_id]
                 if missing:
@@ -544,7 +541,7 @@ class ProofBox(BaseModel):
 
         return errors
 
-    def to_graph(self) -> Dict:
+    def to_graph(self) -> dict:
         """
         Convert proof to dataflow graph representation.
 
@@ -559,7 +556,7 @@ class ProofBox(BaseModel):
                 "id": f"input-{inp.object_id}",
                 "type": "input",
                 "label": inp.object_id,
-                "properties": list(inp.get_all_property_ids())
+                "properties": list(inp.get_all_property_ids()),
             })
 
         # Add step nodes
@@ -568,7 +565,7 @@ class ProofBox(BaseModel):
                 "id": step.step_id,
                 "type": "step",
                 "label": step.description,
-                "status": step.status.value
+                "status": step.status.value,
             })
 
             # Edges from inputs to step
@@ -576,7 +573,7 @@ class ProofBox(BaseModel):
                 edges.append({
                     "source": f"input-{inp.object_id}",
                     "target": step.step_id,
-                    "properties": list(inp.get_all_property_ids())
+                    "properties": list(inp.get_all_property_ids()),
                 })
 
             # Edges from step to outputs
@@ -584,7 +581,7 @@ class ProofBox(BaseModel):
                 edges.append({
                     "source": step.step_id,
                     "target": f"output-{out.object_id}",
-                    "properties": [p.property_id for p in out.properties_established]
+                    "properties": [p.property_id for p in out.properties_established],
                 })
 
         # Add output nodes
@@ -593,22 +590,18 @@ class ProofBox(BaseModel):
                 "id": f"output-{out.object_id}",
                 "type": "output",
                 "label": out.object_id,
-                "properties": [p.property_id for p in out.properties_established]
+                "properties": [p.property_id for p in out.properties_established],
             })
 
-        return {
-            "proof_id": self.proof_id,
-            "label": self.label,
-            "nodes": nodes,
-            "edges": edges
-        }
+        return {"proof_id": self.proof_id, "label": self.label, "nodes": nodes, "edges": edges}
 
     @classmethod
     def from_raw(
         cls,
-        raw: "RawProof",  # type: ignore  # Forward reference
+        raw: RawProof,  # type: ignore  # Forward reference
+        source: SourceLocation,
         proves: str,
-    ) -> "ProofBox":
+    ) -> ProofBox:
         """
         Create a ProofBox from a RawProof staging model.
 
@@ -618,23 +611,26 @@ class ProofBox(BaseModel):
 
         Args:
             raw: The raw proof from Stage 1 extraction
+            source: Source location in documentation (REQUIRED)
             proves: Label of the theorem this proves (e.g., "thm-keystone")
 
         Returns:
             ProofBox with proof stored as single sketched step
+
+        Raises:
+            ValueError: If source is None
 
         Examples:
             >>> raw_proof = RawProof(
             ...     temp_id="raw-proof-1",
             ...     theorem_label="thm-keystone",
             ...     proof_text="We proceed by...",
-            ...     source_section="§3"
+            ...     source_section="§3",
             ... )
             >>> proof = ProofBox.from_raw(raw_proof, proves="thm-keystone")
             >>> proof.proof_id
             'proof-thm-keystone'
         """
-        from fragile.proofs.staging_types import RawProof
 
         # Generate proof_id from theorem label
         proof_id = f"proof-{proves.replace('thm-', '').replace('lem-', '').replace('prop-', '')}"
@@ -652,23 +648,25 @@ class ProofBox(BaseModel):
         # Create a single step with the full proof text
         # This is the "simple" approach - a specialized agent can expand later
         single_step = ProofStep(
-            step_id=f"{proof_id}-step-1",
-            step_number=1,
-            description=proof_text,
-            justification="Full proof text (to be expanded by specialized agent)",
-            step_type=ProofStepType.DIRECT,
+            step_id="step-1",
+            natural_language_description=proof_text,
+            step_type=ProofStepType.DIRECT_DERIVATION,
             status=ProofStepStatus.SKETCHED,  # Not yet broken into detailed steps
             inputs=[],
             outputs=[],
             derivation=DirectDerivation(
-                from_properties=[],
-                conclusion="See description",
-                reasoning=proof_text[:200] + "..." if len(proof_text) > 200 else proof_text
-            )
+                mathematical_content=proof_text[:200] + "..."
+                if len(proof_text) > 200
+                else proof_text,
+                techniques=[],
+                verification_status="sketched",
+            ),
         )
 
         # Use strategy_text if available, otherwise use beginning of proof_text
-        strategy = raw.strategy_text if raw.strategy_text else (proof_text[:100] + "..." if len(proof_text) > 100 else proof_text)
+        strategy = raw.strategy_text or (
+            proof_text[:100] + "..." if len(proof_text) > 100 else proof_text
+        )
 
         return cls(
             proof_id=proof_id,
@@ -681,8 +679,8 @@ class ProofBox(BaseModel):
             sub_proofs={},
             proof_type=None,  # Requires semantic analysis
             complexity=None,  # Requires semantic analysis
-            source=None,  # Requires line finder
-            theorem=None  # Can be attached later
+            source=source,
+            theorem=None,  # Can be attached later
         )
 
 
@@ -703,9 +701,9 @@ class ProofExpansionRequest(BaseModel):
     proof_id: str = Field(..., description="Parent proof ID")
     step_id: str = Field(..., description="Step to expand")
     step_description: str = Field(..., description="What the step should accomplish")
-    inputs: List[ProofInput] = Field(..., description="Available inputs")
-    outputs: List[ProofOutput] = Field(..., description="Required outputs")
-    context: Optional[str] = Field(None, description="Additional context from proof strategy")
+    inputs: list[ProofInput] = Field(..., description="Available inputs")
+    outputs: list[ProofOutput] = Field(..., description="Required outputs")
+    context: str | None = Field(None, description="Additional context from proof strategy")
 
 
 class ProofEngine:
@@ -720,17 +718,17 @@ class ProofEngine:
     """
 
     def __init__(self):
-        self.proofs: Dict[str, ProofBox] = {}
+        self.proofs: dict[str, ProofBox] = {}
 
     def register_proof(self, proof: ProofBox) -> None:
         """Register a proof."""
         self.proofs[proof.proof_id] = proof
 
-    def get_proof(self, proof_id: str) -> Optional[ProofBox]:
+    def get_proof(self, proof_id: str) -> ProofBox | None:
         """Get proof by ID."""
         return self.proofs.get(proof_id)
 
-    def validate_proof(self, proof_id: str) -> List[str]:
+    def validate_proof(self, proof_id: str) -> list[str]:
         """
         Validate proof dataflow.
 
@@ -742,7 +740,7 @@ class ProofEngine:
 
         return proof.validate_dataflow()
 
-    def get_expansion_requests(self, proof_id: str) -> List[ProofExpansionRequest]:
+    def get_expansion_requests(self, proof_id: str) -> list[ProofExpansionRequest]:
         """
         Get all sketched steps that need expansion.
 
@@ -754,14 +752,16 @@ class ProofEngine:
 
         requests = []
         for step in proof.get_sketched_steps():
-            requests.append(ProofExpansionRequest(
-                proof_id=proof_id,
-                step_id=step.step_id,
-                step_description=step.description,
-                inputs=step.inputs,
-                outputs=step.outputs,
-                context=proof.strategy
-            ))
+            requests.append(
+                ProofExpansionRequest(
+                    proof_id=proof_id,
+                    step_id=step.step_id,
+                    step_description=step.natural_language_description,
+                    inputs=step.inputs,
+                    outputs=step.outputs,
+                    context=proof.strategy,
+                )
+            )
 
         return requests
 
@@ -769,7 +769,7 @@ class ProofEngine:
         self,
         proof_id: str,
         step_id: str,
-        derivation: Union[DirectDerivation, SubProofReference, LemmaApplication]
+        derivation: DirectDerivation | SubProofReference | LemmaApplication,
     ) -> bool:
         """
         Expand a sketched step with its derivation.
@@ -803,7 +803,7 @@ class ProofEngine:
         proof.sub_proofs[sub_proof.proof_id] = sub_proof
         return True
 
-    def compute_proof_complexity(self, proof_id: str) -> Dict:
+    def compute_proof_complexity(self, proof_id: str) -> dict:
         """
         Compute complexity metrics for a proof.
 
@@ -841,10 +841,10 @@ class ProofEngine:
 def create_proof_from_theorem(
     theorem_id: str,
     theorem_label: str,
-    inputs: List[ProofInput],
-    outputs: List[ProofOutput],
+    inputs: list[ProofInput],
+    outputs: list[ProofOutput],
     strategy: str,
-    steps: List[ProofStep]
+    steps: list[ProofStep],
 ) -> ProofBox:
     """
     Helper: Create ProofBox from theorem specification.
@@ -860,16 +860,16 @@ def create_proof_from_theorem(
         inputs=inputs,
         outputs=outputs,
         strategy=strategy,
-        steps=steps
+        steps=steps,
     )
 
 
 def create_simple_step(
     step_id: str,
     description: str,
-    inputs: List[ProofInput],
-    outputs: List[ProofOutput],
-    complexity: str = "simple"
+    inputs: list[ProofInput],
+    outputs: list[ProofOutput],
+    complexity: str = "simple",
 ) -> ProofStep:
     """
     Helper: Create simple proof step (to be expanded by LLM).
@@ -882,5 +882,5 @@ def create_simple_step(
         inputs=inputs,
         outputs=outputs,
         step_type=ProofStepType.DIRECT_DERIVATION,
-        estimated_complexity=complexity
+        estimated_complexity=complexity,
     )

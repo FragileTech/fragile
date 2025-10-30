@@ -2,47 +2,45 @@
   "label": "thm-deterministic-error-decomposition",
   "name": "Decomposition of the Total Standardization Error",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§11.3.1",
+    "section_name": null,
+    "directive_label": "thm-deterministic-error-decomposition",
+    "equation": null,
+    "line_range": [
+      3388,
+      3423
+    ],
+    "url_fragment": null
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
-    "obj-components-mean-square-standardization-error",
-    "obj-raw-value-operator",
-    "obj-swarm-and-state-space",
-    "obj-alg-distance"
+    "obj-standardization-operator-n-dimensional",
+    "obj-swarm-and-state-space"
   ],
-  "input_axioms": [
-    "axiom-raw-value-mean-square-continuity"
-  ],
+  "input_axioms": [],
   "input_parameters": [],
-  "properties_required": {},
+  "attributes_required": {
+    "obj-standardization-operator-n-dimensional": [
+      "attr-uses-regularized-std-dev"
+    ]
+  },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [
-    {
-      "label": "prop-structural-error-lipschitz-bound",
-      "expression": "E[SE(s, s')^2] \\leq L_s^2 \\cdot d_{alg}(s, s')^2",
-      "object_label": "obj-lipschitz-structural-error-coefficients",
-      "established_by": "thm-deterministic-error-decomposition",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "prop-value-error-lipschitz-bound",
-      "expression": "E[VE(v, v')^2] \\leq L_v^2 \\cdot d_{val}(v, v')^2",
-      "object_label": "obj-lipschitz-value-error-coefficients",
-      "established_by": "thm-deterministic-error-decomposition",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

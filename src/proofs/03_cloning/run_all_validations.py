@@ -9,17 +9,18 @@ Agent: Math Verifier v1.0
 Source: docs/source/1_euclidean_gas/03_cloning.md
 """
 
-import sys
 from pathlib import Path
+import sys
+
 
 # Import all validation functions
 sys.path.insert(0, str(Path(__file__).parent))
 
-from test_variance_identity_gemini import test_between_group_variance_identity
-from test_mean_deviations import test_mean_deviations_from_total
-from test_within_group_variance_bound import test_within_group_variance_bound
 from test_companion_fitness_gap import test_companion_fitness_gap_algebra
 from test_mean_decomposition_gap import test_mean_decomposition_gap
+from test_mean_deviations import test_mean_deviations_from_total
+from test_variance_identity_gemini import test_between_group_variance_identity
+from test_within_group_variance_bound import test_within_group_variance_bound
 
 
 def run_all_validations():
@@ -40,9 +41,9 @@ def run_all_validations():
     passed = 0
     failed = 0
 
-    print("="*80)
+    print("=" * 80)
     print("SYMBOLIC VALIDATION SUITE FOR 03_CLONING.MD")
-    print("="*80)
+    print("=" * 80)
     print(f"\nRunning {len(tests)} algebraic validation tests...\n")
 
     for i, (name, test_func) in enumerate(tests, 1):
@@ -61,9 +62,9 @@ def run_all_validations():
             print(f"   Unexpected error: {e}\n")
             failed += 1
 
-    print("="*80)
+    print("=" * 80)
     print(f"VALIDATION SUMMARY: {passed} passed, {failed} failed")
-    print("="*80)
+    print("=" * 80)
 
     if failed == 0:
         print("\n✅ All algebraic validations PASSED!")

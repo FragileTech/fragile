@@ -1,0 +1,121 @@
+{
+  "label": "thm-cloning-transition-operator-continuity-recorrected",
+  "name": "Mean-Square Continuity of the Cloning Transition Operator",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": null,
+    "file_path": null,
+    "section": "15.2.8",
+    "directive_label": null,
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": {
+    "label": "proof-cloning-transition-operator-continuity-recorrected",
+    "status": "complete",
+    "line_start": 4454,
+    "line_end": 4501
+  },
+  "proof_status": "proven",
+  "input_objects": [
+    "obj-swarm-and-state-space",
+    "obj-alive-dead-sets",
+    "obj-n-particle-displacement-metric",
+    "obj-cloning-measure",
+    "obj-cloning-operator-continuity-coeffs-recorrected",
+    "obj-cloning-probability-lipschitz-constants",
+    "obj-one-step-ms-continuity-coefficients"
+  ],
+  "input_axioms": [
+    "def-axiom-guaranteed-revival"
+  ],
+  "input_parameters": [
+    "param-N",
+    "param-epsilon-clone",
+    "param-p-max",
+    "param-eta",
+    "param-alpha",
+    "param-beta",
+    "param-D-Y"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "sub-lem-bound-sum-total-cloning-probs"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    {
+      "from": "sub-lem-bound-sum-total-cloning-probs",
+      "to": "thm-cloning-transition-operator-continuity-recorrected"
+    }
+  ],
+  "output_type": "BOUND",
+  "attributes_added": [],
+  "relations_established": [
+    {
+      "type": "continuity_bound",
+      "source": "obj-cloning-measure",
+      "target": "obj-n-particle-displacement-metric",
+      "description": "Establishes quantitative mean-square continuity bound with Lipschitz and Hölder terms"
+    }
+  ],
+  "natural_language_statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two input states from the alive state space, with $k_1 = |\\mathcal{A}(\\mathcal{S}_1)| \\ge 2$. Let $\\mathcal{S}'_1 \\sim \\Psi_{\\text{clone}}(\\mathcal{S}_1, \\cdot)$ and $\\mathcal{S}'_2 \\sim \\Psi_{\\text{clone}}(\\mathcal{S}_2, \\cdot)$ be two intermediate swarms sampled independently from the cloning transition measure.\n\nThe Cloning Transition Operator is mean-square continuous. The expected squared N-Particle Displacement Metric between the two output swarms is bounded by a sum of a Lipschitz term and a Hölder term of the input squared displacement:\n\n$$\n\\mathbb{E}[d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}'_1, \\mathcal{S}'_2)^2] \\le C_{\\text{clone},L}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^2 + C_{\\text{clone},H}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2) + K_{\\text{clone}}(\\mathcal{S}_1, \\mathcal{S}_2)\n$$\n\nwhere $C_{\\text{clone},L}$, $C_{\\text{clone},H}$, and $K_{\\text{clone}}$ are the Cloning Operator Continuity Coefficients, which are deterministic, state-dependent functions.",
+  "assumptions": [
+    "Two input states $\\mathcal{S}_1$ and $\\mathcal{S}_2$ are from the alive state space",
+    "The number of alive walkers satisfies $k_1 = |\\mathcal{A}(\\mathcal{S}_1)| \\ge 2$",
+    "The intermediate swarms $\\mathcal{S}'_1$ and $\\mathcal{S}'_2$ are sampled independently from the cloning transition measure"
+  ],
+  "conclusion": "The cloning transition operator exhibits mean-square continuity, with the expected squared displacement between output swarms bounded by a combination of Lipschitz and Hölder terms of the input displacement, plus a state-dependent offset. This quantitative bound establishes that small perturbations in input swarms lead to controlled perturbations in output swarms.",
+  "equation_label": null,
+  "uses_definitions": [
+    "def-n-particle-displacement-metric",
+    "def-alive-dead-sets",
+    "def-cloning-measure",
+    "def-swarm-and-state-space",
+    "def-cloning-operator-continuity-coeffs-recorrected",
+    "def-displacement-components"
+  ],
+  "validation_errors": [],
+  "raw_fallback": {
+    "label": "thm-cloning-transition-operator-continuity-recorrected",
+    "name": "Mean-Square Continuity of the Cloning Transition Operator",
+    "statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two input states from the alive state space, with $k_1 = |\\mathcal{A}(\\mathcal{S}_1)| \\ge 2$. Let $\\mathcal{S}'_1 \\sim \\Psi_{\\text{clone}}(\\mathcal{S}_1, \\cdot)$ and $\\mathcal{S}'_2 \\sim \\Psi_{\\text{clone}}(\\mathcal{S}_2, \\cdot)$ be two intermediate swarms sampled independently from the cloning transition measure.\n\nThe Cloning Transition Operator is mean-square continuous. The expected squared **N-Particle Displacement Metric** between the two output swarms is bounded by a sum of a Lipschitz term and a Hölder term of the input squared displacement:\n\n$$\n\\mathbb{E}[d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}'_1, \\mathcal{S}'_2)^2] \\le C_{\\text{clone},L}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^2 + C_{\\text{clone},H}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2) + K_{\\text{clone}}(\\mathcal{S}_1, \\mathcal{S}_2)\n$$\n\nwhere $C_{\\text{clone},L}$, $C_{\\text{clone},H}$, and $K_{\\text{clone}}$ are the **Cloning Operator Continuity Coefficients**, which are deterministic, state-dependent functions defined in the subsequent sections.",
+    "hypotheses": [
+      "Two input states from alive state space",
+      "$k_1 = |\\mathcal{A}(\\mathcal{S}_1)| \\ge 2$",
+      "Independent sampling from cloning transition measure"
+    ],
+    "conclusion": "Cloning operator is mean-square continuous with Lipschitz and Hölder terms",
+    "proof_technique": "Bound intermediate positional displacement, bound sum of cloning probabilities, assemble final bound",
+    "dependencies": [
+      "def-cloning-operator-continuity-coeffs-recorrected",
+      "sub-lem-bound-sum-total-cloning-probs"
+    ],
+    "tags": [
+      "cloning",
+      "mean-square",
+      "continuity",
+      "operator",
+      "hölder"
+    ],
+    "context": "Section 16: The Cloning Transition Measure, subsection 15.2.8",
+    "source_file": "01_fragile_gas_framework.md",
+    "line_number": 4437,
+    "extraction_date": "2025-10-27T21:45:04.113269",
+    "input_objects": [
+      "obj-cloning-probability-lipschitz-constants",
+      "obj-one-step-ms-continuity-coefficients",
+      "obj-cloning-measure"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "output_type": "Bound",
+    "relations_established": [
+      "Cloning transition operator is mean-square continuous"
+    ],
+    "statement_type": "theorem"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "definition_id": "def-distance-to-companion-measurement",
+  "term": "Distance-to-Companion Measurement",
+  "informal_definition": "The distance value $d_i$ for walker $i$ is the result of a two-stage sampling process. First, a **potential companion** index, denoted $c_{\\text{pot}}(i)$, is sampled from the **Companion Selection Measure** $\\mathbb{C}_i$. Second, the **Algorithmic Distance** is computed to that specific companion.\n\nThis process is equivalent to sampling a single value from the **Distance-to-Companion Measure** $\\mathbb{D}_i$, which is the pushforward of $\\mathbb{C}_i$ by the distance function $D_i(j) = d_{\\text{alg}}(x_i, x_j)$.",
+  "formal_definition": "$$\nd_i := d_{\\text{alg}}(x_i, x_{c_{\\text{pot}}(i)}) \\quad \\text{where} \\quad c_{\\text{pot}}(i) \\sim \\mathbb{C}_i(\\cdot)\n$$\n\nThe **Raw Distance Vector Operator**, denoted $\\mathbf{d}(\\mathcal{S})$, maps a swarm state $\\mathcal{S}$ to a *distribution* over N-dimensional vectors. A single realization of this vector is produced by performing the distance-to-companion measurement independently for each alive walker. For dead walkers, the component is zero.",
+  "natural_language_definition": "The distance-to-companion measurement is a stochastic operator that measures the algorithmic distance from each alive walker to a randomly selected companion walker. The companion is selected according to the companion selection measure. The operator produces an N-dimensional vector where each component represents the measured distance for the corresponding walker.",
+  "context": "This operator is the second intrinsic measurement in the algorithm and is the primary source of state-dependent instability. Its continuity is probabilistic and state-dependent because each walker's measurement depends on the state of the entire swarm via the Companion Selection Measure.",
+  "dependencies": [],
+  "related_objects": [
+    "obj-companion-selection-measure",
+    "obj-distance-to-companion-measurement",
+    "obj-raw-value-operator"
+  ],
+  "tags": [
+    "measurement",
+    "distance",
+    "companion",
+    "stochastic",
+    "operator"
+  ],
+  "notes": "The continuity of the raw distance vector operator, $\\mathcal{S} \\mapsto \\mathbf{d}(\\mathcal{S})$, is substantially more complex to analyze than that of the reward vector. The operator is stochastic, and the measurement for each walker depends on the state of the entire swarm via the Companion Selection Measure.",
+  "examples": [],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "section_name": null,
+    "directive_label": null,
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

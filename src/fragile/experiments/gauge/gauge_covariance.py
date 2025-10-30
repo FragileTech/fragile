@@ -24,14 +24,14 @@ Does d'_i transform non-trivially under local gauge transformation α_i(x)?
 **THIS IS THE CRITICAL TEST THAT DETERMINES THE INTERPRETATION!**
 """
 
-import torch
 from pydantic import BaseModel, Field
+import torch
 from torch import Tensor
 
 from fragile.core.companion_selection import compute_algorithmic_distance_matrix
 from fragile.experiments.gauge.observables import (
-    ObservablesConfig,
     compute_collective_fields,
+    ObservablesConfig,
 )
 
 
@@ -177,9 +177,7 @@ def modify_companion_probabilities_with_gauge(
     N = positions.shape[0]
 
     # Compute base probabilities
-    dist_sq = compute_algorithmic_distance_matrix(
-        positions, velocities, config.lambda_alg
-    )
+    dist_sq = compute_algorithmic_distance_matrix(positions, velocities, config.lambda_alg)
     weights = torch.exp(-dist_sq / (2 * config.epsilon_d**2))
 
     # Apply gauge-dependent phase modulation
@@ -201,9 +199,7 @@ def modify_companion_probabilities_with_gauge(
     weights_transformed = weights_transformed * alive_mask.float() * self_mask.float()
 
     # Normalize to probabilities
-    probs = weights_transformed / (weights_transformed.sum(dim=1, keepdim=True) + 1e-10)
-
-    return probs
+    return weights_transformed / (weights_transformed.sum(dim=1, keepdim=True) + 1e-10)
 
 
 def sample_companions_from_modified_probabilities(
@@ -284,7 +280,7 @@ def test_gauge_covariance(
         ... )
         >>> print(f"Verdict: {results['verdict']}")
         >>> print(f"Δd'_inside: {results['delta_inside']:.6f}")
-        >>> if results['verdict'] == 'covariant':
+        >>> if results["verdict"] == "covariant":
         ...     print("✓✓✓ LOCAL GAUGE THEORY VIABLE!")
         ... else:
         ...     print("Mean-field interpretation applies.")
@@ -306,9 +302,7 @@ def test_gauge_covariance(
     )
 
     # Apply gauge transformation
-    alpha = apply_gauge_transformation_to_phases(
-        positions, gauge_config.alpha_0, inside
-    )
+    alpha = apply_gauge_transformation_to_phases(positions, gauge_config.alpha_0, inside)
 
     # Run multiple trials with resampling
     d_prime_transformed_trials = []
@@ -404,18 +398,18 @@ def generate_gauge_covariance_report(results: dict) -> str:
     delta_inside = results["delta_inside"]
     delta_boundary = results["delta_boundary"]
     delta_outside = results["delta_outside"]
-    confidence = results["confidence"]
+    results["confidence"]
     rho = results["rho"]
 
-    report = f"""
+    return f"""
 ================================================================================
 GAUGE COVARIANCE TEST (TEST 1D) - CRITICAL EXPERIMENT
 ================================================================================
 
 Configuration:
-  ρ (localization scale): {rho if rho is not None else '∞ (mean-field)'}
+  ρ (localization scale): {rho if rho is not None else "∞ (mean-field)"}
   α_0 (phase shift): {alpha_0:.4f}
-  Number of trials: {results['num_trials']}
+  Number of trials: {results["num_trials"]}
 
 VERDICT: {verdict.upper()}
 
@@ -429,7 +423,7 @@ Measurement Results:
   Boundary (∂R):       Δd'_bd  = {delta_boundary:.6f}
   Outside region:      Δd'_out = {delta_outside:.6f}
 
-  Response ratio:      Δd'_in / Δd'_out = {delta_inside/(delta_outside+1e-10):.2f}
+  Response ratio:      Δd'_in / Δd'_out = {delta_inside / (delta_outside + 1e-10):.2f}
 
 --------------------------------------------------------------------------------
 Interpretation:
@@ -445,7 +439,6 @@ Physical Implications:
 
 ================================================================================
 """
-    return report
 
 
 def _interpret_gauge_test(results: dict) -> str:
@@ -467,8 +460,8 @@ observable. The transformation compensates for the phase shift within the ρ-nei
 
 CONCLUSION: Local gauge theory interpretation is VIABLE!"""
 
-    elif verdict == "invariant":
-        return f"""GAUGE INVARIANT behavior detected.
+    if verdict == "invariant":
+        return """GAUGE INVARIANT behavior detected.
 
 The collective field d'_i does NOT transform under local gauge transformation:
   - Inside region: Δd' ≈ 0
@@ -479,8 +472,7 @@ primitives. It does not support local gauge transformation.
 
 CONCLUSION: Mean-field interpretation applies. Local gauge theory is NOT viable."""
 
-    else:
-        return f"""INCONCLUSIVE results.
+    return f"""INCONCLUSIVE results.
 
   - Inside: Δd' = {delta_inside:.6f}
   - Outside: Δd' = {delta_outside:.6f}
@@ -517,7 +509,7 @@ def _explain_implications(verdict: str) -> str:
    - Construct conserved Noether currents
    - Study gauge boson excitations"""
 
-    elif verdict == "invariant":
+    if verdict == "invariant":
         return """If gauge invariance is confirmed:
 
 1. **Theoretical Framework**: Mean-field collective field theory
@@ -536,8 +528,7 @@ def _explain_implications(verdict: str) -> str:
    - Find condensed matter analogs
    - Phase transitions in (ρ, ε) space"""
 
-    else:
-        return """Inconclusive results require further investigation:
+    return """Inconclusive results require further investigation:
 
 1. Vary ρ systematically to find crossover
 2. Increase num_trials for better statistics

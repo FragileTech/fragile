@@ -1,0 +1,28 @@
+{
+  "label": "obj-canonical-fragile-swarm",
+  "name": "Canonical Fragile Swarm",
+  "mathematical_expression": "A concrete, complete instantiation of the Fragile Gas framework that serves as an existence proof for the axiom system. It specifies all foundational, environmental, and algorithmic components with standard, well-behaved choices.",
+  "object_type": "set",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "canonical",
+    "instantiation",
+    "existence-proof",
+    "baseline",
+    "complete-specification"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "section_name": null,
+    "directive_label": "obj-canonical-fragile-swarm",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-canonical-fragile-swarm"
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-canonical-fragile-swarm"
+}

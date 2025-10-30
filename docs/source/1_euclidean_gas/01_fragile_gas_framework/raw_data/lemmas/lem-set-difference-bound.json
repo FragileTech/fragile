@@ -1,0 +1,45 @@
+{
+  "label": "lem-set-difference-bound",
+  "name": "Bound on the Error from Companion Set Change",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "7.2.1",
+    "section_name": null,
+    "directive_label": "lem-set-difference-bound",
+    "equation": null,
+    "line_range": [
+      1522,
+      1531
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-companion-selection-measure"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Bound on error from companion set change, proportional to symmetric difference of support sets"
+  ],
+  "natural_language_statement": "Let $S_1$ and $S_2$ be two companion support sets, with $|S_1| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$ such that $|f_j| \\le M_f$ for all $j$.\nThe absolute difference between the sums over these two sets, normalized by the initial set size $|S_1|$, is bounded by the size of the symmetric difference between the sets, $|S_1 \\Delta S_2|$.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [
+    "def-companion-selection-measure"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

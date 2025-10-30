@@ -1,0 +1,46 @@
+{
+  "label": "lem-component-potential-lipschitz",
+  "name": "Lipschitz Continuity of the Fitness Potential Function",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "12.2.2",
+    "section_name": null,
+    "directive_label": "lem-component-potential-lipschitz",
+    "equation": null,
+    "line_range": [
+      3767,
+      3796
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-rescale-lipschitz-constants",
+    "obj-potential-bounds",
+    "def-alive-set-potential-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Lipschitz Continuity",
+  "attributes_added": [],
+  "relations_established": [
+    "Lipschitz constants L_{F,r} and L_{F,d} are finite and state-independent",
+    "Component-wise potential function F(z_r, z_d) = (g_A(z_d) + eta)^beta*(g_A(z_r) + eta)^alpha is Lipschitz"
+  ],
+  "natural_language_statement": "Let the component-wise potential function be defined as $F(z_r, z_d) := (g_A(z_d) + \\eta)^{\\beta} \\cdot (g_A(z_r) + \\eta)^{\\alpha}$. This function is Lipschitz continuous with respect to its Z-score inputs. For any two pairs of Z-scores $(z_{r1}, z_{d1})$ and $(z_{r2}, z_{d2})$: $|F(z_{r1}, z_{d1}) - F(z_{r2}, z_{d2})| \\le L_{F,r}|z_{r1} - z_{r2}| + L_{F,d}|z_{d1} - z_{d2}|$ where the Lipschitz constants $L_{F,r}$ and $L_{F,d}$ are finite, state-independent constants.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

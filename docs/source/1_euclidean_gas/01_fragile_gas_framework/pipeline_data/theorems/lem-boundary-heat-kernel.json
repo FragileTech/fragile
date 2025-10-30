@@ -1,0 +1,48 @@
+{
+  "label": "lem-boundary-heat-kernel",
+  "name": "Heat-kernel death probability is Lipschitz with constant ≲ 1/σ",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-perturbation-constants",
+    "obj-perturbation-measure",
+    "obj-algorithmic-space-generic",
+    "obj-smoothed-gaussian-measure",
+    "obj-boundary-regularity-constants",
+    "obj-alg-distance"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-validation-heat-kernel",
+      "lem-boundary-heat-kernel"
+    ]
+  ],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [
+    "Lipschitz constant bounded by C_d'*Per(E)/sigma",
+    "Heat-kernel smoothed probability P_sigma(x) is Lipschitz continuous",
+    "In algorithmic metric: L_death <= (Per(phi(E))/sigma)*L_phi"
+  ],
+  "natural_language_statement": "Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter and let $p_{\\sigma^2}$ be the heat kernel at scale $\\sigma$. Define $P_\\sigma(x)=\\int \\chi_E(y)\\,p_{\\sigma^2}(x,\\mathrm dy)$. Then $|P_\\sigma(x)-P_\\sigma(y)| \\le C_d'\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y)$, with a constant $C_d'$ depending on dimension. Consequently $L_{\\text{death}}\\lesssim (\\mathrm{Per}(\\varphi(E))/\\sigma)\\,L_\\varphi$ in the algorithmic metric.",
+  "assumptions": [
+    "$E=\\mathcal{X}_{\\mathrm{invalid}}$ has finite perimeter",
+    "$p_{\\sigma^2}$ is heat kernel at scale $\\sigma$"
+  ],
+  "conclusion": "$|P_\\sigma(x)-P_\\sigma(y)| \\le C_d'\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y)$",
+  "equation_label": null,
+  "uses_definitions": [
+    "def-perturbation-measure"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

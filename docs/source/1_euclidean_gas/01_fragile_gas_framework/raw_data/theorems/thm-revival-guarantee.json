@@ -1,0 +1,35 @@
+{
+  "label": "thm-revival-guarantee",
+  "name": "Almost‑sure revival under the global constraint",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.1.1",
+    "section_name": null,
+    "directive_label": "thm-revival-guarantee",
+    "equation": null,
+    "line_range": [
+      618,
+      627
+    ],
+    "url_fragment": "#thm-revival-guarantee"
+  },
+  "input_objects": [
+    "obj-potential-bounds",
+    "obj-canonical-fragile-swarm",
+    "obj-cloning-measure",
+    "obj-revival-state"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [
+    "Under global constraint, all dead walkers are revived with probability 1 in cloning stage"
+  ]
+}

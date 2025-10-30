@@ -1,0 +1,501 @@
+================================================================================
+LEMMA REFINEMENT REPORT
+================================================================================
+
+Total lemmas processed: 47
+  - Clean (no issues): 43
+  - With corrections: 0
+  - With validation errors: 4
+
+--------------------------------------------------------------------------------
+ALL LEMMAS
+--------------------------------------------------------------------------------
+
+lem-boundary-heat-kernel
+  File: lem-boundary-heat-kernel.json
+  Name: Heat-kernel death probability is Lipschitz with constant ≲ 1/σ
+  Output Type: General Result
+  Status: OK
+
+lem-boundary-uniform-ball
+  File: lem-boundary-uniform-ball.json
+  Name: Uniform-ball death probability is Lipschitz under finite perimeter
+  Output Type: Bound
+  Status: OK
+
+lem-bounded-differences-favg
+  File: lem-bounded-differences-favg.json
+  Name: Bounded differences for $f_{\text{avg}}$
+  Output Type: Bound
+  Status: OK
+
+lem-cloning-probability-lipschitz
+  File: lem-cloning-probability-lipschitz.json
+  Name: Lipschitz Continuity of the Conditional Cloning Probability Function
+  Output Type: Lipschitz Continuity
+  Status: OK
+
+lem-component-potential-lipschitz
+  File: lem-component-potential-lipschitz.json
+  Name: Lipschitz Continuity of the Fitness Potential Function
+  Output Type: Lipschitz Continuity
+  Status: OK
+
+lem-cubic-patch-coefficients
+  File: lem-cubic-patch-coefficients.json
+  Name: Explicit Coefficients of the Smooth Rescale Patch
+  Output Type: Bound
+  Status: OK
+
+lem-cubic-patch-derivative-bounds
+  File: lem-cubic-patch-derivative-bounds.json
+  Name: Bounds on the Polynomial Patch Derivative
+  Output Type: Bound
+  Status: OK
+
+lem-cubic-patch-derivative
+  File: lem-cubic-patch-derivative.json
+  Name: Explicit Form of the Polynomial Patch Derivative
+  Output Type: General Result
+  Status: OK
+
+lem-cubic-patch-uniqueness
+  File: lem-cubic-patch-uniqueness.json
+  Name: Existence and Uniqueness of the Smooth Rescale Patch
+  Output Type: Bound
+  Status: OK
+
+lem-empirical-aggregator-properties
+  File: lem-empirical-aggregator-properties.json
+  Name: Let the aggregation operator $M$ be defined such that for any swarm state $\math
+  Output Type: General Result
+  Status: OK
+
+lem-empirical-aggregator-properties
+  File: lem-empirical-aggregator-properties_dup1.json
+  Name: Axiomatic Properties of the Empirical Measure Aggregator
+  Output Type: Bound
+  Status: OK
+
+lem-empirical-moments-lipschitz-dup
+  File: lem-empirical-moments-lipschitz-dup.json
+  Name: Empirical moments are Lipschitz in L2
+  Output Type: General Result
+  Status: OK
+
+lem-empirical-moments-lipschitz
+  File: lem-empirical-moments-lipschitz.json
+  Name: Empirical moments are Lipschitz in L2
+  Output Type: Lipschitz Continuity
+  Status: OK
+
+lem-final-positional-displacement-bound
+  File: lem-final-positional-displacement-bound.json
+  Name: Bounding the Final Positional Displacement (unconditional)
+  Output Type: General Result
+  Status: OK
+
+lem-final-status-change-bound
+  File: lem-final-status-change-bound.json
+  Name: Bounding the Expected Final Status Change
+  Output Type: General Result
+  Status: OK
+
+lem-inequality-toolbox
+  File: lem-inequality-toolbox.json
+  Name: Inequality Toolbox
+  Output Type: General Result
+  Status: ERRORS
+
+lem-lipschitz-variance-functional
+  File: lem-lipschitz-variance-functional.json
+  Name: Lipschitz bound for the variance functional
+  Output Type: Lipschitz Continuity
+  Status: OK
+
+lem-normalization-difference-bound
+  File: lem-normalization-difference-bound.json
+  Name: Bound on the Error from Normalization Change
+  Output Type: Bound
+  Status: OK
+
+sub-lem-perturbation-positional-bound-reproof
+  File: lem-perturbation-positional-bound.json
+  Name: Bounding the Output Positional Displacement
+  Output Type: Bound
+  Status: ERRORS
+
+lem-polynomial-patch-monotonicity
+  File: lem-polynomial-patch-monotonicity.json
+  Name: Monotonicity of the Polynomial Patch
+  Output Type: General Result
+  Status: OK
+
+lem-potential-boundedness
+  File: lem-potential-boundedness.json
+  Name: Boundedness of the Fitness Potential
+  Output Type: Bound
+  Status: OK
+
+sub-lem-probabilistic-bound-perturbation-displacement-reproof
+  File: lem-probabilistic-bound-perturbation-displacement.json
+  Name: Probabilistic Bound on Total Perturbation-Induced Displacement
+  Output Type: Bound
+  Status: OK
+
+lem-rescale-monotonicity
+  File: lem-rescale-monotonicity.json
+  Name: Monotonicity of the Smooth Rescale Function
+  Output Type: General Result
+  Status: OK
+
+lem-set-difference-bound
+  File: lem-set-difference-bound.json
+  Name: Bound on the Error from Companion Set Change
+  Output Type: Bound
+  Status: OK
+
+lem-sigma-patch-derivative-bound
+  File: lem-sigma-patch-derivative-bound.json
+  Name: Derivative bound for σ'_reg
+  Output Type: Bound
+  Status: OK
+
+lem-sigma-reg-derivative-bounds
+  File: lem-sigma-reg-derivative-bounds.json
+  Name: Derivative Bounds for Regularized Standard Deviation
+  Output Type: Bound
+  Status: OK
+
+lem-single-walker-own-status-error
+  File: lem-single-walker-own-status-error.json
+  Name: Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm states
+  Output Type: Bound
+  Status: OK
+
+lem-single-walker-positional-error
+  File: lem-single-walker-positional-error.json
+  Name: Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm states
+  Output Type: Bound
+  Status: OK
+
+lem-single-walker-structural-error
+  File: lem-single-walker-structural-error.json
+  Name: Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm states with alive sets $\ma
+  Output Type: Bound
+  Status: OK
+
+lem-stats-structural-continuity
+  File: lem-stats-structural-continuity.json
+  Name: Structural Continuity of Statistical Properties
+  Output Type: Lipschitz Continuity
+  Status: OK
+
+lem-stats-value-continuity
+  File: lem-stats-value-continuity.json
+  Name: Value Continuity of Statistical Properties
+  Output Type: Lipschitz Continuity
+  Status: OK
+
+lem-subadditivity-power
+  File: lem-subadditivity-power.json
+  Name: Subadditivity of Fractional Powers
+  Output Type: General Result
+  Status: ERRORS
+
+lem-total-clone-prob-structural-error
+  File: lem-total-clone-prob-structural-error.json
+  Name: Bounding the Structural Component of Cloning Probability Error
+  Output Type: Bound
+  Status: OK
+
+lem-total-clone-prob-value-error
+  File: lem-total-clone-prob-value-error.json
+  Name: Bounding the Value Component of Cloning Probability Error
+  Output Type: Bound
+  Status: OK
+
+lem-total-squared-error-stable
+  File: lem-total-squared-error-stable.json
+  Name: Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm states with $|\mathcal{A}(\
+  Output Type: Bound
+  Status: OK
+
+lem-total-squared-error-unstable
+  File: lem-total-squared-error-unstable.json
+  Name: Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm states
+  Output Type: Bound
+  Status: OK
+
+lem-validation-heat-kernel
+  File: lem-validation-heat-kernel.json
+  Name: Validation of the Heat Kernel
+  Output Type: Bound
+  Status: OK
+
+lem-validation-uniform-ball
+  File: lem-validation-uniform-ball.json
+  Name: Validation of the Uniform Ball Measure
+  Output Type: Lipschitz Continuity
+  Status: OK
+
+sub-lem-bound-sum-total-cloning-probs
+  File: sub-lem-bound-sum-total-cloning-probs.json
+  Name: Bounding the Sum of Total Cloning Probabilities
+  Output Type: Bound
+  Status: OK
+
+sub-lem-perturbation-positional-bound-reproof
+  File: sub-lem-perturbation-positional-bound-reproof.json
+  Name: Bounding the Output Positional Displacement
+  Output Type: Bound
+  Status: OK
+
+sub-lem-potential-stable-error-mean-square
+  File: sub-lem-potential-stable-error-mean-square.json
+  Name: Bounding the Expected Error from Stable Walkers
+  Output Type: Lipschitz Continuity
+  Status: OK
+
+sub-lem-potential-unstable-error-mean-square
+  File: sub-lem-potential-unstable-error-mean-square.json
+  Name: Bounding the Expected Error from Unstable Walkers
+  Output Type: Bound
+  Status: OK
+
+sub-lem-probabilistic-bound-perturbation-displacement-reproof
+  File: sub-lem-probabilistic-bound-perturbation-displacement-reproof.json
+  Name: Probabilistic Bound on Total Perturbation-Induced Displacement
+  Output Type: Bound
+  Status: OK
+
+sub-lem-stable-positional-error-bound
+  File: sub-lem-stable-positional-error-bound.json
+  Name: The total squared error arising from positional changes for stable walkers is bo
+  Output Type: Bound
+  Status: OK
+
+sub-lem-stable-structural-error-bound
+  File: sub-lem-stable-structural-error-bound.json
+  Name: Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm states with $|\mathcal{A}(\
+  Output Type: Bound
+  Status: OK
+
+sub-lem-stable-walker-error-decomposition
+  File: sub-lem-stable-walker-error-decomposition.json
+  Name: For each stable walker $i \in \mathcal{A}_{\text{stable}}$, the error in its exp
+  Output Type: Bound
+  Status: OK
+
+sub-lem-unify-holder-terms
+  File: sub-lem-unify-holder-terms.json
+  Name: Unifying Multiple Hölder Terms (global, with case split)
+  Output Type: General Result
+  Status: ERRORS
+
+--------------------------------------------------------------------------------
+CORRECTIONS APPLIED
+--------------------------------------------------------------------------------
+
+lem-boundary-heat-kernel.json:
+
+lem-boundary-uniform-ball.json:
+
+lem-bounded-differences-favg.json:
+
+lem-cloning-probability-lipschitz.json:
+
+lem-component-potential-lipschitz.json:
+
+lem-cubic-patch-coefficients.json:
+
+lem-cubic-patch-derivative-bounds.json:
+
+lem-cubic-patch-derivative.json:
+
+lem-cubic-patch-uniqueness.json:
+
+lem-empirical-aggregator-properties.json:
+
+lem-empirical-aggregator-properties_dup1.json:
+
+lem-empirical-moments-lipschitz-dup.json:
+
+lem-empirical-moments-lipschitz.json:
+
+lem-final-positional-displacement-bound.json:
+
+lem-final-status-change-bound.json:
+
+lem-inequality-toolbox.json:
+
+lem-lipschitz-variance-functional.json:
+
+lem-normalization-difference-bound.json:
+
+lem-perturbation-positional-bound.json:
+
+lem-polynomial-patch-monotonicity.json:
+
+lem-potential-boundedness.json:
+
+lem-probabilistic-bound-perturbation-displacement.json:
+
+lem-rescale-monotonicity.json:
+
+lem-set-difference-bound.json:
+
+lem-sigma-patch-derivative-bound.json:
+
+lem-sigma-reg-derivative-bounds.json:
+
+lem-single-walker-own-status-error.json:
+
+lem-single-walker-positional-error.json:
+
+lem-single-walker-structural-error.json:
+
+lem-stats-structural-continuity.json:
+
+lem-stats-value-continuity.json:
+
+lem-subadditivity-power.json:
+
+lem-total-clone-prob-structural-error.json:
+
+lem-total-clone-prob-value-error.json:
+
+lem-total-squared-error-stable.json:
+
+lem-total-squared-error-unstable.json:
+
+lem-validation-heat-kernel.json:
+
+lem-validation-uniform-ball.json:
+
+sub-lem-bound-sum-total-cloning-probs.json:
+
+sub-lem-perturbation-positional-bound-reproof.json:
+
+sub-lem-potential-stable-error-mean-square.json:
+
+sub-lem-potential-unstable-error-mean-square.json:
+
+sub-lem-probabilistic-bound-perturbation-displacement-reproof.json:
+
+sub-lem-stable-positional-error-bound.json:
+
+sub-lem-stable-structural-error-bound.json:
+
+sub-lem-stable-walker-error-decomposition.json:
+
+sub-lem-unify-holder-terms.json:
+
+--------------------------------------------------------------------------------
+VALIDATION ERRORS
+--------------------------------------------------------------------------------
+
+lem-boundary-heat-kernel.json:
+
+lem-boundary-uniform-ball.json:
+
+lem-bounded-differences-favg.json:
+
+lem-cloning-probability-lipschitz.json:
+
+lem-component-potential-lipschitz.json:
+
+lem-cubic-patch-coefficients.json:
+
+lem-cubic-patch-derivative-bounds.json:
+
+lem-cubic-patch-derivative.json:
+
+lem-cubic-patch-uniqueness.json:
+
+lem-empirical-aggregator-properties.json:
+
+lem-empirical-aggregator-properties_dup1.json:
+
+lem-empirical-moments-lipschitz-dup.json:
+
+lem-empirical-moments-lipschitz.json:
+
+lem-final-positional-displacement-bound.json:
+
+lem-final-status-change-bound.json:
+
+lem-inequality-toolbox.json:
+  - Input dependencies: No input objects, axioms, or parameters specified
+
+lem-lipschitz-variance-functional.json:
+
+lem-normalization-difference-bound.json:
+
+lem-perturbation-positional-bound.json:
+  - Input dependencies: No input objects, axioms, or parameters specified
+
+lem-polynomial-patch-monotonicity.json:
+
+lem-potential-boundedness.json:
+
+lem-probabilistic-bound-perturbation-displacement.json:
+
+lem-rescale-monotonicity.json:
+
+lem-set-difference-bound.json:
+
+lem-sigma-patch-derivative-bound.json:
+
+lem-sigma-reg-derivative-bounds.json:
+
+lem-single-walker-own-status-error.json:
+
+lem-single-walker-positional-error.json:
+
+lem-single-walker-structural-error.json:
+
+lem-stats-structural-continuity.json:
+
+lem-stats-value-continuity.json:
+
+lem-subadditivity-power.json:
+  - Input dependencies: No input objects, axioms, or parameters specified
+
+lem-total-clone-prob-structural-error.json:
+
+lem-total-clone-prob-value-error.json:
+
+lem-total-squared-error-stable.json:
+
+lem-total-squared-error-unstable.json:
+
+lem-validation-heat-kernel.json:
+
+lem-validation-uniform-ball.json:
+
+sub-lem-bound-sum-total-cloning-probs.json:
+
+sub-lem-perturbation-positional-bound-reproof.json:
+
+sub-lem-potential-stable-error-mean-square.json:
+
+sub-lem-potential-unstable-error-mean-square.json:
+
+sub-lem-probabilistic-bound-perturbation-displacement-reproof.json:
+
+sub-lem-stable-positional-error-bound.json:
+
+sub-lem-stable-structural-error-bound.json:
+
+sub-lem-stable-walker-error-decomposition.json:
+
+sub-lem-unify-holder-terms.json:
+  - Input dependencies: No input objects, axioms, or parameters specified
+
+================================================================================
+FINAL VALIDATION STATUS
+================================================================================
+
+STATUS: 4 LEMMAS REQUIRE ATTENTION
+Some lemmas have validation errors that need manual review.

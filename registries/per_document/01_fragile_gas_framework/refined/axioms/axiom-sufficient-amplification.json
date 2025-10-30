@@ -1,0 +1,35 @@
+{
+  "label": "axiom-sufficient-amplification",
+  "statement": "The dynamics weights must be configured to actively process measurement signals.",
+  "mathematical_expression": "\\kappa_{\\text{amplification}} := \\alpha + \\beta > 0",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Sufficient Amplification",
+  "core_assumption": "The system must be configured to give positive combined weight to its internal dynamics (governed by α) and incoming measurement signals (governed by β). The system cannot be purely static or dissipative; it must be set up to actively process information to adapt.",
+  "parameters": [
+    {
+      "name": "α",
+      "description": "The weight of the exploitation signal (e.g., reward component of fitness)."
+    },
+    {
+      "name": "β",
+      "description": "The weight of the exploration signal (e.g., diversity component of fitness)."
+    },
+    {
+      "name": "κ_amplification",
+      "description": "The total amplification factor, representing the combined strength of the dynamic weights."
+    }
+  ],
+  "condition": "This condition must hold for the system's core update rule to be considered 'active' and capable of learning. It applies at each time step of the system's evolution.",
+  "failure_mode_analysis": "If α + β ≤ 0, the system becomes non-adaptive. If α + β = 0, the fitness potential becomes constant (V_i = η^0 = 1) for all alive walkers, regardless of their measurements. This makes all walkers appear equally fit, so the cloning score is always zero and no cloning can occur. The swarm becomes a collection of independent, non-interacting random walkers that cannot learn or adapt. If α + β < 0, the system would actively suppress signals from fitter walkers, leading to perverse, anti-adaptive dynamics.",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.3.1",
+    "directive_label": "def-axiom-sufficient-amplification",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

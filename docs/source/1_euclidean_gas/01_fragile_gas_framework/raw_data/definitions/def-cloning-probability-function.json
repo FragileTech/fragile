@@ -1,0 +1,31 @@
+{
+  "label": "def-cloning-probability-function",
+  "term": "Conditional Cloning Probability Function",
+  "type": "definition",
+  "statement": "The **Conditional Cloning Probability Function**, denoted $\\pi: \\mathbb{R}_{\\ge 0} \\times \\mathbb{R}_{\\ge 0} \\to [0, 1]$, maps the fitness potential of a companion ($v_c$) and a primary walker ($v_i$) to the probability that the \"Clone\" action is selected.\n\nGiven that the score is $S(v_c, v_i)$ and the threshold is $T_{\\text{clone}} \\sim \\text{Uniform}(0, p_{\\max})$, the probability is:\n\n$$\n\\pi(v_c, v_i) := P(S(v_c, v_i) > T_{\\text{clone}}) = \\min\\left(1, \\max\\left(0, \\frac{S(v_c, v_i)}{p_{\\max}}\\right)\\right)\n$$\n\nThis function effectively clips the normalized score to the valid probability range $[0, 1]$.",
+  "dependencies": [
+    "def-cloning-score-function"
+  ],
+  "tags": [
+    "cloning",
+    "probability",
+    "function"
+  ],
+  "context": "Section 16: The Cloning Transition Measure, subsection 15.2.2",
+  "source_file": "01_fragile_gas_framework.md",
+  "line_number": 4297,
+  "extraction_date": "2025-10-27T21:43:09.486088",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.2",
+    "section_name": null,
+    "directive_label": "def-cloning-probability-function",
+    "equation": null,
+    "line_range": [
+      4307,
+      4317
+    ],
+    "url_fragment": "#def-cloning-probability-function"
+  }
+}

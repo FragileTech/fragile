@@ -1,0 +1,35 @@
+{
+  "label": "thm-rescale-function-lipschitz",
+  "name": "Global Lipschitz Continuity of the Smooth Rescale Function",
+  "statement": "The **Smooth Piecewise Rescale Function** $g_A(z)$ is globally Lipschitz continuous on $\\mathbb{R}$. Its Lipschitz constant, $L_{g_A}$, is the supremum of the absolute value of its first derivative, and is given by:\n$$\n\\boxed{\nL_{g_A} = \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054\n}\n$$\nwhere $L_P$ is the uniform upper bound on the derivative of the polynomial patch from lem-cubic-patch-derivative-bounds.",
+  "section": "9. Rescale Transformation",
+  "subsection": "8.2.2.7 Theorem: Global Lipschitz Continuity of the Smooth Rescale Function",
+  "has_proof": true,
+  "key_result": "L_{g_A} = L_P ≈ 1.0054",
+  "input_objects": [
+    "obj-rescale-lipschitz-constants",
+    "obj-asymmetric-rescale-function"
+  ],
+  "input_axioms": [
+    "axiom-rescale-function"
+  ],
+  "input_parameters": [],
+  "output_type": "Bound",
+  "relations_established": [
+    "Rescale function is globally Lipschitz continuous"
+  ],
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "8.2.2.7",
+    "section_name": null,
+    "directive_label": "thm-rescale-function-lipschitz",
+    "equation": null,
+    "line_range": [
+      1971,
+      1982
+    ],
+    "url_fragment": "#thm-rescale-function-lipschitz"
+  }
+}

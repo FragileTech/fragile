@@ -2,9 +2,17 @@
   "label": "thm-bakry-emery-classical",
   "name": "Classical Bakry-Émery Criterion",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence",
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "thm-bakry-emery-classical",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-bakry-emery-classical"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -16,7 +24,7 @@
   "input_parameters": [
     "rho"
   ],
-  "properties_required": {
+  "attributes_required": {
     "curvature": [
       "Γ₂ ≥ ρ Γ (carré du champ itéré bound)",
       "Equivalently: Hess(V) ≽ ρ I (potential convexity)"
@@ -26,7 +34,7 @@
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-bakry-emery-classical-0-approximation",
@@ -36,14 +44,22 @@
       "target_object": "obj-dirichlet-form",
       "established_by": "thm-bakry-emery-classical",
       "expression": "Γ₂(f) ≥ ρ Γ(f) implies LSI with C_LSI ≤ 2/ρ",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-bakry-emery-classical",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-bakry-emery-classical"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-bakry-emery-classical-1-other",
@@ -53,14 +69,29 @@
       "target_object": "obj-dirichlet-form",
       "established_by": "thm-bakry-emery-classical",
       "expression": "Provides context for why convexity-based LSI fails for kinetic operator",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-bakry-emery-classical",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-bakry-emery-classical"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

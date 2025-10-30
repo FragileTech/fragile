@@ -1,0 +1,24 @@
+{
+  "label": "def-canonical-logistic-rescale-function-example",
+  "name": "Canonical Logistic Rescale Function",
+  "entity_type": "definition",
+  "statement_type": "DefinitionBox",
+  "natural_language_statement": "A simple, well-behaved rescale function is defined using a scaled logistic (sigmoid) function.",
+  "description": "This definition provides a second concrete example of a valid rescale function. The logistic function is a canonical choice as it is smooth, monotonic, and naturally bounded, thus satisfying the Axiom of a Well-Behaved Rescale Function.",
+  "formal_statement": "The Canonical Logistic Rescale Function $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ is defined as: $g_A(z) := \\frac{2}{1 + e^{-z}}$",
+  "input_objects": [],
+  "input_axioms": [
+    "axiom-well-behaved-rescale-function"
+  ],
+  "input_parameters": [],
+  "relations": [],
+  "proof_status": "n/a",
+  "raw_fallback": {},
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "9. Rescale Transformation",
+    "subsection": "8.3.1. Definition: Canonical Logistic Rescale Function",
+    "directive_label": "def-canonical-logistic-rescale-function-example"
+  }
+}

@@ -472,6 +472,7 @@ Return ONLY the JSON object, no additional text.
 # UTILITY FUNCTIONS
 # =============================================================================
 
+
 def get_decompose_theorem_prompt(theorem_statement: str) -> str:
     """
     Get prompt for decomposing theorem into assumptions + conclusion.
@@ -510,15 +511,12 @@ def get_analyze_proof_prompt(proof_text: str, theorem_label: str) -> str:
         Formatted prompt string
     """
     return ANALYZE_PROOF_STRUCTURE_PROMPT.format(
-        proof_text=proof_text,
-        theorem_label=theorem_label
+        proof_text=proof_text, theorem_label=theorem_label
     )
 
 
 def get_resolve_reference_prompt(
-    reference_text: str,
-    context: str,
-    available_entities: list
+    reference_text: str, context: str, available_entities: list
 ) -> str:
     """
     Get prompt for resolving ambiguous reference.
@@ -532,12 +530,11 @@ def get_resolve_reference_prompt(
         Formatted prompt string
     """
     import json
+
     entities_json = json.dumps(available_entities, indent=2)
 
     return RESOLVE_REFERENCE_PROMPT.format(
-        reference_text=reference_text,
-        context=context,
-        available_entities=entities_json
+        reference_text=reference_text, context=context, available_entities=entities_json
     )
 
 
@@ -552,10 +549,7 @@ def get_link_definition_prompt(definition_text: str, term: str) -> str:
     Returns:
         Formatted prompt string
     """
-    return LINK_DEFINITION_TO_OBJECT_PROMPT.format(
-        definition_text=definition_text,
-        term=term
-    )
+    return LINK_DEFINITION_TO_OBJECT_PROMPT.format(definition_text=definition_text, term=term)
 
 
 def get_extract_sympy_context_prompt(text: str) -> str:
@@ -572,10 +566,7 @@ def get_extract_sympy_context_prompt(text: str) -> str:
 
 
 def get_link_equation_prompt(
-    equation_latex: str,
-    equation_label: str,
-    context: str,
-    available_entities: list
+    equation_latex: str, equation_label: str, context: str, available_entities: list
 ) -> str:
     """
     Get prompt for linking equation to entities.
@@ -590,11 +581,12 @@ def get_link_equation_prompt(
         Formatted prompt string
     """
     import json
+
     entities_json = json.dumps(available_entities, indent=2)
 
     return LINK_EQUATION_TO_ENTITIES_PROMPT.format(
         equation_latex=equation_latex,
         equation_label=equation_label,
         context=context,
-        available_entities=entities_json
+        available_entities=entities_json,
     )

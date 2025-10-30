@@ -1,0 +1,30 @@
+{
+  "label": "obj-asymmetric-rescale-function",
+  "name": "Smooth Piecewise Rescale Function",
+  "mathematical_expression": "g_A(z) := \\begin{cases} \\exp(z), & z \\le 0 \\\\ \\log(1 + z) + 1, & 0 < z < z_{\\max} - 1 \\\\ P(z), & z_{\\max} - 1 \\le z \\le z_{\\max} \\\\ \\log(1 + z_{\\max}) + 1, & z > z_{\\max} \\end{cases}",
+  "object_type": "function",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "asymmetric",
+    "continuity",
+    "function",
+    "rescale",
+    "standardization"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-asymmetric-rescale-function",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "8.2.1",
+    "line_range": [
+      3033,
+      3055
+    ],
+    "directive_label": "obj-asymmetric-rescale-function",
+    "equation": null,
+    "url_fragment": null
+  }
+}

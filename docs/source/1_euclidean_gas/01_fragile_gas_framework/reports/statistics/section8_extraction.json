@@ -1,0 +1,63 @@
+{
+  "section": "8. Companion Selection",
+  "source_document": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+  "source_lines": "1481-1619",
+  "extraction_date": "2025-10-27",
+  "extractor": "document-parser",
+  "entities_extracted": {
+    "objects": 1,
+    "definitions": 0,
+    "lemmas": 2,
+    "theorems": 1,
+    "axioms": 0,
+    "parameters": 0
+  },
+  "total_entities": 4,
+  "entities_by_label": {
+    "objects": [
+      "obj-companion-selection-measure"
+    ],
+    "lemmas": [
+      "lem-set-difference-bound",
+      "lem-normalization-difference-bound"
+    ],
+    "theorems": [
+      "thm-total-error-status-bound"
+    ]
+  },
+  "key_concepts": [
+    "companion selection",
+    "uniform probability measure",
+    "symmetric difference bound",
+    "normalization error",
+    "status changes",
+    "Lipschitz continuity"
+  ],
+  "mathematical_relationships": {
+    "theorem_dependencies": {
+      "thm-total-error-status-bound": {
+        "uses_objects": ["obj-companion-selection-measure"],
+        "uses_lemmas": ["lem-set-difference-bound", "lem-normalization-difference-bound"],
+        "proves": "Bound on total error in terms of status changes"
+      }
+    },
+    "lemma_dependencies": {
+      "lem-set-difference-bound": {
+        "uses": ["def-companion-selection-measure"],
+        "proves": "Bound on error from companion set change"
+      },
+      "lem-normalization-difference-bound": {
+        "uses": ["def-companion-selection-measure"],
+        "proves": "Bound on error from normalization change"
+      }
+    }
+  },
+  "section_summary": "Section 8 establishes the mathematical framework for companion selection in the Fragile Gas algorithm. The companion selection measure is a uniform discrete probability measure that governs how walkers choose comparison partners. The section proves rigorous Lipschitz continuity bounds showing how the expected value under this measure changes when the swarm state changes, decomposing the total error into set change and normalization components.",
+  "output_directory": "docs/source/1_euclidean_gas/01_fragile_gas_framework/",
+  "files_created": [
+    "objects/obj-companion-selection-measure.json",
+    "theorems/lem-set-difference-bound.json",
+    "theorems/lem-normalization-difference-bound.json",
+    "theorems/thm-total-error-status-bound.json"
+  ]
+}

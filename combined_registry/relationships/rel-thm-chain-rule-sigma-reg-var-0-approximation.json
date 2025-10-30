@@ -1,0 +1,25 @@
+{
+  "label": "rel-thm-chain-rule-sigma-reg-var-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-rescale-lipschitz-constants",
+  "target_object": "obj-potential-bounds",
+  "established_by": "thm-chain-rule-sigma-reg-var",
+  "expression": "Provides Lipschitz bound for composite map sigma'_reg o Var",
+  "attributes": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "thm-chain-rule-sigma-reg-var",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-chain-rule-sigma-reg-var"
+  },
+  "chapter": null,
+  "document": null
+}

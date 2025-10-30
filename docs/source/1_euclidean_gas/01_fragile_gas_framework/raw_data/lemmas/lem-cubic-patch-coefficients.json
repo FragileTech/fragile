@@ -1,0 +1,58 @@
+{
+  "label": "lem-cubic-patch-coefficients",
+  "name": "Explicit Coefficients of the Smooth Rescale Patch",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "8.2.2.2",
+    "section_name": null,
+    "directive_label": "lem-cubic-patch-coefficients",
+    "equation": null,
+    "line_range": [
+      1750,
+      1763
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-asymmetric-rescale-function",
+    "obj-cubic-patch-polynomial"
+  ],
+  "input_axioms": [
+    "axiom-rescale-function"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "lem-cubic-patch-uniqueness"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-cubic-patch-uniqueness",
+      "lem-cubic-patch-coefficients"
+    ]
+  ],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Coefficients A, B, C, D of cubic patch P(z) are uniquely determined",
+    "Determined by boundary conditions and parameter z_max > 1"
+  ],
+  "natural_language_statement": "The cubic polynomial patch P(z) on [z_max-1, z_max] has explicit coefficients A, B, C, D uniquely determined by boundary conditions and parameter z_max > 1.",
+  "assumptions": [
+    "z_max > 1"
+  ],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [
+    "def-asymmetric-rescale-function"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

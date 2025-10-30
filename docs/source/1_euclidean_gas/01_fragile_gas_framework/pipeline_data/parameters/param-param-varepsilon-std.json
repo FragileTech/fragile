@@ -1,0 +1,8 @@
+{
+  "label": "param-param-varepsilon-std",
+  "name": "param-varepsilon-std",
+  "symbol": "param-varepsilon-std",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

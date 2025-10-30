@@ -1,0 +1,32 @@
+{
+  "label": "lem-stable-walker-error-decomposition",
+  "name": "For each stable walker $i \\in \\mathcal{A}_{\\text{stable}}$, the error in its expected raw distanc...",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-companion-selection-measure",
+    "obj-distance-measurement-ms-constants"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Stable walker error decomposes into positional, structural, and own-status components"
+  ],
+  "natural_language_statement": "For each stable walker $i \\in \\mathcal{A}_{\\text{stable}}$, the error in its expected raw distance can be decomposed into a positional error term, $\\Delta_{\\text{pos},i}$, and a structural error term, $\\Delta_{\\text{struct},i}$.\n\nThe total squared error over the set of stable walkers is bounded by twice the sum of the squared norms of these two error components:",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

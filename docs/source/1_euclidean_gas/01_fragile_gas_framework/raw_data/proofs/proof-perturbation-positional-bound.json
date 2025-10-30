@@ -1,0 +1,41 @@
+{
+  "label": "proof-sub-lem-perturbation-positional-bound-reproof",
+  "type": "proof",
+  "proves": "sub-lem-perturbation-positional-bound-reproof",
+  "proof_type": "direct",
+  "full_text": "For any walker $i$, by applying the triangle inequality to the distance $d_{\\mathcal{Y}}(\\varphi(x'_{1,i}), \\varphi(x'_{2,i}))$ using the input positions as intermediate points, and then using the inequality $(a+b+c)^2 \\le 3(a^2 + b^2 + c^2)$, we get the following bound on the squared distance for the $i$-th walker:\n$$d_{\\mathcal{Y}}(\\varphi(x'_{1,i}), \\varphi(x'_{2,i}))^2 \\le 3 d_{\\mathcal{Y}}(\\varphi(x'_{1,i}), \\varphi(x_{1,i}))^2 + 3 d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2 + 3 d_{\\mathcal{Y}}(\\varphi(x_{2,i}), \\varphi(x'_{2,i}))^2$$\n\nSumming this inequality over all $N$ walkers and recognizing that the sum of the middle terms is $\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2)$ and the sums of the outer terms are the definitions of $\\Delta_{\\text{pert}}^2(\\mathcal{S}_1)$ and $\\Delta_{\\text{pert}}^2(\\mathcal{S}_2)$ yields the stated result. This decomposition is a purely algebraic consequence of the triangle inequality and holds regardless of any statistical dependency.",
+  "key_steps": [
+    "Apply triangle inequality to walker distances",
+    "Use inequality $(a+b+c)^2 \\le 3(a^2 + b^2 + c^2)$",
+    "Sum over all N walkers",
+    "Recognize sum decomposition"
+  ],
+  "source_section": "14. The Perturbation Operator",
+  "source_document": "01_fragile_gas_framework.md",
+  "line_range": [
+    3988,
+    3998
+  ],
+  "tags": [
+    "proof",
+    "algebraic",
+    "triangle-inequality"
+  ],
+  "techniques_used": [
+    "Triangle inequality",
+    "Algebraic inequality"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "14",
+    "section_name": null,
+    "directive_label": "proof-sub-lem-perturbation-positional-bound-reproof",
+    "equation": null,
+    "line_range": [
+      4000,
+      4000
+    ],
+    "url_fragment": null
+  }
+}

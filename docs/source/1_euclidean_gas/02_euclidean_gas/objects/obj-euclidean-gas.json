@@ -4,11 +4,14 @@
   "mathematical_expression": "\\begin{aligned}\n& \\textbf{Input:} \\mathcal S_t = \\{(x_i^{(t)}, v_i^{(t)}, s_i^{(t)})\\}_{i=1}^N\\text{; and parameters } \\alpha, \\beta, \\varepsilon_{\\mathrm{std}}, \\eta, \\tau, p_{\\max}, \\varepsilon_{\\mathrm{clone}}, \\sigma_x, \\alpha_{\\text{restitution}}, \\sigma_v, \\\\\n& \\qquad \\sigma'_{\\mathrm{patch}}, g_A, \\mathbb C_i, Q_{\\delta}, \\Psi_{\\mathrm{kin,BAOAB}}. \\\\\n& \\textbf{If } |\\mathcal A_t| = 0: \\textbf{ return } \\delta_{\\mathcal S_t} \\quad \\text{\\# Cemetery absorption} \\\\\n\\\\\n& \\underline{\\text{Stage 2a: Raw vectors on alive set}} \\\\\n& \\dots \\quad \\text{\\# Unchanged} \\\\\n\\\\\n& \\underline{\\text{Stage 2b: Patched standardisation}} \\\\\n& \\dots \\quad \\text{\\# Unchanged} \\\\\n\\\\\n& \\underline{\\text{Stage 2c: Logistic rescale of components}} \\\\\n& \\dots \\quad \\text{\\# Unchanged} \\\\\n\\\\\n& \\underline{\\text{Stage 2d: Assemble full vectors with floors}} \\\\\n& \\dots \\quad \\text{\\# Unchanged} \\\\\n\\\\\n& \\underline{\\text{Stage 3: Cloning transition}} \\\\\n& \\dots \\quad \\text{\\# Unchanged logic, produces } (x_i^{(t+\\frac{1}{2})}, v_i^{(t+\\frac{1}{2})}) \\\\\n\\\\\n& \\underline{\\text{Stage 4: Langevin perturbation and status refresh}} \\\\\n& \\mathcal S_{\\mathrm{pert}} \\sim \\Psi_{\\mathrm{kin,BAOAB}}(\\{(x_i^{(t+\\frac{1}{2})}, v_i^{(t+\\frac{1}{2})})\\}, \\cdot) \\quad \\text{\\# BAOAB Langevin step with velocity capping} \\\\\n& \\textbf{For each } i = 1..N: \\\\\n& \\quad (x_i^{(t+1)}, v_i^{(t+1)}) \\leftarrow \\text{draw from kinetic step output} \\\\\n& \\quad s_i^{(t+1)} \\leftarrow \\mathbf 1_{\\mathcal X_{\\mathrm{valid}}}(x_i^{(t+1)}) \\\\\n& \\textbf{Return } \\mathcal S_{t+1}\n\\end{aligned}",
   "object_type": "operator",
   "current_attributes": [],
-  "property_history": [],
+  "attribute_history": [],
   "tags": [
     "euclidean-gas",
     "particle",
     "swarm"
   ],
-  "source": null
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

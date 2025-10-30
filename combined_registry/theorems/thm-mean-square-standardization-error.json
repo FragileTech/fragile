@@ -2,37 +2,73 @@
   "label": "thm-mean-square-standardization-error",
   "name": "Asymptotic Behavior of the Mean-Square Standardization Error",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "thm-mean-square-standardization-error",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-mean-square-standardization-error"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
+    "obj-lipschitz-value-error-coefficients",
+    "obj-raw-value-operator",
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-standardization-total-value-error-coefficient",
     "obj-standardization-operator-n-dimensional",
-    "obj-components-mean-square-standardization-error",
     "obj-lipschitz-structural-error-coefficients",
-    "obj-lipschitz-value-error-coefficients"
+    "obj-components-mean-square-standardization-error",
+    "obj-standardization-lower-bound"
   ],
   "input_axioms": [
     "axiom-raw-value-mean-square-continuity"
   ],
-  "input_parameters": [],
-  "properties_required": {},
+  "input_parameters": [
+    "param-F-V-ms"
+  ],
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [
+  "attributes_added": [],
+  "relations_established": [
     {
-      "label": "prop-mean-square-standardization-error-bound",
-      "expression": "\\mathbb{E}[\\|z(\\mathcal{S}_1) - z(\\mathcal{S}_2)\\|^2] \\text{ bounded by structural and value error sum}",
-      "object_label": "obj-standardization-operator-n-dimensional",
+      "label": "rel-thm-mean-square-standardization-error-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-lipschitz-value-error-coefficients",
+      "target_object": "obj-raw-value-operator",
       "established_by": "thm-mean-square-standardization-error",
+      "expression": "Expected squared standardization error bounded by sum of value and structural errors",
+      "attributes": [],
+      "tags": [
+        "inferred-from-string"
+      ],
       "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
+      "source": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": null,
+        "directive_label": "thm-mean-square-standardization-error",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-mean-square-standardization-error"
+      },
+      "chapter": null,
+      "document": null
     }
   ],
-  "relations_established": []
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

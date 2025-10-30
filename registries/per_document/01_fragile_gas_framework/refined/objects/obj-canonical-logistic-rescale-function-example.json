@@ -1,0 +1,32 @@
+{
+  "label": "obj-canonical-logistic-rescale-function-example",
+  "name": "Canonical Logistic Rescale Function",
+  "mathematical_expression": "g_A(z) := \\frac{2}{1 + e^{-z}}",
+  "object_type": "function",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "canonical",
+    "example",
+    "function",
+    "logistic",
+    "rescale",
+    "standardization"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-canonical-logistic-rescale-function-example",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-canonical-logistic-rescale-function-example",
+  "definition": "A common and well-behaved function used to transform standardized Z-scores into positive values for fitness potential calculation. It is based on the logistic sigmoid function.",
+  "mathematical_properties": "This function is infinitely differentiable (C^infinity), strictly increasing (monotonic), has a uniformly bounded range of (0, 2), and is globally Lipschitz continuous with a constant of 0.5. It satisfies all requirements of a well-behaved rescale function.",
+  "dependencies": [],
+  "typical_values": null
+}

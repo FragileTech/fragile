@@ -6,12 +6,20 @@
   "target_object": "obj-target-complement",
   "established_by": "thm-main-contraction-full",
   "expression": "Alternate form: κ_W = (1/2) · f_UH(ε) · p_u(ε) · c_geom · c_sep(ε)",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "04_wasserstein_contraction"
+  "source": {
+    "document_id": "04_wasserstein_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+    "section": null,
+    "directive_label": "thm-main-contraction-full",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-main-contraction-full"
+  },
+  "chapter": null,
+  "document": null
 }

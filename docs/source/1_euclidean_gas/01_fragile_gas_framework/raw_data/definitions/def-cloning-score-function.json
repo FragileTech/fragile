@@ -1,0 +1,29 @@
+{
+  "label": "def-cloning-score-function",
+  "term": "Cloning Score Function",
+  "type": "definition",
+  "statement": "The **Cloning Score Function**, $S: \\mathbb{R}_{\\ge 0} \\times \\mathbb{R}_{\\ge 0} \\to \\mathbb{R}$, takes the fitness potential of a companion walker ($v_c$) and a primary walker ($v_i$) and computes a raw score.\n\n$$\nS(v_c, v_i) := \\frac{v_c - v_i}{v_i + \\varepsilon}\n$$\n\nwhere $\\varepsilon > 0$ is the cloning denominator regularizer.",
+  "dependencies": [],
+  "tags": [
+    "cloning",
+    "score-function",
+    "measurement"
+  ],
+  "context": "Section 16: The Cloning Transition Measure, subsection 15.1.1",
+  "source_file": "01_fragile_gas_framework.md",
+  "line_number": 4219,
+  "extraction_date": "2025-10-27T21:43:09.486076",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.1.1",
+    "section_name": null,
+    "directive_label": "def-cloning-score-function",
+    "equation": null,
+    "line_range": [
+      4229,
+      4238
+    ],
+    "url_fragment": "#def-cloning-score-function"
+  }
+}

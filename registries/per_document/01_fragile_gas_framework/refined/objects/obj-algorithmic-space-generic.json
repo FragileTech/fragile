@@ -1,0 +1,33 @@
+{
+  "label": "obj-algorithmic-space-generic",
+  "name": "Algorithmic Space",
+  "mathematical_expression": "(\\mathcal{Y}, d_{\\mathcal{Y}})",
+  "object_type": "space",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "algorithmic",
+    "generic",
+    "metric",
+    "space"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-algorithmic-space-generic",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-algorithmic-space-generic",
+  "definition": "A pair consisting of a real vector space Y and a metric d_Y, where agents are projected to for comparison. It is the abstract space where distances and diversity are measured, distinct from the primary state space X where dynamics occur.",
+  "mathematical_properties": "The space is assumed to be a Polish space (complete, separable metric space) and to have a finite diameter, D_Y. This ensures that Wasserstein metrics are well-posed and that all per-walker displacements are bounded.",
+  "dependencies": [],
+  "typical_values": {
+    "Y": "Typically a bounded subset of a finite-dimensional Euclidean space, R^m.",
+    "d_Y": "Typically the standard Euclidean L2-norm."
+  }
+}

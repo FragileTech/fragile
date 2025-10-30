@@ -1,0 +1,30 @@
+{
+  "label": "obj-stochastic-threshold-cloning",
+  "name": "Stochastic Threshold Cloning",
+  "mathematical_expression": "S_i := S(v_c, v_i)",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "cloning",
+    "measure-theory",
+    "particle-system",
+    "stochastic",
+    "threshold"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-stochastic-threshold-cloning",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.1.2",
+    "line_range": [
+      4230,
+      4269
+    ],
+    "directive_label": "obj-stochastic-threshold-cloning",
+    "equation": null,
+    "url_fragment": null
+  }
+}

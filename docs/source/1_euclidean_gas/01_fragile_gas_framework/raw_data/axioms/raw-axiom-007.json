@@ -1,0 +1,17 @@
+{
+  "temp_id": "raw-axiom-007",
+  "label_text": "axiom-7",
+  "axiom_name": "Axiom 7",
+  "statement": "Projection compatibility\nThere exists a function $R_{\\mathcal Y}:\\varphi(\\mathcal X)\\to\\mathbb R$ such that $R = R_{\\mathcal Y}\\circ\\varphi$ on $\\mathcal X$. Equivalently, if $\\varphi(x)=\\varphi(x')$ then $R(x)=R(x')$.",
+  "source_section": "§3",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "3",
+    "section_name": null,
+    "directive_label": "axiom-7",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

@@ -2,9 +2,17 @@
   "label": "thm-foster-lyapunov-main",
   "name": "Foster-Lyapunov Drift for the Composed Operator",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "06_convergence",
+  "source": {
+    "document_id": "06_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/06_convergence.md",
+    "section": null,
+    "directive_label": "thm-foster-lyapunov-main",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-foster-lyapunov-main"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -24,36 +32,25 @@
     "param-tau",
     "param-sigma-v"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-w2-output-metric": [
-      "prop-wasserstein-drift-bound"
+      "attr-wasserstein-drift-bound"
     ],
     "obj-positional-variance-recall": [
-      "prop-positional-variance-drift-bound"
+      "attr-positional-variance-drift-bound"
     ],
     "obj-velocity-variance-recall": [
-      "prop-velocity-variance-drift-bound"
+      "attr-velocity-variance-drift-bound"
     ],
     "obj-boundary-potential-recall": [
-      "prop-boundary-drift-bound"
+      "attr-boundary-drift-bound"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [
-    {
-      "label": "prop-foster-lyapunov-drift",
-      "expression": "E_total[V_total(S')] ≤ (1 - κ_total τ) V_total(S) + C_total",
-      "object_label": "obj-swarm-update-procedure",
-      "established_by": "thm-foster-lyapunov-main",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-swarm-update-procedure-kinetic-operator-stratonovich-other",
@@ -63,14 +60,22 @@
       "target_object": "obj-kinetic-operator-stratonovich",
       "established_by": "thm-foster-lyapunov-main",
       "expression": "{'source': 'obj-swarm-update-procedure', 'target': 'obj-kinetic-operator-stratonovich', 'type': 'decomposition'}",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-dict"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "06_convergence"
+      "source": {
+        "document_id": "06_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/06_convergence.md",
+        "section": null,
+        "directive_label": "thm-foster-lyapunov-main",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-foster-lyapunov-main"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-swarm-update-procedure-cloning-measure-other",
@@ -80,14 +85,29 @@
       "target_object": "obj-cloning-measure",
       "established_by": "thm-foster-lyapunov-main",
       "expression": "{'source': 'obj-swarm-update-procedure', 'target': 'obj-cloning-measure', 'type': 'decomposition'}",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-dict"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "06_convergence"
+      "source": {
+        "document_id": "06_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/06_convergence.md",
+        "section": null,
+        "directive_label": "thm-foster-lyapunov-main",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-foster-lyapunov-main"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

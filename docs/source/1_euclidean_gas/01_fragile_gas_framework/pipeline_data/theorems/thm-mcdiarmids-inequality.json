@@ -1,0 +1,39 @@
+{
+  "label": "thm-mcdiarmids-inequality",
+  "name": "McDiarmid's Inequality (Bounded Differences Inequality)",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "\u00a714",
+    "section_name": null,
+    "directive_label": null,
+    "equation": null,
+    "line_range": [
+      4014,
+      4028
+    ],
+    "url_fragment": null
+  },
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

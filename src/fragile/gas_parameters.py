@@ -24,8 +24,9 @@ from typing import Any, TYPE_CHECKING
 
 import numpy as np
 from numpy.typing import NDArray
-from torch import Tensor
 import torch
+from torch import Tensor
+
 
 if TYPE_CHECKING:
     from fragile.core.history import RunHistory
@@ -727,7 +728,7 @@ def estimate_rates_from_trajectory(
         # Check if equilibrium appears to be reached
         # Compare variance of detected equilibrium region vs early trajectory
         idx_early_end = min(int(0.3 * len(V)), idx_eq_start)
-        var_early = np.var(V[:idx_early_end]) if idx_early_end > 1 else np.var(V[:len(V)//2])
+        var_early = np.var(V[:idx_early_end]) if idx_early_end > 1 else np.var(V[: len(V) // 2])
         var_late = np.var(V[idx_eq_start:]) if idx_eq_start < len(V) - 1 else 0.0
         diag.equilibrium_reached = var_late < 0.1 * var_early and idx_eq_start < 0.9 * len(V)
 
@@ -814,7 +815,7 @@ def estimate_rates_from_trajectory(
     times = np.arange(T) * tau
 
     if verbose:
-        print(f"\nEmpirical Rate Estimation Diagnostics:")
+        print("\nEmpirical Rate Estimation Diagnostics:")
         print(f"  Trajectory length: {T} steps ({times[-1]:.2f} time units)")
 
     # Fit rates with diagnostics
@@ -854,11 +855,11 @@ def estimate_rates_from_trajectory(
         avg_r2 = np.mean([diag_x.r_squared, diag_v.r_squared, diag_W.r_squared, diag_b.r_squared])
         if avg_r2 < 0.5:
             print(f"\n⚠ WARNING: Average fit quality R²={avg_r2:.3f} is poor (<0.5)")
-            print(f"  → Empirical rates may be unreliable")
-            print(f"  → Consider: longer simulation, different initial conditions")
+            print("  → Empirical rates may be unreliable")
+            print("  → Consider: longer simulation, different initial conditions")
         elif avg_r2 < 0.7:
             print(f"\n⚠ CAUTION: Average fit quality R²={avg_r2:.3f} is moderate")
-            print(f"  → Empirical rates should be interpreted carefully")
+            print("  → Empirical rates should be interpreted carefully")
 
     return ConvergenceRates(
         kappa_x=kappa_x,
@@ -1086,7 +1087,8 @@ def estimate_landscape_from_history(
         - Boundary analysis only meaningful when use_bounds_analysis=True
     """
     if history.n_recorded < 2:
-        raise ValueError("History too short for landscape estimation (need n_recorded >=2)")
+        msg = "History too short for landscape estimation (need n_recorded >=2)"
+        raise ValueError(msg)
 
     d = history.d
 
@@ -1186,8 +1188,7 @@ def estimate_landscape_from_history(
                     if len(f_alive) > 0 and len(f_dead) > 0:
                         # Boundary gap: median(alive) - median(dead)
                         gap = float(
-                            torch.median(f_alive).cpu().item()
-                            - torch.median(f_dead).cpu().item()
+                            torch.median(f_alive).cpu().item() - torch.median(f_dead).cpu().item()
                         )
                         boundary_fitness_gaps.append(max(gap, 0.0))
 
@@ -1243,17 +1244,16 @@ def compute_wasserstein_proxy_improved(
     # Determine which position/velocity data to use
     if stage == "before_clone":
         x_data = history.x_before_clone  # [n_recorded-1, N, d]
-        v_data = history.v_before_clone if hasattr(history, "v_before_clone") else None
+        history.v_before_clone if hasattr(history, "v_before_clone") else None
         n_frames = history.n_recorded - 1
         frame_offset = 1
     elif stage == "after_clone":
         x_data = history.x_after_clone  # [n_recorded-1, N, d]
-        v_data = history.v_after_clone if hasattr(history, "v_after_clone") else None
+        history.v_after_clone if hasattr(history, "v_after_clone") else None
         n_frames = history.n_recorded - 1
         frame_offset = 1
     else:  # "final"
         x_data = history.x_final  # [n_recorded, N, d]
-        v_data = history.v_final  # [n_recorded, N, d]
         n_frames = history.n_recorded
         frame_offset = 0
 
@@ -1418,7 +1418,7 @@ def create_fit_diagnostic_plots(
 
     # Ensure bokeh extension is loaded
     try:
-        hv.extension('bokeh')
+        hv.extension("bokeh")
     except Exception:
         pass  # Already loaded or not available
 
@@ -1442,9 +1442,7 @@ def create_fit_diagnostic_plots(
     plots = {}
 
     # Helper function to create individual plot
-    def create_component_plot(
-        V: np.ndarray, times: np.ndarray, component_name: str, fit_key: str
-    ):
+    def create_component_plot(V: np.ndarray, times: np.ndarray, component_name: str, fit_key: str):
         """Create plot for one component."""
         fit_diag = fits.get(fit_key)
         if fit_diag is None or fit_diag.r_squared == 0.0:
@@ -1462,7 +1460,7 @@ def create_fit_diagnostic_plots(
         # Plot exponential fit
         idx_eq = fit_diag.equilibrium_index
         times_fit = times[:idx_eq]
-        V_fit = V_eq + fit_diag.A_estimate * np.exp(-fit_diag.r_squared * times_fit)
+        V_eq + fit_diag.A_estimate * np.exp(-fit_diag.r_squared * times_fit)
 
         # Recompute fit using stored kappa and A
         # Reconstruct: V(t) = C + A * exp(-κ*t)
@@ -1504,9 +1502,9 @@ def create_fit_diagnostic_plots(
             V_fit_upper = V_eq + A * np.exp(-kappa_lower * times_fit_dense)
 
             # Create area for CI
-            ci_area = hv.Area(
-                (times_fit_dense, V_fit_lower, V_fit_upper), vdims=["y", "y2"]
-            ).opts(color="red", alpha=0.15)
+            ci_area = hv.Area((times_fit_dense, V_fit_lower, V_fit_upper), vdims=["y", "y2"]).opts(
+                color="red", alpha=0.15
+            )
 
             overlay = data_curve * eq_line * fit_curve * eq_vline * ci_area
         else:
@@ -1516,7 +1514,7 @@ def create_fit_diagnostic_plots(
         label_text = (
             f"R² = {fit_diag.r_squared:.3f}\n"
             f"V_eq = {V_eq:.4f}\n"
-            f"Equilibrium @ {(idx_eq/len(V))*100:.0f}%"
+            f"Equilibrium @ {(idx_eq / len(V)) * 100:.0f}%"
         )
         label = hv.Text(times[len(times) // 4], np.max(V) * 0.9, label_text).opts(
             text_align="left", text_font_size="10pt"
@@ -1550,9 +1548,7 @@ def create_fit_diagnostic_plots(
     combined_curves = []
     if len(V_Var_x) > 1:
         combined_curves.append(
-            hv.Curve((times, normalize(V_Var_x)), label="V_Var_x").opts(
-                color="blue", line_width=2
-            )
+            hv.Curve((times, normalize(V_Var_x)), label="V_Var_x").opts(color="blue", line_width=2)
         )
     if len(V_Var_v) > 1:
         combined_curves.append(
@@ -1657,9 +1653,10 @@ def optimize_parameters_multi_strategy(
     elif strategy == "empirical":
         # Adaptive tuning from trajectory
         if trajectory_data is None:
-            raise ValueError("Empirical strategy requires trajectory_data")
+            msg = "Empirical strategy requires trajectory_data"
+            raise ValueError(msg)
 
-        optimal_params, history = adaptive_parameter_tuning(
+        optimal_params, _history = adaptive_parameter_tuning(
             trajectory_data=trajectory_data,
             params_init=current_params,
             landscape=landscape,
@@ -1692,9 +1689,10 @@ def optimize_parameters_multi_strategy(
 
         # Ensure stability margins: γ·τ < 0.4 (not 0.5)
         if optimal_params.gamma * optimal_params.tau > 0.4:
-            optimal_params = GasParams(
-                **{**vars(optimal_params), "tau": 0.4 / optimal_params.gamma}
-            )
+            optimal_params = GasParams(**{
+                **vars(optimal_params),
+                "tau": 0.4 / optimal_params.gamma,
+            })
 
     elif strategy == "aggressive":
         # Start with balanced, then push limits

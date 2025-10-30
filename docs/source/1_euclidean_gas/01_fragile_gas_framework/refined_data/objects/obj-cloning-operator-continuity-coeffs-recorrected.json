@@ -1,0 +1,34 @@
+{
+  "label": "obj-cloning-operator-continuity-coeffs-recorrected",
+  "name": "Cloning Operator Continuity Coefficients",
+  "mathematical_expression": "C_{\\text{clone},L}(\\mathcal{S}_1, \\mathcal{S}_2)",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "cloning",
+    "coeffs",
+    "continuity",
+    "measure-theory",
+    "metric",
+    "operator",
+    "particle-system",
+    "recorrected",
+    "stochastic"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-cloning-operator-continuity-coeffs-recorrected",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.8.1",
+    "line_range": [
+      4448,
+      4463
+    ],
+    "directive_label": "obj-cloning-operator-continuity-coeffs-recorrected",
+    "equation": null,
+    "url_fragment": null
+  }
+}

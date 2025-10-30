@@ -1,0 +1,23 @@
+{
+  "label": "param-l-r",
+  "name": "Reward Lipschitz Constant",
+  "symbol": "L_R",
+  "parameter_type": "real",
+  "constraints": "L_R \\ge 0",
+  "default_value": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "1.1",
+    "section_name": null,
+    "directive_label": "param-l-r",
+    "equation": null,
+    "line_range": [
+      17,
+      42
+    ],
+    "url_fragment": null
+  }
+}

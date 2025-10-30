@@ -1,0 +1,36 @@
+{
+  "label": "def-value-error-coefficients",
+  "name": "Value Error Coefficients",
+  "statement_type": "definition",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "source": {
+    "source_document": "01_fragile_gas_framework.md",
+    "source_section": "12"
+  },
+  "proof": null,
+  "proof_status": "unproven",
+  "content": "Let $\\mathcal{S}$ be a fixed swarm state with alive set $\\mathcal{A}$ of size $k = |\\mathcal{A}|$, and let $M$ be the chosen **Swarm Aggregation Operator**. The coefficients for the value error bounds are defined as follows:\n\n1. **The Direct Shift Coefficient ($C_{V,\\text{direct}}$):**\n\n$$\nC_{V,\\text{direct}} := \\frac{1}{\\sigma'^2_{\\min,\\text{bound}}}\n$$\n\n2. **The Mean Shift Coefficient ($C_{V,\\mu}(\\mathcal{S})$):**\n\n$$\nC_{V,\\mu}(\\mathcal{S}) := \\frac{k \\cdot (L_{\\mu,M}(\\mathcal{S}))^2}{\\sigma'^2_{\\min,\\text{bound}}}\n$$\n\n3. **The Statistical Fluctuation Coefficient ($C_{V,\\sigma}(\\mathcal{S})$):**\n\n$$\nC_{V,\\sigma}(\\mathcal{S}) := k \\left( \\frac{2V_{\\max}}{\\sigma'_{\\min,\\text{bound}}} \\right)^2 \\left( \\frac{L_{\\sigma',M}(\\mathcal{S})}{\\sigma'_{\\min,\\text{bound}}} \\right)^2\n$$\n\n4. **The Total Value Error Coefficient ($C_{V,\\text{total}}(\\mathcal{S})$):** The composite coefficient that bounds the total squared error.\n\n$$\nC_{V,\\text{total}}(\\mathcal{S}) := 3 \\cdot \\left( C_{V,\\text{direct}} + C_{V,\\mu}(\\mathcal{S}) + C_{V,\\sigma}(\\mathcal{S}) \\right)\n$$\n\nwhere $L_{\\mu,M}(\\mathcal{S})$ and $L_{\\sigma',M}(\\mathcal{S})$ are the value Lipschitz functions for the aggregator's mean and regularized standard deviation, respectively.",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "natural_language_statement": "Defines the coefficients used to bound the value error, including direct shift, mean shift, statistical fluctuation, and total value error coefficients.",
+  "assumptions": [],
+  "uses_definitions": [
+    "def-swarm-aggregation-operator-axiomatic",
+    "def-statistical-properties-measurement"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null,
+  "dependencies": [
+    "def-swarm-aggregation-operator-axiomatic",
+    "def-statistical-properties-measurement",
+    "lem-stats-value-continuity"
+  ],
+  "tags": [
+    "error-analysis",
+    "coefficients",
+    "continuity",
+    "value-error"
+  ]
+}

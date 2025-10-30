@@ -1,0 +1,31 @@
+{
+  "label": "def-cloning-measure",
+  "term": "Cloning Measure",
+  "formal_statement": null,
+  "applies_to_object_type": "measure",
+  "parameters": [],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "4.1",
+    "section_name": null,
+    "directive_label": "def-cloning-measure",
+    "equation": null,
+    "line_range": [
+      1120,
+      1123
+    ],
+    "url_fragment": "#def-cloning-measure"
+  },
+  "natural_language_description": "For a given cloning noise scale $\\delta > 0$, the **Cloning Measure**, $\\mathcal{Q}_\\delta(x, \\cdot)$, is a **Valid Noise Measure** according to Definition 2.3. It governs the displacement for newly created walkers during the cloning step.",
+  "tags": [
+    "noise",
+    "cloning",
+    "algorithmic",
+    "displacement"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "validation_errors": [],
+  "raw_fallback": null
+}

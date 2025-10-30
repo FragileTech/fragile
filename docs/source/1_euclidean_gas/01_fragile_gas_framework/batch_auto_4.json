@@ -1,0 +1,404 @@
+{
+  "raw_data/lemmas/lem-empirical-aggregator-properties.json": {
+    "label": "lem-empirical-aggregator-properties",
+    "name": "Let the aggregation operator $M$ be defined such that for any swarm state $\\mathcal{S}$ with aliv...",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-aggregator-lipschitz-constants",
+      "obj-swarm-aggregation-operator-axiomatic"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "General Result",
+    "attributes_added": [],
+    "relations_established": [
+      "Empirical aggregator M satisfies 3 axiomatic properties: Range-Respecting Mean, Bounded Deviation from Aggregated Variance, Bounded Variance Production"
+    ],
+    "natural_language_statement": "Let the aggregation operator $M$ be defined such that for any swarm state $\\mathcal{S}$ with alive set $\\mathcal{A}(\\mathcal{S})$ of size $k = |\\mathcal{A}(\\mathcal{S})| \\ge 1$, and any raw value vector $\\mathbf{v}$, it produces the discrete empirical measure:\n\n$$\nM(\\mathcal{S}, \\mathbf{v}) = \\frac{1}{k} \\sum_{i \\in \\mathcal{A}(\\mathcal{S})} \\delta_{v_i}\n$$\n\n:::{note}\n**Breaking down this formula**:\n- $k = |\\mathcal{A}(\\mathcal{S})|$ is the number of alive walkers\n- $\\delta_{v_i}$ is a \"spike\" (Dirac delta) at value $v_i$ - it puts all probability mass exactly at that point\n- The sum creates a collection of spikes, one for each alive walker's value\n- The $\\frac{1}{k}$ factor gives each walker equal weight\n**Result**: A probability distribution that treats each alive walker's measurement as equally important. This is the foundation for computing means, variances, and other statistics!",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-empirical-aggregator-properties_dup1.json": {
+    "label": "lem-empirical-aggregator-properties",
+    "name": "Axiomatic Properties of the Empirical Measure Aggregator",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "unproven",
+    "input_objects": [
+      "obj-alive-dead-sets",
+      "obj-swarm-aggregation-operator-axiomatic",
+      "obj-swarm-and-state-space"
+    ],
+    "input_axioms": [
+      "def-axiom-bounded-relative-collapse",
+      "def-axiom-bounded-variance-production",
+      "def-axiom-bounded-deviation-variance"
+    ],
+    "input_parameters": [
+      "k",
+      "c_min",
+      "kappa_range",
+      "V_max",
+      "n_c",
+      "kappa_var"
+    ],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      {
+        "label": "rel-empirical-aggregator-is-valid-swarm-aggregator",
+        "relationship_type": "INSTANTIATION",
+        "source_object": "obj-swarm-aggregation-operator-axiomatic",
+        "target_object": "empirical-measure-aggregator",
+        "description": "The empirical measure M(S,v) = (1/k) sum delta_vi is a valid instantiation of the axiomatic Swarm Aggregation Operator"
+      },
+      {
+        "label": "rel-empirical-aggregator-value-lipschitz-mean",
+        "relationship_type": "PROPERTY",
+        "source_object": "empirical-measure-aggregator",
+        "target_object": "L_mu_M",
+        "expression": "L_{mu,M}(S) = k^{-1/2}",
+        "description": "Value Lipschitz constant for mean scales as inverse square root of alive set size"
+      },
+      {
+        "label": "rel-empirical-aggregator-value-lipschitz-m2",
+        "relationship_type": "PROPERTY",
+        "source_object": "empirical-measure-aggregator",
+        "target_object": "L_m2_M",
+        "expression": "L_{m_2,M}(S) <= 2V_max k^{-1/2}",
+        "description": "Value Lipschitz constant for second moment bounded by 2V_max k^{-1/2}"
+      },
+      {
+        "label": "rel-empirical-aggregator-structural-lipschitz-mean",
+        "relationship_type": "PROPERTY",
+        "source_object": "empirical-measure-aggregator",
+        "target_object": "L_mu_S",
+        "expression": "L_{mu,S}(S_1, S_2) <= 2V_max / |A(S_2)|",
+        "description": "Structural continuity constant for mean inversely proportional to target alive set size"
+      },
+      {
+        "label": "rel-empirical-aggregator-structural-lipschitz-m2",
+        "relationship_type": "PROPERTY",
+        "source_object": "empirical-measure-aggregator",
+        "target_object": "L_m2_S",
+        "expression": "L_{m_2,S}(S_1, S_2) <= 2V_max^2 / |A(S_2)|",
+        "description": "Structural continuity constant for second moment with V_max^2 scaling"
+      },
+      {
+        "label": "rel-empirical-aggregator-variance-deviation-factor",
+        "relationship_type": "PROPERTY",
+        "source_object": "empirical-measure-aggregator",
+        "target_object": "kappa_var",
+        "expression": "kappa_var = 1",
+        "description": "Variance deviation factor is exactly 1 for empirical aggregator (identity)"
+      },
+      {
+        "label": "rel-empirical-aggregator-range-variance-factor",
+        "relationship_type": "PROPERTY",
+        "source_object": "empirical-measure-aggregator",
+        "target_object": "kappa_range",
+        "expression": "kappa_range = 1",
+        "description": "Range-to-variance factor is exactly 1 for empirical aggregator"
+      },
+      {
+        "label": "rel-empirical-aggregator-structural-growth-exponents",
+        "relationship_type": "PROPERTY",
+        "source_object": "empirical-measure-aggregator",
+        "target_object": "structural_growth_exponents",
+        "expression": "p_{mu,S} = -1, p_{m_2,S} = -1, p_{worst-case} = -1",
+        "description": "Structural continuity improves linearly with alive set size (exponent -1)"
+      }
+    ],
+    "natural_language_statement": "Let the aggregation operator M be defined such that for any swarm state S with alive set A(S) of size k = |A(S)| >= 1, and any raw value vector v, it produces the discrete empirical measure: M(S, v) = (1/k) sum_{i in A(S)} delta_{v_i}. This operator is a valid Swarm Aggregation Operator. Assuming the raw values are bounded by |v_i| <= V_max, its moment functions, continuity functions, and axiomatic parameters satisfy specific bounds and properties.",
+    "assumptions": [
+      "Raw values bounded: |v_i| <= V_max for all i",
+      "Alive set non-empty: k = |A(S)| >= 1",
+      "Bounded relative collapse holds: k_2 >= c_min * k_1 for axiom verification"
+    ],
+    "conclusion": "The empirical measure aggregator satisfies all axiomatic requirements of def-swarm-aggregation-operator-axiomatic with explicit Lipschitz constants and growth exponents: (1) Value Lipschitz constants scale as k^{-1/2}, (2) Structural Lipschitz constants scale as k_2^{-1}, (3) Variance deviation and range factors both equal 1, (4) Structural growth exponents all equal -1.",
+    "equation_label": null,
+    "uses_definitions": [
+      "def-swarm-aggregation-operator-axiomatic",
+      "def-alive-dead-sets",
+      "def-swarm-and-state-space"
+    ],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-empirical-moments-lipschitz-dup.json": {
+    "label": "lem-empirical-moments-lipschitz-dup",
+    "name": "Empirical moments are Lipschitz in L2",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-swarm-aggregation-operator-axiomatic",
+      "obj-aggregator-lipschitz-constants"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "General Result",
+    "attributes_added": [],
+    "relations_established": [
+      "Lipschitz constants for empirical mean: L_μ,M = 1/√k",
+      "Lipschitz constant for second moment: L_m2,M = 2V_max/√k"
+    ],
+    "natural_language_statement": "Let $\\mathbf v\\in\\mathbb R^k$ collect the values of the $k=|\\mathcal A(\\mathcal S)|$ alive walkers. Consider the empirical mean and second raw moment\n\n$$\n\\mu(\\mathbf v) = \\frac{1}{k}\\sum_{i=1}^k v_i,\\qquad m_2(\\mathbf v) = \\frac{1}{k}\\sum_{i=1}^k v_i^{\\,2}.\n$$\n\nAssume $|v_i|\\le V_{\\max}$ for all $i$. Then, with respect to the L2 norm on $\\mathbb R^k$,\n\n$$\n|\\mu(\\mathbf v_1)-\\mu(\\mathbf v_2)|\\;\\le\\; \\frac{1}{\\sqrt{k}}\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2,\\qquad\n|m_2(\\mathbf v_1)-m_2(\\mathbf v_2)|\\;\\le\\; \\frac{2 V_{\\max}}{\\sqrt{k}}\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2.\n$$\n\nIn particular, for the empirical aggregator we may take $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-empirical-moments-lipschitz.json": {
+    "label": "lem-empirical-moments-lipschitz",
+    "name": "Empirical moments are Lipschitz in L2",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "unproven",
+    "input_objects": [
+      "obj-aggregator-lipschitz-constants",
+      "obj-swarm-aggregation-operator-axiomatic",
+      "obj-potential-bounds"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Lipschitz Continuity",
+    "attributes_added": [],
+    "relations_established": [
+      "Empirical mean is Lipschitz: L_{mu,M} = 1/sqrt(k)",
+      "Empirical second moment is Lipschitz: L_{m2,M} = 2V_max/sqrt(k)"
+    ],
+    "natural_language_statement": "Let v ∈ ℝ^k collect the values of the k=|𝒜(𝒮)| alive walkers. Consider the empirical mean and second raw moment. Assume |v_i| ≤ V_max for all i. Then, with respect to the L2 norm on ℝ^k, the mean and second moment are Lipschitz continuous.",
+    "assumptions": [],
+    "conclusion": null,
+    "equation_label": null,
+    "uses_definitions": [
+      "def-swarm-aggregation-operator-axiomatic"
+    ],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-final-positional-displacement-bound.json": {
+    "label": "lem-final-positional-displacement-bound",
+    "name": "Bounding the Final Positional Displacement (unconditional)",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-n-particle-displacement-metric",
+      "obj-swarm-and-state-space"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "General Result",
+    "attributes_added": [],
+    "relations_established": [
+      "Final positional displacement bounded by initial displacement squared"
+    ],
+    "natural_language_statement": "The total squared positional displacement from all walkers is bounded by a quadratic function of the initial displacement metric.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-final-status-change-bound.json": {
+    "label": "lem-final-status-change-bound",
+    "name": "Bounding the Expected Final Status Change",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-n-particle-displacement-metric",
+      "obj-walker"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "General Result",
+    "attributes_added": [],
+    "relations_established": [
+      "Final status change bounded by initial displacement squared"
+    ],
+    "natural_language_statement": "The expected total squared status change from all walkers is bounded by a quadratic function of the initial displacement metric.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-inequality-toolbox.json": {
+    "label": "lem-inequality-toolbox",
+    "name": "Inequality Toolbox",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "General Result",
+    "attributes_added": [],
+    "relations_established": [
+      "Standard inequalities for bounding composite expressions"
+    ],
+    "natural_language_statement": "Collection of standard inequalities: Triangle inequality, Cauchy-Schwarz, Hölder, Jensen, subadditivity of fractional powers.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-lipschitz-variance-functional.json": {
+    "label": "lem-lipschitz-variance-functional",
+    "name": "Lipschitz bound for the variance functional",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-aggregator-lipschitz-constants",
+      "obj-potential-bounds"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Lipschitz Continuity",
+    "attributes_added": [],
+    "relations_established": [
+      "Variance functional Var(v) is Lipschitz with L_var <= 4V_max/sqrt(k)"
+    ],
+    "natural_language_statement": "Let $\\mu(\\mathbf v)$ and $m_2(\\mathbf v)$ denote, respectively, the (aggregator) mean and second raw moment computed from a value vector $\\mathbf v\\in\\mathbb{R}^k$ over the alive set. Assume the moment maps are Lipschitz in $\\mathbf v$ with constants $L_{\\mu,M}$ and $L_{m_2,M}$ as in §6.2.1, and suppose $|v_i|\\le V_{\\max}$. Define the variance functional $\\mathrm{Var}(\\mathbf v):=m_2(\\mathbf v) - \\mu(\\mathbf v)^2$. Then, for all $\\mathbf v_1,\\mathbf v_2$,\n$$\n\\big|\\,\\mathrm{Var}(\\mathbf v_1)-\\mathrm{Var}(\\mathbf v_2)\\,\\big|\\;\\le\\;\\Big( L_{m_2,M}\\; +\\; 2 V_{\\max}\\,L_{\\mu,M}\\Big)\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2.\n$$\nIn particular, the variance functional is $L_{\\mathrm{var}}$‑Lipschitz with $L_{\\mathrm{var}}:=L_{m_2,M}+2 V_{\\max} L_{\\mu,M}$.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-normalization-difference-bound.json": {
+    "label": "lem-normalization-difference-bound",
+    "name": "Bound on the Error from Normalization Change",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "unproven",
+    "input_objects": [
+      "obj-companion-selection-measure"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Bound on error from normalization constant change in companion selection"
+    ],
+    "natural_language_statement": "Let $S_1$ and $S_2$ be two companion support sets, with $|S_1|, |S_2| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$.\nThe absolute difference between two sums over the *same* set $S_2$, but with different normalization constants, is bounded by the absolute difference in the set sizes.",
+    "assumptions": [],
+    "conclusion": null,
+    "equation_label": null,
+    "uses_definitions": [
+      "def-companion-selection-measure"
+    ],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-perturbation-positional-bound.json": {
+    "label": "sub-lem-perturbation-positional-bound-reproof",
+    "name": "Bounding the Output Positional Displacement",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Perturbation-induced positional error bounded by displacement and perturbation constants"
+    ],
+    "natural_language_statement": "Let $\\mathcal{S}_1, \\mathcal{S}_2$ be two input swarms, and let $\\mathcal{S}'_1, \\mathcal{S}'_2$ be the corresponding output swarms after applying the Perturbation Operator. The total squared positional displacement between the output swarms, $\\Delta_{\\text{pos}}^2(\\mathcal{S}'_1, \\mathcal{S}'_2)$, is bounded as follows:\n$$\\Delta_{\\text{pos}}^2(\\mathcal{S}'_1, \\mathcal{S}'_2) \\le 3\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + 3\\Delta_{\\text{pert}}^2(\\mathcal{S}_1) + 3\\Delta_{\\text{pert}}^2(\\mathcal{S}_2)$$\nwhere $\\Delta_{\\text{pert}}^2(\\mathcal{S})$ is the **Total Perturbation-Induced Displacement**.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  }
+}

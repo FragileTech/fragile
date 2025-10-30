@@ -37,14 +37,17 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import numpy as np
-import torch
 from numpy.typing import NDArray
+import torch
 
-from fragile.convergence_bounds import c_max
-from fragile.convergence_bounds import c_min
-from fragile.convergence_bounds import epsilon_F_star
-from fragile.convergence_bounds import validate_ellipticity
-from fragile.convergence_bounds import validate_hypocoercivity
+from fragile.convergence_bounds import (
+    c_max,
+    c_min,
+    epsilon_F_star,
+    validate_ellipticity,
+    validate_hypocoercivity,
+)
+
 
 if TYPE_CHECKING:
     from fragile.core.gas_history import RunHistory
@@ -318,8 +321,7 @@ def estimate_H_max_from_history(
         return 1.0
 
     # Take high percentile to estimate H_max
-    H_max_estimate = float(np.percentile(hessian_norms, percentile))
-    return H_max_estimate
+    return float(np.percentile(hessian_norms, percentile))
 
 
 def _estimate_hessian_norm(
@@ -353,7 +355,7 @@ def _estimate_hessian_norm(
 
     try:
         # Compute gradient at x
-        grad_center = _compute_gradient(x_np, potential, h)
+        _compute_gradient(x_np, potential, h)
 
         # Compute Hessian via finite differences
         for j in range(d):
@@ -371,9 +373,7 @@ def _estimate_hessian_norm(
 
         # Compute spectral norm (largest singular value)
         eigenvalues = np.linalg.eigvalsh(H)
-        H_norm = float(np.max(np.abs(eigenvalues)))
-
-        return H_norm
+        return float(np.max(np.abs(eigenvalues)))
 
     except Exception:
         return None
@@ -488,7 +488,7 @@ IMPACT:
 
 GUIDANCE:
   ✓ Increase ε_Σ to at least {H_max:.6f} (current H_max)
-  ✓ Recommended: ε_Σ ≥ {recommended_epsilon_Sigma:.6f} ({1+safety_margin:.0%} safety margin)
+  ✓ Recommended: ε_Σ ≥ {recommended_epsilon_Sigma:.6f} ({1 + safety_margin:.0%} safety margin)
   ✓ Or reduce H_max by using a smoother potential function
 
 See: docs/source/3_brascamp_lieb/geometric_foundations_lsi.md
@@ -502,7 +502,7 @@ Current configuration:
   Condition: ε_Σ > H_max is satisfied ✓ (margin: {margin:.6f})
 
 CAUTION:
-  ⚠️  Safety margin is small ({margin/H_max:.1%} of H_max)
+  ⚠️  Safety margin is small ({margin / H_max:.1%} of H_max)
   ⚠️  c_max = {c_max_value:.4f}, c_min = {c_min_value:.4f}
   ⚠️  Condition number: {condition_number:.2f}
 
@@ -615,7 +615,7 @@ IMPACT:
 
 GUIDANCE:
   ✓ Reduce ε_F below {epsilon_F_star_value:.6f}
-  ✓ Recommended: ε_F ≤ {0.8*epsilon_F_star_value:.6f} (80% of threshold)
+  ✓ Recommended: ε_F ≤ {0.8 * epsilon_F_star_value:.6f} (80% of threshold)
   ✓ Or increase c_min by raising ε_Σ
 
 See: docs/source/3_brascamp_lieb/eigenvalue_gap_complete_proof.md
@@ -990,20 +990,19 @@ def create_adaptive_gas_diagnostics(
     if is_euclidean_gas:
         overall_status = "valid"
         summary = "✅ Pure Euclidean Gas (no adaptive features enabled)"
+    # Check for critical failures
+    elif ellipticity is not None and not ellipticity.is_valid:
+        overall_status = "invalid"
+        summary = "❌ INVALID: Uniform ellipticity violated (ε_Σ ≤ H_max)"
+    elif hypocoercivity is not None and not hypocoercivity.is_valid:
+        overall_status = "warning"
+        summary = "⚠️  WARNING: Hypocoercivity regime conditions not satisfied"
+    elif ellipticity is not None and ellipticity.margin < 0.1 * H_max:
+        overall_status = "warning"
+        summary = "⚠️  WARNING: Ellipticity margin is small (< 10% of H_max)"
     else:
-        # Check for critical failures
-        if ellipticity is not None and not ellipticity.is_valid:
-            overall_status = "invalid"
-            summary = "❌ INVALID: Uniform ellipticity violated (ε_Σ ≤ H_max)"
-        elif hypocoercivity is not None and not hypocoercivity.is_valid:
-            overall_status = "warning"
-            summary = "⚠️  WARNING: Hypocoercivity regime conditions not satisfied"
-        elif ellipticity is not None and ellipticity.margin < 0.1 * H_max:
-            overall_status = "warning"
-            summary = "⚠️  WARNING: Ellipticity margin is small (< 10% of H_max)"
-        else:
-            overall_status = "valid"
-            summary = "✅ All adaptive gas conditions satisfied"
+        overall_status = "valid"
+        summary = "✅ All adaptive gas conditions satisfied"
 
     return AdaptiveGasDiagnostics(
         ellipticity=ellipticity,

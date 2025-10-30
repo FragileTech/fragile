@@ -1,0 +1,32 @@
+{
+  "label": "lem-final-status-change-bound",
+  "name": "Bounding the Expected Final Status Change",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-n-particle-displacement-metric",
+    "obj-walker"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "General Result",
+  "attributes_added": [],
+  "relations_established": [
+    "Final status change bounded by initial displacement squared"
+  ],
+  "natural_language_statement": "The expected total squared status change from all walkers is bounded by a quadratic function of the initial displacement metric.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

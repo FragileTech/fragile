@@ -3,14 +3,23 @@
   "name": "Barycentres and Centered Vectors (Alive Walkers Only)",
   "mathematical_expression": "\\mu_{x,k} := \\frac{1}{k_{\\text{alive}}}\\sum_{i \\in \\mathcal{A}(S_k)} x_{k,i}",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle",
     "swarm",
     "variance"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning"
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "obj-barycentres-and-centered-vectors",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-barycentres-and-centered-vectors"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

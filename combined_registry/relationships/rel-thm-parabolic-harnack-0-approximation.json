@@ -6,12 +6,20 @@
   "target_object": "obj-langevin-dynamics",
   "established_by": "thm-parabolic-harnack",
   "expression": "sup_{Q_{R/2}^−} u ≤ C_H (inf_{Q_{R/2}^+} u + R² C_h)",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+  "source": {
+    "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+    "section": null,
+    "directive_label": "thm-parabolic-harnack",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-parabolic-harnack"
+  },
+  "chapter": null,
+  "document": null
 }

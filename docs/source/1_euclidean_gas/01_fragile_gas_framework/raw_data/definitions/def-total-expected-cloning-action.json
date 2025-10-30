@@ -1,0 +1,32 @@
+{
+  "label": "def-total-expected-cloning-action",
+  "term": "Total Expected Cloning Action",
+  "type": "definition",
+  "statement": "The **Total Expected Cloning Action** for a walker $i$, denoted $\\overline{P}_{\\text{clone}}(\\mathcal{S})_i$, is the probability that walker $i$ will be assigned the \"Clone\" action, given the swarm state $\\mathcal{S}$. It is the expectation of the **Conditional Expected Cloning Action** (Def. 15.2.3) taken over the probability distribution of the raw distance vector $\\mathbf{d} \\sim \\mathbf{d}(\\mathcal{S})$.\n\nLet $\\mathbf{r}(\\mathcal{S})$ be the deterministic raw reward vector for state $\\mathcal{S}$, and let $\\mathbf{V}(\\mathbf{r}, \\mathbf{d})$ be the fitness potential vector generated from a specific realization of the raw measurement vectors. The total expected action is:\n\n$$\n\\overline{P}_{\\text{clone}}(\\mathcal{S})_i := \\mathbb{E}_{\\mathbf{d} \\sim \\mathbf{d}(\\mathcal{S})} \\left[ P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V}(\\mathbf{r}(\\mathcal{S}), \\mathbf{d}))_i \\right]\n$$\n\nThis quantity is a deterministic function of the input swarm state $\\mathcal{S}$ and is the central object for the continuity analysis of the cloning stage.",
+  "dependencies": [
+    "def-expected-cloning-action"
+  ],
+  "tags": [
+    "cloning",
+    "probability",
+    "expectation",
+    "continuity"
+  ],
+  "context": "Section 16: The Cloning Transition Measure, subsection 15.2.1",
+  "source_file": "01_fragile_gas_framework.md",
+  "line_number": 4284,
+  "extraction_date": "2025-10-27T21:43:09.486087",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.1",
+    "section_name": null,
+    "directive_label": "def-total-expected-cloning-action",
+    "equation": null,
+    "line_range": [
+      4294,
+      4304
+    ],
+    "url_fragment": "#def-total-expected-cloning-action"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "label": "prop-psi-markov-kernel",
+  "name": "The Swarm Update defines a Markov kernel",
+  "statement_type": "proposition",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17.2.4.5",
+    "directive_label": "prop-psi-markov-kernel",
+    "line_range": [
+      5026,
+      5037
+    ]
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm-update-procedure"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {
+    "obj-swarm-update-procedure": [
+      "attr-measurable-stages",
+      "attr-polish-noise-space"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [
+    {
+      "label": "attr-markov-kernel",
+      "expression": "\\Psi(\\mathcal{S},\\cdot) \\text{ is a probability measure on } \\Sigma_N \\text{ and } \\mathcal{S}\\mapsto \\Psi(\\mathcal{S},A) \\text{ is measurable}",
+      "object_label": "obj-swarm-update-procedure",
+      "established_by": "prop-psi-markov-kernel",
+      "timestamp": null,
+      "can_be_refined": false,
+      "refinements": [],
+      "source": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": "17.2.4.5",
+        "directive_label": "prop-psi-markov-kernel",
+        "line_range": [
+          5026,
+          5034
+        ]
+      }
+    }
+  ],
+  "relations_established": [],
+  "natural_language_statement": "Under the assumption that each stage of the Swarm Update (cloning, perturbation, status update) is defined by a measurable map driven by a measurable noise kernel on a Polish probability space, the full Swarm Update Operator Ψ defines a Markov kernel on the measurable state space Σ_N. That is, for each state S∈Σ_N, Ψ(S,·) is a probability measure on Σ_N, and for each measurable set A∈B(Σ_N), the map S↦Ψ(S,A) is measurable.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [
+    "def-swarm-update-procedure",
+    "def-cloning-measure",
+    "def-perturbation-operator",
+    "obj-status-update-operator"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

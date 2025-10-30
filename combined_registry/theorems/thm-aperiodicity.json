@@ -2,9 +2,17 @@
   "label": "thm-aperiodicity",
   "name": "Aperiodicity of the Euclidean Gas",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "06_convergence",
+  "source": {
+    "document_id": "06_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/06_convergence.md",
+    "section": null,
+    "directive_label": "thm-aperiodicity",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-aperiodicity"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -19,22 +27,18 @@
     "param-sigma-v",
     "param-tau"
   ],
-  "properties_required": {},
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [
-    {
-      "label": "prop-aperiodic",
-      "expression": "Chain has no deterministic period: ∃ m,n with gcd(m,n)=1 and P^m(S,U), P^n(S,U) > 0 for any neighborhood U of S",
-      "object_label": "obj-swarm-update-procedure",
-      "established_by": "thm-aperiodicity",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

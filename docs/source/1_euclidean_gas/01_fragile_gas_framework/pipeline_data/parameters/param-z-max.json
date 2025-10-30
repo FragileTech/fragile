@@ -1,0 +1,8 @@
+{
+  "label": "param-z-max",
+  "name": "z_max",
+  "symbol": "z_max",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

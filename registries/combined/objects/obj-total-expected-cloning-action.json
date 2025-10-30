@@ -1,0 +1,30 @@
+{
+  "label": "obj-total-expected-cloning-action",
+  "name": "Total Expected Cloning Action",
+  "mathematical_expression": "Total Expected Cloning Action",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "action",
+    "cloning",
+    "continuity",
+    "expected",
+    "measure-theory",
+    "metric",
+    "particle-system",
+    "total"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.1",
+    "directive_label": "def-total-expected-cloning-action",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": null
+}

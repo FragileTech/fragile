@@ -1,0 +1,8 @@
+{
+  "label": "param-param-std-regularization",
+  "name": "param-std-regularization",
+  "symbol": "param-std-regularization",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

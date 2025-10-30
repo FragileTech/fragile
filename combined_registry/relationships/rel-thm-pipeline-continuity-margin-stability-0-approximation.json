@@ -1,0 +1,25 @@
+{
+  "label": "rel-thm-pipeline-continuity-margin-stability-0-approximation",
+  "relationship_type": "approximation",
+  "bidirectional": false,
+  "source_object": "obj-algorithmic-space-generic",
+  "target_object": "obj-swarm-potential-assembly-operator",
+  "established_by": "thm-pipeline-continuity-margin-stability",
+  "expression": "For d_Disp^2 <= r_status: unstable term vanishes (n_c = 0)",
+  "attributes": [],
+  "tags": [
+    "inferred-from-string"
+  ],
+  "timestamp": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "thm-pipeline-continuity-margin-stability",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-pipeline-continuity-margin-stability"
+  },
+  "chapter": null,
+  "document": null
+}

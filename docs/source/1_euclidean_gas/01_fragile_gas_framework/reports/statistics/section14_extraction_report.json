@@ -1,0 +1,141 @@
+{
+  "section": "14. The Perturbation Operator",
+  "source_document": "01_fragile_gas_framework.md",
+  "line_range": [3937, 4118],
+  "total_lines": 182,
+  "extraction_date": "2025-10-27",
+  "entities_extracted": {
+    "definitions": 2,
+    "axioms": 1,
+    "lemmas": 3,
+    "theorems": 2,
+    "proofs": 3,
+    "objects": 2,
+    "remarks": 2,
+    "total": 15
+  },
+  "entity_details": {
+    "definitions": [
+      {
+        "label": "def-perturbation-operator",
+        "name": "Perturbation Operator",
+        "file": "definitions/def-perturbation-operator.json"
+      },
+      {
+        "label": "def-perturbation-fluctuation-bounds-reproof",
+        "name": "Perturbation Fluctuation Bounds",
+        "file": "definitions/def-perturbation-fluctuation-bounds.json"
+      }
+    ],
+    "axioms": [
+      {
+        "label": "def-axiom-bounded-second-moment-perturbation",
+        "name": "Axiom of Bounded Second Moment of Perturbation",
+        "file": "axioms/axiom-bounded-second-moment-perturbation.json"
+      }
+    ],
+    "lemmas": [
+      {
+        "label": "sub-lem-perturbation-positional-bound-reproof",
+        "name": "Bounding the Output Positional Displacement",
+        "file": "lemmas/lem-perturbation-positional-bound.json"
+      },
+      {
+        "label": "lem-bounded-differences-favg",
+        "name": "Bounded differences for f_avg",
+        "file": "lemmas/lem-bounded-differences-favg.json"
+      },
+      {
+        "label": "sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+        "name": "Probabilistic Bound on Total Perturbation-Induced Displacement",
+        "file": "lemmas/lem-probabilistic-bound-perturbation-displacement.json"
+      }
+    ],
+    "theorems": [
+      {
+        "label": "thm-mcdiarmids-inequality",
+        "name": "McDiarmid's Inequality (Bounded Differences Inequality)",
+        "file": "theorems/thm-mcdiarmids-inequality.json",
+        "external_reference": "Boucheron–Lugosi–Massart"
+      },
+      {
+        "label": "thm-perturbation-operator-continuity-reproof",
+        "name": "Probabilistic Continuity of the Perturbation Operator",
+        "file": "theorems/thm-perturbation-operator-continuity.json",
+        "main_result": true
+      }
+    ],
+    "proofs": [
+      {
+        "label": "proof-sub-lem-perturbation-positional-bound-reproof",
+        "proves": "sub-lem-perturbation-positional-bound-reproof",
+        "file": "proofs/proof-perturbation-positional-bound.json",
+        "proof_type": "direct"
+      },
+      {
+        "label": "proof-sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+        "proves": "sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+        "file": "proofs/proof-probabilistic-bound-perturbation-displacement.json",
+        "proof_type": "constructive"
+      },
+      {
+        "label": "proof-thm-perturbation-operator-continuity-reproof",
+        "proves": "thm-perturbation-operator-continuity-reproof",
+        "file": "proofs/proof-perturbation-operator-continuity.json",
+        "proof_type": "synthetic"
+      }
+    ],
+    "objects": [
+      {
+        "label": "obj-mean-displacement-bound",
+        "name": "Mean Displacement Bound",
+        "symbol": "B_M(N)",
+        "file": "objects/obj-mean-displacement-bound.json"
+      },
+      {
+        "label": "obj-stochastic-fluctuation-bound",
+        "name": "Stochastic Fluctuation Bound",
+        "symbol": "B_S(N, δ')",
+        "file": "objects/obj-stochastic-fluctuation-bound.json"
+      }
+    ],
+    "remarks": [
+      {
+        "label": "remark-randomness-discipline-perturbation",
+        "context": "Randomness discipline for perturbation",
+        "file": "remarks/remark-randomness-discipline-perturbation.json"
+      },
+      {
+        "label": "remark-scope-and-assumptions",
+        "context": "Scope and assumptions for perturbation operator continuity",
+        "file": "remarks/remark-scope-and-assumptions.json"
+      }
+    ]
+  },
+  "key_concepts": [
+    "Perturbation Operator",
+    "Bounded Second Moment of Perturbation",
+    "McDiarmid's Inequality",
+    "Probabilistic Continuity",
+    "Concentration of Measure",
+    "Union Bound",
+    "Mean Displacement Bound",
+    "Stochastic Fluctuation Bound"
+  ],
+  "mathematical_techniques": [
+    "Triangle inequality",
+    "McDiarmid concentration inequality",
+    "Bounded differences method",
+    "Union bound",
+    "Decomposition of metric",
+    "Concentration of measure"
+  ],
+  "dependencies": [
+    "N-Particle Displacement Metric",
+    "Perturbation Measure",
+    "Projection Map",
+    "Algorithmic Space",
+    "Assumption A (in-step independence)",
+    "Axiom of Bounded Algorithmic Diameter"
+  ]
+}

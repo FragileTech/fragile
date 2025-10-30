@@ -3,13 +3,13 @@
 import torch
 
 from fragile.experiments.gauge.u1_symmetry import (
-    U1Config,
     compare_u1_phases,
     compute_dressed_walker_state,
     compute_u1_amplitude,
     compute_u1_observable,
     compute_u1_phase_current,
     compute_u1_phase_proposed,
+    U1Config,
 )
 
 
@@ -222,7 +222,7 @@ def test_compute_dressed_walker_state(simple_swarm_2d):
 
     N = simple_swarm_2d["N"]
     assert state.shape == (N,)
-    assert state.dtype == torch.complex64 or state.dtype == torch.complex128
+    assert state.dtype in {torch.complex64, torch.complex128}
 
     # State should have finite values
     assert torch.isfinite(state).all()

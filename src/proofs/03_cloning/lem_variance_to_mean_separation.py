@@ -10,13 +10,13 @@ This module provides sympy-based validation of algebraic manipulations
 in the proof of lem-variance-to-mean-separation. Each function validates one algebraic step.
 """
 
-from sympy import symbols, simplify, expand, sqrt
-import pytest
+from sympy import expand, simplify, sqrt, symbols
 
 
 # ========================================
 # VALIDATION FUNCTIONS
 # ========================================
+
 
 def test_between_group_variance_identity():
     """
@@ -31,9 +31,9 @@ def test_between_group_variance_identity():
 
     # Define symbols with framework-consistent names and assumptions
     # Fractions are positive real numbers in (0,1)
-    f_H, f_L = symbols('f_H f_L', real=True, positive=True)
+    f_H, f_L = symbols("f_H f_L", real=True, positive=True)
     # Means are real numbers (can be any value)
-    mu_H, mu_L, mu_V = symbols('mu_H mu_L mu_V', real=True)
+    mu_H, mu_L, mu_V = symbols("mu_H mu_L mu_V", real=True)
 
     # Define the total mean constraint: mu_V = f_H*mu_H + f_L*mu_L
     # This is the definition of the weighted average
@@ -107,12 +107,12 @@ def test_between_group_variance_identity():
     )
     print("✓ Step 3 verified: Symmetry confirmed with f_H = 1 - f_L substitution")
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("✓ BETWEEN-GROUP VARIANCE IDENTITY FULLY VERIFIED")
-    print("="*60)
-    print(f"  Identity: f_H(μ_H - μ_V)² + f_L(μ_L - μ_V)² = f_H·f_L·(μ_H - μ_L)²")
-    print(f"  Constraint: μ_V = f_H·μ_H + f_L·μ_L, f_H + f_L = 1")
-    print("="*60)
+    print("=" * 60)
+    print("  Identity: f_H(μ_H - μ_V)² + f_L(μ_L - μ_V)² = f_H·f_L·(μ_H - μ_L)²")
+    print("  Constraint: μ_V = f_H·μ_H + f_L·μ_L, f_H + f_L = 1")
+    print("=" * 60)
 
 
 def test_mean_separation_lower_bound():
@@ -127,9 +127,11 @@ def test_mean_separation_lower_bound():
     """
 
     # Define symbols
-    f_H, f_L = symbols('f_H f_L', real=True, positive=True)
-    mu_H, mu_L = symbols('mu_H mu_L', real=True)
-    Var_total, Var_B, Var_W, Var_max = symbols('Var_total Var_B Var_W Var_max', real=True, positive=True)
+    f_H, f_L = symbols("f_H f_L", real=True, positive=True)
+    mu_H, mu_L = symbols("mu_H mu_L", real=True)
+    Var_total, _Var_B, _Var_W, Var_max = symbols(
+        "Var_total Var_B Var_W Var_max", real=True, positive=True
+    )
 
     # Law of Total Variance: Var_total = Var_B + Var_W
     # Rearranging: Var_B = Var_total - Var_W
@@ -158,18 +160,18 @@ def test_mean_separation_lower_bound():
 
     # Verify LHS simplifies to (mu_H - mu_L)²
     expected_lhs = (mu_H - mu_L) ** 2
-    assert simplify(lhs_divided - expected_lhs) == 0, (
-        f"LHS simplification failed. Expected (mu_H - mu_L)², got {lhs_divided}"
-    )
+    assert (
+        simplify(lhs_divided - expected_lhs) == 0
+    ), f"LHS simplification failed. Expected (mu_H - mu_L)², got {lhs_divided}"
 
     # Verify RHS simplifies to (Var_total - Var_max) / (f_H * f_L)
     expected_rhs = (Var_total - Var_max) / (f_H * f_L)
-    assert simplify(rhs_divided - expected_rhs) == 0, (
-        f"RHS simplification failed. Expected (Var_total - Var_max)/(f_H*f_L), got {rhs_divided}"
-    )
+    assert (
+        simplify(rhs_divided - expected_rhs) == 0
+    ), f"RHS simplification failed. Expected (Var_total - Var_max)/(f_H*f_L), got {rhs_divided}"
 
     print("✓ Mean separation lower bound algebra verified")
-    print(f"  (μ_H - μ_L)² ≥ (Var_total - Var_max) / (f_H · f_L)")
+    print("  (μ_H - μ_L)² ≥ (Var_total - Var_max) / (f_H · f_L)")
 
 
 def test_signal_to_noise_condition():
@@ -184,14 +186,14 @@ def test_signal_to_noise_condition():
     """
 
     # Define symbols
-    f_H, f_L = symbols('f_H f_L', real=True, positive=True)
-    kappa_var, Var_max = symbols('kappa_var Var_max', real=True, positive=True)
-    mu_H, mu_L = symbols('mu_H mu_L', real=True)
+    f_H, f_L = symbols("f_H f_L", real=True, positive=True)
+    kappa_var, Var_max = symbols("kappa_var Var_max", real=True, positive=True)
+    mu_H, mu_L = symbols("mu_H mu_L", real=True)
 
     # From previous lemma: (mu_H - mu_L)² ≥ (kappa_var - Var_max) / (f_H * f_L)
     # Taking square root of both sides (valid since both sides are non-negative when kappa_var > Var_max)
 
-    lhs_squared = (mu_H - mu_L) ** 2
+    (mu_H - mu_L) ** 2
     rhs_squared = (kappa_var - Var_max) / (f_H * f_L)
 
     # Taking square root
@@ -211,12 +213,13 @@ def test_signal_to_noise_condition():
     )
 
     print("✓ Signal-to-noise condition algebra verified")
-    print(f"  |μ_H - μ_L| ≥ √(κ_var - Var_max) / √(f_H · f_L)")
+    print("  |μ_H - μ_L| ≥ √(κ_var - Var_max) / √(f_H · f_L)")
 
 
 # ========================================
 # TEST RUNNER
 # ========================================
+
 
 def run_all_validations():
     """Run all validation tests for lem-variance-to-mean-separation"""
@@ -229,9 +232,9 @@ def run_all_validations():
     passed = 0
     failed = 0
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("RUNNING VALIDATION TESTS FOR LEM-VARIANCE-TO-MEAN-SEPARATION")
-    print("="*60 + "\n")
+    print("=" * 60 + "\n")
 
     for test in tests:
         print(f"Running: {test.__name__}")
@@ -245,9 +248,9 @@ def run_all_validations():
             print(f"  {e}\n")
             failed += 1
 
-    print("="*60)
+    print("=" * 60)
     print(f"VALIDATION SUMMARY: {passed} passed, {failed} failed")
-    print("="*60)
+    print("=" * 60)
 
     return passed, failed
 

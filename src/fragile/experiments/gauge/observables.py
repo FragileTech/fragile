@@ -14,13 +14,11 @@ and statistical measurements used across gauge symmetry tests.
 - Observables include correlations, gradients, perturbation responses
 """
 
-from typing import Literal
-
 import holoviews as hv
 import numpy as np
-import torch
 from pydantic import BaseModel, Field
 from scipy.optimize import curve_fit
+import torch
 from torch import Tensor
 
 from fragile.core.companion_selection import compute_algorithmic_distance_matrix
@@ -308,11 +306,11 @@ def fit_exponential_decay(
         # Fit with or without weights
         if weights is not None:
             sigma = 1 / np.sqrt(weights + 1)
-            popt, pcov = curve_fit(
+            popt, _pcov = curve_fit(
                 model, r, C, p0=[C0_guess, xi_guess], sigma=sigma, maxfev=10000
             )
         else:
-            popt, pcov = curve_fit(model, r, C, p0=[C0_guess, xi_guess], maxfev=10000)
+            popt, _pcov = curve_fit(model, r, C, p0=[C0_guess, xi_guess], maxfev=10000)
 
         # Compute R²
         residuals = C - model(r, *popt)
@@ -406,12 +404,12 @@ def plot_field_configuration(
         HoloViews Points element with Bokeh backend
 
     Example:
-        >>> hv.extension('bokeh')
+        >>> hv.extension("bokeh")
         >>> positions = torch.randn(100, 2)
         >>> d_prime = torch.randn(100)
         >>> alive = torch.ones(100, dtype=torch.bool)
         >>> plot = plot_field_configuration(positions, d_prime, alive, "d'")
-        >>> hv.save(plot, 'field_config.html')
+        >>> hv.save(plot, "field_config.html")
     """
     # Extract alive walkers
     pos = positions[alive].cpu().numpy()

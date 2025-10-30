@@ -3,12 +3,27 @@
   "name": "Smoothed Gaussian Measure",
   "mathematical_expression": "\\tilde{\\rho}_{\\mathcal{S}, \\ell}(y) := \\frac{1}{|\\mathcal{A}(\\mathcal{S})|} \\sum_{i \\in \\mathcal{A}(\\mathcal{S})} K_\\ell(y, \\varphi(x_i))",
   "object_type": "measure",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
-    "swarm"
+    "gaussian",
+    "measure",
+    "measure-theory",
+    "metric",
+    "particle-system",
+    "smoothed"
   ],
-  "source": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§7",
+    "section_name": null,
+    "directive_label": "def-smoothed-gaussian-measure",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
   "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-smoothed-gaussian-measure"
 }

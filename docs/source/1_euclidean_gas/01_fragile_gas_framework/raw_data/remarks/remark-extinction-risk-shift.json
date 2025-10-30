@@ -1,0 +1,16 @@
+{
+  "temp_id": "raw-remark-009",
+  "remark_type": "observation",
+  "full_text": "The Revival State theorem reveals a profound shift in how extinction risk manifests:\n\nBefore Revival (k=1 state):\n- Single survivor at position $x_j^{(t)}$\n- High risk: if this walker dies, swarm goes extinct\n- Gradual attrition has already occurred (N-1 walkers died)\n\nAfter Revival (intermediate state):\n- All N walkers are alive: $|\\mathcal{A}(\\mathcal{S}_{t+0.5})| = N$\n- Extinction requires ALL walkers to simultaneously fail during perturbation\n- Risk is now a single, quantifiable probabilistic event\n- Probability is product of N independent failure probabilities\n\nThe Key Insight:\nThe revival mechanism transforms extinction from a gradual attrition process (walkers die one-by-one) into a single simultaneous event (all walkers must fail together). This makes extinction risk:\n1. More quantifiable (product of independent probabilities)\n2. More controllable (can tune perturbation parameters)\n3. More analyzable (single event vs. complex multi-step process)\n\nThe remaining extinction risk is isolated to the final perturbation phase where all N revived walkers would need to independently move into invalid regions - a much rarer event than gradual attrition.",
+  "source_section": "§17 The Revival State",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17",
+    "section_name": null,
+    "directive_label": null,
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

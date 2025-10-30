@@ -2,9 +2,17 @@
   "label": "thm-geometry-guarantees-variance",
   "name": "Geometric Structure Guarantees Measurement Variance",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning",
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "thm-geometry-guarantees-variance",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-geometry-guarantees-variance"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -23,7 +31,7 @@
     "f_H",
     "f_L"
   ],
-  "properties_required": {},
+  "attributes_required": {},
   "internal_lemmas": [
     "lem-greedy-preserves-signal",
     "lem-outlier-fraction-lower-bound",
@@ -45,7 +53,7 @@
     ]
   ],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-geometry-guarantees-variance-0-other",
@@ -55,14 +63,22 @@
       "target_object": "obj-swarm-and-state-space",
       "established_by": "thm-geometry-guarantees-variance",
       "expression": "high_variance_implies_measurement_signal",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "03_cloning"
+      "source": {
+        "document_id": "03_cloning",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+        "section": null,
+        "directive_label": "thm-geometry-guarantees-variance",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-geometry-guarantees-variance"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-geometry-guarantees-variance-1-other",
@@ -72,14 +88,29 @@
       "target_object": "obj-swarm-and-state-space",
       "established_by": "thm-geometry-guarantees-variance",
       "expression": "law_of_total_variance_application",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "03_cloning"
+      "source": {
+        "document_id": "03_cloning",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+        "section": null,
+        "directive_label": "thm-geometry-guarantees-variance",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-geometry-guarantees-variance"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

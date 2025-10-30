@@ -60,13 +60,10 @@ def parallel_axis_theorem_symbolic() -> bool:
 
     # Identity 2: Var(v) = (1/N) Σ ||v_i||^2 - ||μ_v||^2
     var_expanded = (
-        (1 / N) * sum_v_sq
-        - (2 * mu_v / N) * sum_v
-        + (1 / N) * sp.summation(mu_v**2, (i, 1, N))
+        (1 / N) * sum_v_sq - (2 * mu_v / N) * sum_v + (1 / N) * sp.summation(mu_v**2, (i, 1, N))
     )
     var_simplified = sp.simplify(var_expanded.subs(sum_v, N * mu_v))
     rhs2 = (1 / N) * sum_v_sq - mu_v**2
     id2_ok = sp.simplify(var_simplified - rhs2) == 0
 
     return bool(id1_ok and id2_ok)
-

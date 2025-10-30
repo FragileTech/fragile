@@ -1,0 +1,90 @@
+{
+  "label": "proof-thm-k1-revival-state",
+  "type": "proof",
+  "proves": "thm-k1-revival-state",
+  "status": "complete",
+  "proof_structure": "constructive",
+  "main_steps": [
+    {
+      "step_number": 1,
+      "title": "Proof of Survivor Persistence (Walker j)",
+      "content": "Companion Selection: As per the Companion Selection Measure, when $|\\mathcal{A}|=1$, the single alive walker is its own companion. Therefore, the cloning companion is deterministically $c_{\\text{clone}}(j) = j$.\n\nCloning Score: The fitness potentials are $V_j$ for the walker and $V_{c(j)}=V_j$ for the companion. The cloning score is:\n$$S_j = S(V_j, V_j) = \\frac{V_j - V_j}{V_j + \\varepsilon_{\\text{clone}}} = 0$$\n\nCloning Decision: The random threshold is sampled $T_{\\text{clone}} \\sim \\text{Uniform}(0, p_{\\max})$. Since $p_{\\max} > 0$, the probability of sampling $T_{\\text{clone}}=0$ is zero. The condition for cloning, $S_j > T_{\\text{clone}}$, becomes $0 > T_{\\text{clone}}$, which is false with probability 1.\n\nConclusion: Walker $j$ is assigned the \"Persist\" action. Its intermediate position is unchanged, $x_j^{(t+0.5)} = x_j^{(t)}$. This proves the first property.",
+      "techniques": [
+        "Deterministic companion selection analysis",
+        "Score calculation",
+        "Probabilistic threshold comparison"
+      ],
+      "depends_on": [
+        "def-companion-selection-measure",
+        "def-cloning-score-function"
+      ]
+    },
+    {
+      "step_number": 2,
+      "title": "Proof of Dead Walker Revival (Walker i where i ≠ j)",
+      "content": "Companion Selection: For a dead walker $i$, the companion set is the entire alive set, $\\mathcal{A}(\\mathcal{S}_t)$. Since this set only contains walker $j$, the companion is deterministically $c_{\\text{clone}}(i) = j$.\n\nFitness Potential: As a dead walker, $V_i=0$. As an alive walker, the companion's potential $V_j$ is strictly positive and bounded below by $V_{\\text{pot,min}} = \\eta^{\\alpha+\\beta}$.\n\nCloning Score: The cloning score for walker $i$ is:\n$$S_i = S(V_j, 0) = \\frac{V_j - 0}{0 + \\varepsilon_{\\text{clone}}} = \\frac{V_j}{\\varepsilon_{\\text{clone}}}$$\nUsing the lower bound for $V_j$, we have: $S_i \\ge \\frac{\\eta^{\\alpha+\\beta}}{\\varepsilon_{\\text{clone}}}$.\n\nCloning Decision: The cloning action occurs if $S_i > T_{\\text{clone}}$. We compare the lower bound of the score to the upper bound of the threshold ($p_{\\max}$). The Axiom of Guaranteed Revival requires $\\kappa_{\\text{revival}} = \\frac{\\eta^{\\alpha+\\beta}}{\\varepsilon_{\\text{clone}} \\cdot p_{\\max}} > 1$. Rearranging gives:\n$$\\frac{\\eta^{\\alpha+\\beta}}{\\varepsilon_{\\text{clone}}} > p_{\\max}$$\nTherefore: $S_i \\ge \\frac{\\eta^{\\alpha+\\beta}}{\\varepsilon_{\\text{clone}}} > p_{\\max} \\ge T_{\\text{clone}}$.\n\nConclusion: The score $S_i$ is guaranteed to be greater than any possible sampled threshold $T_{\\text{clone}}$. Walker $i$ is assigned the \"Clone\" action with probability 1. Its intermediate position is sampled from $\\mathcal{Q}_\\delta(x_j^{(t)}, \\cdot)$. This proves the second property for all $N-1$ dead walkers.",
+      "techniques": [
+        "Companion selection for dead walkers",
+        "Lower bound analysis using potential boundedness lemma",
+        "Axiom application to derive threshold inequality",
+        "Chain of inequalities"
+      ],
+      "depends_on": [
+        "def-companion-selection-measure",
+        "def-cloning-score-function",
+        "lem-potential-boundedness",
+        "def-axiom-guaranteed-revival"
+      ]
+    },
+    {
+      "step_number": 3,
+      "title": "Proof of Swarm Revival and Failure Condition",
+      "content": "From steps (1) and (2), all $N$ walkers persist or are cloned. As per the Swarm Update Procedure, all walkers in the intermediate swarm $\\mathcal{S}_{t+0.5}$ are assigned a status of alive. Thus, $|\\mathcal{A}(\\mathcal{S}_{t+0.5})| = N$ is guaranteed.\n\nThe final state $\\mathcal{S}_{t+1}$ is determined by applying the Perturbation Operator and Status Update Operator to $\\mathcal{S}_{t+0.5}$. The only way for the swarm to become extinct is if every walker $i \\in \\{1, \\dots, N\\}$ has its new position $x_i^{(t+1)}$ fall within the invalid domain.\n\nSince the perturbations are independent for each walker, the probability of total swarm failure is the product of the individual probabilities of failure. This isolates the extinction risk to a single, quantifiable event, contingent entirely on the outcomes of the N post-revival random walks. This proves the third property.",
+      "techniques": [
+        "Combining results from steps 1 and 2",
+        "Swarm update procedure application",
+        "Independence of perturbation events",
+        "Product probability for simultaneous failure"
+      ],
+      "depends_on": [
+        "def-swarm-update-procedure",
+        "def-perturbation-operator",
+        "def-status-update-operator"
+      ]
+    }
+  ],
+  "key_insights": [
+    "When $|\\mathcal{A}|=1$, companion selection becomes deterministic (no randomness)",
+    "Survivor comparing to itself yields zero cloning score (deterministic persistence)",
+    "Dead walkers comparing to survivor yields unbounded score ratio",
+    "Axiom of Guaranteed Revival ensures score exceeds maximum threshold",
+    "All walkers revive simultaneously, creating intermediate state with full population",
+    "Extinction risk shifts from gradual attrition to single simultaneous event"
+  ],
+  "techniques_used": [
+    "Case analysis (survivor vs. dead walker)",
+    "Deterministic analysis of random companion selection",
+    "Lower bound analysis on fitness potentials",
+    "Axiom application for threshold guarantee",
+    "Chain of inequalities",
+    "Independence of random perturbations"
+  ],
+  "mathematical_rigor": "complete",
+  "proof_type": "direct",
+  "source_section": "Section 17: The Revival State",
+  "source_document": "01_fragile_gas_framework.md",
+  "source_lines": "4587-4625",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17",
+    "section_name": null,
+    "directive_label": "proof-thm-k1-revival-state",
+    "equation": null,
+    "line_range": [
+      4597,
+      4636
+    ],
+    "url_fragment": null
+  }
+}

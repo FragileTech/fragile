@@ -1,0 +1,26 @@
+{
+  "label": "def-cloning-measure",
+  "name": "Cloning Measure",
+  "entity_type": "definition",
+  "statement_type": "DefinitionBox",
+  "natural_language_statement": "The Cloning Measure is a valid noise measure that defines the probability distribution for the displacement of a newly created walker during the cloning process.",
+  "description": "This defines the source of stochasticity in the cloning step. For a given noise scale δ, the cloning measure Q_δ(x, ⋅) is a probability kernel that describes where a new walker, cloned from a parent at state x, might be placed.",
+  "formal_statement": "For a given cloning noise scale $\\delta > 0$, the Cloning Measure, $\\mathcal{Q}_\\delta(x, \\cdot)$, is a Valid Noise Measure according to Definition 2.3.",
+  "input_objects": [
+    "def-valid-noise-measure"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "delta"
+  ],
+  "relations": [],
+  "proof_status": "n/a",
+  "raw_fallback": {},
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2. Algorithmic Framework",
+    "subsection": "2.3 Noise Measures",
+    "directive_label": "def-cloning-measure"
+  }
+}

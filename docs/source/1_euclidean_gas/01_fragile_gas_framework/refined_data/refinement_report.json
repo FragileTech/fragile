@@ -1,0 +1,211 @@
+{
+  "processed": [
+    {
+      "raw_file": "def-algorithmic-cemetery-extension.json",
+      "label": "obj-algorithmic-cemetery-extension",
+      "name": "Algorithmic Cemetery Extension",
+      "object_type": "space"
+    },
+    {
+      "raw_file": "def-asymmetric-rescale-function.json",
+      "label": "obj-asymmetric-rescale-function",
+      "name": "Smooth Piecewise Rescale Function",
+      "object_type": "function"
+    },
+    {
+      "raw_file": "def-canonical-logistic-rescale-function-example.json",
+      "label": "obj-canonical-logistic-rescale-function-example",
+      "name": "Canonical Logistic Rescale Function",
+      "object_type": "function"
+    },
+    {
+      "raw_file": "def-cemetery-state-measure.json",
+      "label": "obj-cemetery-state-measure",
+      "name": "Cemetery State Measure",
+      "object_type": "measure"
+    },
+    {
+      "raw_file": "def-cloning-measure.json",
+      "label": "obj-cloning-measure",
+      "name": "Cloning Measure",
+      "object_type": "measure"
+    },
+    {
+      "raw_file": "def-cloning-operator-continuity-coeffs-recorrected.json",
+      "label": "obj-cloning-operator-continuity-coeffs-recorrected",
+      "name": "Cloning Operator Continuity Coefficients",
+      "object_type": "operator"
+    },
+    {
+      "raw_file": "def-cloning-probability-function.json",
+      "label": "obj-cloning-probability-function",
+      "name": "Conditional Cloning Probability Function",
+      "object_type": "measure"
+    },
+    {
+      "raw_file": "def-cloning-score-function.json",
+      "label": "obj-cloning-score-function",
+      "name": "Cloning Score Function",
+      "object_type": "function"
+    },
+    {
+      "raw_file": "def-distance-to-cemetery-state.json",
+      "label": "obj-distance-to-cemetery-state",
+      "name": "Distance To Cemetery State",
+      "object_type": "space"
+    },
+    {
+      "raw_file": "def-expected-cloning-action.json",
+      "label": "obj-expected-cloning-action",
+      "name": "Conditional Expected Cloning Action",
+      "object_type": "measure"
+    },
+    {
+      "raw_file": "def-lipschitz-structural-error-coefficients.json",
+      "label": "obj-lipschitz-structural-error-coefficients",
+      "name": "Lipschitz Structural Error Coefficients",
+      "object_type": "set"
+    },
+    {
+      "raw_file": "def-perturbation-measure.json",
+      "label": "obj-perturbation-measure",
+      "name": "Perturbation Measure",
+      "object_type": "measure"
+    },
+    {
+      "raw_file": "def-perturbation-operator.json",
+      "label": "obj-perturbation-operator",
+      "name": "Perturbation Operator",
+      "object_type": "operator"
+    },
+    {
+      "raw_file": "def-raw-value-operator.json",
+      "label": "obj-raw-value-operator",
+      "name": "Raw Value Operator",
+      "object_type": "operator"
+    },
+    {
+      "raw_file": "def-reward-measurement.json",
+      "label": "obj-reward-measurement",
+      "name": "Reward Measurement",
+      "object_type": "measure"
+    },
+    {
+      "raw_file": "def-smoothed-gaussian-measure.json",
+      "label": "obj-smoothed-gaussian-measure",
+      "name": "Smoothed Gaussian Measure",
+      "object_type": "measure"
+    },
+    {
+      "raw_file": "def-standardization-operator-n-dimensional.json",
+      "label": "obj-standardization-operator-n-dimensional",
+      "name": "Standardization Operator N Dimensional",
+      "object_type": "operator"
+    },
+    {
+      "raw_file": "def-statistical-properties-measurement.json",
+      "label": "obj-statistical-properties-measurement",
+      "name": "Statistical Properties Measurement",
+      "object_type": "measure"
+    },
+    {
+      "raw_file": "def-stochastic-threshold-cloning.json",
+      "label": "obj-stochastic-threshold-cloning",
+      "name": "Stochastic Threshold Cloning",
+      "object_type": "measure"
+    },
+    {
+      "raw_file": "def-swarm-aggregation-operator-axiomatic.json",
+      "label": "obj-swarm-aggregation-operator-axiomatic",
+      "name": "Swarm Aggregation Operator Axiomatic",
+      "object_type": "operator"
+    },
+    {
+      "raw_file": "def-total-expected-cloning-action.json",
+      "label": "obj-total-expected-cloning-action",
+      "name": "Total Expected Cloning Action",
+      "object_type": "measure"
+    },
+    {
+      "raw_file": "def-value-error-coefficients.json",
+      "label": "obj-value-error-coefficients",
+      "name": "Value Error Coefficients",
+      "object_type": "operator"
+    },
+    {
+      "raw_file": "raw-def-001.json",
+      "label": "obj-algorithmic-space-generic",
+      "name": "Algorithmic Space",
+      "object_type": "space"
+    },
+    {
+      "raw_file": "raw-def-002.json",
+      "label": "obj-distance-positional-measures",
+      "name": "Distance Between Positional Measures",
+      "object_type": "measure"
+    },
+    {
+      "raw_file": "raw-def-003.json",
+      "label": "obj-alg-distance",
+      "name": "Algorithmic Distance",
+      "object_type": "space"
+    }
+  ],
+  "validation_errors": [
+    {
+      "file": "def-composite-continuity-coeffs-recorrected.json",
+      "label": "obj-composite-continuity-coeffs-recorrected",
+      "errors": [
+        "Missing required field: mathematical_expression"
+      ]
+    },
+    {
+      "file": "def-distance-to-companion-measurement.json",
+      "label": "obj-distance-to-companion-measurement",
+      "errors": [
+        "Missing required field: mathematical_expression"
+      ]
+    },
+    {
+      "file": "def-final-status-change-coeffs.json",
+      "label": "obj-final-status-change-coeffs",
+      "errors": [
+        "Missing required field: mathematical_expression"
+      ]
+    },
+    {
+      "file": "def-perturbation-fluctuation-bounds.json",
+      "label": "obj-perturbation-fluctuation-bounds-reproof",
+      "errors": [
+        "Missing required field: mathematical_expression"
+      ]
+    },
+    {
+      "file": "def-swarm-update-procedure.json",
+      "label": "obj-swarm-update-procedure",
+      "errors": [
+        "Missing required field: mathematical_expression"
+      ]
+    },
+    {
+      "file": "def-w2-output-metric.json",
+      "label": "obj-w2-output-metric",
+      "errors": [
+        "Missing required field: mathematical_expression"
+      ]
+    }
+  ],
+  "statistics": {
+    "total": 31,
+    "successful": 25,
+    "failed": 6,
+    "by_object_type": {
+      "space": 4,
+      "function": 3,
+      "measure": 11,
+      "operator": 6,
+      "set": 1
+    }
+  },
+  "timestamp": "2025-10-28T09:12:42.464178"
+}

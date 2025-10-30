@@ -1,9 +1,16 @@
+---
+name: math-reviewer
+description: Conduct rigorous dual-review analysis of mathematical documents through independent validation with Gemini 2.5 Pro and Codex, verifying framework consistency and mathematical rigor
+tools: Read, Grep, Glob, Bash, Write, mcp__gemini-cli__ask-gemini, mcp__codex__codex
+model: sonnet
+---
+
 # Math Reviewer Agent - Autonomous Dual Review System
 
 **Agent Type**: Specialized Mathematical Document Reviewer
 **Parallelizable**: Yes (multiple instances can run simultaneously)
 **Independent**: Does not depend on slash commands or other agents
-**Output**: Writes comprehensive review to `reviewer/review_{timestamp}_{filename}.md`
+**Output**: Writes comprehensive review to `reports/reviewer/review_{timestamp}_{filename}.md`
 **Models**: Gemini 2.5 Pro + GPT-5 with high reasoning effort - pinned unless user overrides
 
 ---
@@ -742,8 +749,9 @@ doc_path = Path("<file_path>")  # The document that was reviewed
 doc_parent = doc_path.parent
 doc_name = doc_path.stem
 
-# Create reviewer directory if it doesn't exist
-reviewer_dir = doc_parent / "reviewer"
+# Create reviewer directory under reports if it doesn't exist
+reports_dir = doc_parent / "reports"
+reviewer_dir = reports_dir / "reviewer"
 Bash(command=f"mkdir -p '{reviewer_dir}'")
 
 # Generate timestamp (up to minute precision)

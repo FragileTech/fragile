@@ -1,0 +1,21 @@
+{
+  "label": "lem-inequality-toolbox",
+  "name": "Inequality Toolbox",
+  "statement_type": "lemma",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "source": null,
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "output_type": "Property",
+  "natural_language_statement": "Collection of standard inequalities: Triangle inequality, Cauchy-Schwarz, H\u00f6lder, Jensen, subadditivity of fractional powers.",
+  "assumptions": [],
+  "conclusion": "",
+  "uses_definitions": [],
+  "lemma_dag_edges": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

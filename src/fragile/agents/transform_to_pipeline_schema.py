@@ -5,10 +5,10 @@ This script converts the deep dependency extraction JSON to fully compliant Pyda
 """
 
 import json
+from pathlib import Path
 import re
 import sys
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fragile.proofs.core.pipeline_types import (
     Axiom,
@@ -19,7 +19,7 @@ from fragile.proofs.core.pipeline_types import (
 )
 
 
-def extract_math_expression(directive: Dict[str, Any]) -> str:
+def extract_math_expression(directive: dict[str, Any]) -> str:
     """Extract the first substantial mathematical expression from a directive."""
     # Try first_math field
     first_math = directive.get("first_math", "")
@@ -30,12 +30,12 @@ def extract_math_expression(directive: Dict[str, Any]) -> str:
     content = directive.get("content", "")
     if content:
         # Look for $$ blocks
-        math_blocks = re.findall(r'\$\$(.*?)\$\$', content, re.DOTALL)
+        math_blocks = re.findall(r"\$\$(.*?)\$\$", content, re.DOTALL)
         if math_blocks:
             return math_blocks[0].strip()[:500]
 
         # Look for inline math
-        inline_math = re.findall(r'\$(.*?)\$', content)
+        inline_math = re.findall(r"\$(.*?)\$", content)
         if inline_math:
             return inline_math[0].strip()[:500]
 
@@ -47,7 +47,7 @@ def extract_math_expression(directive: Dict[str, Any]) -> str:
     return content[:200] if content else "Mathematical object"
 
 
-def infer_object_type(directive: Dict[str, Any]) -> ObjectType:
+def infer_object_type(directive: dict[str, Any]) -> ObjectType:
     """Infer ObjectType from directive title and content."""
     title = directive.get("title", "").lower()
     content = directive.get("content", "").lower()
@@ -55,19 +55,18 @@ def infer_object_type(directive: Dict[str, Any]) -> ObjectType:
 
     if any(word in combined for word in ["operator", "map", "transformation", "projection"]):
         return ObjectType.OPERATOR
-    elif any(word in combined for word in ["space", "metric", "topology"]):
+    if any(word in combined for word in ["space", "metric", "topology"]):
         return ObjectType.SPACE
-    elif any(word in combined for word in ["distribution", "measure", "probability"]):
+    if any(word in combined for word in ["distribution", "measure", "probability"]):
         return ObjectType.MEASURE
-    elif any(word in combined for word in ["function", "functional"]):
+    if any(word in combined for word in ["function", "functional"]):
         return ObjectType.FUNCTION
-    elif any(word in combined for word in ["field", "vector field"]):
+    if any(word in combined for word in ["field", "vector field"]):
         return ObjectType.FIELD
-    else:
-        return ObjectType.STRUCTURE
+    return ObjectType.STRUCTURE
 
 
-def infer_theorem_output_type(directive: Dict[str, Any]) -> TheoremOutputType:
+def infer_theorem_output_type(directive: dict[str, Any]) -> TheoremOutputType:
     """Infer TheoremOutputType from directive title and content."""
     title = directive.get("title", "").lower()
     content = directive.get("content", "").lower()
@@ -75,29 +74,31 @@ def infer_theorem_output_type(directive: Dict[str, Any]) -> TheoremOutputType:
 
     if any(word in combined for word in ["exists", "existence", "there exists"]):
         return TheoremOutputType.EXISTENCE
-    elif any(word in combined for word in ["unique", "uniqueness"]):
+    if any(word in combined for word in ["unique", "uniqueness"]):
         return TheoremOutputType.UNIQUENESS
-    elif any(word in combined for word in ["continuous", "lipschitz", "smooth", "differentiable", "measurable"]):
+    if any(
+        word in combined
+        for word in ["continuous", "lipschitz", "smooth", "differentiable", "measurable"]
+    ):
         return TheoremOutputType.PROPERTY
-    elif any(word in combined for word in ["converge", "convergence", "limit"]):
+    if any(word in combined for word in ["converge", "convergence", "limit"]):
         return TheoremOutputType.PROPERTY
-    elif any(word in combined for word in ["equivalent", "equivalence", "if and only if"]):
+    if any(word in combined for word in ["equivalent", "equivalence", "if and only if"]):
         return TheoremOutputType.EQUIVALENCE
-    elif any(word in combined for word in ["embedding", "embeds"]):
+    if any(word in combined for word in ["embedding", "embeds"]):
         return TheoremOutputType.EMBEDDING
-    elif any(word in combined for word in ["approximation", "approximate", "error bound"]):
+    if any(word in combined for word in ["approximation", "approximate", "error bound"]):
         return TheoremOutputType.APPROXIMATION
-    elif any(word in combined for word in ["decomposition", "decompose"]):
+    if any(word in combined for word in ["decomposition", "decompose"]):
         return TheoremOutputType.DECOMPOSITION
-    elif any(word in combined for word in ["extension", "extends"]):
+    if any(word in combined for word in ["extension", "extends"]):
         return TheoremOutputType.EXTENSION
-    elif any(word in combined for word in ["reduction", "reduces to"]):
+    if any(word in combined for word in ["reduction", "reduces to"]):
         return TheoremOutputType.REDUCTION
-    else:
-        return TheoremOutputType.PROPERTY  # default
+    return TheoremOutputType.PROPERTY  # default
 
 
-def extract_tags(directive: Dict[str, Any]) -> List[str]:
+def extract_tags(directive: dict[str, Any]) -> list[str]:
     """Extract relevant tags from directive."""
     tags = []
 
@@ -129,18 +130,23 @@ def extract_tags(directive: Dict[str, Any]) -> List[str]:
     return tags
 
 
-def transform_definition_to_object(directive: Dict[str, Any]) -> Optional[MathematicalObject]:
+def transform_definition_to_object(directive: dict[str, Any]) -> MathematicalObject | None:
     """Transform a definition directive to a MathematicalObject."""
     try:
         label = directive["label"]
 
         # Convert def-* to obj-*
-        object_label = label.replace("def-", "obj-", 1) if label.startswith("def-") else f"obj-{label}"
+        object_label = (
+            label.replace("def-", "obj-", 1) if label.startswith("def-") else f"obj-{label}"
+        )
 
         # Extract mathematical expression (REQUIRED)
         math_expr = extract_math_expression(directive)
         if not math_expr:
-            print(f"  Warning: No mathematical expression found for {label}, using title", file=sys.stderr)
+            print(
+                f"  Warning: No mathematical expression found for {label}, using title",
+                file=sys.stderr,
+            )
             math_expr = directive.get("title", "Mathematical object")
 
         return MathematicalObject(
@@ -153,11 +159,14 @@ def transform_definition_to_object(directive: Dict[str, Any]) -> Optional[Mathem
             tags=extract_tags(directive),
         )
     except Exception as e:
-        print(f"  Error transforming definition {directive.get('label', 'unknown')}: {e}", file=sys.stderr)
+        print(
+            f"  Error transforming definition {directive.get('label', 'unknown')}: {e}",
+            file=sys.stderr,
+        )
         return None
 
 
-def transform_axiom(directive: Dict[str, Any]) -> Optional[Axiom]:
+def transform_axiom(directive: dict[str, Any]) -> Axiom | None:
     """Transform an axiom directive to an Axiom."""
     try:
         math_expr = extract_math_expression(directive)
@@ -168,14 +177,16 @@ def transform_axiom(directive: Dict[str, Any]) -> Optional[Axiom]:
             label=directive["label"],
             statement=directive.get("title", "Axiom"),
             mathematical_expression=math_expr,
-            foundational_framework="Fragile Gas Framework"
+            foundational_framework="Fragile Gas Framework",
         )
     except Exception as e:
-        print(f"  Error transforming axiom {directive.get('label', 'unknown')}: {e}", file=sys.stderr)
+        print(
+            f"  Error transforming axiom {directive.get('label', 'unknown')}: {e}", file=sys.stderr
+        )
         return None
 
 
-def transform_theorem_to_box(directive: Dict[str, Any]) -> Optional[TheoremBox]:
+def transform_theorem_to_box(directive: dict[str, Any]) -> TheoremBox | None:
     """Transform a theorem/lemma/proposition to a TheoremBox."""
     try:
         label = directive["label"]
@@ -216,8 +227,8 @@ def transform_theorem_to_box(directive: Dict[str, Any]) -> Optional[TheoremBox]:
                 input_axioms.append(target)
 
         # Remove duplicates and filter invalid labels
-        input_objects = list(set([obj for obj in input_objects if obj.startswith("obj-")]))
-        input_axioms = list(set([ax for ax in input_axioms if ax.startswith("axiom-")]))
+        input_objects = list({obj for obj in input_objects if obj.startswith("obj-")})
+        input_axioms = list({ax for ax in input_axioms if ax.startswith("axiom-")})
 
         # Get mathematical statement
         math_statement = directive.get("content", "")
@@ -239,11 +250,17 @@ def transform_theorem_to_box(directive: Dict[str, Any]) -> Optional[TheoremBox]:
             output_type=infer_theorem_output_type(directive),
             properties_added=[],  # Properties would be added during proof execution
             relations_established=[],
-            mathematical_statement=math_statement[:1000] if math_statement else directive.get("title", ""),
+            mathematical_statement=math_statement[:1000]
+            if math_statement
+            else directive.get("title", ""),
         )
     except Exception as e:
-        print(f"  Error transforming theorem {directive.get('label', 'unknown')}: {e}", file=sys.stderr)
+        print(
+            f"  Error transforming theorem {directive.get('label', 'unknown')}: {e}",
+            file=sys.stderr,
+        )
         import traceback
+
         traceback.print_exc()
         return None
 
@@ -256,7 +273,7 @@ def transform_extraction_to_pipeline_schema(extraction_file: Path, output_file: 
         extraction_file: Path to deep_dependency_analysis.json
         output_file: Path to save pipeline-compatible JSON
     """
-    with open(extraction_file) as f:
+    with open(extraction_file, encoding="utf-8") as f:
         data = json.load(f)
 
     # Handle both dict and list formats for directives
@@ -305,7 +322,7 @@ def transform_extraction_to_pipeline_schema(extraction_file: Path, output_file: 
             if prop:
                 propositions.append(prop.model_dump())
 
-        elif dtype in ["algorithm", "alg"]:
+        elif dtype in {"algorithm", "alg"}:
             # Algorithms are stored but not part of theorem pipeline
             algorithms.append({
                 "label": label,
@@ -347,16 +364,20 @@ def transform_extraction_to_pipeline_schema(extraction_file: Path, output_file: 
         "metadata": {
             "source_extraction": str(extraction_file),
             "total_lines": data.get("metadata", {}).get("total_lines", 0),
-        }
+        },
     }
 
     # Save to output file
-    with open(output_file, 'w') as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(pipeline_data, f, indent=2)
 
-    print(f"✓ Transformed {len(directives)} directives from {extraction_file.parent.parent.name}/{extraction_file.parent.name}")
-    print(f"    Objects: {len(objects)}, Axioms: {len(axioms)}, " +
-          f"Theorems: {len(theorems)}, Lemmas: {len(lemmas)}, Props: {len(propositions)}")
+    print(
+        f"✓ Transformed {len(directives)} directives from {extraction_file.parent.parent.name}/{extraction_file.parent.name}"
+    )
+    print(
+        f"    Objects: {len(objects)}, Axioms: {len(axioms)}, "
+        + f"Theorems: {len(theorems)}, Lemmas: {len(lemmas)}, Props: {len(propositions)}"
+    )
 
     return pipeline_data
 
@@ -397,19 +418,20 @@ def main():
             except Exception as e:
                 print(f"✗ Error processing {doc_path}: {e}", file=sys.stderr)
                 import traceback
+
                 traceback.print_exc()
         else:
             print(f"✗ Skipping {doc_path}: extraction file not found")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PIPELINE SCHEMA TRANSFORMATION COMPLETE")
-    print("="*70)
+    print("=" * 70)
     print(f"Total mathematical objects: {all_stats['total_objects']}")
     print(f"Total axioms: {all_stats['total_axioms']}")
     print(f"Total theorems: {all_stats['total_theorems']}")
     print(f"Total lemmas: {all_stats['total_lemmas']}")
     print(f"Total propositions: {all_stats['total_propositions']}")
-    print(f"\nAll files saved as: docs/source/.../data/pipeline_schema.json")
+    print("\nAll files saved as: docs/source/.../data/pipeline_schema.json")
 
 
 if __name__ == "__main__":

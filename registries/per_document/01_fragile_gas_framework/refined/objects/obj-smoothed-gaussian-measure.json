@@ -1,0 +1,28 @@
+{
+  "label": "obj-smoothed-gaussian-measure",
+  "name": "Smoothed Gaussian Measure",
+  "mathematical_expression": "\\tilde{\\rho}_{\\mathcal{S}, \\ell}(y) := \\frac{1}{|\\mathcal{A}(\\mathcal{S})|} \\sum_{i \\in \\mathcal{A}(\\mathcal{S})} K_\\ell(y, \\varphi(x_i))",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "gaussian",
+    "measure",
+    "measure-theory",
+    "metric",
+    "particle-system",
+    "smoothed"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§7",
+    "directive_label": "def-smoothed-gaussian-measure",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-smoothed-gaussian-measure"
+}

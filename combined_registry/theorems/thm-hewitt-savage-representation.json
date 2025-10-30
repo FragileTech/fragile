@@ -2,9 +2,17 @@
   "label": "thm-hewitt-savage-representation",
   "name": "Mixture Representation (Hewitt-Savage)",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "10_qsd_exchangeability_theory",
+  "source": {
+    "document_id": "10_qsd_exchangeability_theory",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/10_qsd_exchangeability_theory.md",
+    "section": null,
+    "directive_label": "thm-hewitt-savage-representation",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-hewitt-savage-representation"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -14,26 +22,22 @@
   "input_parameters": [
     "param-N"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-qsd": [
-      "prop-exchangeability"
+      "attr-exchangeability"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Existence",
-  "properties_added": [
-    {
-      "label": "prop-de-finetti-mixture",
-      "expression": "π_N = ∫ μ^{⊗N} d𝒬_N(μ)",
-      "object_label": "obj-qsd",
-      "established_by": "thm-hewitt-savage-representation",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

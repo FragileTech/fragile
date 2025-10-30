@@ -1,0 +1,817 @@
+=== FILE: obj-alg-distance.json ===
+{
+  "label": "obj-alg-distance",
+  "name": "Algorithmic Distance",
+  "mathematical_expression": "\\boxed{d_{\\text{alg}",
+  "object_type": "space",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "distance",
+    "measure-theory",
+    "metric",
+    "particle-system"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-alg-distance",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-alg-distance"
+}
+=== FILE: obj-algorithmic-cemetery-extension.json ===
+{
+  "label": "obj-algorithmic-cemetery-extension",
+  "name": "Algorithmic Cemetery Extension",
+  "mathematical_expression": "d_\\dagger(y_1,y_2)=d_{\\mathcal{Y}}(y_1,y_2),\\quad d_\\dagger(y,\\dagger)=D_{\\mathrm{valid}}\\quad \\text{for all }y\\in\\mathcal{Y}.",
+  "object_type": "space",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "algorithmic",
+    "cemetery",
+    "extension",
+    "metric",
+    "particle-system"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§7",
+    "directive_label": "def-algorithmic-cemetery-extension",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-algorithmic-cemetery-extension"
+}
+=== FILE: obj-algorithmic-space-generic.json ===
+{
+  "label": "obj-algorithmic-space-generic",
+  "name": "Algorithmic Space",
+  "mathematical_expression": "(\\mathcal{Y}, d_{\\mathcal{Y}})",
+  "object_type": "space",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "algorithmic",
+    "generic",
+    "metric",
+    "space"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-algorithmic-space-generic",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-algorithmic-space-generic"
+}
+=== FILE: obj-asymmetric-rescale-function.json ===
+{
+  "label": "obj-asymmetric-rescale-function",
+  "name": "Smooth Piecewise Rescale Function",
+  "mathematical_expression": "g_A(z) :=",
+  "object_type": "function",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "asymmetric",
+    "continuity",
+    "function",
+    "rescale",
+    "standardization"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-asymmetric-rescale-function",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-asymmetric-rescale-function"
+}
+=== FILE: obj-canonical-logistic-rescale-function-example.json ===
+{
+  "label": "obj-canonical-logistic-rescale-function-example",
+  "name": "Canonical Logistic Rescale Function",
+  "mathematical_expression": "g_A(z) := \\frac{2}{1 + e^{-z}}",
+  "object_type": "function",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "canonical",
+    "example",
+    "function",
+    "logistic",
+    "rescale",
+    "standardization"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-canonical-logistic-rescale-function-example",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-canonical-logistic-rescale-function-example"
+}
+=== FILE: obj-cemetery-state-measure.json ===
+{
+  "label": "obj-cemetery-state-measure",
+  "name": "Cemetery State Measure",
+  "mathematical_expression": "\\mathcal{S}",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "cemetery",
+    "measure",
+    "measure-theory",
+    "metric",
+    "particle-system",
+    "state"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§7",
+    "directive_label": "def-cemetery-state-measure",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-cemetery-state-measure"
+}
+=== FILE: obj-cloning-measure.json ===
+{
+  "label": "obj-cloning-measure",
+  "name": "Cloning Measure",
+  "mathematical_expression": "\\delta > 0",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "cloning",
+    "measure",
+    "measure-theory",
+    "particle-system",
+    "stochastic"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-cloning-measure",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-cloning-measure"
+}
+=== FILE: obj-cloning-operator-continuity-coeffs-recorrected.json ===
+{
+  "label": "obj-cloning-operator-continuity-coeffs-recorrected",
+  "name": "Cloning Operator Continuity Coefficients",
+  "mathematical_expression": "C_{\\text{clone},L}(\\mathcal{S}_1, \\mathcal{S}_2)",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "cloning",
+    "coeffs",
+    "continuity",
+    "measure-theory",
+    "metric",
+    "operator",
+    "particle-system",
+    "recorrected",
+    "stochastic"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.8.1",
+    "directive_label": "def-cloning-operator-continuity-coeffs-recorrected",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-cloning-operator-continuity-coeffs-recorrected"
+}
+=== FILE: obj-cloning-probability-function.json ===
+{
+  "label": "obj-cloning-probability-function",
+  "name": "Conditional Cloning Probability Function",
+  "mathematical_expression": "\\pi(v_c, v_i) := P(S(v_c, v_i) > T_{\\text{clone}}) = \\min\\left(1, \\max\\left(0, \\frac{S(v_c, v_i)}{p_{\\max}}\\right)\\right)",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "cloning",
+    "function",
+    "measure-theory",
+    "particle-system",
+    "probability"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.2",
+    "directive_label": "def-cloning-probability-function",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-cloning-probability-function"
+}
+=== FILE: obj-cloning-score-function.json ===
+{
+  "label": "obj-cloning-score-function",
+  "name": "Cloning Score Function",
+  "mathematical_expression": "S(v_c, v_i) := \\frac{v_c - v_i}{v_i + \\varepsilon}",
+  "object_type": "function",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "cloning",
+    "function",
+    "particle-system",
+    "score"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.1.1",
+    "directive_label": "def-cloning-score-function",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-cloning-score-function"
+}
+=== FILE: obj-composite-continuity-coeffs-recorrected.json ===
+{
+  "label": "obj-composite-continuity-coeffs-recorrected",
+  "name": "Composite Continuity Coefficients",
+  "mathematical_expression": "C_{\\text{comp},L}(\\mathcal{S}_1, \\mathcal{S}_2), C_{\\text{comp},H}(\\mathcal{S}_1, \\mathcal{S}_2), K_{\\text{comp}}(\\mathcal{S}_1, \\mathcal{S}_2)",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "composite",
+    "continuity",
+    "coefficients",
+    "operator"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "18",
+    "directive_label": "def-composite-continuity-coeffs-recorrected",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-composite-continuity-coeffs-recorrected"
+}
+=== FILE: obj-distance-positional-measures.json ===
+{
+  "label": "obj-distance-positional-measures",
+  "name": "Distance Between Positional Measures",
+  "mathematical_expression": "d(\\varphi_* \\delta_{x_i}, \\varphi_* \\delta_{x_j}) := W_1(\\delta_{\\varphi(x_i)}, \\delta_{\\varphi(x_j)})",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "distance",
+    "measure-theory",
+    "measures",
+    "metric",
+    "particle-system",
+    "positional"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-distance-positional-measures",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-distance-positional-measures"
+}
+=== FILE: obj-distance-to-cemetery-state.json ===
+{
+  "label": "obj-distance-to-cemetery-state",
+  "name": "Distance To Cemetery State",
+  "mathematical_expression": "W_p(\\nu, \\nu_{\\emptyset}) := D_{\\mathrm{valid}} \\quad \\text{and} \\quad W_p(\\nu_{\\emptyset}, \\nu_{\\emptyset}) := 0",
+  "object_type": "space",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "cemetery",
+    "distance",
+    "measure-theory",
+    "metric",
+    "particle-system",
+    "state"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§7",
+    "directive_label": "def-distance-to-cemetery-state",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-distance-to-cemetery-state"
+}
+=== FILE: obj-distance-to-companion-measurement.json ===
+{
+  "label": "obj-distance-to-companion-measurement",
+  "name": "Distance-to-Companion Measurement",
+  "mathematical_expression": "d_i := d_{\\text{alg}}(x_i, x_{c_{\\text{pot}}(i)}) \\quad \\text{where} \\quad c_{\\text{pot}}(i) \\sim \\mathbb{C}_i(\\cdot)",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "distance",
+    "companion",
+    "measurement",
+    "stochastic",
+    "operator"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-distance-to-companion-measurement",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-distance-to-companion-measurement"
+}
+=== FILE: obj-expected-cloning-action.json ===
+{
+  "label": "obj-expected-cloning-action",
+  "name": "Conditional Expected Cloning Action",
+  "mathematical_expression": "P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i := \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S})} [\\pi(V_c, V_i)]",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "action",
+    "cloning",
+    "expected",
+    "measure-theory",
+    "particle-system"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.3",
+    "directive_label": "def-expected-cloning-action",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-expected-cloning-action"
+}
+=== FILE: obj-final-status-change-coeffs.json ===
+{
+  "label": "obj-final-status-change-coeffs",
+  "name": "Final Status Change Bound Coefficients",
+  "mathematical_expression": "C_{\\text{status},L}(\\mathcal{S}_1, \\mathcal{S}_2), K_{\\text{status}}(\\mathcal{S}_1, \\mathcal{S}_2)",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "status",
+    "change",
+    "coefficients",
+    "continuity"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "18",
+    "directive_label": "def-final-status-change-coeffs",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-final-status-change-coeffs"
+}
+=== FILE: obj-lipschitz-structural-error-coefficients.json ===
+{
+  "label": "obj-lipschitz-structural-error-coefficients",
+  "name": "Lipschitz Structural Error Coefficients",
+  "mathematical_expression": "\\sigma'_{\\min,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}",
+  "object_type": "set",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "aggregation",
+    "coefficients",
+    "continuity",
+    "error",
+    "lipschitz",
+    "particle-system",
+    "structural"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-lipschitz-structural-error-coefficients",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-lipschitz-structural-error-coefficients"
+}
+=== FILE: obj-perturbation-fluctuation-bounds-reproof.json ===
+{
+  "label": "obj-perturbation-fluctuation-bounds-reproof",
+  "name": "Perturbation Fluctuation Bounds",
+  "mathematical_expression": "B_M(N) := N \\cdot M_{\\text{pert}}^2, \\quad B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "perturbation",
+    "bound",
+    "concentration",
+    "fluctuation"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "14. The Perturbation Operator",
+    "directive_label": "def-perturbation-fluctuation-bounds-reproof",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-perturbation-fluctuation-bounds-reproof"
+}
+=== FILE: obj-perturbation-measure.json ===
+{
+  "label": "obj-perturbation-measure",
+  "name": "Perturbation Measure",
+  "mathematical_expression": "\\sigma > 0",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "measure",
+    "measure-theory",
+    "perturbation",
+    "stochastic"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-perturbation-measure",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-perturbation-measure"
+}
+=== FILE: obj-perturbation-operator.json ===
+{
+  "label": "obj-perturbation-operator",
+  "name": "Perturbation Operator",
+  "mathematical_expression": "\\Psi_{\\text{pert}}: \\Sigma_N \\to \\mathcal{P}(\\Sigma_N)",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "operator",
+    "particle-system",
+    "perturbation"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-perturbation-operator",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-perturbation-operator"
+}
+=== FILE: obj-raw-value-operator.json ===
+{
+  "label": "obj-raw-value-operator",
+  "name": "Raw Value Operator",
+  "mathematical_expression": "V",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "measure-theory",
+    "metric",
+    "operator",
+    "particle-system",
+    "stochastic",
+    "value"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-raw-value-operator",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-raw-value-operator"
+}
+=== FILE: obj-reward-measurement.json ===
+{
+  "label": "obj-reward-measurement",
+  "name": "Reward Measurement",
+  "mathematical_expression": "The reward value r_i for walker i at position x_i is the result of integrating the global Reward Fun",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "measure-theory",
+    "measurement",
+    "particle-system",
+    "reward"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-reward-measurement",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-reward-measurement"
+}
+=== FILE: obj-smoothed-gaussian-measure.json ===
+{
+  "label": "obj-smoothed-gaussian-measure",
+  "name": "Smoothed Gaussian Measure",
+  "mathematical_expression": "\\tilde{\\rho}_{\\mathcal{S}, \\ell}(y) := \\frac{1}{|\\mathcal{A}(\\mathcal{S})|} \\sum_{i \\in \\mathcal{A}(\\mathcal{S})} K_\\ell(y, \\varphi(x_i))",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "gaussian",
+    "measure",
+    "measure-theory",
+    "metric",
+    "particle-system",
+    "smoothed"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§7",
+    "directive_label": "def-smoothed-gaussian-measure",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-smoothed-gaussian-measure"
+}
+=== FILE: obj-standardization-operator-n-dimensional.json ===
+{
+  "label": "obj-standardization-operator-n-dimensional",
+  "name": "Standardization Operator N Dimensional",
+  "mathematical_expression": "z",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "aggregation",
+    "dimensional",
+    "measure-theory",
+    "operator",
+    "particle-system",
+    "standardization",
+    "stochastic"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-standardization-operator-n-dimensional",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-standardization-operator-n-dimensional"
+}
+=== FILE: obj-statistical-properties-measurement.json ===
+{
+  "label": "obj-statistical-properties-measurement",
+  "name": "Statistical Properties Measurement",
+  "mathematical_expression": "\\sigma'_{\\text{reg}}(V) := \\sqrt{V + \\sigma'^2_{\\min}}",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "aggregation",
+    "measure-theory",
+    "measurement",
+    "operator",
+    "particle-system",
+    "properties",
+    "statistical"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-statistical-properties-measurement",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-statistical-properties-measurement"
+}
+=== FILE: obj-stochastic-threshold-cloning.json ===
+{
+  "label": "obj-stochastic-threshold-cloning",
+  "name": "Stochastic Threshold Cloning",
+  "mathematical_expression": "S_i := S(v_c, v_i)",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "cloning",
+    "measure-theory",
+    "particle-system",
+    "stochastic",
+    "threshold"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.1.2",
+    "directive_label": "def-stochastic-threshold-cloning",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-stochastic-threshold-cloning"
+}
+=== FILE: obj-swarm-aggregation-operator-axiomatic.json ===
+{
+  "label": "obj-swarm-aggregation-operator-axiomatic",
+  "name": "Swarm Aggregation Operator Axiomatic",
+  "mathematical_expression": "|\\mu(\\mathcal{S}, \\mathbf{v}_1) - \\mu(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\mu,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "aggregation",
+    "axiomatic",
+    "continuity",
+    "measure-theory",
+    "operator",
+    "particle-system",
+    "swarm"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§7",
+    "directive_label": "def-swarm-aggregation-operator-axiomatic",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-swarm-aggregation-operator-axiomatic"
+}
+=== FILE: obj-swarm-update-procedure.json ===
+{
+  "label": "obj-swarm-update-procedure",
+  "name": "Swarm Update Procedure",
+  "mathematical_expression": "\\mathcal{S}_{t+1} = \\Psi_{\\text{update}}(\\mathcal{S}_t)",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "swarm",
+    "update",
+    "procedure",
+    "operator"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "18",
+    "directive_label": "def-swarm-update-procedure",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-swarm-update-procedure"
+}
+=== FILE: obj-total-expected-cloning-action.json ===
+{
+  "label": "obj-total-expected-cloning-action",
+  "name": "Total Expected Cloning Action",
+  "mathematical_expression": "\\overline{P}_{\\text{clone}}(\\mathcal{S})_i := \\mathbb{E}_{\\mathbf{d} \\sim \\mathbf{d}(\\mathcal{S})} \\left[ P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V}(\\mathbf{r}(\\mathcal{S}), \\mathbf{d}))_i \\right]",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "action",
+    "cloning",
+    "continuity",
+    "expected",
+    "measure-theory",
+    "metric",
+    "particle-system",
+    "total"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.1",
+    "directive_label": "def-total-expected-cloning-action",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-total-expected-cloning-action"
+}
+=== FILE: obj-value-error-coefficients.json ===
+{
+  "label": "obj-value-error-coefficients",
+  "name": "Value Error Coefficients",
+  "mathematical_expression": "C_{V,\\text{direct}} := \\frac{1}{\\sigma'^2_{\\min,\\text{bound}}}",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "aggregation",
+    "coefficients",
+    "continuity",
+    "error",
+    "operator",
+    "particle-system",
+    "value"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-value-error-coefficients",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-value-error-coefficients"
+}
+=== FILE: obj-w2-output-metric.json ===
+{
+  "label": "obj-w2-output-metric",
+  "name": "Wasserstein-2 on the output space (quotient)",
+  "mathematical_expression": "W_2(\\mu_{\\mathcal{S}_1}, \\mu_{\\mathcal{S}_2})",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "wasserstein",
+    "metric",
+    "measure",
+    "output"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "18",
+    "directive_label": "def-w2-output-metric",
+    "line_range": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-w2-output-metric"
+}

@@ -111,7 +111,7 @@ def build_networkx_graph(document: dict[str, Any]) -> nx.DiGraph:
                 "failure_modes": directive.get("failure_modes", []),
             })
 
-        elif directive_type in ["theorem", "lemma", "proposition"]:
+        elif directive_type in {"theorem", "lemma", "proposition"}:
             node_attrs.update({
                 "importance": directive.get("importance", ""),
                 "hypotheses": directive.get("hypotheses", []),
@@ -150,7 +150,7 @@ def build_networkx_graph(document: dict[str, Any]) -> nx.DiGraph:
                 "pseudocode": directive.get("pseudocode", ""),
             })
 
-        elif directive_type in ["remark", "observation"]:
+        elif directive_type in {"remark", "observation"}:
             node_attrs.update({
                 "relates_to": directive.get("relates_to", []),
                 "significance": directive.get("significance", ""),
@@ -231,7 +231,7 @@ def compute_statistics(G: nx.DiGraph, document: dict[str, Any]) -> dict[str, Any
             stats["by_category"][category] = stats["by_category"].get(category, 0) + 1
 
         # Count by importance (for theorems/lemmas/propositions)
-        if node_type in ["theorem", "lemma", "proposition"]:
+        if node_type in {"theorem", "lemma", "proposition"}:
             importance = attrs.get("importance", "unspecified")
             stats["by_importance"][importance] = stats["by_importance"].get(importance, 0) + 1
 
@@ -270,17 +270,14 @@ def filter_graph(
 
     # Filter by type
     if types is not None and len(types) > 0:
-        nodes_to_include = {
-            n for n in nodes_to_include if G.nodes[n].get("type") in types
-        }
+        nodes_to_include = {n for n in nodes_to_include if G.nodes[n].get("type") in types}
 
     # Filter by category (for axioms)
     if categories is not None and len(categories) > 0:
         nodes_to_include = {
             n
             for n in nodes_to_include
-            if G.nodes[n].get("type") == "axiom"
-            and G.nodes[n].get("category") in categories
+            if G.nodes[n].get("type") == "axiom" and G.nodes[n].get("category") in categories
         }
 
     # Filter by importance (for theorems/lemmas/propositions)
@@ -288,16 +285,14 @@ def filter_graph(
         nodes_to_include = {
             n
             for n in nodes_to_include
-            if G.nodes[n].get("type") in ["theorem", "lemma", "proposition"]
+            if G.nodes[n].get("type") in {"theorem", "lemma", "proposition"}
             and G.nodes[n].get("importance") in importance_levels
         }
 
     # Filter by tags (include if node has ANY of the specified tags)
     if tags is not None and len(tags) > 0:
         nodes_to_include = {
-            n
-            for n in nodes_to_include
-            if any(tag in G.nodes[n].get("tags", []) for tag in tags)
+            n for n in nodes_to_include if any(tag in G.nodes[n].get("tags", []) for tag in tags)
         }
 
     # Include dependencies if requested
@@ -344,19 +339,18 @@ def get_all_unique_values(G: nx.DiGraph) -> dict[str, list[str]]:
             if category:
                 categories.add(category)
 
-        if node_type in ["theorem", "lemma", "proposition"]:
+        if node_type in {"theorem", "lemma", "proposition"}:
             importance = attrs.get("importance")
             if importance:
                 importance_levels.add(importance)
 
-        for tag in attrs.get("tags", []):
-            tags.add(tag)
+        tags.update(attrs.get("tags", []))
 
     return {
-        "types": sorted(list(types)),
-        "categories": sorted(list(categories)),
-        "importance_levels": sorted(list(importance_levels)),
-        "tags": sorted(list(tags)),
+        "types": sorted(types),
+        "categories": sorted(categories),
+        "importance_levels": sorted(importance_levels),
+        "tags": sorted(tags),
     }
 
 
@@ -388,8 +382,10 @@ def graph_to_dataframes(G: nx.DiGraph) -> tuple[pd.DataFrame, pd.DataFrame]:
         edge_dict = {"source": source, "target": target, **attrs}
         edges_data.append(edge_dict)
 
-    edges_df = pd.DataFrame(edges_data) if edges_data else pd.DataFrame(
-        columns=["source", "target", "relationship"]
+    edges_df = (
+        pd.DataFrame(edges_data)
+        if edges_data
+        else pd.DataFrame(columns=["source", "target", "relationship"])
     )
 
     return nodes_df, edges_df

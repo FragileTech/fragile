@@ -1,0 +1,26 @@
+{
+  "label": "obj-w2-output-metric",
+  "name": "Wasserstein-2 on the output space (quotient)",
+  "mathematical_expression": "W_2(\\mu_{\\mathcal{S}_1}, \\mu_{\\mathcal{S}_2})",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "wasserstein",
+    "metric",
+    "measure",
+    "output"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "18",
+    "directive_label": "def-w2-output-metric",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-w2-output-metric"
+}

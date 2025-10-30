@@ -2,164 +2,26 @@
   "label": "lem-sasaki-direct-shift-bound-sq",
   "name": "Bound on the Squared Direct Shift Component",
   "statement_type": "lemma",
-  "source": {
-    "document_id": "02_euclidean_gas",
-    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-    "section": "§2.3.4.2",
-    "directive_label": "lem-sasaki-direct-shift-bound-sq",
-    "line_range": [1421, 1467]
-  },
-  "input_objects": [
-    "obj-swarm-state",
-    "obj-raw-value-vector",
-    "obj-standardization-operator",
-    "obj-patched-std-dev-function",
-    "obj-regularized-standard-deviation"
-  ],
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
   "input_axioms": [],
-  "input_parameters": [
-    "param-N",
-    "param-epsilon-std",
-    "param-kappa-var-min"
-  ],
-  "attributes_required": {
-    "obj-swarm-state": [
-      "attr-fixed-configuration",
-      "attr-has-alive-set"
-    ],
-    "obj-raw-value-vector": [
-      "attr-defined-for-alive-set",
-      "attr-euclidean-norm-defined"
-    ],
-    "obj-patched-std-dev-function": [
-      "attr-strictly-positive",
-      "attr-uniformly-bounded-below"
-    ],
-    "obj-regularized-standard-deviation": [
-      "attr-scalar-valued"
-    ],
-    "obj-standardization-operator": [
-      "attr-produces-z-scores",
-      "attr-depends-on-std-dev"
-    ]
-  },
+  "input_parameters": [],
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
-  "output_type": "Relation",
-  "attributes_added": [
-    {
-      "label": "attr-direct-shift-squared-bound",
-      "expression": "\\|\\Delta_{\\text{direct}}\\|_2^2 \\le \\frac{1}{\\sigma_{\\min,\\mathrm{patch}}^2} \\cdot \\|\\mathbf r_1 - \\mathbf r_2\\|_2^2",
-      "object_label": "obj-standardization-operator",
-      "established_by": "lem-sasaki-direct-shift-bound-sq",
-      "can_be_refined": true,
-      "refinements": []
-    }
-  ],
-  "relations_established": [
-    {
-      "label": "rel-direct-shift-raw-value-difference-approximation",
-      "relationship_type": "approximation",
-      "bidirectional": false,
-      "source_object": "obj-raw-value-vector",
-      "target_object": "obj-standardization-operator",
-      "established_by": "lem-sasaki-direct-shift-bound-sq",
-      "expression": "\\|\\Delta_{\\text{direct}}\\|_2^2 \\le C_{V,\\mathrm{direct}}^{\\mathrm{sq}} \\cdot \\|\\mathbf r_1 - \\mathbf r_2\\|_2^2",
-      "properties": [
-        {
-          "label": "error-coefficient",
-          "expression": "C_{V,\\mathrm{direct}}^{\\mathrm{sq}} = \\frac{1}{\\sigma_{\\min,\\mathrm{patch}}^2}",
-          "description": "Squared error coefficient for direct shift component in standardization operator"
-        },
-        {
-          "label": "independence-from-k",
-          "expression": "\\text{Independent of } k",
-          "description": "Error bound is independent of number of alive walkers"
-        },
-        {
-          "label": "dependence-on-sigma-min",
-          "expression": "\\text{Inverse quadratic in } \\sigma_{\\min,\\mathrm{patch}}",
-          "description": "Error grows quadratically as minimum standard deviation decreases"
-        },
-        {
-          "label": "sigma-min-definition",
-          "expression": "\\sigma_{\\min,\\mathrm{patch}} = \\sqrt{\\kappa_{\\mathrm{var,min}}+\\varepsilon_{\\mathrm{std}}^2}",
-          "description": "Uniform lower bound from regularized standard deviation"
-        }
-      ],
-      "tags": [
-        "standardization",
-        "continuity",
-        "sasaki-geometry",
-        "value-error"
-      ]
-    }
-  ],
-  "theorem_statement": "Let $\\mathcal S$ be a fixed swarm state. Let $\\mathbf r_1$ and $\\mathbf r_2$ be two raw value vectors for the alive set. The squared Euclidean norm of the direct shift error component, $\\Delta_{\\text{direct}} = (\\mathbf r_1 - \\mathbf r_2) / \\sigma'_1$, is bounded as follows:\n\n$$\n\\|\\Delta_{\\text{direct}}\\|_2^2 \\le \\frac{1}{\\sigma_{\\min,\\mathrm{patch}}^2} \\cdot \\|\\mathbf r_1 - \\mathbf r_2\\|_2^2\n$$\n\nwhere $\\sigma_{\\min,\\mathrm{patch}} := \\sqrt{\\kappa_{\\mathrm{var,min}}+\\varepsilon_{\\mathrm{std}}^2}$ is the uniform lower bound from the regularized standard deviation.",
-  "proof_sketch": {
-    "strategy": "Direct application of the definition of the direct shift component combined with the uniform lower bound on the regularized standard deviation. The proof exploits the scalar factorization of norms.",
-    "key_steps": [
-      {
-        "step_number": 1,
-        "description": "Start with the definition of squared L2-norm of direct shift component",
-        "expression": "\\|\\Delta_{\\text{direct}}\\|_2^2 = \\left\\| \\frac{\\mathbf r_1 - \\mathbf r_2}{\\sigma'_1} \\right\\|_2^2"
-      },
-      {
-        "step_number": 2,
-        "description": "Factor out the scalar term (regularized standard deviation)",
-        "expression": "\\|\\Delta_{\\text{direct}}\\|_2^2 = \\frac{1}{(\\sigma'_1)^2} \\cdot \\|\\mathbf r_1 - \\mathbf r_2\\|_2^2",
-        "justification": "Since $\\sigma'_1$ is a scalar for the fixed swarm state and value vector $\\mathbf r_1$, it factors out of the norm"
-      },
-      {
-        "step_number": 3,
-        "description": "Apply the uniform lower bound on regularized standard deviation",
-        "expression": "\\sigma'_1 \\ge \\sigma_{\\min,\\mathrm{patch}} > 0",
-        "justification": "By construction in def-statistical-properties-measurement, the regularized standard deviation is strictly positive and uniformly bounded below"
-      },
-      {
-        "step_number": 4,
-        "description": "Invert the inequality to bound the reciprocal",
-        "expression": "\\frac{1}{(\\sigma'_1)^2} \\le \\frac{1}{\\sigma_{\\min,\\mathrm{patch}}^2}"
-      },
-      {
-        "step_number": 5,
-        "description": "Combine to obtain the final bound",
-        "expression": "\\|\\Delta_{\\text{direct}}\\|_2^2 \\le \\frac{1}{\\sigma_{\\min,\\mathrm{patch}}^2} \\cdot \\|\\mathbf r_1 - \\mathbf r_2\\|_2^2"
-      }
-    ],
-    "dependencies": {
-      "lemmas_used": [],
-      "properties_invoked": [
-        "attr-strictly-positive",
-        "attr-uniformly-bounded-below",
-        "attr-scalar-valued"
-      ],
-      "techniques": [
-        "Scalar factorization of norms",
-        "Uniform lower bound exploitation",
-        "Reciprocal inequality"
-      ]
-    }
-  },
-  "mathematical_context": {
-    "role_in_framework": "First component in three-part decomposition of standardization error (alongside mean shift and denominator shift). Quantifies the direct effect of raw value changes on standardized scores when mean and standard deviation are held at their initial values.",
-    "key_insight": "The direct shift error has the simplest structure and best scaling among the three components: it is independent of the number of alive walkers k and has only inverse quadratic dependence on sigma_min (vs. quartic for denominator shift).",
-    "applications": [
-      "Sasaki metric continuity proof",
-      "Standardization operator stability analysis",
-      "Value error decomposition in lem-sasaki-value-error-decomposition",
-      "Error propagation in cloning operator"
-    ]
-  },
-  "tags": [
-    "euclidean-gas",
-    "standardization",
-    "continuity",
-    "sasaki-geometry",
-    "value-error",
-    "direct-shift",
-    "lipschitz",
-    "error-bound"
-  ]
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

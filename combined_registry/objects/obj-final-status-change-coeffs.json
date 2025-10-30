@@ -1,0 +1,27 @@
+{
+  "label": "obj-final-status-change-coeffs",
+  "name": "Final Status Change Bound Coefficients",
+  "mathematical_expression": "C_{\\text{status},L}(\\mathcal{S}_1, \\mathcal{S}_2), K_{\\text{status}}(\\mathcal{S}_1, \\mathcal{S}_2)",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "status",
+    "change",
+    "coefficients",
+    "continuity"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "18",
+    "section_name": null,
+    "directive_label": "def-final-status-change-coeffs",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-final-status-change-coeffs"
+}

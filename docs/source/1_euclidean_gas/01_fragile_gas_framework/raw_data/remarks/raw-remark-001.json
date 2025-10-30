@@ -1,0 +1,19 @@
+{
+  "temp_id": "raw-remark-001",
+  "remark_type": "note",
+  "full_text": "The name \"Fragile\" reflects the algorithm's fundamental property: walkers are fragile entities that can die (status $s=0$) when they violate environmental constraints. This fragility is not a weakness but the *source of adaptation*. Dead walkers mark dangerous regions, and the cloning operator reallocates computational resources away from these regions toward successful paths. The framework proves this fragile-plus-revival architecture is mathematically sound and guarantees long-term viability.",
+  "source_section": "§1-introduction",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "1",
+    "section_name": null,
+    "directive_label": null,
+    "equation": null,
+    "line_range": [
+      49,
+      49
+    ],
+    "url_fragment": null
+  }
+}

@@ -3,10 +3,19 @@
   "name": "Logarithmic Sobolev Inequality (LSI)",
   "mathematical_expression": "\\text{Ent}_\\pi(f^2) \\le 2C_{\\text{LSI}} \\cdot \\mathcal{E}(f, f)",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence"
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "obj-lsi-continuous",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-lsi-continuous"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

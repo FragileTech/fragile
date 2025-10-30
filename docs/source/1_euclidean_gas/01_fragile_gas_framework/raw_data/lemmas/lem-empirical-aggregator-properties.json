@@ -1,0 +1,44 @@
+{
+  "label": "lem-empirical-aggregator-properties",
+  "name": "Let the aggregation operator $M$ be defined such that for any swarm state $\\mathcal{S}$ with aliv...",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "6.2.2",
+    "section_name": null,
+    "directive_label": "lem-empirical-aggregator-properties",
+    "equation": null,
+    "line_range": [
+      1340,
+      1355
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-aggregator-lipschitz-constants",
+    "obj-swarm-aggregation-operator-axiomatic"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "General Result",
+  "attributes_added": [],
+  "relations_established": [
+    "Empirical aggregator M satisfies 3 axiomatic properties: Range-Respecting Mean, Bounded Deviation from Aggregated Variance, Bounded Variance Production"
+  ],
+  "natural_language_statement": "Let the aggregation operator $M$ be defined such that for any swarm state $\\mathcal{S}$ with alive set $\\mathcal{A}(\\mathcal{S})$ of size $k = |\\mathcal{A}(\\mathcal{S})| \\ge 1$, and any raw value vector $\\mathbf{v}$, it produces the discrete empirical measure:\n\n$$\nM(\\mathcal{S}, \\mathbf{v}) = \\frac{1}{k} \\sum_{i \\in \\mathcal{A}(\\mathcal{S})} \\delta_{v_i}\n$$\n\n:::{note}\n**Breaking down this formula**:\n- $k = |\\mathcal{A}(\\mathcal{S})|$ is the number of alive walkers\n- $\\delta_{v_i}$ is a \"spike\" (Dirac delta) at value $v_i$ - it puts all probability mass exactly at that point\n- The sum creates a collection of spikes, one for each alive walker's value\n- The $\\frac{1}{k}$ factor gives each walker equal weight\n**Result**: A probability distribution that treats each alive walker's measurement as equally important. This is the foundation for computing means, variances, and other statistics!",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

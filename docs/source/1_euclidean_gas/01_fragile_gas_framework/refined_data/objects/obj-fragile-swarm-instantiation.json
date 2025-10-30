@@ -1,0 +1,31 @@
+{
+  "label": "obj-fragile-swarm-instantiation",
+  "name": "Fragile Swarm Instantiation",
+  "statement_type": "object",
+  "mathematical_expression": "A **Fragile Swarm**, denoted $\\mathcal{F}$, is a tuple that encapsulates a complete and fixed configuration of the algorithm. It contains:\n1. **The Foundational & Environmental Parameters:** The full set of environmental structures, including the State Space $(\\mathcal{X}, d_{\\mathcal{X}})$, Valid Domain $\\mathcal{X}_{\\mathrm{valid}}$, Reward Function $R$, Algorithmic Space $(\\mathcal{Y}, d_{\\mathcal{Y}})$, and Projection Map $\\varphi$.\n2. **The Core Algorithmic Parameters:** A specific, fixed set of all tunable values, including the number of walkers $N$, dynamics weights $(\\alpha, \\beta)$, noise scales $(\\sigma, \\delta)$, and all regulation and threshold parameters $(p_{\\max}, \\eta, \\varepsilon_{\\text{std}}, z_{\\max}, \\varepsilon_{\\text{clone}})$.\n3. **The Concrete Operator Choices:** The specific, user-chosen functions for the **Reward Aggregation Operator** ($R_{agg}$) and the **Distance Aggregation Operator** ($M_D$).\n4. **The Concrete Noise Measure Choices:** The specific, user-chosen probability measures for the **Perturbation Measure** ($\\mathcal{P}_\\sigma$) and the **Cloning Measure** ($\\mathcal{Q}_\\delta$).",
+  "object_type": "set",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "algorithm",
+    "instantiation",
+    "configuration",
+    "parameters",
+    "execution"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-fragile-swarm-instantiation",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "18.1",
+    "line_range": [
+      5091,
+      5099
+    ],
+    "directive_label": "obj-fragile-swarm-instantiation",
+    "equation": null,
+    "url_fragment": null
+  }
+}

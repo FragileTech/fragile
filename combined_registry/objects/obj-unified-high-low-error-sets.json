@@ -3,14 +3,23 @@
   "name": "The Unified High-Error and Low-Error Sets",
   "mathematical_expression": "\\text{diam}(G_m) := \\max_{i,j \\in G_m} d_{\\text{alg}}(i, j) \\le D_{\\text{diam}}(\\epsilon)",
   "object_type": "space",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle",
     "swarm",
     "variance"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning"
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "obj-unified-high-low-error-sets",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-unified-high-low-error-sets"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

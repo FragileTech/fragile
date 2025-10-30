@@ -1,0 +1,98 @@
+{
+  "label": "thm-perturbation-operator-continuity",
+  "name": "Probabilistic Continuity of the Perturbation Operator",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "14. The Perturbation Operator",
+    "section_name": null,
+    "directive_label": "thm-perturbation-operator-continuity-reproof",
+    "equation": null,
+    "line_range": [
+      4085,
+      4095
+    ],
+    "url_fragment": null
+  },
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm",
+    "obj-perturbation-operator",
+    "obj-perturbation-measure",
+    "obj-n-particle-displacement-metric",
+    "obj-positional-distance",
+    "obj-status-mismatch-count"
+  ],
+  "input_axioms": [
+    "def-axiom-bounded-second-moment-perturbation"
+  ],
+  "input_parameters": [
+    "param-n",
+    "param-delta",
+    "param-lambda-status",
+    "param-bm-bound",
+    "param-bs-bound"
+  ],
+  "attributes_required": {
+    "obj-perturbation-measure": [
+      "Satisfies the Axiom of Bounded Second Moment of Perturbation"
+    ]
+  },
+  "internal_lemmas": [
+    "sub-lem-perturbation-positional-bound-reproof",
+    "sub-lem-probabilistic-bound-perturbation-displacement-reproof"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "sub-lem-perturbation-positional-bound-reproof",
+      "thm-perturbation-operator-continuity"
+    ],
+    [
+      "sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+      "thm-perturbation-operator-continuity"
+    ]
+  ],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    {
+      "label": "rel-perturbation-operator-probabilistic-continuity-other",
+      "relationship_type": "other",
+      "bidirectional": false,
+      "source_object": "obj-perturbation-operator",
+      "target_object": "obj-n-particle-displacement-metric",
+      "established_by": "thm-perturbation-operator-continuity",
+      "expression": "Perturbation operator is probabilistically continuous in N-particle displacement metric",
+      "attributes": [],
+      "tags": [],
+      "timestamp": null,
+      "source": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": "14. The Perturbation Operator",
+        "section_name": null,
+        "directive_label": "thm-perturbation-operator-continuity-reproof",
+        "equation": null,
+        "line_range": [
+          4085,
+          4095
+        ],
+        "url_fragment": null
+      },
+      "chapter": null,
+      "document": null
+    }
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

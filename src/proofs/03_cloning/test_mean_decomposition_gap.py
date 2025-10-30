@@ -1,4 +1,5 @@
-from sympy import symbols, Eq, solve, simplify
+from sympy import Eq, simplify, solve, symbols
+
 
 def test_mean_decomposition_gap():
     """
@@ -7,8 +8,8 @@ def test_mean_decomposition_gap():
     """
     # 1. Define symbols
     # Fractions are positive, means are real numbers
-    f_U, f_F = symbols('f_U f_F', positive=True)
-    mu_U, mu_F = symbols('mu_U mu_F', real=True)
+    f_U, f_F = symbols("f_U f_F", positive=True)
+    mu_U, mu_F = symbols("mu_U mu_F", real=True)
 
     # 2. Define the overall mean
     mu_V_k = f_U * mu_U + f_F * mu_F
@@ -44,6 +45,7 @@ def test_mean_decomposition_gap():
     print(f"Constraint: {constraint}")
     print(f"LHS - RHS after substituting constraint and simplifying: {final_result}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # Execute the validation function
     test_mean_decomposition_gap()

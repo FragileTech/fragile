@@ -1,0 +1,20 @@
+{
+  "temp_id": "raw-axiom-003",
+  "label_text": "def-axiom-boundary-regularity",
+  "axiom_name": "Boundary Regularity",
+  "statement": "*   **Core Assumption:** The marginal probability of a single walker becoming invalid after the perturbation and status update stages must be a smooth (Hölder continuous) function of the initial N-particle swarm state. This axiom applies to any valid noise measure, including those with state-dependent coupling between walkers.\n\n*   **Axiomatic Parameters:** The user must provide the constants that bound this relationship, derived from their choice of **Noise Measure**, **Valid Domain**, and **Pr",
+  "source_section": "§3",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "3",
+    "section_name": null,
+    "directive_label": "def-axiom-boundary-regularity",
+    "equation": null,
+    "line_range": [
+      666,
+      692
+    ],
+    "url_fragment": "#def-axiom-boundary-regularity"
+  }
+}

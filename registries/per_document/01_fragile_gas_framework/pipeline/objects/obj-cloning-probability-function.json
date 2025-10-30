@@ -1,0 +1,27 @@
+{
+  "label": "obj-cloning-probability-function",
+  "name": "Conditional Cloning Probability Function",
+  "mathematical_expression": "Conditional Cloning Probability Function",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "cloning",
+    "function",
+    "measure-theory",
+    "particle-system",
+    "probability"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.2",
+    "directive_label": "def-cloning-probability-function",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": null
+}

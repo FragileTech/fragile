@@ -4,5 +4,11 @@
   "mathematical_expression": "U \\in C^2(\\mathcal{X}_{\\text{valid}})",
   "foundational_framework": "Euclidean Gas",
   "chapter": "1_euclidean_gas",
-  "document": "05_kinetic_contraction"
+  "document": "05_kinetic_contraction",
+  "name": null,
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": null
 }

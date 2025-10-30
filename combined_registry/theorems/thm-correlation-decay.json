@@ -2,9 +2,17 @@
   "label": "thm-correlation-decay",
   "name": "Quantitative Decorrelation",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "10_qsd_exchangeability_theory",
+  "source": {
+    "document_id": "10_qsd_exchangeability_theory",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/10_qsd_exchangeability_theory.md",
+    "section": null,
+    "directive_label": "thm-correlation-decay",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-correlation-decay"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -14,36 +22,59 @@
   "input_parameters": [
     "param-N"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-qsd": [
-      "prop-de-finetti-mixture"
+      "attr-de-finetti-mixture"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [
+  "attributes_added": [
     {
-      "label": "prop-covariance-decay-on-n",
+      "label": "attr-covariance-decay-on-n",
       "expression": "|Cov_{π_N}(g(w_i), g(w_j))| ≤ C / N for ||g||_∞ ≤ 1, i ≠ j",
       "object_label": "obj-qsd",
       "established_by": "thm-correlation-decay",
       "timestamp": null,
       "can_be_refined": true,
       "refinements": [],
-      "source": null
+      "source": {
+        "document_id": "10_qsd_exchangeability_theory",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/10_qsd_exchangeability_theory.md",
+        "section": null,
+        "directive_label": "thm-correlation-decay",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-correlation-decay"
+      }
     },
     {
-      "label": "prop-definetti-covariance-identity",
+      "label": "attr-definetti-covariance-identity",
       "expression": "Cov_{π_N}(g(w_i), g(w_j)) = Var_{𝒬_N}(E_μ[g])",
       "object_label": "obj-qsd",
       "established_by": "thm-correlation-decay",
       "timestamp": null,
       "can_be_refined": true,
       "refinements": [],
-      "source": null
+      "source": {
+        "document_id": "10_qsd_exchangeability_theory",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/10_qsd_exchangeability_theory.md",
+        "section": null,
+        "directive_label": "thm-correlation-decay",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-correlation-decay"
+      }
     }
   ],
-  "relations_established": []
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

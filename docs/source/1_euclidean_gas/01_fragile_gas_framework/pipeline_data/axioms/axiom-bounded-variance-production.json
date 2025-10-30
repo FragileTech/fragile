@@ -1,0 +1,77 @@
+{
+  "label": "axiom-bounded-variance-production",
+  "statement": "The variance of the measure produced by the aggregation operator must itself be bounded by a function of the input value range. This prevents an aggregator from creating arbitrarily large variance from bounded inputs.",
+  "mathematical_expression": "$$\n\\text{Var}[M(\\mathcal{S}, \\mathbf{v})] \\le \\kappa_{\\text{range}} \\cdot V_{\\max}^2\n$$",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of Bounded Variance Production",
+  "core_assumption": "The aggregation operator cannot amplify the spread of input values beyond what is inherently present in the data. This axiom prevents pathological aggregators that could invent unbounded variance from bounded inputs, which would otherwise cause uncontrolled error amplification in the standardization pipeline. It ensures that the output variance is controllably related to the maximum magnitude of input values, maintaining mathematical soundness of continuity proofs.",
+  "parameters": [
+    {
+      "symbol": "\\kappa_{\\text{range}}",
+      "name": "Range-to-Variance Factor",
+      "type": "axiomatic_parameter",
+      "description": "A non-negative constant that bounds how much variance the aggregation operator can generate relative to the squared input range. Measures the operator's tendency to amplify spread.",
+      "domain": "\\kappa_{\\text{range}} \\geq 0",
+      "typical_value": "\\kappa_{\\text{range}} = 1 (empirical measure aggregator)",
+      "interpretation": "Smaller values indicate better-behaved aggregators that preserve input structure without amplification. The empirical measure aggregator achieves the optimal value of 1."
+    },
+    {
+      "symbol": "M",
+      "name": "Swarm Aggregation Operator",
+      "type": "operator",
+      "description": "A function mapping a swarm state and raw value vector to a probability measure on \\mathbb{R}. Transforms individual walker measurements into collective statistics.",
+      "signature": "M: \\Sigma_N \\times \\mathbb{R}^{|\\mathcal{A}(\\mathcal{S})|} \\to \\mathcal{P}(\\mathbb{R})",
+      "cross_reference": "def-swarm-aggregation-operator-axiomatic"
+    },
+    {
+      "symbol": "\\mathcal{S}",
+      "name": "Swarm State",
+      "type": "state_variable",
+      "description": "An N-tuple of walker states (position, velocity, status) in the swarm configuration space \\Sigma_N.",
+      "cross_reference": "def-swarm-and-state-space"
+    },
+    {
+      "symbol": "\\mathbf{v}",
+      "name": "Raw Value Vector",
+      "type": "input_vector",
+      "description": "Vector of scalar measurements (e.g., rewards, distances) computed for each alive walker, indexed by the alive set \\mathcal{A}(\\mathcal{S}).",
+      "domain": "\\mathbf{v} \\in \\mathbb{R}^{|\\mathcal{A}(\\mathcal{S})|}"
+    },
+    {
+      "symbol": "V_{\\max}",
+      "name": "Maximum Input Value",
+      "type": "bound",
+      "description": "Upper bound on the absolute value of any component in the raw value vector: |v_i| \\le V_{\\max} for all i \\in \\mathcal{A}(\\mathcal{S}).",
+      "interpretation": "Represents the maximum magnitude of individual walker measurements, defining the inherent scale of the input data."
+    },
+    {
+      "symbol": "\\text{Var}[M(\\mathcal{S}, \\mathbf{v})]",
+      "name": "Aggregator Output Variance",
+      "type": "statistical_quantity",
+      "description": "The variance of the probability measure produced by the aggregation operator M. For the empirical measure, this is the sample variance: \\text{Var}[M] = m_2 - \\mu^2 where m_2 is the second moment and \\mu is the mean.",
+      "computation": "For empirical aggregator: \\text{Var}[M] = \\frac{1}{k}\\sum_{i \\in \\mathcal{A}} v_i^2 - \\left(\\frac{1}{k}\\sum_{i \\in \\mathcal{A}} v_i\\right)^2"
+    }
+  ],
+  "condition": "For any swarm state $\\mathcal{S}$ with alive set $\\mathcal{A}(\\mathcal{S})$ of size $k \\geq 1$, and any raw value vector $\\mathbf{v}$ with components bounded by $|v_i| \\le V_{\\max}$ for all $i \\in \\mathcal{A}(\\mathcal{S})$, the aggregation operator $M$ must satisfy the variance bound. This condition applies universally to all valid aggregation operators used in the framework, and is verified for specific instantiations such as the empirical measure aggregator.",
+  "failure_mode_analysis": {
+    "violation_scenario": "If $\\text{Var}[M(\\mathcal{S}, \\mathbf{v})] > \\kappa_{\\text{range}} \\cdot V_{\\max}^2$, the aggregator is inventing variance that exceeds what is present in the bounded input data.",
+    "mathematical_consequence": "The continuity proofs for the standardization pipeline become invalid. The Lipschitz constants and structural error bounds derived in the framework theorems would no longer hold, as they depend critically on this variance bound.",
+    "algorithmic_impact": "Uncontrolled error amplification in the fitness potential calculation. The standardization operator $z$ could produce arbitrarily large z-scores from bounded inputs, leading to extreme and unstable cloning probabilities.",
+    "system_behavior": "Loss of stability guarantees. The swarm dynamics could exhibit pathological behavior including:\n  1. Catastrophic fitness explosions where small measurement differences lead to extreme cloning rates\n  2. Numerical instability in standardization (division by inflated variances)\n  3. Breakdown of contraction properties that ensure convergence\n  4. Violation of mean-square continuity bounds for the full operator pipeline",
+    "detection": "Can be verified by checking whether $\\text{Var}[M(\\mathcal{S}, \\mathbf{v})] \\le \\kappa_{\\text{range}} \\cdot V_{\\max}^2$ holds for all possible swarm states and value vectors in the operational domain.",
+    "prevention": "User must provide a valid $\\kappa_{\\text{range}}$ value and prove that their chosen aggregation operator satisfies this bound. The empirical measure aggregator provably satisfies this with $\\kappa_{\\text{range}} = 1$ (see lem-empirical-aggregator-properties).",
+    "severity": "critical",
+    "framework_limitation": "This axiom is essential for the soundness of all continuity and stability theorems in the framework. Without it, the mathematical guarantees on algorithm behavior are not certified to hold."
+  },
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.3.4",
+    "directive_label": "def-axiom-bounded-variance-production",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#def-axiom-bounded-variance-production"
+  }
+}

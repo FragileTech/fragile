@@ -8,7 +8,6 @@ Demonstrates how to:
 
 """
 
-import numpy as np
 from fragile import convergence_bounds as cb
 
 
@@ -32,7 +31,7 @@ def example_1_euclidean_gas_analysis():
     kappa_W = cb.kappa_W(gamma, lambda_min, c_hypo=0.1)
     kappa_b = cb.kappa_b(lambda_alg, delta_f_boundary)
 
-    print(f"\nComponent contraction rates:")
+    print("\nComponent contraction rates:")
     print(f"  Position (κ_x):    {kappa_x:.4f}")
     print(f"  Velocity (κ_v):    {kappa_v:.4f}")
     print(f"  Wasserstein (κ_W): {kappa_W:.4f}")
@@ -45,7 +44,7 @@ def example_1_euclidean_gas_analysis():
     # Identify bottleneck
     bottlenecks = cb.convergence_timescale_ratio(kappa_x, kappa_v, kappa_W, kappa_b)
     print(f"\nBottleneck component: {bottlenecks['bottleneck']}")
-    print(f"Timescale ratios:")
+    print("Timescale ratios:")
     for component, ratio in bottlenecks.items():
         if component != "bottleneck":
             print(f"  {component:12s}: {ratio:.2f}x slower than fastest")
@@ -55,13 +54,13 @@ def example_1_euclidean_gas_analysis():
     V_init = 10.0  # Initial Lyapunov value
     C_total = 1.0  # Equilibrium constant
     T_mix = cb.T_mix(epsilon, kappa_total, V_init, C_total)
-    print(f"\nMixing time to reach {epsilon*100}% accuracy: {T_mix:.1f} steps")
+    print(f"\nMixing time to reach {epsilon * 100}% accuracy: {T_mix:.1f} steps")
 
     # Equilibrium variances
     d = 3
     var_x = cb.equilibrium_variance_x(sigma_v, tau, gamma, lambda_alg)
     var_v = cb.equilibrium_variance_v(d, sigma_v, gamma)
-    print(f"\nEquilibrium variances:")
+    print("\nEquilibrium variances:")
     print(f"  Position: {var_x:.6f}")
     print(f"  Velocity: {var_v:.4f}")
 
@@ -76,7 +75,7 @@ def example_2_geometric_gas_validation():
     epsilon_Sigma = 2.0  # Diffusion regularization
     H_max = 1.0  # Maximum Hessian eigenvalue
 
-    print(f"\nEllipticity parameters:")
+    print("\nEllipticity parameters:")
     print(f"  ε_Σ:   {epsilon_Sigma}")
     print(f"  H_max: {H_max}")
 
@@ -87,7 +86,7 @@ def example_2_geometric_gas_validation():
     # Compute bounds
     c_min_val = cb.c_min(epsilon_Sigma, H_max)
     c_max_val = cb.c_max(epsilon_Sigma, H_max)
-    print(f"\nEllipticity bounds:")
+    print("\nEllipticity bounds:")
     print(f"  c_min: {c_min_val:.4f}")
     print(f"  c_max: {c_max_val:.4f}")
 
@@ -98,7 +97,7 @@ def example_2_geometric_gas_validation():
     # Critical adaptive force threshold
     F_adapt_max = 10.0  # Maximum adaptive force
     epsilon_F_star = cb.epsilon_F_star(1.0, c_min_val, F_adapt_max)
-    print(f"\nAdaptive force regime:")
+    print("\nAdaptive force regime:")
     print(f"  F_adapt_max:  {F_adapt_max}")
     print(f"  ε_F* (threshold): {epsilon_F_star:.4f}")
 
@@ -144,7 +143,7 @@ def example_3_sensitivity_analysis():
 
     # Principal coupling modes
     modes = cb.principal_coupling_modes(M_kappa, k=3)
-    print(f"\nTop 3 principal coupling modes:")
+    print("\nTop 3 principal coupling modes:")
     print(f"  Singular values: {modes['singular_values']}")
     print("  (Measure strength of parameter coupling)")
 
@@ -166,7 +165,7 @@ def example_4_optimal_parameters():
     d = 3  # Dimension
     V_target = 1.0  # Target exploration variance
 
-    print(f"\nProblem characteristics:")
+    print("\nProblem characteristics:")
     print(f"  Dimension:      {d}")
     print(f"  λ_min:          {lambda_min}")
     print(f"  λ_max:          {lambda_max}")
@@ -175,7 +174,7 @@ def example_4_optimal_parameters():
     # Compute optimal balanced parameters
     optimal = cb.balanced_parameters_closed_form(lambda_min, lambda_max, d, V_target)
 
-    print(f"\nOptimal balanced parameters:")
+    print("\nOptimal balanced parameters:")
     for param, value in optimal.items():
         print(f"  {param:12s}: {value:.4f}")
 

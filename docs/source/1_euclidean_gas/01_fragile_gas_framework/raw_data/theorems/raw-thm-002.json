@@ -1,0 +1,25 @@
+{
+  "temp_id": "raw-thm-002",
+  "label_text": "thm-mean-square-standardization-error",
+  "statement_type": "theorem",
+  "full_statement_text": "The continuity of the **N-Dimensional Standardization Operator** $z(\\mathcal{S})$ depends on the coupled effects of two distinct error sources whose expected growth rates are summed.\n\n*   **Core Principle:** The total **expected** squared error in the standardization operator's output, $\\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2]$, is bounded by the sum of the **Expected Squared Value Error** ($E^2_{V,ms}$) and the **Expected Squared Structural Error** ($E^2_{S,ms}$).\n\n*   **Mathematical R",
+  "source_section": "§3",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "output_type": "Bound",
+  "relations_established": [],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "3",
+    "section_name": null,
+    "directive_label": "thm-mean-square-standardization-error",
+    "equation": null,
+    "line_range": [
+      890,
+      892
+    ],
+    "url_fragment": null
+  }
+}

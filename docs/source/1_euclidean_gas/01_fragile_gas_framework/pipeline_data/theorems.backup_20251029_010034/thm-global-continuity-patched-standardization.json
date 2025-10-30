@@ -1,0 +1,58 @@
+{
+  "label": "thm-global-continuity-patched-standardization",
+  "name": "Global Continuity of the Patched Standardization Operator",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "11.3.7",
+    "directive_label": "thm-global-continuity-patched-standardization",
+    "equation": null,
+    "line_range": [
+      3645,
+      3682
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-standardization-operator-n-dimensional",
+    "obj-swarm-and-state-space",
+    "obj-statistical-properties-measurement"
+  ],
+  "input_axioms": [
+    "axiom-rescale-function"
+  ],
+  "input_parameters": [
+    "param-varepsilon-std",
+    "param-kappa-var-min"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "thm-deterministic-error-decomposition",
+    "thm-lipschitz-value-error-bound",
+    "thm-lipschitz-structural-error-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "This theorem establishes a global continuity property for the N-Dimensional Standardization Operator. It proves that the squared Euclidean distance between the outputs for two different swarm states and raw value vectors is bounded. This bound is a function of the distance between the raw value vectors and the number of changed components between the swarm states, ensuring that the operator's output does not change drastically with small input perturbations.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [
+    "def-statistical-properties-measurement",
+    "def-lipschitz-value-error-coefficients",
+    "def-lipschitz-structural-error-coefficients",
+    "thm-deterministic-error-decomposition",
+    "thm-lipschitz-value-error-bound",
+    "thm-lipschitz-structural-error-bound"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

@@ -1,0 +1,21 @@
+{
+  "label": "def-canonical-logistic-rescale-function-example",
+  "name": "Canonical Logistic Rescale Function",
+  "statement": "The **Canonical Logistic Rescale Function** $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ is defined as:\n$$\ng_A(z) := \\frac{2}{1 + e^{-z}}\n$$",
+  "section": "9. Rescale Transformation",
+  "subsection": "8.3.1. Definition: Canonical Logistic Rescale Function",
+  "type": "definition",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "8.3.1",
+    "section_name": null,
+    "directive_label": "def-canonical-logistic-rescale-function-example",
+    "equation": null,
+    "line_range": [
+      2070,
+      2078
+    ],
+    "url_fragment": "#def-canonical-logistic-rescale-function-example"
+  }
+}

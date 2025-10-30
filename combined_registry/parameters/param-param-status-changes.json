@@ -1,0 +1,10 @@
+{
+  "label": "param-param-status-changes",
+  "name": "param-status-changes",
+  "symbol": "param-status-changes",
+  "parameter_type": "real",
+  "constraints": null,
+  "default_value": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

@@ -1,0 +1,27 @@
+{
+  "label": "obj-stochastic-fluctuation-bound",
+  "name": "Stochastic Fluctuation Bound",
+  "mathematical_expression": "A high-probability bound on the deviation of the total squared displacement from its mean, derived from McDiarmid's inequality.",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "bound",
+    "perturbation",
+    "concentration",
+    "fluctuation"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "section_name": null,
+    "directive_label": "obj-stochastic-fluctuation-bound",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-stochastic-fluctuation-bound"
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-stochastic-fluctuation-bound"
+}

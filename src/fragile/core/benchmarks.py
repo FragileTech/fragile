@@ -280,9 +280,13 @@ class OptimBenchmark(PanelModel):
         if show_contours:
             from holoviews.operation import contours as hv_contours
 
-            contours = hv_contours(base_image, levels=10).relabel("Contours").opts(
-                color="black",
-                line_width=1,
+            contours = (
+                hv_contours(base_image, levels=10)
+                .relabel("Contours")
+                .opts(
+                    color="black",
+                    line_width=1,
+                )
             )
             layers.append(contours)
 
@@ -317,18 +321,17 @@ class OptimBenchmark(PanelModel):
         # Build overlay
         overlay = layers[0]
         for layer in layers[1:]:
-            overlay = overlay * layer
+            overlay *= layer
 
         # Apply legend positioning only if we have multiple layers (actual overlay)
         if len(layers) > 1:
             # Apply overlay options including legend positioning
             return overlay.opts(
                 legend_position="right",  # Places legend outside to the right
-                legend_offset=(10, 0),    # Additional offset for spacing from plot
+                legend_offset=(10, 0),  # Additional offset for spacing from plot
             )
-        else:
-            # Single layer - just return it (no legend positioning needed)
-            return overlay
+        # Single layer - just return it (no legend positioning needed)
+        return overlay
 
 
 class Sphere(OptimBenchmark):
@@ -993,11 +996,9 @@ class LidDrivenCavity(FluidBenchmark):
 
             # Exponential repulsion (maintain autograd graph connection)
             U = strength * torch.exp(-d_left / width)
-            U = U + strength * torch.exp(-d_right / width)
-            U = U + strength * torch.exp(-d_bottom / width)
-            U = U + strength * torch.exp(-d_top / width)
-
-            return U
+            U += strength * torch.exp(-d_right / width)
+            U += strength * torch.exp(-d_bottom / width)
+            return U + strength * torch.exp(-d_top / width)
 
         bounds = TorchBounds(low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0]))
 

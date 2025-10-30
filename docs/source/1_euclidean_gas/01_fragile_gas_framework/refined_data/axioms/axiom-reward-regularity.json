@@ -1,0 +1,43 @@
+{
+  "label": "axiom-reward-regularity",
+  "statement": "The reward function, when viewed in the algorithmic space, must be Hölder continuous to ensure smooth gradients.",
+  "mathematical_expression": "|R_{\\mathcal{Y}}(y_1) - R_{\\mathcal{Y}}(y_2)| \\le L_{R,\\mathcal{Y}} \\cdot d_{\\mathcal{Y}}(y_1, y_2)^{\\alpha_R}",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Reward Regularity",
+  "core_assumption": "The reward landscape is not arbitrarily rugged or chaotic. Small changes in the algorithmic representation 'y' of a walker's state result in proportionally small changes in the assigned reward 'R'. This ensures that the reward signal is learnable and that gradient-based optimization is possible.",
+  "parameters": [
+    {
+      "name": "R_Y",
+      "description": "The reward function defined on the algorithmic space Y."
+    },
+    {
+      "name": "y_1, y_2",
+      "description": "Two points in the algorithmic space."
+    },
+    {
+      "name": "d_Y",
+      "description": "The distance metric in the algorithmic space."
+    },
+    {
+      "name": "L_{R,Y}",
+      "description": "The Hölder constant, controlling the maximum 'steepness' or volatility of the reward function."
+    },
+    {
+      "name": "α_R",
+      "description": "The Hölder exponent (0 < α_R <= 1), controlling the smoothness of the reward function. α_R=1 implies Lipschitz continuity."
+    }
+  ],
+  "condition": "This regularity condition must hold for all points y_1, y_2 within the relevant domain of the algorithmic space Y. The constants L_{R,Y} and α_R must be finite.",
+  "failure_mode_analysis": "If the reward function is not Hölder continuous, the reward landscape could contain jumps, cusps, or infinite gradients. This would make optimization extremely difficult or impossible. Gradient-based learning algorithms would fail as gradients would either not exist or provide misleading information, causing the learning process to diverge, get stuck in spurious local optima, or exhibit chaotic behavior.",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.2.2",
+    "directive_label": "def-axiom-reward-regularity",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

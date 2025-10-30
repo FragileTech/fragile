@@ -23,6 +23,10 @@ Maps to Lean:
     end LLMInterface
 """
 
+from fragile.proofs.llm.document_container import (
+    EnrichedEntities,
+    MathematicalDocument,
+)
 from fragile.proofs.llm.llm_interface import (
     call_batch_extraction_llm,
     call_main_extraction_llm,
@@ -32,10 +36,6 @@ from fragile.proofs.llm.llm_interface import (
     mock_main_extraction_llm,
     mock_semantic_parser_llm,
     validate_llm_response,
-)
-from fragile.proofs.llm.document_container import (
-    EnrichedEntities,
-    MathematicalDocument,
 )
 from fragile.proofs.llm.pipeline_orchestration import (
     enrich_and_assemble,
@@ -47,27 +47,28 @@ from fragile.proofs.llm.pipeline_orchestration import (
     process_sections_parallel,
 )
 
+
 __all__ = [
+    "EnrichedEntities",
+    # Document container
+    "MathematicalDocument",
+    "call_batch_extraction_llm",
     # Main LLM interface functions (to be implemented)
     "call_main_extraction_llm",
     "call_semantic_parser_llm",
-    "call_batch_extraction_llm",
+    "enrich_and_assemble",
     # Utility functions (to be implemented)
     "estimate_tokens",
-    "validate_llm_response",
     "extract_json_from_markdown",
+    "merge_sections",
     # Mock implementations (for testing only)
     "mock_main_extraction_llm",
     "mock_semantic_parser_llm",
-    # Document container
-    "MathematicalDocument",
-    "EnrichedEntities",
     # Pipeline orchestration (end-to-end)
     "process_document",
     "process_document_from_file",
     "process_multiple_documents",
     "process_section",
     "process_sections_parallel",
-    "merge_sections",
-    "enrich_and_assemble",
+    "validate_llm_response",
 ]

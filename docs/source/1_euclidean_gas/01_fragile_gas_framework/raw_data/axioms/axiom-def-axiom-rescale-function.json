@@ -1,0 +1,20 @@
+{
+  "label": "def-axiom-rescale-function",
+  "name": "Axiom of a Well-Behaved Rescale Function",
+  "statement": "Any function $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ chosen for the rescale transformation must satisfy the following properties to be considered valid within the Fragile framework. The user is responsible for proving that their chosen function complies with these conditions.\n\n1. **$C^1$ Smoothness:** The function $g_A(z)$ must be continuously differentiable on its entire domain $\\mathbb{R}$. This ensures that the fitness potential is a smooth function of the standardized scores, which is critical for the stability of the cloning dynamics.\n\n2. **Monotonicity:** The function must be monotonically non-decreasing. This is equivalent to its first derivative being non-negative for all inputs:\n$$\ng'_A(z) \\ge 0 \\quad \\forall z \\in \\mathbb{R}\n$$\nThis property is essential to guarantee that a higher (better) standardized score never results in a lower fitness potential component.\n\n3. **Uniform Boundedness:** The function's range must be a bounded interval $(0, g_{A,\\max}]$ for some finite constant $g_{A,\\max} > 0$. This prevents the fitness potential from becoming infinite, which is a non-negotiable requirement for the stability of the selection and cloning operators.\n\n4. **Global Lipschitz Continuity:** The function must be globally Lipschitz continuous. For a $C^1$ function, this is equivalent to its first derivative being uniformly bounded. There must exist a finite constant $L_{g_A}$, the Lipschitz constant, such that:\n$$\n\\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty\n$$\nThis property is the cornerstone for proving the mean-square continuity of the composite Fitness Potential Operator, as it ensures that small changes in the standardized scores cannot be pathologically amplified.\n\n**Framework Application:** Any function satisfying these four conditions can be used as a rescale function. The subsequent sections provide two distinct examples of valid functions: an asymmetric piecewise function and a canonical logistic function, along with proofs that they satisfy this axiom. The specific choice of function and its corresponding constants, $g_{A,\\max}$ and $L_{g_A}$, will affect the quantitative continuity bounds of the full system.",
+  "section": "9. Rescale Transformation",
+  "type": "axiom",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "8.1",
+    "section_name": null,
+    "directive_label": "def-axiom-rescale-function",
+    "equation": null,
+    "line_range": [
+      1641,
+      1663
+    ],
+    "url_fragment": "#def-axiom-rescale-function"
+  }
+}

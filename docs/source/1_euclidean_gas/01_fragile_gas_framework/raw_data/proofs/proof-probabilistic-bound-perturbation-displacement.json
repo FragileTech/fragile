@@ -1,0 +1,44 @@
+{
+  "label": "proof-sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+  "type": "proof",
+  "proves": "sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+  "proof_type": "constructive",
+  "full_text": "The proof proceeds by applying McDiarmid's Inequality to the function that computes the total perturbation-induced displacement.\n\n1. **Define the Function and Independent Variables.**\n   - **Independent Variables:** The perturbation of the N-particle swarm is the result of **N** independent random choices made by the perturbation measure for each walker.\n   - **Function:** The function we wish to bound is the **Total Perturbation-Induced Displacement**, **f**, which is a function of these **N** independent random choices for a fixed initial state $\\mathcal{S}_{\\text{in}}$.\n\n2. **Prove the Bounded Differences Property.**\n   We apply McDiarmid to $f_{\\text{avg}}$. Changing only the **i**-th random outcome only affects the **i**-th summand. Since each summand is in $[0, D_{\\mathcal{Y}}^2]$, the bounded differences constants are $c_i = D_{\\mathcal{Y}}^2/N$ for all $i$.\n\n3. **Apply McDiarmid's Inequality and Solve for the Bound.**\n   The sum of squares is $\\sum_{i=1}^N c_i^2 = N\\,(D_{\\mathcal{Y}}^2/N)^2 = D_{\\mathcal{Y}}^4/N$. McDiarmid yields, for $t>0$,\n   $$\\mathbb{P}\\big( |f_{\\text{avg}} - \\mathbb{E}[f_{\\text{avg}}]| \\ge t \\big) \\le 2\\exp\\!\\left(\\!-\\,\\frac{2N t^2}{ D_{\\mathcal{Y}}^4}\\right).$$\n   Setting the failure probability to $\\delta'$ and solving for $t$ gives the stochastic fluctuation bound for the average,\n   $\\displaystyle B_{S,\\text{avg}}(N,\\delta') = D_{\\mathcal{Y}}^2 \\sqrt{\\tfrac{1}{2N}\\ln\\!(\\tfrac{2}{\\delta'})}$. Multiplying back by $N$ recovers the bound for $\\Delta_{\\text{pert}}^2$ used below.\n\n4. **Combine with Axiomatic Mean Bound.**\n   The expected total displacement $E[\\Delta_pert^2]$ is bounded by the **Mean Displacement Bound**, $B_M(N)$. Combining these gives the final high-probability bound.",
+  "key_steps": [
+    "Define function and independent variables",
+    "Prove bounded differences property",
+    "Apply McDiarmid's Inequality",
+    "Solve for bound by setting failure probability",
+    "Combine with axiomatic mean bound"
+  ],
+  "source_section": "14. The Perturbation Operator",
+  "source_document": "01_fragile_gas_framework.md",
+  "line_range": [
+    4040,
+    4061
+  ],
+  "tags": [
+    "proof",
+    "concentration",
+    "McDiarmid",
+    "probabilistic"
+  ],
+  "techniques_used": [
+    "McDiarmid's Inequality",
+    "Bounded differences",
+    "Concentration of measure"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "14",
+    "section_name": null,
+    "directive_label": "proof-sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+    "equation": null,
+    "line_range": [
+      4050,
+      4071
+    ],
+    "url_fragment": null
+  }
+}

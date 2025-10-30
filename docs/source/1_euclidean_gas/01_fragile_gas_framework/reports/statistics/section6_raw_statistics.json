@@ -1,0 +1,40 @@
+{
+  "source_file": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+  "section": "§6 - Algorithm Space and Distance Measurement",
+  "line_range": "1212-1241",
+  "processing_stage": "raw_extraction",
+  "extraction_method": "manual_claude_code",
+  "entities_extracted": {
+    "definitions": 3,
+    "theorems": 0,
+    "axioms": 0,
+    "proofs": 0,
+    "equations": 0,
+    "parameters": 0,
+    "remarks": 0,
+    "citations": 0
+  },
+  "total_entities": 3,
+  "total_files": 3,
+  "output_directory": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework/raw_data",
+  "entities_detail": [
+    {
+      "temp_id": "raw-def-001",
+      "label": "def-algorithmic-space-generic",
+      "term": "Algorithmic Space",
+      "subsection": "5.1 Specification of the Algorithmic Space"
+    },
+    {
+      "temp_id": "raw-def-002",
+      "label": "def-distance-positional-measures",
+      "term": "Distance Between Positional Measures",
+      "subsection": "5.2 Distance Between Positional Measures"
+    },
+    {
+      "temp_id": "raw-def-003",
+      "label": "def-alg-distance",
+      "term": "Algorithmic Distance",
+      "subsection": "5.3 Algorithmic Distance"
+    }
+  ]
+}

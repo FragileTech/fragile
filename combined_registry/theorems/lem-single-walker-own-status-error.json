@@ -2,9 +2,17 @@
   "label": "lem-single-walker-own-status-error",
   "name": "Bound on Single-Walker Error from Own Status Change",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "lem-single-walker-own-status-error",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-single-walker-own-status-error"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -18,22 +26,18 @@
     "axiom-raw-value-mean-square-continuity"
   ],
   "input_parameters": [],
-  "properties_required": {},
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [
-    {
-      "label": "prop-single-walker-error-bound-by-cemetery-dist",
-      "expression": "|\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]| \\le D_{\\text{cemetery}} \\text{ if } s_{1,i} \\neq s_{2,i}",
-      "object_label": "obj-walker",
-      "established_by": "lem-single-walker-own-status-error",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

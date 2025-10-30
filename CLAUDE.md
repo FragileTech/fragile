@@ -100,6 +100,81 @@ The `docs/source/` directory contains rigorous mathematical specifications organ
     - Allows editing with GitHub-flavored markdown (````mermaid`) in VSCode
     - Converts to Jupyter Book MyST directive format (` ```{mermaid} `) at build time
     - Works with both ````mermaid` and `:::mermaid` source formats
+  - **`find_source_location.py`** - Interactive CLI for finding source locations
+    - Find text snippets, directives, equations, or sections in markdown
+    - Output SourceLocation JSON for enrichment
+    - Batch processing from CSV
+    - See `.claude/skills/source-location-enrichment/` for full documentation
+
+- `src/fragile/proofs/tools/` - Mathematical entity processing tools
+  - **`source_location_enricher.py`** - Enrich raw JSON with precise source locations
+    - Automatically finds line ranges for extracted entities
+    - Uses text matching with fallback strategies
+    - Batch processing for entire corpus
+    - CLI: `python src/fragile/proofs/tools/source_location_enricher.py {single|directory|batch}`
+  - **`line_finder.py`** - Low-level text finding utilities
+    - `find_text_in_markdown()` - Find text snippets
+    - `find_directive_lines()` - Find Jupyter Book directives
+    - `find_equation_lines()` - Find LaTeX equations
+    - `find_section_lines()` - Find sections by heading
+  - `directive_parser.py` - Extract Jupyter Book directives
+
+- `src/fragile/proofs/utils/source_helpers.py` - SourceLocation builders
+  - **`SourceLocationBuilder`** - Factory methods for creating SourceLocation objects
+    - `from_markdown_location()` - Most precise (line range)
+    - `from_jupyter_directive()` - Precise (directive label)
+    - `from_raw_entity()` - Auto-fallback from entity data
+    - `with_fallback()` - Flexible multi-level fallback
+    - `from_section()` - Section-level precision
+    - `minimal()` - Document-level only
+
+### Source Location Enrichment Workflow
+
+**MANDATORY BEFORE TRANSFORMATION**: Source locations are REQUIRED for all enriched and core math types.
+
+**Workflow:**
+1. **Extract** entities → `raw_data/` (staging types with optional source)
+2. **Enrich** sources → Run enricher to populate source fields (**MANDATORY**)
+3. **Transform** → `.from_raw()` requires source, errors if missing
+4. **Validate** → Verify all enriched types have sources
+
+**When enriching raw data:**
+
+**Step 1: After extraction** - Run enricher on raw_data/ (**REQUIRED**):
+```bash
+# Single document
+python src/fragile/proofs/tools/source_location_enricher.py directory \
+    docs/source/.../raw_data \
+    docs/source/.../document.md \
+    document_id
+
+# Entire corpus
+python src/fragile/proofs/tools/source_location_enricher.py batch docs/source/
+```
+
+**Step 2: Manual lookup** (if needed) - Use interactive tool:
+```bash
+# Find text
+python src/tools/find_source_location.py find-text \
+    docs/source/.../document.md "text to find" -d document_id
+
+# Find directive
+python src/tools/find_source_location.py find-directive \
+    docs/source/.../document.md thm-label -d document_id
+```
+
+**Step 3: Validation** - Verify enriched data:
+```python
+from fragile.proofs.tools.line_finder import validate_line_range, extract_lines
+# Check line_range points to correct content
+```
+
+**Error handling:** If `.from_raw()` raises "requires source location":
+1. Check raw JSON has `source` field populated
+2. If missing, run source_location_enricher
+3. If present but invalid, use find_source_location.py to fix
+
+See `.claude/skills/source-location-enrichment/skill.md` for complete workflow documentation.
 
 ## Development Commands
 

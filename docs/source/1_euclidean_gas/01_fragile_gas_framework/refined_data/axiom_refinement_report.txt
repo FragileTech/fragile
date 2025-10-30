@@ -1,0 +1,118 @@
+================================================================================
+AXIOM REFINEMENT REPORT
+================================================================================
+
+Total axioms processed: 21
+Successfully refined: 21
+Errors: 0
+
+SUCCESSFULLY REFINED AXIOMS:
+--------------------------------------------------------------------------------
+  axiom-bounded-measurement-variance.json
+    Label: axiom-bounded-measurement-variance
+    Name: Axiom of Bounded Measurement Variance
+
+  axiom-bounded-second-moment-perturbation.json
+    Label: axiom-bounded-second-moment-perturbation
+    Name: Axiom of Bounded Second Moment of Perturbation
+    Corrections: label: def-axiom-bounded-second-moment-perturbation → axiom-bounded-second-moment-perturbation
+
+  axiom-def-axiom-rescale-function.json
+    Label: axiom-rescale-function
+    Name: Axiom of a Well-Behaved Rescale Function
+    Corrections: label: def-axiom-rescale-function → axiom-rescale-function
+
+  axiom-raw-value-mean-square-continuity.json
+    Label: axiom-raw-value-mean-square-continuity
+    Name: Axiom of Mean-Square Continuity for Raw Values
+
+  axiom-rescale-function.json
+    Label: axiom-rescale-function
+    Name: Axiom of a Well-Behaved Rescale Function
+
+  raw-axiom-001.json
+    Label: axiom-def-assumption-instep-independence
+    Name: Def Assumption Instep Independence
+    Corrections: label: def-assumption-instep-independence → axiom-def-assumption-instep-independence
+
+  raw-axiom-002.json
+    Label: axiom-guaranteed-revival
+    Name: Guaranteed Revival
+    Corrections: label: def-axiom-guaranteed-revival → axiom-guaranteed-revival
+
+  raw-axiom-003.json
+    Label: axiom-boundary-regularity
+    Name: Boundary Regularity
+    Corrections: label: def-axiom-boundary-regularity → axiom-boundary-regularity
+
+  raw-axiom-004.json
+    Label: axiom-boundary-smoothness
+    Name: Boundary Smoothness
+    Corrections: label: def-axiom-boundary-smoothness → axiom-boundary-smoothness
+
+  raw-axiom-005.json
+    Label: axiom-environmental-richness
+    Name: Environmental Richness
+    Corrections: label: def-axiom-environmental-richness → axiom-environmental-richness
+
+  raw-axiom-006.json
+    Label: axiom-reward-regularity
+    Name: Reward Regularity
+    Corrections: label: def-axiom-reward-regularity → axiom-reward-regularity
+
+  raw-axiom-007.json
+    Label: axiom-7
+    Name: Axiom 7
+
+  raw-axiom-008.json
+    Label: axiom-bounded-algorithmic-diameter
+    Name: Bounded Algorithmic Diameter
+    Corrections: label: def-axiom-bounded-algorithmic-diameter → axiom-bounded-algorithmic-diameter
+
+  raw-axiom-009.json
+    Label: axiom-range-respecting-mean
+    Name: Range Respecting Mean
+    Corrections: label: def-axiom-range-respecting-mean → axiom-range-respecting-mean
+
+  raw-axiom-010.json
+    Label: axiom-sufficient-amplification
+    Name: Sufficient Amplification
+    Corrections: label: def-axiom-sufficient-amplification → axiom-sufficient-amplification
+
+  raw-axiom-011.json
+    Label: axiom-non-degenerate-noise
+    Name: Non Degenerate Noise
+    Corrections: label: def-axiom-non-degenerate-noise → axiom-non-degenerate-noise
+
+  raw-axiom-012.json
+    Label: axiom-bounded-relative-collapse
+    Name: Bounded Relative Collapse
+    Corrections: label: def-axiom-bounded-relative-collapse → axiom-bounded-relative-collapse
+
+  raw-axiom-013.json
+    Label: axiom-bounded-deviation-variance
+    Name: Bounded Deviation Variance
+    Corrections: label: def-axiom-bounded-deviation-variance → axiom-bounded-deviation-variance
+
+  raw-axiom-014.json
+    Label: axiom-bounded-variance-production
+    Name: Bounded Variance Production
+    Corrections: label: def-axiom-bounded-variance-production → axiom-bounded-variance-production
+
+  raw-axiom-015.json
+    Label: axiom-geometric-consistency
+    Name: Geometric Consistency
+    Corrections: label: def-axiom-geometric-consistency → axiom-geometric-consistency
+
+  raw-axiom-016.json
+    Label: axiom-margin-stability
+    Name: Margin Stability
+    Corrections: label: def-axiom-margin-stability → axiom-margin-stability
+
+================================================================================
+VALIDATION STATUS
+================================================================================
+
+VALIDATION PASSED: All axioms successfully refined.
+
+================================================================================

@@ -7,13 +7,14 @@ Tests the parameter optimization system including:
 - GasParams <-> GasConfig conversion
 """
 
+import holoviews as hv
+import numpy as np
 import pytest
 import torch
-import numpy as np
-import holoviews as hv
+
 
 # Initialize HoloViews for GasConfig tests
-hv.extension('bokeh')
+hv.extension("bokeh")
 
 from fragile.bounds import TorchBounds
 from fragile.core.benchmarks import Sphere
@@ -22,17 +23,17 @@ from fragile.core.companion_selection import CompanionSelection
 from fragile.core.euclidean_gas import EuclideanGas
 from fragile.core.fitness import FitnessOperator
 from fragile.core.kinetic_operator import KineticOperator
+from fragile.experiments.gas_config_dashboard import GasConfig
 from fragile.gas_parameters import (
-    GasParams,
-    LandscapeParams,
+    apply_gas_params_to_config,
     estimate_landscape_from_history,
     extract_trajectory_data_from_history,
-    optimize_parameters_multi_strategy,
     gas_params_from_config,
     gas_params_to_config_dict,
-    apply_gas_params_to_config,
+    GasParams,
+    LandscapeParams,
+    optimize_parameters_multi_strategy,
 )
-from fragile.experiments.gas_config_dashboard import GasConfig
 
 
 @pytest.fixture
@@ -105,9 +106,9 @@ def test_extract_trajectory_data(test_simulation):
     V_Var_v = trajectory_data["V_Var_v"]
 
     # Handle torch tensors
-    if hasattr(V_Var_x, 'cpu'):
+    if hasattr(V_Var_x, "cpu"):
         V_Var_x = V_Var_x.cpu().numpy()
-    if hasattr(V_Var_v, 'cpu'):
+    if hasattr(V_Var_v, "cpu"):
         V_Var_v = V_Var_v.cpu().numpy()
 
     assert np.all(np.isfinite(V_Var_x))

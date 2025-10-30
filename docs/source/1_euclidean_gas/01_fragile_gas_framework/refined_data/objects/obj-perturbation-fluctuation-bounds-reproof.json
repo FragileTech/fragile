@@ -1,0 +1,29 @@
+{
+  "label": "obj-perturbation-fluctuation-bounds-reproof",
+  "name": "Perturbation Fluctuation Bounds",
+  "mathematical_expression": "B_M(N) := N \\cdot M_{\\text{pert}}^2, \\quad B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "perturbation",
+    "bound",
+    "concentration",
+    "fluctuation"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-perturbation-fluctuation-bounds-reproof",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "13.2.4",
+    "line_range": [
+      4136,
+      4153
+    ],
+    "directive_label": "obj-perturbation-fluctuation-bounds-reproof",
+    "equation": null,
+    "url_fragment": null
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "label": "lem-cubic-patch-derivative",
+  "name": "Explicit Form of the Polynomial Patch Derivative",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-cubic-patch-polynomial"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [
+    "Derivative of cubic patch P(z) is P'(z) = 3Az^2 + 2Bz + C"
+  ],
+  "natural_language_statement": "Let $P(z)$ be the cubic polynomial patch on the interval $[z_{\\max}-1, z_{\\max}]$, and let $s = z - (z_{\\max}-1)$ be the normalized coordinate on $[0, 1]$. The first derivative of the polynomial, $P'(z)$, is a quadratic function of the normalized coordinate $s$, given by:\n$$\nP'(z(s)) = 3\\left(\\frac{1}{z_{\\max}} - 2\\log\\left(1 + \\frac{1}{z_{\\max}}\\right)\\right)s^2 + 2\\left(3\\log\\left(1 + \\frac{1}{z_{\\max}}\\right) - \\frac{2}{z_{\\max}}\\right)s + \\frac{1}{z_{\\max}}\n$$",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

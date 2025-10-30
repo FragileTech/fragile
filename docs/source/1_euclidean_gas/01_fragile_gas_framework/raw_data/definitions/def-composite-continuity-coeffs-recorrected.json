@@ -1,0 +1,24 @@
+{
+  "label": "def-composite-continuity-coeffs-recorrected",
+  "type": "definition",
+  "name": "Composite Continuity Coefficients",
+  "section": "18",
+  "subsection": "17.2.4.1",
+  "source_file": "01_fragile_gas_framework.md",
+  "source_lines": "4627-5086",
+  "extraction_date": "2025-10-27",
+  "status": "extracted",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17.2.4.0",
+    "section_name": null,
+    "directive_label": "def-composite-continuity-coeffs-recorrected",
+    "equation": null,
+    "line_range": [
+      4837,
+      4877
+    ],
+    "url_fragment": null
+  }
+}

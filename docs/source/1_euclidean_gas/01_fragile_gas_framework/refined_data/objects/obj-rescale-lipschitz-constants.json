@@ -1,0 +1,25 @@
+{
+  "label": "obj-rescale-lipschitz-constants",
+  "name": "Rescale Function Lipschitz Constants",
+  "statement_type": "object",
+  "mathematical_expression": "Lipschitz constants for rescale function g_A and composed standardization-rescale pipeline.",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-rescale-lipschitz-constants",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "8.2.2.7",
+    "line_range": [
+      1886,
+      1901
+    ],
+    "directive_label": "obj-rescale-lipschitz-constants",
+    "equation": null,
+    "url_fragment": null
+  }
+}

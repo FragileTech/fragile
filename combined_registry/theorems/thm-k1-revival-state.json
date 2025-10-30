@@ -2,35 +2,56 @@
   "label": "thm-k1-revival-state",
   "name": "Theorem of Guaranteed Revival from a Single Survivor",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§16.1",
+    "section_name": null,
+    "directive_label": "thm-k1-revival-state",
+    "equation": null,
+    "line_range": [
+      4565,
+      4626
+    ],
+    "url_fragment": "#thm-k1-revival-state"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
-    "obj-status-update-operator",
-    "obj-alive-dead-sets"
+    "obj-revival-state",
+    "obj-companion-selection-measure",
+    "obj-cloning-measure",
+    "obj-revival-score-ratio",
+    "obj-swarm-potential-assembly-operator",
+    "obj-distance-to-cemetery-state"
   ],
   "input_axioms": [
-    "axiom-def-axiom-guaranteed-revival"
+    "def-axiom-guaranteed-revival"
   ],
-  "input_parameters": [],
-  "properties_required": {},
+  "input_parameters": [
+    "param-kappa-revival",
+    "param-epsilon-clone",
+    "param-p-max",
+    "param-eta",
+    "param-alpha",
+    "param-beta",
+    "param-v-pot-min",
+    "param-n"
+  ],
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [
-    {
-      "label": "prop-k1-guarantees-revival",
-      "expression": "k=1 \\text{ states guarantee revival}",
-      "object_label": "obj-status-update-operator",
-      "established_by": "thm-k1-revival-state",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

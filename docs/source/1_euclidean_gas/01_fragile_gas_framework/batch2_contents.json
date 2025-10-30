@@ -1,0 +1,185 @@
+{
+  "raw_data/definitions/def-cloning-probability-function.json": {
+    "label": "def-cloning-probability-function",
+    "term": "Conditional Cloning Probability Function",
+    "type": "definition",
+    "statement": "The **Conditional Cloning Probability Function**, denoted $\\pi: \\mathbb{R}_{\\ge 0} \\times \\mathbb{R}_{\\ge 0} \\to [0, 1]$, maps the fitness potential of a companion ($v_c$) and a primary walker ($v_i$) to the probability that the \"Clone\" action is selected.\n\nGiven that the score is $S(v_c, v_i)$ and the threshold is $T_{\\text{clone}} \\sim \\text{Uniform}(0, p_{\\max})$, the probability is:\n\n$$\n\\pi(v_c, v_i) := P(S(v_c, v_i) > T_{\\text{clone}}) = \\min\\left(1, \\max\\left(0, \\frac{S(v_c, v_i)}{p_{\\max}}\\right)\\right)\n$$\n\nThis function effectively clips the normalized score to the valid probability range $[0, 1]$.",
+    "dependencies": [
+      "def-cloning-score-function"
+    ],
+    "tags": [
+      "cloning",
+      "probability",
+      "function"
+    ],
+    "context": "Section 16: The Cloning Transition Measure, subsection 15.2.2",
+    "source_file": "01_fragile_gas_framework.md",
+    "line_number": 4297,
+    "extraction_date": "2025-10-27T21:43:09.486088"
+  },
+  "raw_data/definitions/def-cloning-score-function.json": {
+    "label": "def-cloning-score-function",
+    "term": "Cloning Score Function",
+    "type": "definition",
+    "statement": "The **Cloning Score Function**, $S: \\mathbb{R}_{\\ge 0} \\times \\mathbb{R}_{\\ge 0} \\to \\mathbb{R}$, takes the fitness potential of a companion walker ($v_c$) and a primary walker ($v_i$) and computes a raw score.\n\n$$\nS(v_c, v_i) := \\frac{v_c - v_i}{v_i + \\varepsilon}\n$$\n\nwhere $\\varepsilon > 0$ is the cloning denominator regularizer.",
+    "dependencies": [],
+    "tags": [
+      "cloning",
+      "score-function",
+      "measurement"
+    ],
+    "context": "Section 16: The Cloning Transition Measure, subsection 15.1.1",
+    "source_file": "01_fragile_gas_framework.md",
+    "line_number": 4219,
+    "extraction_date": "2025-10-27T21:43:09.486076"
+  },
+  "raw_data/definitions/def-composite-continuity-coeffs-recorrected.json": {
+    "label": "def-composite-continuity-coeffs-recorrected",
+    "type": "definition",
+    "name": "Composite Continuity Coefficients",
+    "section": "18",
+    "subsection": "17.2.4.1",
+    "source_file": "01_fragile_gas_framework.md",
+    "source_lines": "4627-5086",
+    "extraction_date": "2025-10-27",
+    "status": "extracted"
+  },
+  "raw_data/definitions/def-distance-to-cemetery-state.json": {
+    "label": "def-distance-to-cemetery-state",
+    "type": "definition",
+    "content": "The distance between any valid probability measure $\\nu$ (representing a living swarm) and the Cemetery State Measure $\\nu_{\\emptyset}$ is defined to be a maximal constant, ensuring that entering the cemetery state represents the largest possible jump in distributional terms.\n*   **For the Wasserstein Metric:** Using [](#def-algorithmic-cemetery-extension), for any measure $\\nu$ corresponding to a living swarm:\n$$\n\n    W_p(\\nu, \\nu_{\\emptyset}) := D_{\\mathrm{valid}} \\quad \\text{and} \\quad W_p(\\nu_{\\emptyset}, \\nu_{\\emptyset}) := 0\n\n\n$$\n*   **For the MMD (on living swarms):** We evaluate $\\mathrm{MMD}_k$ only between measures supported on $\\mathcal Y$ (living swarms). No cemetery extension is defined here. If an extension is required, one must specify an explicit positive‑definite kernel $k^{\\dagger}$ on $\\mathcal Y^{\\dagger}$ that yields the desired constant distances while preserving metric properties. When $k$ is characteristic (e.g., Gaussian/RBF), MMD is a true metric on probability measures over $\\mathcal Y$.\n*   **For the $L_2$ Distance:** The distance is a pre-defined maximal value $M_{L2}$ for the norm. For any density $\\tilde{\\rho}$ corresponding to a living swarm:\n$$\n\n    \\|\\tilde{\\rho} - \\tilde{\\rho}_{\\emptyset}\\|_{L_2} := M_{L2} \\quad \\text{and} \\quad \\|\\tilde{\\rho}_{\\emptyset} - \\tilde{\\rho}_{\\emptyset}\\|_{L2} := 0\n\n\n$$",
+    "start_line": 1462,
+    "end_line": 1480,
+    "section": "§7"
+  },
+  "raw_data/definitions/def-distance-to-companion-measurement.json": {
+    "definition_id": "def-distance-to-companion-measurement",
+    "term": "Distance-to-Companion Measurement",
+    "informal_definition": "The distance value $d_i$ for walker $i$ is the result of a two-stage sampling process. First, a **potential companion** index, denoted $c_{\\text{pot}}(i)$, is sampled from the **Companion Selection Measure** $\\mathbb{C}_i$. Second, the **Algorithmic Distance** is computed to that specific companion.\n\nThis process is equivalent to sampling a single value from the **Distance-to-Companion Measure** $\\mathbb{D}_i$, which is the pushforward of $\\mathbb{C}_i$ by the distance function $D_i(j) = d_{\\text{alg}}(x_i, x_j)$.",
+    "formal_definition": "$$\nd_i := d_{\\text{alg}}(x_i, x_{c_{\\text{pot}}(i)}) \\quad \\text{where} \\quad c_{\\text{pot}}(i) \\sim \\mathbb{C}_i(\\cdot)\n$$\n\nThe **Raw Distance Vector Operator**, denoted $\\mathbf{d}(\\mathcal{S})$, maps a swarm state $\\mathcal{S}$ to a *distribution* over N-dimensional vectors. A single realization of this vector is produced by performing the distance-to-companion measurement independently for each alive walker. For dead walkers, the component is zero.",
+    "natural_language_definition": "The distance-to-companion measurement is a stochastic operator that measures the algorithmic distance from each alive walker to a randomly selected companion walker. The companion is selected according to the companion selection measure. The operator produces an N-dimensional vector where each component represents the measured distance for the corresponding walker.",
+    "context": "This operator is the second intrinsic measurement in the algorithm and is the primary source of state-dependent instability. Its continuity is probabilistic and state-dependent because each walker's measurement depends on the state of the entire swarm via the Companion Selection Measure.",
+    "dependencies": [],
+    "related_objects": [
+      "obj-companion-selection-measure",
+      "obj-distance-to-companion-measurement",
+      "obj-raw-value-operator"
+    ],
+    "tags": [
+      "measurement",
+      "distance",
+      "companion",
+      "stochastic",
+      "operator"
+    ],
+    "notes": "The continuity of the raw distance vector operator, $\\mathcal{S} \\mapsto \\mathbf{d}(\\mathcal{S})$, is substantially more complex to analyze than that of the reward vector. The operator is stochastic, and the measurement for each walker depends on the state of the entire swarm via the Companion Selection Measure.",
+    "examples": []
+  },
+  "raw_data/definitions/def-expected-cloning-action.json": {
+    "label": "def-expected-cloning-action",
+    "term": "Conditional Expected Cloning Action",
+    "type": "definition",
+    "statement": "The **Conditional Expected Cloning Action** for a walker $i$, denoted $P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i$, is the probability that walker $i$ will be assigned the \"Clone\" action, given the swarm state $\\mathcal{S}$ and a specific, fixed fitness potential vector $\\mathbf{V}$. It is the expectation of the **Conditional Cloning Probability Function** under the **Companion Selection Measure**:\n\n$$\nP_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i := \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S})} [\\pi(V_c, V_i)]\n$$",
+    "dependencies": [
+      "def-cloning-probability-function"
+    ],
+    "tags": [
+      "cloning",
+      "probability",
+      "expectation"
+    ],
+    "context": "Section 16: The Cloning Transition Measure, subsection 15.2.3",
+    "source_file": "01_fragile_gas_framework.md",
+    "line_number": 4340,
+    "extraction_date": "2025-10-27T21:43:09.486089"
+  },
+  "raw_data/definitions/def-final-status-change-coeffs.json": {
+    "label": "def-final-status-change-coeffs",
+    "type": "definition",
+    "name": "Final Status Change Bound Coefficients",
+    "section": "18",
+    "subsection": "17.2.3.1",
+    "source_file": "01_fragile_gas_framework.md",
+    "source_lines": "4627-5086",
+    "extraction_date": "2025-10-27",
+    "status": "extracted"
+  },
+  "raw_data/definitions/def-lipschitz-structural-error-coefficients.json": {
+    "label": "def-lipschitz-structural-error-coefficients",
+    "name": "Structural Error Coefficients",
+    "type": "definition",
+    "content": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with alive sets $\\mathcal{A}_1$ and $\\mathcal{A}_2$, of sizes $k_1:=|\\mathcal{A}_1|$ and $k_2:=|\\mathcal{A}_2|$. Let $k_{\\text{stable}}:=|\\mathcal{A}_1\\cap\\mathcal{A}_2|$. Let\n\n$$\n\\sigma'_{\\min,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}\n$$\n\nbe a uniform lower bound on the regularized standard deviation. The coefficients for the structural error bounds are defined as follows:\n\n1. **The Direct Structural Error Coefficient ($C_{S,\\text{direct}}$):** The coefficient of the term linear in $n_c$.\n\n$$\nC_{S,\\text{direct}} := \\left( \\frac{2V_{\\max}}{\\sigma'_{\\min,\\text{bound}}} \\right)^2\n$$\n\n2. **The Indirect Structural Error Coefficient ($C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2)$):** The coefficient of the term quadratic in $n_c$. This coefficient bounds the error for the stable walkers.\n\n$$\nC_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) := 2 k_{\\text{stable}} \\frac{(L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2))^2}{\\sigma'^{2}_{\\min,\\text{bound}}} + 2 k_1 \\left(\\frac{2V_{\\max}}{\\sigma'_{\\min,\\text{bound}}}\\right)^2 \\frac{(L_{\\sigma',S}(\\mathcal{S}_1, \\mathcal{S}_2))^2}{\\sigma'^{2}_{\\min,\\text{bound}}}\n$$\n\nwhere $L_{\\mu,S}$ and $L_{\\sigma',S}$ are the structural continuity functions for the aggregator's mean and regularized standard deviation, as defined in lem-stats-structural-continuity.",
+    "source_section": "12",
+    "source_document": "01_fragile_gas_framework.md",
+    "dependencies": [
+      "lem-stats-structural-continuity",
+      "def-statistical-properties-measurement"
+    ],
+    "tags": [
+      "error-analysis",
+      "coefficients",
+      "continuity",
+      "structural-error"
+    ]
+  },
+  "raw_data/definitions/def-perturbation-fluctuation-bounds.json": {
+    "label": "def-perturbation-fluctuation-bounds-reproof",
+    "type": "definition",
+    "name": "Perturbation Fluctuation Bounds",
+    "term_being_defined": "Perturbation Fluctuation Bounds",
+    "full_text": "The total random displacement introduced by the Perturbation Operator is bounded by the sum of two components: a deterministic bound on its mean and a probabilistic bound on its fluctuations.\n\n1. **The Mean Displacement Bound ($B_M(N)$):** A deterministic upper bound on the total expected squared displacement for a swarm of size N. It is derived from the **Axiom of Bounded Second Moment of Perturbation**.\n   $$B_M(N) := N \\cdot M_{\\text{pert}}^2$$\n\n2. **The Stochastic Fluctuation Bound ($B_S(N, \\delta')$):** A high-probability bound on the deviation of the total squared displacement from its mean, derived from McDiarmid's inequality. For a given failure probability $\\delta' \\in (0, 1)$, it is defined as:\n   $$B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}$$\n   where $D_{\\mathcal{Y}}$ is the diameter of the algorithmic space.",
+    "components": [
+      {
+        "name": "Mean Displacement Bound",
+        "symbol": "$B_M(N)$",
+        "formula": "$B_M(N) := N \\cdot M_{\\text{pert}}^2$",
+        "description": "Deterministic upper bound on total expected squared displacement"
+      },
+      {
+        "name": "Stochastic Fluctuation Bound",
+        "symbol": "$B_S(N, \\delta')$",
+        "formula": "$B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}$",
+        "description": "High-probability bound on deviation from mean"
+      }
+    ],
+    "source_section": "14. The Perturbation Operator",
+    "subsection": "13.2.4. Definition: Perturbation Fluctuation Bounds",
+    "source_document": "01_fragile_gas_framework.md",
+    "line_range": [
+      4064,
+      4082
+    ],
+    "tags": [
+      "definition",
+      "perturbation",
+      "bound",
+      "concentration"
+    ],
+    "dependencies": [
+      "def-axiom-bounded-second-moment-perturbation",
+      "sub-lem-probabilistic-bound-perturbation-displacement-reproof"
+    ],
+    "used_by": [
+      "thm-perturbation-operator-continuity-reproof"
+    ]
+  },
+  "raw_data/definitions/def-perturbation-measure.json": {
+    "label": "def-perturbation-measure",
+    "term": "Perturbation Measure",
+    "formal_statement": null,
+    "applies_to_object_type": "measure",
+    "parameters": [],
+    "source": null,
+    "natural_language_description": "For a given noise scale $\\sigma > 0$, the **Perturbation Measure**, $\\mathcal{P}_\\sigma(x, \\cdot)$, is a **Valid Noise Measure** according to Definition 2.3. It governs the random walks during the perturbation step of the algorithm.",
+    "tags": [
+      "noise",
+      "perturbation",
+      "algorithmic",
+      "random-walk"
+    ],
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "validation_errors": [],
+    "raw_fallback": null
+  }
+}

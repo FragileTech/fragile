@@ -1,0 +1,10 @@
+{
+  "label": "param-param-failure-probability-delta",
+  "name": "param-failure-probability-delta",
+  "symbol": "param-failure-probability-delta",
+  "parameter_type": "real",
+  "constraints": null,
+  "default_value": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

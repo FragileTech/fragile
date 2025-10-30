@@ -1,0 +1,25 @@
+{
+  "label": "obj-potential-bounds",
+  "name": "Fitness Potential Bounds",
+  "statement_type": "object",
+  "mathematical_expression": "Lower and upper bounds on fitness potential values under canonical piecewise rescale function.",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-potential-bounds",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "12.1",
+    "line_range": [
+      3687,
+      3700
+    ],
+    "directive_label": "obj-potential-bounds",
+    "equation": null,
+    "url_fragment": null
+  }
+}

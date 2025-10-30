@@ -1,0 +1,31 @@
+{
+  "label": "def-cloning-operator-continuity-coeffs-recorrected",
+  "term": "Cloning Operator Continuity Coefficients",
+  "type": "definition",
+  "statement": "The state-dependent functions in the continuity bound for the Cloning Transition Operator are defined as follows:\n\n1. **The Cloning Lipschitz Amplification Factor ($C_{\\text{clone},L}(\\mathcal{S}_1, \\mathcal{S}_2)$):** The coefficient of the term that is linear in the input squared displacement, $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^2$. This term primarily captures the propagation of the positional component of the input displacement.\n\n2. **The Cloning Hölder Amplification Factor ($C_{\\text{clone},H}(\\mathcal{S}_1, \\mathcal{S}_2)$):** The coefficient of the Hölder term, $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)$. This term arises from the complex, non-linear error propagation originating from the **Distance-to-Companion Measurement**, specifically from the component of its error bound that is quadratic in the number of status changes.\n\n3. **The Cloning Stochastic Offset ($K_{\\text{clone}}(\\mathcal{S}_1, \\mathcal{S}_2)$):** A state-dependent term that is independent of the input displacement. It represents the baseline displacement introduced by the operator's intrinsic stochasticity, which exists even if the two input swarms are identical.",
+  "dependencies": [
+    "thm-cloning-transition-operator-continuity-recorrected"
+  ],
+  "tags": [
+    "cloning",
+    "continuity",
+    "coefficients"
+  ],
+  "context": "Section 16: The Cloning Transition Measure, subsection 15.2.8.1",
+  "source_file": "01_fragile_gas_framework.md",
+  "line_number": 4447,
+  "extraction_date": "2025-10-27T21:43:09.486090",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.8",
+    "section_name": null,
+    "directive_label": "def-cloning-operator-continuity-coeffs-recorrected",
+    "equation": null,
+    "line_range": [
+      4448,
+      4463
+    ],
+    "url_fragment": null
+  }
+}

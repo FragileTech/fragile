@@ -1,0 +1,115 @@
+{
+  "label": "axiom-projection-compatibility",
+  "name": "Axiom of Projection Compatibility",
+  "statement": "Projection compatibility: There exists a function $R_{\\mathcal Y}:\\varphi(\\mathcal X)\\to\\mathbb R$ such that $R = R_{\\mathcal Y}\\circ\\varphi$ on $\\mathcal X$. Equivalently, if $\\varphi(x)=\\varphi(x')$ then $R(x)=R(x')$.",
+  "mathematical_expression": "R = R_{\\mathcal Y}\\circ\\varphi \\text{ on } \\mathcal X \\text{, i.e., } \\varphi(x)=\\varphi(x') \\Rightarrow R(x)=R(x')",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "core_assumption": "The reward function must factor through the projection map from state space to algorithmic space. This ensures that the reward is determined solely by the algorithmic representation $\\varphi(x)$, not by irrelevant details of the full state $x \\in \\mathcal{X}$. This compatibility condition guarantees that states with identical projected positions have identical rewards, making the algorithmic space a valid abstraction for optimization.",
+  "parameters": {
+    "R": {
+      "symbol": "R",
+      "name": "Reward Function",
+      "type": "function",
+      "domain": "\\mathcal{X}",
+      "codomain": "\\mathbb{R}",
+      "description": "The reward function defined on the full state space $\\mathcal{X}$."
+    },
+    "R_Y": {
+      "symbol": "R_{\\mathcal{Y}}",
+      "name": "Projected Reward Function",
+      "type": "function",
+      "domain": "\\varphi(\\mathcal{X}) \\subseteq \\mathcal{Y}",
+      "codomain": "\\mathbb{R}",
+      "description": "The well-defined reward function on the image of the projection map. This function encodes the reward structure in the algorithmic space, and is related to the original reward by $R = R_{\\mathcal{Y}} \\circ \\varphi$."
+    },
+    "varphi": {
+      "symbol": "\\varphi",
+      "name": "Projection Map",
+      "type": "function",
+      "domain": "\\mathcal{X}",
+      "codomain": "\\mathcal{Y}",
+      "description": "The Lipschitz-continuous projection map from state space to algorithmic space. It extracts the algorithmically relevant features from full states.",
+      "properties": [
+        "Lipschitz continuous with constant $L_{\\varphi}$",
+        "Maps to bounded algorithmic space $\\mathcal{Y} \\subset \\mathbb{R}^m$"
+      ]
+    },
+    "X": {
+      "symbol": "\\mathcal{X}",
+      "name": "State Space",
+      "type": "space",
+      "description": "The full state space where walkers reside. A Polish metric space $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu_{\\mathcal{X}})$ with metric and reference measure."
+    },
+    "Y": {
+      "symbol": "\\mathcal{Y}",
+      "name": "Algorithmic Space",
+      "type": "space",
+      "description": "The bounded algorithmic space $\\mathcal{Y} \\subset \\mathbb{R}^m$ equipped with Euclidean metric $d_{\\mathcal{Y}}(y,y') = \\|y-y'\\|_2$. The space where measurement, aggregation, and standardization operations occur."
+    },
+    "L_varphi": {
+      "symbol": "L_{\\varphi}",
+      "name": "Projection Lipschitz Constant",
+      "type": "constant",
+      "description": "The Lipschitz constant of the projection map: $d_{\\mathcal{Y}}(\\varphi(x), \\varphi(x')) \\le L_{\\varphi} \\, d_{\\mathcal{X}}(x, x')$ for all $x, x' \\in \\mathcal{X}$."
+    }
+  },
+  "condition": "For all states $x, x' \\in \\mathcal{X}$, if they project to the same point in algorithmic space (i.e., $\\varphi(x) = \\varphi(x')$), then they must have identical rewards (i.e., $R(x) = R(x')$). This ensures $R_{\\mathcal{Y}}$ is a well-defined function on the image $\\varphi(\\mathcal{X})$.",
+  "failure_mode_analysis": {
+    "violation_description": "If projection compatibility is violated, the same algorithmic state $y \\in \\varphi(\\mathcal{X})$ could correspond to different rewards depending on which preimage $x \\in \\varphi^{-1}(y)$ is chosen. This makes $R_{\\mathcal{Y}}$ ill-defined as a function.",
+    "consequences": [
+      "The swarm cannot reliably learn from algorithmic features alone, since identical projected positions would yield inconsistent reward signals",
+      "Standardization and fitness potential calculations become meaningless, as the same algorithmic configuration could have arbitrary reward variance",
+      "The entire measurement pipeline breaks down: aggregated statistics in $\\mathcal{Y}$ would not reflect consistent reward structure",
+      "Cloning decisions become unpredictable: walkers with identical algorithmic positions could have drastically different selection probabilities",
+      "Convergence analysis becomes impossible, as the algorithmic space $\\mathcal{Y}$ is no longer a valid abstraction for the reward landscape"
+    ],
+    "severity": "critical",
+    "detection_strategy": "For a random sample of state pairs $(x_1, x_2)$ satisfying $\\varphi(x_1) = \\varphi(x_2)$, verify that $R(x_1) = R(x_2)$ holds within the limits of numerical precision (i.e., $|R(x_1) - R(x_2)| < \\varepsilon_{\\text{machine}}$). If significant deviations are found, the projection map is incompatible with the reward structure.",
+    "remediation": [
+      "Redesign the projection map $\\varphi$ to preserve all reward-relevant features",
+      "Enrich the algorithmic space $\\mathcal{Y}$ to include additional dimensions that capture reward-determining state components",
+      "If the reward genuinely depends on state features not captured by $\\varphi$, redefine the reward function $R$ to factor through the current projection"
+    ]
+  },
+  "related_axioms": [
+    "def-axiom-reward-regularity",
+    "def-axiom-bounded-algorithmic-diameter",
+    "def-axiom-environmental-richness"
+  ],
+  "framework_role": "This axiom establishes the mathematical consistency between the state-space reward function and its algorithmic-space counterpart. It is a prerequisite for all downstream measurement and standardization operations, which assume that reward structure is fully determined by the projection $\\varphi(x)$. The regularity of $R_{\\mathcal{Y}}$ on $(\\mathcal{Y}, d_{\\mathcal{Y}})$ is separately guaranteed by the Axiom of Reward Regularity.",
+  "implementation_notes": [
+    "In the Canonical Fragile Swarm (Euclidean case), if $\\mathcal{X} = \\mathcal{Y} = \\mathbb{R}^d$ and $\\varphi$ is the identity map, this axiom is trivially satisfied with $R_{\\mathcal{Y}} = R$",
+    "For non-injective projections (e.g., dimensionality reduction, symmetry quotients), this axiom requires careful reward design to respect the projection structure",
+    "When $\\varphi$ admits a Lipschitz right-inverse $\\psi: \\varphi(\\mathcal{X}) \\to \\mathcal{X}$ (i.e., $\\varphi \\circ \\psi = \\text{id}_{\\varphi(\\mathcal{X})}$), one can relate the Lipschitz constants: $L_{R,\\mathcal{Y}} \\le L_R \\cdot L_{\\psi}$",
+    "For general projections without right-inverses, treat $L_{R,\\mathcal{Y}}$ as an independent environmental parameter"
+  ],
+  "special_cases": {
+    "identity_projection": "If $\\varphi$ is the identity map (or injective), the axiom is automatically satisfied: $R_{\\mathcal{Y}} = R \\circ \\varphi^{-1}$ on the image",
+    "quotient_projection": "If $\\mathcal{X} = \\mathcal{Y} \\times \\mathcal{Z}$ and $\\varphi$ projects onto the first factor, the axiom requires $R(y, z) = R(y, z')$ for all $z, z' \\in \\mathcal{Z}$",
+    "dimensionality_reduction": "For feature extraction $\\varphi: \\mathbb{R}^d \\to \\mathbb{R}^m$ with $m < d$, the reward must depend only on the extracted $m$-dimensional features"
+  },
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.2.3",
+    "directive_label": "def-axiom-projection-compatibility",
+    "equation": null,
+    "line_range": [
+      792,
+      794
+    ],
+    "url_fragment": "#axiom-of-projection-compatibility"
+  },
+  "tags": [
+    "axiom",
+    "environmental",
+    "projection",
+    "reward",
+    "consistency",
+    "well-definedness",
+    "algorithmic-space",
+    "measurement-prerequisite"
+  ]
+}

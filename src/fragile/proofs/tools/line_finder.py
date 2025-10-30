@@ -28,11 +28,8 @@ from typing import List, Optional, Tuple
 
 
 def find_text_in_markdown(
-    markdown_content: str,
-    search_string: str,
-    context_lines: int = 0,
-    case_sensitive: bool = False
-) -> Optional[Tuple[int, int]]:
+    markdown_content: str, search_string: str, context_lines: int = 0, case_sensitive: bool = False
+) -> tuple[int, int] | None:
     """
     Find the exact line range for a text snippet in markdown.
 
@@ -99,10 +96,8 @@ def find_text_in_markdown(
 
 
 def find_directive_lines(
-    markdown_content: str,
-    directive_label: str,
-    directive_type: Optional[str] = None
-) -> Optional[Tuple[int, int]]:
+    markdown_content: str, directive_label: str, directive_type: str | None = None
+) -> tuple[int, int] | None:
     """
     Find the line range for a Jupyter Book directive by its label.
 
@@ -169,10 +164,8 @@ def find_directive_lines(
 
 
 def find_equation_lines(
-    markdown_content: str,
-    equation_latex: str,
-    equation_label: Optional[str] = None
-) -> Optional[Tuple[int, int]]:
+    markdown_content: str, equation_latex: str, equation_label: str | None = None
+) -> tuple[int, int] | None:
     """
     Find the line range for a LaTeX equation in markdown.
 
@@ -243,10 +236,8 @@ def find_equation_lines(
 
 
 def find_section_lines(
-    markdown_content: str,
-    section_heading: str,
-    exact_match: bool = False
-) -> Optional[Tuple[int, int]]:
+    markdown_content: str, section_heading: str, exact_match: bool = False
+) -> tuple[int, int] | None:
     """
     Find the line range for a section (from heading to next heading or end of file).
 
@@ -297,11 +288,10 @@ def find_section_lines(
                     start_line = i + 1  # 1-indexed
                     heading_level = level
                     break
-            else:
-                if section_heading.lower() in title.lower():
-                    start_line = i + 1  # 1-indexed
-                    heading_level = level
-                    break
+            elif section_heading.lower() in title.lower():
+                start_line = i + 1  # 1-indexed
+                heading_level = level
+                break
 
     if start_line is None or heading_level is None:
         return None
@@ -321,10 +311,8 @@ def find_section_lines(
 
 
 def find_all_occurrences(
-    markdown_content: str,
-    search_string: str,
-    case_sensitive: bool = False
-) -> List[Tuple[int, int]]:
+    markdown_content: str, search_string: str, case_sensitive: bool = False
+) -> list[tuple[int, int]]:
     """
     Find all occurrences of a text snippet in markdown.
 
@@ -373,7 +361,7 @@ def find_all_occurrences(
 # =============================================================================
 
 
-def validate_line_range(line_range: Tuple[int, int], max_lines: int) -> bool:
+def validate_line_range(line_range: tuple[int, int], max_lines: int) -> bool:
     """
     Validate that a line range is well-formed.
 
@@ -390,18 +378,10 @@ def validate_line_range(line_range: Tuple[int, int], max_lines: int) -> bool:
     - end_line <= max_lines
     """
     start, end = line_range
-    return (
-        start >= 1 and
-        end >= 1 and
-        start <= end and
-        end <= max_lines
-    )
+    return start >= 1 and end >= 1 and start <= end <= max_lines
 
 
-def extract_lines(
-    markdown_content: str,
-    line_range: Tuple[int, int]
-) -> str:
+def extract_lines(markdown_content: str, line_range: tuple[int, int]) -> str:
     """
     Extract a specific line range from markdown content.
 

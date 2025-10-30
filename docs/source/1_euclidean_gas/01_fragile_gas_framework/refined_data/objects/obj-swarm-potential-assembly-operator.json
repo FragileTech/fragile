@@ -1,0 +1,30 @@
+{
+  "label": "obj-swarm-potential-assembly-operator",
+  "name": "Swarm Potential Assembly Operator",
+  "statement_type": "object",
+  "mathematical_expression": "The **Swarm Potential Assembly Operator**, denoted $A_{\\text{pot}}$, is a deterministic function that maps the potential vector of the alive set to the full N-dimensional fitness potential vector for the entire swarm.",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "fitness-potential",
+    "operator",
+    "assembly",
+    "swarm"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-swarm-potential-assembly-operator",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "12.1",
+    "line_range": [
+      3712,
+      3729
+    ],
+    "directive_label": "obj-swarm-potential-assembly-operator",
+    "equation": null,
+    "url_fragment": null
+  }
+}

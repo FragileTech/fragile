@@ -1,0 +1,26 @@
+{
+  "label": "def-asymmetric-rescale-function",
+  "name": "Smooth Piecewise Rescale Function",
+  "entity_type": "definition",
+  "statement_type": "DefinitionBox",
+  "natural_language_statement": "A specific, well-behaved rescale function is defined as a smooth, piecewise combination of an exponential function, a logarithmic function, a constant saturation value, and a unique cubic polynomial that patches them together to ensure C1 smoothness.",
+  "description": "This definition provides a concrete example of a rescale function that satisfies the Axiom of a Well-Behaved Rescale Function. It is constructed in four parts to provide different behaviors for low, medium, and high standardized scores, while maintaining continuous differentiability everywhere. The cubic patch is essential for smoothly connecting the growth phase to the saturation phase.",
+  "formal_statement": "The Smooth Piecewise Rescale Function $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ is defined as: ...",
+  "input_objects": [],
+  "input_axioms": [
+    "axiom-well-behaved-rescale-function"
+  ],
+  "input_parameters": [
+    "z_max"
+  ],
+  "relations": [],
+  "proof_status": "n/a",
+  "raw_fallback": {},
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "9. Rescale Transformation",
+    "subsection": "8.2.1 Definition of the Asymmetric Rescale Function",
+    "directive_label": "def-asymmetric-rescale-function"
+  }
+}

@@ -2,9 +2,17 @@
   "label": "thm-meyn-tweedie-drift-minor",
   "name": "Drift-Minorization Implies Geometric Ergodicity (Meyn & Tweedie)",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "12_quantitative_error_bounds",
+  "source": {
+    "document_id": "12_quantitative_error_bounds",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+    "section": null,
+    "directive_label": "thm-meyn-tweedie-drift-minor",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-meyn-tweedie-drift-minor"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -19,19 +27,19 @@
     "M",
     "rho"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-lyapunov-v": [
-      "prop-drift-condition"
+      "attr-drift-condition"
     ],
     "obj-small-set-c": [
-      "prop-minorization"
+      "attr-minorization"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-markov-iterates-invariant-measure-other",
@@ -41,14 +49,29 @@
       "target_object": "obj-invariant-measure",
       "established_by": "thm-meyn-tweedie-drift-minor",
       "expression": "bound: ||T^n(s,.) - nu||_TV <= C_erg * rho^n * V(s)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-dict"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "12_quantitative_error_bounds"
+      "source": {
+        "document_id": "12_quantitative_error_bounds",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+        "section": null,
+        "directive_label": "thm-meyn-tweedie-drift-minor",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-meyn-tweedie-drift-minor"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

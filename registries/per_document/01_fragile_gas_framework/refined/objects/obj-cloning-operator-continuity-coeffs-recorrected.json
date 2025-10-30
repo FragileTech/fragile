@@ -1,0 +1,38 @@
+{
+  "label": "obj-cloning-operator-continuity-coeffs-recorrected",
+  "name": "Cloning Operator Continuity Coefficients",
+  "mathematical_expression": "C_{\\text{clone},L}(\\mathcal{S}_1, \\mathcal{S}_2)",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "cloning",
+    "coeffs",
+    "continuity",
+    "measure-theory",
+    "metric",
+    "operator",
+    "particle-system",
+    "recorrected",
+    "stochastic"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.8.1",
+    "directive_label": "def-cloning-operator-continuity-coeffs-recorrected",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-cloning-operator-continuity-coeffs-recorrected",
+  "definition": "A set of three state-dependent coefficients that appear in the mean-square continuity bound for the Cloning Transition Operator. They characterize how the expected displacement between two output swarms relates to the displacement between the two input swarms, breaking the relationship into linear, non-linear (Hölder), and constant components.",
+  "mathematical_properties": "Three coefficients: (1) C_clone,L - Cloning Lipschitz Amplification Factor (linear in input displacement), (2) C_clone,H - Cloning Hölder Amplification Factor (Hölder term proportional to d), (3) K_clone - Cloning Stochastic Offset (baseline displacement from intrinsic stochasticity). Typical structure: C_clone,L = 3 + (3·D_Y²·C_P)/N where C_P is an aggregate of upstream constants.",
+  "dependencies": [
+    "obj-standardization-operator-n-dimensional",
+    "obj-distance-to-companion-measurement"
+  ],
+  "typical_values": null
+}

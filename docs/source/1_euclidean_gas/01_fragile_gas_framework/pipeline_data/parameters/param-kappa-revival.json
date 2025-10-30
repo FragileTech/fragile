@@ -1,0 +1,10 @@
+{
+  "label": "param-kappa-revival",
+  "name": "Revival Guarantee Parameter",
+  "symbol": "\\kappa_{\\text{revival}}",
+  "parameter_type": "real",
+  "constraints": null,
+  "default_value": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

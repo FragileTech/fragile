@@ -1,0 +1,56 @@
+{
+  "temp_id": "raw-cor-003",
+  "label": "cor-pipeline-continuity-margin-stability",
+  "label_text": "Corollary: Pipeline Continuity Under Margin-Based Status Stability",
+  "name": "Pipeline Continuity Under Margin-Based Status Stability",
+  "statement_type": "corollary",
+  "statement": "Assume the **Axiom of Margin-Based Status Stability**. Then for all inputs $(\\mathcal{S}_1, \\mathbf{v}_{r1}, \\mathbf{v}_{d1})$ and $(\\mathcal{S}_2, \\mathbf{v}_{r2}, \\mathbf{v}_{d2})$, the deterministic bound $F_{\\text{pot,det}}$ in the Deterministic Continuity theorem satisfies: $F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2}) \\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0$. Moreover, for $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2\\le r_{\\mathrm{status}}$ we have $n_c=0$ and the unstable term vanishes exactly; the remaining terms are controlled by the deterministic continuity of the patched standardization operator and the Lipschitz continuity of the potential map $F$.",
+  "full_statement_text": "Assume the **Axiom of Margin-Based Status Stability** ([](#def-axiom-margin-stability)). Then for all inputs $(\\mathcal{S}_1, \\mathbf{v}_{r1}, \\mathbf{v}_{d1})$ and $(\\mathcal{S}_2, \\mathbf{v}_{r2}, \\mathbf{v}_{d2})$, the deterministic bound $F_{\\text{pot,det}}$ in [](#thm-deterministic-potential-continuity) satisfies\n$$\n\nF_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})\n\\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0.\n\n$$\nMoreover, for $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2\\le r_{\\mathrm{status}}$ we have $n_c=0$ and the unstable term vanishes exactly; the remaining terms are controlled by the deterministic continuity of the patched standardization operator and the Lipschitz continuity of the potential map $F$.",
+  "context_before": null,
+  "conclusion_formula_latex": "F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})\\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0",
+  "equation_label": null,
+  "explicit_definition_references": [
+    "def-axiom-margin-stability"
+  ],
+  "explicit_theorem_references": [
+    "thm-deterministic-potential-continuity"
+  ],
+  "source_section": "13. Fitness potential operator",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "13",
+    "section_name": null,
+    "directive_label": "cor-pipeline-continuity-margin-stability",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "has_proof": false,
+  "proof_sketch": "This corollary follows directly from the theorem by invoking the Axiom of Margin-Based Status Stability, which guarantees that status changes are bounded when swarm displacement is small. Under this axiom, when displacement is within the margin radius, the number of status changes $n_c=0$, eliminating the unstable term. The remaining stable term vanishes continuously as the inputs converge.",
+  "depends_on": [
+    "thm-deterministic-potential-continuity",
+    "def-axiom-margin-stability"
+  ],
+  "input_objects": [
+    "obj-algorithmic-space-generic",
+    "def-swarm-potential-assembly-operator",
+    "def-status-update-operator",
+    "obj-alg-distance"
+  ],
+  "input_axioms": [
+    "def-axiom-margin-stability"
+  ],
+  "input_parameters": [],
+  "output_type": "Continuity",
+  "relations_established": [
+    "For d_Disp^2 <= r_status: unstable term vanishes (n_c = 0)",
+    "Under Axiom of Margin-Based Status Stability, deterministic bound F_pot,det -> 0 as inputs converge"
+  ],
+  "tags": [
+    "fitness-potential",
+    "continuity",
+    "margin-stability",
+    "corollary"
+  ]
+}

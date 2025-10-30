@@ -1,0 +1,21 @@
+{
+  "label": "def-swarm-aggregation-operator-axiomatic",
+  "type": "definition",
+  "content": "A **Swarm Aggregation Operator**, denoted $M$, is a function that maps a swarm state $\\mathcal{S}$ and a raw value vector $\\mathbf{v}$ (defined on the alive set $\\mathcal{A}(\\mathcal{S})$) to a probability measure $\\mu_{\\mathbf{v}}$ on $\\mathbb{R}$.\n**Signature:** $M: \\Sigma_N \\times \\mathbb{R}^{|\\mathcal{A}(\\mathcal{S})|} \\to \\mathcal{P}(\\mathbb{R})$\nFor the operator to be valid, it must satisfy the foundational axioms for aggregators defined in Section 2.3.4. Furthermore, the user must provide proofs and explicit functions for the following continuity and structural properties.\n1.  **Value Continuity (Lipschitz):** For a fixed swarm structure $\\mathcal{S}$, the moment functions must be Lipschitz continuous with respect to the L2-norm of the input value vector $\\mathbf{v}$. The user must provide the **Value Lipschitz Functions**, $L_{\\mu,M}(\\mathcal{S})$ and $L_{m_2,M}(\\mathcal{S})$, such that for any two value vectors $\\mathbf{v}_1, \\mathbf{v}_2$:\n$$\n\n|\\mu(\\mathcal{S}, \\mathbf{v}_1) - \\mu(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\mu,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2\n\n$$\n$$\n|m_2(\\mathcal{S}, \\mathbf{v}_1) - m_2(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{m_2,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2\n$$\n\n2.  **Structural Continuity (Quadratic):** For a fixed value vector $\\mathbf{v}$, the change in the moment functions due to a change in the swarm's alive set must be bounded. The user must provide the **Structural Continuity Functions**, $L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2)$ and $L_{m_2,S}(\\mathcal{S}_1, \\mathcal{S}_2)$, which may depend on both the initial and final swarm states. These functions must satisfy the following inequalities for any two swarms $\\mathcal{S}_1, \\mathcal{S}_2$:\n\n$$\n|\\mu(\\mathcal{S}_1, \\mathbf{v}) - \\mu(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2\n$$\n\n$$\n|m_2(\\mathcal{S}_1, \\mathbf{v}) - m_2(\\mathcal{S}_2, \\mathbf{v})| \\le L_{m_2,S}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2\n$$\n*Note: The structural continuity is defined with respect to the squared L2-norm of the status change vector. For notational convenience in subsequent sections, we define the **total number of status changes** between two swarms as $n_c := \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2 = \\sum_{j=1}^N (s_{1,j} - s_{2,j})^2$. This quadratic form is a natural choice because the error in common aggregators (like the empirical mean) is directly proportional to the number of added or removed data points, not its square root.*\n:::{hint}\nWhy quadratic dependence on status changes? When a walker dies or revives, it's like suddenly adding or removing a data point from your dataset. The resulting error in statistics (like the mean) jumps discontinuously. The quadratic form $n_c$ counts these discontinuous jumps, making it the natural measure for how much the aggregated statistics can change.",
+  "start_line": 1273,
+  "end_line": 1300,
+  "section": "§7",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "6.2.1",
+    "section_name": null,
+    "directive_label": "def-swarm-aggregation-operator-axiomatic",
+    "equation": null,
+    "line_range": [
+      1273,
+      1300
+    ],
+    "url_fragment": "#def-swarm-aggregation-operator-axiomatic"
+  }
+}

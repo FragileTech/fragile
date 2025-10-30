@@ -1,0 +1,55 @@
+{
+  "label": "axiom-well-behaved-rescale-function",
+  "name": "Axiom of a Well-Behaved Rescale Function",
+  "entity_type": "axiom",
+  "statement_type": "axiom",
+  "statement": "Any function $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ chosen for the rescale transformation must satisfy the following properties: (1) C^1 Smoothness - continuously differentiable on $\\mathbb{R}$, (2) Monotonicity - $g'_A(z) \\ge 0$ for all $z \\in \\mathbb{R}$, (3) Uniform Boundedness - range is bounded $(0, g_{A,\\max}]$ for finite $g_{A,\\max} > 0$, (4) Global Lipschitz Continuity - $\\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty$.",
+  "natural_language_statement": "Any function chosen for the rescale transformation must be C1 smooth, monotonically non-decreasing, uniformly bounded, and globally Lipschitz continuous.",
+  "mathematical_expression": "g'_A(z) \\ge 0 \\quad \\forall z \\in \\mathbb{R} \\text{ and } \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "description": "This axiom establishes the fundamental properties required for any rescale function used within the Fragile framework. These conditions are crucial for ensuring the stability and mathematical consistency of the fitness potential and cloning dynamics. The user of the framework is responsible for verifying that their chosen rescale function complies with these four conditions.",
+  "assumptions_hypotheses": [
+    {
+      "property": "C1 Smoothness",
+      "description": "The function $g_A(z)$ must be continuously differentiable on its entire domain $\\mathbb{R}$."
+    },
+    {
+      "property": "Monotonicity",
+      "description": "The function must be monotonically non-decreasing, meaning its first derivative is non-negative for all inputs: $g'_A(z) \\ge 0 \\quad \\forall z \\in \\mathbb{R}$."
+    },
+    {
+      "property": "Uniform Boundedness",
+      "description": "The function's range must be a bounded interval $(0, g_{A,\\max}]$ for some finite constant $g_{A,\\max} > 0$."
+    },
+    {
+      "property": "Global Lipschitz Continuity",
+      "description": "The function must be globally Lipschitz continuous, which for a C1 function means its first derivative is uniformly bounded: $\\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty$."
+    }
+  ],
+  "conclusion_main_result": null,
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "lemma_dag_edges": [],
+  "internal_lemmas": [],
+  "relations": [
+    {
+      "formula": "g'_A(z) \\ge 0 \\quad \\forall z \\in \\mathbb{R}",
+      "description": "Monotonicity condition: Ensures that a higher standardized score does not result in a lower fitness potential component."
+    },
+    {
+      "formula": "\\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty",
+      "description": "Global Lipschitz continuity condition: Ensures that small changes in standardized scores are not pathologically amplified, which is critical for the continuity of the Fitness Potential Operator."
+    }
+  ],
+  "proof_status": "unproven",
+  "raw_fallback": {},
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "9. Rescale Transformation",
+    "subsection": null,
+    "directive_label": "def-axiom-rescale-function"
+  }
+}

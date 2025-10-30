@@ -3,14 +3,23 @@
   "name": "The Cemetery State",
   "mathematical_expression": "\\dagger := \\{(x_i, v_i, 0) : i = 1, \\ldots, N\\}",
   "object_type": "space",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "euclidean-gas",
     "particle",
     "swarm"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "06_convergence"
+  "source": {
+    "document_id": "06_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/06_convergence.md",
+    "section": null,
+    "directive_label": "obj-cemetery-state",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-cemetery-state"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

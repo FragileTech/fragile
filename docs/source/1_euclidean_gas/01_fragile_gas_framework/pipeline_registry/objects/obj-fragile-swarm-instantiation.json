@@ -1,0 +1,27 @@
+{
+  "label": "obj-fragile-swarm-instantiation",
+  "name": "Fragile Swarm Instantiation",
+  "mathematical_expression": "Fragile Swarm Instantiation",
+  "object_type": "set",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "algorithm",
+    "instantiation",
+    "configuration",
+    "parameters",
+    "execution"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "Section 19.1 (lines 5089-5099)",
+    "directive_label": null,
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": null
+}

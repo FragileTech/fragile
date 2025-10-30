@@ -13,9 +13,10 @@ Version: 2.0.0
 
 from __future__ import annotations
 
-from typing import Any, Dict, Generic, List, Literal, Optional, Set, TypeVar, Union
+from typing import Any, Generic, Literal, TypeVar, Union
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field
+
 
 # TypeVars for generic types
 T = TypeVar("T")
@@ -41,7 +42,9 @@ class UnresolvedReference(BaseModel, Generic[T]):
     model_config = ConfigDict(frozen=True)
 
     id: str = Field(..., min_length=1, description="Object ID")
-    type_hint: Optional[str] = Field(None, description="Type hint for validation (e.g., 'MathematicalObject')")
+    type_hint: str | None = Field(
+        None, description="Type hint for validation (e.g., 'MathematicalObject')"
+    )
 
     def is_resolved(self) -> Literal[False]:
         """Always False for unresolved references."""
@@ -101,10 +104,10 @@ class TagQuery(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    tags: List[str] = Field(..., min_items=1, description="Tags to query")
+    tags: list[str] = Field(..., min_items=1, description="Tags to query")
     mode: Literal["any", "all", "none"] = Field("any", description="Query mode: any/all/none")
 
-    def matches(self, object_tags: Set[str]) -> bool:
+    def matches(self, object_tags: set[str]) -> bool:
         """
         Pure function: Check if object tags match this query.
 
@@ -118,9 +121,9 @@ class TagQuery(BaseModel):
         tag_set = set(self.tags)
         if self.mode == "any":
             return bool(tag_set & object_tags)  # Intersection non-empty
-        elif self.mode == "all":
+        if self.mode == "all":
             return tag_set.issubset(object_tags)  # All tags present
-        elif self.mode == "none":
+        if self.mode == "none":
             return not bool(tag_set & object_tags)  # No intersection
         return False
 
@@ -143,11 +146,17 @@ class CombinedTagQuery(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    must_have: List[str] = Field(default_factory=list, description="Tags that MUST be present (AND)")
-    any_of: List[str] = Field(default_factory=list, description="At least ONE must be present (OR)")
-    must_not_have: List[str] = Field(default_factory=list, description="Tags that MUST NOT be present (NOT)")
+    must_have: list[str] = Field(
+        default_factory=list, description="Tags that MUST be present (AND)"
+    )
+    any_of: list[str] = Field(
+        default_factory=list, description="At least ONE must be present (OR)"
+    )
+    must_not_have: list[str] = Field(
+        default_factory=list, description="Tags that MUST NOT be present (NOT)"
+    )
 
-    def matches(self, object_tags: Set[str]) -> bool:
+    def matches(self, object_tags: set[str]) -> bool:
         """
         Pure function: Check if object tags match this combined query.
 
@@ -181,7 +190,7 @@ class CombinedTagQuery(BaseModel):
 # =============================================================================
 
 
-def create_reference_id(id: str, type_hint: Optional[str] = None) -> UnresolvedReference[Any]:
+def create_reference_id(id: str, type_hint: str | None = None) -> UnresolvedReference[Any]:
     """
     Helper: Create unresolved reference from ID.
 
@@ -231,7 +240,7 @@ def get_reference_id(ref: Reference[T]) -> str:
     return ref.id
 
 
-def get_reference_value(ref: Reference[T]) -> Optional[T]:
+def get_reference_value(ref: Reference[T]) -> T | None:
     """
     Total function: Get value from reference (None if unresolved).
 
@@ -266,9 +275,11 @@ class QueryResult(BaseModel, Generic[T]):
 
     model_config = ConfigDict(frozen=True)
 
-    matches: List[T] = Field(..., description="Objects matching the query")
+    matches: list[T] = Field(..., description="Objects matching the query")
     total_count: int = Field(..., ge=0, description="Total number of matches")
-    query_time_ms: Optional[float] = Field(None, ge=0, description="Query execution time in milliseconds")
+    query_time_ms: float | None = Field(
+        None, ge=0, description="Query execution time in milliseconds"
+    )
 
     def is_empty(self) -> bool:
         """Pure function: Check if query returned no results."""
@@ -302,9 +313,11 @@ class ResolutionContext(BaseModel):
 
     model_config = ConfigDict(frozen=False)  # Mutable for tracking
 
-    resolved: Set[str] = Field(default_factory=set, description="Successfully resolved IDs")
-    failed: Set[str] = Field(default_factory=set, description="Failed to resolve IDs")
-    resolution_stack: List[str] = Field(default_factory=list, description="Current resolution stack (for cycle detection)")
+    resolved: set[str] = Field(default_factory=set, description="Successfully resolved IDs")
+    failed: set[str] = Field(default_factory=set, description="Failed to resolve IDs")
+    resolution_stack: list[str] = Field(
+        default_factory=list, description="Current resolution stack (for cycle detection)"
+    )
 
     def push_resolution(self, id: str) -> bool:
         """
@@ -345,7 +358,7 @@ class ResolutionContext(BaseModel):
 # =============================================================================
 
 
-def extract_id_from_label(obj: Any) -> Optional[str]:
+def extract_id_from_label(obj: Any) -> str | None:
     """
     Extract ID/label from an object that has a 'label' attribute.
 
@@ -360,7 +373,7 @@ def extract_id_from_label(obj: Any) -> Optional[str]:
     return None
 
 
-def extract_tags_from_object(obj: Any) -> Set[str]:
+def extract_tags_from_object(obj: Any) -> set[str]:
     """
     Extract tags from an object that has a 'tags' attribute.
 
@@ -374,12 +387,14 @@ def extract_tags_from_object(obj: Any) -> Set[str]:
     """
     if hasattr(obj, "tags"):
         tags = getattr(obj, "tags")
-        if isinstance(tags, (list, tuple, set)):
+        if isinstance(tags, list | tuple | set):
             return set(tags)
     return set()
 
 
-def batch_create_references(ids: List[str], type_hint: Optional[str] = None) -> List[UnresolvedReference[Any]]:
+def batch_create_references(
+    ids: list[str], type_hint: str | None = None
+) -> list[UnresolvedReference[Any]]:
     """
     Helper: Create multiple unresolved references from IDs.
 

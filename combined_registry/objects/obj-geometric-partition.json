@@ -3,14 +3,23 @@
   "name": "Geometric Partitioning of High-Variance Swarms",
   "mathematical_expression": "\\varepsilon",
   "object_type": "space",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle",
     "swarm",
     "variance"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning"
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "obj-geometric-partition",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-geometric-partition"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

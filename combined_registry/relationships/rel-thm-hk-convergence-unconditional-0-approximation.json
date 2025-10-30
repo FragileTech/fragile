@@ -6,12 +6,20 @@
   "target_object": "obj-hellinger-kantorovich-metric",
   "established_by": "thm-hk-convergence-unconditional",
   "expression": "HK(μ_t, π_QSD) ≤ C_HK e^{−κ_HK t} with κ_HK > 0 explicit in (γ, σ_v, σ_x, U, R, N)",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence_bounded_density_rigorous_proof"
+  "source": {
+    "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+    "section": null,
+    "directive_label": "thm-hk-convergence-unconditional",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-hk-convergence-unconditional"
+  },
+  "chapter": null,
+  "document": null
 }

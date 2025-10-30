@@ -1,0 +1,146 @@
+{
+  "label": "axiom-boundary-regularity",
+  "statement": "The marginal probability of a single walker becoming invalid after the perturbation and status update stages must be a smooth (Hölder continuous) function of the initial N-particle swarm state.",
+  "mathematical_expression": "$$\n|P(s_{\\text{out},i}=0 | \\mathcal{S}_1) - P(s_{\\text{out},i}=0 | \\mathcal{S}_2)| \\le L_{\\text{death}} \\cdot d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^{\\alpha_B}\n$$",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Boundary Regularity",
+  "core_assumption": "The death boundary of the valid domain must be smooth rather than sharp. The probability of any individual walker becoming invalid (dying) after perturbation and status update must vary continuously as a function of the entire swarm's N-particle configuration. This Hölder continuity ensures that small changes in swarm state lead to small changes in death probabilities, preventing catastrophic mass extinction events from sudden, unpredictable boundary effects. The axiom applies to any valid noise measure, including those with state-dependent coupling between walkers, and is fundamental to establishing the continuity of the composed swarm update operator.",
+  "parameters": [
+    {
+      "symbol": "L_{\\text{death}}",
+      "name": "Boundary Instability Factor",
+      "description": "The Hölder constant bounding how rapidly the marginal death probability can change with respect to swarm configuration distance. Larger values indicate sharper, more unpredictable boundaries where small swarm movements can cause dramatic changes in individual walker death probabilities.",
+      "type": "real",
+      "constraint": "L_{\\text{death}} > 0",
+      "role": "continuity_constant",
+      "canonical_bounds": "For uniform ball kernels: L_{death} ≤ C_d · Per(X_invalid)/σ; For Gaussian/heat kernels: L_{death} ≤ C'_d · Per(X_invalid)/σ, where Per denotes perimeter and σ is the noise scale"
+    },
+    {
+      "symbol": "\\alpha_B",
+      "name": "Boundary Smoothing Exponent",
+      "description": "The Hölder exponent controlling the smoothness of death probability as a function of swarm configuration. Values closer to 1 indicate smoother boundaries (Lipschitz continuity when α_B = 1), while smaller values indicate less regular boundaries. Together with L_death, this parameter quantifies how 'gentle' or 'sharp' the transition from valid to invalid regions appears to the swarm.",
+      "type": "real",
+      "constraint": "\\alpha_B \\in (0, 1]",
+      "role": "smoothness_exponent",
+      "canonical_bounds": "α_B = 1 (Lipschitz) for uniform ball and Gaussian/heat kernels with smooth boundaries"
+    },
+    {
+      "symbol": "P(s_{\\text{out},i}=0 | \\mathcal{S})",
+      "name": "Marginal Death Probability",
+      "description": "The probability that walker i has survival status s=0 (dead) after the composed operator Ψ_status ∘ Ψ_pert is applied to initial swarm state S. This is the quantity whose Hölder continuity is being constrained by the axiom.",
+      "type": "probability",
+      "constraint": "P(s_{\\text{out},i}=0 | \\mathcal{S}) \\in [0, 1]",
+      "role": "dependent_variable"
+    },
+    {
+      "symbol": "d_{\\text{Disp},\\mathcal{Y}}",
+      "name": "N-Particle Displacement Pseudometric",
+      "description": "The metric measuring total swarm configuration distance, combining both positional displacement in algorithmic space Y and status bit changes, weighted by λ_status. Defined as d_Disp(S_1,S_2)² = (1/N)Σ d_Y(φ(x_1i),φ(x_2i))² + (λ_status/N)Σ(s_1i - s_2i)². This is the independent variable with respect to which death probability must be Hölder continuous.",
+      "type": "metric",
+      "constraint": "d_{\\text{Disp},\\mathcal{Y}}: \\Sigma_N \\times \\Sigma_N \\to [0, \\infty)",
+      "role": "independent_variable",
+      "depends_on": [
+        "def-n-particle-displacement-metric",
+        "λ_status",
+        "φ",
+        "d_Y"
+      ]
+    },
+    {
+      "symbol": "\\Psi_{\\text{pert}}",
+      "name": "Perturbation Operator",
+      "description": "The stochastic operator that applies noise to walker positions according to the perturbation measure P_σ. Together with the status update operator, this defines the transformation after which death probabilities must remain continuous.",
+      "type": "operator",
+      "role": "transformation_component",
+      "depends_on": [
+        "def-perturbation-measure"
+      ]
+    },
+    {
+      "symbol": "\\Psi_{\\text{status}}",
+      "name": "Status Update Operator",
+      "description": "The operator that updates walker survival status bits based on whether perturbed positions lie in the valid domain X_valid. The composition Ψ_status ∘ Ψ_pert determines which walkers survive, and this axiom constrains how smoothly this survival probability depends on initial swarm configuration.",
+      "type": "operator",
+      "role": "transformation_component",
+      "depends_on": [
+        "def-valid-state-space",
+        "X_valid"
+      ]
+    },
+    {
+      "symbol": "\\mathcal{S}_1, \\mathcal{S}_2",
+      "name": "Input Swarm States",
+      "description": "Any two swarm configurations in Σ_N for which the Hölder continuity bound on death probability must hold. The axiom requires the bound to hold uniformly for all pairs of swarm states and all walker indices i ∈ {1,...,N}.",
+      "type": "swarm_state",
+      "constraint": "\\mathcal{S}_1, \\mathcal{S}_2 \\in \\Sigma_N",
+      "role": "domain"
+    }
+  ],
+  "condition": "For any two swarm states S_1, S_2 ∈ Σ_N and for all walker indices i ∈ {1,...,N}, the marginal probability that walker i becomes invalid (dies) after the composed perturbation-status-update operator must satisfy the Hölder continuity bound: |P(s_out,i=0|S_1) - P(s_out,i=0|S_2)| ≤ L_death · d_Disp,Y(S_1,S_2)^α_B. This must hold for the user's chosen noise measure (P_σ, Q_δ), valid domain (X_valid), and projection map (φ: X → Y). The constants L_death and α_B must be explicitly computed or bounded based on these choices.",
+  "failure_mode_analysis": {
+    "primary_failure": "Catastrophic Mass Extinction",
+    "mechanism": "A large L_death indicates sharp, unpredictable boundaries where small changes in swarm configuration can cause dramatic, uncorrelated changes in individual death probabilities. This creates the risk of sudden, large-scale death events that are disproportionate to the actual swarm displacement.",
+    "consequences": [
+      {
+        "scenario": "L_death >> 1 (Very Large Boundary Instability)",
+        "effect": "The swarm operates near 'cliff edges' where tiny navigation errors can trigger mass casualties. The death probability becomes hypersensitive to swarm configuration, making the system's behavior near boundaries highly volatile and unpredictable.",
+        "downstream_impact": "Violates the mean-square continuity bounds required for the Swarm Update Operator (Theorem of Swarm Update Continuity). The composed operator loses its continuity properties, making convergence analysis impossible and potentially causing algorithm failure through correlated mass death events."
+      },
+      {
+        "scenario": "α_B → 0 (Very Small Smoothing Exponent)",
+        "effect": "The boundary becomes increasingly fractal or irregular. Even for bounded L_death, the Hölder term d^α_B decays very slowly, meaning death probabilities remain sensitive to configuration changes at all distance scales.",
+        "downstream_impact": "The Hölder component of the Swarm Update continuity bound (with global exponent α_H^global = min(α_B, α_R, ...)) becomes dominant and weak, degrading overall system stability. Long-range correlations in death probabilities emerge."
+      },
+      {
+        "scenario": "Boundary Non-Smoothness (Violating Axiom of Boundary Smoothness)",
+        "effect": "If the boundary ∂X_valid is not a C¹ submanifold (e.g., fractal boundary), it may have positive Lebesgue measure. Then the probability of landing exactly on the boundary is non-zero, death probability functions can have discontinuities, and the Hölder continuity bound cannot hold.",
+        "downstream_impact": "The axiom itself becomes vacuous or impossible to satisfy. The entire analytical framework breaks down as the continuity of the status update operator fails."
+      }
+    ],
+    "diagnostic_protocol": [
+      "Measure L_death empirically by computing death probability changes for known swarm perturbations near boundaries",
+      "Check if L_death scales inversely with noise scale σ (expected for smooth boundaries)",
+      "Verify that death probability gradients are uniformly bounded across the state space",
+      "Test for correlated mass death events indicating boundary sharpness",
+      "Confirm that boundary ∂X_valid has zero Lebesgue measure (C¹ regularity)"
+    ],
+    "mitigation_strategies": [
+      {
+        "strategy": "Increase Perturbation Noise Scale (σ)",
+        "rationale": "For smooth boundaries, L_death ~ Per(X_invalid)/σ. Larger σ smooths out sharp boundaries by allowing walkers to 'probe' dangerous regions more gradually, reducing the effective sharpness.",
+        "tradeoff": "Increased noise reduces exploitation accuracy and may slow convergence"
+      },
+      {
+        "strategy": "Add Boundary Buffer Zones",
+        "rationale": "Modify X_valid to include a 'soft' boundary region where death probability increases gradually rather than abruptly. This effectively increases α_B toward 1 (Lipschitz).",
+        "tradeoff": "Reduces the effective valid domain size; may exclude optimal solutions near boundaries"
+      },
+      {
+        "strategy": "Use Smoother Noise Kernels",
+        "rationale": "Gaussian/heat kernels provide better boundary smoothness than uniform ball kernels. Their infinite support and smooth density help regularize death probabilities.",
+        "tradeoff": "Computational cost of sampling from Gaussian distributions vs uniform balls"
+      },
+      {
+        "strategy": "Regularize the Valid Domain",
+        "rationale": "Ensure ∂X_valid is a C¹ (or smoother) submanifold. Smooth corners, eliminate fractal features, and verify finite perimeter. This is a prerequisite for the axiom to be meaningful.",
+        "tradeoff": "May require problem reformulation; not always possible for externally defined environments"
+      }
+    ],
+    "critical_threshold": "L_death must be small enough that the Hölder term L_death · d^α_B remains subdominant to perturbation noise and other continuity contributions. Empirically, L_death · σ^α_B ≲ 1 is often necessary for stable operation.",
+    "system_level_impact": "Boundary Regularity directly determines the global Hölder exponent α_H^global in the Swarm Update Continuity Theorem. Since α_H^global = min(α_B, α_R, ...), a small α_B degrades the entire system's continuity properties, not just near boundaries. This axiom is therefore as critical as any other for long-term stability and convergence."
+  },
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.1.2",
+    "directive_label": "def-axiom-boundary-regularity",
+    "equation": null,
+    "line_range": [
+      644,
+      693
+    ],
+    "url_fragment": "#axiom-of-boundary-regularity"
+  }
+}

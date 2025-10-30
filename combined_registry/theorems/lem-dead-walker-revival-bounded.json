@@ -2,9 +2,17 @@
   "label": "lem-dead-walker-revival-bounded",
   "name": "Bounded Contribution from Dead Walker Revival",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning",
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "lem-dead-walker-revival-bounded",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-dead-walker-revival-bounded"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -22,22 +30,18 @@
     "param-sigma-x",
     "param-swarm-size"
   ],
-  "properties_required": {},
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [
-    {
-      "label": "prop-dead-walker-revival-bounded",
-      "expression": "\\mathbb{E}_{\\text{clone}}\\left[\\sum_{k=1,2} \\Delta V_{\\text{Var},x}^{(k,\\text{status})}\\right] \\leq \\frac{2}{N} \\sum_{k=1,2} |\\mathcal{D}(S_k)| \\cdot D_{\\text{valid}}^2",
-      "object_label": "obj-variance-conversions",
-      "established_by": "lem-dead-walker-revival-bounded",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

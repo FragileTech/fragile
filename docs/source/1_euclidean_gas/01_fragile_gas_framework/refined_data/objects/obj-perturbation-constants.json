@@ -1,0 +1,25 @@
+{
+  "label": "obj-perturbation-constants",
+  "name": "Perturbation Stage Constants",
+  "statement_type": "object",
+  "mathematical_expression": "Collection of constants controlling perturbation operator bounds, including mean displacement and stochastic fluctuation bounds for Gaussian noise in R^d.",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-perturbation-constants",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "13.2",
+    "line_range": [
+      4000,
+      4020
+    ],
+    "directive_label": "obj-perturbation-constants",
+    "equation": null,
+    "url_fragment": null
+  }
+}

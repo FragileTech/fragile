@@ -31,7 +31,6 @@ References
 
 """
 
-from typing import Optional, Dict, Tuple
 import numpy as np
 
 
@@ -143,11 +142,7 @@ def kappa_W(gamma: float, lambda_min: float, c_hypo: float = 0.1) -> float:
     return (c_hypo**2 * gamma) / (1.0 + gamma / lambda_min)
 
 
-def kappa_b(
-    lambda_alg: float,
-    delta_f_boundary: float,
-    f_typical: float = 1.0
-) -> float:
+def kappa_b(lambda_alg: float, delta_f_boundary: float, f_typical: float = 1.0) -> float:
     """Boundary potential contraction rate (Safe Harbor mechanism).
 
     From 06_convergence.md Theorem 5.1.4, the boundary potential contracts at rate:
@@ -262,12 +257,7 @@ def C_total(
     return (C_x + C_v + C_W + C_b) / kappa_total
 
 
-def T_mix(
-    epsilon: float,
-    kappa_total: float,
-    V_init: float = 1.0,
-    C_total: float = 1.0
-) -> float:
+def T_mix(epsilon: float, kappa_total: float, V_init: float = 1.0, C_total: float = 1.0) -> float:
     """Mixing time to reach ε-proximity to equilibrium.
 
     From 06_convergence.md Proposition 5.6, the mixing time is:
@@ -304,12 +294,7 @@ def T_mix(
     return (1.0 / kappa_total) * np.log((V_init * kappa_total) / (epsilon * C_total))
 
 
-def equilibrium_variance_x(
-    sigma_v: float,
-    tau: float,
-    gamma: float,
-    lambda_alg: float
-) -> float:
+def equilibrium_variance_x(sigma_v: float, tau: float, gamma: float, lambda_alg: float) -> float:
     """Equilibrium positional variance from Foster-Lyapunov balance.
 
     From 06_convergence.md Theorem 5.3, the equilibrium positional variance is:
@@ -381,12 +366,7 @@ def equilibrium_variance_v(d: int, sigma_v: float, gamma: float) -> float:
 # ============================================================================
 
 
-def C_LSI_euclidean(
-    gamma: float,
-    kappa_conf: float,
-    kappa_W: float,
-    delta_sq: float
-) -> float:
+def C_LSI_euclidean(gamma: float, kappa_conf: float, kappa_W: float, delta_sq: float) -> float:
     """LSI constant for the Euclidean Gas via displacement convexity.
 
     From 09_kl_convergence.md Theorem 2.6, the LSI constant is:
@@ -467,11 +447,7 @@ def delta_star(
     - 09_kl_convergence.md § 2.7 (Noise Threshold)
 
     """
-    return (
-        np.exp(-alpha * tau / (2.0 * C_0))
-        * C_HWI
-        * np.sqrt(2.0 * (1.0 - kappa_W) / kappa_conf)
-    )
+    return np.exp(-alpha * tau / (2.0 * C_0)) * C_HWI * np.sqrt(2.0 * (1.0 - kappa_W) / kappa_conf)
 
 
 def kappa_QSD(kappa_total: float, tau: float = 0.01) -> float:
@@ -735,9 +711,7 @@ def epsilon_F_star(rho: float, c_min_val: float, F_adapt_max: float) -> float:
     return c_min_val / (2.0 * F_adapt_max)
 
 
-def lambda_min_spectral_gap(
-    c_min_val: float, c_max_val: float, lambda_ref: float
-) -> float:
+def lambda_min_spectral_gap(c_min_val: float, c_max_val: float, lambda_ref: float) -> float:
     """Spectral gap from uniform ellipticity.
 
     From geometric_foundations_lsi.md Lemma 4.1, the spectral gap is:
@@ -992,9 +966,7 @@ def validate_foster_lyapunov(kappa_total: float, C_total: float) -> bool:
     return kappa_total > 0 and np.isfinite(C_total)
 
 
-def validate_hypocoercivity(
-    epsilon_F: float, epsilon_F_star_val: float, nu: float
-) -> bool:
+def validate_hypocoercivity(epsilon_F: float, epsilon_F_star_val: float, nu: float) -> bool:
     """Validate parameter regime for hypocoercivity-based LSI.
 
     From 15_geometric_gas_lsi_proof.md § 0, requires:
@@ -1070,7 +1042,7 @@ def validate_noise_threshold(delta: float, delta_star_val: float) -> bool:
 
 def convergence_timescale_ratio(
     kappa_x: float, kappa_v: float, kappa_W: float, kappa_b: float
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """Identify convergence bottlenecks via timescale ratios.
 
     Computes T_i / T_min for each component, where T_i = 1/κ_i is the
@@ -1204,7 +1176,7 @@ def mean_field_error_bound(N: int, kappa_W: float, T: float) -> float:
 # ============================================================================
 
 
-def rate_sensitivity_matrix(params: Dict[str, float]) -> np.ndarray:
+def rate_sensitivity_matrix(params: dict[str, float]) -> np.ndarray:
     """Compute Jacobian of convergence rates with respect to parameters.
 
     From 06_convergence.md Theorem 6.1, the sensitivity matrix is:
@@ -1243,14 +1215,13 @@ def rate_sensitivity_matrix(params: Dict[str, float]) -> np.ndarray:
     """
     # Extract parameters
     gamma = params.get("gamma", 1.0)
-    lambda_alg = params.get("lambda_alg", 1.0)
-    sigma_v = params.get("sigma_v", 0.1)
-    tau = params.get("tau", 0.01)
+    params.get("lambda_alg", 1.0)
+    params.get("sigma_v", 0.1)
+    params.get("tau", 0.01)
     lambda_min = params.get("lambda_min", 1.0)
-    delta_f_boundary = params.get("delta_f_boundary", 1.0)
+    params.get("delta_f_boundary", 1.0)
 
     # Compute logarithmic derivatives (approximate via finite differences)
-    eps = 1e-6
 
     # Initialize matrix: 4 rates × 6 parameters
     M = np.zeros((4, 6))
@@ -1279,7 +1250,7 @@ def rate_sensitivity_matrix(params: Dict[str, float]) -> np.ndarray:
     return M
 
 
-def equilibrium_sensitivity_matrix(params: Dict[str, float]) -> np.ndarray:
+def equilibrium_sensitivity_matrix(params: dict[str, float]) -> np.ndarray:
     """Compute Jacobian of equilibrium constants with respect to parameters.
 
     From 06_convergence.md § 6.3, the equilibrium sensitivity matrix is:
@@ -1357,9 +1328,7 @@ def condition_number_parameters(sensitivity_matrix: np.ndarray) -> float:
     return singular_values[0] / singular_values[-1]
 
 
-def principal_coupling_modes(
-    sensitivity_matrix: np.ndarray, k: int = 3
-) -> Dict[str, np.ndarray]:
+def principal_coupling_modes(sensitivity_matrix: np.ndarray, k: int = 3) -> dict[str, np.ndarray]:
     """Compute principal coupling modes via SVD.
 
     From 06_convergence.md Theorem 6.4, the SVD decomposition is:
@@ -1413,7 +1382,7 @@ def balanced_parameters_closed_form(
     lambda_max: float,
     d: int,
     V_target: float,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """Compute optimal parameters for balanced convergence (no bottleneck).
 
     From 06_convergence.md Theorem 6.10, the unconstrained optimum is:
@@ -1471,8 +1440,8 @@ def balanced_parameters_closed_form(
 
 
 def pareto_frontier_rate_variance(
-    kappa_range: Tuple[float, float],
-    C_range: Tuple[float, float],
+    kappa_range: tuple[float, float],
+    C_range: tuple[float, float],
     n_points: int = 100,
 ) -> np.ndarray:
     """Compute Pareto frontier for rate-variance multi-objective optimization.

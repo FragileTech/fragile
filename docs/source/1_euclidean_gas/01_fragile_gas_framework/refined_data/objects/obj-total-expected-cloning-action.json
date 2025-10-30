@@ -1,0 +1,33 @@
+{
+  "label": "obj-total-expected-cloning-action",
+  "name": "Total Expected Cloning Action",
+  "mathematical_expression": "\\overline{P}_{\\text{clone}}(\\mathcal{S})_i := \\mathbb{E}_{\\mathbf{d} \\sim \\mathbf{d}(\\mathcal{S})} \\left[ P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V}(\\mathbf{r}(\\mathcal{S}), \\mathbf{d}))_i \\right]",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "action",
+    "cloning",
+    "continuity",
+    "expected",
+    "measure-theory",
+    "metric",
+    "particle-system",
+    "total"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-total-expected-cloning-action",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.1",
+    "line_range": [
+      4771,
+      4784
+    ],
+    "directive_label": "obj-total-expected-cloning-action",
+    "equation": null,
+    "url_fragment": null
+  }
+}

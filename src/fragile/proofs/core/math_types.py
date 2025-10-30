@@ -26,14 +26,15 @@ Version: 2.0.0
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Set, Tuple
+from typing import Any, Literal, TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
 
 if TYPE_CHECKING:
     from fragile.proofs.core.article_system import SourceLocation
     from fragile.proofs.core.proof_system import ProofBox
-    from fragile.proofs.sympy.dual_representation import DualStatement
+    from fragile.proofs.sympy_integration.dual_representation import DualStatement
 
 
 # =============================================================================
@@ -192,11 +193,11 @@ class Attribute(BaseModel):
     expression: str = Field(..., min_length=1, description="LaTeX mathematical expression")
     object_label: str = Field(..., pattern=r"^obj-[a-z0-9-]+$")
     established_by: str = Field(..., pattern=r"^(thm|lem|prop)-[a-z0-9-]+$")
-    timestamp: Optional[int] = Field(None, ge=0, description="Pipeline execution step")
+    timestamp: int | None = Field(None, ge=0, description="Pipeline execution step")
     can_be_refined: bool = Field(True, description="Whether property can be strengthened")
-    refinements: List[AttributeRefinement] = Field(default_factory=list)
-    source: Optional["SourceLocation"] = Field(
-        None,
+    refinements: list[AttributeRefinement] = Field(default_factory=list)
+    source: SourceLocation = Field(
+        ...,
         description="Source location in documentation where this property is defined",
     )
 
@@ -240,9 +241,13 @@ class RelationshipAttribute(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    label: str = Field(..., pattern=r"^[a-z][a-zA-Z0-9-]*$", description="Attribute label (e.g., 'approx-error-N')")
+    label: str = Field(
+        ...,
+        pattern=r"^[a-z][a-zA-Z0-9-]*$",
+        description="Attribute label (e.g., 'approx-error-N')",
+    )
     expression: str = Field(..., min_length=1, description="Mathematical expression")
-    description: Optional[str] = None
+    description: str | None = None
 
     @field_validator("label")
     @classmethod
@@ -289,63 +294,51 @@ class Relationship(BaseModel):
     label: str = Field(
         ...,
         pattern=r"^rel-[a-z0-9]+(-[a-z0-9]+)*-(equivalence|embedding|approximation|reduction|extension|generalization|specialization|other)$",
-        description="Relationship label (format: rel-{source}-{target}-{type})"
+        description="Relationship label (format: rel-{source}-{target}-{type})",
     )
 
     # Type and directionality
     relationship_type: RelationType
     bidirectional: bool = Field(
         ...,
-        description="Whether relationship is symmetric (auto-computed from type if not provided)"
+        description="Whether relationship is symmetric (auto-computed from type if not provided)",
     )
 
     # Objects involved
-    source_object: str = Field(
-        ...,
-        pattern=r"^obj-[a-z0-9-]+$",
-        description="Source object label"
-    )
-    target_object: str = Field(
-        ...,
-        pattern=r"^obj-[a-z0-9-]+$",
-        description="Target object label"
-    )
+    source_object: str = Field(..., pattern=r"^obj-[a-z0-9-]+$", description="Source object label")
+    target_object: str = Field(..., pattern=r"^obj-[a-z0-9-]+$", description="Target object label")
 
     # Metadata
     established_by: str = Field(
         ...,
         pattern=r"^(thm|lem|prop)-[a-z0-9-]+$",
-        description="Theorem/lemma/proposition that established this relationship"
+        description="Theorem/lemma/proposition that established this relationship",
     )
-    expression: str = Field(..., min_length=1, description="Mathematical expression of relationship")
+    expression: str = Field(
+        ..., min_length=1, description="Mathematical expression of relationship"
+    )
 
     # Properties
-    attributes: List[RelationshipAttribute] = Field(
+    attributes: list[RelationshipAttribute] = Field(
         default_factory=list,
-        description="Relationship-specific attributes (e.g., error bounds, convergence rates)"
+        description="Relationship-specific attributes (e.g., error bounds, convergence rates)",
     )
 
     # Tags for categorization
-    tags: List[str] = Field(
+    tags: list[str] = Field(
         default_factory=list,
-        description="Category tags (e.g., 'mean-field', 'discrete-continuous')"
+        description="Category tags (e.g., 'mean-field', 'discrete-continuous')",
     )
 
     # Timestamp
-    timestamp: Optional[int] = Field(None, ge=0, description="Pipeline execution step when established")
+    timestamp: int | None = Field(
+        None, ge=0, description="Pipeline execution step when established"
+    )
 
     # Source
-    source: Optional["SourceLocation"] = Field(
-        None,
+    source: SourceLocation = Field(
+        ...,
         description="Source location in documentation where this relationship is defined",
-    )
-    chapter: Optional[str] = Field(
-        None,
-        description="High-level chapter/folder name (e.g., '1_euclidean_gas', '2_geometric_gas')"
-    )
-    document: Optional[str] = Field(
-        None,
-        description="Document/subdirectory name (e.g., '03_cloning', '06_convergence')"
     )
 
     @field_validator("label")
@@ -360,8 +353,8 @@ class Relationship(BaseModel):
             raise ValueError(f"Relationship label must end with relationship type: {v}")
         return v
 
-    @model_validator(mode='after')
-    def compute_bidirectionality(self) -> 'Relationship':
+    @model_validator(mode="after")
+    def compute_bidirectionality(self) -> Relationship:
         """
         Auto-compute bidirectionality based on relationship type if needed.
         Equivalence is always bidirectional, others are typically directed.
@@ -376,7 +369,7 @@ class Relationship(BaseModel):
         if self.relationship_type == RelationType.EQUIVALENCE:
             if not self.bidirectional:
                 # Create updated copy with bidirectional=True
-                return self.model_copy(update={'bidirectional': True})
+                return self.model_copy(update={"bidirectional": True})
         return self
 
     # Pure function: Check if symmetric
@@ -402,7 +395,7 @@ class Relationship(BaseModel):
         return not self.bidirectional
 
     # Pure function: Get reverse relationship label
-    def get_reverse_label(self) -> Optional[str]:
+    def get_reverse_label(self) -> str | None:
         """
         Pure function: Get label for reverse relationship (if bidirectional).
 
@@ -421,7 +414,7 @@ class Relationship(BaseModel):
         return None  # Directed relationships don't have automatic reverses
 
     # Pure function: Get related objects
-    def get_objects(self) -> Tuple[str, str]:
+    def get_objects(self) -> tuple[str, str]:
         """
         Pure function: Get (source, target) object labels.
 
@@ -467,72 +460,69 @@ class DefinitionBox(BaseModel):
     label: str = Field(
         ...,
         pattern=r"^def-[a-z0-9-]+$",
-        description="Unique label for the definition (format: def-{concept-name})"
+        description="Unique label for the definition (format: def-{concept-name})",
     )
 
     term: str = Field(
         ...,
         min_length=1,
-        description="The term being defined (e.g., 'v-porous on lines', 'Lipschitz continuous')"
+        description="The term being defined (e.g., 'v-porous on lines', 'Lipschitz continuous')",
     )
 
     # The formal statement defining the term
-    formal_statement: Optional["DualStatement"] = Field(
+    formal_statement: DualStatement | None = Field(
         None,
         description="The 'if and only if' or 'we say that...' statement expressing the definition formally. "
-        "None if using simple from_raw() enrichment; populated by LLM enrichment pipeline."
+        "None if using simple from_raw() enrichment; populated by LLM enrichment pipeline.",
     )
 
     # The object type this definition applies to, if specific
-    applies_to_object_type: Optional[ObjectType] = Field(
+    applies_to_object_type: ObjectType | None = Field(
         None,
-        description="The category of object this definition applies to (e.g., SET, FUNCTION, SPACE)"
+        description="The category of object this definition applies to (e.g., SET, FUNCTION, SPACE)",
     )
 
     # Parameters used within the definition
-    parameters: List[str] = Field(
+    parameters: list[str] = Field(
         default_factory=list,
-        description="Parameter labels used in the definition (e.g., ['param-v', 'param-h', 'param-beta'])"
+        description="Parameter labels used in the definition (e.g., ['param-v', 'param-h', 'param-beta'])",
     )
 
     # Link back to the source document
-    source: Optional["SourceLocation"] = Field(
-        None,
-        description="Source location in documentation where this definition appears"
+    source: SourceLocation | None = Field(
+        None, description="Source location in documentation where this definition appears"
     )
 
     # The original prose from the paper
-    natural_language_description: Optional[str] = Field(
+    natural_language_description: str | None = Field(
         None,
-        description="The original prose from the paper describing the definition, for reference"
+        description="The original prose from the paper describing the definition, for reference",
     )
 
     # Tags for categorization
-    tags: List[str] = Field(
+    tags: list[str] = Field(
         default_factory=list,
-        description="Category tags for filtering/searching (e.g., 'porosity', 'regularity', 'geometric')"
+        description="Category tags for filtering/searching (e.g., 'porosity', 'regularity', 'geometric')",
     )
 
     # Chapter and document for organization
-    chapter: Optional[str] = Field(
+    chapter: str | None = Field(
         None,
-        description="High-level chapter/folder name (e.g., '1_euclidean_gas', '2_geometric_gas')"
+        description="High-level chapter/folder name (e.g., '1_euclidean_gas', '2_geometric_gas')",
     )
 
-    document: Optional[str] = Field(
-        None,
-        description="Document/subdirectory name (e.g., '03_cloning', '06_convergence')"
+    document: str | None = Field(
+        None, description="Document/subdirectory name (e.g., '03_cloning', '06_convergence')"
     )
 
     # Error Tracking (for LLM enrichment failures)
-    validation_errors: List[str] = Field(
+    validation_errors: list[str] = Field(
         default_factory=list,
-        description="Validation errors encountered during enrichment (if any)"
+        description="Validation errors encountered during enrichment (if any)",
     )
 
-    raw_fallback: Optional[Dict[str, Any]] = Field(
-        None,
-        description="Original raw data preserved on partial enrichment failure"
+    raw_fallback: dict[str, Any] | None = Field(
+        None, description="Original raw data preserved on partial enrichment failure"
     )
 
     @field_validator("label")
@@ -545,7 +535,7 @@ class DefinitionBox(BaseModel):
 
     @field_validator("parameters")
     @classmethod
-    def validate_parameters(cls, v: List[str]) -> List[str]:
+    def validate_parameters(cls, v: list[str]) -> list[str]:
         """Validator → Lean proof obligation: all parameter labels well-formed."""
         for label in v:
             if not label.startswith("param-"):
@@ -555,10 +545,11 @@ class DefinitionBox(BaseModel):
     @classmethod
     def from_raw(
         cls,
-        raw: "RawDefinition",  # type: ignore  # Forward reference
-        chapter: Optional[str] = None,
-        document: Optional[str] = None,
-    ) -> "DefinitionBox":
+        raw: RawDefinition,  # type: ignore  # Forward reference
+        source: SourceLocation,
+        chapter: str | None = None,
+        document: str | None = None,
+    ) -> DefinitionBox:
         """
         Create a DefinitionBox from a RawDefinition staging model.
 
@@ -568,11 +559,15 @@ class DefinitionBox(BaseModel):
 
         Args:
             raw: The raw definition from Stage 1 extraction
+            source: Source location in documentation (REQUIRED)
             chapter: Chapter identifier (e.g., "1_euclidean_gas")
             document: Document identifier (e.g., "01_fragile_gas_framework")
 
         Returns:
             Enriched DefinitionBox instance
+
+        Raises:
+            ValueError: If source is None
 
         Examples:
             >>> raw_def = RawDefinition(
@@ -580,14 +575,12 @@ class DefinitionBox(BaseModel):
             ...     label_text="def-walker-state",
             ...     term="Walker State",
             ...     statement_text="A walker state is...",
-            ...     source_section="§1"
+            ...     source_section="§1",
             ... )
             >>> definition = DefinitionBox.from_raw(raw_def)
             >>> definition.label
             'def-walker-state'
         """
-        from fragile.proofs.staging_types import RawDefinition
-        from fragile.proofs.sympy.dual_representation import DualStatement
 
         # Generate label from term (normalize to def- prefix)
         # RawDefinition doesn't have label_text, we create it from temp_id or term
@@ -602,13 +595,13 @@ class DefinitionBox(BaseModel):
             formal_statement=None,  # Requires LLM enrichment pipeline
             applies_to_object_type=None,  # Requires semantic analysis
             parameters=[],  # Requires semantic analysis to extract from parameters_mentioned
-            source=None,  # Requires line finder
+            source=source,
             natural_language_description=raw.full_text,
             tags=[],  # Requires semantic analysis
             chapter=chapter,
             document=document,
             validation_errors=[],
-            raw_fallback=raw.model_dump() if raw else None
+            raw_fallback=raw.model_dump() if raw else None,
         )
 
 
@@ -641,31 +634,30 @@ class MathematicalObject(BaseModel):
     name: str = Field(..., min_length=1)
     mathematical_expression: str = Field(..., min_length=1)
     object_type: ObjectType
-    current_attributes: List[Attribute] = Field(default_factory=list)
-    attribute_history: List[AttributeEvent] = Field(default_factory=list)
-    tags: List[str] = Field(
+    current_attributes: list[Attribute] = Field(default_factory=list)
+    attribute_history: list[AttributeEvent] = Field(default_factory=list)
+    tags: list[str] = Field(
         default_factory=list,
-        description="Category tags for filtering/searching (e.g., 'discrete', 'euclidean-gas', 'particle')"
+        description="Category tags for filtering/searching (e.g., 'discrete', 'euclidean-gas', 'particle')",
     )
-    source: Optional["SourceLocation"] = Field(
-        None,
+    source: SourceLocation = Field(
+        ...,
         description="Source location in documentation where this object is defined",
     )
-    chapter: Optional[str] = Field(
+    chapter: str | None = Field(
         None,
-        description="High-level chapter/folder name (e.g., '1_euclidean_gas', '2_geometric_gas')"
+        description="High-level chapter/folder name (e.g., '1_euclidean_gas', '2_geometric_gas')",
     )
-    document: Optional[str] = Field(
-        None,
-        description="Document/subdirectory name (e.g., '03_cloning', '06_convergence')"
+    document: str | None = Field(
+        None, description="Document/subdirectory name (e.g., '03_cloning', '06_convergence')"
     )
 
     # Link to formal definition (NEW)
-    definition_label: Optional[str] = Field(
+    definition_label: str | None = Field(
         None,
         pattern=r"^def-[a-z0-9-]+$",
         description="The label of the DefinitionBox that formally defines this type of object. "
-                   "Links objects back to their conceptual definitions."
+        "Links objects back to their conceptual definitions.",
     )
 
     @field_validator("label")
@@ -688,7 +680,7 @@ class MathematicalObject(BaseModel):
         return any(p.label == attribute_label for p in self.current_attributes)
 
     # Pure function: Get property labels
-    def get_attribute_labels(self) -> Set[str]:
+    def get_attribute_labels(self) -> set[str]:
         """
         Pure function: Get set of attribute labels this object has.
 
@@ -699,7 +691,7 @@ class MathematicalObject(BaseModel):
         return {p.label for p in self.current_attributes}
 
     # Total function: Get property by label
-    def get_attribute(self, attribute_label: str) -> Optional[Attribute]:
+    def get_attribute(self, attribute_label: str) -> Attribute | None:
         """
         Total function: Get attribute by label (returns None if not found).
 
@@ -713,7 +705,7 @@ class MathematicalObject(BaseModel):
         return None
 
     # Pure function: Add property (returns new object)
-    def add_attribute(self, attr: Attribute, timestamp: int) -> "MathematicalObject":
+    def add_attribute(self, attr: Attribute, timestamp: int) -> MathematicalObject:
         """
         Pure function: Add attribute to object (immutable update).
 
@@ -734,8 +726,8 @@ class MathematicalObject(BaseModel):
 
         return self.model_copy(
             update={
-                "current_attributes": self.current_attributes + [attr],
-                "attribute_history": self.attribute_history + [event],
+                "current_attributes": [*self.current_attributes, attr],
+                "attribute_history": [*self.attribute_history, event],
             }
         )
 
@@ -779,44 +771,36 @@ class Axiom(BaseModel):
     statement: str = Field(..., min_length=1)
     mathematical_expression: str = Field(..., min_length=1)
     foundational_framework: str = Field(..., min_length=1)
-    chapter: Optional[str] = Field(
+    chapter: str | None = Field(
         None,
-        description="High-level chapter/folder name (e.g., '1_euclidean_gas', '2_geometric_gas')"
+        description="High-level chapter/folder name (e.g., '1_euclidean_gas', '2_geometric_gas')",
     )
-    document: Optional[str] = Field(
-        None,
-        description="Document/subdirectory name (e.g., '03_cloning', '06_convergence')"
+    document: str | None = Field(
+        None, description="Document/subdirectory name (e.g., '03_cloning', '06_convergence')"
     )
 
     # Optional structured fields (from Extract-then-Enrich pipeline)
-    name: Optional[str] = Field(
-        None,
-        description="Human-readable title/name of the axiom"
+    name: str | None = Field(None, description="Human-readable title/name of the axiom")
+
+    core_assumption: DualStatement | None = Field(
+        None, description="The fundamental assumption or claim, enriched to dual representation"
     )
 
-    core_assumption: Optional[DualStatement] = Field(
-        None,
-        description="The fundamental assumption or claim, enriched to dual representation"
+    parameters: list[AxiomaticParameter] | None = Field(
+        None, description="Mathematical objects and symbols used in the axiom definition"
     )
 
-    parameters: Optional[List[AxiomaticParameter]] = Field(
+    condition: DualStatement | None = Field(
         None,
-        description="Mathematical objects and symbols used in the axiom definition"
+        description="Formal statement of when the axiom applies, enriched to dual representation",
     )
 
-    condition: Optional[DualStatement] = Field(
-        None,
-        description="Formal statement of when the axiom applies, enriched to dual representation"
+    failure_mode_analysis: str | None = Field(
+        None, description="Analysis of what happens if the axiom is violated"
     )
 
-    failure_mode_analysis: Optional[str] = Field(
-        None,
-        description="Analysis of what happens if the axiom is violated"
-    )
-
-    source: Optional[SourceLocation] = Field(
-        None,
-        description="Location in the source document where this axiom appears"
+    source: SourceLocation = Field(
+        ..., description="Location in the source document where this axiom appears"
     )
 
     @field_validator("label")
@@ -830,10 +814,11 @@ class Axiom(BaseModel):
     @classmethod
     def from_raw(
         cls,
-        raw: "RawAxiom",  # type: ignore  # Forward reference
-        chapter: Optional[str] = None,
-        document: Optional[str] = None,
-    ) -> "Axiom":
+        raw: RawAxiom,  # type: ignore  # Forward reference
+        source: SourceLocation,
+        chapter: str | None = None,
+        document: str | None = None,
+    ) -> Axiom:
         """
         Create an Axiom from a RawAxiom staging model.
 
@@ -843,6 +828,7 @@ class Axiom(BaseModel):
 
         Args:
             raw: The raw axiom from Stage 1 extraction
+            source: Source location in documentation (REQUIRED)
             chapter: Chapter identifier (e.g., "1_euclidean_gas")
             document: Document identifier (e.g., "01_fragile_gas_framework")
 
@@ -857,13 +843,12 @@ class Axiom(BaseModel):
             ...     core_assumption_text="All walkers move within bounded distances",
             ...     parameters_text=["ε > 0"],
             ...     condition_text="When dt < ε",
-            ...     source_section="§1"
+            ...     source_section="§1",
             ... )
             >>> axiom = Axiom.from_raw(raw_axiom, chapter="1_euclidean_gas")
             >>> axiom.label
             'axiom-bounded-displacement'
         """
-        from fragile.proofs.staging_types import RawAxiom
 
         # Extract basic fields
         label = raw.label_text
@@ -883,11 +868,30 @@ class Axiom(BaseModel):
         parameters = None
         if raw.parameters_text:
             from fragile.proofs.core.math_types import AxiomaticParameter
+
+            def extract_symbol(param_text: str) -> str:
+                """Extract symbol from parameter text like 'ε > 0' or 'Δt: time step'."""
+                # If there's a colon, everything before it is the symbol
+                if ":" in param_text:
+                    return param_text.split(":")[0].strip()
+
+                # Otherwise, extract first word/symbol before operators
+                import re
+
+                # Match symbol before operators like >, <, =, ∈, ≤, ≥, etc.
+                match = re.match(
+                    r"^([a-zA-Zα-ωΑ-Ω\u0370-\u03FF\u1F00-\u1FFF]+|[^\s><=∈≤≥]+)\s*[><=∈≤≥]",
+                    param_text,
+                )
+                if match:
+                    return match.group(1).strip()
+
+                # If no operator, take first word
+                return param_text.split()[0] if param_text.split() else param_text[:10]
+
             parameters = [
                 AxiomaticParameter(
-                    symbol=param_text.split(":")[0].strip() if ":" in param_text else param_text[:10],
-                    description=param_text,
-                    constraints=None
+                    symbol=extract_symbol(param_text), description=param_text, constraints=None
                 )
                 for param_text in raw.parameters_text
             ]
@@ -905,7 +909,7 @@ class Axiom(BaseModel):
             parameters=parameters,
             condition=None,  # Requires LLM for DualStatement parsing
             failure_mode_analysis=raw.failure_mode_analysis_text,
-            source=None,  # Requires line finder to create SourceLocation
+            source=source,
         )
 
 
@@ -936,15 +940,14 @@ class Parameter(BaseModel):
     name: str = Field(..., min_length=1)
     symbol: str = Field(..., min_length=1)
     parameter_type: ParameterType
-    constraints: Optional[str] = None
-    default_value: Optional[str] = None
-    chapter: Optional[str] = Field(
+    constraints: str | None = None
+    default_value: str | None = None
+    chapter: str | None = Field(
         None,
-        description="High-level chapter/folder name (e.g., '1_euclidean_gas', '2_geometric_gas')"
+        description="High-level chapter/folder name (e.g., '1_euclidean_gas', '2_geometric_gas')",
     )
-    document: Optional[str] = Field(
-        None,
-        description="Document/subdirectory name (e.g., '03_cloning', '06_convergence')"
+    document: str | None = Field(
+        None, description="Document/subdirectory name (e.g., '03_cloning', '06_convergence')"
     )
 
     @field_validator("label")
@@ -978,20 +981,15 @@ class AxiomaticParameter(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     symbol: str = Field(
-        ...,
-        min_length=1,
-        description="Symbol or name (e.g., 'v', 'U', 'γ', 'walker state w')"
+        ..., min_length=1, description="Symbol or name (e.g., 'v', 'U', 'γ', 'walker state w')"
     )
 
     description: str = Field(
-        ...,
-        min_length=1,
-        description="Natural language description of what this represents"
+        ..., min_length=1, description="Natural language description of what this represents"
     )
 
-    constraints: Optional[str] = Field(
-        None,
-        description="Formal constraints or properties (e.g., 'v > 0', 'U is Lipschitz')"
+    constraints: str | None = Field(
+        None, description="Formal constraints or properties (e.g., 'v > 0', 'U is Lipschitz')"
     )
 
 
@@ -1051,106 +1049,101 @@ class TheoremBox(BaseModel):
         default="theorem",
         description="Type of mathematical statement (auto-detected from label prefix)",
     )
-    source: Optional["SourceLocation"] = Field(
-        None,
+    source: SourceLocation = Field(
+        ...,
         description="Source location in documentation where this theorem/lemma/proposition is defined",
     )
-    chapter: Optional[str] = Field(
+    chapter: str | None = Field(
         None,
-        description="High-level chapter/folder name (e.g., '1_euclidean_gas', '2_geometric_gas')"
+        description="High-level chapter/folder name (e.g., '1_euclidean_gas', '2_geometric_gas')",
     )
-    document: Optional[str] = Field(
-        None,
-        description="Document/subdirectory name (e.g., '03_cloning', '06_convergence')"
+    document: str | None = Field(
+        None, description="Document/subdirectory name (e.g., '03_cloning', '06_convergence')"
     )
 
     # Proof Integration (NEW)
-    proof: Optional['ProofBox'] = Field(
+    proof: ProofBox | None = Field(
         None,
-        description="Complete proof of this theorem (optional - enables sketch-first workflow)"
+        description="Complete proof of this theorem (optional - enables sketch-first workflow)",
     )
     proof_status: Literal["unproven", "sketched", "expanded", "verified"] = Field(
-        default="unproven",
-        description="Current proof development status"
+        default="unproven", description="Current proof development status"
     )
 
     # Inputs (3 categories)
-    input_objects: List[str] = Field(default_factory=list)
-    input_axioms: List[str] = Field(default_factory=list)
-    input_parameters: List[str] = Field(default_factory=list)
+    input_objects: list[str] = Field(default_factory=list)
+    input_axioms: list[str] = Field(default_factory=list)
+    input_parameters: list[str] = Field(default_factory=list)
 
     # Properties Required (API Signature)
-    attributes_required: Dict[str, List[str]] = Field(
+    attributes_required: dict[str, list[str]] = Field(
         default_factory=dict,
         description="API signature: {object_label: [required_attributes]}",
     )
 
     # Internal DAG
-    internal_lemmas: List[str] = Field(default_factory=list)
-    internal_propositions: List[str] = Field(default_factory=list)
-    lemma_dag_edges: List[Tuple[str, str]] = Field(
+    internal_lemmas: list[str] = Field(default_factory=list)
+    internal_propositions: list[str] = Field(default_factory=list)
+    lemma_dag_edges: list[tuple[str, str]] = Field(
         default_factory=list, description="DAG edges: (from, to)"
     )
 
     # Outputs
     output_type: TheoremOutputType
-    attributes_added: List[Attribute] = Field(default_factory=list)
-    relations_established: List[Relationship] = Field(
+    attributes_added: list[Attribute] = Field(default_factory=list)
+    relations_established: list[Relationship] = Field(
         default_factory=list,
-        description="Relationships between objects established by this theorem"
+        description="Relationships between objects established by this theorem",
     )
 
     # Enhanced Semantic Capture (NEW - for PDF/paper processing)
-    natural_language_statement: Optional[str] = Field(
+    natural_language_statement: str | None = Field(
         None,
         description="The original, full prose of the theorem statement as it appears in the source text. "
-                   "Preserves the author's wording and presentation."
+        "Preserves the author's wording and presentation.",
     )
 
-    assumptions: List["DualStatement"] = Field(
+    assumptions: list[DualStatement] = Field(
         default_factory=list,
         description="A structured list of the theorem's explicit assumptions and preconditions "
-                   "(e.g., 'Let v > 0', 'Assume E is compact'). Each assumption is a DualStatement "
-                   "combining LaTeX and SymPy representations."
+        "(e.g., 'Let v > 0', 'Assume E is compact'). Each assumption is a DualStatement "
+        "combining LaTeX and SymPy representations.",
     )
 
-    conclusion: Optional["DualStatement"] = Field(
+    conclusion: DualStatement | None = Field(
         None,
         description="The core conclusion of the theorem, as a machine-readable dual LaTeX/SymPy statement. "
-                   "For example, the main inequality or identity that the theorem establishes."
+        "For example, the main inequality or identity that the theorem establishes.",
     )
 
-    equation_label: Optional[str] = Field(
+    equation_label: str | None = Field(
         None,
         description="The equation number or label associated with the conclusion in the source text "
-                   "(e.g., '(1.1)', '(3.5a)', 'eq:main-result')."
+        "(e.g., '(1.1)', '(3.5a)', 'eq:main-result').",
     )
 
-    uses_definitions: List[str] = Field(
+    uses_definitions: list[str] = Field(
         default_factory=list,
         description="Labels of DefinitionBox entities required to understand the theorem statement "
-                   "(e.g., ['def-v-porous', 'def-lipschitz']). Links theorem to conceptual prerequisites."
+        "(e.g., ['def-v-porous', 'def-lipschitz']). Links theorem to conceptual prerequisites.",
     )
 
     # Error Tracking (for LLM enrichment failures)
-    validation_errors: List[str] = Field(
+    validation_errors: list[str] = Field(
         default_factory=list,
-        description="Validation errors encountered during enrichment (if any)"
+        description="Validation errors encountered during enrichment (if any)",
     )
 
-    raw_fallback: Optional[Dict[str, Any]] = Field(
-        None,
-        description="Original raw data preserved on partial enrichment failure"
+    raw_fallback: dict[str, Any] | None = Field(
+        None, description="Original raw data preserved on partial enrichment failure"
     )
 
     @field_validator("label")
     @classmethod
     def validate_label(cls, v: str) -> str:
         """Validator → Lean proof obligation: label well-formed."""
-        if not v.startswith(("thm-", "lem-", "attr-")):
-            raise ValueError(
-                f"Labels must start with 'thm-', 'lem-', or 'attr-': {v}"
-            )
+        if not v.startswith(("thm-", "lem-", "prop-", "attr-")):
+            raise ValueError(f"Labels must start with 'thm-', 'lem-', 'prop-', or 'attr-': {v}")
         return v
 
     @model_validator(mode="before")
@@ -1191,26 +1184,28 @@ class TheoremBox(BaseModel):
 
     @field_validator("input_objects")
     @classmethod
-    def validate_input_objects(cls, v: List[str]) -> List[str]:
+    def validate_input_objects(cls, v: list[str]) -> list[str]:
         """Validator → Lean proof obligation: all object labels well-formed."""
         # Accept obj- (preferred) or def- (legacy) prefixes
         for label in v:
-            if not (label.startswith("obj-") or label.startswith("def-")):
+            if not (label.startswith(("obj-", "def-"))):
                 raise ValueError(f"Object labels must start with 'obj-' or 'def-': {label}")
         return v
 
     @field_validator("input_axioms")
     @classmethod
-    def validate_input_axioms(cls, v: List[str]) -> List[str]:
+    def validate_input_axioms(cls, v: list[str]) -> list[str]:
         """Validator → Lean proof obligation: all axiom labels well-formed."""
         # Accept axiom- (preferred), ax- (short), or def-axiom- (legacy) prefixes
         for label in v:
-            if not (label.startswith("axiom-") or label.startswith("ax-") or label.startswith("def-axiom-")):
-                raise ValueError(f"Axiom labels must start with 'axiom-', 'ax-', or 'def-axiom-': {label}")
+            if not (label.startswith(("axiom-", "ax-", "def-axiom-"))):
+                raise ValueError(
+                    f"Axiom labels must start with 'axiom-', 'ax-', or 'def-axiom-': {label}"
+                )
         return v
 
     # Pure function: Compute conditionality
-    def compute_conditionality(self, objects: Dict[str, MathematicalObject]) -> List[str]:
+    def compute_conditionality(self, objects: dict[str, MathematicalObject]) -> list[str]:
         """
         Pure function: Compute missing properties (implicit assumptions).
 
@@ -1236,7 +1231,7 @@ class TheoremBox(BaseModel):
                         acc)
                 []
         """
-        missing: List[str] = []
+        missing: list[str] = []
 
         for obj_label, required_props in self.attributes_required.items():
             if obj_label not in objects:
@@ -1253,7 +1248,7 @@ class TheoremBox(BaseModel):
         return missing
 
     # Pure function: Check if conditional
-    def is_conditional(self, objects: Dict[str, MathematicalObject]) -> bool:
+    def is_conditional(self, objects: dict[str, MathematicalObject]) -> bool:
         """
         Pure function: Check if theorem has unmet property requirements.
 
@@ -1268,7 +1263,7 @@ class TheoremBox(BaseModel):
 
     # Pure function: Check if can execute
     def can_execute(
-        self, available_objects: Set[str], object_states: Dict[str, MathematicalObject]
+        self, available_objects: set[str], object_states: dict[str, MathematicalObject]
     ) -> bool:
         """
         Pure function: Check if theorem can execute.
@@ -1319,7 +1314,7 @@ class TheoremBox(BaseModel):
         return self.proof is not None and self.proof.all_steps_expanded()
 
     # Pure function: Attach proof to theorem
-    def attach_proof(self, proof: 'ProofBox') -> 'TheoremBox':
+    def attach_proof(self, proof: ProofBox) -> TheoremBox:
         """
         Pure function: Attach proof to theorem (immutable update).
 
@@ -1354,10 +1349,10 @@ class TheoremBox(BaseModel):
         else:
             status = "sketched"
 
-        return self.model_copy(update={'proof': proof, 'proof_status': status})
+        return self.model_copy(update={"proof": proof, "proof_status": status})
 
     # Total function: Validate proof against theorem
-    def validate_proof(self, objects: Dict[str, MathematicalObject]) -> 'ProofValidationResult':
+    def validate_proof(self, objects: dict[str, MathematicalObject]) -> ProofValidationResult:
         """
         Total function: Validate attached proof against theorem specification.
 
@@ -1396,10 +1391,11 @@ class TheoremBox(BaseModel):
     @classmethod
     def from_raw(
         cls,
-        raw: "RawTheorem",  # type: ignore  # Forward reference
-        chapter: Optional[str] = None,
-        document: Optional[str] = None,
-    ) -> "TheoremBox":
+        raw: RawTheorem,  # type: ignore  # Forward reference
+        source: SourceLocation,
+        chapter: str | None = None,
+        document: str | None = None,
+    ) -> TheoremBox:
         """
         Create a TheoremBox from a RawTheorem staging model.
 
@@ -1409,11 +1405,15 @@ class TheoremBox(BaseModel):
 
         Args:
             raw: The raw theorem from Stage 1 extraction
+            source: Source location in documentation (REQUIRED)
             chapter: Chapter identifier (e.g., "1_euclidean_gas")
             document: Document identifier (e.g., "01_fragile_gas_framework")
 
         Returns:
             Enriched TheoremBox instance
+
+        Raises:
+            ValueError: If source is None
 
         Examples:
             >>> raw_thm = RawTheorem(
@@ -1421,49 +1421,74 @@ class TheoremBox(BaseModel):
             ...     label_text="thm-keystone",
             ...     name="Keystone Principle",
             ...     statement_text="Under axioms...",
-            ...     source_section="§3"
+            ...     source_section="§3",
             ... )
             >>> theorem = TheoremBox.from_raw(raw_thm)
             >>> theorem.label
             'thm-keystone'
         """
-        from fragile.proofs.staging_types import RawTheorem
-        from fragile.proofs.sympy.dual_representation import DualStatement
 
         # Extract label from label_text (e.g., "Theorem 1.1" → "thm-1.1")
         # Normalize to standard prefix format
         label = raw.label_text
         # Extract statement type from label_text or use raw.statement_type
-        statement_type = raw.statement_type  # Already normalized: "theorem", "lemma", "proposition", "corollary"
+        statement_type = (
+            raw.statement_type
+        )  # Already normalized: "theorem", "lemma", "proposition", "corollary"
 
         # Determine prefix from statement_type
         prefix_map = {
             "theorem": "thm-",
             "lemma": "lem-",
             "proposition": "prop-",
-            "corollary": "cor-"
+            "corollary": "cor-",
         }
         prefix = prefix_map.get(statement_type, "thm-")
 
         # Create label if not already prefixed
         if not label.startswith(("thm-", "lem-", "prop-", "cor-")):
-            # Extract name/number from label_text (e.g., "Theorem 1.1" → "1.1")
-            label_slug = label.lower().replace(statement_type, "").replace(" ", "-").strip("-")
+            import re
+
+            # Extract name/number from label_text (e.g., "Theorem 1.1 (Main Result)" → "main-result")
+            # Remove statement type word
+            label_slug = label.lower().replace(statement_type, "")
+            # Extract content from parentheses if present, otherwise use the whole text
+            paren_match = re.search(r"\(([^)]+)\)", label_slug)
+            if paren_match:
+                label_slug = paren_match.group(1)
+            # Clean up: remove dots, parentheses, replace spaces/underscores with hyphens
+            label_slug = re.sub(r"[.\(\)]", "", label_slug)  # Remove dots and parentheses
+            label_slug = re.sub(
+                r"[\s_]+", "-", label_slug
+            )  # Replace whitespace/underscores with hyphens
+            label_slug = re.sub(r"-+", "-", label_slug)  # Collapse multiple hyphens
+            label_slug = label_slug.strip("-")  # Remove leading/trailing hyphens
+            # If no meaningful slug extracted, use a generic one from temp_id or auto-generate
+            if not label_slug or label_slug == statement_type:
+                label_slug = (
+                    raw.temp_id.replace("raw-thm-", "")
+                    .replace("raw-lem-", "")
+                    .replace("raw-prop-", "")
+                )
             label = f"{prefix}{label_slug}"
 
         # Determine output type from label_text and full_statement_text
         # Use both label and statement for heuristics
         combined_text = f"{raw.label_text} {raw.full_statement_text}".lower()
-        if any(word in combined_text for word in ["existence", "exists", "there is", "there exists"]):
+        if any(
+            word in combined_text for word in ["existence", "exists", "there is", "there exists"]
+        ):
             output_type = TheoremOutputType.EXISTENCE
         elif any(word in combined_text for word in ["uniqueness", "unique"]):
             output_type = TheoremOutputType.UNIQUENESS
         elif any(word in combined_text for word in ["bound", "inequality", "estimate"]):
-            output_type = TheoremOutputType.INEQUALITY
+            output_type = TheoremOutputType.BOUND
         elif any(word in combined_text for word in ["equivalence", "iff", "if and only if"]):
             output_type = TheoremOutputType.EQUIVALENCE
         elif any(word in combined_text for word in ["convergence", "converges"]):
-            output_type = TheoremOutputType.ASYMPTOTIC
+            output_type = TheoremOutputType.CONVERGENCE
+        elif any(word in combined_text for word in ["contraction", "contractive"]):
+            output_type = TheoremOutputType.CONTRACTION
         else:
             output_type = TheoremOutputType.PROPERTY  # Default
 
@@ -1473,7 +1498,7 @@ class TheoremBox(BaseModel):
             label=label,
             name=raw.label_text,  # Use label_text as name (e.g., "Theorem 1.1 (Main Result)")
             statement_type=statement_type,
-            source=None,  # Requires line finder
+            source=source,
             chapter=chapter,
             document=document,
             proof=None,  # Can be attached later
@@ -1494,7 +1519,7 @@ class TheoremBox(BaseModel):
             equation_label=raw.equation_label,
             uses_definitions=raw.explicit_definition_references,  # Use extracted references
             validation_errors=[],
-            raw_fallback=raw.model_dump() if raw else None
+            raw_fallback=raw.model_dump() if raw else None,
         )
 
 
@@ -1504,7 +1529,7 @@ class TheoremBox(BaseModel):
 
 
 def create_simple_object(
-    label: str, name: str, expr: str, obj_type: ObjectType, tags: Optional[List[str]] = None
+    label: str, name: str, expr: str, obj_type: ObjectType, tags: list[str] | None = None
 ) -> MathematicalObject:
     """
     Helper: Create simple object with no properties.
@@ -1523,7 +1548,7 @@ def create_simple_object(
 
 
 def create_simple_theorem(
-    label: str, name: str, output_type: TheoremOutputType, input_objects: Optional[List[str]] = None
+    label: str, name: str, output_type: TheoremOutputType, input_objects: list[str] | None = None
 ) -> TheoremBox:
     """
     Helper: Create simple theorem with minimal configuration.
@@ -1536,3 +1561,24 @@ def create_simple_theorem(
         input_objects=input_objects or [],
         output_type=output_type,
     )
+
+
+# =============================================================================
+# MODEL REBUILD (Fix forward references)
+# =============================================================================
+
+# Import forward-referenced types at runtime to resolve forward references
+try:
+    from fragile.proofs.core.article_system import SourceLocation
+    from fragile.proofs.core.proof_system import ProofBox
+    from fragile.proofs.sympy_integration.dual_representation import DualStatement
+
+    # Rebuild models that use forward references
+    DefinitionBox.model_rebuild()
+    Axiom.model_rebuild()
+    Parameter.model_rebuild()
+    MathematicalObject.model_rebuild()
+    TheoremBox.model_rebuild()
+except ImportError:
+    # Dependencies not available yet (e.g., during initial import)
+    pass

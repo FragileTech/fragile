@@ -13,18 +13,16 @@ Version: 1.0.0
 
 from __future__ import annotations
 
-import re
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+import re
+from typing import Any
 
 from fragile.proofs.core.review_system import (
-    LLMResponse,
     Review,
     ReviewComparison,
     ReviewIssue,
     ReviewSeverity,
     ReviewSource,
-    ReviewStatus,
     ValidationResult,
 )
 from fragile.proofs.registry.review_registry import get_review_registry
@@ -135,7 +133,7 @@ class ReviewBuilder:
         )
 
     @staticmethod
-    def _parse_issues(response_text: str, object_id: str) -> List[ReviewIssue]:
+    def _parse_issues(response_text: str, object_id: str) -> list[ReviewIssue]:
         """Parse issues from LLM response text."""
         issues = []
 
@@ -157,7 +155,7 @@ class ReviewBuilder:
 
             # Extract components
             location = ReviewBuilder._extract_field(issue_text, "location") or "unknown"
-            title = ReviewBuilder._extract_field(issue_text, "title") or f"Issue {i+1}"
+            title = ReviewBuilder._extract_field(issue_text, "title") or f"Issue {i + 1}"
             problem = ReviewBuilder._extract_field(issue_text, "problem") or issue_text[:200]
             mechanism = ReviewBuilder._extract_field(issue_text, "mechanism")
             evidence = ReviewBuilder._extract_field(issue_text, "evidence")
@@ -169,7 +167,7 @@ class ReviewBuilder:
 
             issues.append(
                 ReviewIssue(
-                    id=f"issue-{object_id}-iter-{i+1}",
+                    id=f"issue-{object_id}-iter-{i + 1}",
                     severity=severity,
                     location=location,
                     title=title,
@@ -200,21 +198,21 @@ class ReviewBuilder:
         return severity_map.get(severity_str, ReviewSeverity.MINOR)
 
     @staticmethod
-    def _extract_section(text: str, section_name: str) -> Optional[str]:
+    def _extract_section(text: str, section_name: str) -> str | None:
         """Extract section from markdown-like text."""
         pattern = rf"(?:^|\n)#+\s*{section_name}\s*:?\s*\n(.*?)(?=\n#+\s|\Z)"
         match = re.search(pattern, text, re.DOTALL | re.IGNORECASE)
         return match.group(1).strip() if match else None
 
     @staticmethod
-    def _extract_field(text: str, field_name: str) -> Optional[str]:
+    def _extract_field(text: str, field_name: str) -> str | None:
         """Extract field from text (e.g., 'Location: step-2')."""
         pattern = rf"{field_name}\s*:\s*(.+?)(?=\n[A-Z][a-z]+\s*:|$)"
         match = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
         return match.group(1).strip() if match else None
 
     @staticmethod
-    def _extract_list(text: str, field_name: str) -> List[str]:
+    def _extract_list(text: str, field_name: str) -> list[str]:
         """Extract list from text (e.g., 'Impact: - item1 - item2')."""
         section = ReviewBuilder._extract_field(text, field_name)
         if not section:
@@ -223,7 +221,7 @@ class ReviewBuilder:
         return [item.strip() for item in items]
 
     @staticmethod
-    def _parse_strengths(response_text: str) -> List[str]:
+    def _parse_strengths(response_text: str) -> list[str]:
         """Parse strengths from LLM response."""
         strengths_section = ReviewBuilder._extract_section(response_text, "strengths")
         if not strengths_section:
@@ -232,12 +230,12 @@ class ReviewBuilder:
         return [item.strip() for item in items]
 
     @staticmethod
-    def _parse_overall_assessment(response_text: str) -> Optional[str]:
+    def _parse_overall_assessment(response_text: str) -> str | None:
         """Parse overall assessment from LLM response."""
         return ReviewBuilder._extract_section(response_text, "overall assessment")
 
     @staticmethod
-    def _parse_scores(response_text: str) -> Dict[str, float]:
+    def _parse_scores(response_text: str) -> dict[str, float]:
         """Parse scores from LLM response."""
         scores = {}
         scores_section = ReviewBuilder._extract_section(response_text, "scores")
@@ -254,7 +252,7 @@ class ReviewBuilder:
         return scores
 
     @staticmethod
-    def _compute_actionability(suggested_fix: Optional[str], mechanism: Optional[str]) -> float:
+    def _compute_actionability(suggested_fix: str | None, mechanism: str | None) -> float:
         """
         Compute actionability score based on fix clarity.
 
@@ -273,22 +271,21 @@ class ReviewBuilder:
 
         if is_specific and mechanism:
             return 1.0
-        elif is_specific:
+        if is_specific:
             return 0.8
-        elif mechanism:
+        if mechanism:
             return 0.6
-        else:
-            return 0.5
+        return 0.5
 
     @staticmethod
     def from_validation_failure(
         validator: str,
-        errors: List[str],
-        warnings: List[str],
+        errors: list[str],
+        warnings: list[str],
         object_id: str,
         object_type: str,
         iteration: int,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> Review:
         """
         Create Review from validation failure.
@@ -313,7 +310,7 @@ class ReviewBuilder:
         for i, error in enumerate(errors):
             issues.append(
                 ReviewIssue(
-                    id=f"issue-{object_id}-val-{i+1}",
+                    id=f"issue-{object_id}-val-{i + 1}",
                     severity=ReviewSeverity.VALIDATION_FAILURE,
                     location="automated-validation",
                     title=f"{validator} validation failure",
@@ -400,7 +397,7 @@ class ReviewAnalyzer:
     """
 
     @staticmethod
-    def compute_review_metrics(review: Review) -> Dict[str, float]:
+    def compute_review_metrics(review: Review) -> dict[str, float]:
         """
         Pure function: Compute comprehensive metrics for a review.
 
@@ -420,11 +417,11 @@ class ReviewAnalyzer:
                 severity_dist[severity.value] = count
 
         actionabilities = [i.actionability_score for i in review.issues]
-        actionability_mean = sum(actionabilities) / len(actionabilities) if actionabilities else 1.0
+        actionability_mean = (
+            sum(actionabilities) / len(actionabilities) if actionabilities else 1.0
+        )
         actionability_std = (
-            (
-                sum((a - actionability_mean) ** 2 for a in actionabilities) / len(actionabilities)
-            )
+            (sum((a - actionability_mean) ** 2 for a in actionabilities) / len(actionabilities))
             ** 0.5
             if actionabilities
             else 0.0
@@ -441,7 +438,7 @@ class ReviewAnalyzer:
         }
 
     @staticmethod
-    def identify_blocking_issues(review: Review) -> List[ReviewIssue]:
+    def identify_blocking_issues(review: Review) -> list[ReviewIssue]:
         """
         Pure function: Get all blocking issues.
 
@@ -462,7 +459,7 @@ class ReviewAnalyzer:
         - "review-suggestions": Only SUGGESTION issues, optional improvements
         - "ready": No issues, ready for publication
         """
-        status = review.get_status()
+        review.get_status()
 
         critical = review.get_issues_by_severity(ReviewSeverity.CRITICAL)
         if critical:
@@ -517,7 +514,7 @@ class DualReviewProtocol:
     def prepare_review_prompt(
         object_type: str,
         object_content: str,
-        review_focus: Optional[str] = None,
+        review_focus: str | None = None,
     ) -> str:
         """
         Pure function: Prepare review prompt for LLMs.
@@ -533,11 +530,9 @@ class DualReviewProtocol:
         Returns:
             Prompt string for LLMs
         """
-        focus_instruction = (
-            f"\nFocus particularly on: {review_focus}" if review_focus else ""
-        )
+        focus_instruction = f"\nFocus particularly on: {review_focus}" if review_focus else ""
 
-        prompt = f"""Review this {object_type} for mathematical rigor and correctness.{focus_instruction}
+        return f"""Review this {object_type} for mathematical rigor and correctness.{focus_instruction}
 
 {object_content}
 
@@ -575,8 +570,6 @@ Framework Consistency: X/10
 
 **IMPORTANT**: Be specific about locations (step IDs, line numbers, equations). Explain WHY each issue is a problem, not just WHAT is wrong.
 """
-
-        return prompt
 
     @staticmethod
     def parse_dual_review_responses(
@@ -628,7 +621,8 @@ Framework Consistency: X/10
         comparison = registry.compare_reviews(gemini_review.review_id, codex_review.review_id)
 
         if comparison is None:
-            raise ValueError("Failed to create review comparison")
+            msg = "Failed to create review comparison"
+            raise ValueError(msg)
 
         return comparison
 

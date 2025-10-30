@@ -21,8 +21,6 @@ Maps to Lean:
     end MathematicalDocument
 """
 
-from typing import Dict, List, Optional
-
 from pydantic import BaseModel, ConfigDict, Field
 
 from fragile.proofs.core import (
@@ -30,8 +28,8 @@ from fragile.proofs.core import (
     DefinitionBox,
     MathematicalObject,
     Parameter,
-    TheoremBox,
     ProofBox,
+    TheoremBox,
 )
 from fragile.proofs.core.enriched_types import (
     EquationBox,
@@ -39,14 +37,6 @@ from fragile.proofs.core.enriched_types import (
     RemarkBox,
 )
 from fragile.proofs.staging_types import (
-    RawAxiom,
-    RawCitation,
-    RawDefinition,
-    RawEquation,
-    RawParameter,
-    RawProof,
-    RawRemark,
-    RawTheorem,
     StagingDocument,
 )
 
@@ -66,64 +56,55 @@ class EnrichedEntities(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    definitions: Dict[str, DefinitionBox] = Field(
-        default_factory=dict,
-        description="Enriched definitions keyed by label"
+    definitions: dict[str, DefinitionBox] = Field(
+        default_factory=dict, description="Enriched definitions keyed by label"
     )
 
-    theorems: Dict[str, TheoremBox] = Field(
-        default_factory=dict,
-        description="Enriched theorems keyed by label"
+    theorems: dict[str, TheoremBox] = Field(
+        default_factory=dict, description="Enriched theorems keyed by label"
     )
 
-    axioms: Dict[str, Axiom] = Field(
-        default_factory=dict,
-        description="Enriched axioms keyed by label"
+    axioms: dict[str, Axiom] = Field(
+        default_factory=dict, description="Enriched axioms keyed by label"
     )
 
-    proofs: Dict[str, ProofBox] = Field(
-        default_factory=dict,
-        description="Enriched proofs keyed by proof_id"
+    proofs: dict[str, ProofBox] = Field(
+        default_factory=dict, description="Enriched proofs keyed by proof_id"
     )
 
-    objects: Dict[str, MathematicalObject] = Field(
-        default_factory=dict,
-        description="Mathematical objects keyed by label"
+    objects: dict[str, MathematicalObject] = Field(
+        default_factory=dict, description="Mathematical objects keyed by label"
     )
 
-    parameters: Dict[str, Parameter] = Field(
-        default_factory=dict,
-        description="Global parameters keyed by label"
+    parameters: dict[str, Parameter] = Field(
+        default_factory=dict, description="Global parameters keyed by label"
     )
 
-    equations: Dict[str, EquationBox] = Field(
-        default_factory=dict,
-        description="Equations keyed by equation_id"
+    equations: dict[str, EquationBox] = Field(
+        default_factory=dict, description="Equations keyed by equation_id"
     )
 
-    parameter_boxes: Dict[str, ParameterBox] = Field(
-        default_factory=dict,
-        description="Parameter boxes keyed by parameter_id"
+    parameter_boxes: dict[str, ParameterBox] = Field(
+        default_factory=dict, description="Parameter boxes keyed by parameter_id"
     )
 
-    remarks: Dict[str, RemarkBox] = Field(
-        default_factory=dict,
-        description="Remarks keyed by remark_id"
+    remarks: dict[str, RemarkBox] = Field(
+        default_factory=dict, description="Remarks keyed by remark_id"
     )
 
     @property
     def total_entities(self) -> int:
         """Total number of enriched entities."""
         return (
-            len(self.definitions) +
-            len(self.theorems) +
-            len(self.axioms) +
-            len(self.proofs) +
-            len(self.objects) +
-            len(self.parameters) +
-            len(self.equations) +
-            len(self.parameter_boxes) +
-            len(self.remarks)
+            len(self.definitions)
+            + len(self.theorems)
+            + len(self.axioms)
+            + len(self.proofs)
+            + len(self.objects)
+            + len(self.parameters)
+            + len(self.equations)
+            + len(self.parameter_boxes)
+            + len(self.remarks)
         )
 
     def get_summary(self) -> str:
@@ -187,28 +168,24 @@ class MathematicalDocument(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     document_id: str = Field(
-        ...,
-        description="Unique identifier for the document (e.g., '01_fragile_gas_framework')"
+        ..., description="Unique identifier for the document (e.g., '01_fragile_gas_framework')"
     )
 
-    chapter: Optional[str] = Field(
+    chapter: str | None = Field(
         None,
-        description="High-level chapter/folder name (e.g., '1_euclidean_gas', '2_geometric_gas')"
+        description="High-level chapter/folder name (e.g., '1_euclidean_gas', '2_geometric_gas')",
     )
 
-    file_path: Optional[str] = Field(
-        None,
-        description="Path to the source markdown file"
-    )
+    file_path: str | None = Field(None, description="Path to the source markdown file")
 
-    staging_documents: List[StagingDocument] = Field(
+    staging_documents: list[StagingDocument] = Field(
         default_factory=list,
-        description="Raw staging documents from Stage 1 extraction (one per section)"
+        description="Raw staging documents from Stage 1 extraction (one per section)",
     )
 
     enriched: EnrichedEntities = Field(
         default_factory=EnrichedEntities,
-        description="All enriched entities from Stage 2 processing"
+        description="All enriched entities from Stage 2 processing",
     )
 
     @property
@@ -298,22 +275,22 @@ class MathematicalDocument(BaseModel):
     # LOOKUP METHODS
     # =============================================================================
 
-    def get_definition(self, label: str) -> Optional[DefinitionBox]:
+    def get_definition(self, label: str) -> DefinitionBox | None:
         """Get a definition by label."""
         return self.enriched.definitions.get(label)
 
-    def get_theorem(self, label: str) -> Optional[TheoremBox]:
+    def get_theorem(self, label: str) -> TheoremBox | None:
         """Get a theorem by label."""
         return self.enriched.theorems.get(label)
 
-    def get_axiom(self, label: str) -> Optional[Axiom]:
+    def get_axiom(self, label: str) -> Axiom | None:
         """Get an axiom by label."""
         return self.enriched.axioms.get(label)
 
-    def get_object(self, label: str) -> Optional[MathematicalObject]:
+    def get_object(self, label: str) -> MathematicalObject | None:
         """Get a mathematical object by label."""
         return self.enriched.objects.get(label)
 
-    def get_parameter(self, label: str) -> Optional[Parameter]:
+    def get_parameter(self, label: str) -> Parameter | None:
         """Get a parameter by label."""
         return self.enriched.parameters.get(label)

@@ -1,0 +1,56 @@
+{
+  "source_file": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+  "section": "Section 11: Distance-to-Companion Measurement",
+  "line_range": "2140-2750",
+  "extraction_method": "manual",
+  "extraction_date": "2025-10-27",
+  "entities_extracted": {
+    "definitions": 1,
+    "theorems": 12,
+    "axioms": 0,
+    "proofs": 0,
+    "objects": 1,
+    "parameters": 0,
+    "remarks": 0,
+    "citations": 0
+  },
+  "total_entities": 14,
+  "entity_list": {
+    "definitions": [
+      "def-distance-to-companion-measurement"
+    ],
+    "theorems": [
+      "lem-single-walker-positional-error",
+      "lem-single-walker-structural-error",
+      "lem-single-walker-own-status-error",
+      "thm-total-expected-distance-error-decomposition",
+      "lem-total-squared-error-unstable",
+      "lem-total-squared-error-stable",
+      "sub-lem-stable-walker-error-decomposition",
+      "sub-lem-stable-positional-error-bound",
+      "sub-lem-stable-structural-error-bound",
+      "thm-expected-raw-distance-bound",
+      "thm-expected-raw-distance-k1",
+      "thm-distance-operator-satisfies-bounded-variance-axiom",
+      "thm-distance-operator-mean-square-continuity"
+    ],
+    "objects": [
+      "obj-expected-distance-error-coefficients"
+    ]
+  },
+  "section_summary": "Section 11 establishes the continuity properties of the distance-to-companion measurement operator. The section is structured in two main parts: (1) continuity of the expected raw distance vector for k≥2 regime, decomposing error into positional and structural components for stable and unstable walkers, and (2) mean-square continuity of the sampled raw distance vector, proving the operator satisfies the bounded variance axiom and deriving the explicit bound function F_{d,ms}. A critical result is the discontinuous behavior at k=1, where the expected distance vector becomes deterministically zero.",
+  "key_results": [
+    "Bound on single-walker error decomposed into positional, structural, and own-status components",
+    "Total error decomposition into stable and unstable walker contributions",
+    "Explicit continuity coefficients with singularity at k=1",
+    "Verification that distance operator satisfies bounded variance axiom",
+    "Mean-square continuity bound function F_{d,ms} for use in standardization operator analysis"
+  ],
+  "mathematical_highlights": [
+    "Error analysis uses reverse triangle inequality and Jensen's inequality",
+    "Double summation analysis for companion selection averaging",
+    "Singularity coefficient C_{status,d}^{(2)}(k_1) ~ 1/(k_1-1)^2 reflects fundamental discontinuity",
+    "Stochastic variance bounded by N·D_Y^2 uniformly across all states",
+    "Deterministic mean error bounded by displacement components"
+  ]
+}

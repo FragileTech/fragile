@@ -23,17 +23,16 @@ field-based phases).
 - Proposed: Walker phases θ_i depend on collective field d'_i (entire swarm through ρ-stats)
 """
 
-import torch
 from pydantic import BaseModel, Field
+import torch
 from torch import Tensor
 
 from fragile.core.companion_selection import (
     compute_algorithmic_distance_matrix,
-    select_companions_softmax,
 )
 from fragile.experiments.gauge.observables import (
-    ObservablesConfig,
     compute_collective_fields,
+    ObservablesConfig,
 )
 
 
@@ -84,9 +83,7 @@ def compute_u1_phase_current(
         config = U1Config()
 
     # Compute full distance matrix [N, N]
-    dist_sq = compute_algorithmic_distance_matrix(
-        positions, velocities, config.lambda_alg
-    )
+    dist_sq = compute_algorithmic_distance_matrix(positions, velocities, config.lambda_alg)
 
     # Extract distances to companions [N]
     N = positions.shape[0]
@@ -152,7 +149,7 @@ def compute_u1_phase_proposed(
     d_prime = fields["d_prime"]
 
     # Compute phases: θ_i = (d'_i)^β / ℏ_eff
-    phases = (d_prime ** obs_config.beta) / u1_config.h_eff
+    phases = (d_prime**obs_config.beta) / u1_config.h_eff
 
     # Mask dead walkers
     return torch.where(alive, phases, torch.zeros_like(phases))
@@ -190,9 +187,7 @@ def compute_u1_amplitude(
     N = positions.shape[0]
 
     # Compute distance matrix
-    dist_sq = compute_algorithmic_distance_matrix(
-        positions, velocities, config.lambda_alg
-    )
+    dist_sq = compute_algorithmic_distance_matrix(positions, velocities, config.lambda_alg)
 
     # Compute softmax weights: exp(-d²/(2ε²))
     weights = torch.exp(-dist_sq / (2 * config.epsilon_d**2))
@@ -203,9 +198,7 @@ def compute_u1_amplitude(
     weights = weights * alive_mask.float() * self_mask.float()
 
     # Normalize to probabilities
-    probs = weights / (weights.sum(dim=1, keepdim=True) + 1e-10)
-
-    return probs
+    return weights / (weights.sum(dim=1, keepdim=True) + 1e-10)
 
 
 def compare_u1_phases(
@@ -249,9 +242,7 @@ def compare_u1_phases(
         >>> print(f"Mean difference: {comparison['difference'].mean():.4f}")
     """
     # Compute both phase structures
-    current = compute_u1_phase_current(
-        positions, velocities, companions, alive, u1_config
-    )
+    current = compute_u1_phase_current(positions, velocities, companions, alive, u1_config)
     proposed = compute_u1_phase_proposed(
         positions, velocities, rewards, companions, alive, rho, obs_config, u1_config
     )
@@ -262,9 +253,7 @@ def compare_u1_phases(
 
     # Compute correlation
     if len(current_alive) > 1:
-        correlation = torch.corrcoef(
-            torch.stack([current_alive, proposed_alive])
-        )[0, 1].item()
+        correlation = torch.corrcoef(torch.stack([current_alive, proposed_alive]))[0, 1].item()
     else:
         correlation = 0.0
 
@@ -317,9 +306,7 @@ def compute_dressed_walker_state(
     psi = torch.sqrt(probs_i) * torch.exp(1j * phase_i)
 
     # Mask dead companions
-    psi = torch.where(alive, psi, torch.zeros_like(psi))
-
-    return psi
+    return torch.where(alive, psi, torch.zeros_like(psi))
 
 
 def compute_u1_observable(dressed_state: Tensor) -> float:

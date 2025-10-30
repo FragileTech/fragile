@@ -1,0 +1,49 @@
+{
+  "label": "thm-mean-square-standardization-error",
+  "name": "Asymptotic Behavior of the Mean-Square Standardization Error",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.3.3",
+    "section_name": null,
+    "directive_label": "thm-mean-square-standardization-error",
+    "equation": null,
+    "line_range": [
+      887,
+      907
+    ],
+    "url_fragment": "#thm-mean-square-standardization-error"
+  },
+  "input_objects": [
+    "obj-lipschitz-value-error-coefficients",
+    "obj-raw-value-operator",
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-standardization-total-value-error-coefficient",
+    "obj-standardization-operator-n-dimensional",
+    "obj-lipschitz-structural-error-coefficients",
+    "obj-components-mean-square-standardization-error",
+    "obj-standardization-lower-bound"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity"
+  ],
+  "input_parameters": [
+    "param-F-V-ms"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-mean-square-standardization-error-bound",
+      "expression": "\\mathbb{E}[\\|z(\\mathcal{S}_1) - z(\\mathcal{S}_2)\\|^2] \\text{ bounded by structural and value error sum}",
+      "object_label": "obj-standardization-operator-n-dimensional"
+    }
+  ],
+  "relations_established": [
+    "Expected squared standardization error bounded by sum of value and structural errors"
+  ]
+}

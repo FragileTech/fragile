@@ -31,13 +31,14 @@ Maps to Lean:
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, Field
 
+
 if TYPE_CHECKING:
     from fragile.proofs.core.bibliography import Bibliography
-    from fragile.proofs.sympy.dual_representation import PaperContext
+    from fragile.proofs.sympy_integration.dual_representation import PaperContext
 
 
 class SourceLocation(BaseModel):
@@ -60,7 +61,7 @@ class SourceLocation(BaseModel):
         ...     document_id="03_cloning",
         ...     file_path="docs/source/1_euclidean_gas/03_cloning.md",
         ...     directive_label="thm-keystone",
-        ...     section="§3.2"
+        ...     section="3.2",
         ... )
         >>> loc.get_full_url()
         'https://docs.example.com/03_cloning.html#thm-keystone'
@@ -70,7 +71,7 @@ class SourceLocation(BaseModel):
         ...     document_id="03_cloning",
         ...     file_path="docs/source/1_euclidean_gas/03_cloning.md",
         ...     line_range=(142, 158),
-        ...     section="§3.2.1"
+        ...     section="3.2.1",
         ... )
         >>> loc2.get_display_location()
         '03_cloning (line 142-158)'
@@ -94,38 +95,46 @@ class SourceLocation(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
+    file_path: str = Field(
+        ...,
+        description="Path to source file relative to project root (e.g., 'docs/source/1_euclidean_gas/03_cloning.md')",
+    )
     # Document identification
+    chapter: str | None = Field(
+        ...,
+        description="High-level chapter/folder name (e.g., '1_euclidean_gas', '2_geometric_gas')",
+    )
     document_id: str = Field(
         ...,
         pattern=r"^[0-9]{2}_[a-z_]+$",
         description="Document ID (e.g., '03_cloning', '11_geometric_gas')",
     )
-    file_path: str = Field(
-        ...,
-        description="Path to source file relative to project root (e.g., 'docs/source/1_euclidean_gas/03_cloning.md')",
-    )
-
     # Location within document
-    section: Optional[str] = Field(
-        None, description="Section reference (e.g., '§3.2.1', 'Section 3: The Keystone Principle')"
+    section: str | None = Field(
+        ...,
+        description="Section reference using the markdown header format of X.Y.Z (e.g., '3.2.1')",
     )
-    directive_label: Optional[str] = Field(
-        None,
+    section_name: str | None = Field(
+        ..., description="Human-readable section name (e.g., 'The Keystone Principle')"
+    )
+    directive_label: str | None = Field(
+        ...,
         pattern=r"^[a-z][a-z0-9-]*$",
-        description="Jupyter Book directive label (e.g., 'thm-keystone', 'def-walker')",
+        description="Jupyter Book directive label (e.g., 'thm-keystone', 'def-walker'). "
+        "If not present in the document, invent one based on object label.",
     )
-    equation: Optional[str] = Field(
-        None, description="Equation reference if applicable (e.g., 'Eq. (17)')"
-    )
-    line_range: Optional[Tuple[int, int]] = Field(
-        None,
+    line_range: tuple[int, int] | None = Field(
+        ...,
         description="Line range in markdown file (start_line, end_line, 1-indexed). "
-                   "Essential for grounding mathematical objects to their exact location in source documents. "
-                   "Example: (142, 158) means the object spans from line 142 to line 158 inclusive."
+        "Essential for grounding mathematical objects to their exact location in source documents. "
+        "Example: (142, 158) means the object spans from line 142 to line 158 inclusive.",
+    )
+    equation: str | None = Field(
+        None, description="Equation reference if applicable (e.g., 'Eq. (17)')"
     )
 
     # URL for documentation
-    url_fragment: Optional[str] = Field(
+    url_fragment: str | None = Field(
         None, description="URL fragment for Jupyter Book (e.g., '#thm-keystone')"
     )
 
@@ -182,7 +191,7 @@ class Article(BaseModel):
         ...     file_path="docs/source/1_euclidean_gas/03_cloning.md",
         ...     chapter=1,
         ...     tags=["cloning", "measurement", "fitness"],
-        ...     contains_labels=["thm-keystone", "def-fitness"]
+        ...     contains_labels=["thm-keystone", "def-fitness"],
         ... )
         >>> article.has_tag("cloning")
         True
@@ -213,21 +222,19 @@ class Article(BaseModel):
         description="Unique document ID (e.g., '03_cloning', '11_geometric_gas')",
     )
     title: str = Field(..., description="Document title")
-    file_path: str = Field(
-        ..., description="Path to markdown file relative to project root"
-    )
+    file_path: str = Field(..., description="Path to markdown file relative to project root")
 
     # Organization
-    chapter: Optional[int] = Field(
+    chapter: int | None = Field(
         None,
         description="Chapter number in the framework (1 = Euclidean Gas, 2 = Geometric Gas)",
     )
-    section_number: Optional[str] = Field(
+    section_number: str | None = Field(
         None, description="Section number within chapter (e.g., '2.3', '1.3.2')"
     )
 
     # Categorization
-    tags: List[str] = Field(
+    tags: list[str] = Field(
         default_factory=list,
         description="Tags for filtering/categorizing (e.g., ['cloning', 'convergence', 'mean-field'])",
     )
@@ -238,29 +245,27 @@ class Article(BaseModel):
         pattern=r"^\d+\.\d+\.\d+$",
         description="Semantic version (e.g., '1.0.0', '2.1.0')",
     )
-    last_modified: Optional[datetime] = Field(None, description="Last modification timestamp")
+    last_modified: datetime | None = Field(None, description="Last modification timestamp")
 
     # Content
-    abstract: Optional[str] = Field(
-        None, description="Brief abstract/summary of document content"
-    )
-    contains_labels: List[str] = Field(
+    abstract: str | None = Field(None, description="Brief abstract/summary of document content")
+    contains_labels: list[str] = Field(
         default_factory=list,
         description="All mathematical object labels defined in this document",
     )
 
     # Enhanced Paper Processing (NEW - for PDF/paper extraction)
-    bibliography: Optional["Bibliography"] = Field(
+    bibliography: Bibliography | None = Field(
         None,
         description="The bibliography containing all references cited in this article. "
-                   "Essential for tracking theorem dependencies on external literature."
+        "Essential for tracking theorem dependencies on external literature.",
     )
 
-    global_context: Optional["PaperContext"] = Field(
+    global_context: PaperContext | None = Field(
         None,
         description="The global SymPy context for the paper, including symbols and assumptions "
-                   "defined for the whole document (e.g., 'h denotes a small parameter'). "
-                   "Built once by parsing introduction and notation sections."
+        "defined for the whole document (e.g., 'h denotes a small parameter'). "
+        "Built once by parsing introduction and notation sections.",
     )
 
     def has_tag(self, tag: str) -> bool:

@@ -3,15 +3,24 @@
   "name": "Sequence of N-Particle QSDs and their Marginals (Summary)",
   "mathematical_expression": "\\mu_N(A) := \\nu_N^{QSD}(\\{ S \\in \\Sigma_N \\mid (x_1, v_1) \\in A \\})",
   "object_type": "measure",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "euclidean-gas",
     "particle",
     "swarm",
     "convergence"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "08_propagation_chaos"
+  "source": {
+    "document_id": "08_propagation_chaos",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/08_propagation_chaos.md",
+    "section": null,
+    "directive_label": "obj-sequence-of-qsds-summary",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-sequence-of-qsds-summary"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

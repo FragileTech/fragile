@@ -1,0 +1,10 @@
+{
+  "label": "param-x-i",
+  "name": "x_i",
+  "symbol": "x_i",
+  "parameter_type": "real",
+  "constraints": null,
+  "default_value": null,
+  "chapter": null,
+  "document": null
+}

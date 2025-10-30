@@ -1,0 +1,57 @@
+{
+  "label": "cor-chain-rule-sigma-reg-var",
+  "name": "Chain-rule bound for σ'_reg ∘ Var",
+  "entity_type": "corollary",
+  "statement_type": "TheoremBox",
+  "output_type": "Bound",
+  "natural_language_statement": "The composite map of the regularized sigma derivative and the variance functional (σ'_reg ∘ Var) is Lipschitz, and its Lipschitz constant is bounded by the product of the Lipschitz constant of σ'_reg and a term depending on the Lipschitz constants of the mean and second moment aggregators.",
+  "description": "This corollary provides a specific Lipschitz bound for the composite function σ'_reg ∘ Var, which is a component in the analysis of the overall fitness potential's continuity. It applies the chain rule for Lipschitz functions to combine bounds from previous lemmas.",
+  "assumptions_hypotheses": [
+    "The conditions of lem-lipschitz-variance-functional hold.",
+    "The conditions of lem-sigma-patch-derivative-bound hold.",
+    "Using the empirical aggregator from §6.2.2.a."
+  ],
+  "conclusion_main_result": "The composite map σ'_reg ∘ Var is Lipschitz with a constant $L_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}} \\le \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}$.",
+  "input_objects": [
+    "obj-standardization-operator-n-dimensional"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "k",
+    "V_max"
+  ],
+  "lemma_dag_edges": [
+    [
+      "cor-chain-rule-sigma-reg-var",
+      "lem-lipschitz-variance-functional"
+    ],
+    [
+      "cor-chain-rule-sigma-reg-var",
+      "lem-sigma-patch-derivative-bound"
+    ],
+    [
+      "cor-chain-rule-sigma-reg-var",
+      "lem-empirical-aggregator-properties"
+    ]
+  ],
+  "internal_lemmas": [],
+  "relations": [
+    {
+      "formula": "L_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}} \\le L_{\\sigma'_{\\text{reg}}} ( L_{m_2,M}+2 V_{\\max} L_{\\mu,M})",
+      "description": "General chain-rule bound for the composite map's Lipschitz constant."
+    },
+    {
+      "formula": "L_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}} \\le \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}",
+      "description": "Specific bound when using the empirical aggregator, where $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$."
+    }
+  ],
+  "proof_status": "verified",
+  "raw_fallback": {},
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "9. Rescale Transformation",
+    "subsection": "8.2.2.10",
+    "directive_label": "cor-chain-rule-sigma-reg-var"
+  }
+}

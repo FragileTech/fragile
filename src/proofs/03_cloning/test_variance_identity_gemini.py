@@ -1,4 +1,5 @@
-from sympy import symbols, simplify, expand
+from sympy import expand, simplify, symbols
+
 
 def test_between_group_variance_identity():
     """
@@ -11,19 +12,19 @@ def test_between_group_variance_identity():
     """
 
     # 1. Define symbols with appropriate assumptions from the framework
-    f_H, f_L = symbols('f_H f_L', positive=True, real=True)
-    mu_H, mu_L, mu_V = symbols('mu_H mu_L mu_V', real=True)
+    f_H, f_L = symbols("f_H f_L", positive=True, real=True)
+    mu_H, mu_L, mu_V = symbols("mu_H mu_L mu_V", real=True)
 
     # 2. Define the Left-Hand Side (LHS) from the definition of between-group variance
     # Var_B = f_H(mu_H - mu_V)^2 + f_L(mu_L - mu_V)^2
-    lhs = f_H * (mu_H - mu_V)**2 + f_L * (mu_L - mu_V)**2
+    lhs = f_H * (mu_H - mu_V) ** 2 + f_L * (mu_L - mu_V) ** 2
 
     # 3. Substitute the definition of the total mean (mu_V) into the LHS
     # mu_V = f_H*mu_H + f_L*mu_L
     lhs_substituted = lhs.subs(mu_V, f_H * mu_H + f_L * mu_L)
 
     # 4. Define the Right-Hand Side (RHS) of the identity to be verified
-    rhs = f_H * f_L * (mu_H - mu_L)**2
+    rhs = f_H * f_L * (mu_H - mu_L) ** 2
 
     # 5. Create the expression representing the difference between LHS and RHS
     difference = lhs_substituted - rhs
@@ -43,6 +44,7 @@ def test_between_group_variance_identity():
     # 8. Print confirmation message on success
     print("✓ Between-group variance identity verified successfully.")
     print("Identity: Var_B = f_H * f_L * (mu_H - mu_L)**2")
+
 
 if __name__ == "__main__":
     test_between_group_variance_identity()

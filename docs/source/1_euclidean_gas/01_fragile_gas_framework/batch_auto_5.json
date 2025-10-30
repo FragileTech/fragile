@@ -1,0 +1,330 @@
+{
+  "raw_data/lemmas/lem-polynomial-patch-monotonicity.json": {
+    "label": "lem-polynomial-patch-monotonicity",
+    "name": "Monotonicity of the Polynomial Patch",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-cubic-patch-polynomial"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "General Result",
+    "attributes_added": [],
+    "relations_established": [
+      "Cubic patch P(z) is monotone non-decreasing via Fritsch-Carlson/Hyman conditions"
+    ],
+    "natural_language_statement": "Let $z_0=z_{\\max}-1$, $z_1=z_{\\max}$, $y_0=\\log(z_{\\max})+1$, $y_1=\\log(1+z_{\\max})+1$, and endpoint slopes $m_0=P'(z_0)=1/z_{\\max}$, $m_1=P'(z_1)=0$. Set the secant $\\Delta:=(y_1-y_0)/(z_1-z_0)=\\log(1+1/z_{\\max})>0$. Then the Hermite cubic $P$ on $[z_0,z_1]$ with $(y_0,m_0),(y_1,m_1)$ is monotonically non‑decreasing.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-potential-boundedness.json": {
+    "label": "lem-potential-boundedness",
+    "name": "Boundedness of the Fitness Potential",
+    "statement_type": "lemma",
+    "source": {
+      "document": "01_fragile_gas_framework.md",
+      "section": "13. Fitness potential operator",
+      "subsection": "12.2.1. Lemma: Boundedness of the Fitness Potential"
+    },
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "def-alive-set-potential-operator",
+      "obj-potential-bounds"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Fitness potential bounded: V_pot,min <= V_pot <= V_pot,max"
+    ],
+    "natural_language_statement": "For any alive walker $i$, its fitness potential $V_i$ is strictly positive and uniformly bounded. That is, there exist finite, state-independent constants $V_{\\text{pot,min}}$ and $V_{\\text{pot,max}}$ such that: $0 < V_{\\text{pot,min}} \\le V_i \\le V_{\\text{pot,max}} < \\infty$ where the bounds are defined in terms of the global algorithmic parameters: $V_{\\text{pot,min}} := \\eta^{\\alpha+\\beta}$, $V_{\\text{pot,max}} := (g_{A,\\max} + \\eta)^{\\alpha+\\beta}$, $g_{A,\\max} := \\log(1 + z_{\\max}) + 1$",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-probabilistic-bound-perturbation-displacement.json": {
+    "label": "sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+    "name": "Probabilistic Bound on Total Perturbation-Induced Displacement",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-stochastic-fluctuation-bound",
+      "obj-mean-displacement-bound"
+    ],
+    "input_axioms": [
+      "def-axiom-bounded-second-moment-perturbation"
+    ],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "High-probability bound on total perturbation-induced displacement across swarm"
+    ],
+    "natural_language_statement": "Let $\\mathcal{S}_{\\text{in}}$ be an input swarm. Assume the **Axiom of Bounded Second Moment of Perturbation** holds. Then for any probability of failure $\\delta' \\in (0, 1)$, the **Total Perturbation-Induced Displacement** is bounded with probability at least $1-\\delta'$:\n$$\\Delta_{\\text{pert}}^2(\\mathcal{S}_{\\text{in}}) \\le B_M(N) + B_S(N, \\delta')$$\nwhere $B_M(N)$ is the **Mean Displacement Bound** and $B_S(N, \\delta')$ is the **Stochastic Fluctuation Bound**.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-rescale-monotonicity.json": {
+    "label": "lem-rescale-monotonicity",
+    "name": "Monotonicity of the Smooth Rescale Function",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-asymmetric-rescale-function"
+    ],
+    "input_axioms": [
+      "axiom-rescale-function"
+    ],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "General Result",
+    "attributes_added": [],
+    "relations_established": [
+      "Smooth piecewise rescale g_A(z) is monotone non-decreasing on R"
+    ],
+    "natural_language_statement": "The Smooth Piecewise Rescale Function $g_A(z)$ is monotonically non-decreasing on $\\mathbb{R}$.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-set-difference-bound.json": {
+    "label": "lem-set-difference-bound",
+    "name": "Bound on the Error from Companion Set Change",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "unproven",
+    "input_objects": [
+      "obj-companion-selection-measure"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Bound on error from companion set change, proportional to symmetric difference of support sets"
+    ],
+    "natural_language_statement": "Let $S_1$ and $S_2$ be two companion support sets, with $|S_1| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$ such that $|f_j| \\le M_f$ for all $j$.\nThe absolute difference between the sums over these two sets, normalized by the initial set size $|S_1|$, is bounded by the size of the symmetric difference between the sets, $|S_1 \\Delta S_2|$.",
+    "assumptions": [],
+    "conclusion": null,
+    "equation_label": null,
+    "uses_definitions": [
+      "def-companion-selection-measure"
+    ],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-sigma-patch-derivative-bound.json": {
+    "label": "lem-sigma-patch-derivative-bound",
+    "name": "Derivative bound for σ'_reg",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-rescale-lipschitz-constants",
+      "obj-standardization-lower-bound"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Derivative sigma'_reg(s) bounded by L_{sigma'_reg}"
+    ],
+    "natural_language_statement": "Let $\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}$ be the regularized standard deviation from def-statistical-properties-measurement, where $\\sigma'_{\\min} = \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}$. Its global derivative bound is:\n$$\nL_{\\sigma'_{\\text{reg}}}=\\sup_{V\\ge 0}\\big|\\,(\\sigma'_{\\text{reg}})'(V)\\,\\big|= \\frac{1}{2\\sigma'_{\\min}} = \\frac{1}{2\\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}}\n$$\nas established in lem-sigma-reg-derivative-bounds.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-sigma-reg-derivative-bounds.json": {
+    "label": "lem-sigma-reg-derivative-bounds",
+    "name": "Derivative Bounds for Regularized Standard Deviation",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "expanded",
+    "input_objects": [
+      "obj-standardization-lower-bound"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Bounds on derivatives of regularized standard deviation sigma'_reg"
+    ],
+    "natural_language_statement": "The regularized standard deviation $\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}$ has explicit derivative bounds for all orders. For the first three derivatives:\n\n$$\n\\left|(\\sigma'_{\\text{reg}})'(V)\\right| = \\frac{1}{2\\sqrt{V + \\sigma'^2_{\\min}}} \\le \\frac{1}{2\\sigma'_{\\min}} =: L_{\\sigma'_{\\text{reg}}}\n$$\n\n$$\n\\left|(\\sigma'_{\\text{reg}})''(V)\\right| = \\frac{1}{4(V + \\sigma'^2_{\\min})^{3/2}} \\le \\frac{1}{4\\sigma'^3_{\\min}} =: L_{\\sigma''_{\\text{reg}}}\n$$\n\n$$\n\\left|(\\sigma'_{\\text{reg}})'''(V)\\right| = \\frac{3}{8(V + \\sigma'^2_{\\min})^{5/2}} \\le \\frac{3}{8\\sigma'^5_{\\min}} =: L_{\\sigma'''_{\\text{reg}}}\n$$\n\nGeneral form: For the $n$-th derivative with $n \\ge 1$,\n\n$$\n\\left|(\\sigma'_{\\text{reg}})^{(n)}(V)\\right| \\le \\frac{(2n-1)!!}{2^n \\sigma'^{(2n-1)}_{\\min}}\n$$\n\nwhere $(2n-1)!! = 1 \\cdot 3 \\cdot 5 \\cdots (2n-1)$ is the double factorial.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-single-walker-own-status-error.json": {
+    "label": "lem-single-walker-own-status-error",
+    "name": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "complete",
+    "input_objects": [
+      "obj-distance-measurement-ms-constants",
+      "def-status-update-operator"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Change in expected distance from walker's own status change bounded by D_Y"
+    ],
+    "natural_language_statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. For any walker $i$ whose survival status changes ($s_{1,i} \\neq s_{2,i}$), the absolute difference in its expected raw distance measurement is bounded by the diameter of the algorithmic space, $D_{\\mathcal{Y}}$.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-single-walker-positional-error.json": {
+    "label": "lem-single-walker-positional-error",
+    "name": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "complete",
+    "input_objects": [
+      "obj-companion-selection-measure",
+      "obj-distance-measurement-ms-constants"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Bound on error in expected distance measurement from positional displacement"
+    ],
+    "natural_language_statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. For a given walker $i$ that is alive in swarm $\\mathcal{S}_1$ ($s_{1,i}=1$), let $\\mathbb{C}_i(\\mathcal{S}_1)$ be its companion selection measure.\n\nThe absolute error in its expected distance due to the positional displacement of the walkers between the two states, evaluated over the fixed companion set from $\\mathcal{S}_1$, is bounded by the sum of its own displacement and the average displacement of its potential companions.",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  },
+  "raw_data/lemmas/lem-single-walker-structural-error.json": {
+    "label": "lem-single-walker-structural-error",
+    "name": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with alive sets $\\mathcal{A}_1$ and $...",
+    "statement_type": "lemma",
+    "source": null,
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework",
+    "proof": null,
+    "proof_status": "complete",
+    "input_objects": [
+      "obj-aggregator-lipschitz-constants",
+      "obj-swarm-aggregation-operator-axiomatic",
+      "obj-distance-measurement-ms-constants",
+      "obj-companion-selection-measure"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "attributes_required": {},
+    "internal_lemmas": [],
+    "internal_propositions": [],
+    "lemma_dag_edges": [],
+    "output_type": "Bound",
+    "attributes_added": [],
+    "relations_established": [
+      "Bounds structural error in expected distance for walker i due to companion selection measure change"
+    ],
+    "natural_language_statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with alive sets $\\mathcal{A}_1$ and $\\mathcal{A}_2$. Let walker $i$ be alive in both swarms ($i \\in \\mathcal{A}_1 \\cap \\mathcal{A}_2$), and let the initial swarm have at least two alive walkers, $k_1=|\\mathcal{A}_1| \\ge 2$. Let the walker positions $\\mathbf{x}_2$ from the second swarm be fixed for the analysis. Let $n_c$ be the total number of status changes in the swarm.\n\nThe absolute error in the expected distance for walker $i$ due to the change in the companion selection measure is bounded by:",
+    "assumptions": [],
+    "conclusion": "",
+    "equation_label": null,
+    "uses_definitions": [],
+    "validation_errors": [],
+    "raw_fallback": null
+  }
+}

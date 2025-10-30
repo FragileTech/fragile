@@ -1,0 +1,81 @@
+{
+  "total_errors": 2,
+  "by_severity": {
+    "complete_failure": 0,
+    "partial_validation": 2
+  },
+  "errors": [
+    {
+      "file": "raw-thm-001.json",
+      "label": "thm-revival-guarantee",
+      "errors": [
+        "assumptions.0.lhs: Field required",
+        "assumptions.0.relation: Field required",
+        "assumptions.0.rhs: Field required",
+        "assumptions.0.latex: Extra inputs are not permitted",
+        "assumptions.0.sympy: Extra inputs are not permitted",
+        "assumptions.1.lhs: Field required",
+        "assumptions.1.relation: Field required",
+        "assumptions.1.rhs: Field required",
+        "assumptions.1.latex: Extra inputs are not permitted",
+        "assumptions.1.sympy: Extra inputs are not permitted",
+        "assumptions.2.lhs: Field required",
+        "assumptions.2.relation: Field required",
+        "assumptions.2.rhs: Field required",
+        "assumptions.2.latex: Extra inputs are not permitted",
+        "assumptions.2.sympy: Extra inputs are not permitted",
+        "assumptions.3.lhs: Field required",
+        "assumptions.3.relation: Field required",
+        "assumptions.3.rhs: Field required",
+        "assumptions.3.latex: Extra inputs are not permitted",
+        "assumptions.3.sympy: Extra inputs are not permitted",
+        "assumptions.4.lhs: Field required",
+        "assumptions.4.relation: Field required",
+        "assumptions.4.rhs: Field required",
+        "assumptions.4.latex: Extra inputs are not permitted",
+        "assumptions.4.sympy: Extra inputs are not permitted",
+        "conclusion.lhs: Field required",
+        "conclusion.relation: Field required",
+        "conclusion.rhs: Field required",
+        "conclusion.latex: Extra inputs are not permitted",
+        "conclusion.sympy: Extra inputs are not permitted"
+      ]
+    },
+    {
+      "file": "thm-revival-guarantee.json",
+      "label": "thm-revival-guarantee",
+      "errors": [
+        "assumptions.0.lhs: Field required",
+        "assumptions.0.relation: Field required",
+        "assumptions.0.rhs: Field required",
+        "assumptions.0.latex: Extra inputs are not permitted",
+        "assumptions.0.sympy: Extra inputs are not permitted",
+        "assumptions.1.lhs: Field required",
+        "assumptions.1.relation: Field required",
+        "assumptions.1.rhs: Field required",
+        "assumptions.1.latex: Extra inputs are not permitted",
+        "assumptions.1.sympy: Extra inputs are not permitted",
+        "assumptions.2.lhs: Field required",
+        "assumptions.2.relation: Field required",
+        "assumptions.2.rhs: Field required",
+        "assumptions.2.latex: Extra inputs are not permitted",
+        "assumptions.2.sympy: Extra inputs are not permitted",
+        "assumptions.3.lhs: Field required",
+        "assumptions.3.relation: Field required",
+        "assumptions.3.rhs: Field required",
+        "assumptions.3.latex: Extra inputs are not permitted",
+        "assumptions.3.sympy: Extra inputs are not permitted",
+        "assumptions.4.lhs: Field required",
+        "assumptions.4.relation: Field required",
+        "assumptions.4.rhs: Field required",
+        "assumptions.4.latex: Extra inputs are not permitted",
+        "assumptions.4.sympy: Extra inputs are not permitted",
+        "conclusion.lhs: Field required",
+        "conclusion.relation: Field required",
+        "conclusion.rhs: Field required",
+        "conclusion.latex: Extra inputs are not permitted",
+        "conclusion.sympy: Extra inputs are not permitted"
+      ]
+    }
+  ]
+}

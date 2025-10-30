@@ -6,12 +6,20 @@
   "target_object": "obj-qsd",
   "established_by": "thm-main-kl-convergence",
   "expression": "C_LSI = O(1/(γ κ_conf κ_W δ²))",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence"
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "thm-main-kl-convergence",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-main-kl-convergence"
+  },
+  "chapter": null,
+  "document": null
 }

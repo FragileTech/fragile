@@ -1,0 +1,14 @@
+{
+  "label": "prop-w2-bound-no-offset",
+  "type": "proposition",
+  "name": "W2 continuity bound without offset (for k\u22652)",
+  "section": "18",
+  "subsection": "17.2.4.4",
+  "source_file": "01_fragile_gas_framework.md",
+  "source_lines": "4627-5086",
+  "extraction_date": "2025-10-27",
+  "status": "extracted",
+  "statement_type": "proposition",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework"
+}

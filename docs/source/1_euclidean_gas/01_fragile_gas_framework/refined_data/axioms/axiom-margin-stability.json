@@ -1,0 +1,159 @@
+{
+  "label": "axiom-margin-stability",
+  "statement": "There exists a uniform margin $r_{\\mathrm{pos}}>0$ such that for any two swarms $\\mathcal{S}_1,\\mathcal{S}_2\\in\\Sigma_N$ with\n\n$$\n\\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal Y}\\!\\big(\\varphi(x_{1,i}),\\varphi(x_{2,i})\\big)^2\\;\\le\\; r_{\\mathrm{pos}},\n$$\n\nthe alive/dead decisions are invariant under the status update:\n\n$$\nn_c(\\mathcal{S}_1,\\mathcal{S}_2)=0.\n$$\n\nIn words, sufficiently small positional perturbations (average squared displacement) cannot flip any walker's status; the alive/dead decision has a uniform buffer that is independent of the metric's status penalty.",
+  "mathematical_expression": "There exists a uniform margin $r_{\\mathrm{pos}}>0$ such that for any two swarms $\\mathcal{S}_1,\\mathcal{S}_2\\in\\Sigma_N$ with\n\n$$\n\\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal Y}\\!\\big(\\varphi(x_{1,i}),\\varphi(x_{2,i})\\big)^2\\;\\le\\; r_{\\mathrm{pos}},\n$$\n\nthe alive/dead decisions are invariant under the status update:\n\n$$\nn_c(\\mathcal{S}_1,\\mathcal{S}_2)=0.\n$$",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of Position-Only Status Margin",
+  "core_assumption": "The mechanism determining a walker's alive/dead status is deterministically continuous and robust with respect to small changes in its projected position within the algorithmic space. The framework mandates the existence of a uniform \"safety margin\" or \"buffer\" $r_{\\mathrm{pos}}$ in the algorithmic space such that if a walker's position is perturbed by an amount whose average squared displacement is smaller than this margin, its survival status is guaranteed not to change. This provides a crucial stability guarantee, ensuring that infinitesimal positional noise cannot cause discrete, discontinuous status flips, which is essential for the continuity of all downstream operators that depend on the set of alive walkers.",
+  "parameters": {
+    "r_pos": {
+      "symbol": "r_{\\mathrm{pos}}",
+      "description": "Positional stability margin",
+      "type": "positive scalar",
+      "constraint": "r_{\\mathrm{pos}} > 0",
+      "interpretation": "A uniform positive constant representing the maximum average squared displacement in algorithmic space that guarantees no change in walker status. It defines the radius of a ball in the space of average squared positional displacements within which the alive/dead status of all walkers is invariant."
+    },
+    "N": {
+      "symbol": "N",
+      "description": "Number of walkers in the swarm",
+      "type": "positive integer",
+      "constraint": "N \\ge 2",
+      "interpretation": "The total, fixed number of walkers in a swarm, corresponding to the fixed length of the swarm tuple $\\mathcal{S}$."
+    },
+    "S_1": {
+      "symbol": "\\mathcal{S}_1",
+      "description": "First swarm configuration",
+      "type": "swarm state",
+      "constraint": "\\mathcal{S}_1 \\in \\Sigma_N",
+      "interpretation": "An N-tuple of walkers representing one possible swarm configuration in the swarm state space."
+    },
+    "S_2": {
+      "symbol": "\\mathcal{S}_2",
+      "description": "Second swarm configuration",
+      "type": "swarm state",
+      "constraint": "\\mathcal{S}_2 \\in \\Sigma_N",
+      "interpretation": "An N-tuple of walkers representing another possible swarm configuration in the swarm state space, used for comparison with $\\mathcal{S}_1$."
+    },
+    "Sigma_N": {
+      "symbol": "\\Sigma_N",
+      "description": "Swarm state space",
+      "type": "product space",
+      "constraint": "\\Sigma_N = (\\mathcal{X} \\times \\{0,1\\})^N",
+      "interpretation": "The N-particle swarm state space, representing all possible configurations of N walkers. Each walker is characterized by a position in state space $\\mathcal{X}$ and a binary survival status."
+    },
+    "i": {
+      "symbol": "i",
+      "description": "Walker index",
+      "type": "integer",
+      "constraint": "1 \\le i \\le N",
+      "interpretation": "An index ranging from 1 to N, identifying individual walkers within a swarm."
+    },
+    "d_Y": {
+      "symbol": "d_{\\mathcal{Y}}",
+      "description": "Algorithmic distance metric",
+      "type": "metric function",
+      "constraint": "d_{\\mathcal{Y}}: \\mathcal{Y} \\times \\mathcal{Y} \\to \\mathbb{R}_{\\ge 0}",
+      "interpretation": "The standard Euclidean metric on the algorithmic space $\\mathcal{Y}$, defined as $d_{\\mathcal{Y}}(y,y') = \\|y-y'\\|_2$."
+    },
+    "phi": {
+      "symbol": "\\varphi",
+      "description": "Projection map",
+      "type": "Lipschitz continuous function",
+      "constraint": "\\varphi: \\mathcal{X} \\to \\mathcal{Y}$ with Lipschitz constant $L_{\\varphi}",
+      "interpretation": "A Lipschitz continuous function that maps positions from the high-dimensional state space $\\mathcal{X}$ to the lower-dimensional algorithmic space $\\mathcal{Y}$ where algorithmic computations (like distance measurements) are performed."
+    },
+    "x_1i": {
+      "symbol": "x_{1,i}",
+      "description": "Position of i-th walker in swarm 1",
+      "type": "state space element",
+      "constraint": "x_{1,i} \\in \\mathcal{X}",
+      "interpretation": "The position component of the i-th walker in swarm $\\mathcal{S}_1$, belonging to the state space $\\mathcal{X}$."
+    },
+    "x_2i": {
+      "symbol": "x_{2,i}",
+      "description": "Position of i-th walker in swarm 2",
+      "type": "state space element",
+      "constraint": "x_{2,i} \\in \\mathcal{X}",
+      "interpretation": "The position component of the i-th walker in swarm $\\mathcal{S}_2$, belonging to the state space $\\mathcal{X}$."
+    },
+    "X": {
+      "symbol": "\\mathcal{X}",
+      "description": "State space",
+      "type": "Polish metric space",
+      "constraint": "\\mathcal{X} \\subset \\mathbb{R}^d$ with metric $d_{\\mathcal{X}}$ and reference measure $\\mu_{\\mathcal{X}}",
+      "interpretation": "A Polish metric space where the walkers' positions are defined. It is a Valid State Space satisfying the foundational axioms of the framework."
+    },
+    "Y": {
+      "symbol": "\\mathcal{Y}",
+      "description": "Algorithmic space",
+      "type": "bounded Euclidean subset",
+      "constraint": "\\mathcal{Y} \\subset \\mathbb{R}^m$ with $\\operatorname{diam}_{d_{\\mathcal{Y}}}(\\mathcal{Y}) < \\infty",
+      "interpretation": "A bounded subset of $\\mathbb{R}^m$ equipped with the Euclidean metric, where algorithmic computations (distance measurements, aggregations) are performed."
+    },
+    "n_c": {
+      "symbol": "n_c(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "description": "Total status change count",
+      "type": "non-negative integer function",
+      "constraint": "n_c(\\mathcal{S}_1, \\mathcal{S}_2) = \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2",
+      "interpretation": "The number of walkers whose survival status ($s_i \\in \\{0,1\\}$) differs between the two swarms. Since $s_i \\in \\{0,1\\}$, we have $(s_{1,i} - s_{2,i})^2 = 1$ if walker $i$ changed status, and $(s_{1,i} - s_{2,i})^2 = 0$ otherwise."
+    }
+  },
+  "condition": "The axiom's conclusion ($n_c(\\mathcal{S}_1,\\mathcal{S}_2)=0$) applies under the specific condition that the average squared positional displacement between the corresponding walkers of two swarms, measured in the algorithmic space $\\mathcal{Y}$ after projection by $\\varphi$, is less than or equal to the uniform margin $r_{\\mathrm{pos}}$.\n\nMathematical condition:\n\n$$\n\\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal Y}\\!\\big(\\varphi(x_{1,i}),\\varphi(x_{2,i})\\big)^2\\;\\le\\; r_{\\mathrm{pos}}\n$$\n\nThis condition ensures that when two swarms differ only by a sufficiently small average squared positional perturbation, their alive/dead status assignments remain identical.",
+  "failure_mode_analysis": {
+    "mechanism_of_failure": "Violation of this axiom implies that no such uniform $r_{\\mathrm{pos}} > 0$ exists. This means that for any arbitrarily small displacement $\\varepsilon > 0$, it is possible to find two swarms $\\mathcal{S}_1$ and $\\mathcal{S}_2$ whose average squared positional displacement is less than $\\varepsilon$, yet at least one walker changes status ($n_c(\\mathcal{S}_1, \\mathcal{S}_2) > 0$).",
+    "consequences": {
+      "loss_of_deterministic_continuity": "The primary failure is the breakdown of deterministic continuity for the status update operator. Without a guaranteed margin, the system becomes pathologically sensitive. Operators that depend on the set of alive walkers (e.g., aggregators, companion selectors, cloning operators) would experience discontinuous jumps in their inputs for arbitrarily small changes in walker positions, rendering their behavior unpredictable.",
+      "algorithmic_instability": "The swarm's dynamics would be fundamentally unstable. The inherent noise from the perturbation step, even if small, could trigger non-trivial status changes ($n_c > 0$). This breaks the chain of reasoning for many continuity proofs in the framework, which rely on $n_c$ being zero for sufficiently small positional changes.",
+      "invalidation_of_downstream_proofs": "As noted in the framework remark, this axiom is \"crucial to guarantee deterministic continuity of downstream operators.\" Its failure would invalidate the stability analysis for the entire pipeline, as the propagation of error could no longer be controlled. For example, the continuity of the fitness potential operator, which depends on stable aggregation, would be compromised.",
+      "numerical_instability": "In computational simulations, the system would exhibit extreme sensitivity to small numerical errors or floating-point inaccuracies in walker positions. This could lead to erratic and unpredictable changes in swarm composition, making simulations unstable and results unreliable.",
+      "compromised_debugging": "The axiom provides a clear separation of concerns: small positional changes should not cause status flips. Without it, it becomes impossible to distinguish status changes caused by meaningful walker movement from those caused by incidental noise near a decision boundary, making the system exceptionally difficult to tune and debug."
+    },
+    "severity": "CRITICAL",
+    "impact_on_framework": "This axiom is foundational for the deterministic continuity guarantees throughout the Fragile Gas Framework. Its violation would invalidate multiple convergence theorems, stability analyses, and mean-field limit proofs that depend on the smooth behavior of the status update operator."
+  },
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.4.3",
+    "directive_label": "def-axiom-margin-stability",
+    "equation": null,
+    "line_range": [1064, 1096],
+    "url_fragment": "#axiom-of-position-only-status-margin"
+  },
+  "related_definitions": [
+    "def-swarm-and-state-space",
+    "def-n-particle-displacement-metric",
+    "def-algorithmic-space-generic",
+    "def-alg-distance",
+    "def-walker"
+  ],
+  "related_axioms": [
+    "def-axiom-boundary-regularity",
+    "def-axiom-boundary-smoothness",
+    "def-axiom-bounded-relative-collapse"
+  ],
+  "related_theorems": [
+    "thm-swarm-update-operator-continuity-recorrected",
+    "thm-deterministic-potential-continuity"
+  ],
+  "tags": [
+    "axiom",
+    "viability",
+    "continuity",
+    "status-update",
+    "deterministic",
+    "stability",
+    "margin",
+    "robustness"
+  ],
+  "axiom_category": "Algorithmic & Operator Axioms",
+  "axiom_principle": "The algorithm's internal mechanics must be stable and active.",
+  "framework_role": "Ensures deterministic continuity of the status update operator by providing a uniform buffer against status flips due to small positional perturbations, which is essential for the stability and predictability of all downstream operators.",
+  "remarks": [
+    "This axiom expresses a deterministic stability of the status update in terms of the positional component alone.",
+    "It is strictly stronger than the trivial consequence of the identity $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2 = \\tfrac{1}{N}\\,\\Delta_{\\text{pos}}^2 + \\tfrac{\\lambda_{\\mathrm{status}}}{N}\\,n_c$, which would otherwise allow a tautological 'margin' by tuning $\\lambda_{\\mathrm{status}}$.",
+    "The margin-based axiom strengthens this near zero by ensuring $n_c=0$ whenever the displacement is small enough, which is crucial to guarantee deterministic continuity of downstream operators."
+  ]
+}

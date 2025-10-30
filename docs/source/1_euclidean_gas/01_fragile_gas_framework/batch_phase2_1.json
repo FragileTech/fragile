@@ -1,0 +1,229 @@
+{
+  "raw_data/axioms/axiom-def-axiom-rescale-function.json": {
+    "label": "def-axiom-rescale-function",
+    "name": "Axiom of a Well-Behaved Rescale Function",
+    "statement": "Any function $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ chosen for the rescale transformation must satisfy the following properties to be considered valid within the Fragile framework. The user is responsible for proving that their chosen function complies with these conditions.\n\n1. **$C^1$ Smoothness:** The function $g_A(z)$ must be continuously differentiable on its entire domain $\\mathbb{R}$. This ensures that the fitness potential is a smooth function of the standardized scores, which is critical for the stability of the cloning dynamics.\n\n2. **Monotonicity:** The function must be monotonically non-decreasing. This is equivalent to its first derivative being non-negative for all inputs:\n$$\ng'_A(z) \\ge 0 \\quad \\forall z \\in \\mathbb{R}\n$$\nThis property is essential to guarantee that a higher (better) standardized score never results in a lower fitness potential component.\n\n3. **Uniform Boundedness:** The function's range must be a bounded interval $(0, g_{A,\\max}]$ for some finite constant $g_{A,\\max} > 0$. This prevents the fitness potential from becoming infinite, which is a non-negotiable requirement for the stability of the selection and cloning operators.\n\n4. **Global Lipschitz Continuity:** The function must be globally Lipschitz continuous. For a $C^1$ function, this is equivalent to its first derivative being uniformly bounded. There must exist a finite constant $L_{g_A}$, the Lipschitz constant, such that:\n$$\n\\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty\n$$\nThis property is the cornerstone for proving the mean-square continuity of the composite Fitness Potential Operator, as it ensures that small changes in the standardized scores cannot be pathologically amplified.\n\n**Framework Application:** Any function satisfying these four conditions can be used as a rescale function. The subsequent sections provide two distinct examples of valid functions: an asymmetric piecewise function and a canonical logistic function, along with proofs that they satisfy this axiom. The specific choice of function and its corresponding constants, $g_{A,\\max}$ and $L_{g_A}$, will affect the quantitative continuity bounds of the full system.",
+    "section": "9. Rescale Transformation",
+    "type": "axiom"
+  },
+  "raw_data/definitions/def-composite-continuity-coeffs-recorrected.json": {
+    "label": "def-composite-continuity-coeffs-recorrected",
+    "type": "definition",
+    "name": "Composite Continuity Coefficients",
+    "section": "18",
+    "subsection": "17.2.4.1",
+    "source_file": "01_fragile_gas_framework.md",
+    "source_lines": "4627-5086",
+    "extraction_date": "2025-10-27",
+    "status": "extracted"
+  },
+  "raw_data/definitions/def-final-status-change-coeffs.json": {
+    "label": "def-final-status-change-coeffs",
+    "type": "definition",
+    "name": "Final Status Change Bound Coefficients",
+    "section": "18",
+    "subsection": "17.2.3.1",
+    "source_file": "01_fragile_gas_framework.md",
+    "source_lines": "4627-5086",
+    "extraction_date": "2025-10-27",
+    "status": "extracted"
+  },
+  "raw_data/definitions/def-perturbation-fluctuation-bounds.json": {
+    "label": "def-perturbation-fluctuation-bounds-reproof",
+    "type": "definition",
+    "name": "Perturbation Fluctuation Bounds",
+    "term_being_defined": "Perturbation Fluctuation Bounds",
+    "full_text": "The total random displacement introduced by the Perturbation Operator is bounded by the sum of two components: a deterministic bound on its mean and a probabilistic bound on its fluctuations.\n\n1. **The Mean Displacement Bound ($B_M(N)$):** A deterministic upper bound on the total expected squared displacement for a swarm of size N. It is derived from the **Axiom of Bounded Second Moment of Perturbation**.\n   $$B_M(N) := N \\cdot M_{\\text{pert}}^2$$\n\n2. **The Stochastic Fluctuation Bound ($B_S(N, \\delta')$):** A high-probability bound on the deviation of the total squared displacement from its mean, derived from McDiarmid's inequality. For a given failure probability $\\delta' \\in (0, 1)$, it is defined as:\n   $$B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}$$\n   where $D_{\\mathcal{Y}}$ is the diameter of the algorithmic space.",
+    "components": [
+      {
+        "name": "Mean Displacement Bound",
+        "symbol": "$B_M(N)$",
+        "formula": "$B_M(N) := N \\cdot M_{\\text{pert}}^2$",
+        "description": "Deterministic upper bound on total expected squared displacement"
+      },
+      {
+        "name": "Stochastic Fluctuation Bound",
+        "symbol": "$B_S(N, \\delta')$",
+        "formula": "$B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}$",
+        "description": "High-probability bound on deviation from mean"
+      }
+    ],
+    "source_section": "14. The Perturbation Operator",
+    "subsection": "13.2.4. Definition: Perturbation Fluctuation Bounds",
+    "source_document": "01_fragile_gas_framework.md",
+    "line_range": [
+      4064,
+      4082
+    ],
+    "tags": [
+      "definition",
+      "perturbation",
+      "bound",
+      "concentration"
+    ],
+    "dependencies": [
+      "def-axiom-bounded-second-moment-perturbation",
+      "sub-lem-probabilistic-bound-perturbation-displacement-reproof"
+    ],
+    "used_by": [
+      "thm-perturbation-operator-continuity-reproof"
+    ]
+  },
+  "raw_data/definitions/def-raw-value-operator.json": {
+    "label": "def-raw-value-operator",
+    "type": "definition",
+    "name": "Raw Value Operator",
+    "statement": "A **Raw Value Operator**, denoted $V$, is a function that maps a swarm state $S \\in \\Sigma_N$ to a **probability distribution** over N-dimensional real-valued vectors, $P(\\mathbb{R}^N)$.\n\n**Signature:** $V: \\Sigma_N \\to P(\\mathbb{R}^N)$\n\nFor any swarm state $S$, a single sample $v \\sim V(S)$ produces a raw value vector. This process must adhere to the following rules:\n\n1. **Alive Set Dependency:** The sampling process for the components of $v$ corresponding to the alive set $\\mathcal{A}(S)$ may depend on the entire state $S$.\n2. **Dead Set Determinism:** For any walker $i$ that is not in the alive set ($i \\notin \\mathcal{A}(S)$), the corresponding component of the raw value vector is deterministically zero: $v_i = 0$.\n\nThis definition encapsulates both deterministic measurements (like reward, where the distribution is a Dirac delta) and stochastic measurements (like distance-to-companion).",
+    "context": {
+      "section": "10. Abstract Raw Value Measurement",
+      "subsection": "9.1 The Raw Value Operator",
+      "chapter": "1_euclidean_gas/01_fragile_gas_framework",
+      "lines": [
+        2100,
+        2108
+      ],
+      "source_file": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md"
+    },
+    "mathematical_content": {
+      "notation": {
+        "V": "Raw Value Operator",
+        "S": "Swarm state",
+        "\\Sigma_N": "Space of swarm states with N walkers",
+        "P(\\mathbb{R}^N)": "Probability distribution over N-dimensional real vectors",
+        "v": "Raw value vector sampled from V(S)",
+        "\\mathcal{A}(S)": "Alive set of swarm state S",
+        "v_i": "Component of raw value vector for walker i"
+      },
+      "signature": "$V: \\Sigma_N \\to P(\\mathbb{R}^N)$",
+      "properties": [
+        "Maps swarm states to probability distributions over real vectors",
+        "Alive set components may depend on entire state",
+        "Dead set components are deterministically zero",
+        "Encapsulates both deterministic and stochastic measurements"
+      ]
+    },
+    "tags": [
+      "operator",
+      "measurement",
+      "raw-value",
+      "probability-distribution",
+      "abstract-framework",
+      "stochastic",
+      "section-10"
+    ],
+    "relations": {
+      "generalizes": [
+        "obj-reward-measurement",
+        "obj-distance-to-companion-measurement"
+      ],
+      "uses": [
+        "obj-swarm-and-state-space",
+        "obj-alive-dead-sets"
+      ],
+      "required_by": [
+        "axiom-raw-value-mean-square-continuity",
+        "axiom-bounded-measurement-variance"
+      ]
+    },
+    "notes": "This is the foundational abstraction for the measurement pipeline. Any specific measurement (reward, distance-to-companion) is a concrete instantiation of this abstract operator. The continuity of the entire system depends on this operator being well-behaved in a probabilistic sense."
+  },
+  "raw_data/definitions/def-reward-measurement.json": {
+    "label": "def-reward-measurement",
+    "term": "Reward Measurement",
+    "formal_statement": null,
+    "applies_to_object_type": "measure",
+    "parameters": [
+      "r_i",
+      "x_i",
+      "R",
+      "\\delta_{x_i}",
+      "\\mathcal{X}"
+    ],
+    "natural_language_description": "The reward value r_i for walker i at position x_i is the result of integrating the global Reward Function R against the walker's positional measure, which is the Dirac delta measure \\delta_{x_i} on \\mathcal{X}. This formalizes the act of 'evaluating the reward' as a measurement process.",
+    "mathematical_statement": "r_i := \\mathbb{E}_{\\delta_{x_i}}[R] = \\int_{\\mathcal{X}} R(x) \\, d\\delta_{x_i}(x) = R(x_i)",
+    "depends_on": [],
+    "examples": [],
+    "tags": [
+      "measurement",
+      "reward",
+      "dirac-measure",
+      "environment"
+    ],
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+      "line_number": 1102,
+      "section": "4. The Environment: State and Reward Measurement",
+      "subsection": "3.1 Reward Measurement"
+    },
+    "chapter": "1_euclidean_gas",
+    "document": "01_fragile_gas_framework"
+  },
+  "raw_data/definitions/def-smoothed-gaussian-measure.json": {
+    "label": "def-smoothed-gaussian-measure",
+    "type": "definition",
+    "content": "The creation of a smoothed measure requires a key analytical parameter:\n*   **Smoothed Measure Kernel Scale ($\\ell$):** The length scale (standard deviation), $\\ell > 0$, of the Gaussian kernel used for smoothing. A larger $\\ell$ results in a smoother, less detailed density estimate.\nLet $K_\\ell(y, y')$ be a Gaussian kernel with length scale $\\ell$. The **smoothed Gaussian measure**, denoted $\\tilde{\\nu}_{\\mathcal{S}, \\ell}$, is the probability measure whose density is given by:\n$$\n\n\\tilde{\\rho}_{\\mathcal{S}, \\ell}(y) := \\frac{1}{|\\mathcal{A}(\\mathcal{S})|} \\sum_{i \\in \\mathcal{A}(\\mathcal{S})} K_\\ell(y, \\varphi(x_i))\n\n$$\nThis representation provides a smooth, differentiable approximation of the swarm's distribution in the algorithmic space and is the foundation for the $d_{\\Sigma_N, L_2}$ distance.",
+    "start_line": 1428,
+    "end_line": 1439,
+    "section": "§7"
+  },
+  "raw_data/definitions/def-standardization-operator-n-dimensional.json": {
+    "label": "def-standardization-operator-n-dimensional",
+    "name": "N-Dimensional Standardization Operator",
+    "type": "definition",
+    "content": "The **N-Dimensional Standardization Operator**, denoted $z$, is a function that maps a swarm state $S$ to an N-dimensional vector, parameterized by a choice of a raw value operator and an aggregation operator.\n\n**Signature:** $z: \\Sigma_N \\times (\\text{Raw Value Operator}) \\times (\\text{Swarm Aggregation Operator}) \\to \\mathbb{R}^N$\n\n**Inputs:**\n- The current swarm state, $S_t$.\n- A **Raw Value Operator**, $V$ (per def-raw-value-operator).\n- A **Swarm Aggregation Operator**, $M$ (e.g., $R_{\\text{agg}}$ or $M_D$, per def-swarm-aggregation-operator-axiomatic).\n- All relevant implicit parameters ($\\varepsilon_{\\text{std}}$).\n\n**Operation:**\nThe operator computes the output vector $z = z(S_t, V, M)$ as follows:\n\n1. **Generate Raw Values:**\n   a. Let $\\mathcal{A}(S_t)$ be the set of alive walkers. Let $k = |\\mathcal{A}(S_t)|$. If $k=0$, return the zero vector and terminate.\n   b. Generate a single stochastic sample of the raw value vector by drawing $v \\sim V(S_t)$. Let $v_A$ be the k-dimensional sub-vector corresponding to the alive set.\n\n2. **Aggregate and Measure Statistics:**\n   a. Form the **Swarm Aggregation Measure**: $\\mu_v = M(S_t; v_A)$.\n   b. Measure the statistical properties $(\\mu_A, \\sigma'_A)$ from $\\mu_v$ (per Def. 11.1.2), using the provided $\\varepsilon_{\\text{std}}$ and the regularized standard deviation $\\sigma'_{\\text{reg}}$.\n\n3. **Standardize and Assemble N-Dimensional Vector:**\n   a. Initialize an N-dimensional zero vector, $z_{\\text{out}} \\leftarrow 0$.\n   b. For each walker $i \\in \\mathcal{A}(S_t)$:\n      - Compute its Z-score: $z_i := (v_i - \\mu_A) / \\sigma'_A$.\n      - Set the $i$-th component of the output vector: $z_{\\text{out}}[i] := z_i$.\n\n**Output:** The full N-dimensional standardized vector $z_{\\text{out}}$.",
+    "source_section": "12",
+    "source_document": "01_fragile_gas_framework.md",
+    "dependencies": [
+      "def-raw-value-operator",
+      "def-swarm-aggregation-operator-axiomatic",
+      "def-statistical-properties-measurement"
+    ],
+    "tags": [
+      "standardization",
+      "operator",
+      "z-score",
+      "normalization"
+    ]
+  },
+  "raw_data/definitions/def-statistical-properties-measurement.json": {
+    "label": "def-statistical-properties-measurement",
+    "name": "Statistical Properties Measurement",
+    "type": "definition",
+    "content": "Let $\\mathbf{v}_{\\mathcal{A}}$ be the vector of raw scalar values for the alive set $\\mathcal{A}_t$. Let $\\mu_{\\mathbf{v}} = M(\\mathcal{S}_t; \\mathbf{v}_{\\mathcal{A}})$ be the **Swarm Aggregation Measure** for these values. The **Statistical Properties Measurement** extracts the effective mean and a smoothed, regularized standard deviation from this measure:\n\n- **Mean:** $\\mu_{\\mathcal{A}} := \\mathbb{E}[\\mu_{\\mathbf{v}}]$\n- **Regularized Standard Deviation:** $\\sigma'_{\\mathcal{A}} := \\sigma'_{\\text{reg}}(\\operatorname{Var}[\\mu_{\\mathbf{v}}])$\n\nwhere $\\sigma'_{\\text{reg}}: \\mathbb{R}_{\\ge 0} \\to \\mathbb{R}_{>0}$ is the **Regularized Standard Deviation**. This $C^\\infty$ replacement for the square-root prevents pathological sensitivity near zero variance while maintaining smooth behavior everywhere. It is defined as:\n\n$$\n\\sigma'_{\\text{reg}}(V) := \\sqrt{V + \\sigma'^2_{\\min}}\n$$\n\nwhere $\\sigma'_{\\min} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2} > 0$ is the **regularization parameter** combining the variance floor threshold $\\kappa_{\\text{var,min}} > 0$ and the numerical stability parameter $\\varepsilon_{\\text{std}} > 0$.\n\n**Properties:**\n1. **$C^\\infty$ Regularity:** The function is infinitely differentiable on $[0, \\infty)$ as a composition of smooth functions.\n2. **Positive Lower Bound:** $\\sigma'_{\\text{reg}}(V) \\ge \\sigma'_{\\min} > 0$ for all $V \\ge 0$, preventing division by zero.\n3. **Asymptotic Behavior:** For large $V \\gg \\sigma'^2_{\\min}$, the regularized function closely approximates the natural square root: $\\sigma'_{\\text{reg}}(V) \\approx \\sqrt{V} + \\frac{\\sigma'^2_{\\min}}{2\\sqrt{V}}$.\n4. **Monotonicity:** The function is strictly increasing, with $\\sigma'_{\\text{reg}}(0) = \\sigma'_{\\min}$ and $\\lim_{V \\to \\infty} \\sigma'_{\\text{reg}}(V) = \\infty$.",
+    "source_section": "12",
+    "source_document": "01_fragile_gas_framework.md",
+    "dependencies": [
+      "def-swarm-aggregation-operator-axiomatic"
+    ],
+    "parameters": [
+      "kappa_var_min",
+      "epsilon_std",
+      "sigma_min"
+    ],
+    "tags": [
+      "standardization",
+      "statistics",
+      "regularization",
+      "variance"
+    ]
+  },
+  "raw_data/definitions/def-stochastic-threshold-cloning.json": {
+    "label": "def-stochastic-threshold-cloning",
+    "term": "Stochastic Threshold Cloning",
+    "type": "definition",
+    "statement": "For each walker $i \\in \\{1, \\dots, N\\}$, the cloning action $a_i \\in \\{\\text{Clone}, \\text{Persist}\\}$ is determined by the following procedure, which depends on the full fitness potential vector of the swarm and an independent random choice of a companion.\n\n**Inputs:**\n- The full N-dimensional fitness potential vector, $\\mathbf{V}_{\\text{fit}}$.\n- The walker's index, $i$.\n- The **Companion Selection Measure** for that walker, $\\mathbb{C}_i$.\n- The **Clone Threshold Scale** parameter, $p_{\\max}$.\n\n**Operation:**\n1. **Sample Cloning Companion:** An independent cloning companion index, $c_{\\text{clone}}(i)$, is sampled from the companion measure: $c_{\\text{clone}}(i) \\sim \\mathbb{C}_i(\\cdot)$.\n2. **Compute Score:** The walker's potential, $v_i = V_{\\text{fit},i}$, and its companion's potential, $v_c = V_{\\text{fit},c_{\\text{clone}}(i)}$, are used to compute the cloning score:\n$$\nS_i := S(v_c, v_i)\n$$\n3. **Sample Cloning Threshold:** A random threshold, $T_{\\text{clone}}$, is drawn from a uniform distribution:\n$$\nT_{\\text{clone}} \\sim \\text{Uniform}(0, p_{\\max})\n$$\n4. **Determine Action:** The action is determined by comparing the score to the threshold:\n$$\na_i :=\n\\begin{cases}\n\\text{Clone} & \\text{if } S_i > T_{\\text{clone}} \\\\\n\\text{Persist} & \\text{if } S_i \\le T_{\\text{clone}}\n\\end{cases}\n$$",
+    "dependencies": [
+      "def-cloning-score-function"
+    ],
+    "tags": [
+      "cloning",
+      "stochastic-process",
+      "measurement",
+      "revival"
+    ],
+    "context": "Section 16: The Cloning Transition Measure, subsection 15.1.2",
+    "source_file": "01_fragile_gas_framework.md",
+    "line_number": 4231,
+    "extraction_date": "2025-10-27T21:43:09.486085"
+  }
+}

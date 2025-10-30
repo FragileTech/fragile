@@ -1,0 +1,24 @@
+{
+  "label": "def-cemetery-state-measure",
+  "name": "Cemetery State Measure",
+  "entity_type": "definition",
+  "statement_type": "DefinitionBox",
+  "natural_language_statement": "The distributional representation of a swarm is defined. If the swarm is active, it is its empirical or smoothed measure. If the swarm is empty (all walkers are dead), its representation is the unique Cemetery State Measure.",
+  "description": "This definition assigns a formal mathematical object to a swarm that has no living walkers. By defining a unique 'Cemetery State Measure' for any empty swarm, we ensure that the distributional representation map is well-defined for all possible swarms, which is crucial for continuity arguments.",
+  "formal_statement": "Let $\\mathcal{S}$ be a swarm. Its distributional representation, $\\mu_{\\mathcal{S}}$, is: ...",
+  "input_objects": [
+    "def-algorithmic-cemetery-extension"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "relations": [],
+  "proof_status": "n/a",
+  "raw_fallback": {},
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "7. The Cemetery of Dead Walkers",
+    "subsection": null,
+    "directive_label": "def-cemetery-state-measure"
+  }
+}

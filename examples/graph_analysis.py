@@ -11,30 +11,25 @@ Demonstrates:
 7. Theorem dependency layers
 """
 
-import sys
 from pathlib import Path
+import sys
+
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from fragile.proofs import (
-    MathematicalObject,
+    build_framework_flow_from_registry,
+    build_relationship_graph_from_registry,
+    create_simple_object,
+    EquivalenceClassifier,
+    MathematicalRegistry,
+    ObjectLineage,
     ObjectType,
     Relationship,
-    RelationshipProperty,
     RelationType,
     TheoremBox,
     TheoremOutputType,
-    create_simple_object,
-)
-from fragile.proofs import MathematicalRegistry
-from fragile.proofs import (
-    EquivalenceClassifier,
-    FrameworkFlow,
-    ObjectLineage,
-    RelationshipGraph,
-    build_framework_flow_from_registry,
-    build_relationship_graph_from_registry,
 )
 
 
@@ -178,7 +173,7 @@ def main() -> None:
     registry.add_all([rel1, rel2, rel3, rel4])
     registry.add_all([thm1, thm2, thm3, thm4])
 
-    print(f"✓ Created registry with:")
+    print("✓ Created registry with:")
     print(f"  - {len(registry.get_all_objects())} objects")
     print(f"  - {len(registry.get_all_relationships())} relationships")
     print(f"  - {len(registry.get_all_theorems())} theorems")
@@ -192,7 +187,7 @@ def main() -> None:
 
     graph = build_relationship_graph_from_registry(registry)
 
-    print(f"✓ Built graph with:")
+    print("✓ Built graph with:")
     print(f"  - {graph.node_count()} nodes")
     print(f"  - {graph.edge_count()} edges")
     print()
@@ -251,7 +246,7 @@ def main() -> None:
     if path2:
         print(f"  Path: {' → '.join(path2)}")
     else:
-        print(f"  No path exists (expected - not connected)")
+        print("  No path exists (expected - not connected)")
     print()
 
     # ==========================================================================
@@ -328,7 +323,7 @@ def main() -> None:
 
     flow = build_framework_flow_from_registry(registry, graph)
 
-    print(f"Framework flow:")
+    print("Framework flow:")
     print(f"  Theorems: {len(flow.theorem_nodes)}")
     print()
 
@@ -370,7 +365,7 @@ def main() -> None:
     if deps:
         print(f"  Depends on: {', '.join(sorted(deps))}")
     else:
-        print(f"  No dependencies (base theorem)")
+        print("  No dependencies (base theorem)")
     print()
 
     # Compute framework layers
@@ -394,7 +389,7 @@ def main() -> None:
     }
     subgraph = graph.get_subgraph(euclidean_nodes)
 
-    print(f"Euclidean gas subgraph:")
+    print("Euclidean gas subgraph:")
     print(f"  Nodes: {subgraph.node_count()}")
     print(f"  Edges: {subgraph.edge_count()}")
     print(f"  Node IDs: {', '.join(sorted(subgraph.nodes.keys()))}")
@@ -429,7 +424,7 @@ def main() -> None:
     print("  3. Dependency analysis")
     print("  4. Layered framework structure")
     print()
-    print(f"✅ Graph Statistics:")
+    print("✅ Graph Statistics:")
     print(f"  - {graph.node_count()} nodes in relationship graph")
     print(f"  - {graph.edge_count()} edges")
     print(f"  - {len(eq_classes)} equivalence classes")

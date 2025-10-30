@@ -1,0 +1,29 @@
+{
+  "label": "obj-standardization-operator-n-dimensional",
+  "name": "Standardization Operator N Dimensional",
+  "mathematical_expression": "Standardization Operator N Dimensional",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "aggregation",
+    "dimensional",
+    "measure-theory",
+    "operator",
+    "particle-system",
+    "standardization",
+    "stochastic"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-standardization-operator-n-dimensional",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": null
+}

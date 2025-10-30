@@ -5,7 +5,6 @@ of docs/source/03_cloning.md. The mechanisms use distance-dependent random match
 on the algorithmic distance metric d_alg(i,j)^2 = ||x_i - x_j||^2 + λ_alg ||v_i - v_j||^2.
 """
 
-
 import panel as pn
 import param
 import torch

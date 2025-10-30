@@ -11,4 +11,5 @@ Version: 1.0.0
 
 from fragile.proofs.validators.framework_checker import FrameworkChecker
 
+
 __all__ = ["FrameworkChecker"]

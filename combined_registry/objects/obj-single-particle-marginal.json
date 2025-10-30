@@ -3,12 +3,21 @@
   "name": "Single-Particle Marginal",
   "mathematical_expression": "\\mu_N(A) := \\pi_N(\\{(w_1, \\ldots, w_N) : w_1 \\in A\\})",
   "object_type": "set",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "10_qsd_exchangeability_theory"
+  "source": {
+    "document_id": "10_qsd_exchangeability_theory",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/10_qsd_exchangeability_theory.md",
+    "section": null,
+    "directive_label": "obj-single-particle-marginal",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-single-particle-marginal"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

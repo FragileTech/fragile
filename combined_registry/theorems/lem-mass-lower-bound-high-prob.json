@@ -2,9 +2,17 @@
   "label": "lem-mass-lower-bound-high-prob",
   "name": "High-Probability Alive Mass Lower Bound",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence_bounded_density_rigorous_proof",
+  "source": {
+    "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+    "section": null,
+    "directive_label": "lem-mass-lower-bound-high-prob",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-mass-lower-bound-high-prob"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -24,7 +32,7 @@
     "t_eq",
     "delta"
   ],
-  "properties_required": {
+  "attributes_required": {
     "equilibration": [
       "t ≥ t_eq = O(κ_QSD^{-1} log N) ⇒ TV distance ≤ 1/N²"
     ],
@@ -47,7 +55,7 @@
     ]
   ],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-lem-mass-lower-bound-high-prob-0-approximation",
@@ -57,14 +65,22 @@
       "target_object": "obj-alive-mass",
       "established_by": "lem-mass-lower-bound-high-prob",
       "expression": "P(k_t ≥ k_*/2 and τ_† > t) ≥ 1 − e^{−δN}",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+      "source": {
+        "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+        "section": null,
+        "directive_label": "lem-mass-lower-bound-high-prob",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-mass-lower-bound-high-prob"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-lem-mass-lower-bound-high-prob-1-approximation",
@@ -74,14 +90,22 @@
       "target_object": "obj-alive-mass",
       "established_by": "lem-mass-lower-bound-high-prob",
       "expression": "||ρ_t||_{L^1} = k_t/N ≥ m_eq/2 on high-probability event",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+      "source": {
+        "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+        "section": null,
+        "directive_label": "lem-mass-lower-bound-high-prob",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-mass-lower-bound-high-prob"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-lem-mass-lower-bound-high-prob-2-equivalence",
@@ -91,14 +115,29 @@
       "target_object": "obj-alive-mass",
       "established_by": "lem-mass-lower-bound-high-prob",
       "expression": "c_mass := m_eq/2",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence_bounded_density_rigorous_proof"
+      "source": {
+        "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence_bounded_density_rigorous_proof.md",
+        "section": null,
+        "directive_label": "lem-mass-lower-bound-high-prob",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-mass-lower-bound-high-prob"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

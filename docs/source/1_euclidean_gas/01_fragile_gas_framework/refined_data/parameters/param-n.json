@@ -1,0 +1,9 @@
+{
+  "label": "param-n",
+  "name": "Number of Walkers",
+  "symbol": "N",
+  "parameter_type": "natural",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "statement_type": "parameter"
+}

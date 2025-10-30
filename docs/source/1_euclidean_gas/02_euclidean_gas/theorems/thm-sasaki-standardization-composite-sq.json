@@ -3,114 +3,25 @@
   "name": "Composite Continuity of the Patched Standardization Operator (Sasaki)",
   "statement_type": "theorem",
   "source": null,
-  "input_objects": [
-    "obj-standardization-operator",
-    "obj-swarm-state",
-    "obj-sasaki-dispersion-metric",
-    "obj-reward-vector"
-  ],
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
   "input_axioms": [],
-  "input_parameters": [
-    "param-N",
-    "param-k-1",
-    "param-V-max-R",
-    "param-sigma-min-patch",
-    "param-lambda-status"
-  ],
-  "attributes_required": {
-    "obj-standardization-operator": [
-      "attr-value-continuity",
-      "attr-structural-continuity"
-    ],
-    "obj-sasaki-dispersion-metric": [
-      "attr-metric"
-    ]
-  },
-  "internal_lemmas": [
-    "lem-sasaki-value-error-decomposition",
-    "lem-sasaki-structural-error-decomposition",
-    "lem-sasaki-direct-structural-error-sq",
-    "lem-sasaki-indirect-structural-error-sq"
-  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
   "internal_propositions": [],
-  "lemma_dag_edges": [
-    ["lem-sasaki-value-error-decomposition", "thm-sasaki-standardization-composite-sq"],
-    ["lem-sasaki-structural-error-decomposition", "thm-sasaki-standardization-composite-sq"],
-    ["lem-sasaki-direct-structural-error-sq", "thm-sasaki-standardization-composite-sq"],
-    ["lem-sasaki-indirect-structural-error-sq", "thm-sasaki-standardization-composite-sq"]
-  ],
+  "lemma_dag_edges": [],
   "output_type": "Property",
-  "attributes_added": [
-    {
-      "label": "attr-composite-continuity-standardization",
-      "expression": "The standardization operator $z(\\mathcal{S})$ is continuous with respect to the dispersion metric with composite Lipschitz-Hölder bound: $\\|z(\\mathcal{S}_1)-z(\\mathcal{S}_2)\\|_2^2 \\le L_{z,L}^2(\\mathcal{S}_1,\\mathcal{S}_2) \\cdot d_{\\mathrm{Disp},\\mathcal{Y}}^{\\mathrm{Sasaki}}(\\mathcal{S}_1, \\mathcal{S}_2)^2 + L_{z,H}^2(\\mathcal{S}_1,\\mathcal{S}_2) \\cdot d_{\\mathrm{Disp},\\mathcal{Y}}^{\\mathrm{Sasaki}}(\\mathcal{S}_1, \\mathcal{S}_2)^4$",
-      "object_label": "obj-standardization-operator",
-      "established_by": "thm-sasaki-standardization-composite-sq",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "attr-lipschitz-coefficient-standardization",
-      "expression": "The Lipschitz coefficient is: $L_{z,L}^2(\\mathcal{S}_1,\\mathcal{S}_2) := 2C_{V,\\mathrm{total}}^{\\mathrm{Sasaki}}(\\mathcal{S}_1)(L_R^{\\mathrm{Sasaki}})^2N + \\frac{N}{\\lambda_{\\mathrm{status}}}\\Big(8C_{V,\\mathrm{total}}^{\\mathrm{Sasaki}}(\\mathcal{S}_1)(V_{\\max}^{(R)})^2+2C_{S,\\mathrm{direct}}^{\\mathrm{sq}}(\\mathcal{S}_1,\\mathcal{S}_2)\\Big)$",
-      "object_label": "obj-standardization-operator",
-      "established_by": "thm-sasaki-standardization-composite-sq",
-      "timestamp": null,
-      "can_be_refined": false,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "attr-holder-coefficient-standardization",
-      "expression": "The Hölder coefficient is: $L_{z,H}^2(\\mathcal{S}_1,\\mathcal{S}_2) := 2C_{S,\\mathrm{indirect}}^{\\mathrm{sq}}(\\mathcal{S}_1,\\mathcal{S}_2)\\left(\\frac{N}{\\lambda_{\\mathrm{status}}}\\right)^2$",
-      "object_label": "obj-standardization-operator",
-      "established_by": "thm-sasaki-standardization-composite-sq",
-      "timestamp": null,
-      "can_be_refined": false,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "attr-rescale-operator-continuity",
-      "expression": "The logistic rescale operator $u(\\mathcal{S}) = g_A(z(\\mathcal{S}))$ is continuous as a consequence of the global Lipschitz property of $g_A$ and the continuity of $z$",
-      "object_label": "obj-rescale-operator",
-      "established_by": "thm-sasaki-standardization-composite-sq",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": [
-    {
-      "label": "rel-standardization-dispersion-approximation",
-      "relationship_type": "approximation",
-      "bidirectional": false,
-      "source_object": "obj-standardization-operator",
-      "target_object": "obj-sasaki-dispersion-metric",
-      "established_by": "thm-sasaki-standardization-composite-sq",
-      "expression": "The standardization operator error is bounded by a composite function of the dispersion metric with quadratic and quartic terms",
-      "properties": [
-        {
-          "label": "lipschitz-order",
-          "expression": "$2$",
-          "description": "Quadratic term in dispersion distance"
-        },
-        {
-          "label": "holder-order",
-          "expression": "$4$",
-          "description": "Quartic term in dispersion distance"
-        }
-      ],
-      "tags": [
-        "sasaki-geometry",
-        "dispersion-metric",
-        "composite-continuity",
-        "standardization"
-      ],
-      "timestamp": null,
-      "source": null
-    }
-  ]
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

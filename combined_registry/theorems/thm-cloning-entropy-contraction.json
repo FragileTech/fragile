@@ -2,9 +2,17 @@
   "label": "thm-cloning-entropy-contraction",
   "name": "Entropy Contraction for the Cloning Operator",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence",
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "thm-cloning-entropy-contraction",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-cloning-entropy-contraction"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -21,7 +29,7 @@
     "kappa_conf",
     "C_W"
   ],
-  "properties_required": {
+  "attributes_required": {
     "hwi": [
       "HWI inequality applies (log-concave π)"
     ],
@@ -46,7 +54,7 @@
     ]
   ],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-cloning-entropy-contraction-0-approximation",
@@ -56,14 +64,22 @@
       "target_object": "obj-hwi-inequality",
       "established_by": "thm-cloning-entropy-contraction",
       "expression": "D_KL(μ_{S'}|π) ≤ (1 − κ_W² δ²/(2C_I)) D_KL(μ_S|π) + C_clone (heuristic form)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-cloning-entropy-contraction",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-cloning-entropy-contraction"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-cloning-entropy-contraction-1-approximation",
@@ -73,14 +89,22 @@
       "target_object": "obj-hwi-inequality",
       "established_by": "thm-cloning-entropy-contraction",
       "expression": "KL contracts via W₂ contraction × Fisher bound",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-cloning-entropy-contraction",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-cloning-entropy-contraction"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-cloning-entropy-contraction-2-other",
@@ -90,14 +114,29 @@
       "target_object": "obj-hwi-inequality",
       "established_by": "thm-cloning-entropy-contraction",
       "expression": "Cloning alone insufficient → needs kinetic operator composition",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-cloning-entropy-contraction",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-cloning-entropy-contraction"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

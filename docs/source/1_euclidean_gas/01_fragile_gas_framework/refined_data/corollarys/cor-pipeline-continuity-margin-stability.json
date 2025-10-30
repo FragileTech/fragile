@@ -1,0 +1,8 @@
+{
+  "label": "cor-pipeline-continuity-margin-stability",
+  "name": "Pipeline Continuity Under Margin-Based Status Stability",
+  "statement_type": "corollary",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "output_type": "Property"
+}

@@ -3,13 +3,22 @@
   "name": "The Kinetic Operator (Stratonovich Form)",
   "mathematical_expression": "\\begin{aligned}\ndx_t &= v_t \\, dt \\\\\ndv_t &= F(x_t) \\, dt - \\gamma(v_t - u(x_t)) \\, dt + \\Sigma(x_t, v_t) \\circ dW_t\n\\end{aligned}",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle",
     "swarm"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "05_kinetic_contraction"
+  "source": {
+    "document_id": "05_kinetic_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+    "section": null,
+    "directive_label": "obj-kinetic-operator-stratonovich",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-kinetic-operator-stratonovich"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

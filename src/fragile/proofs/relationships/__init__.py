@@ -12,21 +12,22 @@ from fragile.proofs.core.pipeline_types import Relationship, RelationshipAttribu
 
 # Import graph analysis
 from fragile.proofs.relationships.graphs import (
+    build_relationship_graph_from_registry,
     EquivalenceClassifier,
     FrameworkFlow,
     ObjectLineage,
     RelationshipGraph,
-    build_relationship_graph_from_registry,
 )
 
+
 __all__ = [
+    "EquivalenceClassifier",
+    "FrameworkFlow",
+    "ObjectLineage",
     # Types (from core)
     "Relationship",
     "RelationshipAttribute",
     # Graphs
     "RelationshipGraph",
-    "ObjectLineage",
-    "EquivalenceClassifier",
-    "FrameworkFlow",
     "build_relationship_graph_from_registry",
 ]

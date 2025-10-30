@@ -15,20 +15,20 @@ Usage:
 """
 
 import json
-import sys
 from pathlib import Path
+import sys
 from typing import Dict, List, Optional, Set, Tuple, Union
 import warnings
 
 # Use relative imports since script is inside the package
 from ..core.article_system import SourceLocation
 from ..core.math_types import (
+    Attribute,
     Axiom,
     MathematicalObject,
     ObjectType,
     Parameter,
     ParameterType,
-    Attribute,
     Relationship,
     RelationshipAttribute,
     RelationType,
@@ -44,7 +44,8 @@ from ..utils.source_helpers import SourceLocationBuilder
 # LAYER 1: Path & Source Location Helpers
 # ============================================================================
 
-def extract_location_from_path(json_path: Path, docs_root: Path) -> Tuple[str, str, str]:
+
+def extract_location_from_path(json_path: Path, docs_root: Path) -> tuple[str, str, str]:
     """Extract chapter, document, and markdown file path from JSON file path.
 
     Args:
@@ -95,11 +96,8 @@ def extract_location_from_path(json_path: Path, docs_root: Path) -> Tuple[str, s
 
 
 def create_source_location(
-    chapter: str,
-    document: str,
-    file_path: str,
-    label: Optional[str] = None
-) -> Optional[SourceLocation]:
+    chapter: str, document: str, file_path: str, label: str | None = None
+) -> SourceLocation | None:
     """Create SourceLocation using SourceLocationBuilder.
 
     Args:
@@ -121,6 +119,7 @@ def create_source_location(
 
     # Check if document_id matches pattern: ^[0-9]{2}_[a-z_]+$
     import re
+
     if not re.match(r"^[0-9]{2}_[a-z_]+$", document_id):
         warnings.warn(
             f"Document ID '{document_id}' doesn't match expected pattern (NN_lowercase). "
@@ -132,16 +131,10 @@ def create_source_location(
         if label:
             # Use from_jupyter_directive for more specific location
             return SourceLocationBuilder.from_jupyter_directive(
-                document_id=document_id,
-                file_path=file_path,
-                directive_label=label
+                document_id=document_id, file_path=file_path, directive_label=label
             )
-        else:
-            # Use minimal for just document reference
-            return SourceLocationBuilder.minimal(
-                document_id=document_id,
-                file_path=file_path
-            )
+        # Use minimal for just document reference
+        return SourceLocationBuilder.minimal(document_id=document_id, file_path=file_path)
     except Exception as e:
         warnings.warn(f"Cannot create SourceLocation for {document_id}: {e}")
         return None
@@ -161,11 +154,10 @@ def ensure_object_label_prefix(label: str) -> str:
 
     if clean_label.startswith("obj-"):
         return clean_label
-    elif clean_label.startswith("def-"):
+    if clean_label.startswith("def-"):
         # Convert def- to obj-
         return "obj-" + clean_label[4:]
-    else:
-        return "obj-" + clean_label
+    return "obj-" + clean_label
 
 
 def infer_relationship_type(expression: str) -> RelationType:
@@ -181,26 +173,22 @@ def infer_relationship_type(expression: str) -> RelationType:
 
     if any(keyword in expression for keyword in ["≤", "≥", "<", ">", "bound"]):
         return RelationType.APPROXIMATION
-    elif any(keyword in expression for keyword in ["=", "≡", "equivalent", "equals"]):
+    if any(keyword in expression for keyword in ["=", "≡", "equivalent", "equals"]):
         return RelationType.EQUIVALENCE
-    elif any(keyword in expression for keyword in ["⊂", "⊆", "extends", "extension"]):
+    if any(keyword in expression for keyword in ["⊂", "⊆", "extends", "extension"]):
         return RelationType.EXTENSION
-    elif "embeds" in expr_lower or "embedding" in expr_lower:
+    if "embeds" in expr_lower or "embedding" in expr_lower:
         return RelationType.EMBEDDING
-    elif "reduces" in expr_lower or "reduction" in expr_lower:
+    if "reduces" in expr_lower or "reduction" in expr_lower:
         return RelationType.REDUCTION
-    elif "generaliz" in expr_lower:
+    if "generaliz" in expr_lower:
         return RelationType.GENERALIZATION
-    elif "specializ" in expr_lower:
+    if "specializ" in expr_lower:
         return RelationType.SPECIALIZATION
-    else:
-        return RelationType.OTHER
+    return RelationType.OTHER
 
 
-def normalize_lemma_edge(
-    edge: Union[list, tuple, dict, str],
-    theorem_label: str
-) -> Tuple[str, str]:
+def normalize_lemma_edge(edge: list | tuple | dict | str, theorem_label: str) -> tuple[str, str]:
     """Normalize lemma DAG edge to (source, target) tuple.
 
     Args:
@@ -210,30 +198,29 @@ def normalize_lemma_edge(
     Returns:
         Tuple of (source_label, target_label)
     """
-    if isinstance(edge, (list, tuple)) and len(edge) == 2:
+    if isinstance(edge, list | tuple) and len(edge) == 2:
         # Already a tuple/list, convert to tuple
         return (edge[0], edge[1])
-    elif isinstance(edge, dict):
+    if isinstance(edge, dict):
         # Dict format: {"depends_on": "lem-x"} or {"from": "lem-x", "to": "lem-y"}
         if "from" in edge and "to" in edge:
             return (edge["from"], edge["to"])
-        elif "depends_on" in edge:
+        if "depends_on" in edge:
             # depends_on means edge[depends_on] → current theorem
             return (edge["depends_on"], theorem_label)
-        else:
-            raise ValueError(f"Dict edge missing 'from'/'to' or 'depends_on': {edge}")
-    elif isinstance(edge, str):
+        raise ValueError(f"Dict edge missing 'from'/'to' or 'depends_on': {edge}")
+    if isinstance(edge, str):
         # String format: single dependency, target is the current theorem
         return (edge, theorem_label)
-    else:
-        raise ValueError(f"Invalid edge format: {edge}")
+    raise ValueError(f"Invalid edge format: {edge}")
 
 
 # ============================================================================
 # LAYER 2: Preprocessing Functions (Prepare dicts for Pydantic)
 # ============================================================================
 
-def preprocess_attributes_added(props_raw: List) -> List[dict]:
+
+def preprocess_attributes_added(props_raw: list) -> list[dict]:
     """Preprocess attributes_added from theorem JSON.
 
     Args:
@@ -258,11 +245,8 @@ def preprocess_attributes_added(props_raw: List) -> List[dict]:
 
 
 def preprocess_relations_established(
-    rels_raw: List,
-    theorem_label: str,
-    input_objects: List[str],
-    source: Optional[SourceLocation]
-) -> List[dict]:
+    rels_raw: list, theorem_label: str, input_objects: list[str], source: SourceLocation | None
+) -> list[dict]:
     """Preprocess relations_established from theorem JSON.
 
     Handles three formats:
@@ -294,8 +278,16 @@ def preprocess_relations_established(
                 label = f"rel-{theorem_clean}-{idx}-{rel_type.value}"
 
                 # Infer source/target from input objects
-                source_obj = ensure_object_label_prefix(input_objects[0]) if len(input_objects) > 0 else "obj-unknown"
-                target_obj = ensure_object_label_prefix(input_objects[1]) if len(input_objects) > 1 else source_obj
+                source_obj = (
+                    ensure_object_label_prefix(input_objects[0])
+                    if len(input_objects) > 0
+                    else "obj-unknown"
+                )
+                target_obj = (
+                    ensure_object_label_prefix(input_objects[1])
+                    if len(input_objects) > 1
+                    else source_obj
+                )
 
                 rel_dict = {
                     "label": label,
@@ -322,8 +314,16 @@ def preprocess_relations_established(
             elif isinstance(rel_item, dict):
                 # Simple dict format: parse and create relationship
                 type_str = rel_item.get("type", "other")
-                source_raw = rel_item.get("from", rel_item.get("source", input_objects[0] if input_objects else "unknown"))
-                target_raw = rel_item.get("to", rel_item.get("target", input_objects[1] if len(input_objects) > 1 else "unknown"))
+                source_raw = rel_item.get(
+                    "from",
+                    rel_item.get("source", input_objects[0] if input_objects else "unknown"),
+                )
+                target_raw = rel_item.get(
+                    "to",
+                    rel_item.get(
+                        "target", input_objects[1] if len(input_objects) > 1 else "unknown"
+                    ),
+                )
 
                 source_obj = ensure_object_label_prefix(source_raw)
                 target_obj = ensure_object_label_prefix(target_raw)
@@ -333,15 +333,15 @@ def preprocess_relations_established(
                     rel_type = RelationType(type_str)
                 except ValueError:
                     type_lower = type_str.lower()
-                    if type_lower in ("contraction", "approximation"):
+                    if type_lower in {"contraction", "approximation"}:
                         rel_type = RelationType.APPROXIMATION
-                    elif type_lower in ("equivalence", "equal"):
+                    elif type_lower in {"equivalence", "equal"}:
                         rel_type = RelationType.EQUIVALENCE
-                    elif type_lower in ("embedding", "embeds"):
+                    elif type_lower in {"embedding", "embeds"}:
                         rel_type = RelationType.EMBEDDING
-                    elif type_lower in ("reduction", "reduces"):
+                    elif type_lower in {"reduction", "reduces"}:
                         rel_type = RelationType.REDUCTION
-                    elif type_lower in ("extension", "extends"):
+                    elif type_lower in {"extension", "extends"}:
                         rel_type = RelationType.EXTENSION
                     elif type_lower == "generalization":
                         rel_type = RelationType.GENERALIZATION
@@ -353,7 +353,9 @@ def preprocess_relations_established(
                 # Generate label
                 source_clean = source_obj.replace("obj-", "").replace("_", "-")
                 target_clean = target_obj.replace("obj-", "").replace("_", "-")
-                label = rel_item.get("label", f"rel-{source_clean}-{target_clean}-{rel_type.value}")
+                label = rel_item.get(
+                    "label", f"rel-{source_clean}-{target_clean}-{rel_type.value}"
+                )
 
                 # Construct expression from dict fields
                 expression_parts = []
@@ -388,7 +390,7 @@ def preprocess_relations_established(
     return relations
 
 
-def preprocess_lemma_edges(edges_raw: List, theorem_label: str) -> List[Tuple[str, str]]:
+def preprocess_lemma_edges(edges_raw: list, theorem_label: str) -> list[tuple[str, str]]:
     """Preprocess lemma_dag_edges from theorem JSON.
 
     Args:
@@ -416,6 +418,7 @@ def preprocess_lemma_edges(edges_raw: List, theorem_label: str) -> List[Tuple[st
 # ============================================================================
 # LAYER 3: JSON Loaders (Pydantic validation)
 # ============================================================================
+
 
 def load_object_from_json(json_path: Path, docs_root: Path) -> MathematicalObject:
     """Load MathematicalObject from JSON file using Pydantic validation.
@@ -549,7 +552,9 @@ def load_theorem_from_json(json_path: Path, docs_root: Path) -> TheoremBox:
     # Preprocess relations_established
     rels_raw = data.get("relations_established", [])
     input_objects = data.get("input_objects", [])
-    rels_processed = preprocess_relations_established(rels_raw, data["label"], input_objects, source)
+    rels_processed = preprocess_relations_established(
+        rels_raw, data["label"], input_objects, source
+    )
     if rels_processed:
         # Parse Relationship objects
         relations_established = []
@@ -629,21 +634,20 @@ class ChapterCombiner:
             "chapters_processed": set(),
         }
 
-    def find_all_chapters(self) -> List[Path]:
+    def find_all_chapters(self) -> list[Path]:
         """Find all chapter directories."""
         chapters = []
 
         # Look for numbered chapter directories
         for path in self.docs_root.iterdir():
             if path.is_dir() and (
-                path.name.startswith("1_euclidean_gas")
-                or path.name.startswith("2_geometric_gas")
+                path.name.startswith("1_euclidean_gas") or path.name.startswith("2_geometric_gas")
             ):
                 chapters.append(path)
 
         return sorted(chapters)
 
-    def find_chapter_subdirectories(self, chapter_path: Path) -> List[Path]:
+    def find_chapter_subdirectories(self, chapter_path: Path) -> list[Path]:
         """Find all subdirectories in a chapter that contain JSON files."""
         subdirs = []
 
@@ -671,9 +675,13 @@ class ChapterCombiner:
         has_target = rel.target_object in all_objects
 
         if not has_source and rel.source_object != "obj-unknown":
-            print(f"    ⚠️  Relationship {rel.label}: source object '{rel.source_object}' not found")
+            print(
+                f"    ⚠️  Relationship {rel.label}: source object '{rel.source_object}' not found"
+            )
         if not has_target and rel.target_object != "obj-unknown":
-            print(f"    ⚠️  Relationship {rel.label}: target object '{rel.target_object}' not found")
+            print(
+                f"    ⚠️  Relationship {rel.label}: target object '{rel.target_object}' not found"
+            )
 
         return has_source and has_target
 
@@ -755,9 +763,9 @@ class ChapterCombiner:
         Layer 1 helpers handle this from file paths.
         """
         chapter_name = chapter_path.name
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print(f"Processing Chapter: {chapter_name}")
-        print(f"{'='*70}")
+        print(f"{'=' * 70}")
 
         self.stats["chapters_processed"].add(chapter_name)
 
@@ -806,14 +814,14 @@ class ChapterCombiner:
             print(f"  - {ch}")
 
         total_items = (
-            self.stats['objects'] +
-            self.stats['axioms'] +
-            self.stats['parameters'] +
-            self.stats['theorems'] +
-            self.stats['relationships']
+            self.stats["objects"]
+            + self.stats["axioms"]
+            + self.stats["parameters"]
+            + self.stats["theorems"]
+            + self.stats["relationships"]
         )
 
-        print(f"\n✓ Total Items Loaded:")
+        print("\n✓ Total Items Loaded:")
         print(f"  - Objects:        {self.stats['objects']}")
         print(f"  - Axioms:         {self.stats['axioms']}")
         print(f"  - Parameters:     {self.stats['parameters']}")
@@ -822,12 +830,18 @@ class ChapterCombiner:
         print(f"  - TOTAL:          {total_items}")
 
         # Detailed relationship statistics
-        if self.stats['relationships'] > 0:
-            print(f"\n✓ Relationship Details:")
-            print(f"  - From strings:         {self.stats['relationships_from_strings']} ({100 * self.stats['relationships_from_strings'] / self.stats['relationships']:.1f}%)")
-            print(f"  - From simple dicts:    {self.stats['relationships_from_dicts']} ({100 * self.stats['relationships_from_dicts'] / self.stats['relationships']:.1f}%)")
-            print(f"  - From full objects:    {self.stats['relationships_from_full_objects']} ({100 * self.stats['relationships_from_full_objects'] / self.stats['relationships']:.1f}%)")
-            if self.stats['relationships_invalid'] > 0:
+        if self.stats["relationships"] > 0:
+            print("\n✓ Relationship Details:")
+            print(
+                f"  - From strings:         {self.stats['relationships_from_strings']} ({100 * self.stats['relationships_from_strings'] / self.stats['relationships']:.1f}%)"
+            )
+            print(
+                f"  - From simple dicts:    {self.stats['relationships_from_dicts']} ({100 * self.stats['relationships_from_dicts'] / self.stats['relationships']:.1f}%)"
+            )
+            print(
+                f"  - From full objects:    {self.stats['relationships_from_full_objects']} ({100 * self.stats['relationships_from_full_objects'] / self.stats['relationships']:.1f}%)"
+            )
+            if self.stats["relationships_invalid"] > 0:
                 print(f"  - Invalid (missing src/tgt): {self.stats['relationships_invalid']}")
 
             # Count by relationship type
@@ -836,9 +850,9 @@ class ChapterCombiner:
                 rt = rel.relationship_type.value
                 rel_type_counts[rt] = rel_type_counts.get(rt, 0) + 1
 
-            print(f"\n✓ Relationships by Type:")
+            print("\n✓ Relationships by Type:")
             for rt, count in sorted(rel_type_counts.items(), key=lambda x: -x[1]):
-                pct = 100 * count / self.stats['relationships']
+                pct = 100 * count / self.stats["relationships"]
                 print(f"  - {rt:20s} {count:4d} ({pct:.1f}%)")
 
         if self.stats["errors"]:
@@ -857,13 +871,13 @@ class ChapterCombiner:
 
         save_registry_to_directory(self.registry, output_dir)
 
-        print(f"\n✓ Registry saved successfully!")
-        print(f"\nTo visualize with dashboard:")
-        print(f"  panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show")
-        print(f"\nTo regenerate:")
-        print(f"  python -m fragile.proofs.combine_all_chapters --output combined_registry")
-        print(f"\nOr load programmatically:")
-        print(f"  from fragile.proofs import load_registry_from_directory, MathematicalRegistry")
+        print("\n✓ Registry saved successfully!")
+        print("\nTo visualize with dashboard:")
+        print("  panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show")
+        print("\nTo regenerate:")
+        print("  python -m fragile.proofs.combine_all_chapters --output combined_registry")
+        print("\nOr load programmatically:")
+        print("  from fragile.proofs import load_registry_from_directory, MathematicalRegistry")
         print(f"  registry = load_registry_from_directory(MathematicalRegistry, '{output_dir}')")
 
 
@@ -871,7 +885,9 @@ def main():
     """Main entry point."""
     import argparse
 
-    parser = argparse.ArgumentParser(description="Combine all chapter JSON files into unified registry")
+    parser = argparse.ArgumentParser(
+        description="Combine all chapter JSON files into unified registry"
+    )
     parser.add_argument(
         "--output",
         "-o",

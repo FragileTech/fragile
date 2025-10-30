@@ -2,9 +2,17 @@
   "label": "thm-stability-condition-final-corrected",
   "name": "**(The Corrected Stability Condition for Intelligent Adaptation)**",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning",
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "thm-stability-condition-final-corrected",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-stability-condition-final-corrected"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -28,10 +36,10 @@
     "D_valid",
     "eta"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-fitness-potential-operator": [
-      "prop-corrective-diversity-signal",
-      "prop-adversarial-reward-bound"
+      "attr-corrective-diversity-signal",
+      "attr-adversarial-reward-bound"
     ]
   },
   "internal_lemmas": [
@@ -40,16 +48,16 @@
     "lem-log-gap-bounds"
   ],
   "internal_propositions": [
-    "prop-diversity-mean-separation",
-    "prop-reward-mean-separation-axiom-based"
+    "attr-diversity-mean-separation",
+    "attr-reward-mean-separation-axiom-based"
   ],
   "lemma_dag_edges": [
     [
-      "prop-diversity-mean-separation",
+      "attr-diversity-mean-separation",
       "lem-diversity-signal-lower-bound"
     ],
     [
-      "prop-reward-mean-separation-axiom-based",
+      "attr-reward-mean-separation-axiom-based",
       "lem-reward-signal-upper-bound"
     ],
     [
@@ -62,7 +70,7 @@
     ]
   ],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-stability-condition-final-corrected-0-other",
@@ -72,14 +80,29 @@
       "target_object": "obj-logistic-rescale",
       "established_by": "thm-stability-condition-final-corrected",
       "expression": "rel-stability-requires-beta-dominance",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "03_cloning"
+      "source": {
+        "document_id": "03_cloning",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+        "section": null,
+        "directive_label": "thm-stability-condition-final-corrected",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-stability-condition-final-corrected"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

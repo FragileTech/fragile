@@ -2,229 +2,26 @@
   "label": "lem-projection-lipschitz",
   "name": "Lipschitz continuity of the projection $\\varphi$",
   "statement_type": "lemma",
-  "source": {
-    "document": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-    "section": "3.3",
-    "line_start": 449,
-    "line_end": 480
-  },
-  "input_objects": [
-    "obj-projection-map",
-    "obj-squashing-map-x",
-    "obj-squashing-map-v",
-    "obj-euclidean-space",
-    "obj-sasaki-metric"
-  ],
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
   "input_axioms": [],
-  "input_parameters": [
-    "param-dimension",
-    "param-lambda-v",
-    "param-radius-x",
-    "param-radius-v-alg"
-  ],
-  "attributes_required": {
-    "obj-squashing-map-x": [
-      "attr-1-lipschitz",
-      "attr-smooth-away-from-origin"
-    ],
-    "obj-squashing-map-v": [
-      "attr-1-lipschitz",
-      "attr-smooth-away-from-origin"
-    ],
-    "obj-sasaki-metric": [
-      "attr-product-metric-structure"
-    ]
-  },
-  "internal_lemmas": [
-    "lem-squashing-properties-generic"
-  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
   "internal_propositions": [],
-  "lemma_dag_edges": [
-    ["lem-squashing-properties-generic", "lem-projection-lipschitz"]
-  ],
+  "lemma_dag_edges": [],
   "output_type": "Property",
-  "attributes_added": [
-    {
-      "label": "attr-lipschitz-projection",
-      "expression": "For $(x,v),(x',v')\\in\\mathbb R^d\\times\\mathbb R^d$ the projection $\\varphi(x,v)=(\\psi_x(x),\\psi_v(v))$ satisfies $d_{\\mathcal Y}^{\\mathrm{Sasaki}}\\bigl(\\varphi(x,v),\\varphi(x',v')\\bigr)\\le L_{\\varphi}\\,\\sqrt{\\|x-x'\\|^2+\\lambda_v\\|v-v'\\|^2}$ with Lipschitz constant $L_{\\varphi}\\le\\max\\{1,\\sqrt{\\lambda_v}\\}$.",
-      "object_label": "obj-projection-map",
-      "established_by": "lem-projection-lipschitz",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": {
-        "document": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "3.3",
-        "line_start": 449,
-        "line_end": 480
-      }
-    },
-    {
-      "label": "attr-bounded-lipschitz-constant",
-      "expression": "$L_{\\varphi} = 1$ if $\\lambda_v \\le 1$ and $L_{\\varphi} = \\sqrt{\\lambda_v}$ otherwise, ensuring $L_{\\varphi} \\le \\max\\{1, \\sqrt{\\lambda_v}\\}$.",
-      "object_label": "obj-projection-map",
-      "established_by": "lem-projection-lipschitz",
-      "timestamp": null,
-      "can_be_refined": false,
-      "refinements": [],
-      "source": {
-        "document": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "3.3",
-        "line_start": 449,
-        "line_end": 480
-      }
-    }
-  ],
-  "relations_established": [
-    {
-      "label": "rel-projection-squashing-embedding",
-      "relationship_type": "embedding",
-      "bidirectional": false,
-      "source_object": "obj-euclidean-space",
-      "target_object": "obj-algorithmic-space",
-      "established_by": "lem-projection-lipschitz",
-      "expression": "The projection $\\varphi: \\mathbb{R}^d \\times \\mathbb{R}^d \\to B(0,R_x) \\times B(0,V_{\\mathrm{alg}})$ embeds the physical state space into the bounded algorithmic space with Lipschitz control in the Sasaki metric.",
-      "properties": [
-        {
-          "label": "lipschitz-constant-bound",
-          "expression": "$L_{\\varphi} \\le \\max\\{1, \\sqrt{\\lambda_v}\\}$",
-          "description": "The Lipschitz constant depends on the velocity weight parameter"
-        }
-      ],
-      "tags": [
-        "sasaki-metric",
-        "projection",
-        "lipschitz-continuity"
-      ],
-      "timestamp": null,
-      "source": {
-        "document": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "3.3",
-        "line_start": 449,
-        "line_end": 480
-      }
-    }
-  ],
-  "theorem_inputs": [
-    {
-      "object_label": "obj-projection-map",
-      "properties_assumed": [],
-      "role": "The composition map $\\varphi(x,v) = (\\psi_x(x), \\psi_v(v))$ whose Lipschitz constant we are bounding"
-    },
-    {
-      "object_label": "obj-squashing-map-x",
-      "properties_assumed": [
-        "attr-1-lipschitz"
-      ],
-      "role": "Positional squashing map $\\psi_x: \\mathbb{R}^d \\to B(0,R_x)$ with 1-Lipschitz property from lem-squashing-properties-generic"
-    },
-    {
-      "object_label": "obj-squashing-map-v",
-      "properties_assumed": [
-        "attr-1-lipschitz"
-      ],
-      "role": "Velocity squashing map $\\psi_v: \\mathbb{R}^d \\to B(0,V_{\\mathrm{alg}})$ with 1-Lipschitz property from lem-squashing-properties-generic"
-    },
-    {
-      "object_label": "obj-sasaki-metric",
-      "properties_assumed": [
-        "attr-product-metric-structure"
-      ],
-      "role": "The metric $d_{\\mathcal{Y}}^{\\mathrm{Sasaki}}((y_x,y_v),(y'_x,y'_v))^2 = \\|y_x - y'_x\\|^2 + \\lambda_v \\|y_v - y'_v\\|^2$ used to measure distance in algorithmic space"
-    }
-  ],
-  "theorem_outputs": [
-    {
-      "property_label": "attr-lipschitz-projection",
-      "object_label": "obj-projection-map",
-      "expression": "$d_{\\mathcal{Y}}^{\\mathrm{Sasaki}}(\\varphi(x,v), \\varphi(x',v')) \\le L_{\\varphi} \\sqrt{\\|x-x'\\|^2 + \\lambda_v \\|v-v'\\|^2}$",
-      "description": "The projection is Lipschitz continuous with respect to the Sasaki metric"
-    },
-    {
-      "property_label": "attr-bounded-lipschitz-constant",
-      "object_label": "obj-projection-map",
-      "expression": "$L_{\\varphi} \\le \\max\\{1, \\sqrt{\\lambda_v}\\}$",
-      "description": "Explicit bound on the Lipschitz constant depending on velocity weight"
-    }
-  ],
-  "proof_sketch": {
-    "strategy": "Use the 1-Lipschitz property of individual squashing maps from lem-squashing-properties-generic, then apply the definition of the Sasaki metric to obtain the composite bound.",
-    "steps": [
-      {
-        "step_number": 1,
-        "description": "Apply lem-squashing-properties-generic to get $\\|\\psi_x(x) - \\psi_x(x')\\| \\le \\|x - x'\\|$ and $\\|\\psi_v(v) - \\psi_v(v')\\| \\le \\|v - v'\\|$"
-      },
-      {
-        "step_number": 2,
-        "description": "Expand the Sasaki metric: $d_{\\mathcal{Y}}^{\\mathrm{Sasaki}}(\\varphi(x,v), \\varphi(x',v'))^2 = \\|\\psi_x(x) - \\psi_x(x')\\|^2 + \\lambda_v \\|\\psi_v(v) - \\psi_v(v')\\|^2$"
-      },
-      {
-        "step_number": 3,
-        "description": "Substitute the Lipschitz bounds: $\\le \\|x - x'\\|^2 + \\lambda_v \\|v - v'\\|^2$"
-      },
-      {
-        "step_number": 4,
-        "description": "Determine optimal constant: $L_{\\varphi} = 1$ if $\\lambda_v \\le 1$, else $L_{\\varphi} = \\sqrt{\\lambda_v}$, yielding the bound $\\le L_{\\varphi}^2 (\\|x-x'\\|^2 + \\lambda_v \\|v-v'\\|^2)$"
-      },
-      {
-        "step_number": 5,
-        "description": "Take square roots to obtain the final inequality"
-      }
-    ]
-  },
-  "dependencies": {
-    "required_theorems": [
-      "lem-squashing-properties-generic"
-    ],
-    "required_definitions": [
-      "obj-projection-map",
-      "obj-squashing-map-x",
-      "obj-squashing-map-v",
-      "obj-sasaki-metric",
-      "obj-algorithmic-space"
-    ],
-    "enables_theorems": [
-      "def-axiom-bounded-algorithmic-diameter",
-      "lem-euclidean-perturb-moment",
-      "lem-sasaki-single-walker-positional-error"
-    ]
-  },
-  "mathematical_content": {
-    "statement": "For $(x,v),(x',v')\\in\\mathbb{R}^d\\times\\mathbb{R}^d$ the projection $\\varphi(x,v)=(\\psi_x(x),\\psi_v(v))$ satisfies\n$$\nd_{\\mathcal{Y}}^{\\mathrm{Sasaki}}\\bigl(\\varphi(x,v),\\varphi(x',v')\\bigr)\\le L_{\\varphi}\\,\\sqrt{\\|x-x'\\|^2+\\lambda_v\\|v-v'\\|^2},\n$$\nwith Lipschitz constant $L_{\\varphi}\\le\\max\\{1,\\sqrt{\\lambda_v}\\}$.",
-    "key_inequalities": [
-      "$\\|\\psi_x(x)-\\psi_x(x')\\| \\le \\|x-x'\\|$",
-      "$\\|\\psi_v(v)-\\psi_v(v')\\| \\le \\|v-v'\\|$",
-      "$d_{\\mathcal{Y}}^{\\mathrm{Sasaki}}(\\varphi(x,v),\\varphi(x',v'))^2 \\le \\|x-x'\\|^2 + \\lambda_v\\|v-v'\\|^2$"
-    ],
-    "key_constants": [
-      {
-        "symbol": "$L_{\\varphi}$",
-        "value": "$\\max\\{1, \\sqrt{\\lambda_v}\\}$",
-        "description": "Lipschitz constant of projection map"
-      },
-      {
-        "symbol": "$\\lambda_v$",
-        "description": "Velocity weight parameter in Sasaki metric"
-      },
-      {
-        "symbol": "$R_x$",
-        "description": "Positional radius bound"
-      },
-      {
-        "symbol": "$V_{\\mathrm{alg}}$",
-        "description": "Velocity radius bound"
-      }
-    ]
-  },
-  "framework_role": {
-    "axiom_verification": [
-      "def-axiom-bounded-algorithmic-diameter"
-    ],
-    "continuity_analysis": "Establishes Lipschitz control for projection map, enabling Sasaki metric-based continuity bounds throughout the framework",
-    "downstream_usage": [
-      "Perturbation moment bounds (lem-euclidean-perturb-moment)",
-      "Measurement operator continuity (lem-sasaki-single-walker-positional-error)",
-      "Swarm dispersion analysis"
-    ]
-  }
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

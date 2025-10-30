@@ -1,0 +1,29 @@
+{
+  "label": "lem-unify-holder-terms",
+  "name": "Unifying Multiple H\u00f6lder Terms (global, with case split)",
+  "statement_type": "lemma",
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [
+    "Unified H\u00f6lder bound for multiple terms"
+  ],
+  "natural_language_statement": "Multiple H\u00f6lder-type terms (\u221aV, V^{1/3}, etc.) arising from different components can be unified into a single dominant term using subadditivity and case analysis.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

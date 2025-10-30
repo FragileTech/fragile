@@ -1,0 +1,9 @@
+{
+  "label": "param-f-v-ms",
+  "name": "Expected Squared Value Error Bound",
+  "symbol": "F_{V,ms}",
+  "parameter_type": "symbolic",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "statement_type": "parameter"
+}

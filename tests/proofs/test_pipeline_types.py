@@ -4,29 +4,29 @@ Comprehensive tests for fragile.proofs.core.pipeline_types.
 Tests all core types, enums, helper functions, and validation rules.
 """
 
-import pytest
 from pydantic import ValidationError
+import pytest
 
 from fragile.proofs.core.pipeline_types import (
+    Attribute,
+    AttributeEvent,
+    AttributeEventType,
+    AttributeRefinement,
     Axiom,
+    create_simple_object,
+    create_simple_theorem,
     Err,
     MathematicalObject,
     ObjectType,
     Ok,
     Parameter,
     ParameterType,
-    Property,
-    PropertyEvent,
-    PropertyEventType,
-    PropertyRefinement,
     RefinementType,
     Relationship,
-    RelationshipProperty,
+    RelationshipAttribute,
     RelationType,
     TheoremBox,
     TheoremOutputType,
-    create_simple_object,
-    create_simple_theorem,
 )
 
 
@@ -78,61 +78,65 @@ class TestResultTypes:
         assert err.error == "Something went wrong"
 
 
-class TestPropertyRefinement:
-    """Test PropertyRefinement type."""
+class TestAttributeRefinement:
+    """Test AttributeRefinement type."""
 
     def test_creation(self):
-        """Test PropertyRefinement creation."""
-        refinement = PropertyRefinement(
-            original_property="prop-continuous",
-            refined_property="prop-smooth",
+        """Test AttributeRefinement creation."""
+        refinement = AttributeRefinement(
+            original_attribute="attr-continuous",
+            refined_attribute="attr-smooth",
             refinement_theorem="thm-regularity",
             refinement_type=RefinementType.STRENGTHENING,
         )
         assert refinement.refinement_type == RefinementType.STRENGTHENING
-        assert refinement.original_property == "prop-continuous"
+        assert refinement.original_attribute == "attr-continuous"
 
     def test_all_refinement_types(self):
         """Test all RefinementType values."""
-        types = [RefinementType.STRENGTHENING, RefinementType.GENERALIZATION, RefinementType.QUANTIFICATION]
+        types = [
+            RefinementType.STRENGTHENING,
+            RefinementType.GENERALIZATION,
+            RefinementType.QUANTIFICATION,
+        ]
         for rtype in types:
-            ref = PropertyRefinement(
-                original_property="prop-test1",
-                refined_property="prop-test2",
+            ref = AttributeRefinement(
+                original_attribute="attr-test1",
+                refined_attribute="attr-test2",
                 refinement_theorem="thm-test",
                 refinement_type=rtype,
             )
             assert ref.refinement_type == rtype
 
 
-class TestProperty:
-    """Test Property type."""
+class TestAttribute:
+    """Test Attribute type."""
 
     def test_minimal_property(self):
         """Test minimal property creation."""
-        prop = Property(
-            label="prop-test",
+        prop = Attribute(
+            label="attr-test",
             object_label="obj-test",
             expression="Test property",
             established_by="thm-test",
         )
-        assert prop.label == "prop-test"
+        assert prop.label == "attr-test"
         assert prop.object_label == "obj-test"
 
     def test_property_with_expression(self):
         """Test property with mathematical expression."""
-        prop = Property(
-            label="prop-lipschitz",
+        prop = Attribute(
+            label="attr-lipschitz",
             object_label="obj-function",
             expression=r"|\nabla f(x)| \leq L",
             established_by="thm-regularity",
         )
         assert r"\nabla" in prop.expression
 
-    def test_property_label_validation(self):
+    def test_attribute_label_validation(self):
         """Test property label must start with prop-."""
-        with pytest.raises(ValidationError, match="prop-"):
-            Property(
+        with pytest.raises(ValidationError, match="attr-"):
+            Attribute(
                 label="invalid-label",  # Should be prop-invalid-label
                 object_label="obj-test",
                 expression="Test",
@@ -141,14 +145,14 @@ class TestProperty:
 
     def test_property_with_refinement(self):
         """Test property with refinement history."""
-        refinement = PropertyRefinement(
-            original_property="prop-continuous",
-            refined_property="prop-smooth",
+        refinement = AttributeRefinement(
+            original_attribute="attr-continuous",
+            refined_attribute="attr-smooth",
             refinement_theorem="thm-regularity",
             refinement_type=RefinementType.STRENGTHENING,
         )
-        prop = Property(
-            label="prop-test",
+        prop = Attribute(
+            label="attr-test",
             object_label="obj-test",
             expression="Test",
             established_by="thm-test",
@@ -158,29 +162,29 @@ class TestProperty:
         assert prop.refinements[0].refinement_type == RefinementType.STRENGTHENING
 
 
-class TestPropertyEvent:
-    """Test PropertyEvent type."""
+class TestAttributeEvent:
+    """Test AttributeEvent type."""
 
     def test_property_added(self):
         """Test property addition event."""
-        event = PropertyEvent(
+        event = AttributeEvent(
             timestamp=0,
-            property_label="prop-new",
+            attribute_label="attr-new",
             added_by_theorem="thm-creator",
-            event_type=PropertyEventType.ADDED,
+            event_type=AttributeEventType.ADDED,
         )
-        assert event.event_type == PropertyEventType.ADDED
+        assert event.event_type == AttributeEventType.ADDED
         assert event.added_by_theorem == "thm-creator"
 
     def test_property_refined(self):
         """Test property refinement event."""
-        event = PropertyEvent(
+        event = AttributeEvent(
             timestamp=1,
-            property_label="prop-existing",
+            attribute_label="attr-existing",
             added_by_theorem="thm-refiner",
-            event_type=PropertyEventType.REFINED,
+            event_type=AttributeEventType.REFINED,
         )
-        assert event.event_type == PropertyEventType.REFINED
+        assert event.event_type == AttributeEventType.REFINED
 
 
 class TestMathematicalObject:
@@ -204,22 +208,22 @@ class TestMathematicalObject:
             name="Smooth Function",
             mathematical_expression="f: X -> Y",
             object_type=ObjectType.FUNCTION,
-            current_properties=[
-                Property(
-                    label="prop-continuous",
+            current_attributes=[
+                Attribute(
+                    label="attr-continuous",
                     object_label="obj-function",
                     expression="f is continuous",
                     established_by="thm-regularity",
                 ),
-                Property(
-                    label="prop-bounded",
+                Attribute(
+                    label="attr-bounded",
                     object_label="obj-function",
                     expression="f is bounded",
                     established_by="thm-regularity",
                 ),
             ],
         )
-        assert len(obj.current_properties) == 2
+        assert len(obj.current_attributes) == 2
 
     def test_object_label_validation(self):
         """Test object label must start with obj-."""
@@ -276,8 +280,8 @@ class TestRelationship:
         assert r"\hookrightarrow" in rel.expression
 
     def test_relationship_with_properties(self):
-        """Test relationship with properties."""
-        rel_prop = RelationshipProperty(
+        """Test relationship with attributes."""
+        rel_attr = RelationshipAttribute(
             label="error-bound",
             expression="Error bounded by O(N^{-1/d})",
         )
@@ -289,10 +293,10 @@ class TestRelationship:
             bidirectional=False,
             established_by="thm-test",
             expression="A ≈ B",
-            properties=[rel_prop],
+            attributes=[rel_attr],
         )
-        assert len(rel.properties) == 1
-        assert "N^{-1/d}" in rel.properties[0].expression
+        assert len(rel.attributes) == 1
+        assert "N^{-1/d}" in rel.attributes[0].expression
 
 
 class TestAxiom:
@@ -357,7 +361,7 @@ class TestTheoremBox:
             name="Test Theorem",
             output_type=TheoremOutputType.PROPERTY,
             input_objects=["obj-a"],
-            properties_required={"obj-a": ["prop-1"]},
+            properties_required={"obj-a": ["attr-1"]},
         )
         assert theorem.label == "thm-test"
         assert theorem.output_type == TheoremOutputType.PROPERTY
@@ -424,14 +428,14 @@ class TestImmutability:
 
     def test_property_immutable(self):
         """Test Property is frozen."""
-        prop = Property(
-            label="prop-test",
+        prop = Attribute(
+            label="attr-test",
             object_label="obj-test",
             expression="Test",
             established_by="thm-test",
         )
         with pytest.raises(ValidationError):
-            prop.label = "prop-modified"
+            prop.label = "attr-modified"
 
     def test_object_immutable(self):
         """Test MathematicalObject is frozen."""

@@ -1,0 +1,52 @@
+{
+  "label": "thm-fitness-potential-mean-square-continuity",
+  "name": "Mean-Square Continuity of the Fitness Potential Operator",
+  "statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. Let $\\mathbf{V}_1$ and $\\mathbf{V}_2$ be the corresponding N-dimensional fitness potential vectors, generated from the full stochastic measurement and potential calculation pipeline. The Fitness Potential Operator is mean-square continuous. The expected squared Euclidean distance between the fitness potential vectors is bounded by a deterministic function of the input swarm states: $\\mathbb{E}[\\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2] \\le F_{\\text{pot}}(\\mathcal{S}_1, \\mathcal{S}_2)$ where the **Expected Squared Potential Error Bound**, $F_{\\text{pot}}$, is defined as: $F_{\\text{pot}}(\\mathcal{S}_1, \\mathcal{S}_2) := E_{\\text{unstable,ms}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + E_{\\text{stable,ms}}^2(\\mathcal{S}_1, \\mathcal{S}_2)$ and the two error components are the expected squared errors from the unstable and stable sets of walkers, respectively.",
+  "proof_sketch": "We decompose the total squared error $\\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2$ into contributions from two disjoint sets of walker indices: the unstable set $\\mathcal{A}_{\\text{unstable}} = \\mathcal{A}_1 \\Delta \\mathcal{A}_2$ and the stable set $\\mathcal{A}_{\\text{stable}} = \\mathcal{A}_1 \\cap \\mathcal{A}_2$. Because the sets are disjoint, the error vectors are orthogonal, and the total squared norm is the sum of the squared norms over each set. We take the expectation of both sides, and by linearity of expectation, the total expected squared error is the sum of the expected squared errors over these two partitions.",
+  "dependencies": [
+    "def-alive-set-potential-operator",
+    "def-swarm-potential-assembly-operator"
+  ],
+  "proof_dependencies": [
+    "sub-lem-potential-unstable-error-mean-square",
+    "sub-lem-potential-stable-error-mean-square"
+  ],
+  "has_full_proof": true,
+  "tags": [
+    "fitness-potential",
+    "mean-square-continuity",
+    "stochastic",
+    "operator"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "12.2.2",
+    "section_name": null,
+    "directive_label": "thm-fitness-potential-mean-square-continuity",
+    "equation": null,
+    "line_range": [
+      3788,
+      3815
+    ],
+    "url_fragment": null
+  },
+  "input_objects": [
+    "obj-raw-value-operator",
+    "def-swarm-potential-assembly-operator",
+    "obj-potential-bounds",
+    "obj-rescale-lipschitz-constants",
+    "def-alive-set-potential-operator"
+  ],
+  "input_axioms": [
+    "axiom-raw-value-mean-square-continuity"
+  ],
+  "input_parameters": [
+    "param-F-V-ms"
+  ],
+  "output_type": "Bound",
+  "relations_established": [
+    "Fitness potential operator is mean-square continuous"
+  ],
+  "statement_type": "theorem"
+}

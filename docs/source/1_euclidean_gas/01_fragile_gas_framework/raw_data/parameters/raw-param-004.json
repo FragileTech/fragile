@@ -1,0 +1,21 @@
+{
+  "temp_id": "raw-param-004",
+  "symbol": "N",
+  "meaning": "number of walkers in swarm",
+  "full_text": "a sophisticated composition of measurement, standardization, fitness evaluation, perturbation, status checking, and cloning operations that evolves a swarm of $N$ walkers from one discrete time step to the next",
+  "scope": "global",
+  "source_section": "§1-introduction",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "1",
+    "section_name": null,
+    "directive_label": null,
+    "equation": null,
+    "line_range": [
+      19,
+      19
+    ],
+    "url_fragment": null
+  }
+}

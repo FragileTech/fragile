@@ -1,0 +1,10 @@
+{
+  "label": "param-param-lambda-status",
+  "name": "param-lambda-status",
+  "symbol": "param-lambda-status",
+  "parameter_type": "real",
+  "constraints": null,
+  "default_value": null,
+  "chapter": null,
+  "document": null
+}

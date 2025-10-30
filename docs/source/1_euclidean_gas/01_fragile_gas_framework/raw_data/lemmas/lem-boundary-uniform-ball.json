@@ -1,0 +1,57 @@
+{
+  "label": "lem-boundary-uniform-ball",
+  "name": "Uniform-ball death probability is Lipschitz under finite perimeter",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "4.2.3",
+    "section_name": null,
+    "directive_label": "lem-boundary-uniform-ball",
+    "equation": null,
+    "line_range": [
+      1173,
+      1188
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-perturbation-measure",
+    "obj-algorithmic-space-generic",
+    "obj-boundary-regularity-constants",
+    "obj-alg-distance"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "lem-validation-uniform-ball",
+      "lem-boundary-uniform-ball"
+    ]
+  ],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Uniform ball death probability P_sigma(x) is Lipschitz continuous",
+    "Lipschitz bound: |P_sigma(x) - P_sigma(y)| <= C_d*Per(E)/sigma*d_X(x,y)"
+  ],
+  "natural_language_statement": "Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter (BV boundary) and let $\\mathcal P_\\sigma(x,\\cdot)$ be the uniform law on $B(x,\\sigma)$. Define $P_\\sigma(x) := \\mathcal P_\\sigma(x, E) = \\frac{1}{\\mathrm{Vol}(B_\\sigma)}\\int \\mathbb 1_E(y)\\,\\mathbb 1_{B_\\sigma}(y-x)\\,\\mathrm dy$. Then there exists a constant $C_d>0$ depending only on the dimension such that for all $x,y\\in\\mathcal X$, $|P_\\sigma(x)-P_\\sigma(y)| \\le C_d\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y)$.",
+  "assumptions": [
+    "$E=\\mathcal{X}_{\\mathrm{invalid}}$ has finite perimeter (BV boundary)",
+    "$\\mathcal P_\\sigma(x,\\cdot)$ is uniform law on $B(x,\\sigma)$"
+  ],
+  "conclusion": "$|P_\\sigma(x)-P_\\sigma(y)| \\le C_d\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y)$",
+  "equation_label": null,
+  "uses_definitions": [
+    "def-perturbation-measure"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

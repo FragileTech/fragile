@@ -1,0 +1,22 @@
+{
+  "label": "obj-cloning-probability-lipschitz-constants",
+  "name": "Cloning Probability Lipschitz Constants",
+  "mathematical_expression": "Collection of per-walker Lipschitz constants for cloning probability function and related structural/value continuity factors.",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "section_name": null,
+    "directive_label": "obj-cloning-probability-lipschitz-constants",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-cloning-probability-lipschitz-constants"
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-cloning-probability-lipschitz-constants"
+}

@@ -1,0 +1,31 @@
+{
+  "label": "def-perturbation-measure",
+  "term": "Perturbation Measure",
+  "formal_statement": null,
+  "applies_to_object_type": "measure",
+  "parameters": [],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "4.1",
+    "section_name": null,
+    "directive_label": "def-perturbation-measure",
+    "equation": null,
+    "line_range": [
+      1116,
+      1119
+    ],
+    "url_fragment": "#def-perturbation-measure"
+  },
+  "natural_language_description": "For a given noise scale $\\sigma > 0$, the **Perturbation Measure**, $\\mathcal{P}_\\sigma(x, \\cdot)$, is a **Valid Noise Measure** according to Definition 2.3. It governs the random walks during the perturbation step of the algorithm.",
+  "tags": [
+    "noise",
+    "perturbation",
+    "algorithmic",
+    "random-walk"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "validation_errors": [],
+  "raw_fallback": null
+}

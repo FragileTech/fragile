@@ -1,0 +1,19 @@
+{
+  "source_file": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+  "section": "Section 3 (lines 534-1097)",
+  "processing_stage": "raw_extraction",
+  "entities_extracted": {
+    "definitions": 2,
+    "theorems": 3,
+    "axioms": 16,
+    "proofs": 0,
+    "equations": 0,
+    "parameters": 0,
+    "remarks": 0,
+    "citations": 0
+  },
+  "total_entities": 21,
+  "extraction_time_seconds": 0,
+  "output_directory": "docs/source/1_euclidean_gas/01_fragile_gas_framework/raw_data",
+  "timestamp": "2025-10-27T21:39:39.913437"
+}

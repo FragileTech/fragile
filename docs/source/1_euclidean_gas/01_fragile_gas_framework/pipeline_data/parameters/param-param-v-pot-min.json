@@ -1,0 +1,8 @@
+{
+  "label": "param-param-v-pot-min",
+  "name": "param-v-pot-min",
+  "symbol": "param-v-pot-min",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

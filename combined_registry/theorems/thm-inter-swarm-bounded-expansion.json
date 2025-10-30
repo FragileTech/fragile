@@ -2,9 +2,17 @@
   "label": "thm-inter-swarm-bounded-expansion",
   "name": "Bounded Expansion of Inter-Swarm Wasserstein Distance",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning",
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "thm-inter-swarm-bounded-expansion",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-inter-swarm-bounded-expansion"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -19,12 +27,12 @@
     "L_clone",
     "C_jitter"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-cloning-operator-formal": [
-      "prop-lipschitz-continuity"
+      "attr-lipschitz-continuity"
     ],
     "obj-w2-output-metric": [
-      "prop-decomposition"
+      "attr-decomposition"
     ]
   },
   "internal_lemmas": [
@@ -44,7 +52,7 @@
     ]
   ],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-inter-swarm-bounded-expansion-0-approximation",
@@ -54,14 +62,29 @@
       "target_object": "obj-w2-output-metric",
       "established_by": "thm-inter-swarm-bounded-expansion",
       "expression": "rel-cloning-expands-vw-bounded",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "03_cloning"
+      "source": {
+        "document_id": "03_cloning",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+        "section": null,
+        "directive_label": "thm-inter-swarm-bounded-expansion",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-inter-swarm-bounded-expansion"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

@@ -4,5 +4,11 @@
   "mathematical_expression": "\\frac{1}{\\|x-y\\|} \\int_{0}^{\\|x-y\\|} \\big\\|\\nabla R_{\\mathrm{pos}}\\big(x + t\\tfrac{y-x}{\\|y-x\\|}\\big)\\big\\|^2 dt \\ge \\kappa_{\\mathrm{grad}}.",
   "foundational_framework": "Euclidean Gas",
   "chapter": "1_euclidean_gas",
-  "document": "root"
+  "document": "axioms",
+  "name": null,
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": null
 }

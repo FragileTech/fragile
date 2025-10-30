@@ -2,9 +2,17 @@
   "label": "thm-main-kl-convergence",
   "name": "Exponential KL-Convergence for the Euclidean Gas",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence",
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "thm-main-kl-convergence",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-main-kl-convergence"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -26,7 +34,7 @@
     "alpha",
     "C_HWI"
   ],
-  "properties_required": {
+  "attributes_required": {
     "noise-condition": [
       "δ > δ* = e^{-ατ/(2C_0)} · C_HWI √(2(1−κ_W)/κ_conf)"
     ],
@@ -50,7 +58,7 @@
     ]
   ],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-main-kl-convergence-0-approximation",
@@ -60,14 +68,22 @@
       "target_object": "obj-qsd",
       "established_by": "thm-main-kl-convergence",
       "expression": "D_KL(μ_t || π_QSD) ≤ e^{-t/C_LSI} · D_KL(μ_0 || π_QSD)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-main-kl-convergence",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-main-kl-convergence"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-main-kl-convergence-1-equivalence",
@@ -77,14 +93,22 @@
       "target_object": "obj-qsd",
       "established_by": "thm-main-kl-convergence",
       "expression": "C_LSI = O(1/(γ κ_conf κ_W δ²))",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-main-kl-convergence",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-main-kl-convergence"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-main-kl-convergence-2-other",
@@ -94,14 +118,29 @@
       "target_object": "obj-qsd",
       "established_by": "thm-main-kl-convergence",
       "expression": "Seesaw mechanism: kinetic dissipates entropy, cloning contracts W₂",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-main-kl-convergence",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-main-kl-convergence"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

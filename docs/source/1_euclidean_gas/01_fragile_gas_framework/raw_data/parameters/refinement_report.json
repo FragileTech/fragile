@@ -1,0 +1,172 @@
+{
+  "refinement_stage": "parameter_entities",
+  "timestamp": "2025-10-28T09:22:56.749638",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "section_name": null,
+    "directive_label": null,
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "statistics": {
+    "total_parameters_processed": 8,
+    "validation_success_rate": 1.0,
+    "parameters_by_type": {
+      "natural": 1,
+      "real": 6,
+      "symbolic": 1
+    }
+  },
+  "transformations_applied": [
+    {
+      "type": "label_normalization",
+      "description": "Converted all labels to lowercase to match ^param-[a-z0-9-]+$ pattern",
+      "examples": [
+        "param-F-V-ms → param-f-v-ms",
+        "param-L-R → param-l-r",
+        "param-L-phi → param-l-phi",
+        "param-N → param-n"
+      ]
+    },
+    {
+      "type": "schema_conformance",
+      "description": "Mapped RawParameter fields to Parameter schema",
+      "fields_mapped": [
+        "temp_id → label (normalized)",
+        "symbol → symbol (preserved)",
+        "meaning → name (descriptive)",
+        "full_text → constraints (extracted)",
+        "scope → chapter/document metadata"
+      ]
+    },
+    {
+      "type": "type_inference",
+      "description": "Inferred parameter_type from constraints and mathematical context",
+      "type_assignments": {
+        "natural": [
+          "param-n (N >= 1)"
+        ],
+        "real": [
+          "param-epsilon-std (ε_std >= 0)",
+          "param-kappa-revival (κ_revival > 0)",
+          "param-kappa-variance (κ²_variance >= 0)",
+          "param-l-phi (L_φ <= 1)",
+          "param-l-r (L_R >= 0)",
+          "param-p-worst-case (0 < p_worst-case <= 1)"
+        ],
+        "symbolic": [
+          "param-f-v-ms (function signature)"
+        ]
+      }
+    },
+    {
+      "type": "constraint_formalization",
+      "description": "Extracted and formalized mathematical constraints from raw text",
+      "latex_preservation": true
+    }
+  ],
+  "parameters": [
+    {
+      "label": "param-epsilon-std",
+      "name": "Standardization Error Parameter",
+      "symbol": "\\varepsilon_{\\text{std}}",
+      "parameter_type": "real",
+      "constraints": "\\varepsilon_{\\text{std}} \\ge 0",
+      "file": "param-epsilon-std.json"
+    },
+    {
+      "label": "param-f-v-ms",
+      "name": "Expected Squared Value Error Bound",
+      "symbol": "F_{V,ms}",
+      "parameter_type": "symbolic",
+      "constraints": "F_{V,ms}: \\Sigma_N \\times \\Sigma_N \\to \\mathbb{R}_+, must satisfy \\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "file": "param-f-v-ms.json"
+    },
+    {
+      "label": "param-kappa-revival",
+      "name": "Revival Guarantee Parameter",
+      "symbol": "\\kappa_{\\text{revival}}",
+      "parameter_type": "real",
+      "constraints": "\\kappa_{\\text{revival}} > 0",
+      "file": "param-kappa-revival.json"
+    },
+    {
+      "label": "param-kappa-variance",
+      "name": "Maximum Measurement Variance",
+      "symbol": "\\kappa^2_{\\text{variance}}",
+      "parameter_type": "real",
+      "constraints": "\\kappa^2_{\\text{variance}} \\ge 0",
+      "file": "param-kappa-variance.json"
+    },
+    {
+      "label": "param-l-phi",
+      "name": "Displacement Lipschitz Constant",
+      "symbol": "L_\\varphi",
+      "parameter_type": "real",
+      "constraints": "L_\\varphi \\le 1",
+      "file": "param-l-phi.json"
+    },
+    {
+      "label": "param-l-r",
+      "name": "Reward Lipschitz Constant",
+      "symbol": "L_R",
+      "parameter_type": "real",
+      "constraints": "L_R \\ge 0",
+      "file": "param-l-r.json"
+    },
+    {
+      "label": "param-n",
+      "name": "Number of Walkers",
+      "symbol": "N",
+      "parameter_type": "natural",
+      "constraints": "N \\ge 1",
+      "file": "param-n.json"
+    },
+    {
+      "label": "param-p-worst-case",
+      "name": "Worst-Case Probability Parameter",
+      "symbol": "p_{\\text{worst-case}}",
+      "parameter_type": "real",
+      "constraints": "0 < p_{\\text{worst-case}} \\le 1",
+      "file": "param-p-worst-case.json"
+    }
+  ],
+  "validation": {
+    "schema": "fragile.proofs.core.math_types.Parameter",
+    "all_passed": true,
+    "pattern_compliance": true,
+    "required_fields_present": true,
+    "type_enum_valid": true
+  },
+  "semantic_categorization": {
+    "axiomatic_parameters": [
+      "param-kappa-revival",
+      "param-kappa-variance",
+      "param-f-v-ms"
+    ],
+    "lipschitz_constants": [
+      "param-l-r",
+      "param-l-phi"
+    ],
+    "algorithm_configuration": [
+      "param-n"
+    ],
+    "error_bounds": [
+      "param-epsilon-std",
+      "param-p-worst-case"
+    ]
+  },
+  "raw_to_refined_mapping": {
+    "raw-param-001": "param-kappa-revival",
+    "raw-param-002": "param-l-r",
+    "raw-param-003": "param-p-worst-case",
+    "raw-param-004": "param-n",
+    "raw-param-005": "param-l-phi",
+    "raw-param-006": "param-epsilon-std",
+    "param-kappa-variance": "param-kappa-variance",
+    "param-F-V-ms": "param-f-v-ms"
+  }
+}

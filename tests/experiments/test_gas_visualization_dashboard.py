@@ -14,7 +14,7 @@ import torch
 
 from fragile.core.benchmarks import prepare_benchmark_for_explorer
 from fragile.experiments.gas_config_dashboard import GasConfig
-from fragile.experiments.gas_visualization_dashboard import GasVisualizer, create_app
+from fragile.experiments.gas_visualization_dashboard import create_app, GasVisualizer
 
 
 # Initialize extensions once for all tests
@@ -87,9 +87,7 @@ class TestGasVisualizerCallbacks:
         callback_execution_time = time.time() - start_time
 
         # Verify callback started quickly (should not block)
-        assert callback_started.wait(
-            timeout=1.0
-        ), "Callback didn't start within 1 second"
+        assert callback_started.wait(timeout=1.0), "Callback didn't start within 1 second"
 
         # Callback should complete synchronously in main thread part
         # (parameter setting), then spawn thread for heavy work
@@ -109,7 +107,7 @@ class TestGasVisualizerCallbacks:
 
     def test_button_state_after_simulation(self, test_potential):
         """Test that run button is re-enabled after simulation completes."""
-        potential, background, mode_points = test_potential
+        potential, _background, _mode_points = test_potential
 
         gas_config = GasConfig(potential=potential, dims=2)
         gas_config.N = 10
@@ -131,7 +129,7 @@ class TestGasVisualizerCallbacks:
 
     def test_callback_exception_handling(self, test_potential):
         """Test that exceptions in callbacks don't leave button frozen."""
-        potential, background, mode_points = test_potential
+        potential, _background, _mode_points = test_potential
 
         gas_config = GasConfig(potential=potential, dims=2)
         gas_config.N = 10
@@ -139,7 +137,8 @@ class TestGasVisualizerCallbacks:
 
         # Add a callback that raises an exception
         def failing_callback(history):
-            raise ValueError("Test exception")
+            msg = "Test exception"
+            raise ValueError(msg)
 
         gas_config.add_completion_callback(failing_callback)
 
@@ -156,7 +155,7 @@ class TestGasVisualizerCallbacks:
 
     def test_multiple_callbacks_execute(self, test_potential):
         """Test that multiple callbacks all execute."""
-        potential, background, mode_points = test_potential
+        potential, _background, _mode_points = test_potential
 
         gas_config = GasConfig(potential=potential, dims=2)
         gas_config.N = 10
@@ -286,9 +285,7 @@ class TestCreateAppIntegration:
 
         # Verify the heavy work ran in a different thread
         assert callback_thread_id[0] is not None, "Callback thread ID not recorded"
-        assert (
-            callback_thread_id[0] != main_thread_id
-        ), "Heavy work should run in separate thread"
+        assert callback_thread_id[0] != main_thread_id, "Heavy work should run in separate thread"
 
         # Verify visualizer was updated
         assert visualizer.history is not None
@@ -325,9 +322,7 @@ class TestProcessHistoryPerformance:
         elapsed_precomputed = time.time() - start
 
         # Verify precomputed data was available
-        assert (
-            history.fitness_hessians_diag is not None
-        ), "Expected precomputed Hessians"
+        assert history.fitness_hessians_diag is not None, "Expected precomputed Hessians"
 
         # Should complete in reasonable time
         assert (
@@ -361,9 +356,7 @@ class TestProcessHistoryPerformance:
         elapsed_strided = time.time() - start
 
         # Should complete faster due to fewer frames processed
-        assert (
-            elapsed_strided < 3.0
-        ), f"Strided processing took {elapsed_strided:.2f}s"
+        assert elapsed_strided < 3.0, f"Strided processing took {elapsed_strided:.2f}s"
 
         # Verify fewer frames were generated
         frame_count = len(visualizer.result["times"])

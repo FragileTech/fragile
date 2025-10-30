@@ -38,24 +38,11 @@ Maps to Lean:
 """
 
 # Stage 1: Extraction prompts
-from fragile.proofs.prompts.extraction import (
-    DEFINITION_ONLY_PROMPT,
-    EQUATION_ONLY_PROMPT,
-    MAIN_EXTRACTION_PROMPT,
-    THEOREM_ONLY_PROMPT,
-    get_extraction_prompt,
-    get_focused_extraction_prompt,
-)
-
 # Stage 2: Enrichment prompts
 from fragile.proofs.prompts.enrichment import (
     ANALYZE_PROOF_STRUCTURE_PROMPT,
     DECOMPOSE_THEOREM_PROMPT,
     EXTRACT_SYMPY_CONTEXT_PROMPT,
-    LINK_DEFINITION_TO_OBJECT_PROMPT,
-    LINK_EQUATION_TO_ENTITIES_PROMPT,
-    PARSE_LATEX_TO_DUAL_PROMPT,
-    RESOLVE_REFERENCE_PROMPT,
     get_analyze_proof_prompt,
     get_decompose_theorem_prompt,
     get_extract_sympy_context_prompt,
@@ -63,29 +50,42 @@ from fragile.proofs.prompts.enrichment import (
     get_link_equation_prompt,
     get_parse_latex_prompt,
     get_resolve_reference_prompt,
+    LINK_DEFINITION_TO_OBJECT_PROMPT,
+    LINK_EQUATION_TO_ENTITIES_PROMPT,
+    PARSE_LATEX_TO_DUAL_PROMPT,
+    RESOLVE_REFERENCE_PROMPT,
+)
+from fragile.proofs.prompts.extraction import (
+    DEFINITION_ONLY_PROMPT,
+    EQUATION_ONLY_PROMPT,
+    get_extraction_prompt,
+    get_focused_extraction_prompt,
+    MAIN_EXTRACTION_PROMPT,
+    THEOREM_ONLY_PROMPT,
 )
 
+
 __all__ = [
-    # Extraction prompts (Stage 1)
-    "MAIN_EXTRACTION_PROMPT",
-    "DEFINITION_ONLY_PROMPT",
-    "THEOREM_ONLY_PROMPT",
-    "EQUATION_ONLY_PROMPT",
-    "get_extraction_prompt",
-    "get_focused_extraction_prompt",
+    "ANALYZE_PROOF_STRUCTURE_PROMPT",
     # Enrichment prompts (Stage 2)
     "DECOMPOSE_THEOREM_PROMPT",
-    "PARSE_LATEX_TO_DUAL_PROMPT",
-    "ANALYZE_PROOF_STRUCTURE_PROMPT",
-    "RESOLVE_REFERENCE_PROMPT",
-    "LINK_DEFINITION_TO_OBJECT_PROMPT",
+    "DEFINITION_ONLY_PROMPT",
+    "EQUATION_ONLY_PROMPT",
     "EXTRACT_SYMPY_CONTEXT_PROMPT",
+    "LINK_DEFINITION_TO_OBJECT_PROMPT",
     "LINK_EQUATION_TO_ENTITIES_PROMPT",
-    "get_decompose_theorem_prompt",
-    "get_parse_latex_prompt",
+    # Extraction prompts (Stage 1)
+    "MAIN_EXTRACTION_PROMPT",
+    "PARSE_LATEX_TO_DUAL_PROMPT",
+    "RESOLVE_REFERENCE_PROMPT",
+    "THEOREM_ONLY_PROMPT",
     "get_analyze_proof_prompt",
-    "get_resolve_reference_prompt",
-    "get_link_definition_prompt",
+    "get_decompose_theorem_prompt",
     "get_extract_sympy_context_prompt",
+    "get_extraction_prompt",
+    "get_focused_extraction_prompt",
+    "get_link_definition_prompt",
     "get_link_equation_prompt",
+    "get_parse_latex_prompt",
+    "get_resolve_reference_prompt",
 ]

@@ -1,0 +1,29 @@
+{
+  "label": "obj-alg-distance",
+  "name": "Algorithmic Distance",
+  "mathematical_expression": "Algorithmic Distance",
+  "object_type": "function",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "distance",
+    "measure-theory",
+    "metric",
+    "particle-system"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "5.3",
+    "directive_label": "def-alg-distance",
+    "equation": null,
+    "line_range": [
+      1232,
+      1241
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": null
+}

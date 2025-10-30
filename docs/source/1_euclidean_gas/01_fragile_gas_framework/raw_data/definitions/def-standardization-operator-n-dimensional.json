@@ -1,0 +1,32 @@
+{
+  "label": "def-standardization-operator-n-dimensional",
+  "name": "N-Dimensional Standardization Operator",
+  "type": "definition",
+  "content": "The **N-Dimensional Standardization Operator**, denoted $z$, is a function that maps a swarm state $S$ to an N-dimensional vector, parameterized by a choice of a raw value operator and an aggregation operator.\n\n**Signature:** $z: \\Sigma_N \\times (\\text{Raw Value Operator}) \\times (\\text{Swarm Aggregation Operator}) \\to \\mathbb{R}^N$\n\n**Inputs:**\n- The current swarm state, $S_t$.\n- A **Raw Value Operator**, $V$ (per def-raw-value-operator).\n- A **Swarm Aggregation Operator**, $M$ (e.g., $R_{\\text{agg}}$ or $M_D$, per def-swarm-aggregation-operator-axiomatic).\n- All relevant implicit parameters ($\\varepsilon_{\\text{std}}$).\n\n**Operation:**\nThe operator computes the output vector $z = z(S_t, V, M)$ as follows:\n\n1. **Generate Raw Values:**\n   a. Let $\\mathcal{A}(S_t)$ be the set of alive walkers. Let $k = |\\mathcal{A}(S_t)|$. If $k=0$, return the zero vector and terminate.\n   b. Generate a single stochastic sample of the raw value vector by drawing $v \\sim V(S_t)$. Let $v_A$ be the k-dimensional sub-vector corresponding to the alive set.\n\n2. **Aggregate and Measure Statistics:**\n   a. Form the **Swarm Aggregation Measure**: $\\mu_v = M(S_t; v_A)$.\n   b. Measure the statistical properties $(\\mu_A, \\sigma'_A)$ from $\\mu_v$ (per Def. 11.1.2), using the provided $\\varepsilon_{\\text{std}}$ and the regularized standard deviation $\\sigma'_{\\text{reg}}$.\n\n3. **Standardize and Assemble N-Dimensional Vector:**\n   a. Initialize an N-dimensional zero vector, $z_{\\text{out}} \\leftarrow 0$.\n   b. For each walker $i \\in \\mathcal{A}(S_t)$:\n      - Compute its Z-score: $z_i := (v_i - \\mu_A) / \\sigma'_A$.\n      - Set the $i$-th component of the output vector: $z_{\\text{out}}[i] := z_i$.\n\n**Output:** The full N-dimensional standardized vector $z_{\\text{out}}$.",
+  "source_section": "12",
+  "source_document": "01_fragile_gas_framework.md",
+  "dependencies": [
+    "def-raw-value-operator",
+    "def-swarm-aggregation-operator-axiomatic",
+    "def-statistical-properties-measurement"
+  ],
+  "tags": [
+    "standardization",
+    "operator",
+    "z-score",
+    "normalization"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "12",
+    "section_name": null,
+    "directive_label": "def-standardization-operator-n-dimensional",
+    "equation": null,
+    "line_range": [
+      2763,
+      2786
+    ],
+    "url_fragment": "#def-standardization-operator-n-dimensional"
+  }
+}

@@ -6,12 +6,20 @@
   "target_object": "obj-fitness-landscape",
   "established_by": "lem-cluster-alignment",
   "expression": "⟨μ_x(I_1) - μ_x(J_1), x̄_1 - x̄_2⟩ ≥ c_align(ε) ||μ_x(I_1) - μ_x(J_1)|| · L",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "04_wasserstein_contraction"
+  "source": {
+    "document_id": "04_wasserstein_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+    "section": null,
+    "directive_label": "lem-cluster-alignment",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-cluster-alignment"
+  },
+  "chapter": null,
+  "document": null
 }

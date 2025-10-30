@@ -2,9 +2,17 @@
   "label": "thm-unfit-high-error-overlap-fraction",
   "name": "N-Uniform Lower Bound on the Unfit-High-Error Overlap Fraction",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning",
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "thm-unfit-high-error-overlap-fraction",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-unfit-high-error-overlap-fraction"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -23,9 +31,9 @@
     "epsilon",
     "f_UH"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-fitness-potential-operator": [
-      "prop-intelligent-targeting"
+      "attr-intelligent-targeting"
     ]
   },
   "internal_lemmas": [
@@ -34,7 +42,7 @@
     "lem-fitness-gap-high-low-error"
   ],
   "internal_propositions": [
-    "prop-stability-condition-consequences"
+    "attr-stability-condition-consequences"
   ],
   "lemma_dag_edges": [
     [
@@ -51,7 +59,7 @@
     ]
   ],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-unfit-high-error-overlap-fraction-0-other",
@@ -61,14 +69,29 @@
       "target_object": "obj-unified-high-low-error-sets",
       "established_by": "thm-unfit-high-error-overlap-fraction",
       "expression": "rel-targeting-correctness",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "03_cloning"
+      "source": {
+        "document_id": "03_cloning",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+        "section": null,
+        "directive_label": "thm-unfit-high-error-overlap-fraction",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-unfit-high-error-overlap-fraction"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

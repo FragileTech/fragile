@@ -6,12 +6,20 @@
   "target_object": "obj-barrier-function",
   "established_by": "thm-boundary-potential-contraction-kinetic",
   "expression": "confining-potential-provides-independent-boundary-safety",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "05_kinetic_contraction"
+  "source": {
+    "document_id": "05_kinetic_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+    "section": null,
+    "directive_label": "thm-boundary-potential-contraction-kinetic",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-boundary-potential-contraction-kinetic"
+  },
+  "chapter": null,
+  "document": null
 }

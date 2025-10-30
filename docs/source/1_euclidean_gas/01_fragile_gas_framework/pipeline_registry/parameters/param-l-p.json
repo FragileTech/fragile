@@ -1,0 +1,10 @@
+{
+  "label": "param-l-p",
+  "name": "L_P",
+  "symbol": "L_P",
+  "parameter_type": "real",
+  "constraints": null,
+  "default_value": null,
+  "chapter": null,
+  "document": null
+}

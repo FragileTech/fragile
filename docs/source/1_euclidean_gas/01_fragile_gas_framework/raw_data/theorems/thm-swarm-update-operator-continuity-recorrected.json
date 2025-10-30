@@ -1,0 +1,31 @@
+{
+  "label": "thm-swarm-update-operator-continuity-recorrected",
+  "name": "Continuity of the Swarm Update Operator",
+  "section": "18",
+  "subsection": "17.2.4",
+  "source_file": "01_fragile_gas_framework.md",
+  "source_lines": "4627-5086",
+  "extraction_date": "2025-10-27",
+  "status": "extracted",
+  "statement_type": "theorem",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "relations_established": [
+    "Swarm update operator is continuous in algorithmic distance metric"
+  ],
+  "output_type": "General Result",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "2.5.1",
+    "section_name": null,
+    "directive_label": "thm-swarm-update-operator-continuity-recorrected",
+    "equation": null,
+    "line_range": [
+      1051,
+      1064
+    ],
+    "url_fragment": null
+  }
+}

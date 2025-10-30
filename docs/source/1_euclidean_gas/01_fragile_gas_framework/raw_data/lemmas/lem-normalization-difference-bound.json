@@ -1,0 +1,45 @@
+{
+  "label": "lem-normalization-difference-bound",
+  "name": "Bound on the Error from Normalization Change",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "7.2.2",
+    "section_name": null,
+    "directive_label": "lem-normalization-difference-bound",
+    "equation": null,
+    "line_range": [
+      1560,
+      1569
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-companion-selection-measure"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Bound on error from normalization constant change in companion selection"
+  ],
+  "natural_language_statement": "Let $S_1$ and $S_2$ be two companion support sets, with $|S_1|, |S_2| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$.\nThe absolute difference between two sums over the *same* set $S_2$, but with different normalization constants, is bounded by the absolute difference in the set sizes.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [
+    "def-companion-selection-measure"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

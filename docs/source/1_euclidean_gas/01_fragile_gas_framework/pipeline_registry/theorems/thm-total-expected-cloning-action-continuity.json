@@ -1,0 +1,64 @@
+{
+  "label": "thm-total-expected-cloning-action-continuity",
+  "name": "Continuity of the Total Expected Cloning Action",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-distance-measurement-ms-constants",
+    "obj-cloning-probability-lipschitz-constants"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, with $k_1 = |\\mathcal{A}(\\mathcal{S}_1)| > 0$. The **Total Expected Cloning Action** is continuous with respect to the N-Particle Displacement Metric. For any walker $i$, the change in its total cloning probability is bounded:\n\n$$\n|\\overline{P}_{\\text{clone}}(\\mathcal{S}_1)_i - \\overline{P}_{\\text{clone}}(\\mathcal{S}_2)_i| \\le E_{\\text{struct}}^{(\\overline{P})}(\\mathcal{S}_1, \\mathcal{S}_2) + E_{\\text{val}}^{(\\overline{P})}(\\mathcal{S}_1, \\mathcal{S}_2)\n$$\n\nwhere the two error components are bounded in the subsequent lemmas.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": {
+    "label": "thm-total-expected-cloning-action-continuity",
+    "name": "Continuity of the Total Expected Cloning Action",
+    "statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, with $k_1 = |\\mathcal{A}(\\mathcal{S}_1)| > 0$. The **Total Expected Cloning Action** is continuous with respect to the N-Particle Displacement Metric. For any walker $i$, the change in its total cloning probability is bounded:\n\n$$\n|\\overline{P}_{\\text{clone}}(\\mathcal{S}_1)_i - \\overline{P}_{\\text{clone}}(\\mathcal{S}_2)_i| \\le E_{\\text{struct}}^{(\\overline{P})}(\\mathcal{S}_1, \\mathcal{S}_2) + E_{\\text{val}}^{(\\overline{P})}(\\mathcal{S}_1, \\mathcal{S}_2)\n$$\n\nwhere the two error components are bounded in the subsequent lemmas.",
+    "hypotheses": [
+      "Two swarm states $\\mathcal{S}_1, \\mathcal{S}_2$",
+      "$k_1 = |\\mathcal{A}(\\mathcal{S}_1)| > 0$"
+    ],
+    "conclusion": "Total expected cloning action is continuous function of swarm state",
+    "proof_technique": "Decomposition via intermediate term and triangle inequality",
+    "dependencies": [
+      "obj-total-expected-cloning-action",
+      "obj-expected-cloning-action"
+    ],
+    "tags": [
+      "cloning",
+      "continuity",
+      "expectation"
+    ],
+    "context": "Section 16: The Cloning Transition Measure, subsection 15.2.4",
+    "source_file": "01_fragile_gas_framework.md",
+    "line_number": 4372,
+    "extraction_date": "2025-10-27T21:45:04.113266",
+    "input_objects": [
+      "obj-distance-measurement-ms-constants",
+      "obj-cloning-probability-lipschitz-constants"
+    ],
+    "input_axioms": [],
+    "input_parameters": [],
+    "output_type": "Bound",
+    "relations_established": [
+      "Total expected cloning action is continuous"
+    ],
+    "statement_type": "theorem"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "label": "lem-single-walker-own-status-error",
+  "name": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "10.2.3",
+    "section_name": null,
+    "directive_label": "lem-single-walker-own-status-error",
+    "equation": null,
+    "line_range": [
+      2237,
+      2245
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "complete",
+  "input_objects": [
+    "obj-distance-measurement-ms-constants",
+    "def-status-update-operator"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    "Change in expected distance from walker's own status change bounded by D_Y"
+  ],
+  "natural_language_statement": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. For any walker $i$ whose survival status changes ($s_{1,i} \\neq s_{2,i}$), the absolute difference in its expected raw distance measurement is bounded by the diameter of the algorithmic space, $D_{\\mathcal{Y}}$.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

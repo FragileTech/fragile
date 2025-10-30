@@ -2,42 +2,38 @@
   "label": "lem-set-difference-bound",
   "name": "Bound on the Error from Companion Set Change",
   "statement_type": "lemma",
-  "source": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "lem-set-difference-bound",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-set-difference-bound"
+  },
   "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
-    "obj-alive-dead-sets",
-    "obj-reward-measurement"
+    "obj-companion-selection-measure"
   ],
   "input_axioms": [],
-  "input_parameters": [
-    "param-m-f"
-  ],
-  "properties_required": {
-    "obj-reward-measurement": [
-      "prop-bounded-real-valued"
-    ],
-    "obj-alive-dead-sets": [
-      "prop-non-empty"
-    ]
-  },
+  "input_parameters": [],
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [
-    {
-      "label": "prop-set-difference-error-bound",
-      "expression": "|\\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j| \\le M_f \\frac{|S_1 \\Delta S_2|}{|S_1|}",
-      "object_label": "obj-statistical-properties-measurement",
-      "established_by": "lem-set-difference-bound",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "Let $S_1$ and $S_2$ be two companion support sets, with $|S_1| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$ such that $|f_j| \\le M_f$ for all $j$.\nThe absolute difference between the sums over these two sets, normalized by the initial set size $|S_1|$, is bounded by the size of the symmetric difference between the sets, $|S_1 \\Delta S_2|$.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [
+    "def-companion-selection-measure"
   ],
-  "relations_established": []
+  "validation_errors": [],
+  "raw_fallback": null
 }

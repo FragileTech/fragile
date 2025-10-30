@@ -10,9 +10,9 @@ This module provides validation for the Parallel Axis Theorem, also known as
 Huygens-Steiner theorem or variance decomposition.
 """
 
-import pytest
-import sympy as sp
 import numpy as np
+import sympy as sp
+
 
 def test_parallel_axis_theorem():
     """
@@ -21,17 +21,17 @@ def test_parallel_axis_theorem():
     Identity 1: (1/N)Σ||v_i||² = (1/N)Σ||v_i - μ_v||² + ||μ_v||²
     Identity 2: Var(v) = (1/N)Σ||v_i||² - ||μ_v||²
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Running Validation: Parallel Axis Theorem")
-    print("="*60)
+    print("=" * 60)
 
     # --- Symbolic Verification ---
     print("\n--- 1. Symbolic Verification (using SymPy) ---")
 
-    N = sp.Symbol('N', integer=True, positive=True)
-    i = sp.Symbol('i', integer=True)
-    v_i_norm_sq = sp.IndexedBase('v_norm_sq')
-    mu_v_norm_sq = sp.Symbol('mu_v_norm_sq', real=True, positive=True)
+    N = sp.Symbol("N", integer=True, positive=True)
+    i = sp.Symbol("i", integer=True)
+    v_i_norm_sq = sp.IndexedBase("v_norm_sq")
+    mu_v_norm_sq = sp.Symbol("mu_v_norm_sq", real=True, positive=True)
 
     # Define sums
     sum_v_i_norm_sq = sp.Sum(v_i_norm_sq[i], (i, 1, N))
@@ -42,19 +42,20 @@ def test_parallel_axis_theorem():
 
     # Expanded variance term: (1/N) Σ ||v_i - μ_v||²
     # = (1/N) Σ (||v_i||² - 2(v_i · μ_v) + ||μ_v||²)
-    expanded_variance_term = (1/N) * sum_v_i_norm_sq - (2/N) * sum_dot_prod + (1/N) * sum_mu_v_norm_sq
+    expanded_variance_term = (
+        (1 / N) * sum_v_i_norm_sq - (2 / N) * sum_dot_prod + (1 / N) * sum_mu_v_norm_sq
+    )
 
     # RHS of Identity 1: variance + ||μ_v||²
     rhs_identity_1 = expanded_variance_term + mu_v_norm_sq
 
     # LHS of Identity 1
-    lhs_identity_1 = (1/N) * sum_v_i_norm_sq
+    lhs_identity_1 = (1 / N) * sum_v_i_norm_sq
 
     # Verify equality
     difference = sp.simplify(rhs_identity_1 - lhs_identity_1)
     assert difference == 0, (
-        f"Symbolic verification of Identity 1 failed!\n"
-        f"Difference: {difference}"
+        f"Symbolic verification of Identity 1 failed!\n" f"Difference: {difference}"
     )
     print("✓ Identity 1: (1/N)Σ||v_i||² = (1/N)Σ||v_i - μ_v||² + ||μ_v||²")
     print("✓ Identity 2: Var(v) = (1/N)Σ||v_i||² - ||μ_v||² (algebraic rearrangement)")
@@ -69,7 +70,7 @@ def test_parallel_axis_theorem():
 
     mu_v = np.mean(vectors, axis=0)
     mean_of_squares = np.mean(np.sum(vectors**2, axis=1))
-    variance = np.mean(np.sum((vectors - mu_v)**2, axis=1))
+    variance = np.mean(np.sum((vectors - mu_v) ** 2, axis=1))
     squared_mean = np.sum(mu_v**2)
 
     # Verify Identity 1
@@ -86,9 +87,10 @@ def test_parallel_axis_theorem():
     assert np.isclose(variance, rhs_identity_2_val)
     print(f"✓ Identity 2: {variance:.4f} ≈ {mean_of_squares:.4f} - {squared_mean:.4f}")
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("✓ Parallel Axis Theorem verified")
-    print("="*60)
+    print("=" * 60)
+
 
 if __name__ == "__main__":
     test_parallel_axis_theorem()

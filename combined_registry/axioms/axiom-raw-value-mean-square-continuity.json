@@ -4,5 +4,45 @@
   "mathematical_expression": "\\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
   "foundational_framework": "Euclidean Gas",
   "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of Mean-Square Continuity for Raw Values",
+  "core_assumption": null,
+  "parameters": [
+    {
+      "symbol": "V",
+      "description": "Raw Value Operator",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathcal{S}_1, \\mathcal{S}_2",
+      "description": "Two swarm states",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathbf{v}_1 \\sim V(\\mathcal{S}_1)",
+      "description": "Independently sampled raw value vector from state 1",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathbf{v}_2 \\sim V(\\mathcal{S}_2)",
+      "description": "Independently sampled raw value vector from state 2",
+      "constraints": null
+    },
+    {
+      "symbol": "F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)",
+      "description": "Expected Squared Value Error Bound - explicit, deterministic bounding function",
+      "constraints": "Must be provided by user for their chosen operator V"
+    }
+  ],
+  "condition": null,
+  "failure_mode_analysis": "If an operator violates this axiom, the expected error introduced at the measurement stage can be unbounded. This would lead to a breakdown of continuity in the standardization and cloning decisions, resulting in chaotic and unstable swarm behavior.",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-raw-value-mean-square-continuity",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
 }

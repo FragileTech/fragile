@@ -35,11 +35,9 @@ def test_parallel_axis_theorem_symbolic_equivalence():
     mu_v = sum_v / N
     sum_v_sq = sp.Sum(v[i] ** 2, (i, 1, N))
 
-    var_expr = (1 / N) * sp.Sum((v[i] - mu_v) ** 2, (i, 1, N))
+    (1 / N) * sp.Sum((v[i] - mu_v) ** 2, (i, 1, N))
     var_expanded = (
-        (1 / N) * sum_v_sq
-        - (2 * mu_v / N) * sum_v
-        + (1 / N) * sp.summation(mu_v**2, (i, 1, N))
+        (1 / N) * sum_v_sq - (2 * mu_v / N) * sum_v + (1 / N) * sp.summation(mu_v**2, (i, 1, N))
     )
     var_simplified = sp.simplify(var_expanded.subs(sum_v, N * mu_v))
     rhs2 = (1 / N) * sum_v_sq - mu_v**2
@@ -71,4 +69,3 @@ def test_parallel_axis_theorem_numeric_R3_N5():
     var_v = np.mean(np.sum((V - mu_v) ** 2, axis=1))
     rhs2 = np.mean(np.sum(V * V, axis=1)) - float(np.dot(mu_v, mu_v))
     np.testing.assert_allclose(var_v, rhs2, rtol=1e-12, atol=1e-12)
-

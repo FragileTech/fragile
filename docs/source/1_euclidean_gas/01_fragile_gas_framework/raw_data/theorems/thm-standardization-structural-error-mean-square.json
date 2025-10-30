@@ -1,0 +1,43 @@
+{
+  "label": "thm-standardization-structural-error-mean-square",
+  "name": "Bounding the Expected Squared Structural Error",
+  "statement": "The expected squared structural error is bounded deterministically by a function of the number of status changes, $n_c$.\n\n$$\nE_{S,ms}^2(\\mathcal{S}_1, \\mathcal{S}_2) \\le C_{S,\\text{direct}} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2\n$$\n\nwhere $C_{S,\\text{direct}}$ and $C_{S,\\text{indirect}}$ are the **Structural Error Coefficients**, deterministic constants derived from the axiomatic properties of the aggregation operator and the global parameters, as formally defined in def-lipschitz-structural-error-coefficients.",
+  "proof_sketch": "The proof combines the algebraic error decomposition with the deterministic bounds for each component. The direct error (from walkers changing status) is linear in $n_c$, while the indirect error (affecting stable walkers through changed statistics) is quadratic in $n_c$. Since the right-hand side is deterministic, taking the expectation yields the final result.",
+  "source_section": "12",
+  "source_document": "01_fragile_gas_framework.md",
+  "dependencies": [
+    "def-lipschitz-structural-error-coefficients",
+    "lem-stats-structural-continuity"
+  ],
+  "tags": [
+    "mean-square",
+    "continuity",
+    "structural-error",
+    "expectation"
+  ],
+  "input_objects": [
+    "obj-aggregator-lipschitz-constants",
+    "obj-standardization-total-value-error-coefficient",
+    "obj-swarm-aggregation-operator-axiomatic"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "output_type": "Bound",
+  "relations_established": [
+    "Structural error in standardization bounded in mean-square"
+  ],
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "12",
+    "section_name": null,
+    "directive_label": "thm-standardization-structural-error-mean-square",
+    "equation": null,
+    "line_range": [
+      3274,
+      3283
+    ],
+    "url_fragment": "#thm-standardization-structural-error-mean-square"
+  }
+}

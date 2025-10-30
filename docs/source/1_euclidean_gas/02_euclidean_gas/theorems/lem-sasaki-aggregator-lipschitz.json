@@ -3,124 +3,25 @@
   "name": "Lipschitz data for the Sasaki empirical aggregators",
   "statement_type": "lemma",
   "source": null,
-  "input_objects": [
-    "obj-swarm-state",
-    "obj-empirical-mean-aggregator",
-    "obj-empirical-second-moment-aggregator"
-  ],
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
   "input_axioms": [],
-  "input_parameters": [
-    "param-V-max",
-    "param-k",
-    "param-k-min",
-    "param-N",
-    "param-lambda-status"
-  ],
-  "attributes_required": {
-    "obj-empirical-mean-aggregator": [
-      "attr-value-continuity",
-      "attr-structural-continuity"
-    ],
-    "obj-empirical-second-moment-aggregator": [
-      "attr-value-continuity",
-      "attr-structural-continuity"
-    ]
-  },
-  "internal_lemmas": [
-    "lem-sasaki-aggregator-value",
-    "lem-sasaki-aggregator-structural"
-  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
   "internal_propositions": [],
-  "lemma_dag_edges": [
-    ["lem-sasaki-aggregator-value", "lem-sasaki-aggregator-lipschitz"],
-    ["lem-sasaki-aggregator-structural", "lem-sasaki-aggregator-lipschitz"]
-  ],
+  "lemma_dag_edges": [],
   "output_type": "Property",
-  "attributes_added": [
-    {
-      "label": "attr-lipschitz-mean-value",
-      "expression": "The empirical mean satisfies value Lipschitz continuity: $L_{\\mu,M}^{\\mathrm{Sasaki}}(k) = \\frac{1}{\\sqrt{k}}$",
-      "object_label": "obj-empirical-mean-aggregator",
-      "established_by": "lem-sasaki-aggregator-lipschitz",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "attr-lipschitz-second-moment-value",
-      "expression": "The empirical second moment satisfies value Lipschitz continuity: $L_{m_2,M}^{\\mathrm{Sasaki}}(k) = \\frac{2V_{\\max}}{\\sqrt{k}}$",
-      "object_label": "obj-empirical-second-moment-aggregator",
-      "established_by": "lem-sasaki-aggregator-lipschitz",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "attr-lipschitz-mean-structural",
-      "expression": "The empirical mean satisfies structural Lipschitz continuity: $L_{\\mu,S}^{\\mathrm{Sasaki}}(k_{\\min}) = \\frac{3V_{\\max}}{k_{\\min}}$",
-      "object_label": "obj-empirical-mean-aggregator",
-      "established_by": "lem-sasaki-aggregator-lipschitz",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "attr-lipschitz-second-moment-structural",
-      "expression": "The empirical second moment satisfies structural Lipschitz continuity: $L_{m_2,S}^{\\mathrm{Sasaki}}(k_{\\min}) = \\frac{3V_{\\max}^2}{k_{\\min}}$",
-      "object_label": "obj-empirical-second-moment-aggregator",
-      "established_by": "lem-sasaki-aggregator-lipschitz",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "attr-lipschitz-growth-exponents",
-      "expression": "The growth exponents satisfy: $p_{\\mu,S} = p_{m_2,S} = p_{\\mathrm{worst\\text{-}case}} = -1$",
-      "object_label": "obj-empirical-mean-aggregator",
-      "established_by": "lem-sasaki-aggregator-lipschitz",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "attr-aggregator-variance-constants",
-      "expression": "Consequently $\\kappa_{\\mathrm{var}}^{\\mathrm{Sasaki}} = \\kappa_{\\mathrm{range}}^{\\mathrm{Sasaki}} = 1$ as in the canonical framework",
-      "object_label": "obj-empirical-mean-aggregator",
-      "established_by": "lem-sasaki-aggregator-lipschitz",
-      "timestamp": null,
-      "can_be_refined": false,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": [
-    {
-      "label": "rel-aggregator-lipschitz-dispersion-equivalence",
-      "relationship_type": "equivalence",
-      "bidirectional": true,
-      "source_object": "obj-status-change-metric",
-      "target_object": "obj-sasaki-dispersion-metric",
-      "established_by": "lem-sasaki-aggregator-lipschitz",
-      "expression": "The status change count $n_c$ is bounded by the Sasaki dispersion metric: $n_c \\le (N/\\sqrt{\\lambda_{\\mathrm{status}}}) d_{\\mathrm{Disp},\\mathcal{Y}}^{\\mathrm{Sasaki}}(\\mathcal{S}_1, \\mathcal{S}_2)$",
-      "properties": [
-        {
-          "label": "dispersion-bound-constant",
-          "expression": "$N/\\sqrt{\\lambda_{\\mathrm{status}}}$",
-          "description": "Multiplicative constant relating status changes to Sasaki dispersion distance"
-        }
-      ],
-      "tags": [
-        "sasaki-geometry",
-        "dispersion-metric",
-        "aggregator-continuity"
-      ],
-      "timestamp": null,
-      "source": null
-    }
-  ]
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

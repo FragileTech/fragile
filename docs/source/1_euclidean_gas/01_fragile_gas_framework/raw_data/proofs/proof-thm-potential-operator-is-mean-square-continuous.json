@@ -1,0 +1,40 @@
+{
+  "label": "proof-thm-potential-operator-is-mean-square-continuous",
+  "proves": "thm-potential-operator-is-mean-square-continuous",
+  "type": "proof",
+  "proof_text": "This property is established by the detailed analysis in Section 12.2, culminating in **thm-fitness-potential-mean-square-continuity**. The explicit form of $F_{\\text{pot}}$ is constructed from the composition of the mean-square continuity bounds of all preceding operators.",
+  "proof_structure": [
+    "Reference Section 12.2 analysis",
+    "Cite culminating theorem",
+    "Note construction of explicit bound"
+  ],
+  "key_techniques": [
+    "reference to prior work",
+    "composition of bounds"
+  ],
+  "dependencies": [
+    "thm-fitness-potential-mean-square-continuity"
+  ],
+  "tags": [
+    "potential",
+    "mean-square",
+    "proof"
+  ],
+  "context": "Section 16: The Cloning Transition Measure, subsection 15.2.6",
+  "source_file": "01_fragile_gas_framework.md",
+  "line_number": 4415,
+  "extraction_date": "2025-10-27T21:50:09.741089",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "15.2.6",
+    "section_name": null,
+    "directive_label": "proof-thm-potential-operator-is-mean-square-continuous",
+    "equation": null,
+    "line_range": [
+      4425,
+      4429
+    ],
+    "url_fragment": null
+  }
+}

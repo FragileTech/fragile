@@ -1,0 +1,30 @@
+{
+  "label": "obj-alive-set-potential-operator",
+  "name": "Rescaled Potential Operator for the Alive Set",
+  "mathematical_expression": "The **Rescaled Potential Operator for the Alive Set**, denoted $V_{\\text{op},\\mathcal{A}}$, is a deterministic function that maps the raw reward and distance vectors of an alive set of size $k=|\\mathcal{A}_t|$ to a vector of fitness potentials for that same set.",
+  "object_type": "operator",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "fitness-potential",
+    "operator",
+    "standardization",
+    "cloning"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-alive-set-potential-operator",
+  "statement_type": "object",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "12.1",
+    "line_range": [
+      3687,
+      3721
+    ],
+    "directive_label": "obj-alive-set-potential-operator",
+    "equation": null,
+    "url_fragment": null
+  }
+}

@@ -1,35 +1,39 @@
 {
   "label": "thm-mcdiarmids-inequality",
-  "name": "McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron–Lugosi–Massart)",
+  "name": "McDiarmid's Inequality (Bounded Differences Inequality)",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§14",
+    "section_name": null,
+    "directive_label": null,
+    "equation": null,
+    "line_range": [
+      4014,
+      4028
+    ],
+    "url_fragment": null
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
-  "input_objects": [
-    "obj-walker"
-  ],
+  "input_objects": [],
   "input_axioms": [],
-  "input_parameters": [
-    "param-n"
-  ],
-  "properties_required": {},
+  "input_parameters": [],
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [
-    {
-      "label": "prop-concentration-inequality",
-      "expression": "P(f(X_1, \\dots, X_N) - \\mathbb{E}[f(X_1, \\dots, X_N)] \\ge t) \\le \\exp\\left(-\\frac{2t^2}{\\sum_{i=1}^N c_i^2}\\right)",
-      "object_label": "obj-fragile-gas-algorithm",
-      "established_by": "thm-mcdiarmids-inequality",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

@@ -6,12 +6,20 @@
   "target_object": "obj-swarm-and-state-space",
   "established_by": "thm-geometry-guarantees-variance",
   "expression": "high_variance_implies_measurement_signal",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning"
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "thm-geometry-guarantees-variance",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-geometry-guarantees-variance"
+  },
+  "chapter": null,
+  "document": null
 }

@@ -2,9 +2,17 @@
   "label": "thm-velocity-variance-contraction-kinetic",
   "name": "Velocity Variance Contraction Under Kinetic Operator",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "05_kinetic_contraction",
+  "source": {
+    "document_id": "05_kinetic_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+    "section": null,
+    "directive_label": "thm-velocity-variance-contraction-kinetic",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-velocity-variance-contraction-kinetic"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -21,7 +29,7 @@
     "d",
     "tau"
   ],
-  "properties_required": {
+  "attributes_required": {
     "langevin-sde": [
       "friction-term",
       "noise-term-bounded"
@@ -35,7 +43,7 @@
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-velocity-variance-contraction-kinetic-0-other",
@@ -45,14 +53,22 @@
       "target_object": "obj-velocity-variance-recall",
       "established_by": "thm-velocity-variance-contraction-kinetic",
       "expression": "friction-provides-direct-linear-contraction",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "05_kinetic_contraction"
+      "source": {
+        "document_id": "05_kinetic_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+        "section": null,
+        "directive_label": "thm-velocity-variance-contraction-kinetic",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-velocity-variance-contraction-kinetic"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-thm-velocity-variance-contraction-kinetic-1-other",
@@ -62,14 +78,29 @@
       "target_object": "obj-velocity-variance-recall",
       "established_by": "thm-velocity-variance-contraction-kinetic",
       "expression": "balances-cloning-velocity-expansion",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "05_kinetic_contraction"
+      "source": {
+        "document_id": "05_kinetic_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/05_kinetic_contraction.md",
+        "section": null,
+        "directive_label": "thm-velocity-variance-contraction-kinetic",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-velocity-variance-contraction-kinetic"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

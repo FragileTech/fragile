@@ -2,9 +2,17 @@
   "label": "lem-softmax-lipschitz-status",
   "name": "Lipschitz Continuity of Softmax-Weighted Companion Selection",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence",
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "lem-softmax-lipschitz-status",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-softmax-lipschitz-status"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -14,7 +22,7 @@
   "input_parameters": [
     "alpha"
   ],
-  "properties_required": {
+  "attributes_required": {
     "softmax": [
       "Softmax selection mechanism"
     ]
@@ -23,7 +31,7 @@
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-lem-softmax-lipschitz-status-0-other",
@@ -33,14 +41,29 @@
       "target_object": "obj-softmax-selection",
       "established_by": "lem-softmax-lipschitz-status",
       "expression": "Softmax is Lipschitz in fitness values",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "lem-softmax-lipschitz-status",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-softmax-lipschitz-status"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

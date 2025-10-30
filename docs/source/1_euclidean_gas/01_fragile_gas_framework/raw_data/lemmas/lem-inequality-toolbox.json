@@ -1,0 +1,41 @@
+{
+  "label": "lem-inequality-toolbox",
+  "name": "Inequality Toolbox",
+  "statement_type": "lemma",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17.2.4.0",
+    "section_name": null,
+    "directive_label": "lem-inequality-toolbox",
+    "equation": null,
+    "line_range": [
+      4798,
+      4845
+    ],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "General Result",
+  "attributes_added": [],
+  "relations_established": [
+    "Standard inequalities for bounding composite expressions"
+  ],
+  "natural_language_statement": "Collection of standard inequalities: Triangle inequality, Cauchy-Schwarz, Hölder, Jensen, subadditivity of fractional powers.",
+  "assumptions": [],
+  "conclusion": "",
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

@@ -2,9 +2,17 @@
   "label": "thm-unconditional-lsi",
   "name": "Unconditional LSI for Euclidean Gas (TARGET)",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence",
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "thm-unconditional-lsi",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-unconditional-lsi"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -17,7 +25,7 @@
     "gamma",
     "kappa_conf"
   ],
-  "properties_required": {
+  "attributes_required": {
     "no-cloning-assumption": [
       "LSI without cloning noise assumption"
     ]
@@ -28,7 +36,7 @@
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Property",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-thm-unconditional-lsi-0-other",
@@ -38,14 +46,29 @@
       "target_object": "obj-total-operator",
       "established_by": "thm-unconditional-lsi",
       "expression": "Kinetic LSI holds without cloning",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "09_kl_convergence"
+      "source": {
+        "document_id": "09_kl_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "section": null,
+        "directive_label": "thm-unconditional-lsi",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-unconditional-lsi"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

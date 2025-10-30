@@ -1,0 +1,14 @@
+{
+  "label": "axiom-well-behaved-rescale-function",
+  "statement": "Any function $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ chosen for the rescale transformation must satisfy the following properties: (1) C^1 Smoothness - continuously differentiable on $\\mathbb{R}$, (2) Monotonicity - $g'_A(z) \\ge 0$ for all $z \\in \\mathbb{R}$, (3) Uniform Boundedness - range is bounded $(0, g_{A,\\max}]$ for finite $g_{A,\\max} > 0$, (4) Global Lipschitz Continuity - $\\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty$.",
+  "mathematical_expression": "g'_A(z) \\ge 0 \\quad \\forall z \\in \\mathbb{R} \\text{ and } \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of a Well-Behaved Rescale Function",
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": null
+}

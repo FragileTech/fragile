@@ -1,0 +1,8 @@
+{
+  "label": "param-param-v-pot-max",
+  "name": "param-V-pot-max",
+  "symbol": "param-V-pot-max",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

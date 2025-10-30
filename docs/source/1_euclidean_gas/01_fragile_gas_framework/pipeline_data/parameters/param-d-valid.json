@@ -1,0 +1,8 @@
+{
+  "label": "param-d-valid",
+  "name": "D_valid",
+  "symbol": "D_valid",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

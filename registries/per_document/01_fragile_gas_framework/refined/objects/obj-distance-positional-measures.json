@@ -1,0 +1,28 @@
+{
+  "label": "obj-distance-positional-measures",
+  "name": "Distance Between Positional Measures",
+  "mathematical_expression": "d(\\varphi_* \\delta_{x_i}, \\varphi_* \\delta_{x_j}) := W_1(\\delta_{\\varphi(x_i)}, \\delta_{\\varphi(x_j)})",
+  "object_type": "measure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "distance",
+    "measure-theory",
+    "measures",
+    "metric",
+    "particle-system",
+    "positional"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-distance-positional-measures",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-distance-positional-measures"
+}

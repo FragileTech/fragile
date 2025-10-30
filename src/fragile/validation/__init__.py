@@ -4,5 +4,4 @@ Currently includes:
 - Parallel Axis Theorem (variance decomposition) symbolic verification.
 """
 
-from .variance import parallel_axis_theorem_symbolic  # noqa: F401
-
+from .variance import parallel_axis_theorem_symbolic

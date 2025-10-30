@@ -1,0 +1,53 @@
+{
+  "label": "cor-chain-rule-sigma-reg-var",
+  "name": "Chain-rule bound for σ'_reg ∘ Var",
+  "statement_type": "TheoremBox",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "9. Rescale Transformation",
+    "directive_label": "cor-chain-rule-sigma-reg-var",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  },
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "verified",
+  "input_objects": [
+    "obj-standardization-operator-n-dimensional"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "k",
+    "V_max"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    {
+      "source": "cor-chain-rule-sigma-reg-var",
+      "target": "lem-lipschitz-variance-functional"
+    },
+    {
+      "source": "cor-chain-rule-sigma-reg-var",
+      "target": "lem-sigma-patch-derivative-bound"
+    },
+    {
+      "source": "cor-chain-rule-sigma-reg-var",
+      "target": "lem-empirical-aggregator-properties"
+    }
+  ],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "The composite map of the regularized sigma derivative and the variance functional (σ'_reg ∘ Var) is Lipschitz, and its Lipschitz constant is bounded by the product of the Lipschitz constant of σ'_reg and a term depending on the Lipschitz constants of the mean and second moment aggregators.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": {}
+}

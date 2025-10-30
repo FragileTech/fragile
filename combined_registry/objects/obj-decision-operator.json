@@ -3,13 +3,22 @@
   "name": "The Cloning Decision Operator",
   "mathematical_expression": "P(c_i = j) = \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}(x_i, x_j)^2}{2\\epsilon_c^2}\\right)}{\\sum_{\\ell \\in \\mathcal{A}(S) \\setminus \\{i\\}} \\exp\\left(-\\frac{d_{\\text{alg}}(x_i, x_\\ell)^2}{2\\epsilon_c^2}\\right)} \\quad \\text{for } j \\in \\mathcal{A}(S) \\setminus \\{i\\}",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "particle",
     "swarm"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "03_cloning"
+  "source": {
+    "document_id": "03_cloning",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/03_cloning.md",
+    "section": null,
+    "directive_label": "obj-decision-operator",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-decision-operator"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

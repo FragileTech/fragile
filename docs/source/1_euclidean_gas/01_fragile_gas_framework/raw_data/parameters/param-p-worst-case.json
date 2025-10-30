@@ -1,0 +1,20 @@
+{
+  "label": "param-p-worst-case",
+  "name": "Worst-Case Probability Parameter",
+  "symbol": "p_{\\text{worst-case}}",
+  "parameter_type": "real",
+  "constraints": "0 < p_{\\text{worst-case}} \\le 1",
+  "default_value": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "section_name": null,
+    "directive_label": "param-p-worst-case",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

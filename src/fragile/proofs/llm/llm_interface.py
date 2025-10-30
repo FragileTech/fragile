@@ -20,8 +20,10 @@ Maps to Lean:
 
 import json
 import logging
+import os
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -45,7 +47,7 @@ def extract_json_from_markdown(llm_output: str) -> str:
         Clean JSON string
 
     Examples:
-        >>> output = "```json\\n{\"key\": \"value\"}\\n```"
+        >>> output = '```json\\n{"key": "value"}\\n```'
         >>> extract_json_from_markdown(output)
         '{"key": "value"}'
 
@@ -78,7 +80,7 @@ def extract_json_from_markdown(llm_output: str) -> str:
     return output
 
 
-def validate_llm_response(response: Dict[str, Any], schema_name: str) -> bool:
+def validate_llm_response(response: dict[str, Any], schema_name: str) -> bool:
     """
     Validate LLM response against expected schema.
 
@@ -95,10 +97,10 @@ def validate_llm_response(response: Dict[str, Any], schema_name: str) -> bool:
         True
     """
     from fragile.proofs.staging_types import (
-        StagingDocument,
         RawDefinition,
-        RawTheorem,
         RawProof,
+        RawTheorem,
+        StagingDocument,
     )
 
     schema_map = {
@@ -117,7 +119,7 @@ def validate_llm_response(response: Dict[str, Any], schema_name: str) -> bool:
     schema_class = schema_map[schema_name]
 
     # For generic types, just check type
-    if schema_class in (dict, list):
+    if schema_class in {dict, list}:
         return isinstance(response, schema_class)
 
     # For Pydantic models, validate with model_validate
@@ -162,8 +164,8 @@ def call_main_extraction_llm(
     section_id: str,
     prompt_template: str,
     model: str = "claude-sonnet-4",
-    **kwargs
-) -> Dict[str, Any]:
+    **kwargs,
+) -> dict[str, Any]:
     """
     Make Stage 1 extraction LLM call using Anthropic Claude API.
 
@@ -199,51 +201,66 @@ def call_main_extraction_llm(
         ...     section_text=section,
         ...     section_id="§2.1",
         ...     prompt_template=MAIN_EXTRACTION_PROMPT,
-        ...     temperature=0.0
+        ...     temperature=0.0,
         ... )
-        >>> result['section_id']
+        >>> result["section_id"]
         '§2.1'
     """
     try:
-        # NOTE: This is a STUB implementation that returns mock data
-        # In production, this should use the Anthropic API client:
-        #
-        # from anthropic import Anthropic
-        # client = Anthropic()
-        # message = client.messages.create(
-        #     model=model,
-        #     max_tokens=kwargs.get("max_tokens", 8192),
-        #     temperature=kwargs.get("temperature", 0.0),
-        #     messages=[{
-        #         "role": "user",
-        #         "content": prompt_template.format(
-        #             section_text=section_text,
-        #             section_id=section_id
-        #         )
-        #     }]
-        # )
-        # response_text = message.content[0].text
-        # json_str = extract_json_from_markdown(response_text)
-        # result = json.loads(json_str)
-        # if not validate_llm_response(result, "StagingDocument"):
-        #     raise ValueError("Response doesn't match StagingDocument schema")
-        # return result
+        # Check for API key
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
+        if not api_key:
+            logger.warning("ANTHROPIC_API_KEY not set, falling back to stub implementation")
+            return {
+                "section_id": section_id,
+                "definitions": [],
+                "theorems": [],
+                "proofs": [],
+                "axioms": [],
+                "citations": [],
+                "equations": [],
+                "parameters": [],
+                "remarks": [],
+            }
 
-        logger.info(f"[STUB] Calling main extraction LLM for section {section_id}")
-        logger.info(f"[STUB] Model: {model}, Section length: {len(section_text)} chars")
-        logger.info(f"[STUB] Estimated tokens: {estimate_tokens(section_text)}")
+        # Use Anthropic API
+        from anthropic import Anthropic
 
-        # Return mock StagingDocument
-        return {
-            "section_id": section_id,
-            "definitions": [],
-            "theorems": [],
-            "proofs": [],
-            "citations": [],
-            "equations": [],
-            "parameters": [],
-            "remarks": []
-        }
+        client = Anthropic(api_key=api_key)
+
+        # Format the prompt
+        full_prompt = prompt_template.format(section_text=section_text, section_id=section_id)
+
+        logger.info(f"Calling Anthropic API for section {section_id}")
+        logger.info(f"  Model: {model}")
+        logger.info(f"  Section length: {len(section_text)} chars")
+        logger.info(f"  Estimated tokens: {estimate_tokens(section_text)}")
+
+        # Make API call
+        message = client.messages.create(
+            model=model,
+            max_tokens=kwargs.get("max_tokens", 8192),
+            temperature=kwargs.get("temperature", 0.0),
+            messages=[{"role": "user", "content": full_prompt}],
+        )
+
+        # Extract response text
+        response_text = message.content[0].text
+
+        # Parse JSON from response
+        json_str = extract_json_from_markdown(response_text)
+        result = json.loads(json_str)
+
+        # Validate response
+        if not validate_llm_response(result, "StagingDocument"):
+            msg = "Response doesn't match StagingDocument schema"
+            raise ValueError(msg)
+
+        logger.info(f"  Extracted {len(result.get('definitions', []))} definitions")
+        logger.info(f"  Extracted {len(result.get('theorems', []))} theorems")
+        logger.info(f"  Extracted {len(result.get('axioms', []))} axioms")
+
+        return result
 
     except Exception as e:
         logger.error(f"LLM API call failed: {e}")
@@ -251,11 +268,8 @@ def call_main_extraction_llm(
 
 
 def call_semantic_parser_llm(
-    prompt: str,
-    expected_schema: Optional[str] = None,
-    model: str = "claude-sonnet-4",
-    **kwargs
-) -> Dict[str, Any]:
+    prompt: str, expected_schema: str | None = None, model: str = "claude-sonnet-4", **kwargs
+) -> dict[str, Any]:
     """
     Make Stage 2 enrichment LLM call using Anthropic Claude API.
 
@@ -292,37 +306,45 @@ def call_semantic_parser_llm(
         ...     theorem_statement="Let v > 0 and assume U is Lipschitz. Then..."
         ... )
         >>> result = call_semantic_parser_llm(prompt, expected_schema="dict")
-        >>> result['assumptions']
+        >>> result["assumptions"]
         ['Let v > 0', 'assume U is Lipschitz']
     """
     try:
-        # NOTE: This is a STUB implementation that returns mock data
-        # In production, this should use the Anthropic API client:
-        #
-        # from anthropic import Anthropic
-        # client = Anthropic()
-        # message = client.messages.create(
-        #     model=model,
-        #     max_tokens=kwargs.get("max_tokens", 4096),
-        #     temperature=kwargs.get("temperature", 0.2),
-        #     messages=[{
-        #         "role": "user",
-        #         "content": prompt
-        #     }]
-        # )
-        # response_text = message.content[0].text
-        # json_str = extract_json_from_markdown(response_text)
-        # result = json.loads(json_str)
-        # if expected_schema and not validate_llm_response(result, expected_schema):
-        #     raise ValueError(f"Response doesn't match {expected_schema} schema")
-        # return result
+        # Check for API key
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
+        if not api_key:
+            logger.warning("ANTHROPIC_API_KEY not set, falling back to stub implementation")
+            return {}
 
-        logger.info(f"[STUB] Calling semantic parser LLM")
-        logger.info(f"[STUB] Model: {model}, Expected schema: {expected_schema}")
-        logger.info(f"[STUB] Prompt length: {len(prompt)} chars")
+        # Use Anthropic API
+        from anthropic import Anthropic
 
-        # Return empty dict for now
-        return {}
+        client = Anthropic(api_key=api_key)
+
+        logger.info("Calling Anthropic API for semantic parsing")
+        logger.info(f"  Model: {model}")
+        logger.info(f"  Expected schema: {expected_schema}")
+
+        # Make API call
+        message = client.messages.create(
+            model=model,
+            max_tokens=kwargs.get("max_tokens", 4096),
+            temperature=kwargs.get("temperature", 0.2),
+            messages=[{"role": "user", "content": prompt}],
+        )
+
+        # Extract response text
+        response_text = message.content[0].text
+
+        # Parse JSON from response
+        json_str = extract_json_from_markdown(response_text)
+        result = json.loads(json_str)
+
+        # Validate if schema provided
+        if expected_schema and not validate_llm_response(result, expected_schema):
+            raise ValueError(f"Response doesn't match {expected_schema} schema")
+
+        return result
 
     except Exception as e:
         logger.error(f"LLM API call failed: {e}")
@@ -330,12 +352,12 @@ def call_semantic_parser_llm(
 
 
 def call_batch_extraction_llm(
-    sections: List[Dict[str, str]],
+    sections: list[dict[str, str]],
     prompt_template: str,
     model: str = "claude-sonnet-4",
     parallel: bool = True,
-    **kwargs
-) -> List[Dict[str, Any]]:
+    **kwargs,
+) -> list[dict[str, Any]]:
     """
     Make parallel batch extraction calls using Anthropic Claude API.
 
@@ -363,36 +385,19 @@ def call_batch_extraction_llm(
     Examples:
         >>> sections = [
         ...     {"section_id": "§1", "section_text": "# Introduction..."},
-        ...     {"section_id": "§2", "section_text": "# Main Results..."}
+        ...     {"section_id": "§2", "section_text": "# Main Results..."},
         ... ]
         >>> results = call_batch_extraction_llm(sections, prompt, parallel=True)
         >>> len(results)
         2
     """
     try:
-        # NOTE: This is a STUB implementation
-        # In production with parallel=True, use asyncio:
-        #
-        # import asyncio
-        # from anthropic import AsyncAnthropic
-        #
-        # async def process_section(section):
-        #     client = AsyncAnthropic()
-        #     message = await client.messages.create(...)
-        #     # ... process response ...
-        #     return result
-        #
-        # async def process_all():
-        #     tasks = [process_section(s) for s in sections]
-        #     return await asyncio.gather(*tasks)
-        #
-        # return asyncio.run(process_all())
+        logger.info("Calling batch extraction LLM")
+        logger.info(f"  Processing {len(sections)} sections")
+        logger.info(f"  Parallel mode: {parallel}")
 
-        logger.info(f"[STUB] Calling batch extraction LLM")
-        logger.info(f"[STUB] Processing {len(sections)} sections")
-        logger.info(f"[STUB] Parallel mode: {parallel}")
-
-        # Return list of mock results
+        # For now, process sequentially
+        # TODO: Implement async parallel processing with AsyncAnthropic
         results = []
         for section in sections:
             result = call_main_extraction_llm(
@@ -400,7 +405,7 @@ def call_batch_extraction_llm(
                 section_id=section["section_id"],
                 prompt_template=prompt_template,
                 model=model,
-                **kwargs
+                **kwargs,
             )
             results.append(result)
 
@@ -417,11 +422,8 @@ def call_batch_extraction_llm(
 
 
 def mock_main_extraction_llm(
-    section_text: str,
-    section_id: str,
-    prompt_template: str,
-    **kwargs
-) -> Dict[str, Any]:
+    section_text: str, section_id: str, prompt_template: str, **kwargs
+) -> dict[str, Any]:
     """
     Mock implementation for testing purposes only.
 
@@ -435,14 +437,15 @@ def mock_main_extraction_llm(
         "definitions": [],
         "theorems": [],
         "proofs": [],
+        "axioms": [],
         "citations": [],
         "equations": [],
         "parameters": [],
-        "remarks": []
+        "remarks": [],
     }
 
 
-def mock_semantic_parser_llm(prompt: str, **kwargs) -> Dict[str, Any]:
+def mock_semantic_parser_llm(prompt: str, **kwargs) -> dict[str, Any]:
     """
     Mock implementation for testing purposes only.
 
@@ -452,116 +455,3 @@ def mock_semantic_parser_llm(prompt: str, **kwargs) -> Dict[str, Any]:
     NOT FOR PRODUCTION USE.
     """
     return {}
-
-
-# =============================================================================
-# PRODUCTION-READY IMPLEMENTATION NOTES
-# =============================================================================
-
-"""
-To make this production-ready, replace the STUB implementations with actual
-Anthropic API calls:
-
-1. Install the Anthropic SDK:
-   ```bash
-   pip install anthropic
-   ```
-
-2. Set the API key as environment variable:
-   ```bash
-   export ANTHROPIC_API_KEY='your-api-key'
-   ```
-
-3. Replace the STUB code in call_main_extraction_llm:
-   ```python
-   from anthropic import Anthropic
-
-   client = Anthropic()
-   message = client.messages.create(
-       model=model,
-       max_tokens=kwargs.get("max_tokens", 8192),
-       temperature=kwargs.get("temperature", 0.0),
-       messages=[{
-           "role": "user",
-           "content": prompt_template.format(
-               section_text=section_text,
-               section_id=section_id
-           )
-       }]
-   )
-
-   response_text = message.content[0].text
-   json_str = extract_json_from_markdown(response_text)
-   result = json.loads(json_str)
-
-   if not validate_llm_response(result, "StagingDocument"):
-       raise ValueError("Response doesn't match StagingDocument schema")
-
-   return result
-   ```
-
-4. For parallel batch processing, use AsyncAnthropic:
-   ```python
-   import asyncio
-   from anthropic import AsyncAnthropic
-
-   async def process_section(section):
-       client = AsyncAnthropic()
-       message = await client.messages.create(
-           model=model,
-           max_tokens=8192,
-           temperature=0.0,
-           messages=[{
-               "role": "user",
-               "content": prompt_template.format(
-                   section_text=section["section_text"],
-                   section_id=section["section_id"]
-               )
-           }]
-       )
-       response_text = message.content[0].text
-       json_str = extract_json_from_markdown(response_text)
-       return json.loads(json_str)
-
-   async def process_all(sections):
-       tasks = [process_section(s) for s in sections]
-       return await asyncio.gather(*tasks)
-
-   results = asyncio.run(process_all(sections))
-   ```
-
-5. Add retry logic for transient failures:
-   ```python
-   from tenacity import retry, stop_after_attempt, wait_exponential
-
-   @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
-   def call_with_retry(client, **kwargs):
-       return client.messages.create(**kwargs)
-   ```
-
-6. Add rate limiting to respect API limits:
-   ```python
-   import time
-   from collections import deque
-
-   class RateLimiter:
-       def __init__(self, max_requests_per_minute=50):
-           self.max_requests = max_requests_per_minute
-           self.requests = deque()
-
-       def wait_if_needed(self):
-           now = time.time()
-           # Remove requests older than 1 minute
-           while self.requests and self.requests[0] < now - 60:
-               self.requests.popleft()
-           # Wait if at limit
-           if len(self.requests) >= self.max_requests:
-               sleep_time = 60 - (now - self.requests[0])
-               time.sleep(sleep_time)
-           self.requests.append(time.time())
-
-   rate_limiter = RateLimiter()
-   rate_limiter.wait_if_needed()
-   # ... make API call ...
-   ```
-"""

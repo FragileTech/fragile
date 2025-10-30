@@ -2,9 +2,17 @@
   "label": "lem-single-walker-structural-error",
   "name": "Bound on Single-Walker Error from Structural Change",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "lem-single-walker-structural-error",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-single-walker-structural-error"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -16,22 +24,18 @@
   ],
   "input_axioms": [],
   "input_parameters": [],
-  "properties_required": {},
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [
-    {
-      "label": "prop-single-walker-structural-error-bound",
-      "expression": "d_{err}(w_i, \\mathcal{S}_1, \\mathcal{S}_2) \\le C_{struct} \\cdot d_{struct}(\\mu_{i,1}, \\mu_{i,2})",
-      "object_label": "obj-walker",
-      "established_by": "lem-single-walker-structural-error",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

@@ -3,12 +3,21 @@
   "name": "Discrete Dirichlet Form",
   "mathematical_expression": "\\mathcal{E}_{\\Psi}(f, f) := \\mathbb{E}_\\pi[(f - \\Psi f)^2]",
   "object_type": "function",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
     "discrete"
   ],
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "09_kl_convergence"
+  "source": {
+    "document_id": "09_kl_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/09_kl_convergence.md",
+    "section": null,
+    "directive_label": "obj-discrete-dirichlet",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#obj-discrete-dirichlet"
+  },
+  "chapter": null,
+  "document": null,
+  "definition_label": null
 }

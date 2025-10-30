@@ -18,20 +18,21 @@ from pathlib import Path
 from typing import Callable
 
 import matplotlib
-matplotlib.use('Agg')  # Non-interactive backend
-import matplotlib.pyplot as plt
+
+
+matplotlib.use("Agg")  # Non-interactive backend
 import numpy as np
 import pandas as pd
 import torch
 from tqdm import tqdm
 
-from fragile.core.euclidean_gas import EuclideanGas
+from fragile.bounds import TorchBounds
 from fragile.core.cloning import CloneOperator
 from fragile.core.companion_selection import CompanionSelection
+from fragile.core.euclidean_gas import EuclideanGas
 from fragile.core.fitness import FitnessOperator
-from fragile.core.kinetic_operator import KineticOperator
 from fragile.core.history import RunHistory
-from fragile.bounds import TorchBounds
+from fragile.core.kinetic_operator import KineticOperator
 
 # Import utilities from qsd_variance.py
 from fragile.theory.qsd_variance import compute_hypocoercive_variance, estimate_edge_budget
@@ -51,8 +52,10 @@ def create_quadratic_potential(alpha: float = 0.1) -> Callable:
     Returns:
         Potential function U: R^d → R
     """
+
     def potential(x: torch.Tensor) -> torch.Tensor:
-        return 0.5 * alpha * (x ** 2).sum(dim=-1)
+        return 0.5 * alpha * (x**2).sum(dim=-1)
+
     return potential
 
 
@@ -76,8 +79,8 @@ def create_gaussian_mixture_potential(
         Potential function U: R^d → R
     """
     centers_tensor = torch.tensor(centers, dtype=torch.float32)  # [K, d]
-    depths_tensor = torch.tensor(depths, dtype=torch.float32)    # [K]
-    widths_tensor = torch.tensor(widths, dtype=torch.float32)    # [K]
+    depths_tensor = torch.tensor(depths, dtype=torch.float32)  # [K]
+    widths_tensor = torch.tensor(widths, dtype=torch.float32)  # [K]
 
     def potential(x: torch.Tensor) -> torch.Tensor:
         # x: [N, d] or [d]
@@ -87,7 +90,7 @@ def create_gaussian_mixture_potential(
         # Compute ||x - center_k||² for all centers
         # x: [N, d], centers: [K, d] → diff: [N, K, d]
         diff = x.unsqueeze(1) - centers_tensor.unsqueeze(0).to(x.device)
-        dist_sq = (diff ** 2).sum(dim=2)  # [N, K]
+        dist_sq = (diff**2).sum(dim=2)  # [N, K]
 
         # Gaussian well: -depth_k · exp(-dist²/(2·width²))
         wells = -depths_tensor.to(x.device) * torch.exp(
@@ -121,20 +124,19 @@ def create_rastrigin_potential(
     Returns:
         Potential function U: R^d → R
     """
+
     def potential(x: torch.Tensor) -> torch.Tensor:
         # x: [N, d] or [d]
         d = x.shape[-1]
 
         # Quadratic part: Σ x_i²
-        quadratic = (x ** 2).sum(dim=-1)  # [N] or scalar
+        quadratic = (x**2).sum(dim=-1)  # [N] or scalar
 
         # Periodic part: -Σ A·cos(ω·x_i)
         periodic = -(A * torch.cos(omega * x)).sum(dim=-1)  # [N] or scalar
 
         # Total: offset + A·d + Σ[x_i² - A·cos(ω·x_i)]
-        U = offset + A * d + quadratic + periodic
-
-        return U
+        return offset + A * d + quadratic + periodic
 
     return potential
 
@@ -217,9 +219,7 @@ def compute_variance_from_history(
 
     # Scaling exponent: log(N_close) / log(N)
     scaling_exponent = (
-        np.log(n_close_estimate) / np.log(N)
-        if N > 1 and n_close_estimate > 0
-        else 0.0
+        np.log(n_close_estimate) / np.log(N) if N > 1 and n_close_estimate > 0 else 0.0
     )
 
     return {
@@ -364,11 +364,11 @@ def run_parameter_sweep(
     d: int = 2,
     alpha_values: list[float] = [0.1, 0.5, 1.0, 3.0, 10.0],
     beta_values: list[float] = [0.1, 0.5, 1.0, 3.0, 10.0],
-    potential_configs: list[tuple[str, Callable]] = None,
+    potential_configs: list[tuple[str, Callable]] | None = None,
     n_steps_warmup: int = 3000,
     n_steps_sample: int = 500,
     record_every: int = 25,
-    output_dir: Path = None,
+    output_dir: Path | None = None,
 ) -> pd.DataFrame:
     """Run full parameter grid sweep.
 
@@ -410,21 +410,21 @@ def run_parameter_sweep(
         ]
 
     # Compute total experiments
-    n_experiments = (
-        len(N_values) * len(alpha_values) * len(beta_values) * len(potential_configs)
-    )
+    n_experiments = len(N_values) * len(alpha_values) * len(beta_values) * len(potential_configs)
 
-    print("="*70)
+    print("=" * 70)
     print("QSD Variance Parameter Sweep")
-    print("="*70)
+    print("=" * 70)
     print(f"Total experiments: {n_experiments}")
     print(f"  Potentials: {len(potential_configs)}")
     print(f"  N values: {N_values}")
     print(f"  Alpha values: {alpha_values}")
     print(f"  Beta values: {beta_values}")
-    print(f"  Grid: {len(alpha_values)} × {len(beta_values)} = {len(alpha_values) * len(beta_values)}")
+    print(
+        f"  Grid: {len(alpha_values)} × {len(beta_values)} = {len(alpha_values) * len(beta_values)}"
+    )
     print(f"\nEstimated runtime: ~{n_experiments * 2.5 / 60:.1f} hours")
-    print("="*70)
+    print("=" * 70)
 
     results = []
     experiment_id = 0
@@ -438,9 +438,7 @@ def run_parameter_sweep(
                         experiment_id += 1
 
                         # Update progress description
-                        pbar.set_description(
-                            f"{potential_name} N={N} α={alpha:.1f} β={beta:.1f}"
-                        )
+                        pbar.set_description(f"{potential_name} N={N} α={alpha:.1f} β={beta:.1f}")
 
                         # Run experiment
                         try:
@@ -509,9 +507,9 @@ def main():
     )
 
     # Print summary statistics
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("SUMMARY STATISTICS")
-    print("="*70)
+    print("=" * 70)
 
     for potential in results["potential"].unique():
         df_pot = results[results["potential"] == potential]
@@ -523,8 +521,10 @@ def main():
         # Find best (α, β) combination
         best_idx = df_pot["ratio_h_mean"].idxmax()
         best_row = df_pot.loc[best_idx]
-        print(f"  Best (α={best_row['alpha_fit']:.1f}, β={best_row['beta_fit']:.1f}): "
-              f"ratio={best_row['ratio_h_mean']:.4f}")
+        print(
+            f"  Best (α={best_row['alpha_fit']:.1f}, β={best_row['beta_fit']:.1f}): "
+            f"ratio={best_row['ratio_h_mean']:.4f}"
+        )
 
     # Check if any achieved high variance
     high_variance = results[results["ratio_h_mean"] >= 0.45]
@@ -536,7 +536,7 @@ def main():
         print("\n❌ NO HIGH VARIANCE (ratio < 0.45) in any configuration")
         print("→ O(N^{3/2}) edge budget likely UNPROVABLE")
 
-    print("="*70)
+    print("=" * 70)
 
     return results
 

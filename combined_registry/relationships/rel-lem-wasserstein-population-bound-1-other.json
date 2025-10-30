@@ -6,12 +6,20 @@
   "target_object": "obj-wasserstein-distance",
   "established_by": "lem-wasserstein-population-bound",
   "expression": "Bound valid for any cluster-respecting matching (not necessarily optimal)",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-string"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "04_wasserstein_contraction"
+  "source": {
+    "document_id": "04_wasserstein_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+    "section": null,
+    "directive_label": "lem-wasserstein-population-bound",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-wasserstein-population-bound"
+  },
+  "chapter": null,
+  "document": null
 }

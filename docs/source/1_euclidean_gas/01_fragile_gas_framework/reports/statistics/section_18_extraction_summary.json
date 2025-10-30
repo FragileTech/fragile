@@ -1,0 +1,128 @@
+{
+  "section": "18",
+  "section_title": "Swarm Update Operator: A Composition of Measures",
+  "source_file": "01_fragile_gas_framework.md",
+  "source_lines": "4627-5086",
+  "extraction_date": "2025-10-27",
+  "total_entities": 14,
+  "entities_by_type": {
+    "definition": 4,
+    "lemma": 5,
+    "theorem": 1,
+    "proof": 1,
+    "proposition": 3
+  },
+  "entities": [
+    {
+      "type": "definition",
+      "label": "def-swarm-update-procedure",
+      "name": "Swarm Update Procedure",
+      "section": "18",
+      "file": "def-swarm-update-procedure.json"
+    },
+    {
+      "type": "lemma",
+      "label": "lem-final-positional-displacement-bound",
+      "name": "Bounding the Final Positional Displacement (unconditional)",
+      "section": "18",
+      "subsection": "17.2.2",
+      "file": "lem-final-positional-displacement-bound.json"
+    },
+    {
+      "type": "definition",
+      "label": "def-final-status-change-coeffs",
+      "name": "Final Status Change Bound Coefficients",
+      "section": "18",
+      "subsection": "17.2.3.1",
+      "file": "def-final-status-change-coeffs.json"
+    },
+    {
+      "type": "lemma",
+      "label": "lem-final-status-change-bound",
+      "name": "Bounding the Expected Final Status Change",
+      "section": "18",
+      "subsection": "17.2.3.2",
+      "file": "lem-final-status-change-bound.json"
+    },
+    {
+      "type": "lemma",
+      "label": "lem-inequality-toolbox",
+      "name": "Inequality Toolbox",
+      "section": "18",
+      "subsection": "17.2.4.0",
+      "file": "lem-inequality-toolbox.json"
+    },
+    {
+      "type": "theorem",
+      "label": "thm-swarm-update-operator-continuity-recorrected",
+      "name": "Continuity of the Swarm Update Operator",
+      "section": "18",
+      "subsection": "17.2.4",
+      "file": "thm-swarm-update-operator-continuity-recorrected.json"
+    },
+    {
+      "type": "definition",
+      "label": "def-composite-continuity-coeffs-recorrected",
+      "name": "Composite Continuity Coefficients",
+      "section": "18",
+      "subsection": "17.2.4.1",
+      "file": "def-composite-continuity-coeffs-recorrected.json"
+    },
+    {
+      "type": "proof",
+      "label": "proof-composite-continuity-bound-recorrected",
+      "name": "Proof of the Composite Continuity Bound",
+      "section": "18",
+      "subsection": "17.2.4.2",
+      "file": "proof-composite-continuity-bound-recorrected.json"
+    },
+    {
+      "type": "lemma",
+      "label": "lem-subadditivity-power",
+      "name": "Subadditivity of Fractional Powers",
+      "section": "18",
+      "subsection": "17.2.4.2a",
+      "file": "lem-subadditivity-power.json"
+    },
+    {
+      "type": "lemma",
+      "label": "sub-lem-unify-holder-terms",
+      "name": "Unifying Multiple H\u00f6lder Terms (global, with case split)",
+      "section": "18",
+      "subsection": "17.2.4.3",
+      "file": "sub-lem-unify-holder-terms.json"
+    },
+    {
+      "type": "definition",
+      "label": "def-w2-output-metric",
+      "name": "Wasserstein-2 on the output space (quotient)",
+      "section": "18",
+      "subsection": "17.2.4.4",
+      "file": "def-w2-output-metric.json"
+    },
+    {
+      "type": "proposition",
+      "label": "prop-w2-bound-no-offset",
+      "name": "W2 continuity bound without offset (for k\u22652)",
+      "section": "18",
+      "subsection": "17.2.4.4",
+      "file": "prop-w2-bound-no-offset.json"
+    },
+    {
+      "type": "proposition",
+      "label": "prop-psi-markov-kernel",
+      "name": "The Swarm Update defines a Markov kernel",
+      "section": "18",
+      "subsection": "17.2.4.5",
+      "file": "prop-psi-markov-kernel.json"
+    },
+    {
+      "type": "proposition",
+      "label": "prop-coefficient-regularity",
+      "name": "Boundedness and continuity of composite coefficients",
+      "section": "18",
+      "subsection": "17.2.4.6",
+      "file": "prop-coefficient-regularity.json"
+    }
+  ]
+}

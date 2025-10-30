@@ -10,7 +10,8 @@ Validates the optimal choice of coupling parameter ε = 1/(2γ) in the
 velocity-weighted Lyapunov function for boundary potential contraction.
 """
 
-from sympy import symbols, simplify, Rational
+from sympy import Rational, simplify, symbols
+
 
 def test_optimal_epsilon_choice():
     """
@@ -26,7 +27,7 @@ def test_optimal_epsilon_choice():
     """
 
     # Define symbols
-    gamma, epsilon = symbols('gamma epsilon', positive=True)
+    gamma, _epsilon = symbols("gamma epsilon", positive=True)
 
     # Define the optimal choice
     epsilon_optimal = Rational(1, 2) / gamma
@@ -49,12 +50,13 @@ def test_optimal_epsilon_choice():
     )
 
     print("✓ Optimal epsilon choice verified:")
-    print(f"  ε = 1/(2γ)  ⟹  1 - ε·γ = 1/2")
+    print("  ε = 1/(2γ)  ⟹  1 - ε·γ = 1/2")
 
     # Additional verification: check that this balances transport term
     # The full expression in line 2340 becomes:
     # (1/2)⟨v_i, ∇φ_i⟩ + (1/2γ)⟨F(x_i), ∇φ_i⟩ + ...
     print("  This balances transport (v·∇φ) and friction (γ) contributions.")
+
 
 def test_epsilon_positive_definiteness_boundary():
     """
@@ -64,7 +66,7 @@ def test_epsilon_positive_definiteness_boundary():
     mathematical constraints.
     """
 
-    gamma = symbols('gamma', positive=True)
+    gamma = symbols("gamma", positive=True)
     epsilon = Rational(1, 2) / gamma
 
     # Check positivity
@@ -74,9 +76,10 @@ def test_epsilon_positive_definiteness_boundary():
     # For positive γ, ε = 1/(2γ) is always well-defined and positive
     print("✓ Positive definiteness: ε = 1/(2γ) > 0 for all γ > 0")
 
+
 if __name__ == "__main__":
     test_optimal_epsilon_choice()
     test_epsilon_positive_definiteness_boundary()
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("✓ All optimal parameter validations passed")
-    print("="*60)
+    print("=" * 60)

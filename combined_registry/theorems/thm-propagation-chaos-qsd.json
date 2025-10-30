@@ -2,9 +2,17 @@
   "label": "thm-propagation-chaos-qsd",
   "name": "Propagation of Chaos",
   "statement_type": "theorem",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "10_qsd_exchangeability_theory",
+  "source": {
+    "document_id": "10_qsd_exchangeability_theory",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/10_qsd_exchangeability_theory.md",
+    "section": null,
+    "directive_label": "thm-propagation-chaos-qsd",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-propagation-chaos-qsd"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -16,39 +24,25 @@
   "input_parameters": [
     "param-N"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-qsd": [
-      "prop-qsd-exists-unique"
+      "attr-qsd-exists-unique"
     ],
     "obj-single-particle-marginal": [
-      "prop-marginal-mixture-average"
+      "attr-marginal-mixture-average"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Convergence",
-  "properties_added": [
-    {
-      "label": "prop-weak-convergence-marginal",
-      "expression": "μ_N ⇒ μ_∞ as N → ∞",
-      "object_label": "obj-single-particle-marginal",
-      "established_by": "thm-propagation-chaos-qsd",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "prop-mean-field-stationary-uniqueness",
-      "expression": "μ_∞ is the unique stationary solution of ∂_t ρ = 𝓛[ρ] ρ",
-      "object_label": "obj-mean-field-phase-space",
-      "established_by": "thm-propagation-chaos-qsd",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

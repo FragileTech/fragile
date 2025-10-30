@@ -1,0 +1,31 @@
+{
+  "label": "obj-distance-to-cemetery-state",
+  "name": "Distance To Cemetery State",
+  "mathematical_expression": "W_p(\\nu, \\nu_{\\emptyset}) := D_{\\mathrm{valid}} \\quad \\text{and} \\quad W_p(\\nu_{\\emptyset}, \\nu_{\\emptyset}) := 0",
+  "object_type": "space",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [
+    "cemetery",
+    "distance",
+    "measure-theory",
+    "metric",
+    "particle-system",
+    "state"
+  ],
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-distance-to-cemetery-state",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "6.4",
+    "line_range": [
+      1463,
+      1463
+    ],
+    "directive_label": "obj-distance-to-cemetery-state",
+    "equation": null,
+    "url_fragment": null
+  }
+}

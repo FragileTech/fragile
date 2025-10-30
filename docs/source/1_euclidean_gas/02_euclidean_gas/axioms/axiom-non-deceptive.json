@@ -2,5 +2,13 @@
   "label": "axiom-non-deceptive",
   "statement": "Axiom of Non-Deceptive Landscapes",
   "mathematical_expression": "\\frac{1}{\\|x-y\\|} \\int_{0}^{\\|x-y\\|} \\big\\|\\nabla R_{\\mathrm{pos}}\\big(x + t\\tfrac{y-x}{\\|y-x\\|}\\big)\\big\\|^2 dt \\ge \\kappa_{\\mathrm{grad}}.",
-  "foundational_framework": "Euclidean Gas"
+  "foundational_framework": "Euclidean Gas",
+  "chapter": null,
+  "document": null,
+  "name": null,
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": null
 }

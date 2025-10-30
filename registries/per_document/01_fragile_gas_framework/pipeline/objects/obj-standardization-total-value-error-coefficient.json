@@ -1,0 +1,13 @@
+{
+  "label": "obj-standardization-total-value-error-coefficient",
+  "name": "Total Value Error Coefficient for Standardization",
+  "mathematical_expression": "Total Value Error Coefficient for Standardization",
+  "object_type": "structure",
+  "current_attributes": [],
+  "attribute_history": [],
+  "tags": [],
+  "source": null,
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "definition_label": null
+}

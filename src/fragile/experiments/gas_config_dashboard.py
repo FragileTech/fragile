@@ -13,8 +13,8 @@ visualized or analyzed separately.
 
 from __future__ import annotations
 
-import warnings
 from typing import Callable, Iterable
+import warnings
 
 import panel as pn
 import panel.widgets as pnw

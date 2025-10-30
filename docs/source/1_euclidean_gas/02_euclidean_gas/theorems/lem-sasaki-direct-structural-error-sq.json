@@ -2,195 +2,26 @@
   "label": "lem-sasaki-direct-structural-error-sq",
   "name": "Bound on the Squared Direct Structural Error",
   "statement_type": "lemma",
-  "source": {
-    "document_id": "02_euclidean_gas",
-    "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-    "section": "2.3.6.2",
-    "line_range": [1751, 1802]
-  },
-  "input_objects": [
-    "obj-sasaki-structural-coeffs-sq"
-  ],
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [],
   "input_axioms": [],
-  "input_parameters": [
-    "param-V-max-R",
-    "param-sigma-min-patch",
-    "param-N"
-  ],
+  "input_parameters": [],
   "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
-  "output_type": "Relation",
+  "output_type": "Property",
   "attributes_added": [],
-  "relations_established": [
-    {
-      "label": "rel-direct-structural-error-bound-approximation",
-      "relationship_type": "approximation",
-      "bidirectional": false,
-      "source_object": "obj-direct-structural-error-component",
-      "target_object": "obj-status-change-count",
-      "established_by": "lem-sasaki-direct-structural-error-sq",
-      "expression": "\\|\\Delta_{\\text{direct}}\\|_2^2 \\le \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2 \\cdot n_c(\\mathcal S_1, \\mathcal S_2)",
-      "properties": [
-        {
-          "label": "bound-coefficient",
-          "expression": "\\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2",
-          "description": "Squared direct structural error coefficient"
-        },
-        {
-          "label": "scaling-order",
-          "expression": "O(n_c)",
-          "description": "Linear scaling in number of status changes"
-        }
-      ],
-      "tags": ["structural-error", "direct-error", "sasaki-geometry", "error-bound"],
-      "timestamp": null,
-      "source": {
-        "document_id": "02_euclidean_gas",
-        "file_path": "docs/source/1_euclidean_gas/02_euclidean_gas.md",
-        "section": "2.3.6.2",
-        "line_range": [1751, 1802]
-      }
-    }
-  ],
-  "inputs": {
-    "swarm_states": [
-      {
-        "label": "S1",
-        "description": "First swarm state",
-        "type": "swarm-state",
-        "attributes_required": ["alive-set"]
-      },
-      {
-        "label": "S2",
-        "description": "Second swarm state",
-        "type": "swarm-state",
-        "attributes_required": ["alive-set"]
-      }
-    ],
-    "raw_vectors": [
-      {
-        "label": "r2",
-        "description": "Fixed raw value vector with components bounded by V_max^(R)",
-        "type": "vector",
-        "dimension": "k (number of alive walkers)",
-        "bound": "V_{\\max}^{(R)}"
-      }
-    ],
-    "error_components": [
-      {
-        "label": "Delta_direct",
-        "description": "Direct structural error component (non-zero for walkers changing status)",
-        "type": "error-vector",
-        "support": "A_unstable = A(S1) triangle A(S2)"
-      }
-    ],
-    "parameters": [
-      {
-        "label": "param-V-max-R",
-        "symbol": "V_{\\max}^{(R)}",
-        "description": "Maximum bound on raw reward values",
-        "type": "real",
-        "constraints": "> 0"
-      },
-      {
-        "label": "param-sigma-min-patch",
-        "symbol": "\\sigma_{\\min,\\mathrm{patch}}",
-        "description": "Uniform lower bound on regularized standard deviation",
-        "type": "real",
-        "expression": "\\sqrt{\\kappa_{\\mathrm{var,min}}+\\varepsilon_{\\mathrm{std}}^2}",
-        "constraints": "> 0"
-      },
-      {
-        "label": "param-N",
-        "symbol": "N",
-        "description": "Total number of walkers",
-        "type": "natural",
-        "constraints": ">= 1"
-      },
-      {
-        "label": "param-n-c",
-        "symbol": "n_c(\\mathcal S_1, \\mathcal S_2)",
-        "description": "Number of status changes between swarms",
-        "type": "natural",
-        "expression": "|A(\\mathcal S_1) \\triangle A(\\mathcal S_2)|",
-        "constraints": ">= 0, <= N"
-      }
-    ]
-  },
-  "outputs": {
-    "bound_established": {
-      "label": "squared-direct-structural-error-bound",
-      "description": "Upper bound on squared L2-norm of direct structural error component",
-      "expression": "\\|\\Delta_{\\text{direct}}\\|_2^2 \\le \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2 \\cdot n_c(\\mathcal S_1, \\mathcal S_2)",
-      "scaling": "Linear in n_c (number of status changes)",
-      "coefficient": {
-        "label": "C_{S,\\mathrm{direct}}^{\\mathrm{sq}}",
-        "expression": "\\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2",
-        "reference": "obj-sasaki-structural-coeffs-sq"
-      }
-    }
-  },
-  "dependencies": {
-    "theorems_used": [
-      "thm-z-score-norm-bound"
-    ],
-    "lemmas_used": [],
-    "definitions_used": [
-      "def-sasaki-structural-coeffs-sq"
-    ]
-  },
-  "proof_sketch": {
-    "strategy": "Bound squared error for each unstable walker using universal z-score bound, then sum over all status changes",
-    "steps": [
-      {
-        "step": 1,
-        "description": "Isolate the sum over unstable walkers",
-        "expression": "\\|\\Delta_{\\text{direct}}\\|_2^2 = \\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} (z_{1,i} - z_{2,i})^2",
-        "note": "Unstable set has exactly n_c walkers"
-      },
-      {
-        "step": 2,
-        "description": "Bound error for single unstable walker",
-        "cases": [
-          {
-            "case": "A",
-            "condition": "Walker alive in S1, dead in S2",
-            "result": "z_{2,i} = 0, error = (z_{1,i})^2"
-          },
-          {
-            "case": "B",
-            "condition": "Walker dead in S1, alive in S2",
-            "result": "z_{1,i} = 0, error = (z_{2,i})^2"
-          }
-        ],
-        "conclusion": "Squared error is square of single standardized score"
-      },
-      {
-        "step": 3,
-        "description": "Apply universal z-score bound",
-        "theorem": "thm-z-score-norm-bound",
-        "bound": "|z_j| \\le 2V_{\\max}^{(R)} / \\sigma_{\\min,\\mathrm{patch}}",
-        "squared": "(z_{1,i} - z_{2,i})^2 \\le \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2"
-      },
-      {
-        "step": 4,
-        "description": "Sum uniform bound over all unstable walkers",
-        "expression": "\\|\\Delta_{\\text{direct}}\\|_2^2 \\le \\sum_{i=1}^{n_c} \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2 = n_c \\cdot \\left( \\frac{2V_{\\max}^{(R)}}{\\sigma_{\\min,\\mathrm{patch}}} \\right)^2"
-      }
-    ]
-  },
-  "mathematical_context": {
-    "geometric_setting": "Sasaki metric on position-velocity space",
-    "error_decomposition": "Direct error (status changes) + Indirect error (stable walkers)",
-    "orthogonality": "Direct and indirect components have disjoint support",
-    "application": "Bounds structural continuity of standardization operator"
-  },
-  "notes": [
-    "This lemma establishes the linear (in n_c) component of the total structural error bound",
-    "Combined with lem-sasaki-indirect-structural-error-sq (quadratic in n_c) to prove thm-sasaki-standardization-structural-sq",
-    "The factor of 2 in the coefficient comes from the worst-case z-score bound",
-    "Direct error only affects walkers whose status changes between swarms"
-  ]
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

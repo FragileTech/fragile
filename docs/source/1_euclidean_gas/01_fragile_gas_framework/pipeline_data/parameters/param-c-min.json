@@ -1,0 +1,8 @@
+{
+  "label": "param-c-min",
+  "name": "c_min",
+  "symbol": "c_min",
+  "parameter_type": "real",
+  "domain": null,
+  "constraints": null
+}

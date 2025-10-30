@@ -1,0 +1,134 @@
+{
+  "extraction_metadata": {
+    "source_file": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "10. Abstract Raw Value Measurement",
+    "subsections": [
+      "9.1 The Raw Value Operator",
+      "9.2 Axiom of Mean-Square Continuity for Raw Values",
+      "9.3 Proving Mean-Square Continuity"
+    ],
+    "line_range": [2097, 2139],
+    "extraction_date": "2025-10-27",
+    "total_lines": 43
+  },
+  "entities_extracted": {
+    "definitions": {
+      "count": 1,
+      "items": [
+        {
+          "label": "def-raw-value-operator",
+          "name": "Raw Value Operator",
+          "file": "definitions/def-raw-value-operator.json"
+        }
+      ]
+    },
+    "axioms": {
+      "count": 2,
+      "items": [
+        {
+          "label": "axiom-raw-value-mean-square-continuity",
+          "name": "Axiom of Mean-Square Continuity for Raw Values",
+          "file": "axioms/axiom-raw-value-mean-square-continuity.json"
+        },
+        {
+          "label": "axiom-bounded-measurement-variance",
+          "name": "Axiom of Bounded Measurement Variance",
+          "file": "axioms/axiom-bounded-measurement-variance.json"
+        }
+      ]
+    },
+    "parameters": {
+      "count": 2,
+      "items": [
+        {
+          "label": "param-F-V-ms",
+          "symbol": "F_{V,ms}",
+          "name": "Expected Squared Value Error Bound",
+          "file": "parameters/param-F-V-ms.json"
+        },
+        {
+          "label": "param-kappa-variance",
+          "symbol": "\\kappa^2_{\\text{variance}}",
+          "name": "Maximum Measurement Variance",
+          "file": "parameters/param-kappa-variance.json"
+        }
+      ]
+    },
+    "theorems": {
+      "count": 0,
+      "items": []
+    },
+    "lemmas": {
+      "count": 0,
+      "items": []
+    },
+    "propositions": {
+      "count": 0,
+      "items": []
+    },
+    "proofs": {
+      "count": 0,
+      "items": []
+    },
+    "equations": {
+      "count": 0,
+      "items": []
+    },
+    "remarks": {
+      "count": 0,
+      "items": []
+    }
+  },
+  "summary": {
+    "total_entities": 5,
+    "entity_breakdown": {
+      "definitions": 1,
+      "axioms": 2,
+      "parameters": 2,
+      "theorems": 0,
+      "lemmas": 0,
+      "propositions": 0,
+      "proofs": 0,
+      "equations": 0,
+      "remarks": 0
+    },
+    "files_created": [
+      "definitions/def-raw-value-operator.json",
+      "axioms/axiom-raw-value-mean-square-continuity.json",
+      "axioms/axiom-bounded-measurement-variance.json",
+      "parameters/param-F-V-ms.json",
+      "parameters/param-kappa-variance.json"
+    ],
+    "files_updated": [
+      "axioms/axiom-raw-value-mean-square-continuity.json",
+      "axioms/axiom-bounded-measurement-variance.json"
+    ]
+  },
+  "key_concepts": [
+    "Raw Value Operator - abstract framework for measurement",
+    "Mean-square continuity - stability requirement",
+    "Bounded variance - stochastic error control",
+    "Expected squared error bound - deterministic upper bound",
+    "Measurement pipeline - standardization precursor"
+  ],
+  "relations": {
+    "definition_to_axioms": {
+      "def-raw-value-operator": [
+        "axiom-raw-value-mean-square-continuity",
+        "axiom-bounded-measurement-variance"
+      ]
+    },
+    "axioms_introduce_parameters": {
+      "axiom-raw-value-mean-square-continuity": ["F_{V,ms}"],
+      "axiom-bounded-measurement-variance": ["\\kappa^2_{\\text{variance}}"]
+    },
+    "continuity_chain": [
+      "axiom-bounded-measurement-variance",
+      "axiom-raw-value-mean-square-continuity",
+      "thm-standardization-value-error-mean-square",
+      "thm-global-continuity-patched-standardization",
+      "thm-expected-cloning-action-continuity"
+    ]
+  },
+  "notes": "Section 10 establishes the foundational abstraction for the measurement pipeline. It defines the Raw Value Operator as a generic framework that encompasses both deterministic (reward) and stochastic (distance-to-companion) measurements. Two axioms establish the requirements for mean-square continuity: one requiring bounded expected squared error, the other requiring bounded variance. These axioms are cornerstone requirements whose bounding functions propagate through all subsequent continuity proofs in the framework."
+}

@@ -1,0 +1,49 @@
+{
+  "label": "prop-w2-bound-no-offset",
+  "name": "W2 continuity bound without offset (for k≥2)",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "17.2.4.4",
+    "directive_label": "prop-w2-bound-no-offset",
+    "equation": null,
+    "line_range": [
+      4992,
+      5023
+    ],
+    "url_fragment": null
+  },
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm-update-procedure",
+    "obj-w2-output-metric",
+    "obj-alg-distance"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "sub-lem-unify-holder-terms"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    [
+      "sub-lem-unify-holder-terms",
+      "prop-w2-bound-no-offset"
+    ]
+  ],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

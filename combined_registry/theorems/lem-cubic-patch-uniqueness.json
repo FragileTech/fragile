@@ -2,9 +2,17 @@
   "label": "lem-cubic-patch-uniqueness",
   "name": "Existence and Uniqueness of the Smooth Rescale Patch",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "lem-cubic-patch-uniqueness",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-cubic-patch-uniqueness"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -15,36 +23,22 @@
     "param-z-max",
     "param-z"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-asymmetric-rescale-function": [
-      "prop-c1-boundary-conditions"
+      "attr-c1-boundary-conditions"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Existence",
-  "properties_added": [
-    {
-      "label": "prop-existence-cubic-patch",
-      "expression": "\\exists P(z)",
-      "object_label": "obj-asymmetric-rescale-function",
-      "established_by": "lem-cubic-patch-uniqueness",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    },
-    {
-      "label": "prop-uniqueness-cubic-patch",
-      "expression": "\\exists! P(z)",
-      "object_label": "obj-asymmetric-rescale-function",
-      "established_by": "lem-cubic-patch-uniqueness",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

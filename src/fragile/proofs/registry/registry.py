@@ -16,30 +16,29 @@ Version: 2.0.0
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Set, Type, TypeVar, Union
+from typing import Any, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 
 from fragile.proofs.core.pipeline_types import (
+    Attribute,
     Axiom,
     MathematicalObject,
     Parameter,
-    Attribute,
     Relationship,
     TheoremBox,
 )
 from fragile.proofs.registry.reference_system import (
     CombinedTagQuery,
+    extract_id_from_label,
+    extract_tags_from_object,
     QueryResult,
     Reference,
     ResolvedReference,
-    ResolutionContext,
     TagQuery,
     UnresolvedReference,
-    create_reference_resolved,
-    extract_id_from_label,
-    extract_tags_from_object,
 )
+
 
 # TypeVar for generic registry operations
 T = TypeVar("T", bound=BaseModel)
@@ -68,9 +67,9 @@ class RegistryIndex(BaseModel):
 
     model_config = ConfigDict(frozen=False)  # Mutable for updates
 
-    id_to_object: Dict[str, Any] = {}
-    tag_to_ids: Dict[str, Set[str]] = {}
-    type_to_ids: Dict[str, Set[str]] = {}
+    id_to_object: dict[str, Any] = {}
+    tag_to_ids: dict[str, set[str]] = {}
+    type_to_ids: dict[str, set[str]] = {}
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -124,12 +123,12 @@ class MathematicalRegistry:
         self._index = RegistryIndex()
 
         # Separate collections by type
-        self._objects: Dict[str, MathematicalObject] = {}
-        self._axioms: Dict[str, Axiom] = {}
-        self._parameters: Dict[str, Parameter] = {}
-        self._properties: Dict[str, Attribute] = {}
-        self._relationships: Dict[str, Relationship] = {}
-        self._theorems: Dict[str, TheoremBox] = {}
+        self._objects: dict[str, MathematicalObject] = {}
+        self._axioms: dict[str, Axiom] = {}
+        self._parameters: dict[str, Parameter] = {}
+        self._properties: dict[str, Attribute] = {}
+        self._relationships: dict[str, Relationship] = {}
+        self._theorems: dict[str, TheoremBox] = {}
 
     # =========================================================================
     # BASIC OPERATIONS
@@ -197,7 +196,7 @@ class MathematicalRegistry:
                 self._index.tag_to_ids[tag] = set()
             self._index.tag_to_ids[tag].add(id)
 
-    def add_all(self, objects: List[Any]) -> None:
+    def add_all(self, objects: list[Any]) -> None:
         """
         Add multiple objects to registry.
 
@@ -208,7 +207,7 @@ class MathematicalRegistry:
         for obj in objects:
             self.add(obj)
 
-    def get(self, id: str) -> Optional[Any]:
+    def get(self, id: str) -> Any | None:
         """
         Get object by ID.
 
@@ -220,27 +219,27 @@ class MathematicalRegistry:
         """
         return self._index.id_to_object.get(id)
 
-    def get_object(self, id: str) -> Optional[MathematicalObject]:
+    def get_object(self, id: str) -> MathematicalObject | None:
         """Get mathematical object by ID."""
         return self._objects.get(id)
 
-    def get_axiom(self, id: str) -> Optional[Axiom]:
+    def get_axiom(self, id: str) -> Axiom | None:
         """Get axiom by ID."""
         return self._axioms.get(id)
 
-    def get_parameter(self, id: str) -> Optional[Parameter]:
+    def get_parameter(self, id: str) -> Parameter | None:
         """Get parameter by ID."""
         return self._parameters.get(id)
 
-    def get_attribute(self, id: str) -> Optional[Attribute]:
+    def get_attribute(self, id: str) -> Attribute | None:
         """Get property by ID."""
         return self._properties.get(id)
 
-    def get_relationship(self, id: str) -> Optional[Relationship]:
+    def get_relationship(self, id: str) -> Relationship | None:
         """Get relationship by ID."""
         return self._relationships.get(id)
 
-    def get_theorem(self, id: str) -> Optional[TheoremBox]:
+    def get_theorem(self, id: str) -> TheoremBox | None:
         """Get theorem by ID."""
         return self._theorems.get(id)
 
@@ -307,7 +306,7 @@ class MathematicalRegistry:
               r.index.id_to_object.values.filter (fun obj =>
                 query.matches (extract_tags obj))
         """
-        matching_ids: Set[str] = set()
+        matching_ids: set[str] = set()
 
         if query.mode == "any":
             # Union of all tag sets
@@ -334,7 +333,7 @@ class MathematicalRegistry:
         elif query.mode == "none":
             # All objects minus those with any of the tags
             all_ids = set(self._index.id_to_object.keys())
-            excluded_ids: Set[str] = set()
+            excluded_ids: set[str] = set()
             for tag in query.tags:
                 if tag in self._index.tag_to_ids:
                     excluded_ids.update(self._index.tag_to_ids[tag])
@@ -355,7 +354,7 @@ class MathematicalRegistry:
                 query.matches (extract_tags obj))
         """
         matches = []
-        for id, obj in self._index.id_to_object.items():
+        for obj in self._index.id_to_object.values():
             tags = extract_tags_from_object(obj)
             if query.matches(tags):
                 matches.append(obj)
@@ -383,27 +382,27 @@ class MathematicalRegistry:
 
         return QueryResult(matches=matches, total_count=len(matches))
 
-    def get_all_objects(self) -> List[MathematicalObject]:
+    def get_all_objects(self) -> list[MathematicalObject]:
         """Get all mathematical objects."""
         return list(self._objects.values())
 
-    def get_all_axioms(self) -> List[Axiom]:
+    def get_all_axioms(self) -> list[Axiom]:
         """Get all axioms."""
         return list(self._axioms.values())
 
-    def get_all_parameters(self) -> List[Parameter]:
+    def get_all_parameters(self) -> list[Parameter]:
         """Get all parameters."""
         return list(self._parameters.values())
 
-    def get_all_properties(self) -> List[Attribute]:
+    def get_all_properties(self) -> list[Attribute]:
         """Get all properties."""
         return list(self._properties.values())
 
-    def get_all_relationships(self) -> List[Relationship]:
+    def get_all_relationships(self) -> list[Relationship]:
         """Get all relationships."""
         return list(self._relationships.values())
 
-    def get_all_theorems(self) -> List[TheoremBox]:
+    def get_all_theorems(self) -> list[TheoremBox]:
         """Get all theorems."""
         return list(self._theorems.values())
 
@@ -411,7 +410,7 @@ class MathematicalRegistry:
     # RELATIONSHIP QUERIES
     # =========================================================================
 
-    def get_related_objects(self, object_id: str) -> List[str]:
+    def get_related_objects(self, object_id: str) -> list[str]:
         """
         Get all objects related to the given object.
 
@@ -434,7 +433,7 @@ class MathematicalRegistry:
 
         return related
 
-    def get_relationships_for_object(self, object_id: str) -> List[Relationship]:
+    def get_relationships_for_object(self, object_id: str) -> list[Relationship]:
         """
         Get all relationships involving the given object.
 
@@ -444,11 +443,12 @@ class MathematicalRegistry:
                 .filter (fun rel => rel.source_object == obj_id || rel.target_object == obj_id)
         """
         return [
-            rel for rel in self._relationships.values()
-            if rel.source_object == object_id or rel.target_object == object_id
+            rel
+            for rel in self._relationships.values()
+            if object_id in {rel.source_object, rel.target_object}
         ]
 
-    def get_relationships_by_type(self, relationship_type: str) -> List[Relationship]:
+    def get_relationships_by_type(self, relationship_type: str) -> list[Relationship]:
         """
         Get all relationships of a specific type.
 
@@ -456,7 +456,8 @@ class MathematicalRegistry:
             relationship_type: Type name (e.g., "equivalence", "embedding")
         """
         return [
-            rel for rel in self._relationships.values()
+            rel
+            for rel in self._relationships.values()
             if rel.relationship_type.value == relationship_type
         ]
 
@@ -464,7 +465,7 @@ class MathematicalRegistry:
     # REFERENCE RESOLUTION
     # =========================================================================
 
-    def resolve_reference(self, ref: Reference[T]) -> Optional[T]:
+    def resolve_reference(self, ref: Reference[T]) -> T | None:
         """
         Resolve a reference to its full object.
 
@@ -484,7 +485,7 @@ class MathematicalRegistry:
 
         return None
 
-    def resolve_references(self, refs: List[Reference[T]]) -> List[Optional[T]]:
+    def resolve_references(self, refs: list[Reference[T]]) -> list[T | None]:
         """
         Resolve multiple references.
 
@@ -502,7 +503,7 @@ class MathematicalRegistry:
         """Get total number of objects in registry."""
         return len(self._index.id_to_object)
 
-    def count_by_type(self) -> Dict[str, int]:
+    def count_by_type(self) -> dict[str, int]:
         """Get counts by type."""
         return {
             "MathematicalObject": len(self._objects),
@@ -513,11 +514,11 @@ class MathematicalRegistry:
             "TheoremBox": len(self._theorems),
         }
 
-    def get_all_tags(self) -> Set[str]:
+    def get_all_tags(self) -> set[str]:
         """Get set of all tags used in registry."""
         return set(self._index.tag_to_ids.keys())
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get registry statistics."""
         return {
             "total_objects": self.count_total(),
@@ -530,7 +531,7 @@ class MathematicalRegistry:
     # VALIDATION
     # =========================================================================
 
-    def validate_referential_integrity(self) -> List[str]:
+    def validate_referential_integrity(self) -> list[str]:
         """
         Validate that all referenced IDs exist.
 
@@ -562,14 +563,20 @@ class MathematicalRegistry:
         # Check properties
         for prop in self._properties.values():
             if not self.contains(prop.object_label):
-                missing.append(f"Attribute {prop.label} references missing object: {prop.object_label}")
+                missing.append(
+                    f"Attribute {prop.label} references missing object: {prop.object_label}"
+                )
 
         # Check relationships
         for rel in self._relationships.values():
             if not self.contains(rel.source_object):
-                missing.append(f"Relationship {rel.label} references missing source: {rel.source_object}")
+                missing.append(
+                    f"Relationship {rel.label} references missing source: {rel.source_object}"
+                )
             if not self.contains(rel.target_object):
-                missing.append(f"Relationship {rel.label} references missing target: {rel.target_object}")
+                missing.append(
+                    f"Relationship {rel.label} references missing target: {rel.target_object}"
+                )
 
         return missing
 

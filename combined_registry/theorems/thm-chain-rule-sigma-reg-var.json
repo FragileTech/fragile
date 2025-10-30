@@ -1,0 +1,90 @@
+{
+  "label": "thm-chain-rule-sigma-reg-var",
+  "name": "Chain‑rule bound for σ'_reg ∘ Var",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "thm-chain-rule-sigma-reg-var",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-chain-rule-sigma-reg-var"
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-rescale-lipschitz-constants",
+    "obj-potential-bounds",
+    "obj-aggregator-lipschitz-constants"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [
+    {
+      "label": "rel-thm-chain-rule-sigma-reg-var-0-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-rescale-lipschitz-constants",
+      "target_object": "obj-potential-bounds",
+      "established_by": "thm-chain-rule-sigma-reg-var",
+      "expression": "Provides Lipschitz bound for composite map sigma'_reg o Var",
+      "attributes": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": null,
+        "directive_label": "thm-chain-rule-sigma-reg-var",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-chain-rule-sigma-reg-var"
+      },
+      "chapter": null,
+      "document": null
+    },
+    {
+      "label": "rel-thm-chain-rule-sigma-reg-var-1-approximation",
+      "relationship_type": "approximation",
+      "bidirectional": false,
+      "source_object": "obj-rescale-lipschitz-constants",
+      "target_object": "obj-potential-bounds",
+      "established_by": "thm-chain-rule-sigma-reg-var",
+      "expression": "Chain rule bound: L_{sigma'_reg o Var} <= L_{sigma'_reg}(L_{m2,M} + 2V_max*L_{mu,M})",
+      "attributes": [],
+      "tags": [
+        "inferred-from-string"
+      ],
+      "timestamp": null,
+      "source": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "section": null,
+        "directive_label": "thm-chain-rule-sigma-reg-var",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#thm-chain-rule-sigma-reg-var"
+      },
+      "chapter": null,
+      "document": null
+    }
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

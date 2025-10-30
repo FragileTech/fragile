@@ -9,9 +9,9 @@ Generated from: math_schema.json v1.0.0
 """
 
 from datetime import date, datetime
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Literal, Union
 
-from pydantic import BaseModel, Field, constr, field_validator
+from pydantic import BaseModel, constr, Field
 
 
 # ==================== Basic Types ====================
@@ -199,14 +199,14 @@ class CrossReference(BaseModel):
 
     label: Label = Field(..., description="Label of the referenced item")
     type: DirectiveType = Field(..., description="Type of the referenced mathematical object")
-    role: Optional[ReferenceRole] = Field(
+    role: ReferenceRole | None = Field(
         None, description="How this reference is used in the current context"
     )
-    description: Optional[str] = Field(
+    description: str | None = Field(
         None,
         description="Brief explanation of how this reference is used (e.g., 'provides the bound on variance')",
     )
-    location: Optional[str] = Field(
+    location: str | None = Field(
         None,
         description="Where in the current item this reference is used (e.g., 'Step 2.3', 'Part 1', 'Equation (5)')",
     )
@@ -217,9 +217,7 @@ class PropertyConstant(BaseModel):
 
     symbol: str = Field(..., description="Mathematical symbol (e.g., 'κ_x', 'C_bound')")
     value: str = Field(..., description="Explicit value or bound expression")
-    dependencies: Optional[List[str]] = Field(
-        None, description="Parameters this constant depends on"
-    )
+    dependencies: list[str] | None = Field(None, description="Parameters this constant depends on")
 
 
 class MathematicalProperty(BaseModel):
@@ -230,13 +228,13 @@ class MathematicalProperty(BaseModel):
         description="Name of the property (e.g., 'N-uniform stability', 'Exponential convergence', 'Lipschitz continuity')",
     )
     statement: MathExpression = Field(..., description="Mathematical statement of the property")
-    quantitative: Optional[bool] = Field(
+    quantitative: bool | None = Field(
         None, description="Whether this property includes explicit constants/bounds"
     )
-    constants: Optional[Dict[str, PropertyConstant]] = Field(
+    constants: dict[str, PropertyConstant] | None = Field(
         None, description="Explicit constants appearing in this property"
     )
-    scope: Optional[str] = Field(
+    scope: str | None = Field(
         None,
         description="Scope or regime where this property holds (e.g., 'for large N', 'in the high-friction limit')",
     )
@@ -247,13 +245,13 @@ class MathematicalAssumption(BaseModel):
 
     statement: MathExpression = Field(..., description="Mathematical statement of the assumption")
     type: AssumptionType = Field(..., description="Category of the assumption")
-    label: Optional[str] = Field(
+    label: str | None = Field(
         None, description="Optional label for referencing this specific assumption"
     )
-    justification: Optional[str] = Field(
+    justification: str | None = Field(
         None, description="Why this assumption is necessary or reasonable"
     )
-    references: Optional[List[CrossReference]] = Field(
+    references: list[CrossReference] | None = Field(
         None, description="References establishing or validating this assumption"
     )
 
@@ -261,12 +259,12 @@ class MathematicalAssumption(BaseModel):
 class VerificationResults(BaseModel):
     """Results from computational verification."""
 
-    summary: Optional[str] = Field(None, description="Brief summary of verification results")
-    passed: Optional[bool] = Field(None, description="Whether verification passed")
-    metrics: Optional[Dict[str, Any]] = Field(
+    summary: str | None = Field(None, description="Brief summary of verification results")
+    passed: bool | None = Field(None, description="Whether verification passed")
+    metrics: dict[str, Any] | None = Field(
         None, description="Quantitative metrics (e.g., error bounds, convergence rates)"
     )
-    plots: Optional[List[str]] = Field(None, description="Paths to generated plots/figures")
+    plots: list[str] | None = Field(None, description="Paths to generated plots/figures")
 
 
 class ComputationalVerification(BaseModel):
@@ -274,16 +272,16 @@ class ComputationalVerification(BaseModel):
 
     type: VerificationType = Field(..., description="Type of computational verification")
     status: VerificationStatus = Field(..., description="Verification status")
-    script_path: Optional[str] = Field(
+    script_path: str | None = Field(
         None, description="Path to Python/SymPy verification script relative to docs root"
     )
-    notebook_path: Optional[str] = Field(
+    notebook_path: str | None = Field(
         None, description="Path to Jupyter notebook with interactive verification"
     )
-    description: Optional[str] = Field(
+    description: str | None = Field(
         None, description="What aspect is being verified computationally"
     )
-    results: Optional[VerificationResults] = Field(
+    results: VerificationResults | None = Field(
         None, description="Results from running the verification"
     )
 
@@ -299,31 +297,31 @@ class ReviewIssue(BaseModel):
         description="Issue severity level: CRITICAL (invalidates theorem), MAJOR (significant gap), MINOR (subtle error), SUGGESTION (improvement)",
     )
     title: str = Field(..., description="Brief descriptive title of the issue")
-    location: Dict[str, Optional[str]] = Field(
+    location: dict[str, str | None] = Field(
         ...,
         description="Location information (section, line_range, equation_number, proof_step)",
     )
     problem: str = Field(..., description="Clear description of what is wrong or missing")
-    mechanism: Optional[str] = Field(
+    mechanism: str | None = Field(
         None, description="WHY this fails - precise mechanism of the error"
     )
-    evidence: Optional[str] = Field(
+    evidence: str | None = Field(
         None, description="Quoted passage, counterexample, or calculation demonstrating the issue"
     )
-    impact: Optional[str] = Field(
+    impact: str | None = Field(
         None, description="What downstream results are affected by this issue"
     )
-    suggested_fix: Optional[str] = Field(
+    suggested_fix: str | None = Field(
         None, description="Concrete suggestion for how to fix this issue"
     )
-    distinction: Optional[IssueDistinction] = Field(
+    distinction: IssueDistinction | None = Field(
         None, description="Classification of the issue type"
     )
-    status: Optional[IssueStatus] = Field(default="open", description="Current status of the issue")
-    estimated_difficulty: Optional[EstimatedDifficulty] = Field(
+    status: IssueStatus | None = Field(default="open", description="Current status of the issue")
+    estimated_difficulty: EstimatedDifficulty | None = Field(
         None, description="Estimated difficulty to resolve this issue"
     )
-    affected_labels: Optional[List[str]] = Field(
+    affected_labels: list[str] | None = Field(
         None, description="Labels of other directives affected by this issue"
     )
 
@@ -335,29 +333,27 @@ class ReviewScore(BaseModel):
     review_date: date = Field(..., description="Date of review")
     rigor: int = Field(..., ge=1, le=10, description="Mathematical rigor score (1-10)")
     soundness: int = Field(..., ge=1, le=10, description="Logical soundness score (1-10)")
-    consistency: int = Field(
-        ..., ge=1, le=10, description="Framework consistency score (1-10)"
-    )
+    consistency: int = Field(..., ge=1, le=10, description="Framework consistency score (1-10)")
     verdict: Verdict = Field(..., description="Overall publication readiness verdict")
-    issues_identified: Optional[List[ReviewIssue]] = Field(
+    issues_identified: list[ReviewIssue] | None = Field(
         None, description="List of issues identified during review"
     )
-    strengths: Optional[List[str]] = Field(
+    strengths: list[str] | None = Field(
         None, description="Positive aspects highlighted by reviewer"
     )
-    recommended_actions: Optional[List[str]] = Field(
+    recommended_actions: list[str] | None = Field(
         None, description="Prioritized list of recommended actions"
     )
-    comments: Optional[str] = Field(None, description="Additional reviewer comments")
+    comments: str | None = Field(None, description="Additional reviewer comments")
 
 
 class UniqueFindings(BaseModel):
     """Issues found by only one reviewer."""
 
-    gemini_only: Optional[List[ReviewIssue]] = Field(
+    gemini_only: list[ReviewIssue] | None = Field(
         None, description="Issues identified only by Gemini"
     )
-    codex_only: Optional[List[ReviewIssue]] = Field(
+    codex_only: list[ReviewIssue] | None = Field(
         None, description="Issues identified only by Codex"
     )
 
@@ -373,27 +369,27 @@ class AggregateScore(BaseModel):
 class DualReviewAnalysis(BaseModel):
     """Dual review analysis combining Gemini and Codex reviews."""
 
-    gemini_review: Optional[ReviewScore] = Field(None, description="Gemini 2.5 Pro review")
-    codex_review: Optional[ReviewScore] = Field(None, description="Codex review")
-    consensus_issues: Optional[List[ReviewIssue]] = Field(
+    gemini_review: ReviewScore | None = Field(None, description="Gemini 2.5 Pro review")
+    codex_review: ReviewScore | None = Field(None, description="Codex review")
+    consensus_issues: list[ReviewIssue] | None = Field(
         None, description="Issues identified by both reviewers (high confidence)"
     )
-    discrepancies: Optional[List[str]] = Field(
+    discrepancies: list[str] | None = Field(
         None, description="Contradictory findings requiring manual verification"
     )
-    unique_findings: Optional[UniqueFindings] = Field(
+    unique_findings: UniqueFindings | None = Field(
         None, description="Issues found by only one reviewer"
     )
-    aggregate_score: Optional[AggregateScore] = Field(
+    aggregate_score: AggregateScore | None = Field(
         None, description="Average scores across both reviewers"
     )
-    final_verdict: Optional[Verdict] = Field(
+    final_verdict: Verdict | None = Field(
         None, description="Final publication readiness verdict after synthesis"
     )
-    blocking_issues: Optional[List[ReviewIssue]] = Field(
+    blocking_issues: list[ReviewIssue] | None = Field(
         None, description="CRITICAL issues that block publication"
     )
-    synthesis_notes: Optional[str] = Field(
+    synthesis_notes: str | None = Field(
         None, description="Claude's synthesis and recommendations from dual review"
     )
 
@@ -401,11 +397,9 @@ class DualReviewAnalysis(BaseModel):
 class VerificationFlags(BaseModel):
     """Verification status flags."""
 
-    logic_verified: Optional[bool] = Field(None, description="Logical correctness verified")
-    computation_verified: Optional[bool] = Field(
-        None, description="Computational aspects verified"
-    )
-    framework_consistent: Optional[bool] = Field(
+    logic_verified: bool | None = Field(None, description="Logical correctness verified")
+    computation_verified: bool | None = Field(None, description="Computational aspects verified")
+    framework_consistent: bool | None = Field(
         None, description="Consistent with framework axioms and definitions"
     )
 
@@ -413,10 +407,10 @@ class VerificationFlags(BaseModel):
 class QualityMetrics(BaseModel):
     """Quality assessment metrics."""
 
-    rigor_level: Optional[int] = Field(
+    rigor_level: int | None = Field(
         None, ge=1, le=10, description="Self-assessed rigor level (1-10)"
     )
-    detail_level: Optional[DetailLevel] = Field(None, description="Level of detail provided")
+    detail_level: DetailLevel | None = Field(None, description="Level of detail provided")
 
 
 class DevelopmentStatus(BaseModel):
@@ -425,26 +419,22 @@ class DevelopmentStatus(BaseModel):
     stage: DevelopmentStage = Field(
         ..., description="Current stage of development (sketch → verified → published)"
     )
-    completeness: int = Field(
-        ..., ge=0, le=100, description="Completeness percentage (0-100)"
-    )
-    verification_status: Optional[VerificationFlags] = Field(
+    completeness: int = Field(..., ge=0, le=100, description="Completeness percentage (0-100)")
+    verification_status: VerificationFlags | None = Field(
         None, description="What has been verified"
     )
-    quality_metrics: Optional[QualityMetrics] = Field(
-        None, description="Quality assessment metrics"
-    )
-    last_updated: Optional[date] = Field(None, description="When this status was last updated")
-    notes: Optional[str] = Field(None, description="Development notes or TODO items")
+    quality_metrics: QualityMetrics | None = Field(None, description="Quality assessment metrics")
+    last_updated: date | None = Field(None, description="When this status was last updated")
+    notes: str | None = Field(None, description="Development notes or TODO items")
 
 
 class SourceSketch(BaseModel):
     """Information about the source sketch."""
 
     file_path: str = Field(..., description="Path to the sketch file")
-    label: Optional[str] = Field(None, description="Label of the sketch")
-    date_created: Optional[date] = Field(None, description="When the sketch was created")
-    agent: Optional[str] = Field(None, description="Agent that created the sketch (e.g., 'gemini')")
+    label: str | None = Field(None, description="Label of the sketch")
+    date_created: date | None = Field(None, description="When the sketch was created")
+    agent: str | None = Field(None, description="Agent that created the sketch (e.g., 'gemini')")
 
 
 class ExpansionHistoryEntry(BaseModel):
@@ -452,7 +442,7 @@ class ExpansionHistoryEntry(BaseModel):
 
     expansion_date: date = Field(..., description="Date of this expansion step")
     stage: DevelopmentStage = Field(..., description="Stage reached at this step")
-    agent: Optional[str] = Field(
+    agent: str | None = Field(
         None, description="Agent performing expansion (e.g., 'claude', 'human')"
     )
     description: str = Field(..., description="Description of changes made")
@@ -464,7 +454,7 @@ class SketchCoverage(BaseModel):
     coverage_percentage: int = Field(
         ..., ge=0, le=100, description="Percentage of sketch items covered"
     )
-    uncovered_items: Optional[List[str]] = Field(
+    uncovered_items: list[str] | None = Field(
         None, description="List of sketch items not yet fully addressed"
     )
 
@@ -473,40 +463,36 @@ class StrategyOption(BaseModel):
     """Alternative proof strategy."""
 
     name: str = Field(..., description="Name of the strategy")
-    source: Optional[str] = Field(
+    source: str | None = Field(
         None, description="Where this strategy came from (sketch/reviewer/alternative)"
     )
     chosen: bool = Field(..., description="Whether this strategy was chosen")
-    rationale: Optional[str] = Field(None, description="Why this was chosen/rejected")
+    rationale: str | None = Field(None, description="Why this was chosen/rejected")
 
 
 class StrategyComparison(BaseModel):
     """Comparison of different proof strategies."""
 
-    strategies: List[StrategyOption] = Field(
-        ..., description="Different strategies considered"
-    )
-    rationale: Optional[str] = Field(
-        None, description="Overall rationale for strategy selection"
-    )
+    strategies: list[StrategyOption] = Field(..., description="Different strategies considered")
+    rationale: str | None = Field(None, description="Overall rationale for strategy selection")
 
 
 class SketchProofLinkage(BaseModel):
     """Link between a proof sketch and its full expansion."""
 
-    source_sketch: Optional[SourceSketch] = Field(
+    source_sketch: SourceSketch | None = Field(
         None, description="Information about the original sketch"
     )
-    expansion_history: Optional[List[ExpansionHistoryEntry]] = Field(
+    expansion_history: list[ExpansionHistoryEntry] | None = Field(
         None, description="History of expansion from sketch to full proof"
     )
-    sketch_coverage: Optional[SketchCoverage] = Field(
+    sketch_coverage: SketchCoverage | None = Field(
         None, description="How much of the sketch is covered"
     )
-    strategy_comparison: Optional[StrategyComparison] = Field(
+    strategy_comparison: StrategyComparison | None = Field(
         None, description="Comparison of sketch strategy vs. final strategy"
     )
-    divergences: Optional[List[str]] = Field(
+    divergences: list[str] | None = Field(
         None, description="Places where the full proof diverged from the sketch"
     )
 
@@ -518,20 +504,20 @@ class ProofStep(BaseModel):
     """A single step in a proof (can have recursive substeps)."""
 
     id: str = Field(..., description="Step identifier (e.g., 'Step 1', 'Step 2.1')")
-    title: Optional[str] = Field(None, description="Optional step title")
+    title: str | None = Field(None, description="Optional step title")
     content: str = Field(..., description="Mathematical content of this step")
-    type: Optional[str] = Field(None, description="Type of reasoning (e.g., 'direct', 'case-1')")
-    techniques: Optional[List[str]] = Field(
+    type: str | None = Field(None, description="Type of reasoning (e.g., 'direct', 'case-1')")
+    techniques: list[str] | None = Field(
         None,
         description="Mathematical techniques used (e.g., 'contradiction', 'induction', 'Cauchy-Schwarz')",
     )
-    justification: Optional[Union[str, List[Union[str, CrossReference]]]] = Field(
+    justification: str | list[str | CrossReference] | None = Field(
         None, description="Why this step is valid (references or text)"
     )
-    intermediate_result: Optional[MathExpression] = Field(
+    intermediate_result: MathExpression | None = Field(
         None, description="Key intermediate result from this step"
     )
-    substeps: Optional[List["ProofStep"]] = Field(
+    substeps: list["ProofStep"] | None = Field(
         None, description="Substeps for hierarchical proof structure"
     )
 
@@ -546,12 +532,12 @@ ProofStep.model_rebuild()
 class SourceLocation(BaseModel):
     """Location in source documentation."""
 
-    document: Optional[str] = Field(
+    document: str | None = Field(
         None, description="Source document (e.g., '01_fragile_gas_framework.md')"
     )
-    section: Optional[str] = Field(None, description="Section reference (e.g., '§2.3.5')")
-    equation: Optional[str] = Field(None, description="Equation reference (e.g., 'Eq. (17)')")
-    page: Optional[int] = Field(None, description="Page number (if from PDF/paper)")
+    section: str | None = Field(None, description="Section reference (e.g., '§2.3.5')")
+    equation: str | None = Field(None, description="Equation reference (e.g., 'Eq. (17)')")
+    page: int | None = Field(None, description="Page number (if from PDF/paper)")
 
 
 class BaseDirective(BaseModel):
@@ -561,13 +547,13 @@ class BaseDirective(BaseModel):
     label: Label = Field(..., description="Unique label for cross-referencing")
     title: str = Field(..., description="Human-readable title")
     statement: str = Field(..., description="Main statement (LaTeX-formatted)")
-    tags: Optional[List[str]] = Field(
+    tags: list[str] | None = Field(
         None, description="Tags for categorization (e.g., 'cloning', 'convergence', 'fundamental')"
     )
-    source: Optional[SourceLocation] = Field(
+    source: SourceLocation | None = Field(
         None, description="Where this directive appears in source documentation"
     )
-    related_concepts: Optional[List[CrossReference]] = Field(
+    related_concepts: list[CrossReference] | None = Field(
         None, description="Related mathematical concepts"
     )
 
@@ -581,14 +567,14 @@ class DefinedObject(BaseModel):
     name: str = Field(
         ..., description="Name of the object being defined (e.g., 'Walker', 'Swarm State Space')"
     )
-    symbol: Optional[str] = Field(
+    symbol: str | None = Field(
         None,
         description="Primary mathematical symbol (e.g., 'w', '\\mathcal{S}', '\\Sigma_N')",
     )
     mathematical_definition: MathExpression = Field(
         ..., description="Formal mathematical definition"
     )
-    type: Optional[
+    type: (
         Literal[
             "set",
             "function",
@@ -602,8 +588,9 @@ class DefinedObject(BaseModel):
             "parameter",
             "structure",
         ]
-    ] = Field(None, description="Mathematical type of the defined object")
-    properties: Optional[List[Union[str, MathematicalProperty]]] = Field(
+        | None
+    ) = Field(None, description="Mathematical type of the defined object")
+    properties: list[str | MathematicalProperty] | None = Field(
         None, description="Key properties that follow immediately from the definition"
     )
 
@@ -613,7 +600,7 @@ class DefinitionExample(BaseModel):
 
     description: str
     instance: MathExpression
-    verification: Optional[str] = Field(None, description="Why this is a valid example")
+    verification: str | None = Field(None, description="Why this is a valid example")
 
 
 class DefinitionCounterexample(BaseModel):
@@ -621,34 +608,33 @@ class DefinitionCounterexample(BaseModel):
 
     description: str
     instance: MathExpression
-    reason: Optional[str] = Field(
-        None, description="Why this fails to satisfy the definition"
-    )
+    reason: str | None = Field(None, description="Why this fails to satisfy the definition")
 
 
 class Definition(BaseDirective):
     """A mathematical definition."""
 
     type: Literal["definition"] = "definition"
-    defined_objects: List[DefinedObject] = Field(
+    defined_objects: list[DefinedObject] = Field(
         ..., description="Objects being defined (can define multiple related objects)"
     )
-    motivation: Optional[str] = Field(
-        None, description="Why this definition is introduced (mathematical or intuitive motivation)"
+    motivation: str | None = Field(
+        None,
+        description="Why this definition is introduced (mathematical or intuitive motivation)",
     )
-    examples: Optional[List[DefinitionExample]] = Field(
+    examples: list[DefinitionExample] | None = Field(
         None, description="Concrete examples illustrating the definition"
     )
-    counterexamples: Optional[List[DefinitionCounterexample]] = Field(
+    counterexamples: list[DefinitionCounterexample] | None = Field(
         None, description="Examples that fail to satisfy the definition (clarifies boundaries)"
     )
-    peer_review: Optional[DualReviewAnalysis] = Field(
+    peer_review: DualReviewAnalysis | None = Field(
         None, description="Dual review analysis (Gemini + Codex) tracking publication readiness"
     )
-    development_status: Optional[DevelopmentStatus] = Field(
+    development_status: DevelopmentStatus | None = Field(
         None, description="Development maturity and completeness tracking"
     )
-    sketch_linkage: Optional[SketchProofLinkage] = Field(
+    sketch_linkage: SketchProofLinkage | None = Field(
         None, description="Link to proof sketch and expansion history (if applicable)"
     )
 
@@ -664,14 +650,12 @@ class AxiomaticParameter(BaseModel):
     )
     description: str = Field(..., description="What this parameter quantifies")
     type: ParameterType = Field(..., description="Type of parameter")
-    conditions: Optional[Union[str, List[MathExpression]]] = Field(
+    conditions: str | list[MathExpression] | None = Field(
         None,
         description="Required conditions on this parameter (e.g., 'κ_revival > 1', 'L_R < ∞')",
     )
-    typical_values: Optional[str] = Field(
-        None, description="Typical or recommended parameter values"
-    )
-    sensitivity: Optional[ParameterSensitivity] = Field(
+    typical_values: str | None = Field(None, description="Typical or recommended parameter values")
+    sensitivity: ParameterSensitivity | None = Field(
         None, description="How sensitive the framework is to this parameter"
     )
 
@@ -679,35 +663,33 @@ class AxiomaticParameter(BaseModel):
 class FailureMode(BaseModel):
     """What happens when an axiom is violated."""
 
-    condition: Optional[MathExpression] = Field(
+    condition: MathExpression | None = Field(
         None, description="Parameter configuration that causes failure"
     )
     consequence: str = Field(..., description="What goes wrong when axiom is violated")
-    diagnostic: Optional[str] = Field(
-        None, description="How to detect this failure mode in practice"
-    )
+    diagnostic: str | None = Field(None, description="How to detect this failure mode in practice")
 
 
 class Axiom(BaseDirective):
     """A foundational axiom of the framework."""
 
     type: Literal["axiom"] = "axiom"
-    axiomatic_parameters: Optional[List[AxiomaticParameter]] = Field(
+    axiomatic_parameters: list[AxiomaticParameter] | None = Field(
         None, description="Quantifiable parameters introduced by this axiom"
     )
-    category: Optional[AxiomCategory] = Field(
+    category: AxiomCategory | None = Field(
         None, description="Axiom category in the framework hierarchy"
     )
-    failure_modes: Optional[List[FailureMode]] = Field(
+    failure_modes: list[FailureMode] | None = Field(
         None, description="What happens when the axiom is violated (for debugging)"
     )
-    peer_review: Optional[DualReviewAnalysis] = Field(
+    peer_review: DualReviewAnalysis | None = Field(
         None, description="Dual review analysis (Gemini + Codex) tracking publication readiness"
     )
-    development_status: Optional[DevelopmentStatus] = Field(
+    development_status: DevelopmentStatus | None = Field(
         None, description="Development maturity and completeness tracking"
     )
-    sketch_linkage: Optional[SketchProofLinkage] = Field(
+    sketch_linkage: SketchProofLinkage | None = Field(
         None, description="Link to proof sketch and expansion history (if applicable)"
     )
 
@@ -720,17 +702,17 @@ class QuantitativeBound(BaseModel):
 
     bound: MathExpression
     type: BoundType
-    tightness: Optional[BoundTightness] = Field(None, description="How tight the bound is")
+    tightness: BoundTightness | None = Field(None, description="How tight the bound is")
 
 
 class TheoremConclusion(BaseModel):
     """Conclusion of a theorem."""
 
     statement: MathExpression = Field(..., description="Main conclusion of the theorem")
-    properties_established: Optional[List[Union[str, MathematicalProperty]]] = Field(
+    properties_established: list[str | MathematicalProperty] | None = Field(
         None, description="Key properties established by this theorem (for downstream use)"
     )
-    quantitative_bounds: Optional[Dict[str, Union[str, QuantitativeBound]]] = Field(
+    quantitative_bounds: dict[str, str | QuantitativeBound] | None = Field(
         None, description="Explicit quantitative bounds established"
     )
 
@@ -738,10 +720,10 @@ class TheoremConclusion(BaseModel):
 class ProofReference(BaseModel):
     """Reference to where a proof can be found."""
 
-    label: Optional[Label] = Field(None, description="Label of the proof directive")
-    inline: Optional[bool] = Field(None, description="Whether proof is inline")
-    sketch: Optional[bool] = Field(None, description="Whether only a sketch is provided")
-    reference: Optional[str] = Field(
+    label: Label | None = Field(None, description="Label of the proof directive")
+    inline: bool | None = Field(None, description="Whether proof is inline")
+    sketch: bool | None = Field(None, description="Whether only a sketch is provided")
+    reference: str | None = Field(
         None, description="External reference (e.g., 'Rudin (1987), Theorem 3.14')"
     )
 
@@ -750,23 +732,19 @@ class Theorem(BaseDirective):
     """A mathematical theorem."""
 
     type: Literal["theorem"] = "theorem"
-    hypotheses: List[MathematicalAssumption] = Field(
+    hypotheses: list[MathematicalAssumption] = Field(
         ..., description="All hypotheses/assumptions required for the theorem to hold"
     )
     conclusion: TheoremConclusion = Field(..., description="Theorem conclusion")
-    proof_reference: Optional[ProofReference] = Field(
-        None, description="Where to find the proof"
-    )
-    importance: Optional[Importance] = Field(
-        None, description="Importance level in the framework"
-    )
-    peer_review: Optional[DualReviewAnalysis] = Field(
+    proof_reference: ProofReference | None = Field(None, description="Where to find the proof")
+    importance: Importance | None = Field(None, description="Importance level in the framework")
+    peer_review: DualReviewAnalysis | None = Field(
         None, description="Dual review analysis (Gemini + Codex) tracking publication readiness"
     )
-    development_status: Optional[DevelopmentStatus] = Field(
+    development_status: DevelopmentStatus | None = Field(
         None, description="Development maturity and completeness tracking"
     )
-    sketch_linkage: Optional[SketchProofLinkage] = Field(
+    sketch_linkage: SketchProofLinkage | None = Field(
         None, description="Link to proof sketch and expansion history (if applicable)"
     )
 
@@ -775,24 +753,20 @@ class Lemma(BaseDirective):
     """A supporting lemma."""
 
     type: Literal["lemma"] = "lemma"
-    hypotheses: List[MathematicalAssumption] = Field(..., description="Lemma hypotheses")
+    hypotheses: list[MathematicalAssumption] = Field(..., description="Lemma hypotheses")
     conclusion: TheoremConclusion = Field(..., description="Lemma conclusion")
-    proof_reference: Optional[ProofReference] = Field(
-        None, description="Where to find the proof"
-    )
-    supports: Optional[List[CrossReference]] = Field(
+    proof_reference: ProofReference | None = Field(None, description="Where to find the proof")
+    supports: list[CrossReference] | None = Field(
         None, description="Main results this lemma supports"
     )
-    importance: Optional[Importance] = Field(
-        None, description="Importance level in the framework"
-    )
-    peer_review: Optional[DualReviewAnalysis] = Field(
+    importance: Importance | None = Field(None, description="Importance level in the framework")
+    peer_review: DualReviewAnalysis | None = Field(
         None, description="Dual review analysis (Gemini + Codex) tracking publication readiness"
     )
-    development_status: Optional[DevelopmentStatus] = Field(
+    development_status: DevelopmentStatus | None = Field(
         None, description="Development maturity and completeness tracking"
     )
-    sketch_linkage: Optional[SketchProofLinkage] = Field(
+    sketch_linkage: SketchProofLinkage | None = Field(
         None, description="Link to proof sketch and expansion history (if applicable)"
     )
 
@@ -801,21 +775,17 @@ class Proposition(BaseDirective):
     """A mathematical proposition."""
 
     type: Literal["proposition"] = "proposition"
-    hypotheses: List[MathematicalAssumption] = Field(..., description="Proposition hypotheses")
+    hypotheses: list[MathematicalAssumption] = Field(..., description="Proposition hypotheses")
     conclusion: TheoremConclusion = Field(..., description="Proposition conclusion")
-    proof_reference: Optional[ProofReference] = Field(
-        None, description="Where to find the proof"
-    )
-    importance: Optional[Importance] = Field(
-        None, description="Importance level in the framework"
-    )
-    peer_review: Optional[DualReviewAnalysis] = Field(
+    proof_reference: ProofReference | None = Field(None, description="Where to find the proof")
+    importance: Importance | None = Field(None, description="Importance level in the framework")
+    peer_review: DualReviewAnalysis | None = Field(
         None, description="Dual review analysis (Gemini + Codex) tracking publication readiness"
     )
-    development_status: Optional[DevelopmentStatus] = Field(
+    development_status: DevelopmentStatus | None = Field(
         None, description="Development maturity and completeness tracking"
     )
-    sketch_linkage: Optional[SketchProofLinkage] = Field(
+    sketch_linkage: SketchProofLinkage | None = Field(
         None, description="Link to proof sketch and expansion history (if applicable)"
     )
 
@@ -824,14 +794,14 @@ class CorollaryConclusion(BaseModel):
     """Conclusion of a corollary."""
 
     statement: MathExpression
-    properties_established: Optional[List[MathematicalProperty]] = None
+    properties_established: list[MathematicalProperty] | None = None
 
 
 class ImmediateProof(BaseModel):
     """Proof that follows immediately."""
 
     immediate: Literal[True] = True
-    justification: Optional[str] = Field(
+    justification: str | None = Field(
         None, description="Brief explanation of why this follows immediately"
     )
 
@@ -846,18 +816,18 @@ class Corollary(BaseDirective):
     """A corollary following from theorems/lemmas."""
 
     type: Literal["corollary"] = "corollary"
-    follows_from: List[CrossReference] = Field(
+    follows_from: list[CrossReference] = Field(
         ..., description="Theorems/lemmas this corollary immediately follows from"
     )
     conclusion: CorollaryConclusion = Field(..., description="Corollary conclusion")
-    proof_reference: Optional[Union[ImmediateProof, InlineProof]] = None
-    peer_review: Optional[DualReviewAnalysis] = Field(
+    proof_reference: ImmediateProof | InlineProof | None = None
+    peer_review: DualReviewAnalysis | None = Field(
         None, description="Dual review analysis (Gemini + Codex) tracking publication readiness"
     )
-    development_status: Optional[DevelopmentStatus] = Field(
+    development_status: DevelopmentStatus | None = Field(
         None, description="Development maturity and completeness tracking"
     )
-    sketch_linkage: Optional[SketchProofLinkage] = Field(
+    sketch_linkage: SketchProofLinkage | None = Field(
         None, description="Link to proof sketch and expansion history (if applicable)"
     )
 
@@ -869,49 +839,47 @@ class AlternativeApproach(BaseModel):
     """Alternative proof approach."""
 
     description: str
-    advantages: Optional[str] = None
-    disadvantages: Optional[str] = None
+    advantages: str | None = None
+    disadvantages: str | None = None
 
 
 class Proof(BaseDirective):
     """A mathematical proof."""
 
     type: Literal["proof"] = "proof"
-    proves: CrossReference = Field(
-        ..., description="What theorem/lemma/proposition this proves"
-    )
-    proof_type: Optional[ProofType] = Field(None, description="Overall proof strategy type")
+    proves: CrossReference = Field(..., description="What theorem/lemma/proposition this proves")
+    proof_type: ProofType | None = Field(None, description="Overall proof strategy type")
     strategy: str = Field(
         ...,
         description="High-level overview of the proof approach (1-3 paragraphs explaining the main idea)",
     )
-    prerequisites: Optional[List[CrossReference]] = Field(
+    prerequisites: list[CrossReference] | None = Field(
         None, description="All results used in this proof (explicitly listed)"
     )
-    steps: List[ProofStep] = Field(
+    steps: list[ProofStep] = Field(
         ..., description="Detailed proof steps in hierarchical structure", min_length=1
     )
-    key_insights: Optional[List[str]] = Field(
+    key_insights: list[str] | None = Field(
         None,
         description="Main mathematical insights that make the proof work (pedagogical)",
     )
-    alternative_approaches: Optional[List[AlternativeApproach]] = Field(
+    alternative_approaches: list[AlternativeApproach] | None = Field(
         None, description="Other possible proof strategies and why this one was chosen"
     )
-    computational_verification: Optional[List[ComputationalVerification]] = Field(
+    computational_verification: list[ComputationalVerification] | None = Field(
         None, description="Computational verifications for different parts of the proof"
     )
-    difficulty: Optional[ProofDifficulty] = Field(None, description="Mathematical difficulty level")
-    rigor_level: Optional[int] = Field(
+    difficulty: ProofDifficulty | None = Field(None, description="Mathematical difficulty level")
+    rigor_level: int | None = Field(
         None, ge=1, le=10, description="Self-assessed rigor level (1=sketch, 10=publication-ready)"
     )
-    peer_review: Optional[DualReviewAnalysis] = Field(
+    peer_review: DualReviewAnalysis | None = Field(
         None, description="Dual review analysis (Gemini + Codex) tracking publication readiness"
     )
-    development_status: Optional[DevelopmentStatus] = Field(
+    development_status: DevelopmentStatus | None = Field(
         None, description="Development maturity and completeness tracking"
     )
-    sketch_linkage: Optional[SketchProofLinkage] = Field(
+    sketch_linkage: SketchProofLinkage | None = Field(
         None, description="Link to proof sketch and expansion history (if applicable)"
     )
 
@@ -926,8 +894,8 @@ class AlgorithmInput(BaseModel):
     type: str = Field(
         ..., description="Mathematical type (e.g., 'swarm state S ∈ Σ_N', 'parameter γ > 0')"
     )
-    description: Optional[str] = None
-    constraints: Optional[List[MathExpression]] = None
+    description: str | None = None
+    constraints: list[MathExpression] | None = None
 
 
 class AlgorithmOutput(BaseModel):
@@ -935,8 +903,8 @@ class AlgorithmOutput(BaseModel):
 
     name: str
     type: str
-    description: Optional[str] = None
-    guarantees: Optional[List[MathExpression]] = Field(
+    description: str | None = None
+    guarantees: list[MathExpression] | None = Field(
         None, description="Mathematical properties guaranteed for output"
     )
 
@@ -944,54 +912,54 @@ class AlgorithmOutput(BaseModel):
 class AlgorithmStep(BaseModel):
     """Single step in an algorithm."""
 
-    step_number: Optional[int] = None
+    step_number: int | None = None
     description: str
-    pseudocode: Optional[str] = None
-    mathematical_operation: Optional[MathExpression] = None
-    complexity: Optional[str] = Field(None, description="Time/space complexity for this step")
+    pseudocode: str | None = None
+    mathematical_operation: MathExpression | None = None
+    complexity: str | None = Field(None, description="Time/space complexity for this step")
 
 
 class AlgorithmComplexity(BaseModel):
     """Computational complexity analysis."""
 
-    time: Optional[str] = Field(
+    time: str | None = Field(
         None, description="Overall time complexity (e.g., 'O(N log N)', 'O(N²)')"
     )
-    space: Optional[str] = Field(None, description="Space complexity")
-    worst_case: Optional[str] = None
-    average_case: Optional[str] = None
+    space: str | None = Field(None, description="Space complexity")
+    worst_case: str | None = None
+    average_case: str | None = None
 
 
 class AlgorithmImplementation(BaseModel):
     """Implementation details."""
 
-    path: Optional[str] = Field(None, description="Path to implementation code")
-    language: Optional[ProgrammingLanguage] = None
-    entry_point: Optional[str] = Field(
+    path: str | None = Field(None, description="Path to implementation code")
+    language: ProgrammingLanguage | None = None
+    entry_point: str | None = Field(
         None, description="Function/class name implementing this algorithm"
     )
-    tests: Optional[str] = Field(None, description="Path to test suite")
+    tests: str | None = Field(None, description="Path to test suite")
 
 
 class Algorithm(BaseDirective):
     """An algorithm specification."""
 
     type: Literal["algorithm"] = "algorithm"
-    inputs: List[AlgorithmInput] = Field(..., description="Algorithm inputs")
-    outputs: List[AlgorithmOutput] = Field(..., description="Algorithm outputs")
-    steps: List[AlgorithmStep] = Field(..., description="Algorithm steps")
-    complexity: Optional[AlgorithmComplexity] = None
-    correctness_proof: Optional[CrossReference] = Field(
+    inputs: list[AlgorithmInput] = Field(..., description="Algorithm inputs")
+    outputs: list[AlgorithmOutput] = Field(..., description="Algorithm outputs")
+    steps: list[AlgorithmStep] = Field(..., description="Algorithm steps")
+    complexity: AlgorithmComplexity | None = None
+    correctness_proof: CrossReference | None = Field(
         None, description="Reference to proof of correctness"
     )
-    implementation: Optional[AlgorithmImplementation] = None
-    peer_review: Optional[DualReviewAnalysis] = Field(
+    implementation: AlgorithmImplementation | None = None
+    peer_review: DualReviewAnalysis | None = Field(
         None, description="Dual review analysis (Gemini + Codex) tracking publication readiness"
     )
-    development_status: Optional[DevelopmentStatus] = Field(
+    development_status: DevelopmentStatus | None = Field(
         None, description="Development maturity and completeness tracking"
     )
-    sketch_linkage: Optional[SketchProofLinkage] = Field(
+    sketch_linkage: SketchProofLinkage | None = Field(
         None, description="Link to proof sketch and expansion history (if applicable)"
     )
 
@@ -1003,17 +971,17 @@ class Remark(BaseDirective):
     """A mathematical remark or note."""
 
     type: Literal["remark"] = "remark"
-    remark_type: Optional[RemarkType] = None
-    relates_to: Optional[List[CrossReference]] = Field(
+    remark_type: RemarkType | None = None
+    relates_to: list[CrossReference] | None = Field(
         None, description="What results this remark comments on"
     )
-    peer_review: Optional[DualReviewAnalysis] = Field(
+    peer_review: DualReviewAnalysis | None = Field(
         None, description="Dual review analysis (Gemini + Codex) tracking publication readiness"
     )
-    development_status: Optional[DevelopmentStatus] = Field(
+    development_status: DevelopmentStatus | None = Field(
         None, description="Development maturity and completeness tracking"
     )
-    sketch_linkage: Optional[SketchProofLinkage] = Field(
+    sketch_linkage: SketchProofLinkage | None = Field(
         None, description="Link to proof sketch and expansion history (if applicable)"
     )
 
@@ -1023,26 +991,26 @@ class ObservationEvidence(BaseModel):
 
     type: EvidenceType
     description: str
-    reference: Optional[str] = None
+    reference: str | None = None
 
 
 class Observation(BaseDirective):
     """An empirical or mathematical observation."""
 
     type: Literal["observation"] = "observation"
-    empirical: Optional[bool] = Field(
+    empirical: bool | None = Field(
         None, description="Whether this is an empirical observation (vs. mathematical)"
     )
-    evidence: Optional[List[ObservationEvidence]] = Field(
+    evidence: list[ObservationEvidence] | None = Field(
         None, description="Supporting evidence for this observation"
     )
-    peer_review: Optional[DualReviewAnalysis] = Field(
+    peer_review: DualReviewAnalysis | None = Field(
         None, description="Dual review analysis (Gemini + Codex) tracking publication readiness"
     )
-    development_status: Optional[DevelopmentStatus] = Field(
+    development_status: DevelopmentStatus | None = Field(
         None, description="Development maturity and completeness tracking"
     )
-    sketch_linkage: Optional[SketchProofLinkage] = Field(
+    sketch_linkage: SketchProofLinkage | None = Field(
         None, description="Link to proof sketch and expansion history (if applicable)"
     )
 
@@ -1059,20 +1027,20 @@ class Conjecture(BaseDirective):
 
     type: Literal["conjecture"] = "conjecture"
     confidence: ConfidenceLevel = Field(..., description="Confidence level in this conjecture")
-    evidence: List[ConjectureEvidence] = Field(..., description="Supporting evidence")
-    partial_results: Optional[List[CrossReference]] = Field(
+    evidence: list[ConjectureEvidence] = Field(..., description="Supporting evidence")
+    partial_results: list[CrossReference] | None = Field(
         None, description="Partial results supporting this conjecture"
     )
-    obstacles: Optional[List[str]] = Field(
+    obstacles: list[str] | None = Field(
         None, description="Known obstacles to proving this conjecture"
     )
-    peer_review: Optional[DualReviewAnalysis] = Field(
+    peer_review: DualReviewAnalysis | None = Field(
         None, description="Dual review analysis (Gemini + Codex) tracking publication readiness"
     )
-    development_status: Optional[DevelopmentStatus] = Field(
+    development_status: DevelopmentStatus | None = Field(
         None, description="Development maturity and completeness tracking"
     )
-    sketch_linkage: Optional[SketchProofLinkage] = Field(
+    sketch_linkage: SketchProofLinkage | None = Field(
         None, description="Link to proof sketch and expansion history (if applicable)"
     )
 
@@ -1081,20 +1049,20 @@ class Example(BaseDirective):
     """A worked example."""
 
     type: Literal["example"] = "example"
-    demonstrates: List[CrossReference] = Field(
+    demonstrates: list[CrossReference] = Field(
         ..., description="What concepts/results this example illustrates"
     )
-    setup: Optional[str] = Field(None, description="Description of the example setup")
-    calculation: Optional[str] = Field(None, description="Worked calculation or construction")
-    conclusion: Optional[str] = Field(None, description="What this example shows")
-    computational_verification: Optional[ComputationalVerification] = None
-    peer_review: Optional[DualReviewAnalysis] = Field(
+    setup: str | None = Field(None, description="Description of the example setup")
+    calculation: str | None = Field(None, description="Worked calculation or construction")
+    conclusion: str | None = Field(None, description="What this example shows")
+    computational_verification: ComputationalVerification | None = None
+    peer_review: DualReviewAnalysis | None = Field(
         None, description="Dual review analysis (Gemini + Codex) tracking publication readiness"
     )
-    development_status: Optional[DevelopmentStatus] = Field(
+    development_status: DevelopmentStatus | None = Field(
         None, description="Development maturity and completeness tracking"
     )
-    sketch_linkage: Optional[SketchProofLinkage] = Field(
+    sketch_linkage: SketchProofLinkage | None = Field(
         None, description="Link to proof sketch and expansion history (if applicable)"
     )
 
@@ -1103,17 +1071,15 @@ class Property(BaseDirective):
     """A mathematical property."""
 
     type: Literal["property"] = "property"
-    applies_to: List[CrossReference] = Field(
-        ..., description="What objects have this property"
-    )
-    property_type: Optional[PropertyType] = None
-    peer_review: Optional[DualReviewAnalysis] = Field(
+    applies_to: list[CrossReference] = Field(..., description="What objects have this property")
+    property_type: PropertyType | None = None
+    peer_review: DualReviewAnalysis | None = Field(
         None, description="Dual review analysis (Gemini + Codex) tracking publication readiness"
     )
-    development_status: Optional[DevelopmentStatus] = Field(
+    development_status: DevelopmentStatus | None = Field(
         None, description="Development maturity and completeness tracking"
     )
-    sketch_linkage: Optional[SketchProofLinkage] = Field(
+    sketch_linkage: SketchProofLinkage | None = Field(
         None, description="Link to proof sketch and expansion history (if applicable)"
     )
 
@@ -1130,10 +1096,10 @@ class DependencyEdge(BaseModel):
         ...,
         description="Type of dependency (e.g., 'requires', 'builds-on', 'proves', 'uses')",
     )
-    critical: Optional[bool] = Field(
+    critical: bool | None = Field(
         None, description="Whether this is a critical dependency for the proof/result"
     )
-    description: Optional[str] = Field(None, description="Brief explanation of the dependency")
+    description: str | None = Field(None, description="Brief explanation of the dependency")
 
     class Config:
         populate_by_name = True
@@ -1142,7 +1108,7 @@ class DependencyEdge(BaseModel):
 class DependencyGraph(BaseModel):
     """Dependency graph showing relationships between directives."""
 
-    edges: List[DependencyEdge] = Field(..., description="Edges in the dependency graph")
+    edges: list[DependencyEdge] = Field(..., description="Edges in the dependency graph")
 
 
 # ==================== Metadata ====================
@@ -1151,17 +1117,17 @@ class DependencyGraph(BaseModel):
 class ReviewStatusEntry(BaseModel):
     """Review status for a single reviewer."""
 
-    date: Optional[date] = None
-    status: Optional[PeerReviewStatus] = None
-    review_file: Optional[str] = Field(None, description="Path to review output")
+    date: date | None = None
+    status: PeerReviewStatus | None = None
+    review_file: str | None = Field(None, description="Path to review output")
 
 
 class DocumentPeerReviewStatus(BaseModel):
     """Peer review status tracking for the document."""
 
-    gemini_review: Optional[ReviewStatusEntry] = None
-    codex_review: Optional[ReviewStatusEntry] = None
-    dual_review_consensus: Optional[bool] = Field(
+    gemini_review: ReviewStatusEntry | None = None
+    codex_review: ReviewStatusEntry | None = None
+    dual_review_consensus: bool | None = Field(
         None, description="Whether both reviewers agree on approval"
     )
 
@@ -1199,19 +1165,22 @@ class DevelopmentSummary(BaseModel):
 class PublicationReadinessAggregate(BaseModel):
     """Aggregate publication readiness metrics across all directives."""
 
-    overall_verdict: Literal["ready", "minor-revisions", "major-revisions", "reject", "not-reviewed"]
-    aggregate_scores: Optional[AggregateScore] = None
-    directive_summary: Optional[DirectiveSummary] = None
-    blocking_issues: Optional[List[BlockingIssue]] = None
-    development_summary: Optional[DevelopmentSummary] = None
-    last_updated: Optional[datetime] = None
+    overall_verdict: Literal[
+        "ready", "minor-revisions", "major-revisions", "reject", "not-reviewed"
+    ]
+    aggregate_scores: AggregateScore | None = None
+    directive_summary: DirectiveSummary | None = None
+    blocking_issues: list[BlockingIssue] | None = None
+    development_summary: DevelopmentSummary | None = None
+    last_updated: datetime | None = None
 
 
 class Metadata(BaseModel):
     """Document-level metadata."""
 
     title: str = Field(
-        ..., description="Document title (e.g., 'The Keystone Principle and the Contractive Nature of Cloning')"
+        ...,
+        description="Document title (e.g., 'The Keystone Principle and the Contractive Nature of Cloning')",
     )
     document_id: str = Field(
         ..., description="Unique document identifier (e.g., '03_cloning', '11_geometric_gas')"
@@ -1219,21 +1188,21 @@ class Metadata(BaseModel):
     version: constr(pattern=r"^\d+\.\d+(\.\d+)?$") = Field(  # type: ignore
         ..., description="Semantic version (e.g., '1.0.0', '2.3.1')"
     )
-    chapter: Optional[int] = Field(None, description="Chapter number in the overall framework")
-    authors: Optional[List[str]] = None
-    date_created: Optional[date] = None
-    date_modified: Optional[date] = None
-    rigor_level: Optional[RigorLevel] = Field(None, description="Overall rigor level of the document")
-    peer_review_status: Optional[DocumentPeerReviewStatus] = Field(
+    chapter: int | None = Field(None, description="Chapter number in the overall framework")
+    authors: list[str] | None = None
+    date_created: date | None = None
+    date_modified: date | None = None
+    rigor_level: RigorLevel | None = Field(None, description="Overall rigor level of the document")
+    peer_review_status: DocumentPeerReviewStatus | None = Field(
         None, description="Dual review protocol status (as per CLAUDE.md)"
     )
-    dependencies: Optional[List[str]] = Field(
+    dependencies: list[str] | None = Field(
         None, description="Other documents this one depends on (prerequisite reading)"
     )
-    abstract: Optional[str] = Field(
+    abstract: str | None = Field(
         None, description="Brief abstract summarizing the document (TLDR section)"
     )
-    publication_readiness_aggregate: Optional[PublicationReadinessAggregate] = Field(
+    publication_readiness_aggregate: PublicationReadinessAggregate | None = Field(
         None, description="Aggregate publication readiness metrics across all directives"
     )
 
@@ -1263,14 +1232,14 @@ class MathematicalDocument(BaseModel):
     """Complete mathematical document."""
 
     metadata: Metadata = Field(..., description="Document metadata")
-    directives: List[Directive] = Field(..., description="Mathematical directives")
-    dependency_graph: Optional[DependencyGraph] = Field(
+    directives: list[Directive] = Field(..., description="Mathematical directives")
+    dependency_graph: DependencyGraph | None = Field(
         None, description="Dependency graph showing relationships between directives"
     )
-    notation_index: Optional[Dict[str, Any]] = Field(
+    notation_index: dict[str, Any] | None = Field(
         None, description="Index of mathematical notation used"
     )
-    constants_glossary: Optional[Dict[str, Any]] = Field(
+    constants_glossary: dict[str, Any] | None = Field(
         None, description="Glossary of constants defined and used"
     )
 

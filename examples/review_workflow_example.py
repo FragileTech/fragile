@@ -12,17 +12,16 @@ This example shows how to:
 Run with: python examples/review_workflow_example.py
 """
 
-import sys
-from datetime import datetime
 from pathlib import Path
+import sys
+
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from fragile.proofs import (
+    get_review_registry,
     # Core types
-    MathematicalObject,
-    ObjectType,
     ProofBox,
     ProofInput,
     ProofOutput,
@@ -31,18 +30,12 @@ from fragile.proofs import (
     ProofStepType,
     Property,
     PropertyReference,
-    TheoremBox,
-    TheoremOutputType,
     # Review system
-    Review,
     ReviewAnalyzer,
     ReviewBuilder,
-    ReviewComparison,
-    ReviewIssue,
-    ReviewSeverity,
     ReviewSource,
-    ValidationResult,
-    get_review_registry,
+    TheoremBox,
+    TheoremOutputType,
 )
 
 
@@ -52,9 +45,7 @@ def create_example_theorem() -> TheoremBox:
         label="thm-convergence-example",
         name="Convergence Example",
         input_objects=["obj-discrete-system"],
-        properties_required={
-            "obj-discrete-system": ["prop-lipschitz", "prop-bounded"]
-        },
+        properties_required={"obj-discrete-system": ["prop-lipschitz", "prop-bounded"]},
         output_type=TheoremOutputType.PROPERTY,
         properties_added=[
             Property(
@@ -334,7 +325,9 @@ def main():
     history = registry.get_review_history(proof.proof_id)
     print(f"Review history for {proof.proof_id}: {len(history)} reviews")
     for review in history:
-        print(f"  - Iteration {review.iteration} ({review.source.value}): {review.get_status().value}")
+        print(
+            f"  - Iteration {review.iteration} ({review.source.value}): {review.get_status().value}"
+        )
     print()
 
     # Get current status

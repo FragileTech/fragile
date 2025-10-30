@@ -2,9 +2,17 @@
   "label": "lem-total-squared-error-unstable",
   "name": "Bound on the Total Squared Error for Unstable Walkers",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "lem-total-squared-error-unstable",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-total-squared-error-unstable"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -19,22 +27,18 @@
     "axiom-raw-value-mean-square-continuity"
   ],
   "input_parameters": [],
-  "properties_required": {},
+  "attributes_required": {},
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [
-    {
-      "label": "prop-total-squared-error-unstable-bound",
-      "expression": "\\sum_{i \\in \\text{unstable}} \\mathbb{E}[d_{\\text{raw}}(s_i)]^2 \\le |\\text{unstable}| \\cdot d_{\\text{cemetery}}^2",
-      "object_label": "obj-fragile-swarm-instantiation",
-      "established_by": "lem-total-squared-error-unstable",
-      "timestamp": null,
-      "can_be_refined": true,
-      "refinements": [],
-      "source": null
-    }
-  ],
-  "relations_established": []
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

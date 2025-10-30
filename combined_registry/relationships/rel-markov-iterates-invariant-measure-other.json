@@ -6,12 +6,20 @@
   "target_object": "obj-invariant-measure",
   "established_by": "thm-meyn-tweedie-drift-minor",
   "expression": "bound: ||T^n(s,.) - nu||_TV <= C_erg * rho^n * V(s)",
-  "properties": [],
+  "attributes": [],
   "tags": [
     "inferred-from-dict"
   ],
   "timestamp": null,
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "12_quantitative_error_bounds"
+  "source": {
+    "document_id": "12_quantitative_error_bounds",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/12_quantitative_error_bounds.md",
+    "section": null,
+    "directive_label": "thm-meyn-tweedie-drift-minor",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#thm-meyn-tweedie-drift-minor"
+  },
+  "chapter": null,
+  "document": null
 }

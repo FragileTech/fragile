@@ -1,15 +1,33 @@
 {
   "label": "obj-algorithmic-cemetery-extension",
-  "name": "Algorithmic space with cemetery point",
-  "mathematical_expression": "d_\\dagger(y_1,y_2)=d_{\\mathcal{Y}}(y_1,y_2),\\quad d_\\dagger(y,\\dagger)=D_{\\mathrm{valid}}\\quad \\text{for all }y\\in\\mathcal{Y}.",
+  "name": "Algorithmic Cemetery Extension",
+  "mathematical_expression": "\\mathcal{Y}^{\\dagger}:=\\mathcal{Y}\\cup\\{\\dagger\\}",
   "object_type": "space",
-  "current_properties": [],
-  "property_history": [],
+  "current_attributes": [],
+  "attribute_history": [],
   "tags": [
-    "particle",
-    "swarm"
+    "algorithmic",
+    "cemetery",
+    "extension",
+    "metric",
+    "wasserstein",
+    "particle-system",
+    "absorption"
   ],
-  "source": null,
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§7",
+    "section_name": null,
+    "directive_label": "def-algorithmic-cemetery-extension",
+    "equation": null,
+    "line_range": [
+      1442,
+      1451
+    ],
+    "url_fragment": null
+  },
   "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  "document": "01_fragile_gas_framework",
+  "definition_label": "def-algorithmic-cemetery-extension"
 }

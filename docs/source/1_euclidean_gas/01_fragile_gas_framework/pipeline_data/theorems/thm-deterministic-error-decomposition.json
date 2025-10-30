@@ -1,0 +1,46 @@
+{
+  "label": "thm-deterministic-error-decomposition",
+  "name": "Decomposition of the Total Standardization Error",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "\u00a711.3.1",
+    "section_name": null,
+    "directive_label": "thm-deterministic-error-decomposition",
+    "equation": null,
+    "line_range": [
+      3388,
+      3423
+    ],
+    "url_fragment": null
+  },
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-standardization-operator-n-dimensional",
+    "obj-swarm-and-state-space"
+  ],
+  "input_axioms": [],
+  "input_parameters": [],
+  "attributes_required": {
+    "obj-standardization-operator-n-dimensional": [
+      "attr-uses-regularized-std-dev"
+    ]
+  },
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
+}

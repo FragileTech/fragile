@@ -10,7 +10,8 @@ This module provides sympy-based validation of algebraic manipulations
 in the proof of variance decomposition lemma.
 """
 
-from sympy import symbols, simplify, factor
+from sympy import factor, simplify, symbols
+
 
 def test_variance_decomposition_by_clusters():
     """
@@ -24,9 +25,9 @@ def test_variance_decomposition_by_clusters():
     # f_I, f_J: population fractions (positive, sum to 1)
     # k: total swarm size (positive integer)
     # I_k_size, J_k_size: cluster sizes, represented as |I_k| and |J_k|
-    f_I, f_J = symbols('f_I f_J', real=True, positive=True)
-    k = symbols('k', integer=True, positive=True)
-    I_k_size, J_k_size = symbols('|I_k| |J_k|', integer=True, positive=True)
+    f_I, f_J = symbols("f_I f_J", real=True, positive=True)
+    k = symbols("k", integer=True, positive=True)
+    I_k_size, J_k_size = symbols("|I_k| |J_k|", integer=True, positive=True)
 
     # 2. Define the Left-Hand Side (LHS) and Right-Hand Side (RHS) of the identity to be verified
     # Identity: |I_k| * f_J**2 + |J_k| * f_I**2 = k * f_I * f_J
@@ -67,8 +68,8 @@ def test_variance_decomposition_by_clusters():
     assert simplified_difference == 0, assertion_message
 
     print("✓ Variance decomposition factorization step verified successfully.")
-    print(f"  Identity: |I_k|*f_J**2 + |J_k|*f_I**2 = k*f_I*f_J")
-    print(f"  Verified using constraints: |I_k|=k*f_I, |J_k|=k*f_J, f_I+f_J=1")
+    print("  Identity: |I_k|*f_J**2 + |J_k|*f_I**2 = k*f_I*f_J")
+    print("  Verified using constraints: |I_k|=k*f_I, |J_k|=k*f_J, f_I+f_J=1")
 
 
 def run_all_validations():
@@ -88,11 +89,12 @@ def run_all_validations():
             print(f"✗ {test.__name__} FAILED: {e}")
             failed += 1
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"VALIDATION SUMMARY: {passed} passed, {failed} failed")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     return passed, failed
+
 
 if __name__ == "__main__":
     run_all_validations()

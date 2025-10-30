@@ -308,7 +308,7 @@ class ColorDim(DimensionMapper):
         # No normalization needed - HoloViews handles it automatically
         if self.is_categorical:
             # Use categorical colormap instead of continuous (viridis)
-            self.cmap = 'Category20'  # 20 distinct colors for categorical data
+            self.cmap = "Category20"  # 20 distinct colors for categorical data
             self.value = hv.dim(self.column.value)
             return
 
@@ -353,9 +353,15 @@ class ColorDim(DimensionMapper):
         std_0 = bool(self.std_col == 0)
         self.default_value.visible = use_default or std_0
         # Hide colormap/transform controls for categorical columns
-        self.colormap_widget.cmap_widget.visible = not use_default and not std_0 and not self.is_categorical
-        self.colormap_widget.autocomplete.visible = not use_default and not std_0 and not self.is_categorical
-        self.button_check.visible = not use_default and not self.is_bool_col and not std_0 and not self.is_categorical
+        self.colormap_widget.cmap_widget.visible = (
+            not use_default and not std_0 and not self.is_categorical
+        )
+        self.colormap_widget.autocomplete.visible = (
+            not use_default and not std_0 and not self.is_categorical
+        )
+        self.button_check.visible = (
+            not use_default and not self.is_bool_col and not std_0 and not self.is_categorical
+        )
 
     @param.depends("colormap_widget.value")
     def update_cmap(self):

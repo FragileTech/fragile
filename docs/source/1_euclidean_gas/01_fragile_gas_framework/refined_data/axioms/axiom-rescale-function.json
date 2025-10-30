@@ -1,0 +1,39 @@
+{
+  "label": "axiom-rescale-function",
+  "statement": "Axiom of a Well-Behaved Rescale Function",
+  "mathematical_expression": "g_A: \\mathbb{R} \\to \\mathbb{R}_{>0} \\text{ with: } (1) \\text{ } C^1 \\text{ smoothness}, (2) \\text{ } g'_A(z) \\ge 0 \\text{ } \\forall z, (3) \\text{ range } (0, g_{A,\\max}], (4) \\text{ } \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty",
+  "foundational_framework": "Fragile Gas Framework",
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of a Well-Behaved Rescale Function",
+  "core_assumption": "The function g_A used to rescale standardized scores into fitness components must be smooth, monotonic, and bounded. This ensures that the transformation is predictable and stable, preventing erratic, discontinuous, or unbounded amplification of measurement signals.",
+  "parameters": [
+    {
+      "name": "g_A",
+      "description": "The rescale function."
+    },
+    {
+      "name": "z",
+      "description": "The input to the rescale function, typically a standardized Z-score."
+    },
+    {
+      "name": "g_{A,max}",
+      "description": "The maximum value of the rescale function, ensuring the output is bounded."
+    },
+    {
+      "name": "L_{g_A}",
+      "description": "The global Lipschitz constant of the rescale function, bounding its steepness."
+    }
+  ],
+  "condition": "The function g_A must be applied to a scalar value z, which typically represents a standardized measure of reward or diversity. The four listed properties (C1 smoothness, monotonicity, boundedness, Lipschitz continuity) must hold for all z in the real numbers.",
+  "failure_mode_analysis": "Violating any property makes the algorithm unpredictable or unstable. (1) No C1 smoothness: Gradients of the fitness potential are not well-defined, breaking gradient-based analysis and optimization. (2) Decreasing derivative: Higher (better) scores could be mapped to lower fitness components, inverting the intended logic of selection. (3) Unbounded range: Rescaled fitness components could become infinite, causing numerical overflow and making probabilities ill-defined. (4) Unbounded derivative (not Lipschitz): Arbitrarily small changes in input scores could cause arbitrarily large changes in fitness, leading to chaotic sensitivity and instability.",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "def-axiom-rescale-function",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "label": "axiom-bounded-measurement-variance",
+  "statement": "Axiom of Bounded Measurement Variance",
+  "mathematical_expression": "\\mathbb{E}[\\|\\mathbf{v} - \\mathbb{E}[\\mathbf{v}]\\|_2^2] \\le \\kappa^2_{\\text{variance}}",
+  "foundational_framework": "Euclidean Gas",
+  "chapter": "1_euclidean_gas/01_fragile_gas_framework",
+  "document": "01_fragile_gas_framework",
+  "name": "Axiom of Bounded Measurement Variance",
+  "core_assumption": null,
+  "parameters": [
+    {
+      "symbol": "\\kappa^2_{\\text{variance}}",
+      "description": "The Maximum Measurement Variance - constant that provides a uniform upper bound on the expected squared deviation of a sampled raw value vector from its mean",
+      "constraints": "\\kappa^2_{\\text{variance}} \\ge 0"
+    },
+    {
+      "symbol": "\\mathcal{S} \\in \\Sigma_N",
+      "description": "Any swarm state",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathbf{v} \\sim V(\\mathcal{S})",
+      "description": "Sampled raw value vector",
+      "constraints": null
+    },
+    {
+      "symbol": "\\mathbb{E}[\\mathbf{v}]",
+      "description": "Expectation of the raw value vector",
+      "constraints": null
+    }
+  ],
+  "condition": null,
+  "failure_mode_analysis": "If this axiom is violated, the raw measurement process could have an unbounded variance. This would allow for rare but arbitrarily large measurement errors, causing the expected squared error to be infinite. This would break the mean-square continuity of the operator, leading to unstable swarm behavior.",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework/01_fragile_gas_framework.md",
+    "section": null,
+    "directive_label": "axiom-bounded-measurement-variance",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": null
+  }
+}

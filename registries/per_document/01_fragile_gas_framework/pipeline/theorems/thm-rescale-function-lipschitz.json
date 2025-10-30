@@ -1,0 +1,53 @@
+{
+  "label": "thm-rescale-function-lipschitz",
+  "name": "Global Lipschitz Continuity of the Smooth Rescale Function",
+  "statement_type": "theorem",
+  "source": null,
+  "chapter": null,
+  "document": null,
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-rescale-lipschitz-constants",
+    "obj-asymmetric-rescale-function"
+  ],
+  "input_axioms": [
+    "axiom-rescale-function"
+  ],
+  "input_parameters": [],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Bound",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "The **Smooth Piecewise Rescale Function** $g_A(z)$ is globally Lipschitz continuous on $\\mathbb{R}$. Its Lipschitz constant, $L_{g_A}$, is the supremum of the absolute value of its first derivative, and is given by:\n$$\n\\boxed{\nL_{g_A} = \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054\n}\n$$\nwhere $L_P$ is the uniform upper bound on the derivative of the polynomial patch from lem-cubic-patch-derivative-bounds.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": {
+    "label": "thm-rescale-function-lipschitz",
+    "name": "Global Lipschitz Continuity of the Smooth Rescale Function",
+    "statement": "The **Smooth Piecewise Rescale Function** $g_A(z)$ is globally Lipschitz continuous on $\\mathbb{R}$. Its Lipschitz constant, $L_{g_A}$, is the supremum of the absolute value of its first derivative, and is given by:\n$$\n\\boxed{\nL_{g_A} = \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054\n}\n$$\nwhere $L_P$ is the uniform upper bound on the derivative of the polynomial patch from lem-cubic-patch-derivative-bounds.",
+    "section": "9. Rescale Transformation",
+    "subsection": "8.2.2.7 Theorem: Global Lipschitz Continuity of the Smooth Rescale Function",
+    "has_proof": true,
+    "key_result": "L_{g_A} = L_P ≈ 1.0054",
+    "input_objects": [
+      "obj-rescale-lipschitz-constants",
+      "obj-asymmetric-rescale-function"
+    ],
+    "input_axioms": [
+      "axiom-rescale-function"
+    ],
+    "input_parameters": [],
+    "output_type": "Bound",
+    "relations_established": [
+      "Rescale function is globally Lipschitz continuous"
+    ],
+    "statement_type": "theorem"
+  }
+}

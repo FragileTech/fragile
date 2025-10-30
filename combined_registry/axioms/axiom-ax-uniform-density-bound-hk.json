@@ -4,5 +4,11 @@
   "mathematical_expression": "\\sup_{t \\geq 0} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M",
   "foundational_framework": "Euclidean Gas",
   "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence"
+  "document": "11_hk_convergence",
+  "name": null,
+  "core_assumption": null,
+  "parameters": null,
+  "condition": null,
+  "failure_mode_analysis": null,
+  "source": null
 }

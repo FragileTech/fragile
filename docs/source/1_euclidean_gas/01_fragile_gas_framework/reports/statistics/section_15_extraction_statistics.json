@@ -1,0 +1,73 @@
+{
+  "source_file": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+  "section": "15. The Status Update Operator",
+  "lines": "4119-4213",
+  "extraction_timestamp": "2025-10-27T16:45:00Z",
+  "entities_extracted": {
+    "definitions": 1,
+    "theorems": 1,
+    "axioms": 0,
+    "proofs": 1,
+    "objects": 1,
+    "constants": 2
+  },
+  "total_entities": 6,
+  "files_created": [
+    "objects/obj-status-update-operator.json",
+    "theorems/thm-post-perturbation-status-update-continuity.json"
+  ],
+  "entity_details": {
+    "definitions": [
+      {
+        "label": "def-status-update-operator",
+        "name": "Status Update Operator",
+        "symbol": "$\\Psi_{\\text{status}}$",
+        "file": "objects/obj-status-update-operator.json"
+      }
+    ],
+    "theorems": [
+      {
+        "label": "thm-post-perturbation-status-update-continuity",
+        "name": "Probabilistic Continuity of the Post-Perturbation Status Update",
+        "file": "theorems/thm-post-perturbation-status-update-continuity.json",
+        "has_proof": true
+      }
+    ],
+    "constants": [
+      {
+        "symbol": "$L_{\\text{death}}$",
+        "name": "Boundary Instability Factor",
+        "description": "Lipschitz constant for death probability from Axiom of Boundary Regularity"
+      },
+      {
+        "symbol": "$\\alpha_B$",
+        "name": "Boundary Smoothing Exponent",
+        "description": "Hölder exponent for boundary regularity from Axiom of Boundary Regularity"
+      }
+    ]
+  },
+  "dependencies_identified": [
+    "def-axiom-boundary-regularity",
+    "def-perturbation-operator",
+    "def-swarm-configuration-space",
+    "def-projection-map",
+    "def-n-particle-displacement-metric"
+  ],
+  "key_concepts": [
+    "Status Update Operator",
+    "Probabilistic Continuity",
+    "Hölder Continuity",
+    "Boundary Regularity",
+    "Operator Composition",
+    "Bernoulli Random Variables",
+    "Expected Status Changes"
+  ],
+  "notes": [
+    "Section contains 1 main definition (Status Update Operator)",
+    "Contains 1 major theorem with complete proof",
+    "Theorem establishes probabilistic continuity of composed operator $\\Psi_{\\text{status}} \\circ \\Psi_{\\text{pert}}$",
+    "Proof uses Bernoulli variance analysis and Hölder continuity bounds",
+    "Constants $L_{\\text{death}}$ and $\\alpha_B$ come from Axiom of Boundary Regularity",
+    "Includes note on probabilistic status variants and independence assumption"
+  ]
+}

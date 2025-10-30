@@ -1,0 +1,46 @@
+{
+  "label": "thm-expected-raw-distance-k1",
+  "name": "Deterministic Behavior of the Expected Raw Distance Vector at k=1",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§10.2.8",
+    "directive_label": "thm-expected-raw-distance-k1",
+    "equation": null,
+    "line_range": [2609, 2645],
+    "url_fragment": null
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "unproven",
+  "input_objects": [
+    "obj-swarm-and-state-space",
+    "obj-distance-to-companion-measurement",
+    "obj-raw-value-operator",
+    "obj-companion-selection-measure"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-N"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [],
+  "internal_propositions": [],
+  "lemma_dag_edges": [],
+  "output_type": "Property",
+  "attributes_added": [],
+  "relations_established": [],
+  "natural_language_statement": "Let S be a swarm state with exactly one alive walker, |A(S)| = 1. The N-dimensional vector of expected raw distances, E[d(S)], is deterministically the zero vector. Any transition between a state S₁ with |A(S₁)| ≥ 2 and a state S₂ with |A(S₂)| = 1 induces a discontinuous change in the expected raw distance vector. The magnitude of this change is not governed by the Lipschitz bounds derived for the k ≥ 2 regime, but is instead given by the norm of the vector in the k ≥ 2 state: ||E[d(S₁)] - E[d(S₂)]||₂² = ||E[d(S₁)]||₂².",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [
+    "def-companion-selection-measure",
+    "def-raw-value-operator",
+    "def-distance-to-companion-measurement"
+  ],
+  "validation_errors": [],
+  "raw_fallback": null
+}

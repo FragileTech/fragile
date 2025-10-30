@@ -2,9 +2,17 @@
   "label": "lem-hypoelliptic-density-bound",
   "name": "Hypoelliptic Regularity Provides Density Bounds",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "11_hk_convergence",
+  "source": {
+    "document_id": "11_hk_convergence",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+    "section": null,
+    "directive_label": "lem-hypoelliptic-density-bound",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-hypoelliptic-density-bound"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -30,21 +38,21 @@
     "tau",
     "c_revival"
   ],
-  "properties_required": {
+  "attributes_required": {
     "obj-kinetic-operator": [
-      "prop-hypoelliptic",
-      "prop-hormander-bracket-condition"
+      "attr-hypoelliptic",
+      "attr-hormander-bracket-condition"
     ],
     "obj-mckean-vlasov-generator": [
-      "prop-smoothing",
-      "prop-gaussian-bounds"
+      "attr-smoothing",
+      "attr-gaussian-bounds"
     ]
   },
   "internal_lemmas": [],
   "internal_propositions": [],
   "lemma_dag_edges": [],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-evolved-density-constant-c-hypo-other",
@@ -54,14 +62,22 @@
       "target_object": "obj-constant-c-hypo",
       "established_by": "lem-hypoelliptic-density-bound",
       "expression": "{'type': 'upper_bound', 'from': 'obj-evolved-density', 'to': 'constant-C-hypo', 'description': 'L^infty bound: ||rho_t||_infty <= C_hypo(M_0, t, gamma, sigma, U, R)'}",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-dict"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence"
+      "source": {
+        "document_id": "11_hk_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+        "section": null,
+        "directive_label": "lem-hypoelliptic-density-bound",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-hypoelliptic-density-bound"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-evolved-density-c-infinity-other",
@@ -71,14 +87,22 @@
       "target_object": "obj-c-infinity",
       "established_by": "lem-hypoelliptic-density-bound",
       "expression": "{'type': 'smoothness', 'from': 'obj-evolved-density', 'to': 'C-infinity', 'description': 'Hypoelliptic smoothing: rho(t, ·) in C^infty(Omega) for t > 0'}",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-dict"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence"
+      "source": {
+        "document_id": "11_hk_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+        "section": null,
+        "directive_label": "lem-hypoelliptic-density-bound",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-hypoelliptic-density-bound"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-transition-kernel-gaussian-bounds-other",
@@ -88,14 +112,29 @@
       "target_object": "obj-gaussian-bounds",
       "established_by": "lem-hypoelliptic-density-bound",
       "expression": "{'type': 'kernel_bound', 'from': 'obj-transition-kernel', 'to': 'gaussian-bounds', 'description': 'Transition kernel satisfies Gaussian bounds with Carnot-Carathéodory distance'}",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-dict"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence"
+      "source": {
+        "document_id": "11_hk_convergence",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/11_hk_convergence.md",
+        "section": null,
+        "directive_label": "lem-hypoelliptic-density-bound",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-hypoelliptic-density-bound"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }

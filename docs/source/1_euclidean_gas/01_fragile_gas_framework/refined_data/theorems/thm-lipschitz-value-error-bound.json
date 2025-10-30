@@ -1,0 +1,99 @@
+{
+  "label": "thm-lipschitz-value-error-bound",
+  "name": "Bounding the Squared Value Error",
+  "statement_type": "theorem",
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "section": "§11.3.3",
+    "directive_label": "thm-lipschitz-value-error-bound",
+    "equation": null,
+    "line_range": [3493, 3533],
+    "url_fragment": "#thm-lipschitz-value-error-bound"
+  },
+  "chapter": "1_euclidean_gas",
+  "document": "01_fragile_gas_framework",
+  "proof": null,
+  "proof_status": "expanded",
+  "input_objects": [
+    "obj-standardization-operator-n-dimensional",
+    "obj-swarm-aggregation-operator-axiomatic",
+    "obj-swarm-and-state-space",
+    "obj-components-mean-square-standardization-error"
+  ],
+  "input_axioms": [],
+  "input_parameters": [
+    "param-kappa-var-min",
+    "param-epsilon-std",
+    "param-V-max",
+    "param-k"
+  ],
+  "attributes_required": {},
+  "internal_lemmas": [
+    "sub-lem-lipschitz-value-error-decomposition",
+    "lem-stats-value-continuity",
+    "thm-z-score-norm-bound"
+  ],
+  "internal_propositions": [],
+  "lemma_dag_edges": [
+    ["sub-lem-lipschitz-value-error-decomposition", "thm-lipschitz-value-error-bound"],
+    ["lem-stats-value-continuity", "thm-lipschitz-value-error-bound"],
+    ["thm-z-score-norm-bound", "thm-lipschitz-value-error-bound"]
+  ],
+  "output_type": "Bound",
+  "attributes_added": [
+    {
+      "label": "attr-lipschitz-value-continuity",
+      "expression": "E_{V}^2(\\mathcal{S}; \\mathbf{v}_1, \\mathbf{v}_2) \\le C_{V,\\text{total}}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2",
+      "object_label": "obj-standardization-operator-n-dimensional",
+      "established_by": "thm-lipschitz-value-error-bound",
+      "timestamp": null,
+      "can_be_refined": true,
+      "refinements": [],
+      "source": null
+    }
+  ],
+  "relations_established": [],
+  "natural_language_statement": "Let S be a fixed swarm state and let v1 and v2 be two raw value vectors. The squared value error, defined as the squared Euclidean norm of the difference between the N-Dimensional Standardization Operator z(S, v, M) applied to v1 and v2, is deterministically bounded. This bound is proportional to the squared Euclidean norm of the difference between the two value vectors, with the proportionality constant being the Total Value Error Coefficient C_V,total(S), which is a deterministic, finite constant that depends on the swarm state S but not on the raw value vectors.",
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": "C_{V,\\text{total}}",
+  "uses_definitions": [
+    "def-statistical-properties-measurement",
+    "def-swarm-aggregation-operator-axiomatic",
+    "def-value-error-coefficients",
+    "sub-lem-lipschitz-value-error-decomposition"
+  ],
+  "validation_errors": [],
+  "raw_fallback": {
+    "theorem_id": "thm-lipschitz-value-error-bound",
+    "label": "thm-lipschitz-value-error-bound",
+    "title": "Bounding the Squared Value Error",
+    "statement_type": "theorem",
+    "statement": "Let $\\mathcal{S}$ be a fixed swarm state. Let $\\mathbf{v}_1$ and $\\mathbf{v}_2$ be two raw value vectors. The squared value error, $E_V^2(\\mathcal{S}; \\mathbf{v}_1, \\mathbf{v}_2) = \\|z(\\mathcal{S}, \\mathbf{v}_1, M) - z(\\mathcal{S}, \\mathbf{v}_2, M)\\|_2^2$, is deterministically bounded as follows:\n\n$$\nE_{V}^2(\\mathcal{S}; \\mathbf{v}_1, \\mathbf{v}_2) \\le C_{V,\\text{total}}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2\n$$\n\nwhere $C_{V,\\text{total}}(\\mathcal{S})$ is the **Total Value Error Coefficient**, a deterministic, finite constant that depends on the state $\\mathcal{S}$ but not on the raw value vectors, as formally defined in def-value-error-coefficients.",
+    "formal_statement": "$$\nE_{V}^2(\\mathcal{S}; \\mathbf{v}_1, \\mathbf{v}_2) \\le C_{V,\\text{total}}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2\n$$\n\nwhere the **Total Value Error Coefficient** is defined as:\n\n$$\nC_{V,\\text{total}}(\\mathcal{S}) := 3 \\cdot \\left( C_{V,\\text{direct}} + C_{V,\\mu}(\\mathcal{S}) + C_{V,\\sigma}(\\mathcal{S}) \\right)\n$$\n\nwith:\n- $C_{V,\\text{direct}} := \\frac{1}{\\sigma'^2_{\\min\\,\\text{bound}}}$\n- $C_{V,\\mu}(\\mathcal{S}) := \\frac{k \\cdot (L_{\\mu,M}(\\mathcal{S}))^2}{\\sigma'^2_{\\min\\,\\text{bound}}}$\n- $C_{V,\\sigma}(\\mathcal{S}) := k \\left( \\frac{2V_{\\max}}{\\sigma'_{\\min\\,\\text{bound}}} \\right)^2 \\left( \\frac{L_{\\sigma',M}(\\mathcal{S})}{\\sigma'_{\\min\\,\\text{bound}}} \\right)^2$\n- $\\sigma'_{\\min\\,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}$",
+    "proof_sketch": "The proof proceeds by bounding the squared L2-norm of each of the three components from the algebraic decomposition in sub-lem-lipschitz-value-error-decomposition and then summing them:\n1. **Direct Shift Component**: $\\|\\Delta_{\\text{direct}}\\|_2^2 \\le \\frac{1}{\\sigma'^2_{\\min\\,\\text{bound}}} \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2$\n2. **Mean Shift Component**: $\\|\\Delta_{\\text{mean}}\\|_2^2 \\le \\frac{k \\cdot (L_{\\mu,M}(\\mathcal{S}))^2}{\\sigma'^2_{\\min\\,\\text{bound}}} \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2$\n3. **Denominator Shift Component**: Bounded using thm-z-score-norm-bound and lem-stats-value-continuity\n4. **Combine**: Use triangle inequality to combine all three components with factor of 3",
+    "proof_status": "complete",
+    "dependencies": [
+      "def-value-error-coefficients",
+      "lem-stats-value-continuity",
+      "thm-z-score-norm-bound",
+      "sub-lem-lipschitz-value-error-decomposition",
+      "def-statistical-properties-measurement",
+      "def-swarm-aggregation-operator-axiomatic"
+    ],
+    "used_in": [
+      "thm-global-continuity-patched-standardization"
+    ],
+    "tags": [
+      "lipschitz",
+      "value-error",
+      "continuity",
+      "deterministic",
+      "standardization",
+      "error-decomposition"
+    ],
+    "importance": "major",
+    "notes": "This theorem establishes deterministic Lipschitz continuity of the N-Dimensional Standardization Operator with respect to changes in raw value vectors for a fixed swarm state. It is a key component of the global continuity analysis and demonstrates that the patched operator using regularized standard deviation achieves guaranteed stability. The bound is explicit and computable, with coefficients defined in def-value-error-coefficients."
+  }
+}

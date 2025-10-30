@@ -2,9 +2,17 @@
   "label": "lem-expected-distance-change",
   "name": "Expected Cross-Distance Change",
   "statement_type": "lemma",
-  "source": null,
-  "chapter": "1_euclidean_gas",
-  "document": "04_wasserstein_contraction",
+  "source": {
+    "document_id": "04_wasserstein_contraction",
+    "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+    "section": null,
+    "directive_label": "lem-expected-distance-change",
+    "equation": null,
+    "line_range": null,
+    "url_fragment": "#lem-expected-distance-change"
+  },
+  "chapter": null,
+  "document": null,
   "proof": null,
   "proof_status": "unproven",
   "input_objects": [
@@ -21,7 +29,7 @@
     "c_geom",
     "p_bar_I"
   ],
-  "properties_required": {
+  "attributes_required": {
     "coupling": [
       "Cluster-preserving coupling applies",
       "Shared cloning randomness",
@@ -49,7 +57,7 @@
     ]
   ],
   "output_type": "Bound",
-  "properties_added": [],
+  "attributes_added": [],
   "relations_established": [
     {
       "label": "rel-lem-expected-distance-change-0-approximation",
@@ -59,14 +67,22 @@
       "target_object": "obj-target-complement",
       "established_by": "lem-expected-distance-change",
       "expression": "E[Δ D_IJ] ≤ -p̄_I · c_geom ||μ_x(I_1) - μ_x(J_1)||² + O(δ²)",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "04_wasserstein_contraction"
+      "source": {
+        "document_id": "04_wasserstein_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+        "section": null,
+        "directive_label": "lem-expected-distance-change",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-expected-distance-change"
+      },
+      "chapter": null,
+      "document": null
     },
     {
       "label": "rel-lem-expected-distance-change-1-equivalence",
@@ -76,14 +92,29 @@
       "target_object": "obj-target-complement",
       "established_by": "lem-expected-distance-change",
       "expression": "Quadratic identity: ||a - c||² - ||b - c||² = ||a - b||² + 2⟨a - b, b - c⟩",
-      "properties": [],
+      "attributes": [],
       "tags": [
         "inferred-from-string"
       ],
       "timestamp": null,
-      "source": null,
-      "chapter": "1_euclidean_gas",
-      "document": "04_wasserstein_contraction"
+      "source": {
+        "document_id": "04_wasserstein_contraction",
+        "file_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+        "section": null,
+        "directive_label": "lem-expected-distance-change",
+        "equation": null,
+        "line_range": null,
+        "url_fragment": "#lem-expected-distance-change"
+      },
+      "chapter": null,
+      "document": null
     }
-  ]
+  ],
+  "natural_language_statement": null,
+  "assumptions": [],
+  "conclusion": null,
+  "equation_label": null,
+  "uses_definitions": [],
+  "validation_errors": [],
+  "raw_fallback": null
 }
