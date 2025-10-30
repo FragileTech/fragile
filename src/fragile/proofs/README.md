@@ -130,12 +130,12 @@ format_directive_hints_for_llm(directives: List[DirectiveHint]) -> str
 - **Verbatim extraction**: Preserve exact LaTeX, notation, wording
 - **No interpretation**: Don't simplify or rephrase
 - **Complete context**: Extract text before/after for semantic understanding
-- **Temporary IDs**: Assign `raw-thm-001`, `raw-def-001`, etc. for tracking
+- **Descriptive labels**: Assign `thm-exponential-convergence`, `def-walker-state`, etc. for tracking
 
 **Models**:
 ```python
 class RawTheorem(BaseModel):
-    temp_id: str                      # "raw-thm-001"
+    label: str                        # "thm-exponential-convergence"
     label_text: str                   # "Theorem 3.1"
     statement_type: Literal[...]      # "theorem", "lemma", etc.
     context_before: Optional[str]     # Preceding paragraph
@@ -143,7 +143,6 @@ class RawTheorem(BaseModel):
     conclusion_formula_latex: Optional[str]
     equation_label: Optional[str]     # "(3.1)" if numbered
     explicit_definition_references: List[str]
-    source_section: str               # "§2.1"
 ```
 
 **Output**: `StagingDocument` containing all raw entities from the section
@@ -163,7 +162,7 @@ class RawTheorem(BaseModel):
    ctx = ResolutionContext()
    ctx.add_staging_document(staging_doc)
    ```
-   - Builds reverse lookups: label_text → temp_id, term → definition, etc.
+   - Builds reverse lookups: label_text → label, term → definition, etc.
 
 2. **Entity-by-Entity Enrichment**:
    For each raw entity:
@@ -340,7 +339,7 @@ StagingDocument     # Container for all raw entities
 **Characteristics**:
 - Frozen (immutable)
 - String-heavy (minimal interpretation)
-- Temporary IDs (`raw-thm-001`)
+- Descriptive labels (`thm-exponential-convergence`, `def-walker-state`)
 - Full context preservation
 
 ---
@@ -353,15 +352,15 @@ StagingDocument     # Container for all raw entities
 class ResolutionContext(BaseModel):
     """Cross-referencing knowledge base during enrichment."""
 
-    # Entity storage (temp_id → entity)
+    # Entity storage (label → entity)
     definitions: Dict[str, RawDefinition]
     theorems: Dict[str, RawTheorem]
     proofs: Dict[str, RawProof]
     # ... other entity types
 
     # Reverse lookups (for fast resolution)
-    label_text_to_theorem: Dict[str, str]     # "Theorem 2.1" → "raw-thm-001"
-    term_to_definition: Dict[str, str]        # "walker" → "raw-def-001"
+    label_text_to_theorem: Dict[str, str]     # "Theorem 2.1" → "thm-exponential-convergence"
+    term_to_definition: Dict[str, str]        # "walker" → "def-walker-state"
 
     # Methods
     def resolve_theorem_reference(self, label_text: str) -> Optional[str]
@@ -373,7 +372,7 @@ class ResolutionContext(BaseModel):
 class EnrichmentError(Exception):
     """Exception for enrichment failures."""
     error_type: ErrorType              # PARSE_FAILURE, REFERENCE_UNRESOLVED, etc.
-    entity_id: str                     # "raw-thm-001"
+    entity_id: str                     # "thm-exponential-convergence"
     raw_data: Dict[str, Any]           # Preserved for retry
     context: Dict[str, Any]            # Additional debug info
 ```

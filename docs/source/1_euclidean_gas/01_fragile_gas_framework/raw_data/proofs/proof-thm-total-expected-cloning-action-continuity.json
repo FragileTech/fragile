@@ -1,37 +1,14 @@
 {
   "label": "proof-thm-total-expected-cloning-action-continuity",
-  "proves": "thm-total-expected-cloning-action-continuity",
-  "type": "proof",
+  "proves_label_text": "Proof of Theorem: Total Expected Cloning Action Continuity",
   "proof_text": "Let $\\overline{P}_{k,i} = \\overline{P}_{\\text{clone}}(\\mathcal{S}_k)_i$. We introduce an intermediate term and apply the triangle inequality to decompose the total error. Let $P_{k,i}(\\mathbf{V}) := P_{\\text{clone}}(\\mathcal{S}_k, \\mathbf{V})_i$ be the conditional expected action. The total error is $|\\mathbb{E}_{\\mathbf{V}_1}[P_{1,i}(\\mathbf{V}_1)] - \\mathbb{E}_{\\mathbf{V}_2}[P_{2,i}(\\mathbf{V}_2)]|$.\n\nWe add and subtract the term $\\mathbb{E}_{\\mathbf{V}_1}[P_{2,i}(\\mathbf{V}_1)]$:\n\n$$\n\\le |\\mathbb{E}_{\\mathbf{V}_1}[P_{1,i}(\\mathbf{V}_1) - P_{2,i}(\\mathbf{V}_1)]| + |\\mathbb{E}_{\\mathbf{V}_1}[P_{2,i}(\\mathbf{V}_1)] - \\mathbb{E}_{\\mathbf{V}_2}[P_{2,i}(\\mathbf{V}_2)]|\n$$\n\nThe first term is the **Structural Error Component**, $E_{\\text{struct}}^{(\\overline{P})}$. The second term is the **Value Error Component**, $E_{\\text{val}}^{(\\overline{P})}$.",
-  "proof_structure": [
-    "Define conditional expected action",
-    "Introduce intermediate term",
-    "Apply triangle inequality",
-    "Identify structural and value components"
-  ],
-  "key_techniques": [
-    "triangle inequality",
-    "intermediate term method"
-  ],
-  "dependencies": [
-    "def-expected-cloning-action"
-  ],
-  "tags": [
-    "cloning",
-    "continuity",
-    "proof"
-  ],
-  "context": "Section 16: The Cloning Transition Measure, subsection 15.2.4",
-  "source_file": "01_fragile_gas_framework.md",
-  "line_number": 4382,
-  "extraction_date": "2025-10-27T21:50:09.741087",
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "15.2.4",
-    "section_name": null,
+    "section_name": "Decomposition of Total Expected Cloning Action Error",
     "directive_label": "proof-thm-total-expected-cloning-action-continuity",
-    "equation": null,
     "line_range": [
       4392,
       4403

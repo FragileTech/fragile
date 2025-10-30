@@ -1,5 +1,4 @@
 {
-  "temp_id": "raw-param-005",
   "symbol": "L_φ",
   "meaning": "Lipschitz constant bound related to displacement",
   "full_text": "The framework's Axiom of Bounded Displacement guarantees $L_\\varphi \\leq 1$ through Lemma 2.3",
@@ -13,6 +12,8 @@
     "directive_label": null,
     "equation": null,
     "line_range": null,
-    "url_fragment": null
-  }
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
+  },
+  "label": "param-l-phi"
 }

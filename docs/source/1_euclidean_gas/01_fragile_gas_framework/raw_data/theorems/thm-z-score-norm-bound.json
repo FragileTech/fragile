@@ -1,7 +1,5 @@
 {
   "label": "thm-z-score-norm-bound",
-  "name": "General Bound on the Norm of the Standardized Vector",
-  "statement": "Let $\\mathbf{v} = (v_i)_{i \\in \\mathcal{A}}$ be a $k$-dimensional vector of raw values from an alive set $\\mathcal{A}$ of size $k=|\\mathcal{A}| \\ge 1$. The raw values are bounded such that $|v_i| \\le V_{\\max}$. Let the statistical properties $(\\mu_{\\mathcal{A}}, \\sigma'_{\\mathcal{A}})$ be calculated using any valid **Swarm Aggregation Operator** $M$ that guarantees the mean is bounded by the values, i.e., $|\\mu_{\\mathcal{A}}| \\le V_{\\max}$.\n\nLet $\\mathbf{z}$ be the corresponding $k$-dimensional standardized vector, where each component is $z_i = (v_i - \\mu_{\\mathcal{A}}) / \\sigma'_{\\mathcal{A}}$ and the regularized standard deviation is $\\sigma'_{\\mathcal{A}} = \\sigma'_{\\text{reg}}(\\operatorname{Var}[\\mu_{\\mathbf{v}}])$ from def-statistical-properties-measurement. Denote the minimal value of this map by $\\sigma'_{\\min,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\mathrm{std}}^2}$.\n\nThe squared Euclidean norm of the standardized vector $\\mathbf{z}$ is strictly bounded by a constant that depends on the number of alive walkers and the global parameters:\n\n$$\n\\|\\mathbf{z}\\|_2^2 \\le k \\left( \\frac{2V_{\\max}}{\\varepsilon_{\\mathrm{std}}} \\right)^2\n$$",
   "proof_sketch": "The proof proceeds by first establishing a uniform bound on the magnitude of any single component of the standardized vector and then summing the squares of these bounds. For a single component $|z_i| \\le (2V_{\\max})/\\sigma'_{\\min,\\text{bound}}$ by bounding the numerator $|v_i - \\mu_{\\mathcal{A}}| \\le 2V_{\\max}$ and using the lower bound on the denominator $\\sigma'_{\\mathcal{A}} \\ge \\sigma'_{\\min,\\text{bound}}$. Summing over all $k$ components yields the final bound.",
   "source_section": "12",
   "source_document": "01_fragile_gas_framework.md",
@@ -36,6 +34,9 @@
       2922,
       2932
     ],
-    "url_fragment": "#thm-z-score-norm-bound"
-  }
+    "url_fragment": "#thm-z-score-norm-bound",
+    "chapter": "1"
+  },
+  "label_text": "General Bound on the Norm of the Standardized Vector",
+  "full_statement_text": "Let $\\mathbf{v} = (v_i)_{i \\in \\mathcal{A}}$ be a $k$-dimensional vector of raw values from an alive set $\\mathcal{A}$ of size $k=|\\mathcal{A}| \\ge 1$. The raw values are bounded such that $|v_i| \\le V_{\\max}$. Let the statistical properties $(\\mu_{\\mathcal{A}}, \\sigma'_{\\mathcal{A}})$ be calculated using any valid **Swarm Aggregation Operator** $M$ that guarantees the mean is bounded by the values, i.e., $|\\mu_{\\mathcal{A}}| \\le V_{\\max}$.\nLet $\\mathbf{z}$ be the corresponding $k$-dimensional standardized vector, where each component is $z_i = (v_i - \\mu_{\\mathcal{A}}) / \\sigma'_{\\mathcal{A}}$ and the regularized standard deviation is $\\sigma'_{\\mathcal{A}} = \\sigma'_{\\text{reg}}(\\operatorname{Var}[\\mu_{\\mathbf{v}}])$ from [](#def-statistical-properties-measurement). Denote the minimal value of this map by $\\sigma'_{\\min\\,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\mathrm{std}}^2}$.\nThe squared Euclidean norm of the standardized vector $\\mathbf{z}$ is strictly bounded by a constant that depends on the number of alive walkers and the global parameters:\n\n$$\n\\|\\mathbf{z}\\|_2^2 \\le k \\left( \\frac{2V_{\\max}}{\\varepsilon_{\\mathrm{std}}} \\right)^2\n$$"
 }

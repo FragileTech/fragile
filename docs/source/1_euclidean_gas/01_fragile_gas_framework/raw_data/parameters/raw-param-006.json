@@ -1,5 +1,4 @@
 {
-  "temp_id": "raw-param-006",
   "symbol": "ε_std",
   "meaning": "standardization error parameter",
   "full_text": "For example, if fitness variance is unstable, check $\\varepsilon_{\\text{std}}$ (Section 9), variance axioms (Section 3), and $L_R$ (Section 4).",
@@ -16,6 +15,8 @@
       136,
       136
     ],
-    "url_fragment": null
-  }
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
+  },
+  "label": "param-epsilon-std"
 }

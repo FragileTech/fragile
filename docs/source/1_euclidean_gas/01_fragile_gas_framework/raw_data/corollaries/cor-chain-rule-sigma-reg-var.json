@@ -1,5 +1,4 @@
 {
-  "temp_id": "raw-cor-001",
   "label": "cor-chain-rule-sigma-reg-var",
   "label_text": "Corollary: Chain‑rule bound for σ'_reg ∘ Var",
   "name": "Chain‑rule bound for σ'_reg ∘ Var",
@@ -25,7 +24,8 @@
     "directive_label": "cor-chain-rule-sigma-reg-var",
     "equation": null,
     "line_range": null,
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
   "depends_on": [
     "lem-lipschitz-variance-functional",

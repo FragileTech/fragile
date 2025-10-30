@@ -1,20 +1,26 @@
 {
   "label": "def-w2-output-metric",
-  "type": "definition",
-  "name": "Wasserstein-2 on the output space (quotient)",
-  "section": "18",
-  "subsection": "17.2.4.4",
-  "source_file": "01_fragile_gas_framework.md",
-  "source_lines": "4627-5086",
-  "extraction_date": "2025-10-27",
-  "status": "extracted",
+  "term": "Wasserstein-2 on the output space (quotient)",
+  "full_text": "Let $(\\overline{\\Sigma}_N, \\overline d_{\\text{Disp},\\mathcal{Y}})$ denote the $N$-particle quotient state space with the displacement metric. For two probability measures $\\mu,\\nu$ on $\\overline{\\Sigma}_N$, define\n$$\n\nW_2^2(\\mu,\\nu) := \\inf_{\\pi\\in\\Pi(\\mu,\\nu)} \\int \\overline d_{\\text{Disp},\\mathcal{Y}}(s',\\tilde s')^2\\,\\mathrm{d}\\pi(s',\\tilde s'),\n\n$$\nwhere $\\Pi(\\mu,\\nu)$ is the set of couplings with marginals $\\mu$ and $\\nu$.",
+  "parameters_mentioned": [
+    "(\\overline{\\Sigma}_N, \\overline d_{\\text{Disp},\\mathcal{Y}})",
+    "N",
+    "\\mu",
+    "\\nu",
+    "\\overline{\\Sigma}_N",
+    "W_2^2(\\mu,\\nu)",
+    "\\pi",
+    "\\Pi(\\mu,\\nu)",
+    "s'",
+    "\\tilde s'"
+  ],
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "17.2.4.4",
-    "section_name": null,
+    "section_name": "W2 Coupling: Removing Constant Offsets",
     "directive_label": "def-w2-output-metric",
-    "equation": null,
     "line_range": [
       4992,
       5001

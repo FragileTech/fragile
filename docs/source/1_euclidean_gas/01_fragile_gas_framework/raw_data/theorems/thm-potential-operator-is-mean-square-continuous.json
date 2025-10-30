@@ -1,7 +1,5 @@
 {
   "label": "thm-potential-operator-is-mean-square-continuous",
-  "name": "The Fitness Potential Operator is Mean-Square Continuous",
-  "statement": "The **Fitness Potential Operator** is **mean-square continuous**. There exists a deterministic function $F_{\\text{pot}}(\\mathcal{S}_1, \\mathcal{S}_2)$, the **Expected Squared Potential Error Bound**, such that:\n\n$$\n\\mathbb{E}[\\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2] \\le F_{\\text{pot}}(\\mathcal{S}_1, \\mathcal{S}_2)\n$$",
   "hypotheses": [
     "Two swarm states $\\mathcal{S}_1, \\mathcal{S}_2$"
   ],
@@ -48,6 +46,9 @@
       4408,
       4425
     ],
-    "url_fragment": null
-  }
+    "url_fragment": null,
+    "chapter": "1"
+  },
+  "label_text": "The Fitness Potential Operator is Mean-Square Continuous",
+  "full_statement_text": "The **Fitness Potential Operator** is **mean-square continuous**. There exists a deterministic function $F_{\\text{pot}}(\\mathcal{S}_1, \\mathcal{S}_2)$, the **Expected Squared Potential Error Bound**, such that:\n\n$$\n\\mathbb{E}[\\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2] \\le F_{\\text{pot}}(\\mathcal{S}_1, \\mathcal{S}_2)\n$$"
 }

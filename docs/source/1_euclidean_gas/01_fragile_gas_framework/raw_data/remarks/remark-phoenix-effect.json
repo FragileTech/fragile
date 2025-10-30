@@ -1,5 +1,4 @@
 {
-  "temp_id": "raw-remark-008",
   "remark_type": "observation",
   "full_text": "The revival state exhibits a remarkable 'phoenix effect': when disaster strikes and only one walker survives, the swarm can rise from the ashes and fully resurrect itself in a single step.\n\nThis is not a gradual recovery but an instantaneous full revival where:\n1. The lone survivor stays put (comparing itself to itself yields zero cloning score)\n2. All N-1 dead walkers simultaneously clone from the survivor (their scores are guaranteed to exceed the maximum threshold)\n3. The intermediate state goes from 1 alive walker to N alive walkers\n\nThe beauty of this mechanism is that it's deterministic rather than probabilistic. Under the Axiom of Guaranteed Revival, there's no randomness in the cloning decisions - the math guarantees full revival.\n\nThe only remaining risk is the final perturbation step, where all revived walkers might simultaneously wander into forbidden territory. But this is now a single, well-defined probabilistic event rather than gradual attrition.",
   "source_section": "§17 The Revival State",
@@ -11,6 +10,8 @@
     "directive_label": null,
     "equation": null,
     "line_range": null,
-    "url_fragment": null
-  }
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
+  },
+  "label": "remark-phoenix-effect"
 }

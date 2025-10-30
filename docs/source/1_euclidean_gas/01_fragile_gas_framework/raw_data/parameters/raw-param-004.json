@@ -1,5 +1,4 @@
 {
-  "temp_id": "raw-param-004",
   "symbol": "N",
   "meaning": "number of walkers in swarm",
   "full_text": "a sophisticated composition of measurement, standardization, fitness evaluation, perturbation, status checking, and cloning operations that evolves a swarm of $N$ walkers from one discrete time step to the next",
@@ -16,6 +15,8 @@
       19,
       19
     ],
-    "url_fragment": null
-  }
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
+  },
+  "label": "param-n"
 }

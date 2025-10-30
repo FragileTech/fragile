@@ -1,35 +1,14 @@
 {
   "label": "proof-lem-total-clone-prob-structural-error",
-  "proves": "lem-total-clone-prob-structural-error",
-  "type": "proof",
+  "proves_label_text": "Proof of Lemma: Total Clone Probability Structural Error",
   "proof_text": "The structural error is $|E_V_1[P_1,i(V_1) - P_2,i(V_1)]|$. By Jensen's inequality, this is $\\leq E_V_1[|P_1,i(V_1) - P_2,i(V_1)|]$. From thm-expected-cloning-action-continuity, the term inside the expectation is bounded by $C_{\\text{struct}}^{(π)}(k_1) \\cdot n_c$. Since this bound is a deterministic constant, its expectation is the bound itself.",
-  "proof_structure": [
-    "Apply Jensen's inequality",
-    "Use continuity theorem bound",
-    "Note deterministic constant"
-  ],
-  "key_techniques": [
-    "Jensen's inequality"
-  ],
-  "dependencies": [
-    "thm-expected-cloning-action-continuity"
-  ],
-  "tags": [
-    "cloning",
-    "error-bound",
-    "proof"
-  ],
-  "context": "Section 16: The Cloning Transition Measure, subsection 15.2.5",
-  "source_file": "01_fragile_gas_framework.md",
-  "line_number": 4402,
-  "extraction_date": "2025-10-27T21:50:09.741088",
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "15.2.5",
-    "section_name": null,
+    "section_name": "Total Cloning Probability Error Bounds",
     "directive_label": "proof-lem-total-clone-prob-structural-error",
-    "equation": null,
     "line_range": [
       4412,
       4416

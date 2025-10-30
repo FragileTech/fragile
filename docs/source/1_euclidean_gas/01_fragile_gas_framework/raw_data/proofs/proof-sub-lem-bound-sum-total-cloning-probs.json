@@ -1,47 +1,14 @@
 {
   "label": "proof-sub-lem-bound-sum-total-cloning-probs",
-  "proves": "sub-lem-bound-sum-total-cloning-probs",
-  "type": "proof",
+  "proves_label_text": "Proof of Sub-Lemma: Bound on Sum of Total Cloning Probabilities",
   "proof_text": "The proof proceeds by bounding the change in the cloning probability and then relating that change to the input displacement.\n\n1. **Decompose the Sum.**\nUsing the triangle inequality, we can bound the sum:\n$$\n\\sum_{i=1}^N \\left( \\overline{P}_{\\text{clone}}(\\mathcal{S}_1)_i + \\overline{P}_{\\text{clone}}(\\mathcal{S}_2)_i \\right) \\le \\sum_{i=1}^N |\\overline{P}_{\\text{clone}}(\\mathcal{S}_1)_i - \\overline{P}_{\\text{clone}}(\\mathcal{S}_2)_i| + 2\\sum_{i=1}^N \\overline{P}_{\\text{clone}}(\\mathcal{S}_2)_i\n$$\n\nThe second term, $2\\sum \\overline{P}_{\\text{clone}}(\\mathcal{S}_2)_i$, is bounded by the state-dependent constant $2N$. This will be absorbed into the final offset, $K_P$. The core of the proof is to bound the first term, which is the L1-norm of the difference between the total cloning probability vectors, $\\|\\Delta \\overline{\\mathbf{P}}\\|_1$.\n\n2. **Bound the L1-Norm of the Probability Difference.**\nFrom the continuity of the total expected cloning action (thm-total-expected-cloning-action-continuity), we have a bound for each component, which we sum over all **N** walkers:\n$$\n\\|\\Delta \\overline{\\mathbf{P}}\\|_1 = \\sum_{i=1}^N |\\overline{P}_{\\text{clone}}(\\mathcal{S}_1)_i - \\overline{P}_{\\text{clone}}(\\mathcal{S}_2)_i| \\le \\sum_{i=1}^N (E_{\\text{struct}}^{(\\overline{P})} + E_{\\text{val}}^{(\\overline{P})})\n$$\n\n- The structural error term from lem-total-clone-prob-structural-error is bounded by $N \\cdot C_{\\text{struct}}^{(\\pi)}(k_1) \\cdot n_c$.\n- The value error term from lem-total-clone-prob-value-error is bounded by $N \\cdot C_{\\text{val}}^{(\\pi)} \\sqrt{2N \\cdot F_{\\text{pot}}}$.\n\n3. **Substitute the Bound for the Fitness Potential Error ($F_{\\text{pot}}$).**\nThe crucial step is to substitute the bound for the **Expected Squared Potential Error Bound** ($F_{\\text{pot}}$) from thm-fitness-potential-mean-square-continuity. $F_{\\text{pot}}$ is itself a function of the input displacement components: $F_{\\text{pot}}(S_1, S_2) = F_unstable + F_{\\text{stable}}$, where $F_{\\text{stable}}$ is bounded by the mean-square errors of the standardization pipelines for reward and distance. The distance standardization error ($E_[\\|\\Deltaz_d\\|^2]$) from thm-distance-operator-mean-square-continuity contains a term proportional to $n_c^2$.\n\nTherefore, the full bound for $F_{\\text{pot}}$ takes the form:\n$$\nF_{\\text{pot}} \\le A_1 \\cdot \\Delta_{\\text{pos}}^2 + A_2 \\cdot n_c + A_3 \\cdot n_c^2 + A_4\n$$\nwhere $A_k$ are state-dependent coefficients.\n\n4. **Relate Displacement Components to $V_{\\text{in}}$.**\nWe relate the input displacement components to the total input squared displacement $V_{\\text{in}}$ using the definitions from def-displacement-components:\n- $\\Delta_{\\text{pos}}^2 \\le N \\cdot V_{\\text{in}}$\n- $n_c \\le \\frac{N}{\\lambda_{\\text{status}}} \\cdot V_{\\text{in}}$\n- $n_c^2 \\le \\left(\\frac{N}{\\lambda_{\\text{status}}}\\right)^2 \\cdot V_{\\text{in}}^2$\n\nSubstituting these into the bound for $F_{\\text{pot}}$ shows that $F_{\\text{pot}}$ is bounded by a quadratic function of $V_{\\text{in}}$: $F_{\\text{pot}} <= B_2 V_{\\text{in}}^2 + B_1 V_{\\text{in}} + B_0$.\n\n5. **Finalize the Bound on the L1-Norm.**\nThe term $\\sqrt{F_{\\text{pot}}}$ is therefore bounded by $\\sqrt{B_2 V_{\\text{in}}^2 + B_1 V_{\\text{in}} + B_0}$, which is asymptotically linear in $V_{\\text{in}}$ for large $V_{\\text{in}}$. Applying lem-subadditivity-power with $\\alpha=1/2$ yields $\\sqrt{a+b} \\le \\sqrt{a} + \\sqrt{b}$, so we can bound $\\sqrt{F_{\\text{pot}}}$ by a sum of linear and square-root terms of $V_{\\text{in}}$.\n\nCombining all terms, the total L1-norm $\\|\\DeltaP\\|_1$ is bounded by an expression of the form $C'_P V_{\\text{in}} + H'_P sqrt(V_{\\text{in}}) + K'_P$. Absorbing the term **2N** into the constant offset gives the final result as stated in the sub-lemma.",
-  "proof_structure": [
-    "Decompose sum using triangle inequality",
-    "Bound L1-norm of probability difference",
-    "Substitute fitness potential error bound",
-    "Relate displacement components to input",
-    "Finalize bound with square root simplification"
-  ],
-  "key_techniques": [
-    "triangle inequality",
-    "L1-norm bounds",
-    "composition",
-    "displacement component relations"
-  ],
-  "dependencies": [
-    "thm-total-expected-cloning-action-continuity",
-    "lem-total-clone-prob-structural-error",
-    "lem-total-clone-prob-value-error",
-    "thm-fitness-potential-mean-square-continuity",
-    "thm-distance-operator-mean-square-continuity",
-    "def-displacement-components",
-    "lem-subadditivity-power"
-  ],
-  "tags": [
-    "cloning",
-    "probability-sum",
-    "proof",
-    "hölder"
-  ],
-  "context": "Section 16: The Cloning Transition Measure, subsection 15.2.8.3",
-  "source_file": "01_fragile_gas_framework.md",
-  "line_number": 4512,
-  "extraction_date": "2025-10-27T21:50:09.741093",
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "15.2.8.3",
-    "section_name": null,
+    "section_name": "Bound on Sum of Total Cloning Probabilities",
     "directive_label": "proof-sub-lem-bound-sum-total-cloning-probs",
-    "equation": null,
     "line_range": [
       4522,
       4564

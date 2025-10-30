@@ -18,6 +18,10 @@
       17,
       42
     ],
-    "url_fragment": null
-  }
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
+  },
+  "meaning": "Reward Lipschitz Constant",
+  "full_text": "Reward Lipschitz Constant. Symbol: $L_R$. Type: real. Constraints: $L_R \\ge 0$.",
+  "scope": "global"
 }

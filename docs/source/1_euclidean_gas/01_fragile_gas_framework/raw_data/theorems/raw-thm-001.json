@@ -1,8 +1,8 @@
 {
-  "temp_id": "raw-thm-001",
-  "label_text": "thm-revival-guarantee",
+  "label": "thm-revival-guarantee",
+  "label_text": "Almost‑sure revival under the global constraint",
   "statement_type": "theorem",
-  "full_statement_text": "Assume the global constraint $\\varepsilon_{\\text{clone}}\\,p_{\\max} < \\eta^{\\alpha+\\beta}$. Let $\\mathcal S$ be any swarm with at least one alive walker ($|\\mathcal A(\\mathcal S)|\\ge 1$) and let $i\\in\\mathcal D(\\mathcal S)$ be dead. Then, under the cloning rule with threshold $T_{\\text{clone}}\\sim\\mathrm{Unif}(0,p_{\\max})$ and a per‑dead‑walker score $S_i$ computed from an alive companion as in §16.1, we have\n\n$$\n\\mathbb P\\big[\\text{$i$ is revived in the cloning stage}\\big] \\;=\\;1.\n$$\n\nIn particu",
+  "full_statement_text": "Assume the global constraint $\\varepsilon_{\\text{clone}}\\,p_{\\max} < \\eta^{\\alpha+\\beta}$. Let $\\mathcal S$ be any swarm with at least one alive walker ($|\\mathcal A(\\mathcal S)|\\ge 1$) and let $i\\in\\mathcal D(\\mathcal S)$ be dead. Then, under the cloning rule with threshold $T_{\\text{clone}}\\sim\\mathrm{Unif}(0,p_{\\max})$ and a per‑dead‑walker score $S_i$ computed from an alive companion as in §16.1, we have\n\n$$\n\\mathbb P\\big[\\text{$i$ is revived in the cloning stage}\\big] \\;=\\;1.\n$$\n\nIn particular, $S_i > p_{\\max}$ surely, hence $S_i > T_{\\text{clone}}$ for every threshold realization. The conclusion holds also when $|\\mathcal A(\\mathcal S)|=1$ (single‑survivor case) since the companion selection measure assigns the unique alive index to every dead walker (cf. [](#def-companion-selection-measure)).",
   "source_section": "§3",
   "input_objects": [],
   "input_axioms": [],
@@ -12,14 +12,15 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1",
     "section": "3",
     "section_name": null,
     "directive_label": "thm-revival-guarantee",
     "equation": null,
     "line_range": [
-      620,
-      620
+      618,
+      627
     ],
-    "url_fragment": null
+    "url_fragment": "#thm-revival-guarantee"
   }
 }

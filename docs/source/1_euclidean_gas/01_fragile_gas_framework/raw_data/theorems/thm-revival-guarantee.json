@@ -1,6 +1,5 @@
 {
   "label": "thm-revival-guarantee",
-  "name": "Almost‑sure revival under the global constraint",
   "statement_type": "theorem",
   "source": {
     "document_id": "01_fragile_gas_framework",
@@ -13,7 +12,8 @@
       618,
       627
     ],
-    "url_fragment": "#thm-revival-guarantee"
+    "url_fragment": "#thm-revival-guarantee",
+    "chapter": "1"
   },
   "input_objects": [
     "obj-potential-bounds",
@@ -31,5 +31,7 @@
   "attributes_added": [],
   "relations_established": [
     "Under global constraint, all dead walkers are revived with probability 1 in cloning stage"
-  ]
+  ],
+  "label_text": "Almost‑sure revival under the global constraint",
+  "full_statement_text": "Assume the global constraint $\\varepsilon_{\\text{clone}}\\,p_{\\max} < \\eta^{\\alpha+\\beta}$. Let $\\mathcal S$ be any swarm with at least one alive walker ($|\\mathcal A(\\mathcal S)|\\ge 1$) and let $i\\in\\mathcal D(\\mathcal S)$ be dead. Then, under the cloning rule with threshold $T_{\\text{clone}}\\sim\\mathrm{Unif}(0,p_{\\max})$ and a per‑dead‑walker score $S_i$ computed from an alive companion as in §16.1, we have\n\n$$\n\\mathbb P\\big[\\text{$i$ is revived in the cloning stage}\\big] \\;=\\;1.\n$$\n\nIn particular, $S_i > p_{\\max}$ surely, hence $S_i > T_{\\text{clone}}$ for every threshold realization. The conclusion holds also when $|\\mathcal A(\\mathcal S)|=1$ (single‑survivor case) since the companion selection measure assigns the unique alive index to every dead walker (cf. [](#def-companion-selection-measure))."
 }

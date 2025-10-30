@@ -1,5 +1,5 @@
 {
-  "label": "sub-lem-potential-stable-error-mean-square",
+  "label": "lem-potential-stable-error-mean-square",
   "name": "Bounding the Expected Error from Stable Walkers",
   "statement_type": "lemma",
   "source": {
@@ -7,15 +7,15 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "12.2.5",
     "section_name": null,
-    "directive_label": "sub-lem-potential-stable-error-mean-square",
+    "directive_label": "lem-potential-stable-error-mean-square",
     "equation": null,
     "line_range": [
       3840,
       3878
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "expanded",
@@ -47,5 +47,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 12.2.5",
+  "full_statement_text": "The expected squared error component from walkers that remain alive in both states ($\\mathcal{A}_{\\text{stable}} = \\mathcal{A}(\\mathcal{S}_1) \\cap \\mathcal{A}(\\mathcal{S}_2)$), denoted $E^2_{\\text{stable,ms}}$, is bounded in terms of the mean-square continuity of the underlying standardization pipelines: $E_{\\text{stable,ms}}^2(\\mathcal{S}_1, \\mathcal{S}_2) \\le 2L_{F,r}^2 \\cdot \\mathbb{E}[\\|\\Delta\\mathbf{z}_r\\|_2^2] + 2L_{F,d}^2 \\cdot \\mathbb{E}[\\|\\Delta\\mathbf{z}_d\\|_2^2]$ where $L_{F,r}$ and $L_{F,d}$ are the component-wise Lipschitz constants for the potential function, and $\\mathbb{E}[\\|\\Delta\\mathbf{z}_r\\|_2^2]$ and $\\mathbb{E}[\\|\\Delta\\mathbf{z}_d\\|_2^2]$ are the total expected squared error bounds for the reward standardization pipeline and distance standardization pipeline, respectively."
 }

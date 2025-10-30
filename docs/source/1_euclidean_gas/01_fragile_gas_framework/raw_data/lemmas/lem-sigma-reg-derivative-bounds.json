@@ -13,9 +13,9 @@
       2789,
       2839
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "expanded",
@@ -39,5 +39,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 11.1.2",
+  "full_statement_text": "The regularized standard deviation $\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}$ has explicit derivative bounds for all orders. For the first three derivatives:\n\n$$\n\\left|(\\sigma'_{\\text{reg}})'(V)\\right| = \\frac{1}{2\\sqrt{V + \\sigma'^2_{\\min}}} \\le \\frac{1}{2\\sigma'_{\\min}} =: L_{\\sigma'_{\\text{reg}}}\n$$\n\n$$\n\\left|(\\sigma'_{\\text{reg}})''(V)\\right| = \\frac{1}{4(V + \\sigma'^2_{\\min})^{3/2}} \\le \\frac{1}{4\\sigma'^3_{\\min}} =: L_{\\sigma''_{\\text{reg}}}\n$$\n\n$$\n\\left|(\\sigma'_{\\text{reg}})'''(V)\\right| = \\frac{3}{8(V + \\sigma'^2_{\\min})^{5/2}} \\le \\frac{3}{8\\sigma'^5_{\\min}} =: L_{\\sigma'''_{\\text{reg}}}\n$$\n\nGeneral form: For the $n$-th derivative with $n \\ge 1$,\n\n$$\n\\left|(\\sigma'_{\\text{reg}})^{(n)}(V)\\right| \\le \\frac{(2n-1)!!}{2^n \\sigma'^{(2n-1)}_{\\min}}\n$$\n\nwhere $(2n-1)!! = 1 \\cdot 3 \\cdot 5 \\cdots (2n-1)$ is the double factorial."
 }

@@ -1,5 +1,5 @@
 {
-  "label": "sub-lem-stable-positional-error-bound",
+  "label": "lem-stable-positional-error-bound",
   "name": "The total squared error arising from positional changes for stable walkers is bounded by the tota...",
   "statement_type": "lemma",
   "source": {
@@ -7,15 +7,15 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "10.2.6.2",
     "section_name": null,
-    "directive_label": "sub-lem-stable-positional-error-bound",
+    "directive_label": "lem-stable-positional-error-bound",
     "equation": null,
     "line_range": [
       2341,
       2395
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "complete",
@@ -43,5 +43,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 10.2.6.2",
+  "full_statement_text": "The total squared error arising from positional changes for stable walkers is bounded by the total positional displacement of all walkers in the swarm."
 }

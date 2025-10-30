@@ -1,6 +1,5 @@
 {
   "label": "thm-total-error-status-bound",
-  "name": "Total Error Bound in Terms of Status Changes",
   "statement_type": "theorem",
   "source": {
     "document_id": "01_fragile_gas_framework",
@@ -13,7 +12,8 @@
       1584,
       1593
     ],
-    "url_fragment": "#thm-total-error-status-bound"
+    "url_fragment": "#thm-total-error-status-bound",
+    "chapter": "1"
   },
   "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
@@ -54,5 +54,7 @@
     "def-companion-selection-measure"
   ],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Total Error Bound in Terms of Status Changes",
+  "full_statement_text": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, and for a given walker $i$, let $S_1$ and $S_2$ be its companion support sets, with $|S_1| > 0$. Let the status of each potential companion $j$ be given by $s_{1,j}$ and $s_{2,j}$ in the respective swarms. Let $f_j = f(x_{2,j})$ be a function bounded by $M_f$. Let $n_c$ be the total number of status changes in the swarm.\nThe total error $E = |\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_1)}[f_j] - \\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_2)}[f_j]|$ is bounded by:\n$$\n\nE \\le \\frac{2 M_f}{|S_1|} \\cdot n_c\n\n$$"
 }

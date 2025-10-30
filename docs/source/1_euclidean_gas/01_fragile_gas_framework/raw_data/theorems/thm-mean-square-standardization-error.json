@@ -1,49 +1,25 @@
 {
-  "label": "thm-mean-square-standardization-error",
-  "name": "Asymptotic Behavior of the Mean-Square Standardization Error",
-  "statement_type": "theorem",
-  "source": {
-    "document_id": "01_fragile_gas_framework",
-    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "2.3.3",
-    "section_name": null,
-    "directive_label": "thm-mean-square-standardization-error",
-    "equation": null,
-    "line_range": [
-      887,
-      907
-    ],
-    "url_fragment": "#thm-mean-square-standardization-error"
-  },
-  "input_objects": [
-    "obj-lipschitz-value-error-coefficients",
-    "obj-raw-value-operator",
-    "obj-swarm-aggregation-operator-axiomatic",
-    "obj-standardization-total-value-error-coefficient",
-    "obj-standardization-operator-n-dimensional",
-    "obj-lipschitz-structural-error-coefficients",
-    "obj-components-mean-square-standardization-error",
-    "obj-standardization-lower-bound"
-  ],
-  "input_axioms": [
-    "axiom-raw-value-mean-square-continuity"
-  ],
-  "input_parameters": [
-    "param-F-V-ms"
-  ],
-  "attributes_required": {},
-  "internal_lemmas": [],
-  "internal_propositions": [],
-  "lemma_dag_edges": [],
-  "output_type": "Bound",
-  "attributes_added": [
-    {
-      "label": "attr-mean-square-standardization-error-bound",
-      "expression": "\\mathbb{E}[\\|z(\\mathcal{S}_1) - z(\\mathcal{S}_2)\\|^2] \\text{ bounded by structural and value error sum}",
-      "object_label": "obj-standardization-operator-n-dimensional"
+    "label": "thm-mean-square-standardization-error",
+    "label_text": "Asymptotic Behavior of the Mean-Square Standardization Error",
+    "statement_type": "theorem",
+    "full_statement_text": "The continuity of the **N-Dimensional Standardization Operator** z(S) depends on the coupled effects of two distinct error sources whose expected growth rates are summed.\n\n*   **Core Principle:** The total **expected** squared error in the standardization operator's output, E[|| z_1 - z_2 ||_2^2], is bounded by the sum of the **Expected Squared Value Error** (E^2_{V,ms}) and the **Expected Squared Structural Error** (E^2_{S,ms}).\n\n*   **Mathematical Result (General Form):** For a large number of alive walkers, k_1 = |A(S_1)|, the total expected error has an asymptotic growth rate given by the sum of the growth rates of its two components:\n\n$$\n\\boxed{\n    E[|| z_1 - z_2 ||_2^2] \\in O(E_{V,ms}^2(k_1)) + O(E_{S,ms}^2(k_1))\n    }\n$$\n\n*   **Implications & Failure Modes:** The overall mean-square continuity of the standardization pipeline is governed by the operational regime of the swarm. The analysis reveals a critical distinction between normal operation and catastrophic collapse.\n    1.  **Regime 1: Normal Operation (Asymptotically Stable):** Under normal conditions where walker attrition is low and the number of status changes (n_c) is small, the structural error term is negligible. The dominant error is the **expected value error**, which, for the benchmark case of an empirical aggregator and distance-to-companion measurement, **is constant with respect to swarm size** (E^2_{V,ms} in O(1)). This is a powerful result, indicating that under stable conditions, the algorithm's average measurement process **does not become noisier as the swarm gets larger**. The primary bottleneck for stability in this regime is not swarm size but the **extreme sensitivity to the regularization parameter**, as all error sources are amplified by a factor of up to **O(epsilon_{std}^{-6})**.\n    2.  **Regime 2: Catastrophic Collapse (Unstable):** During a catastrophic collapse event where a large fraction of the swarm dies (e.g., n_c prop k_1), the **expected structural error** term **grows linearly with swarm size** (E^2_{S,ms} in O(k_1)). This confirms that large-scale death events are a fundamental source of instability, and that larger swarms are more vulnerable to continuity breakdown during such events. The choice of a **structurally stable aggregator** (p_{worst-case} <= -1/2) is critical to prevent this expected error from growing even faster.",
+    "input_objects": [],
+    "input_axioms": [],
+    "input_parameters": [],
+    "output_type": "",
+    "relations_established": [],
+    "source": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "chapter": "1",
+        "section": "§11.3.3",
+        "section_name": null,
+        "directive_label": "thm-mean-square-standardization-error",
+        "equation": null,
+        "line_range": [
+            887,
+            906
+        ],
+        "url_fragment": "#thm-mean-square-standardization-error"
     }
-  ],
-  "relations_established": [
-    "Expected squared standardization error bounded by sum of value and structural errors"
-  ]
 }

@@ -1,24 +1,37 @@
 {
   "label": "def-composite-continuity-coeffs-recorrected",
-  "type": "definition",
-  "name": "Composite Continuity Coefficients",
-  "section": "18",
-  "subsection": "17.2.4.1",
-  "source_file": "01_fragile_gas_framework.md",
-  "source_lines": "4627-5086",
-  "extraction_date": "2025-10-27",
-  "status": "extracted",
+  "term": "Composite Continuity Coefficients",
+  "full_text": "The state-dependent functions in the final continuity bound for the full Swarm Update Operator are constructed from the sequential composition of the continuity bounds of the cloning and post-cloning operators.\n1.  **The Composite Lipschitz Amplification Factor ($C_{\\Psi,L}(\\mathcal{S}_1, \\mathcal{S}_2)$):** The coefficient of the term that is linear in the input squared displacement. An explicit admissible choice is\n$$\n\n    C_{\\Psi,L}(\\mathcal{S}_1, \\mathcal{S}_2) := 3\\, C_{\\text{clone},L}(\\mathcal{S}_1, \\mathcal{S}_2).\n\n\n$$\n2.  **The Composite Hölder Amplification Factor ($C_{\\Psi,H}(\\mathcal{S}_1, \\mathcal{S}_2)$):** The coefficient of the non-linear, Hölder-continuous term. Before unifying powers, two sub‑linear contributions appear:\n$$\n\n    3\\, C_{\\text{clone},H}(\\mathcal{S}_1, \\mathcal{S}_2)\\, V_{\\text{in}}^{1/2}\\quad\\text{and}\\quad \\lambda_{\\mathrm{status}}\\, C_{\\text{status},H}\\, (C_{\\text{clone},L}(\\mathcal{S}_1, \\mathcal{S}_2))^{\\alpha_B}\\, V_{\\text{in}}^{\\alpha_B}.\n\n\n$$\nAfter unification (Sub‑Lemma 17.2.4.3), these are aggregated under $\\alpha_H^{\\mathrm{global}} = \\max(\\alpha_B, \\tfrac12)$. A convenient explicit choice is\n$$\n\n    C_{\\Psi,H}(\\mathcal{S}_1, \\mathcal{S}_2) := 3\\, C_{\\text{clone},H}(\\mathcal{S}_1, \\mathcal{S}_2) + \\lambda_{\\mathrm{status}}\\, C_{\\text{status},H}\\, (C_{\\text{clone},L}(\\mathcal{S}_1, \\mathcal{S}_2))^{\\alpha_B}.\n\n\n$$\n3.  **The Composite Offset ($K_{\\Psi}(\\mathcal{S}_1, \\mathcal{S}_2)$):** Collect the constants from the positional and status parts and from the cloning bound. With $K_{\\text{pert}}(\\delta)$ from [](#lem-final-positional-displacement-bound), an explicit admissible choice is\n$$\n\n    K_{\\Psi}(\\mathcal{S}_1, \\mathcal{S}_2) := \\frac{K_{\\text{pert}}(\\delta)}{N} + \\frac{\\lambda_{\\mathrm{status}}}{N} K_{\\text{status},\\text{var}} + 3\\, K_{\\text{clone}}(\\mathcal{S}_1, \\mathcal{S}_2) + \\lambda_{\\mathrm{status}}\\, C_{\\text{status},H}\\, (K_{\\text{clone}}(\\mathcal{S}_1, \\mathcal{S}_2))^{\\alpha_B}.\n\n\n$$",
+  "parameters_mentioned": [
+    "$C_{\\Psi,L}(\\mathcal{S}_1, \\mathcal{S}_2)$",
+    "$C_{\\text{clone},L}(\\mathcal{S}_1, \\mathcal{S}_2)$",
+    "$C_{\\Psi,H}(\\mathcal{S}_1, \\mathcal{S}_2)$",
+    "$C_{\\text{clone},H}(\\mathcal{S}_1, \\mathcal{S}_2)$",
+    "$V_{\\text{in}}^{1/2}$",
+    "$\\lambda_{\\mathrm{status}}$",
+    "$C_{\\text{status},H}$",
+    "$(C_{\\text{clone},L}(\\mathcal{S}_1, \\mathcal{S}_2))^{\\alpha_B}$",
+    "$V_{\\text{in}}^{\\alpha_B}$",
+    "$\\alpha_H^{\\mathrm{global}}$",
+    "$\\max(\\alpha_B, \\tfrac12)$",
+    "$K_{\\Psi}(\\mathcal{S}_1, \\mathcal{S}_2)$",
+    "$K_{\\text{pert}}(\\delta)$",
+    "$N$",
+    "$K_{\\text{status},\\text{var}}$",
+    "$K_{\\text{clone}}(\\mathcal{S}_1, \\mathcal{S}_2)$",
+    "$(K_{\\text{clone}}(\\mathcal{S}_1, \\mathcal{S}_2))^{\\alpha_B}$"
+  ],
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "17.2.4.0",
-    "section_name": null,
+    "section_name": "Proof Strategy",
     "directive_label": "def-composite-continuity-coeffs-recorrected",
-    "equation": null,
     "line_range": [
       4837,
       4877
     ],
-    "url_fragment": null
+    "url_fragment": "#def-composite-continuity-coeffs-recorrected"
   }
 }

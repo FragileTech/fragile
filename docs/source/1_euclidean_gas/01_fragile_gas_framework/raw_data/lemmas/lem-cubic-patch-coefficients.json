@@ -13,9 +13,9 @@
       1750,
       1763
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "unproven",
@@ -54,5 +54,7 @@
     "def-asymmetric-rescale-function"
   ],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 8.2.2.2",
+  "full_statement_text": "The cubic polynomial patch P(z) on [z_max-1, z_max] has explicit coefficients A, B, C, D uniquely determined by boundary conditions and parameter z_max > 1."
 }

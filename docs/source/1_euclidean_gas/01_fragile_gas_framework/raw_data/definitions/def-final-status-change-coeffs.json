@@ -1,24 +1,26 @@
 {
   "label": "def-final-status-change-coeffs",
-  "type": "definition",
-  "name": "Final Status Change Bound Coefficients",
-  "section": "18",
-  "subsection": "17.2.3.1",
-  "source_file": "01_fragile_gas_framework.md",
-  "source_lines": "4627-5086",
-  "extraction_date": "2025-10-27",
-  "status": "extracted",
+  "term": "Final Status Change Bound Coefficients",
+  "full_text": "The bound on the expected final status change is determined by two coefficients derived from the foundational axioms and global parameters:\n1.  **The Status Change Hölder Coefficient ($C_{\\text{status},H}$):** This coefficient captures the Hölder‑continuous scaling between positional displacement and expected status changes, aggregated over $N$ walkers:\n$$\n\nC_{\\text{status},H} := L_{\\text{death}}^2 \\, N^{\\,1-\\alpha_B}.\n\n$$\nThis choice matches the explicit inequality of Theorem 14.2, where the per‑walker Hölder bound contributes $L_{\\text{death}}^2\\, d^{2\\alpha_B}$ and summing over $N$ walkers yields the factor $N$.\n2.  **The Status Change Variance Bound ($K_{\\text{status},\\text{var}}$):** This coefficient provides a state-independent upper bound on the total variance of the final status variables, which represents irreducible stochasticity.\n$$\n\nK_{\\text{status},\\text{var}} := \\frac{N}{2}\n\n$$",
+  "parameters_mentioned": [
+    "$C_{\\text{status},H}$",
+    "$N$",
+    "$L_{\\text{death}}$",
+    "$\\alpha_B$",
+    "$d$",
+    "$K_{\\text{status},\\text{var}}$"
+  ],
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "17.2.2",
-    "section_name": null,
+    "section_name": "Sub-Lemma: Bounding the Final Positional Displacement (unconditional)",
     "directive_label": "def-final-status-change-coeffs",
-    "equation": null,
     "line_range": [
       4728,
-      4753
+      4746
     ],
-    "url_fragment": null
+    "url_fragment": "#def-final-status-change-coeffs"
   }
 }

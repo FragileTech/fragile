@@ -13,9 +13,9 @@
       4430,
       4446
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "expanded",
@@ -41,5 +41,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 15.2.7",
+  "full_statement_text": "Let $E_{\\text{val}}^{(\\overline{P})}$ be the value error component from **thm-total-expected-cloning-action-continuity**. It is deterministically bounded as follows:\n\n$$\nE_{\\text{val}}^{(\\overline{P})}(\\mathcal{S}_1, \\mathcal{S}_2) \\le C_{\\text{val}}^{(\\pi)} \\sqrt{2N \\cdot F_{\\text{pot}}(\\mathcal{S}_1, \\mathcal{S}_2)}\n$$\n\nwhere $F_{\\text{pot}}$ is the **Expected Squared Potential Error Bound**."
 }

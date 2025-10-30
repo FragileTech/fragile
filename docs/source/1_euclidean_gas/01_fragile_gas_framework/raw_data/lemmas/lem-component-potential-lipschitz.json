@@ -13,9 +13,9 @@
       3767,
       3796
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "expanded",
@@ -42,5 +42,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 12.2.2",
+  "full_statement_text": "Let the component-wise potential function be defined as $F(z_r, z_d) := (g_A(z_d) + \\eta)^{\\beta} \\cdot (g_A(z_r) + \\eta)^{\\alpha}$. This function is Lipschitz continuous with respect to its Z-score inputs. For any two pairs of Z-scores $(z_{r1}, z_{d1})$ and $(z_{r2}, z_{d2})$: $|F(z_{r1}, z_{d1}) - F(z_{r2}, z_{d2})| \\le L_{F,r}|z_{r1} - z_{r2}| + L_{F,d}|z_{d1} - z_{d2}|$ where the Lipschitz constants $L_{F,r}$ and $L_{F,d}$ are finite, state-independent constants."
 }

@@ -13,9 +13,9 @@
       4404,
       4416
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "expanded",
@@ -40,5 +40,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 15.2.5",
+  "full_statement_text": "Let $E_{\\text{struct}}^{(\\overline{P})}$ be the structural error component from **thm-total-expected-cloning-action-continuity**. It is deterministically bounded by the number of status changes between the swarms:\n\n$$\nE_{\\text{struct}}^{(\\overline{P})}(\\mathcal{S}_1, \\mathcal{S}_2) \\le C_{\\text{struct}}^{(\\pi)}(k_1) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)\n$$"
 }

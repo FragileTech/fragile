@@ -1,39 +1,14 @@
 {
   "label": "proof-lem-total-clone-prob-value-error",
-  "proves": "lem-total-clone-prob-value-error",
-  "type": "proof",
+  "proves_label_text": "Proof of Lemma: Total Clone Probability Value Error",
   "proof_text": "The error is $|E_V_1[f(V_1)] - E_V_2[f(V_2)]|$ where $f(V) = P_{\\text{clone}}(S_2, V)_i$.\n\n1. **Lipschitz Continuity of f:** From thm-expected-cloning-action-continuity, $|f(V_1) - f(V_2)| \\leq C_{val}^{(π)} (E_c[|V_1,c-V_2,c|] + |V_1,i-V_2,i|)$. Using properties of L1/L2 norms, this is $\\leq C_{val}^{(π)}√2\\|V_1-V_2\\|_1 \\leq C_{val}^{(π)}√2√N\\|V_1-V_2\\|_2$. So, **f** is Lipschitz with constant $L_f = C_{val}^{(π)}√(2N)$.\n\n2. **Bound the Difference in Expectations:** The difference is $|E[f(V_1)-f(V_2)]| \\leq E[|f(V_1)-f(V_2)|] \\leq E[L_f \\|V_1-V_2\\|_2] = L_f E[\\|V_1-V_2\\|_2]$.\n\n3. **Apply Jensen's Inequality and Mean-Square Bound:** $E[X] \\leq √E[X^2]$. So, the error is $\\leq L_f √E[\\|V_1-V_2\\|_2^2]$. Substituting $L_f$ and the $F_{\\text{pot}}$ bound from thm-potential-operator-is-mean-square-continuous yields the final result.",
-  "proof_structure": [
-    "Establish Lipschitz continuity of function f",
-    "Bound difference in expectations",
-    "Apply Jensen's inequality",
-    "Substitute mean-square bound"
-  ],
-  "key_techniques": [
-    "Lipschitz continuity",
-    "Jensen's inequality",
-    "norm inequalities"
-  ],
-  "dependencies": [
-    "thm-expected-cloning-action-continuity",
-    "thm-potential-operator-is-mean-square-continuous"
-  ],
-  "tags": [
-    "cloning",
-    "error-bound",
-    "proof"
-  ],
-  "context": "Section 16: The Cloning Transition Measure, subsection 15.2.7",
-  "source_file": "01_fragile_gas_framework.md",
-  "line_number": 4429,
-  "extraction_date": "2025-10-27T21:50:09.741091",
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "15.2.7",
-    "section_name": null,
+    "section_name": "Value Error in Expected Cloning Action",
     "directive_label": "proof-lem-total-clone-prob-value-error",
-    "equation": null,
     "line_range": [
       4439,
       4446

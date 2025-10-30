@@ -1,5 +1,4 @@
 {
-  "temp_id": "raw-remark-006",
   "remark_type": "note",
   "full_text": "All bounds in §15.2.4–§15.2.8 are stated for the regime $k_1=|\\mathcal A(\\mathcal S_1)|\\ge 2$ (at least two alive walkers), with the \"no self‑companion\" convention (an alive walker samples companions from $\\mathcal A\\setminus\\{i\\}$). The edge case $k=1$ is handled separately in §15 (single‑survivor revival), after which analysis resumes with $k\\ge 2$. Where intermediate formulas feature denominators $k_1-1$, they are interpreted under this precondition; if a generic statement is needed, replace $k_1-1$ by $\\max(1, k_1-1)$ and invoke the $k=1$ section.",
   "source_section": "§16 The Cloning Transition Measure",
@@ -11,6 +10,8 @@
     "directive_label": null,
     "equation": null,
     "line_range": null,
-    "url_fragment": null
-  }
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
+  },
+  "label": "remark-cloning-scope-companion-convention"
 }

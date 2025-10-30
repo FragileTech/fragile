@@ -1,27 +1,23 @@
 {
   "label": "def-expected-cloning-action",
   "term": "Conditional Expected Cloning Action",
-  "type": "definition",
-  "statement": "The **Conditional Expected Cloning Action** for a walker $i$, denoted $P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i$, is the probability that walker $i$ will be assigned the \"Clone\" action, given the swarm state $\\mathcal{S}$ and a specific, fixed fitness potential vector $\\mathbf{V}$. It is the expectation of the **Conditional Cloning Probability Function** under the **Companion Selection Measure**:\n\n$$\nP_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i := \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S})} [\\pi(V_c, V_i)]\n$$",
-  "dependencies": [
-    "def-cloning-probability-function"
+  "full_text": "The **Conditional Expected Cloning Action** for a walker $i$, denoted $P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i$, is the probability that walker $i$ will be assigned the \"Clone\" action, given the swarm state $\\mathcal{S}$ and a specific, fixed fitness potential vector $\\mathbf{V}$. It is the expectation of the **Conditional Cloning Probability Function** under the **Companion Selection Measure**:\n\n$$\nP_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i := \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S})} [\\pi(V_c, V_i)]\n$$",
+  "parameters_mentioned": [
+    "$i$",
+    "$P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i$",
+    "$\\mathcal{S}$",
+    "$\\mathbf{V}$",
+    "$\\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S})}$",
+    "$\\pi(V_c, V_i)$",
+    "$\\mathbb{C}_i$"
   ],
-  "tags": [
-    "cloning",
-    "probability",
-    "expectation"
-  ],
-  "context": "Section 16: The Cloning Transition Measure, subsection 15.2.3",
-  "source_file": "01_fragile_gas_framework.md",
-  "line_number": 4340,
-  "extraction_date": "2025-10-27T21:43:09.486089",
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "15.2.3",
-    "section_name": null,
+    "section_name": "Continuity of the Conditional Expected Cloning Action",
     "directive_label": "def-expected-cloning-action",
-    "equation": null,
     "line_range": [
       4350,
       4358

@@ -43,7 +43,8 @@
       2126,
       2139
     ],
-    "url_fragment": "#axiom-bounded-measurement-variance"
+    "url_fragment": "#axiom-bounded-measurement-variance",
+    "chapter": "1_euclidean_gas"
   },
   "context": {
     "motivation": "A common and effective strategy to prove that an operator satisfies the Axiom of Mean-Square Continuity is to decompose the total expected squared error into a bound on the change of the operator's mean and a bound on its variance. This axiom provides a powerful tool for establishing the variance bound part of the proof.",
@@ -73,5 +74,7 @@
       "thm-distance-operator-satisfies-bounded-variance-axiom",
       "thm-distance-operator-mean-square-continuity"
     ]
-  }
+  },
+  "label_text": "Axiom 9.3",
+  "core_assumption_text": "The variance of the raw value measurement process, summed over all N walkers, must be uniformly bounded across all possible swarm states. This axiom prevents the stochastic noise from having pathologically heavy tails that would make the expectation of the squared error diverge."
 }

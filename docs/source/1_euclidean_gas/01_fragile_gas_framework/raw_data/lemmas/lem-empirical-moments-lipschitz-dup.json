@@ -13,9 +13,9 @@
       1314,
       1317
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "expanded",
@@ -41,5 +41,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 6.2.2",
+  "full_statement_text": "Let $\\mathbf v\\in\\mathbb R^k$ collect the values of the $k=|\\mathcal A(\\mathcal S)|$ alive walkers. Consider the empirical mean and second raw moment\n\n$$\n\\mu(\\mathbf v) = \\frac{1}{k}\\sum_{i=1}^k v_i,\\qquad m_2(\\mathbf v) = \\frac{1}{k}\\sum_{i=1}^k v_i^{\\,2}.\n$$\n\nAssume $|v_i|\\le V_{\\max}$ for all $i$. Then, with respect to the L2 norm on $\\mathbb R^k$,\n\n$$\n|\\mu(\\mathbf v_1)-\\mu(\\mathbf v_2)|\\;\\le\\; \\frac{1}{\\sqrt{k}}\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2,\\qquad\n|m_2(\\mathbf v_1)-m_2(\\mathbf v_2)|\\;\\le\\; \\frac{2 V_{\\max}}{\\sqrt{k}}\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2.\n$$\n\nIn particular, for the empirical aggregator we may take $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$."
 }

@@ -13,9 +13,9 @@
       1173,
       1188
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "expanded",
@@ -53,5 +53,7 @@
     "def-perturbation-measure"
   ],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 4.2.3",
+  "full_statement_text": "Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter (BV boundary) and let $\\mathcal P_\\sigma(x,\\cdot)$ be the uniform law on $B(x,\\sigma)$. Define $P_\\sigma(x) := \\mathcal P_\\sigma(x, E) = \\frac{1}{\\mathrm{Vol}(B_\\sigma)}\\int \\mathbb 1_E(y)\\,\\mathbb 1_{B_\\sigma}(y-x)\\,\\mathrm dy$. Then there exists a constant $C_d>0$ depending only on the dimension such that for all $x,y\\in\\mathcal X$, $|P_\\sigma(x)-P_\\sigma(y)| \\le C_d\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y)$."
 }

@@ -1,17 +1,28 @@
 {
   "label": "def-algorithmic-cemetery-extension",
-  "type": "definition",
-  "content": "Define $\\mathcal{Y}^{\\dagger}:=\\mathcal{Y}\\cup\\{\\dagger\\}$ with metric $d_\\dagger$ given by\n$$\n\nd_\\dagger(y_1,y_2)=d_{\\mathcal{Y}}(y_1,y_2),\\quad d_\\dagger(y,\\dagger)=D_{\\mathrm{valid}}\\quad \\text{for all }y\\in\\mathcal{Y}.\n\n$$\nIdentifying a dead walker with the point $\\dagger$ makes the Wasserstein distance to the cemetery law canonical: for any living swarm law $\\nu$ and the cemetery $\\delta_{\\dagger}$ we have $W_p(\\nu,\\delta_{\\dagger})=D_{\\mathrm{valid}}$.",
-  "start_line": 1442,
-  "end_line": 1451,
-  "section": "§7",
+  "term": "Algorithmic Cemetery Extension",
+  "full_text": "Define $\\mathcal{Y}^{\\dagger}:=\\mathcal{Y}\\cup\\{\\dagger\\}$ with metric $d_\\dagger$ given by\n$$\n\nd_\\dagger(y_1,y_2)=d_{\\mathcal{Y}}(y_1,y_2),\\quad d_\\dagger(y,\\dagger)=D_{\\mathrm{valid}}\\quad \\text{for all }y\\in\\mathcal{Y}.\n\n$$\nIdentifying a dead walker with the point $\\dagger$ makes the Wasserstein distance to the cemetery law canonical: for any living swarm law $\\nu$ and the cemetery $\\delta_{\\dagger}$ we have $W_p(\\nu,\\delta_{\\dagger})=D_{\\mathrm{valid}}$.",
+  "parameters_mentioned": [
+    "\\mathcal{Y}^{\\dagger}",
+    "\\mathcal{Y}",
+    "\\dagger",
+    "d_\\dagger",
+    "y_1",
+    "y_2",
+    "d_{\\mathcal{Y}}",
+    "y",
+    "D_{\\mathrm{valid}}",
+    "\\nu",
+    "\\delta_{\\dagger}",
+    "W_p"
+  ],
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "6.4",
-    "section_name": null,
+    "section_name": "The Cemetery State Measure",
     "directive_label": "def-algorithmic-cemetery-extension",
-    "equation": null,
     "line_range": [
       1442,
       1451

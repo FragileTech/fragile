@@ -10,9 +10,9 @@
     "directive_label": "lem-empirical-moments-lipschitz",
     "equation": null,
     "line_range": null,
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "unproven",
@@ -41,5 +41,7 @@
     "def-swarm-aggregation-operator-axiomatic"
   ],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma",
+  "full_statement_text": "Let v ∈ ℝ^k collect the values of the k=|𝒜(𝒮)| alive walkers. Consider the empirical mean and second raw moment. Assume |v_i| ≤ V_max for all i. Then, with respect to the L2 norm on ℝ^k, the mean and second moment are Lipschitz continuous."
 }

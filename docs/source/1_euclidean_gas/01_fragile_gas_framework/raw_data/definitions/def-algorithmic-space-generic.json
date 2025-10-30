@@ -1,0 +1,22 @@
+{
+  "label": "def-algorithmic-space-generic",
+  "term": "Algorithmic Space",
+  "full_text": "An **algorithmic space** is a pair $(\\mathcal{Y}, d_{\\mathcal{Y}})$ consisting of a real vector space $\\mathcal{Y}$ and a true metric $d_{\\mathcal{Y}}$ on $\\mathcal{Y}$.",
+  "parameters_mentioned": [
+    "\\mathcal{Y}",
+    "d_{\\mathcal{Y}}"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
+    "section": "6",
+    "section_name": "Algorithm Space and Distance Measurement",
+    "directive_label": "def-algorithmic-space-generic",
+    "line_range": [
+      1214,
+      1217
+    ],
+    "url_fragment": "#def-algorithmic-space-generic"
+  }
+}

@@ -1,8 +1,8 @@
 {
-  "temp_id": "raw-thm-002",
-  "label_text": "thm-mean-square-standardization-error",
+  "label": "thm-mean-square-standardization-error",
+  "label_text": "Asymptotic Behavior of the Mean-Square Standardization Error",
   "statement_type": "theorem",
-  "full_statement_text": "The continuity of the **N-Dimensional Standardization Operator** $z(\\mathcal{S})$ depends on the coupled effects of two distinct error sources whose expected growth rates are summed.\n\n*   **Core Principle:** The total **expected** squared error in the standardization operator's output, $\\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2]$, is bounded by the sum of the **Expected Squared Value Error** ($E^2_{V,ms}$) and the **Expected Squared Structural Error** ($E^2_{S,ms}$).\n\n*   **Mathematical R",
+  "full_statement_text": "The continuity of the **N-Dimensional Standardization Operator** $z(\\mathcal{S})$ depends on the coupled effects of two distinct error sources whose expected growth rates are summed.\n\n*   **Core Principle:** The total **expected** squared error in the standardization operator's output, $\\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2]$, is bounded by the sum of the **Expected Squared Value Error** ($E^2_{V,ms}$) and the **Expected Squared Structural Error** ($E^2_{S,ms}$). \n\n*   **Mathematical Result (General Form):** For a large number of alive walkers, $k_1 = |\\mathcal{A}(\\mathcal{S}_1)|$, the total expected error has an asymptotic growth rate given by the sum of the growth rates of its two components:\n\n\n\n$$ \n\\boxed{\n    \\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2] \\in O(E_{V,ms}^2(k_1)) + O(E_{S,ms}^2(k_1))\n    }\n$$\n\n*   **Implications & Failure Modes:** The overall mean-square continuity of the standardization pipeline is governed by the operational regime of the swarm. The analysis reveals a critical distinction between normal operation and catastrophic collapse.",
   "source_section": "§3",
   "input_objects": [],
   "input_axioms": [],
@@ -12,14 +12,15 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1",
     "section": "3",
     "section_name": null,
     "directive_label": "thm-mean-square-standardization-error",
     "equation": null,
     "line_range": [
-      890,
-      892
+      887,
+      904
     ],
-    "url_fragment": null
+    "url_fragment": "#thm-mean-square-standardization-error"
   }
 }

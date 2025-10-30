@@ -11,8 +11,8 @@ The document-parser agent has been successfully reconfigured to perform **Stage 
 
 1. ✅ Extracts raw mathematical entities using `staging_types.py` schemas
 2. ✅ Outputs to `raw_data/` directory with proper subdirectories
-3. ✅ Uses temp ID naming convention (`raw-def-001.json`, `raw-thm-001.json`, etc.)
-4. ✅ Generates statistics to `statistics/raw_statistics.json`
+3. ✅ Uses descriptive label naming convention (`def-walker-state.json`, `thm-exponential-convergence.json`, etc.)
+4. ✅ Generates statistics to `reports/statistics/raw_statistics.json`
 
 ---
 
@@ -76,28 +76,29 @@ After running the agent on a document (e.g., `03_cloning.md`):
 docs/source/1_euclidean_gas/03_cloning/
 ├── raw_data/
 │   ├── definitions/
-│   │   ├── raw-def-001.json
-│   │   ├── raw-def-002.json
+│   │   ├── def-walker-state.json
+│   │   ├── def-cloning-operator.json
 │   │   └── ...
 │   ├── theorems/
-│   │   ├── raw-thm-001.json
+│   │   ├── thm-keystone-convergence.json
 │   │   └── ...
 │   ├── axioms/
-│   │   ├── raw-axiom-001.json
+│   │   ├── axiom-bounded-displacement.json
 │   │   └── ...
 │   ├── proofs/
 │   ├── equations/
 │   ├── parameters/
 │   ├── remarks/
 │   └── citations/
-└── statistics/
-    └── raw_statistics.json
+└── reports/
+    └── statistics/
+        └── raw_statistics.json
 ```
 
 **Key Features**:
 - All subdirectories created (even if empty)
 - Individual JSON files per entity
-- Temp ID naming: `raw-{type}-{number}.json`
+- Descriptive label naming: `{type}-{descriptive-name}.json`
 - Statistics file with entity counts and timing
 
 ---
@@ -156,40 +157,34 @@ The agent uses schemas from `src/fragile/proofs/staging_types.py`:
 ### RawDefinition
 ```json
 {
-  "temp_id": "raw-def-001",
-  "term_being_defined": "Walker State",
+  "label": "def-walker-state",
+  "term": "Walker State",
   "full_text": "A *walker* is a tuple $w := (x, v, s)$ where...",
-  "parameters_mentioned": ["w", "x", "v", "s"],
-  "source_section": "§2.1"
+  "parameters_mentioned": ["w", "x", "v", "s"]
 }
 ```
 
 ### RawTheorem
 ```json
 {
-  "temp_id": "raw-thm-001",
+  "label": "thm-exponential-convergence",
   "label_text": "Theorem 3.1",
   "statement_type": "theorem",
   "context_before": "The following result establishes...",
   "full_statement_text": "Let $v > 0$ and assume...",
   "conclusion_formula_latex": "d_W(\\mu_N^t, \\pi) \\leq C e^{-\\lambda t}",
   "equation_label": "(3.1)",
-  "explicit_definition_references": ["Euclidean Gas", "potential U"],
-  "source_section": "§3"
+  "explicit_definition_references": ["Euclidean Gas", "potential U"]
 }
 ```
 
 ### RawAxiom
 ```json
 {
-  "temp_id": "raw-axiom-001",
-  "label_text": "axiom-guaranteed-revival",
-  "name": "Axiom of Guaranteed Revival",
-  "core_assumption_text": "Every walker that dies is guaranteed to revive.",
-  "parameters_text": ["v > 0 is the velocity magnitude"],
-  "condition_text": "v > 0",
-  "failure_mode_analysis_text": "If v = 0, walkers cannot escape...",
-  "source_section": "§1.2"
+  "label": "axiom-guaranteed-revival",
+  "label_text": "Axiom 1.2",
+  "axiom_name": "Guaranteed Revival",
+  "statement": "Every walker that dies is guaranteed to revive with velocity v > 0."
 }
 ```
 
@@ -199,7 +194,7 @@ The agent uses schemas from `src/fragile/proofs/staging_types.py`:
 
 ## Statistics File
 
-**File**: `statistics/raw_statistics.json`
+**File**: `reports/statistics/raw_statistics.json`
 
 ```json
 {
@@ -332,7 +327,7 @@ The document-parser agent is now correctly configured to:
 
 1. ✅ Use `staging_types.py` for raw entity schemas
 2. ✅ Output to `raw_data/` directory structure
-3. ✅ Create individual JSON files with temp IDs
+3. ✅ Create individual JSON files with descriptive labels
 4. ✅ Generate statistics file
 5. ✅ Support both CLI and Python API
 6. ✅ Follow Extract-then-Enrich pipeline Stage 1 specification

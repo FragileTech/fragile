@@ -121,8 +121,8 @@ ctx = ResolutionContext()
 ctx.add_staging_document(staging_doc)
 
 # Now available:
-# - ctx.resolve_theorem_reference("Theorem 3.1") → "raw-thm-001"
-# - ctx.resolve_definition_reference("Walker State") → "raw-def-001"
+# - ctx.resolve_theorem_reference("Theorem 3.1") → "thm-exponential-convergence"
+# - ctx.resolve_definition_reference("Walker State") → "def-walker-state"
 # - ctx.find_proof_for_theorem("Theorem 3.1") → RawProof instance
 ```
 
@@ -139,7 +139,7 @@ for raw_def in staging_doc.definitions:
     # e.g., ["euclidean-gas", "discrete", "particle-system"]
 
     # Create normalized label
-    label = normalize_label(raw_def.term_being_defined, prefix="obj")
+    label = normalize_label(raw_def.term, prefix="obj")
     # "Walker State" → "obj-walker-state"
 
     # Extract primary mathematical expression
@@ -149,7 +149,7 @@ for raw_def in staging_doc.definitions:
     # Create MathematicalObject
     obj = MathematicalObject(
         label=label,
-        name=raw_def.term_being_defined,
+        name=raw_def.term,
         expression=expression,
         object_type=obj_type,
         tags=tags,
@@ -175,10 +175,10 @@ for raw_thm in staging_doc.theorems:
     # Resolve definition references
     input_objects = []
     for ref in raw_thm.explicit_definition_references:
-        temp_id = ctx.resolve_definition_reference(ref)
-        if temp_id:
-            # Convert temp_id → final label
-            final_label = get_final_label_for_definition(temp_id)
+        label = ctx.resolve_definition_reference(ref)
+        if label:
+            # Convert raw label → final label
+            final_label = get_final_label_for_definition(label)
             input_objects.append(final_label)
 
     # Infer theorem output type
@@ -301,7 +301,7 @@ explicit_rels = []
 for raw_thm in staging_doc.theorems:
     for ref in raw_thm.explicit_definition_references:
         # Create dependency relationship
-        source_label = get_final_label_for_theorem(raw_thm.temp_id)
+        source_label = get_final_label_for_theorem(raw_thm.label)
         target_label = get_final_label_for_definition(ref)
 
         rel = Relationship(

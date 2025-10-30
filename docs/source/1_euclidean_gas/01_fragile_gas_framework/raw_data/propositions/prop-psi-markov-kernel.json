@@ -1,6 +1,5 @@
 {
   "label": "prop-psi-markov-kernel",
-  "type": "proposition",
   "name": "The Swarm Update defines a Markov kernel",
   "section": "18",
   "subsection": "17.2.4.5",
@@ -19,6 +18,10 @@
       5036,
       5039
     ],
-    "url_fragment": "#prop-psi-markov-kernel"
-  }
+    "url_fragment": "#prop-psi-markov-kernel",
+    "chapter": "1_euclidean_gas"
+  },
+  "label_text": "Proposition 17.2.4.5",
+  "full_statement_text": "The Swarm Update defines a Markov kernel",
+  "statement_type": "proposition"
 }

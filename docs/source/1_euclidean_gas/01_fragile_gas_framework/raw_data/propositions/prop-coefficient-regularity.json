@@ -1,6 +1,5 @@
 {
   "label": "prop-coefficient-regularity",
-  "type": "proposition",
   "name": "Boundedness and continuity of composite coefficients",
   "section": "18",
   "subsection": "17.2.4.6",
@@ -19,6 +18,10 @@
       5050,
       5059
     ],
-    "url_fragment": "#prop-coefficient-regularity"
-  }
+    "url_fragment": "#prop-coefficient-regularity",
+    "chapter": "1_euclidean_gas"
+  },
+  "label_text": "Proposition 17.2.4.6",
+  "full_statement_text": "Boundedness and continuity of composite coefficients",
+  "statement_type": "proposition"
 }

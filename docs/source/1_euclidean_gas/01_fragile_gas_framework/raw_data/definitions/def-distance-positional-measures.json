@@ -1,0 +1,30 @@
+{
+  "label": "def-distance-positional-measures",
+  "term": "Distance Between Positional Measures",
+  "full_text": "Let two walkers, $i$ and $j$, have their positions represented by the Dirac positional measures $\\delta_{x_i}$ and $\\delta_{x_j}$. The distance between them in the algorithmic space is the **1-Wasserstein distance ($W_1$)** between their **projected positional measures**, with $d_{\\mathcal{Y}}$ as the ground metric.\nThe projected positional measure for walker $i$ is the pushforward measure $\\varphi_* \\delta_{x_i} = \\delta_{\\varphi(x_i)}$. The distance is then:\n$$\n\nd(\\varphi_* \\delta_{x_i}, \\varphi_* \\delta_{x_j}) := W_1(\\delta_{\\varphi(x_i)}, \\delta_{\\varphi(x_j)})\n\n$$\nFor Dirac measures, the Wasserstein distance simplifies to the ground metric distance between their points of support.",
+  "parameters_mentioned": [
+    "i",
+    "j",
+    "x_i",
+    "x_j",
+    "\\delta_{x_i}",
+    "\\delta_{x_j}",
+    "W_1",
+    "d_{\\mathcal{Y}}",
+    "\\varphi",
+    "\\varphi_*"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
+    "section": "6",
+    "section_name": "Algorithm Space and Distance Measurement",
+    "directive_label": "def-distance-positional-measures",
+    "line_range": [
+      1220,
+      1230
+    ],
+    "url_fragment": "#def-distance-positional-measures"
+  }
+}

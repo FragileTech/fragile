@@ -13,9 +13,9 @@
       1340,
       1355
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "unproven",
@@ -122,5 +122,7 @@
     "def-swarm-and-state-space"
   ],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 6.2.2",
+  "full_statement_text": "Let the aggregation operator M be defined such that for any swarm state S with alive set A(S) of size k = |A(S)| >= 1, and any raw value vector v, it produces the discrete empirical measure: M(S, v) = (1/k) sum_{i in A(S)} delta_{v_i}. This operator is a valid Swarm Aggregation Operator. Assuming the raw values are bounded by |v_i| <= V_max, its moment functions, continuity functions, and axiomatic parameters satisfy specific bounds and properties."
 }

@@ -1,55 +1,24 @@
 {
-  "theorem_id": "thm-distance-operator-mean-square-continuity",
   "label": "thm-distance-operator-mean-square-continuity",
-  "title": "Mean-Square Continuity of the Distance Operator",
+  "label_text": "Mean-Square Continuity of the Distance Operator",
   "statement_type": "theorem",
-  "statement": "The **Distance-to-Companion Measurement** operator ($V=d$) is mean-square continuous for transitions in the $k \\geq 2$ regime. For any two swarm states $\\mathcal{S}_1$ and $\\mathcal{S}_2$ with $|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2$, the expected squared Euclidean distance between the sampled raw distance vectors is deterministically bounded by the function $F_{d,ms}$:",
-  "formal_statement": "$$\n\\mathbb{E}[\\|\\mathbf{d}(\\mathcal{S}_1) - \\mathbf{d}(\\mathcal{S}_2)\\|_2^2] \\le F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2)\n$$\n\nwhere the **Expected Squared Distance Error Bound** is defined as:\n\n$$\n\\boxed{\nF_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2) := 6 N D_{\\mathcal{Y}}^2 + 3 \\left( C_{\\text{pos},d} \\cdot \\Delta_{\\text{pos}}^2 + C_{\\text{status},d}^{(1)} \\cdot n_c + C_{\\text{status},d}^{(2)}(k_1) \\cdot n_c^2 \\right)\n}\n$$\n\nand the coefficients $C_{\\dots,d}$ are the deterministic **Expected Distance Error Coefficients** from thm-expected-raw-distance-bound:\n- $C_{\\text{pos},d} = 12$\n- $C_{\\text{status},d}^{(1)} = D_{\\mathcal{Y}}^2$\n- $C_{\\text{status},d}^{(2)}(k_1) = \\frac{8 k_1 D_{\\mathcal{Y}}^2}{(k_1 - 1)^2}$\n\nWith the explicit derivation of this function, we have formally proven that the Distance-to-Companion operator is a valid raw value operator that satisfies the **Axiom of Mean-Square Continuity for Raw Values**.",
-  "proof_sketch": "1. Decompose the total error using the triangle inequality with intermediate expectation vectors:\n   $\\|\\mathbf{d}_1 - \\mathbf{d}_2\\|_2^2 \\le 3\\|\\mathbf{d}_1 - \\mathbb{E}[\\mathbf{d}_1]\\|_2^2 + 3\\|\\mathbb{E}[\\mathbf{d}_1] - \\mathbb{E}[\\mathbf{d}_2]\\|_2^2 + 3\\|\\mathbf{d}_2 - \\mathbb{E}[\\mathbf{d}_2]\\|_2^2$\n2. Take the expectation of both sides.\n3. Bound the stochastic variance terms (first and third) using thm-distance-operator-satisfies-bounded-variance-axiom with $\\kappa^2_{\\text{variance}} = N D_{\\mathcal{Y}}^2$.\n4. Bound the deterministic mean term (middle) using thm-expected-raw-distance-bound.\n5. Combine all bounds to get the final expression for $F_{d,ms}$.",
-  "proof_status": "complete",
-  "dependencies": [
-    "thm-distance-operator-satisfies-bounded-variance-axiom",
-    "thm-expected-raw-distance-bound",
-    "axiom-raw-value-mean-square-continuity"
-  ],
-  "used_in": [],
-  "tags": [
-    "mean-square-continuity",
-    "distance",
-    "axiom-verification",
-    "error-bound",
-    "stochastic"
-  ],
-  "importance": "major",
-  "notes": "This theorem is the culmination of the distance operator continuity analysis. It provides the explicit bound function that will be used as input to the standardization operator continuity analysis. The function $F_{d,ms}$ captures both the stochastic variance (constant term $6ND_{\\mathcal{Y}}^2$) and the deterministic signal change (displacement-dependent terms).",
-  "input_objects": [
-    "obj-raw-value-operator",
-    "obj-companion-selection-measure",
-    "obj-distance-measurement-ms-constants"
-  ],
-  "input_axioms": [
-    "axiom-raw-value-mean-square-continuity",
-    "axiom-bounded-measurement-variance"
-  ],
-  "input_parameters": [
-    "param-F-V-ms",
-    "param-kappa-variance"
-  ],
+  "full_statement_text": "The **Distance-to-Companion Measurement** operator ($V=d$) is mean-square continuous for transitions in the $k \\ge 2$ regime. For any two swarm states $\\mathcal{S}_1$ and $\\mathcal{S}_2$ with $|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2$, the expected squared Euclidean distance between the sampled raw distance vectors is deterministically bounded by the function $F_{d,ms}$:\n$$\n\n\\mathbb{E}[\\|\\mathbf{d}(\\mathcal{S}_1) - \\mathbf{d}(\\mathcal{S}_2)\\|_2^2] \\le F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2)\n\n$$\nwhere the **Expected Squared Distance Error Bound** is defined as:\n$$\n\n\\boxed{\nF_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2) := 6 N D_{\\mathcal{Y}}^2 + 3 \\left( C_{\\text{pos},d} \\cdot \\Delta_{\\text{pos}}^2 + C_{\\text{status},d}^{(1)} \\cdot n_c + C_{\\text{status},d}^{(2)}(k_1) \\cdot n_c^2 \\right)\n}\n\n$$\nand the coefficients $C_{\\dots,d}$ are the deterministic **Expected Distance Error Coefficients** from [](#thm-distance-operator-mean-square-continuity).\nWith the explicit derivation of this function, we have formally proven that the Distance-to-Companion operator is a valid raw value operator that satisfies the **Axiom of Mean-Square Continuity for Raw Values**. This function will now be used as a direct input to the continuity analysis of the standardization operator.",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
   "output_type": "Bound",
-  "relations_established": [
-    "Distance operator is mean-square continuous"
-  ],
-  "name": "Distance Operator Mean Square Continuity",
+  "relations_established": [],
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "10.3.2",
+    "chapter": "1",
+    "section": "10.2.1",
     "section_name": null,
     "directive_label": "thm-distance-operator-mean-square-continuity",
     "equation": null,
     "line_range": [
       2688,
-      2706
+      2705
     ],
     "url_fragment": "#thm-distance-operator-mean-square-continuity"
   }

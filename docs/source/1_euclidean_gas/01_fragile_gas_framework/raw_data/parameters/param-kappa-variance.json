@@ -15,6 +15,10 @@
     "directive_label": "param-kappa-variance",
     "equation": null,
     "line_range": null,
-    "url_fragment": null
-  }
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
+  },
+  "meaning": "Maximum Measurement Variance",
+  "full_text": "Maximum Measurement Variance. Symbol: $\\kappa^2_{\\text{variance}}$. Type: real. Constraints: $\\kappa^2_{\\text{variance}} \\ge 0$.",
+  "scope": "global"
 }

@@ -1,50 +1,22 @@
 {
   "label": "def-perturbation-fluctuation-bounds-reproof",
-  "type": "definition",
-  "name": "Perturbation Fluctuation Bounds",
-  "term_being_defined": "Perturbation Fluctuation Bounds",
+  "term": "Perturbation Fluctuation Bounds",
   "full_text": "The total random displacement introduced by the Perturbation Operator is bounded by the sum of two components: a deterministic bound on its mean and a probabilistic bound on its fluctuations.\n\n1. **The Mean Displacement Bound ($B_M(N)$):** A deterministic upper bound on the total expected squared displacement for a swarm of size N. It is derived from the **Axiom of Bounded Second Moment of Perturbation**.\n   $$B_M(N) := N \\cdot M_{\\text{pert}}^2$$\n\n2. **The Stochastic Fluctuation Bound ($B_S(N, \\delta')$):** A high-probability bound on the deviation of the total squared displacement from its mean, derived from McDiarmid's inequality. For a given failure probability $\\delta' \\in (0, 1)$, it is defined as:\n   $$B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}$$\n   where $D_{\\mathcal{Y}}$ is the diameter of the algorithmic space.",
-  "components": [
-    {
-      "name": "Mean Displacement Bound",
-      "symbol": "$B_M(N)$",
-      "formula": "$B_M(N) := N \\cdot M_{\\text{pert}}^2$",
-      "description": "Deterministic upper bound on total expected squared displacement"
-    },
-    {
-      "name": "Stochastic Fluctuation Bound",
-      "symbol": "$B_S(N, \\delta')$",
-      "formula": "$B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}$",
-      "description": "High-probability bound on deviation from mean"
-    }
-  ],
-  "source_section": "14. The Perturbation Operator",
-  "subsection": "13.2.4. Definition: Perturbation Fluctuation Bounds",
-  "source_document": "01_fragile_gas_framework.md",
-  "line_range": [
-    4064,
-    4082
-  ],
-  "tags": [
-    "definition",
-    "perturbation",
-    "bound",
-    "concentration"
-  ],
-  "dependencies": [
-    "def-axiom-bounded-second-moment-perturbation",
-    "sub-lem-probabilistic-bound-perturbation-displacement-reproof"
-  ],
-  "used_by": [
-    "thm-perturbation-operator-continuity-reproof"
+  "parameters_mentioned": [
+    "$B_M(N)$",
+    "$N$",
+    "$M_{\\text{pert}}$",
+    "$B_S(N, \\delta')$",
+    "$\\delta'$",
+    "$D_{\\mathcal{Y}}$"
   ],
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "14",
-    "section_name": null,
+    "section_name": "The Perturbation Operator",
     "directive_label": "def-perturbation-fluctuation-bounds-reproof",
-    "equation": null,
     "line_range": [
       4074,
       4092

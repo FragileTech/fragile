@@ -1,5 +1,5 @@
 {
-  "label": "sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+  "label": "lem-probabilistic-bound-perturbation-displacement-reproof",
   "name": "Probabilistic Bound on Total Perturbation-Induced Displacement",
   "statement_type": "lemma",
   "source": {
@@ -7,15 +7,15 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "13.2.3.2",
     "section_name": null,
-    "directive_label": "sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+    "directive_label": "lem-probabilistic-bound-perturbation-displacement-reproof",
     "equation": null,
     "line_range": [
       4040,
       4049
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "expanded",
@@ -42,5 +42,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 13.2.3.2",
+  "full_statement_text": "Let $\\mathcal{S}_{\\text{in}}$ be an input swarm. Assume the **Axiom of Bounded Second Moment of Perturbation** holds. Then for any probability of failure $\\delta' \\in (0, 1)$, the **Total Perturbation-Induced Displacement** is bounded with probability at least $1-\\delta'$:\n$$\\Delta_{\\text{pert}}^2(\\mathcal{S}_{\\text{in}}) \\le B_M(N) + B_S(N, \\delta')$$\nwhere $B_M(N)$ is the **Mean Displacement Bound** and $B_S(N, \\delta')$ is the **Stochastic Fluctuation Bound**."
 }

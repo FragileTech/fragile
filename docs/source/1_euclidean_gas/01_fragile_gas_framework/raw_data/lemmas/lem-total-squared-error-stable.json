@@ -13,9 +13,9 @@
       2287,
       2295
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "complete",
@@ -41,5 +41,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 10.2.6",
+  "full_statement_text": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with $|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2$. The total squared error in the expected raw distance from the set of stable walkers, $\\mathcal{A}_{\\text{stable}} = \\mathcal{A}(\\mathcal{S}_1) \\cap \\mathcal{A}(\\mathcal{S}_2)$, is bounded as follows:"
 }

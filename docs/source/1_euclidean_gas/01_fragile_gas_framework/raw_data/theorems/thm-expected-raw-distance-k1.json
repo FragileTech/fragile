@@ -1,48 +1,24 @@
 {
-  "theorem_id": "thm-expected-raw-distance-k1",
   "label": "thm-expected-raw-distance-k1",
-  "title": "Deterministic Behavior of the Expected Raw Distance Vector at k=1",
+  "label_text": "Deterministic Behavior of the Expected Raw Distance Vector at k=1",
   "statement_type": "theorem",
-  "statement": "Let $\\mathcal{S}$ be a swarm state with exactly one alive walker, $|\\mathcal{A}(\\mathcal{S})| = 1$. The N-dimensional vector of expected raw distances, $\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$, is deterministically the zero vector.",
-  "formal_statement": "$$\n|\\mathcal{A}(\\mathcal{S})| = 1 \\implies \\mathbb{E}[\\mathbf{d}(\\mathcal{S})] = \\mathbf{0}\n$$\n\n**Implication for Continuity:**\n\nAny transition between a state $\\mathcal{S}_1$ with $|\\mathcal{A}(\\mathcal{S}_1)| \\ge 2$ and a state $\\mathcal{S}_2$ with $|\\mathcal{A}(\\mathcal{S}_2)| = 1$ induces a discontinuous change in the expected raw distance vector. The magnitude of this change is not governed by the Lipschitz bounds derived for the $k \\geq 2$ regime, but is instead given by the norm of the vector in the $k \\geq 2$ state:\n\n$$\n\\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] - \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_2)] \\|_2^2 = \\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] \\|_2^2\n$$",
-  "proof_sketch": "1. For the single alive walker j, the companion selection measure makes it its own companion: $c(j) = j$.\n2. The expected distance is thus $\\mathbb{E}[d_j(\\mathcal{S})] = d_{\\text{alg}}(x_j, x_j) = 0$ (metric property).\n3. For all dead walkers, the raw value is defined to be 0.\n4. Therefore, all components of $\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$ are zero.\n5. The discontinuity at the k=1 boundary is handled by the revival dynamics rather than the continuity framework.",
-  "proof_status": "complete",
-  "dependencies": [
-    "def-companion-selection-measure",
-    "def-raw-value-operator"
-  ],
-  "used_in": [],
-  "tags": [
-    "discontinuity",
-    "k=1-regime",
-    "distance",
-    "boundary-case",
-    "revival"
-  ],
-  "importance": "major",
-  "notes": "This theorem formally establishes the discontinuity in the distance measurement when the swarm collapses to a single walker. This singularity is fundamental to the algorithm's behavior and cannot be eliminated through continuity analysis. It motivates the need for special revival mechanisms.",
-  "input_objects": [
-    "obj-distance-to-cemetery-state",
-    "obj-distance-measurement-ms-constants",
-    "obj-revival-state"
-  ],
+  "full_statement_text": "Let $\\mathcal{S}$ be a swarm state with exactly one alive walker, $|\\mathcal{A}(\\mathcal{S})| = 1$. The N-dimensional vector of expected raw distances, $\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$, is deterministically the zero vector.\n\n$$\n|\\mathcal{A}(\\mathcal{S})| = 1 \\implies \\mathbb{E}[\\mathbf{d}(\\mathcal{S})] = \\mathbf{0}\n$$\n\n**Implication for Continuity:**\n\nAny transition between a state $\\mathcal{S}_1$ with $|\\mathcal{A}(\\mathcal{S}_1)| \\ge 2$ and a state $\\mathcal{S}_2$ with $|\\mathcal{A}(\\mathcal{S}_2)| = 1$ induces a discontinuous change in the expected raw distance vector. The magnitude of this change is not governed by the Lipschitz bounds derived for the $k \\geq 2$ regime, but is instead given by the norm of the vector in the $k \\geq 2$ state:\n\n$$\n\\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] - \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_2)] \\|_2^2 = \\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] \\|_2^2\n$$",
+  "input_objects": [],
   "input_axioms": [],
   "input_parameters": [],
-  "output_type": "General Result",
-  "relations_established": [
-    "Expected raw distance when k=1 equals distance to revival state"
-  ],
-  "name": "Expected Raw Distance K1",
+  "output_type": "Property",
+  "relations_established": [],
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1",
     "section": "10.2.8",
     "section_name": null,
     "directive_label": "thm-expected-raw-distance-k1",
     "equation": null,
     "line_range": [
       2609,
-      2624
+      2645
     ],
     "url_fragment": "#thm-expected-raw-distance-k1"
   }

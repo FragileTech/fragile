@@ -1,6 +1,5 @@
 {
   "label": "prop-w2-bound-no-offset",
-  "type": "proposition",
   "name": "W2 continuity bound without offset (for k≥2)",
   "section": "18",
   "subsection": "17.2.4.4",
@@ -19,6 +18,10 @@
       5002,
       5013
     ],
-    "url_fragment": "#prop-w2-bound-no-offset"
-  }
+    "url_fragment": "#prop-w2-bound-no-offset",
+    "chapter": "1_euclidean_gas"
+  },
+  "label_text": "Proposition 17.2.4.4",
+  "full_statement_text": "W2 continuity bound without offset (for k≥2)",
+  "statement_type": "proposition"
 }

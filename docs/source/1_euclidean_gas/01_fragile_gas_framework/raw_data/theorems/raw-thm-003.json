@@ -1,19 +1,20 @@
 {
-  "temp_id": "raw-thm-003",
-  "label_text": "thm-forced-activity",
+  "label": "thm-forced-activity",
+  "label_text": "Theorem of Forced Activity",
   "statement_type": "theorem",
-  "full_statement_text": "",
+  "full_statement_text": ":::{admonition} The \"No Stagnation\" Guarantee\n:class: important\n:open:\nThis theorem is beautiful because it guarantees the swarm can never get completely stuck! Here's the intuition:\n\n**The Setup**: If you have:\n1. **Spread out walkers** (covering enough space to sense reward differences)\n2. **Rich environment** (reward actually varies across space)\n3. **Non-zero amplification** (the algorithm pays attention to rewards)\n4. **Some noise** (walkers can explore)\n\n**The Conclusion**: Then some cloning MUST happen - the swarm can't just sit still.\n\n**Why it works**: Spread-out walkers in a rich environment will experience different rewards. This creates fitness differences. With amplification > 0, these differences get magnified into different cloning probabilities. Someone will always be \"fit enough\" to clone, keeping the swarm active.\n\nThink of it as an \"anti-stagnation theorem\" - as long as the basic conditions are met, the swarm is guaranteed to keep exploring and adapting!\n:::\n\n*   **Core Principle:** A swarm that is sufficiently spread out in a sufficiently rich environment will generate a non-zero probability of cloning. This property is an emergent consequence of satisfying the **Axiom of Environmental Richness (2.2.1)**, the **Axiom of Non-Degenerate Noise (2.3.2)**, and the **Axiom of Sufficient Amplification (2.3.1)**.\n*   **System Property ($p_{\\text{clone,min}}$ - The Minimum Average Cloning Probability):** The user is responsible for ensuring their choice of axiomatic parameters ($\\kappa_{\\text{richness}}$, $r_{\\min}$, $\\alpha$, $\\beta$, etc.) leads to a configuration where, for any \"non-degenerate\" swarm state, the expected cloning probability is bounded below by a positive constant.\n    *   A swarm is considered **non-degenerate** in this context if its walkers are sufficiently dispersed in the algorithmic space (e.g., spanning a diameter greater than $r_{\\min}$) to experience the guaranteed environmental richness $\\kappa_{\\text{richness}}$, thus generating variance in the fitness potential.\n\n\n\n$$\np_{\\text{clone,min}} > 0\n$$\n\n*   **Condition for Viable Adaptation:** The system configuration must yield **$p_{\\text{clone,min}}$ > 0**.\n*   **Failure Mode Analysis:** If the system parameters lead to **$p_{\\text{clone,min}}$ = 0**, the system can enter states where the contractive force of cloning vanishes, even when the swarm is not converged. This can occur if the swarm collapses into a region smaller than $r_{\\min}$ where the reward landscape appears flat, stalling adaptation and preventing convergence.\n\n:::{warning}\n**Stagnation Risk**: When $p_{\\text{clone,min}} = 0$, the swarm can enter \"dead zones\" where everyone looks equally fit (no reward gradients visible), so no one gets cloned. The swarm becomes a collection of independent random walkers, losing its collective intelligence. Always check that your swarm stays spread out enough ($> r_{\\min}$) to sense environmental structure!\n:::",
   "source_section": "§3",
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1",
     "section": "3",
     "section_name": null,
     "directive_label": "thm-forced-activity",
     "equation": null,
     "line_range": [
       992,
-      1011
+      1029
     ],
     "url_fragment": "#thm-forced-activity"
   }

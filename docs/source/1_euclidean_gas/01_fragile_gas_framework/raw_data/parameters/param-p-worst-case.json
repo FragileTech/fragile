@@ -15,6 +15,10 @@
     "directive_label": "param-p-worst-case",
     "equation": null,
     "line_range": null,
-    "url_fragment": null
-  }
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
+  },
+  "meaning": "Worst-Case Probability Parameter",
+  "full_text": "Worst-Case Probability Parameter. Symbol: $p_{\\text{worst-case}}$. Type: real. Constraints: $0 < p_{\\text{worst-case}} \\le 1$.",
+  "scope": "global"
 }

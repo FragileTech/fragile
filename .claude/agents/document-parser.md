@@ -98,7 +98,7 @@ sections = split_into_sections(markdown_text)
 ```
 
 Each section contains:
-- `section_id`: Unique identifier (e.g., "§2.1")
+- `section_id`: Unique identifier (e.g., "2.1")
 - `title`: Section heading
 - `content`: Full markdown content
 - `start_line`, `end_line`: Line numbers
@@ -153,14 +153,13 @@ Section Content:
 **LLM Returns**:
 ```json
 {
-  "section_id": "§2.1",
+  "section_id": "2.1",
   "definitions": [
     {
-      "temp_id": "raw-def-001",
-      "term_being_defined": "Walker State",
+      "label": "def-walker-state",
+      "term": "Walker State",
       "full_text": "A *walker* is a tuple $w := (x, v, s)$ where...",
-      "parameters_mentioned": ["w", "x", "v", "s"],
-      "source_section": "§2.1"
+      "parameters_mentioned": ["w", "x", "v", "s"]
     }
   ],
   "theorems": [...],
@@ -183,17 +182,17 @@ For each entity type, write individual JSON files:
 ```python
 # Export definitions
 for raw_def in merged_staging.definitions:
-    file_path = f"raw_data/definitions/{raw_def.temp_id}.json"
+    file_path = f"raw_data/definitions/{raw_def.label}.json"
     write_json(file_path, raw_def.dict())
 
 # Export theorems
 for raw_thm in merged_staging.theorems:
-    file_path = f"raw_data/theorems/{raw_thm.temp_id}.json"
+    file_path = f"raw_data/theorems/{raw_thm.label}.json"
     write_json(file_path, raw_thm.dict())
 
 # Export proofs
 for raw_proof in merged_staging.proofs:
-    file_path = f"raw_data/proofs/{raw_proof.temp_id}.json"
+    file_path = f"raw_data/proofs/{raw_proof.label}.json"
     write_json(file_path, raw_proof.dict())
 
 # ... repeat for all entity types
@@ -233,32 +232,32 @@ After processing `docs/source/1_euclidean_gas/03_cloning.md`:
 docs/source/1_euclidean_gas/03_cloning/
 ├── raw_data/
 │   ├── definitions/
-│   │   ├── raw-def-001.json
-│   │   ├── raw-def-002.json
+│   │   ├── def-walker-state.json
+│   │   ├── def-cloning-operator.json
 │   │   ├── ...
-│   │   └── raw-def-036.json
+│   │   └── def-quasi-stationary-distribution.json
 │   ├── theorems/
-│   │   ├── raw-thm-001.json
-│   │   ├── raw-thm-002.json
+│   │   ├── thm-keystone-convergence.json
+│   │   ├── thm-exponential-mixing.json
 │   │   ├── ...
-│   │   └── raw-thm-053.json
+│   │   └── thm-mean-field-limit.json
 │   ├── axioms/
-│   │   ├── raw-axiom-001.json
+│   │   ├── axiom-bounded-displacement.json
 │   │   ├── ...
-│   │   └── raw-axiom-006.json
+│   │   └── axiom-confining-potential.json
 │   ├── proofs/
 │   │   └── (empty if no proofs extracted)
 │   ├── equations/
-│   │   ├── raw-eq-001.json
+│   │   ├── eq-langevin-dynamics.json
 │   │   └── ...
 │   ├── parameters/
-│   │   ├── raw-param-001.json
+│   │   ├── param-swarm-size.json
 │   │   └── ...
 │   ├── remarks/
-│   │   ├── raw-remark-001.json
+│   │   ├── remark-physical-interpretation.json
 │   │   └── ...
 │   └── citations/
-│       ├── raw-cite-001.json
+│       ├── cite-villani-hypocoercivity.json
 │       └── ...
 └── reports/
     └── statistics/
@@ -269,52 +268,48 @@ docs/source/1_euclidean_gas/03_cloning/
 
 ### Example Raw Entity Files
 
-**raw_data/definitions/raw-def-001.json**:
+**raw_data/definitions/def-walker-state.json**:
 ```json
 {
-  "temp_id": "raw-def-001",
-  "term_being_defined": "Walker State",
+  "label": "def-walker-state",
+  "term": "Walker State",
   "full_text": "A *walker* is a tuple $w := (x, v, s)$ where $x \\in \\mathcal{X}$ is the position, $v \\in \\mathbb{R}^d$ is the velocity, and $s \\in \\{\\text{alive}, \\text{dead}\\}$ is the status.",
-  "parameters_mentioned": ["w", "x", "v", "s"],
-  "source_section": "§2.1"
+  "parameters_mentioned": ["w", "x", "v", "s"]
 }
 ```
 
-**raw_data/theorems/raw-thm-001.json**:
+**raw_data/theorems/thm-exponential-convergence.json**:
 ```json
 {
-  "temp_id": "raw-thm-001",
+  "label": "thm-exponential-convergence",
   "label_text": "Theorem 3.1",
   "statement_type": "theorem",
   "context_before": "The following result establishes convergence.",
   "full_statement_text": "Let $v > 0$ and assume the potential $U$ is Lipschitz. Then the Euclidean Gas converges exponentially: $d_W(\\mu_N^t, \\pi) \\leq C e^{-\\lambda t}$ for constants $C, \\lambda > 0$.",
   "conclusion_formula_latex": "d_W(\\mu_N^t, \\pi) \\leq C e^{-\\lambda t}",
   "equation_label": "(3.1)",
-  "explicit_definition_references": ["Euclidean Gas", "potential U"],
-  "source_section": "§3"
+  "explicit_definition_references": ["Euclidean Gas", "potential U"]
 }
 ```
 
-**raw_data/axioms/raw-axiom-001.json**:
+**raw_data/axioms/axiom-bounded-displacement.json**:
 ```json
 {
-  "temp_id": "raw-axiom-001",
+  "label": "axiom-bounded-displacement",
   "label_text": "Axiom 1.1",
   "axiom_name": "Bounded Displacement",
-  "statement": "For all walkers, the displacement per step is bounded: $|\\phi(w) - x| \\leq 1$ where $w = (x, v, s)$.",
-  "source_section": "§1.2"
+  "statement": "For all walkers, the displacement per step is bounded: $|\\phi(w) - x| \\leq 1$ where $w = (x, v, s)$."
 }
 ```
 
-**raw_data/parameters/raw-param-001.json**:
+**raw_data/parameters/param-swarm-size.json**:
 ```json
 {
-  "temp_id": "raw-param-001",
+  "label": "param-swarm-size",
   "symbol": "N",
   "name": "Swarm Size",
   "definition_text": "Let $N \\geq 3$ be the number of walkers in the swarm.",
-  "constraints": "N \\geq 3",
-  "source_section": "§2"
+  "constraints": "N \\geq 3"
 }
 ```
 
@@ -347,93 +342,85 @@ docs/source/1_euclidean_gas/03_cloning/
 ### RawDefinition
 ```python
 {
-  "temp_id": str,                    # Pattern: ^raw-def-[0-9]+$
-  "term_being_defined": str,         # Exact term from text
+  "label": str,                      # Pattern: ^def-[a-z0-9-]+$
+  "term": str,                       # Exact term from text
   "full_text": str,                  # Complete verbatim text
-  "parameters_mentioned": List[str], # Symbols in definition
-  "source_section": str              # Section identifier
+  "parameters_mentioned": List[str]  # Symbols in definition
 }
 ```
 
 ### RawTheorem
 ```python
 {
-  "temp_id": str,                    # Pattern: ^raw-thm-[0-9]+$
+  "label": str,                      # Pattern: ^(thm|lem|prop|cor)-[a-z0-9-]+$
   "label_text": str,                 # "Theorem 3.1", "Lemma 2.5", etc.
   "statement_type": str,             # "theorem", "lemma", "proposition", "corollary"
   "context_before": Optional[str],   # Preceding paragraph
   "full_statement_text": str,        # Complete statement
   "conclusion_formula_latex": Optional[str],
   "equation_label": Optional[str],   # "(3.1)" if numbered
-  "explicit_definition_references": List[str],
-  "source_section": str
+  "explicit_definition_references": List[str]
 }
 ```
 
 ### RawProof
 ```python
 {
-  "temp_id": str,                    # Pattern: ^raw-proof-[0-9]+$
+  "label": str,                      # Pattern: ^proof-[a-z0-9-]+$
   "proves_label_text": str,          # "Theorem 3.1"
   "proof_text": str,                 # Complete proof content
   "steps": List[str],                # Enumerated steps if present
-  "citations": List[str],            # Referenced labels
-  "source_section": str
+  "citations": List[str]             # Referenced labels
 }
 ```
 
 ### RawAxiom
 ```python
 {
-  "temp_id": str,                    # Pattern: ^raw-axiom-[0-9]+$
+  "label": str,                      # Pattern: ^axiom-[a-z0-9-]+$
   "label_text": str,                 # "Axiom 1.1"
   "axiom_name": str,                 # "Bounded Displacement"
-  "statement": str,                  # Full axiom statement
-  "source_section": str
+  "statement": str                   # Full axiom statement
 }
 ```
 
 ### RawParameter
 ```python
 {
-  "temp_id": str,                    # Pattern: ^raw-param-[0-9]+$
+  "label": str,                      # Pattern: ^param-[a-z0-9-]+$
   "symbol": str,                     # "N", "d", "τ", etc.
   "name": str,                       # "Swarm Size"
   "definition_text": str,            # Full definition text
-  "constraints": Optional[str],      # "N ≥ 3"
-  "source_section": str
+  "constraints": Optional[str]       # "N ≥ 3"
 }
 ```
 
 ### RawEquation
 ```python
 {
-  "temp_id": str,                    # Pattern: ^raw-eq-[0-9]+$
+  "label": str,                      # Pattern: ^eq-[a-z0-9-]+$
   "equation_label": Optional[str],   # "(2.1)" if numbered
   "latex_content": str,              # LaTeX expression
   "context_before": Optional[str],   # Preceding text
-  "context_after": Optional[str],    # Following text
-  "source_section": str
+  "context_after": Optional[str]     # Following text
 }
 ```
 
 ### RawRemark
 ```python
 {
-  "temp_id": str,                    # Pattern: ^raw-remark-[0-9]+$
+  "label": str,                      # Pattern: ^remark-[a-z0-9-]+$
   "remark_type": str,                # "note", "remark", "example", etc.
-  "content": str,                    # Full remark text
-  "source_section": str
+  "content": str                     # Full remark text
 }
 ```
 
 ### RawCitation
 ```python
 {
-  "temp_id": str,                    # Pattern: ^raw-cite-[0-9]+$
+  "label": str,                      # Pattern: ^cite-[a-z0-9-]+$
   "key_in_text": str,                # "[smith2020]"
-  "context": str,                    # Sentence containing citation
-  "source_section": str
+  "context": str                     # Sentence containing citation
 }
 ```
 
@@ -455,11 +442,11 @@ docs/source/1_euclidean_gas/03_cloning/
 - ❌ NO relationship extraction
 - ❌ NO Pydantic validation
 
-### Temporary IDs
-- Pattern: `raw-{type}-{sequence}`
-- Examples: `raw-def-001`, `raw-thm-042`, `raw-axiom-003`
-- Sequential numbering per type
-- Used only in Stage 1
+### Label Format
+- Pattern: `{type}-{descriptive-name}`
+- Examples: `def-walker-state`, `thm-exponential-convergence`, `axiom-bounded-displacement`
+- Descriptive kebab-case naming
+- Must match Pydantic pattern regex (e.g., `^def-[a-z0-9-]+$` for definitions)
 
 ### Completeness
 - Extract **every** directive found
@@ -534,7 +521,7 @@ Verify counts match expectations.
 ### Step 2: Browse Raw Files
 ```bash
 ls docs/source/1_euclidean_gas/03_cloning/raw_data/definitions/
-cat docs/source/1_euclidean_gas/03_cloning/raw_data/definitions/raw-def-001.json
+cat docs/source/1_euclidean_gas/03_cloning/raw_data/definitions/def-walker-state.json
 ```
 
 ### Step 3: Proceed to Stage 2
@@ -654,7 +641,7 @@ python src/fragile/proofs/tools/source_location_enricher.py directory \
 ```python
 # ❌ This will FAIL:
 enriched = DefinitionBox.from_raw(raw_def, chapter="1")
-# ValueError: Definition raw-def-1 missing source location
+# ValueError: Definition def-walker-state missing source location
 
 # ✓ This will SUCCEED:
 python src/fragile/proofs/tools/source_location_enricher.py directory raw_data/ doc.md doc_id

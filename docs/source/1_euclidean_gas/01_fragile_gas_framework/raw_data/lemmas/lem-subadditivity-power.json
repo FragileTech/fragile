@@ -13,9 +13,9 @@
       4946,
       4958
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "expanded",
@@ -37,5 +37,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 17.2.4.2",
+  "full_statement_text": "For α ∈ (0, 1], the function t ↦ t^α is subadditive: (a + b)^α ≤ a^α + b^α for all a, b ≥ 0."
 }

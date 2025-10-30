@@ -56,8 +56,8 @@ class RawDataModel(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    source: SourceLocation | None = Field(
-        None, description="Source location metadata for this extracted entity."
+    source: SourceLocation = Field(
+        ..., description="Source location metadata for this extracted entity."
     )
 
 
@@ -80,10 +80,9 @@ class RawDefinition(RawDataModel):
     Maps to Lean:
         structure RawDefinition where
           label : String
-          term_being_defined : String
+          term : String
           full_text : String
           parameters_mentioned : List String
-          source_section : String
     """
 
     label: str = Field(
@@ -139,7 +138,6 @@ class RawTheorem(RawDataModel):
           conclusion_formula_latex : Option String
           equation_label : Option String
           explicit_definition_references : List String
-          source_section : String
     """
 
     label: str = Field(
@@ -219,7 +217,6 @@ class RawProof(RawDataModel):
           full_body_text : Option String
           explicit_theorem_references : List String
           citations_in_text : List String
-          source_section : String
     """
 
     label: str = Field(
@@ -334,7 +331,6 @@ class RawEquation(RawDataModel):
           latex_content : String
           context_before : Option String
           context_after : Option String
-          source_section : String
     """
 
     label: str = Field(
@@ -371,8 +367,6 @@ class RawEquation(RawDataModel):
         "Example: 'where K is the kernel function and w_i are weights'. "
         "Helps understand equation components.",
     )
-
-    source_section: str = Field(..., description="The section where this equation appears.")
 
 
 class RawParameter(RawDataModel):
@@ -436,12 +430,6 @@ class RawParameter(RawDataModel):
         "or locally (within a specific theorem/section). "
         "Global: 'Throughout this paper...', 'We always assume...'. "
         "Local: 'In this section...', 'For the remainder of this proof...'.",
-    )
-
-    source_section: str = Field(
-        ...,
-        description="The section where this parameter is defined. "
-        "For global parameters, often appears in introduction or notation sections.",
     )
 
 
@@ -509,12 +497,8 @@ class RawAxiom(RawDataModel):
         structure RawAxiom where
           label : String
           label_text : String
-          name : String
-          core_assumption_text : String
-          parameters_text : List String
-          condition_text : String
-          failure_mode_analysis_text : Option String
-          source_section : String
+          axiom_name : String
+          statement : String
     """
 
     label: str = Field(

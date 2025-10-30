@@ -1,67 +1,23 @@
 {
   "label": "def-raw-value-operator",
-  "type": "definition",
-  "name": "Raw Value Operator",
-  "statement": "A **Raw Value Operator**, denoted $V$, is a function that maps a swarm state $S \\in \\Sigma_N$ to a **probability distribution** over N-dimensional real-valued vectors, $P(\\mathbb{R}^N)$.\n\n**Signature:** $V: \\Sigma_N \\to P(\\mathbb{R}^N)$\n\nFor any swarm state $S$, a single sample $v \\sim V(S)$ produces a raw value vector. This process must adhere to the following rules:\n\n1. **Alive Set Dependency:** The sampling process for the components of $v$ corresponding to the alive set $\\mathcal{A}(S)$ may depend on the entire state $S$.\n2. **Dead Set Determinism:** For any walker $i$ that is not in the alive set ($i \\notin \\mathcal{A}(S)$), the corresponding component of the raw value vector is deterministically zero: $v_i = 0$.\n\nThis definition encapsulates both deterministic measurements (like reward, where the distribution is a Dirac delta) and stochastic measurements (like distance-to-companion).",
-  "context": {
-    "section": "10. Abstract Raw Value Measurement",
-    "subsection": "9.1 The Raw Value Operator",
-    "chapter": "1_euclidean_gas/01_fragile_gas_framework",
-    "lines": [
-      2100,
-      2108
-    ],
-    "source_file": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md"
-  },
-  "mathematical_content": {
-    "notation": {
-      "V": "Raw Value Operator",
-      "S": "Swarm state",
-      "\\Sigma_N": "Space of swarm states with N walkers",
-      "P(\\mathbb{R}^N)": "Probability distribution over N-dimensional real vectors",
-      "v": "Raw value vector sampled from V(S)",
-      "\\mathcal{A}(S)": "Alive set of swarm state S",
-      "v_i": "Component of raw value vector for walker i"
-    },
-    "signature": "$V: \\Sigma_N \\to P(\\mathbb{R}^N)$",
-    "properties": [
-      "Maps swarm states to probability distributions over real vectors",
-      "Alive set components may depend on entire state",
-      "Dead set components are deterministically zero",
-      "Encapsulates both deterministic and stochastic measurements"
-    ]
-  },
-  "tags": [
-    "operator",
-    "measurement",
-    "raw-value",
-    "probability-distribution",
-    "abstract-framework",
-    "stochastic",
-    "section-10"
+  "term": "Raw Value Operator",
+  "full_text": "A **Raw Value Operator**, denoted $V$, is a function that maps a swarm state $S \\in \\Sigma_N$ to a **probability distribution** over N-dimensional real-valued vectors, $P(\\mathbb{R}^N)$.\n\n**Signature:** $V: \\Sigma_N \\to P(\\mathbb{R}^N)$\n\nFor any swarm state $S$, a single sample $v \\sim V(S)$ produces a raw value vector. This process must adhere to the following rules:\n\n1. **Alive Set Dependency:** The sampling process for the components of $v$ corresponding to the alive set $\\mathcal{A}(S)$ may depend on the entire state $S$.\n2. **Dead Set Determinism:** For any walker $i$ that is not in the alive set ($i \\notin \\mathcal{A}(S)$), the corresponding component of the raw value vector is deterministically zero: $v_i = 0$.\n\nThis definition encapsulates both deterministic measurements (like reward, where the distribution is a Dirac delta) and stochastic measurements (like distance-to-companion).",
+  "parameters_mentioned": [
+    "V",
+    "S",
+    "\\Sigma_N",
+    "P(\\mathbb{R}^N)",
+    "v",
+    "\\mathcal{A}(S)",
+    "v_i"
   ],
-  "relations": {
-    "generalizes": [
-      "obj-reward-measurement",
-      "obj-distance-to-companion-measurement"
-    ],
-    "uses": [
-      "obj-swarm-and-state-space",
-      "obj-alive-dead-sets"
-    ],
-    "required_by": [
-      "axiom-raw-value-mean-square-continuity",
-      "axiom-bounded-measurement-variance"
-    ]
-  },
-  "notes": "This is the foundational abstraction for the measurement pipeline. Any specific measurement (reward, distance-to-companion) is a concrete instantiation of this abstract operator. The continuity of the entire system depends on this operator being well-behaved in a probabilistic sense.",
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "9.1",
-    "section_name": null,
+    "section_name": "The Raw Value Operator",
     "directive_label": "def-raw-value-operator",
-    "equation": null,
     "line_range": [
       2100,
       2108

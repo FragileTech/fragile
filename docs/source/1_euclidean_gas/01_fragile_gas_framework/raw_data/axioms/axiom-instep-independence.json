@@ -1,16 +1,19 @@
 {
-  "temp_id": "raw-axiom-001",
-  "label_text": "def-assumption-instep-independence",
-  "axiom_name": "Def Assumption Instep Independence",
+  "label": "axiom-instep-independence",
+  "label_text": "Def-Assumption: Instep Independence",
+  "name": "Def Assumption Instep Independence",
+  "type": "axiom",
   "statement": "Fix a time $t$ and swarm state $\\mathcal S_t$. For each walker $i\\in\\{1,\\dots,N\\}$, let\n\n$$\nX_i \\;:=\\;\\big(U_i^{\\mathrm{comp}},\\,U_i^{\\mathrm{pert}},\\,U_i^{\\mathrm{status}},\\,U_i^{\\mathrm{clone}}\\big)\n$$\n\nbe the collection of random inputs used by walker $i$ during the next update (companion selection, perturbation noise, status/death draw, cloning/parent draw). **Conditional on $\\mathcal S_t$, the vectors $X_1,\\dots,X_N$ are independent**, and the components inside each $X_i$ are mutually indep",
+  "core_assumption_text": "Conditional on $\\mathcal S_t$, the vectors $X_1,\\dots,X_N$ are independent, and the components inside each $X_i$ are mutually independent.",
   "source_section": "§3",
   "source": {
     "document_id": "01_fragile_gas_framework",
+    "chapter": "1_euclidean_gas",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "3",
     "section_name": null,
-    "directive_label": "def-assumption-instep-independence",
     "equation": null,
+    "directive_label": "axiom-instep-independence",
     "line_range": [
       553,
       563

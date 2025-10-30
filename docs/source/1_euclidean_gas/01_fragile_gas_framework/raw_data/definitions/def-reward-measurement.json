@@ -1,38 +1,26 @@
 {
   "label": "def-reward-measurement",
   "term": "Reward Measurement",
-  "formal_statement": null,
-  "applies_to_object_type": "measure",
-  "parameters": [
+  "full_text": "The reward value $r_i$ for walker $i$ at position $x_i$ is the result of integrating the global Reward Function $R$ against the walker's positional measure, which is the Dirac delta measure $\\delta_{x_i}$ on $\\mathcal{X}$. This formalizes the act of 'evaluating the reward' as a measurement process.\n\n$$\nr_i := \\mathbb{E}_{\\delta_{x_i}}[R] = \\int_{\\mathcal{X}} R(x) \\, d\\delta_{x_i}(x) = R(x_i)\n$$",
+  "parameters_mentioned": [
     "r_i",
     "x_i",
     "R",
     "\\delta_{x_i}",
-    "\\mathcal{X}"
-  ],
-  "natural_language_description": "The reward value r_i for walker i at position x_i is the result of integrating the global Reward Function R against the walker's positional measure, which is the Dirac delta measure \\delta_{x_i} on \\mathcal{X}. This formalizes the act of 'evaluating the reward' as a measurement process.",
-  "mathematical_statement": "r_i := \\mathbb{E}_{\\delta_{x_i}}[R] = \\int_{\\mathcal{X}} R(x) \\, d\\delta_{x_i}(x) = R(x_i)",
-  "depends_on": [],
-  "examples": [],
-  "tags": [
-    "measurement",
-    "reward",
-    "dirac-measure",
-    "environment"
+    "\\mathcal{X}",
+    "\\mathbb{E}_{\\delta_{x_i}}"
   ],
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "3.1",
-    "section_name": null,
+    "section_name": "Reward Measurement",
     "directive_label": "def-reward-measurement",
-    "equation": null,
     "line_range": [
       1102,
       1111
     ],
     "url_fragment": "#def-reward-measurement"
-  },
-  "chapter": "1_euclidean_gas",
-  "document": "01_fragile_gas_framework"
+  }
 }

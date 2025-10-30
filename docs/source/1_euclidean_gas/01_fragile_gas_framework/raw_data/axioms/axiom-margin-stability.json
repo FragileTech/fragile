@@ -1,20 +1,23 @@
 {
-  "temp_id": "raw-axiom-016",
-  "label_text": "def-axiom-margin-stability",
-  "axiom_name": "Margin Stability",
+  "label": "axiom-margin-stability",
+  "label_text": "Def-Axiom: Margin-Stability",
+  "name": "Margin Stability",
+  "type": "axiom",
   "statement": "There exists a uniform margin $r_{\\mathrm{pos}}>0$ such that for any two swarms $\\mathcal{S}_1,\\mathcal{S}_2\\in\\Sigma_N$ with\n\n$$\n\\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal Y}\\!\\big(\\varphi(x_{1,i}),\\varphi(x_{2,i})\\big)^2\\;\\le\\; r_{\\mathrm{pos}},\n$$\n\nthe alive/dead decisions are invariant under the status update:\n\n$$\nn_c(\\mathcal{S}_1,\\mathcal{S}_2)=0.\n$$\n\nIn words, sufficiently small positional perturbations (average squared displacement) cannot flip any walker’s status; the alive/dead decision has a",
+  "core_assumption_text": "There exists a uniform margin $r_{\\mathrm{pos}}>0$ such that for any two swarms $\\mathcal{S}_1,\\mathcal{S}_2\\in\\Sigma_N$ with\n\n$$\n\\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal Y}\\!\\big(\\varphi(x_{1,i}),\\varphi(x_{2,i})\\big)^2\\;\\le\\; r_{\\mathrm{pos}},\n$$\n\nthe alive/dead decisions are invariant under the status update:\n\n$$\nn_c(\\mathcal{S}_1,\\mathcal{S}_2)=0.",
   "source_section": "§3",
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "3",
     "section_name": null,
-    "directive_label": "def-axiom-margin-stability",
+    "directive_label": "axiom-margin-stability",
     "equation": null,
     "line_range": [
       1066,
       1081
     ],
-    "url_fragment": "#def-axiom-margin-stability"
+    "url_fragment": "#def-axiom-margin-stability",
+    "chapter": "1_euclidean_gas"
   }
 }

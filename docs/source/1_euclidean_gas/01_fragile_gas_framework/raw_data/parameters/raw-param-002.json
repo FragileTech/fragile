@@ -1,5 +1,4 @@
 {
-  "temp_id": "raw-param-002",
   "symbol": "L_R",
   "meaning": "Lipschitz constant of the reward",
   "full_text": "We reframe every stability assumption as a quantifiable **Axiomatic Parameter** (e.g., $\\kappa_{\\text{revival}}$, $L_R$, $p_{\\text{worst-case}}$)",
@@ -16,6 +15,8 @@
       23,
       23
     ],
-    "url_fragment": null
-  }
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
+  },
+  "label": "param-l-r"
 }

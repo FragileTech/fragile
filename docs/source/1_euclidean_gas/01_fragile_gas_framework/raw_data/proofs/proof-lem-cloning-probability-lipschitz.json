@@ -1,38 +1,14 @@
 {
   "label": "proof-lem-cloning-probability-lipschitz",
-  "proves": "lem-cloning-probability-lipschitz",
-  "type": "proof",
+  "proves_label_text": "Proof of Lemma: Cloning Probability Lipschitz",
   "proof_text": "The proof proceeds by finding the Lipschitz constant of the composition of the **clip** function and the normalized score function, $S(v_c, v_i)/p_{\\max}$. The **clip** function (min(1, max(0, x))) has a Lipschitz constant of 1. Therefore, the Lipschitz constant of $\\pi$ is bounded by the Lipschitz constant of the normalized score. We find this by bounding the partial derivatives of the score function $S(v_c, v_i)$.\n\n1. **Partial Derivative with respect to $v_c$:** $\\partial S/\\partial v_c = 1/(v_i + \\varepsilon_{\\text{clone}})$. For alive walkers, lem-potential-boundedness gives $v_i\\ge V_{\\text{pot,min}}$, hence the bound $1/(V_{\\text{pot,min}} + \\varepsilon_{\\text{clone}})$. For a dead walker ($v_i=0$), the bound is $1/\\varepsilon_{\\text{clone}}$. The worst case is the dead‑walker value $1/\\varepsilon_{\\text{clone}}$.\n\n2. **Partial Derivative with respect to $v_i$:** $\\partial S/\\partial v_i = (-\\varepsilon_{\\text{clone}} - v_c)/(v_i + \\varepsilon_{\\text{clone}})^2$. In magnitude, this is $\\le (V_{\\text{pot,max}} + \\varepsilon_{\\text{clone}})/(v_i + \\varepsilon_{\\text{clone}})^2$. For alive walkers, use $v_i\\ge V_{\\text{pot,min}}$; for a dead walker, $v_i=0$ yields the worst‑case bound $(V_{\\text{pot,max}} + \\varepsilon_{\\text{clone}})/\\varepsilon_{\\text{clone}}^2$.\n\n3. **Combine:** Divide the worst‑case partial‑derivative bounds by $p_{\\max}$ to obtain the stated uniform Lipschitz constants $L_{\\pi,c}$ and $L_{\\pi,i}$ that cover both alive and dead cases.",
-  "proof_structure": [
-    "Analyze composition of clip function and normalized score",
-    "Bound partial derivative with respect to companion potential",
-    "Bound partial derivative with respect to walker potential",
-    "Combine worst-case bounds"
-  ],
-  "key_techniques": [
-    "partial derivatives",
-    "case analysis",
-    "worst-case bounds"
-  ],
-  "dependencies": [
-    "lem-potential-boundedness"
-  ],
-  "tags": [
-    "cloning",
-    "lipschitz",
-    "proof"
-  ],
-  "context": "Section 16: The Cloning Transition Measure, subsection 15.2.2",
-  "source_file": "01_fragile_gas_framework.md",
-  "line_number": 4330,
-  "extraction_date": "2025-10-27T21:50:09.741075",
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "15.2.2",
-    "section_name": null,
+    "section_name": "Continuity of the Cloning Transition Measure",
     "directive_label": "proof-lem-cloning-probability-lipschitz",
-    "equation": null,
     "line_range": [
       4340,
       4347

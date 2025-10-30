@@ -323,21 +323,20 @@ report_enrichment_coverage(Path("docs/source"))
 
 ## Expected Output
 
-After successful enrichment, each raw JSON file will have a `source_location` field:
+After successful enrichment, each raw JSON file will have a `source` field:
 
 ```json
 {
-  "temp_id": "raw-thm-1",
+  "label": "thm-keystone",
   "label_text": "Theorem 3.2 (Keystone Principle)",
   "statement_type": "theorem",
   "full_statement_text": "Let v > 0 and assume the walker velocity...",
-  "source_section": "§3.2",
-  "source_location": {
+  "source": {
     "document_id": "03_cloning",
     "file_path": "docs/source/1_euclidean_gas/03_cloning.md",
     "line_range": [142, 158],
     "directive_label": "thm-keystone",
-    "section": "§3.2",
+    "section": "3.2",
     "url_fragment": "#thm-keystone"
   }
 }

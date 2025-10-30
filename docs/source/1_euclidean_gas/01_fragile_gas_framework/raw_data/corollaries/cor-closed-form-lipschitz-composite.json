@@ -1,5 +1,4 @@
 {
-  "temp_id": "raw-cor-002",
   "label": "cor-closed-form-lipschitz-composite",
   "label_text": "Corollary: Closed‑form bound for L_{g_A∘z} (empirical aggregator)",
   "name": "Closed‑form bound for L_{g_A∘z} (empirical aggregator)",
@@ -25,7 +24,8 @@
     "directive_label": "cor-closed-form-lipschitz-composite",
     "equation": null,
     "line_range": null,
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
   "has_proof": true,
   "depends_on": [

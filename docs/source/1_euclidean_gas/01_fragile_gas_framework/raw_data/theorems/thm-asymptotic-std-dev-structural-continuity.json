@@ -1,40 +1,24 @@
 {
   "label": "thm-asymptotic-std-dev-structural-continuity",
-  "name": "Asymptotic Behavior of the Structural Continuity for the Regularized Standard Deviation",
-  "statement": "Let the chosen swarm aggregation operator $M$ have structural growth exponents $p_{\\mu,S}$ and $p_{m_2,S}$ for its mean and second moment, respectively, as defined in def-swarm-aggregation-operator-axiomatic. Let $L_{\\sigma',S}(\\mathcal{S})$ be the structural Lipschitz function for the regularized standard deviation, as derived in lem-stats-structural-continuity.\n\nThe asymptotic behavior of this function for large swarm size $k = |\\mathcal{A}(\\mathcal{S})|$ is determined by the larger of the two structural growth exponents. Let the worst-case exponent be:\n\n$$\np_{\\text{worst-case}} := \\max(p_{\\mu,S}, p_{m_2,S})\n$$\n\nThen, for large $k$, the structural Lipschitz function for the standard deviation is governed by this worst-case exponent:\n\n$$\nL_{\\sigma',S}(k) \\propto k^{p_{\\text{worst-case}}}\n$$",
-  "proof_sketch": "The proof proceeds by analyzing the asymptotic form of the bound for the structural Lipschitz constant of the regularized standard deviation. From lem-stats-structural-continuity, $L_{\\sigma',S}(\\mathcal{S}) \\le (L_{m_2,S}(\\mathcal{S}) + 2V_{\\max}L_{\\mu,S}(\\mathcal{S}))/(2\\varepsilon_{\\mathrm{std}})$. Since the numerator is a sum of power-law terms, the asymptotic behavior is dominated by the term with the largest exponent, yielding the result.",
-  "source_section": "12",
-  "source_document": "01_fragile_gas_framework.md",
-  "dependencies": [
-    "def-swarm-aggregation-operator-axiomatic",
-    "lem-stats-structural-continuity"
-  ],
-  "tags": [
-    "asymptotics",
-    "scaling",
-    "structural-continuity"
-  ],
-  "input_objects": [
-    "obj-swarm-aggregation-operator-axiomatic",
-    "obj-standardization-lower-bound"
-  ],
+  "label_text": "Asymptotic Behavior of the Structural Continuity for the Regularized Standard Deviation",
+  "statement_type": "theorem",
+  "full_statement_text": "Let the chosen swarm aggregation operator $M$ have structural growth exponents $p_{\\mu,S}$ and $p_{m_2,S}$ for its mean and second moment, respectively, as defined in [](#def-swarm-aggregation-operator-axiomatic). Let $L_{\\sigma',S}(\\mathcal{S})$ be the structural Lipschitz function for the regularized standard deviation, as derived in [](#lem-stats-structural-continuity).\nThe asymptotic behavior of this function for large swarm size $k = |\\mathcal{A}(\\mathcal{S})|$ is determined by the larger of the two structural growth exponents. Let the worst-case exponent be:\n\n$$\np_{\\text{worst-case}} := \\max(p_{\\mu,S}, p_{m_2,S})\n$$\n\nThen, for large $k$, the structural Lipschitz function for the standard deviation is governed by this worst-case exponent:\n\n$$\nL_{\\sigma',S}(k) \\propto k^{p_{\\text{worst-case}}}\n$$",
+  "input_objects": [],
   "input_axioms": [],
   "input_parameters": [],
   "output_type": "Bound",
-  "relations_established": [
-    "Asymptotic standard deviation is structurally continuous"
-  ],
-  "statement_type": "theorem",
+  "relations_established": [],
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1",
     "section": "12",
     "section_name": null,
     "directive_label": "thm-asymptotic-std-dev-structural-continuity",
     "equation": null,
     "line_range": [
-      2981,
-      2996
+      2971,
+      2984
     ],
     "url_fragment": "#thm-asymptotic-std-dev-structural-continuity"
   }

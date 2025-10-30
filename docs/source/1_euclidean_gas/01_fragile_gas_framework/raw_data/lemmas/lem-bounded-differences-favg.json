@@ -10,9 +10,9 @@
     "directive_label": "lem-bounded-differences-favg",
     "equation": null,
     "line_range": null,
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "expanded",
@@ -39,5 +39,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma",
+  "full_statement_text": "Under the Axiom of Bounded Algorithmic Diameter, for the normalized functional $f_{\\text{avg}} := \\frac{1}{N}\\,\\Delta_{\\text{pert}}^2(\\mathcal{S}_{\\text{in}}) = \\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal{Y}}\\!\\big(\\varphi(x'_{\\text{out},i}),\\varphi(x_{\\text{in},i})\\big)^2$, the McDiarmid bounded‑difference constants may be taken as $c_i=D_{\\mathcal{Y}}^2/N$ for all $i$."
 }

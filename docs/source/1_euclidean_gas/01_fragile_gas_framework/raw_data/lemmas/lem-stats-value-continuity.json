@@ -13,9 +13,9 @@
       2863,
       2883
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "expanded",
@@ -43,5 +43,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 11.1.3",
+  "full_statement_text": "Let $\\mathcal{S}$ be a fixed swarm state with alive set $\\mathcal{A}$ of size $k = |\\mathcal{A}| \\geq 1$. Let $\\mathbf{v}_1$ and $\\mathbf{v}_2$ be two raw value vectors, with components bounded by $V_{\\max}$. The mean $\\mu(\\mathcal{S}, \\mathbf{v})$ and regularized standard deviation $\\sigma'(\\mathcal{S}, \\mathbf{v})$ are Lipschitz continuous with respect to the raw value vector $\\mathbf{v}$.\n\n$$\n|\\mu(\\mathcal{S}, \\mathbf{v}_1) - \\mu(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\mu,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2\n$$\n\n$$\n|\\sigma'(\\mathcal{S}, \\mathbf{v}_1) - \\sigma'(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\sigma',M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2\n$$\n\nwhere $L_{\\mu,M}$ is the axiomatic value Lipschitz function for the mean from def-swarm-aggregation-operator-axiomatic, and $L_{\\sigma',M}$ is the derived Lipschitz constant for the regularized standard deviation, given by:\n\n$$\n\\boxed{\nL_{\\sigma',M}(\\mathcal{S}) := L_{\\sigma'_{\\text{reg}}} \\cdot \\left( L_{m_2,M}(\\mathcal{S}) + 2V_{\\max}L_{\\mu,M}(\\mathcal{S}) \\right)\n}\n$$\n\nand $L_{\\sigma'_{\\text{reg}}} = \\frac{1}{2\\sigma'_{\\min}}$ is the finite, global Lipschitz constant of the Regularized Standard Deviation Function from lem-sigma-reg-derivative-bounds."
 }

@@ -18,6 +18,10 @@
       1,
       20
     ],
-    "url_fragment": null
-  }
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
+  },
+  "meaning": "Number of Walkers",
+  "full_text": "Number of Walkers. Symbol: $N$. Type: natural. Constraints: $N \\ge 1$.",
+  "scope": "global"
 }

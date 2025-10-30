@@ -1,17 +1,23 @@
 {
   "label": "def-cemetery-state-measure",
-  "type": "definition",
-  "content": "Let $\\mathcal{S}$ be a swarm. Its distributional representation, denoted $\\mu_{\\mathcal{S}}$, is defined as:\n1.  If $|\\mathcal{A}(\\mathcal{S})| > 0$, $\\mu_{\\mathcal{S}}$ is the empirical or smoothed measure as defined in 5.1 and 5.2 (i.e., $\\mu_{\\mathcal{S}} = \\nu_{\\mathcal{S}}$ or $\\mu_{\\mathcal{S}} = \\tilde{\\nu}_{\\mathcal{S}, \\ell}$).\n2.  If $|\\mathcal{A}(\\mathcal{S})| = 0$, its representation is the unique **Cemetery State Measure**, denoted $\\mu_{\\mathcal{S}} := \\nu_{\\emptyset}$.\nThe Cemetery State Measure $\\nu_{\\emptyset}$ is an abstract object that does not have a density on $\\mathcal{Y}$. Its properties are defined entirely by its interaction with the distance functions used in the swarm metrics.",
-  "start_line": 1455,
-  "end_line": 1461,
-  "section": "§7",
+  "term": "Cemetery State Measure",
+  "full_text": "Let $\\mathcal{S}$ be a swarm. Its distributional representation, denoted $\\mu_{\\mathcal{S}}$, is defined as:\n1.  If $|\\mathcal{A}(\\mathcal{S})| > 0$, $\\mu_{\\mathcal{S}}$ is the empirical or smoothed measure as defined in 5.1 and 5.2 (i.e., $\\mu_{\\mathcal{S}} = \\nu_{\\mathcal{S}}$ or $\\mu_{\\mathcal{S}} = \\tilde{\\nu}_{\\mathcal{S}, \\ell}$).\n2.  If $|\\mathcal{A}(\\mathcal{S})| = 0$, its representation is the unique **Cemetery State Measure**, denoted $\\mu_{\\mathcal{S}} := \\nu_{\\emptyset}$.\nThe Cemetery State Measure $\\nu_{\\emptyset}$ is an abstract object that does not have a density on $\\mathcal{Y}$. Its properties are defined entirely by its interaction with the distance functions used in the swarm metrics.",
+  "parameters_mentioned": [
+    "\\mathcal{S}",
+    "\\mu_{\\mathcal{S}}",
+    "\\mathcal{A}(\\mathcal{S})",
+    "\\nu_{\\mathcal{S}}",
+    "\\tilde{\\nu}_{\\mathcal{S}, \\ell}",
+    "\\nu_{\\emptyset}",
+    "\\mathcal{Y}"
+  ],
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "6.4",
-    "section_name": null,
+    "section_name": "The Cemetery State Measure",
     "directive_label": "def-cemetery-state-measure",
-    "equation": null,
     "line_range": [
       1455,
       1461

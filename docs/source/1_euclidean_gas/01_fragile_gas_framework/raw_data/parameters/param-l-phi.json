@@ -15,6 +15,10 @@
     "directive_label": "param-l-phi",
     "equation": null,
     "line_range": null,
-    "url_fragment": null
-  }
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
+  },
+  "meaning": "Displacement Lipschitz Constant",
+  "full_text": "Displacement Lipschitz Constant. Symbol: $L_\\varphi$. Type: real. Constraints: $L_\\varphi \\le 1$.",
+  "scope": "global"
 }

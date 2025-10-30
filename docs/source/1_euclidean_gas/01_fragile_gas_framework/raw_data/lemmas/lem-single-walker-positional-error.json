@@ -13,9 +13,9 @@
       2164,
       2173
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "complete",
@@ -40,5 +40,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 10.2.1",
+  "full_statement_text": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. For a given walker $i$ that is alive in swarm $\\mathcal{S}_1$ ($s_{1,i}=1$), let $\\mathbb{C}_i(\\mathcal{S}_1)$ be its companion selection measure.\n\nThe absolute error in its expected distance due to the positional displacement of the walkers between the two states, evaluated over the fixed companion set from $\\mathcal{S}_1$, is bounded by the sum of its own displacement and the average displacement of its potential companions."
 }

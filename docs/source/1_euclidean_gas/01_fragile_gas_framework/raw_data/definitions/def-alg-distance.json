@@ -1,0 +1,27 @@
+{
+  "label": "def-alg-distance",
+  "term": "Algorithmic Distance",
+  "full_text": "The **algorithmic distance** $d_{\\text{alg}}\\colon\\mathcal{X}\\times\\mathcal{X}\\to\\mathbb{R}_{\\ge0}$ is the distance between the projected positional measures of two walkers. In practice, this is the distance or semidistance function $d_{\\mathcal{Y}}$ applied to the projected points in the algorithmic space:\n$$\n\n\\boxed{d_{\\text{alg}}(x_1, x_2) := d_{\\mathcal{Y}}(\\varphi(x_1), \\varphi(x_2))}\n\n$$\nThis is the practical implementation of the Wasserstein distance between the walkers' projected Dirac measures and serves as the ground distance for all subsequent calculations.",
+  "parameters_mentioned": [
+    "d_{\\text{alg}}",
+    "\\mathcal{X}",
+    "\\mathbb{R}_{\\ge0}",
+    "d_{\\mathcal{Y}}",
+    "\\varphi",
+    "x_1",
+    "x_2"
+  ],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
+    "section": "6",
+    "section_name": "Algorithm Space and Distance Measurement",
+    "directive_label": "def-alg-distance",
+    "line_range": [
+      1232,
+      1241
+    ],
+    "url_fragment": "#def-alg-distance"
+  }
+}

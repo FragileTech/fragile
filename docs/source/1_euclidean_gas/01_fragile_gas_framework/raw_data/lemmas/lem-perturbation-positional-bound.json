@@ -1,5 +1,5 @@
 {
-  "label": "sub-lem-perturbation-positional-bound-reproof",
+  "label": "lem-perturbation-positional-bound-reproof",
   "name": "Bounding the Output Positional Displacement",
   "statement_type": "lemma",
   "source": {
@@ -7,15 +7,15 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "13.2.2",
     "section_name": null,
-    "directive_label": "sub-lem-perturbation-positional-bound-reproof",
+    "directive_label": "lem-perturbation-positional-bound-reproof",
     "equation": null,
     "line_range": [
       3988,
       3997
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "expanded",
@@ -37,5 +37,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 13.2.2",
+  "full_statement_text": "Let $\\mathcal{S}_1, \\mathcal{S}_2$ be two input swarms, and let $\\mathcal{S}'_1, \\mathcal{S}'_2$ be the corresponding output swarms after applying the Perturbation Operator. The total squared positional displacement between the output swarms, $\\Delta_{\\text{pos}}^2(\\mathcal{S}'_1, \\mathcal{S}'_2)$, is bounded as follows:\n$$\\Delta_{\\text{pos}}^2(\\mathcal{S}'_1, \\mathcal{S}'_2) \\le 3\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + 3\\Delta_{\\text{pert}}^2(\\mathcal{S}_1) + 3\\Delta_{\\text{pert}}^2(\\mathcal{S}_2)$$\nwhere $\\Delta_{\\text{pert}}^2(\\mathcal{S})$ is the **Total Perturbation-Induced Displacement**."
 }

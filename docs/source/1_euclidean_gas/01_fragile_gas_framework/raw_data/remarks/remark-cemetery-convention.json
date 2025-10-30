@@ -1,5 +1,4 @@
 {
-  "temp_id": "raw-remark-002",
   "remark_type": "note",
   "full_text": "This convention selects a maximal, state-independent distance to the cemetery law so that absorption events represent the largest possible jump in distributional metrics. It simplifies comparisons (no ad-hoc offsets) and keeps $W_p(\\nu,\\delta_{\\dagger})$ constant across all living $\\nu$.",
   "source_section": "§7",
@@ -11,6 +10,8 @@
     "directive_label": null,
     "equation": null,
     "line_range": null,
-    "url_fragment": null
-  }
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
+  },
+  "label": "remark-cemetery-convention"
 }

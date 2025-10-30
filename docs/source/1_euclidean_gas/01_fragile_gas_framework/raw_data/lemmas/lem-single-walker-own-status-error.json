@@ -13,9 +13,9 @@
       2237,
       2245
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "complete",
@@ -40,5 +40,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 10.2.3",
+  "full_statement_text": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. For any walker $i$ whose survival status changes ($s_{1,i} \\neq s_{2,i}$), the absolute difference in its expected raw distance measurement is bounded by the diameter of the algorithmic space, $D_{\\mathcal{Y}}$."
 }

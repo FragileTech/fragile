@@ -1,5 +1,5 @@
 {
-  "label": "sub-lem-stable-walker-error-decomposition",
+  "label": "lem-stable-walker-error-decomposition",
   "name": "For each stable walker $i \\in \\mathcal{A}_{\\text{stable}}$, the error in its expected raw distanc...",
   "statement_type": "lemma",
   "source": {
@@ -7,15 +7,15 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "10.2.6.1",
     "section_name": null,
-    "directive_label": "sub-lem-stable-walker-error-decomposition",
+    "directive_label": "lem-stable-walker-error-decomposition",
     "equation": null,
     "line_range": [
       2320,
       2340
     ],
-    "url_fragment": null
+    "url_fragment": null,
+    "chapter": "1_euclidean_gas"
   },
-  "chapter": "1_euclidean_gas",
   "document": "01_fragile_gas_framework",
   "proof": null,
   "proof_status": "complete",
@@ -40,5 +40,7 @@
   "equation_label": null,
   "uses_definitions": [],
   "validation_errors": [],
-  "raw_fallback": null
+  "raw_fallback": null,
+  "label_text": "Lemma 10.2.6.1",
+  "full_statement_text": "For each stable walker $i \\in \\mathcal{A}_{\\text{stable}}$, the error in its expected raw distance can be decomposed into a positional error term, $\\Delta_{\\text{pos},i}$, and a structural error term, $\\Delta_{\\text{struct},i}$.\n\nThe total squared error over the set of stable walkers is bounded by twice the sum of the squared norms of these two error components:"
 }
