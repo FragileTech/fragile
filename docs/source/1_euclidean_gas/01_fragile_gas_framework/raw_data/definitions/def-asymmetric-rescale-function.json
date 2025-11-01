@@ -12,13 +12,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "8.2.1",
-    "section_name": "Definition of the Asymmetric Rescale Function",
-    "directive_label": "def-asymmetric-rescale-function",
-    "line_range": [
-      1675,
-      1696
-    ],
-    "url_fragment": "#def-asymmetric-rescale-function"
+    "section": null,
+    "section_name": null,
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          1681,
+          1702
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": null
   }
 }

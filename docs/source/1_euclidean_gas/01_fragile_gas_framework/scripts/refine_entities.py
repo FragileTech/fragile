@@ -15,7 +15,7 @@ CATEGORY_MAP = {
     "definitions": "definition",
     "objects": "object",
     "parameters": "parameter",
-    "proofs": "proof",
+    "mathster": "proof",
 }
 
 

@@ -74,7 +74,7 @@ def extract_section_7():
         "definitions": output_base / "definitions",
         "theorems": output_base / "theorems",
         "axioms": output_base / "axioms",
-        "proofs": output_base / "proofs",
+        "mathster": output_base / "mathster",
         "equations": output_base / "equations",
         "parameters": output_base / "parameters",
         "remarks": output_base / "remarks",
@@ -122,14 +122,14 @@ def extract_section_7():
                 json.dump(raw_axiom.model_dump(), f, indent=2)
         stats["entities_extracted"]["axioms"] = len(staging_doc.axioms)
 
-    # Export proofs
+    # Export mathster
     if staging_doc.proofs:
-        logger.info(f"Exporting {len(staging_doc.proofs)} proofs...")
+        logger.info(f"Exporting {len(staging_doc.proofs)} mathster...")
         for raw_proof in staging_doc.proofs:
-            file_path = output_dirs["proofs"] / f"{raw_proof.temp_id}.json"
+            file_path = output_dirs["mathster"] / f"{raw_proof.temp_id}.json"
             with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(raw_proof.model_dump(), f, indent=2)
-        stats["entities_extracted"]["proofs"] = len(staging_doc.proofs)
+        stats["entities_extracted"]["mathster"] = len(staging_doc.proofs)
 
     # Export equations
     if staging_doc.equations:

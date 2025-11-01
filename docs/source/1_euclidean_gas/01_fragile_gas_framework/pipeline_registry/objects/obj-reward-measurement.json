@@ -15,7 +15,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "3.1",
-    "directive_label": "def-reward-measurement",
+    "label": "def-reward-measurement",
     "equation": null,
     "line_range": null,
     "url_fragment": null

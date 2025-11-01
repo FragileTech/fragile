@@ -5,16 +5,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "15.2.2",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "lem-cloning-probability-lipschitz",
+    "label": "lem-cloning-probability-lipschitz",
+    "line_range": {
+      "lines": [
+        [
+          4337,
+          4358
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      4318,
-      4339
-    ],
-    "url_fragment": null,
-    "chapter": "1_euclidean_gas"
+    "url_fragment": "#lem-cloning-probability-lipschitz"
   },
   "document": "01_fragile_gas_framework",
   "proof": null,

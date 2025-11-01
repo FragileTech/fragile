@@ -12,8 +12,6 @@ parts:
 - caption: Part I - Euclidean Gas
   numbered: false
   chapters:
-  - file: source/1_euclidean_gas/intro_euclidean_gas
-    title: Introduction
   - file: source/1_euclidean_gas/01_fragile_gas_framework
     title: Fragile Gas Framework
   - file: source/1_euclidean_gas/02_euclidean_gas
@@ -60,6 +58,10 @@ parts:
     title: QSD Exchangeability Theory
   - file: source/2_geometric_gas/18_emergent_geometry
     title: Emergent Geometry
+  - file: source/2_geometric_gas/19_geometric_gas_cinf_regularity_simplified
+    title: C^∞ Regularity (Simplified)
+  - file: source/2_geometric_gas/20_geometric_gas_cinf_regularity_full
+    title: C^∞ Regularity (Full)
 
 - caption: Part III - Analytical Foundations
   numbered: false
@@ -68,8 +70,10 @@ parts:
     title: Geometric Foundations of LSI
   - file: source/3_brascamp_lieb/README
     title: Directory README
-  - file: source/3_brascamp_lieb/eigenvalue_gap_research_note
-    title: Eigenvalue Gap Research Note
+  - file: source/3_brascamp_lieb/eigenvalue_gap_complete_proof
+    title: Eigenvalue Gap Complete Proof
+  - file: source/3_brascamp_lieb/hierarchical_clustering_proof
+    title: Hierarchical Clustering Proof
   - file: source/3_brascamp_lieb/roadmap
     title: Roadmap (Historical)
   - file: source/3_brascamp_lieb/brascamp_lieb_proof

@@ -6,13 +6,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "17",
-    "section_name": "The Revival State",
-    "directive_label": "proof-thm-k1-revival-state",
-    "line_range": [
-      4597,
-      4636
-    ],
-    "url_fragment": null
+    "section": null,
+    "section_name": null,
+    "label": "proof-thm-k1-revival-state",
+    "line_range": {
+      "lines": [
+        [
+          4638,
+          4679
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": "#proof-thm-k1-revival-state"
   }
 }

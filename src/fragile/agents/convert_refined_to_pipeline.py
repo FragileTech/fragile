@@ -3,7 +3,7 @@ Convert refined_data (Stage 2) to pipeline_data (Stage 3).
 
 This script transforms semantically enriched entities from refined_data/
 to framework-compatible schema in pipeline_data/, ensuring compliance with
-fragile.proofs.core.math_types.py
+fragile.mathster.core.math_types.py
 """
 
 from collections import defaultdict

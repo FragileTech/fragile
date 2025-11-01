@@ -15,13 +15,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "15.2.3",
-    "section_name": "Continuity of the Conditional Expected Cloning Action",
-    "directive_label": "def-expected-cloning-action",
-    "line_range": [
-      4350,
-      4358
-    ],
-    "url_fragment": "#def-expected-cloning-action"
+    "section": null,
+    "section_name": null,
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          4371,
+          4379
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": null
   }
 }

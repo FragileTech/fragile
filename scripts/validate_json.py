@@ -157,7 +157,7 @@ def detect_entity_type(file_path: Path, data: dict, stage: DataStage) -> EntityT
         "definitions": "definition",
         "objects": "object",
         "parameters": "parameter",
-        "proofs": "proof",
+        "mathster": "proof",
         "remarks": "remark",
         "equations": "equation",
     }

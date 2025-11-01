@@ -295,13 +295,13 @@ src/proofs/03_cloning/
 **Usage**:
 ```bash
 # Run all validations for document
-python src/proofs/03_cloning/run_all_validations.py
+python src/mathster/03_cloning/run_all_validations.py
 
 # Run specific theorem validation
-python src/proofs/03_cloning/test_variance_identity_gemini.py
+python src/mathster/03_cloning/test_variance_identity_gemini.py
 
 # Run with pytest
-pytest src/proofs/03_cloning/
+pytest src/mathster/03_cloning/
 ```
 
 ---
@@ -368,7 +368,7 @@ $$
 3. **Continuous Validation**:
    - After any edits to validated sections, re-run:
      ```bash
-     python src/proofs/03_cloning/run_all_validations.py
+     python src/mathster/03_cloning/run_all_validations.py
      ```
 
 4. **Dual-AI Protocol Completion** (When GPT-5 Available):

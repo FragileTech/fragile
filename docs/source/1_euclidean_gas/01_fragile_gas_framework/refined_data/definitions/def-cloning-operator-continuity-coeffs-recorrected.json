@@ -24,6 +24,6 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "16. The Cloning Transition Measure",
     "subsection": "15.2.8.1 Definition: Cloning Operator Continuity Coefficients",
-    "directive_label": "def-cloning-operator-continuity-coeffs-recorrected"
+    "label": "def-cloning-operator-continuity-coeffs-recorrected"
   }
 }

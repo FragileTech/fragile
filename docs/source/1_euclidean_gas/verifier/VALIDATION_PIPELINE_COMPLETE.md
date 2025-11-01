@@ -93,11 +93,11 @@ This document underwent a complete 4-stage validation and correction pipeline:
 
 ### Validation Scripts (All Passing ✅)
 ```bash
-# Located in src/proofs/04_wasserstein_contraction/
+# Located in src/mathster/04_wasserstein_contraction/
 
-pytest src/proofs/04_wasserstein_contraction/test_variance_decomposition.py  # ✅ PASS
-pytest src/proofs/04_wasserstein_contraction/test_quadratic_identity.py      # ✅ PASS
-pytest src/proofs/04_wasserstein_contraction/test_separation_constant.py     # ✅ PASS
+pytest src/mathster/04_wasserstein_contraction/test_variance_decomposition.py  # ✅ PASS
+pytest src/mathster/04_wasserstein_contraction/test_quadratic_identity.py      # ✅ PASS
+pytest src/mathster/04_wasserstein_contraction/test_separation_constant.py     # ✅ PASS
 ```
 
 ### Reports

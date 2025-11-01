@@ -10,16 +10,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "17.2.4.4",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "prop-w2-bound-no-offset",
+    "label": "prop-w2-bound-no-offset",
+    "line_range": {
+      "lines": [
+        [
+          5045,
+          5056
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      5002,
-      5013
-    ],
-    "url_fragment": "#prop-w2-bound-no-offset",
-    "chapter": "1_euclidean_gas"
+    "url_fragment": "#prop-w2-bound-no-offset"
   },
   "label_text": "Proposition 17.2.4.4",
   "full_statement_text": "W2 continuity bound without offset (for k≥2)",

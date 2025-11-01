@@ -15,13 +15,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "9.1",
-    "section_name": "The Raw Value Operator",
-    "directive_label": "def-raw-value-operator",
-    "line_range": [
-      2100,
-      2108
-    ],
+    "section": null,
+    "section_name": null,
+    "label": "def-raw-value-operator",
+    "line_range": {
+      "lines": [
+        [
+          2110,
+          2118
+        ]
+      ]
+    },
+    "equation": null,
     "url_fragment": "#def-raw-value-operator"
   }
 }

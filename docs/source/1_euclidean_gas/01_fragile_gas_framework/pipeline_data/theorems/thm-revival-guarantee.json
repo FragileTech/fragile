@@ -7,7 +7,7 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": null,
     "section_name": null,
-    "directive_label": "thm-revival-guarantee",
+    "label": "thm-revival-guarantee",
     "equation": null,
     "line_range": null,
     "url_fragment": "#thm-revival-guarantee"

@@ -241,10 +241,10 @@ Found **111** validation errors that must be fixed:
 **Useful Commands:**
 ```bash
 # Find incomplete entities
-python -m fragile.proofs.tools.find_incomplete_entities \
+python -m fragile.mathster.tools.find_incomplete_entities \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data
 
 # Complete partial refinements
-python -m fragile.proofs.tools.complete_refinement \
+python -m fragile.mathster.tools.complete_refinement \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data
 ```

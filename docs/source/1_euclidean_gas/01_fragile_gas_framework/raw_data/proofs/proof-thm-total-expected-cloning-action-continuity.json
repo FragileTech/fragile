@@ -6,13 +6,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "15.2.4",
-    "section_name": "Decomposition of Total Expected Cloning Action Error",
-    "directive_label": "proof-thm-total-expected-cloning-action-continuity",
-    "line_range": [
-      4392,
-      4403
-    ],
-    "url_fragment": null
+    "section": null,
+    "section_name": null,
+    "label": "proof-thm-total-expected-cloning-action-continuity",
+    "line_range": {
+      "lines": [
+        [
+          4425,
+          4438
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": "#proof-thm-total-expected-cloning-action-continuity"
   }
 }

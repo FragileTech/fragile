@@ -7,7 +7,7 @@ Copy-paste commands for validating refined mathematical entities.
 ## Quick Schema Check (10 seconds)
 
 ```bash
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --mode schema
 ```
@@ -19,7 +19,7 @@ python -m fragile.proofs.tools.validation \
 ## Complete Validation with Report (3-5 minutes)
 
 ```bash
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --mode complete \
   --output-report validation_report.md \
@@ -34,13 +34,13 @@ python -m fragile.proofs.tools.validation \
 
 ```bash
 # Theorems only
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --entity-types theorems \
   --mode schema
 
 # Axioms and objects
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --entity-types axioms objects \
   --mode complete
@@ -51,7 +51,7 @@ python -m fragile.proofs.tools.validation \
 ## Strict Mode (Warnings as Errors)
 
 ```bash
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --mode complete \
   --strict
@@ -64,7 +64,7 @@ python -m fragile.proofs.tools.validation \
 ## Relationship Validation Only
 
 ```bash
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --mode relationships
 ```
@@ -76,7 +76,7 @@ python -m fragile.proofs.tools.validation \
 ## Generate JSON Report
 
 ```bash
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --mode complete \
   --output-json validation_report.json
@@ -92,12 +92,12 @@ python -m fragile.proofs.tools.validation \
 
 ```bash
 # 1. Quick schema check
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --mode schema
 
 # 2. If no errors, run complete validation
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --mode complete \
   --output-report validation_report.md
@@ -107,7 +107,7 @@ python -m fragile.proofs.tools.validation \
 
 ```bash
 # Complete validation with strict mode
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --mode complete \
   --strict \
@@ -118,17 +118,17 @@ python -m fragile.proofs.tools.validation \
 
 ```bash
 # 1. Schema validation to identify basic errors
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --mode schema
 
 # 2. Relationship validation to find broken references
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --mode relationships
 
 # 3. Fix errors, then re-validate
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --mode complete
 ```
@@ -207,11 +207,11 @@ Validation Result: ❌ INVALID
 
 ```bash
 # Store result in variable
-if python -m fragile.proofs.tools.validation \
+if python -m fragile.mathster.tools.validation \
     --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
     --mode complete; then
     echo "✅ Validation passed - proceeding to transformation"
-    python -m fragile.proofs.tools.enriched_to_math_types \
+    python -m fragile.mathster.tools.enriched_to_math_types \
       --input docs/source/1_euclidean_gas/03_cloning/refined_data/ \
       --output docs/source/1_euclidean_gas/03_cloning/pipeline_data/
 else
@@ -270,7 +270,7 @@ Machine-readable, for automation
 
 ```bash
 # Transform to pipeline format
-python -m fragile.proofs.tools.enriched_to_math_types \
+python -m fragile.mathster.tools.enriched_to_math_types \
   --input docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --output docs/source/1_euclidean_gas/03_cloning/pipeline_data/
 
@@ -282,15 +282,15 @@ python -m fragile.proofs.tools.enriched_to_math_types \
 
 ```bash
 # Find incomplete entities
-python -m fragile.proofs.tools.find_incomplete_entities \
+python -m fragile.mathster.tools.find_incomplete_entities \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/
 
 # Complete partial refinements
-python -m fragile.proofs.tools.complete_refinement \
+python -m fragile.mathster.tools.complete_refinement \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/
 
 # Re-validate
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --mode complete
 ```

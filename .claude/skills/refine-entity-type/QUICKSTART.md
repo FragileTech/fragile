@@ -10,19 +10,19 @@ Entity-specific refinement workflows by type.
 
 ```bash
 # Theorems only
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir refined_data/ \
   --entity-types theorems \
   --mode schema
 
 # Axioms only
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir refined_data/ \
   --entity-types axioms \
   --mode schema
 
 # Multiple types
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir refined_data/ \
   --entity-types theorems axioms objects \
   --mode complete
@@ -91,7 +91,7 @@ Fill: output_type, input_objects, input_axioms, properties_required, tags"
 
 ```bash
 # 1. Validate raw theorems
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir raw_data/ \
   --entity-types theorems \
   --mode schema
@@ -106,7 +106,7 @@ python -m fragile.proofs.tools.validation \
 # 3. Save to refined_data/theorems/
 
 # 4. Validate refined
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir refined_data/ \
   --entity-types theorems \
   --mode complete

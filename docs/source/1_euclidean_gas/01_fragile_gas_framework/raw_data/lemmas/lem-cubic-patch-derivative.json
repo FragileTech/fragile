@@ -5,16 +5,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "8.2.2.3",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "lem-cubic-patch-derivative",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          1810,
+          1818
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      1804,
-      1812
-    ],
-    "url_fragment": null,
-    "chapter": "1_euclidean_gas"
+    "url_fragment": null
   },
   "document": "01_fragile_gas_framework",
   "proof": null,

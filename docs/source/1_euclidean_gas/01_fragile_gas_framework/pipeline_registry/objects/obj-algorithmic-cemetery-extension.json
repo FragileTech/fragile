@@ -18,7 +18,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "§7",
-    "directive_label": "def-algorithmic-cemetery-extension",
+    "label": "def-algorithmic-cemetery-extension",
     "equation": null,
     "line_range": [
       1442,

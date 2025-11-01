@@ -10,7 +10,7 @@ author                      : "Guillem Duran Ballester"  # The author of the boo
 copyright                   : "2025"  # Copyright year to be placed in the footer
 logo                        : "logo.png"  # A path to the book logo
 # Patterns to skip when building the book. Can be glob-style (e.g. "*skip.ipynb")
-exclude_patterns            : [_build, Thumbs.db, .DS_Store, "**.ipynb_checkpoints", "**/empty.md", "**/2_neural_nets", "**/4_riemanian_gas", "**/5_relativistic_gas", "**/agent_output"]
+exclude_patterns            : [_build, Thumbs.db, .DS_Store, "**.ipynb_checkpoints", "**/empty.md", "**/2_neural_nets", "**/4_riemanian_gas", "**/5_relativistic_gas", "**/agent_output", "**/raw_data", "**/refined_data", "**/data", "**/axioms", "**/objects", "**/mathster", "**/theorems", "**/sketcher", "**/reviewer", "**/verifier", "**/backups_*", "**/*_ASSEMBLED.md", "**/CORRECTIONS_*.md", "**/DUAL_REVIEW_*.md", "**/PIPELINE_*.md", "**/DEPENDENCY_*.md", "**/DUAL_MECHANISM_*.md", "**/COMPLETE_REVISION*.md", "**/REVISION_*.md", "**/THEOREM_ASSESSMENT*.md", "**/pipeline_report*.md", "**/*_bounded_density_rigorous_proof.md", "**/3_brascamp_lieb/*.md"]
 # Auto-exclude files not in the toc
 only_build_toc_files        : false
 

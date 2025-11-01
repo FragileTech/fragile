@@ -26,7 +26,7 @@ Output Structure:
     │   │   └── ...
     │   ├── theorems/
     │   ├── axioms/
-    │   ├── proofs/
+    │   ├── mathster/
     │   ├── equations/
     │   ├── parameters/
     │   ├── remarks/
@@ -204,7 +204,7 @@ class RawDocumentParser:
                 definitions/raw-def-001.json, ...
                 theorems/raw-thm-001.json, ...
                 axioms/raw-axiom-001.json, ...
-                proofs/raw-proof-001.json, ...
+                mathster/raw-proof-001.json, ...
                 equations/raw-eq-001.json, ...
                 parameters/raw-param-001.json, ...
                 remarks/raw-remark-001.json, ...
@@ -232,7 +232,7 @@ class RawDocumentParser:
         )
 
         self._export_entity_type(
-            entities=self.staging_doc.proofs, subdir="proofs", raw_data_dir=raw_data_dir
+            entities=self.staging_doc.proofs, subdir="mathster", raw_data_dir=raw_data_dir
         )
 
         self._export_entity_type(
@@ -303,7 +303,7 @@ class RawDocumentParser:
                 "definitions": len(self.staging_doc.definitions),
                 "theorems": len(self.staging_doc.theorems),
                 "axioms": len(self.staging_doc.axioms),
-                "proofs": len(self.staging_doc.proofs),
+                "mathster": len(self.staging_doc.proofs),
                 "equations": len(self.staging_doc.equations),
                 "parameters": len(self.staging_doc.parameters),
                 "remarks": len(self.staging_doc.remarks),

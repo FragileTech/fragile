@@ -323,7 +323,7 @@ make build-docs
 
 ```bash
 git add docs/source/2_geometric_gas/20_geometric_gas_cinf_regularity_full.md
-git add docs/source/2_geometric_gas/proofs/
+git add docs/source/2_geometric_gas/mathster/
 git commit -m "Add complete proofs for 7 theorems via autonomous math pipeline
 
 - Proved: effective cluster size bounds, interaction radius, companion count

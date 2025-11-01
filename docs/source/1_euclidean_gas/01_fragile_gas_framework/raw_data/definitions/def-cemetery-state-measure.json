@@ -15,13 +15,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "6.4",
-    "section_name": "The Cemetery State Measure",
-    "directive_label": "def-cemetery-state-measure",
-    "line_range": [
-      1455,
-      1461
-    ],
-    "url_fragment": "#def-cemetery-state-measure"
+    "section": null,
+    "section_name": null,
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          1463,
+          1464
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": null
   }
 }

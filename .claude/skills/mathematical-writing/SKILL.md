@@ -1,6 +1,6 @@
 ---
 name: mathematical-writing
-description: Write and publish mathematical documentation following Fragile framework standards. Use when drafting theorems/proofs, formatting mathematical content, ensuring LaTeX/MyST compliance, or preparing documents for Jupyter Book publication.
+description: Write and publish mathematical documentation following Fragile framework standards. Use when drafting theorems/mathster, formatting mathematical content, ensuring LaTeX/MyST compliance, or preparing documents for Jupyter Book publication.
 ---
 
 # Mathematical Writing Skill

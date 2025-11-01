@@ -1,25 +1,29 @@
 {
+  "label": "thm-mcdiarmids-inequality",
+  "label_text": "McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron–Lugosi–Massart)",
+  "statement_type": "theorem",
+  "full_statement_text": "Let X_1, X_2, ..., X_N be a set of independent random variables. Let f be a function of these variables, f(X_1, ..., X_N), that satisfies the **bounded differences property**. This means that for each variable i in {1, ..., N}, there exists a constant c_i such that if only the i-th variable is changed, the function's value cannot change by more than c_i:\n$$\n\nsup_{x_1, ..., x_N, x'_i} |f(x_1, ..., x_i, ..., x_N) - f(x_1, ..., x'_i, ..., x_N)| \\le c_i\n\n$$\nThen for any t > 0, the probability that the function's value deviates from its expected value by more than t is bounded by:\n$$\n\nP(|f(X_1, ..., X_N) - E[f(X_1, ..., X_N)]| >= t) \\le 2exp(\\frac{-2t^2}{\\sum_{i=1}^N c_i^2})\n\n$$",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "output_type": "",
+  "relations_established": [],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
+    "section": null,
+    "section_name": null,
     "label": "thm-mcdiarmids-inequality",
-    "label_text": "McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron–Lugosi–Massart)",
-    "statement_type": "theorem",
-    "full_statement_text": "Let X_1, X_2, ..., X_N be a set of independent random variables. Let f be a function of these variables, f(X_1, ..., X_N), that satisfies the **bounded differences property**. This means that for each variable i in {1, ..., N}, there exists a constant c_i such that if only the i-th variable is changed, the function's value cannot change by more than c_i:\n$$\n\nsup_{x_1, ..., x_N, x'_i} |f(x_1, ..., x_i, ..., x_N) - f(x_1, ..., x'_i, ..., x_N)| \\le c_i\n\n$$\nThen for any t > 0, the probability that the function's value deviates from its expected value by more than t is bounded by:\n$$\n\nP(|f(X_1, ..., X_N) - E[f(X_1, ..., X_N)]| >= t) \\le 2exp(\\frac{-2t^2}{\\sum_{i=1}^N c_i^2})\n\n$$",
-    "input_objects": [],
-    "input_axioms": [],
-    "input_parameters": [],
-    "output_type": "",
-    "relations_established": [],
-    "source": {
-        "document_id": "01_fragile_gas_framework",
-        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-        "chapter": "1",
-        "section": "§14",
-        "section_name": null,
-        "directive_label": "thm-mcdiarmids-inequality",
-        "equation": null,
-        "line_range": [
-            4014,
-            4027
-        ],
-        "url_fragment": "#thm-mcdiarmids-inequality"
-    }
+    "line_range": {
+      "lines": [
+        [
+          4038,
+          4052
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": "#thm-mcdiarmids-inequality"
+  }
 }

@@ -6,7 +6,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "§11.3.1",
-    "directive_label": "thm-deterministic-error-decomposition",
+    "label": "thm-deterministic-error-decomposition",
     "equation": null,
     "line_range": [
       3388,

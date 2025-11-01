@@ -33,16 +33,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "15.2.4",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "thm-total-expected-cloning-action-continuity",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          4405,
+          4414
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      4382,
-      4391
-    ],
-    "url_fragment": "#thm-total-expected-cloning-action-continuity",
-    "chapter": "1"
+    "url_fragment": null
   },
   "label_text": "Continuity of the Total Expected Cloning Action",
   "full_statement_text": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, with $k_1 = |\\mathcal{A}(\\mathcal{S}_1)| > 0$. The **Total Expected Cloning Action** is continuous with respect to the N-Particle Displacement Metric. For any walker $i$, the change in its total cloning probability is bounded:\n$$\n\n|\\overline{P}_{\\text{clone}}(\\mathcal{S}_1)_i - \\overline{P}_{\\text{clone}}(\\mathcal{S}_2)_i| \\le E_{\\text{struct}}^{(\\overline{P})}(\\mathcal{S}_1, \\mathcal{S}_2) + E_{\\text{val}}^{(\\overline{P})}(\\mathcal{S}_1, \\mathcal{S}_2)\n\n$$\nwhere the two error components are bounded in the subsequent lemmas."

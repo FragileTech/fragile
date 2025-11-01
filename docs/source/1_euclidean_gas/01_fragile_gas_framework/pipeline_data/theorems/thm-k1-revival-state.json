@@ -7,7 +7,7 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "\u00a716.1",
     "section_name": null,
-    "directive_label": "thm-k1-revival-state",
+    "label": "thm-k1-revival-state",
     "equation": null,
     "line_range": [
       4565,

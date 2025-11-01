@@ -1,0 +1,4 @@
+# This file is used internally by FFMPEG.
+file 'file:/home/guillem/fragile/media/videos/fitness_potential_fixed/720p30/partial_movie_files/CompactPipeline/2016333726_2383577991_223132457.mp4'
+file 'file:/home/guillem/fragile/media/videos/fitness_potential_fixed/720p30/partial_movie_files/CompactPipeline/543634251_3429112775_221059788.mp4'
+file 'file:/home/guillem/fragile/media/videos/fitness_potential_fixed/720p30/partial_movie_files/CompactPipeline/543634251_3891874688_3052595753.mp4'

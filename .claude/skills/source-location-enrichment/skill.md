@@ -96,7 +96,7 @@ for f in missing[:10]:
 Use when processing the entire corpus or re-enriching after markdown changes:
 
 ```bash
-python src/fragile/proofs/tools/source_location_enricher.py batch \
+python src/fragile/mathster/tools/source_location_enricher.py batch \
     docs/source/ \
     --types theorems definitions axioms
 ```
@@ -106,7 +106,7 @@ python src/fragile/proofs/tools/source_location_enricher.py batch \
 Use when working on one document:
 
 ```bash
-python src/fragile/proofs/tools/source_location_enricher.py directory \
+python src/fragile/mathster/tools/source_location_enricher.py directory \
     docs/source/1_euclidean_gas/01_fragile_gas_framework/raw_data \
     docs/source/1_euclidean_gas/01_fragile_gas_framework.md \
     01_fragile_gas_framework
@@ -117,7 +117,7 @@ python src/fragile/proofs/tools/source_location_enricher.py directory \
 Use for one-off enrichment or manual fixes:
 
 ```bash
-python src/fragile/proofs/tools/source_location_enricher.py single \
+python src/fragile/mathster/tools/source_location_enricher.py single \
     docs/source/.../raw_data/theorems/thm-keystone.json \
     docs/source/.../03_cloning.md \
     03_cloning
@@ -234,7 +234,7 @@ def report_enrichment_coverage(docs_source_dir: Path):
 
                 if "line_range" in loc and loc["line_range"]:
                     stats[document_id]["with_line_range"] += 1
-                elif "directive_label" in loc and loc["directive_label"]:
+                elif "label" in loc and loc["label"]:
                     stats[document_id]["with_directive"] += 1
                 elif "section" in loc and loc["section"]:
                     stats[document_id]["section_only"] += 1
@@ -335,7 +335,7 @@ After successful enrichment, each raw JSON file will have a `source` field:
     "document_id": "03_cloning",
     "file_path": "docs/source/1_euclidean_gas/03_cloning.md",
     "line_range": [142, 158],
-    "directive_label": "thm-keystone",
+    "label": "thm-keystone",
     "section": "3.2",
     "url_fragment": "#thm-keystone"
   }
@@ -344,7 +344,7 @@ After successful enrichment, each raw JSON file will have a `source` field:
 
 Precision levels (in order of preference):
 1. **Line range** (most precise): `line_range: [142, 158]`
-2. **Directive label** (precise): `directive_label: "thm-keystone"`, `url_fragment: "#thm-keystone"`
+2. **Directive label** (precise): `label: "thm-keystone"`, `url_fragment: "#thm-keystone"`
 3. **Section** (less precise): `section: "§3.2"`
 4. **Minimal** (least precise): Just `document_id` and `file_path`
 

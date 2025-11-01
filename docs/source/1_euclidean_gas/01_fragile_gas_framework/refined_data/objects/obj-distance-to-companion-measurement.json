@@ -23,7 +23,7 @@
       2610,
       2622
     ],
-    "directive_label": "obj-distance-to-companion-measurement",
+    "label": "obj-distance-to-companion-measurement",
     "equation": null,
     "url_fragment": null
   }

@@ -314,7 +314,7 @@ mcp__gemini-cli__ask-gemini(
     prompt=<identical_comprehensive_prompt>
 )
 
-# Tool Call 2: GPT-5 with high reasoning effort (PINNED - constructive proofs)
+# Tool Call 2: GPT-5 with high reasoning effort (PINNED - constructive mathster)
 mcp__codex__codex(
     model="gpt-5",  # DO NOT CHANGE unless user overrides
     config={"model_reasoning_effort": "high"},

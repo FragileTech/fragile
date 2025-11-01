@@ -1,6 +1,6 @@
 ---
 name: proof-validation
-description: Develop, expand, and validate mathematical proofs using dual-AI review (Gemini + Codex). Use when sketching proof strategies, expanding proofs, reviewing mathematical rigor, or verifying computational claims in proofs.
+description: Develop, expand, and validate mathematical mathster using dual-AI review (Gemini + Codex). Use when sketching proof strategies, expanding mathster, reviewing mathematical rigor, or verifying computational claims in mathster.
 ---
 
 # Proof Validation Skill
@@ -257,9 +257,9 @@ from fragile.proofs import load_registry_from_directory, MathematicalRegistry
 registry = load_registry_from_directory(MathematicalRegistry, 'my_registry')
 theorems = registry.get_all_theorems()
 
-# Find theorems without proofs
+# Find theorems without mathster
 unproven = [thm for thm in theorems if not thm.has_proof()]
-print(f'{len(unproven)} theorems need proofs')
+print(f'{len(unproven)} theorems need mathster')
 ```
 
 ---

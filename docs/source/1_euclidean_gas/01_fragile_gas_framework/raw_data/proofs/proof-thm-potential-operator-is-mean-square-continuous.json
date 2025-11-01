@@ -6,13 +6,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "15.2.6",
-    "section_name": "Mean-Square Continuity of the Fitness Potential Operator",
-    "directive_label": "proof-thm-potential-operator-is-mean-square-continuous",
-    "line_range": [
-      4425,
-      4429
-    ],
-    "url_fragment": null
+    "section": null,
+    "section_name": null,
+    "label": "proof-thm-potential-operator-is-mean-square-continuous",
+    "line_range": {
+      "lines": [
+        [
+          4462,
+          4468
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": "#proof-thm-potential-operator-is-mean-square-continuous"
   }
 }

@@ -24,13 +24,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "12",
-    "section_name": "Standardization pipeline",
-    "directive_label": "def-lipschitz-structural-error-coefficients",
-    "line_range": [
-      3628,
-      3652
-    ],
-    "url_fragment": "#def-lipschitz-structural-error-coefficients"
+    "section": null,
+    "section_name": null,
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          3632,
+          3656
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": null
   }
 }

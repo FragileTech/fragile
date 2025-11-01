@@ -11,15 +11,19 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "chapter": "1",
-    "section": "12",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "thm-asymptotic-std-dev-structural-continuity",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          2981,
+          2996
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      2971,
-      2984
-    ],
-    "url_fragment": "#thm-asymptotic-std-dev-structural-continuity"
+    "url_fragment": null
   }
 }

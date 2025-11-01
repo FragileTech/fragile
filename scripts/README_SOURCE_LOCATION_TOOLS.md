@@ -25,7 +25,7 @@ python scripts/enrich_line_ranges_from_directives.py \
 python scripts/aggressive_text_matching.py \
     --document docs/source/1_euclidean_gas/01_fragile_gas_framework
 
-# Fix missing line_range (special cases: parameters, proofs, remarks)
+# Fix missing line_range (special cases: parameters, mathster, remarks)
 python scripts/handle_special_cases.py \
     --document docs/source/1_euclidean_gas/01_fragile_gas_framework
 

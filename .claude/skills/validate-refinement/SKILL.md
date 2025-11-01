@@ -34,7 +34,7 @@ Use this skill when you need to:
 Validates entities against Pydantic schemas only. Best for quick checks during development.
 
 ```bash
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --mode schema
 ```
@@ -50,7 +50,7 @@ python -m fragile.proofs.tools.validation \
 Validates cross-references and dependencies between entities.
 
 ```bash
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --mode relationships
 ```
@@ -68,7 +68,7 @@ python -m fragile.proofs.tools.validation \
 Validates consistency with Fragile framework standards using LLM.
 
 ```bash
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --mode framework \
   --glossary docs/glossary.md
@@ -85,7 +85,7 @@ python -m fragile.proofs.tools.validation \
 Runs all three validation modes in sequence.
 
 ```bash
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --mode complete \
   --output-report validation_report.md \
@@ -102,13 +102,13 @@ Validate only specific entity types for faster iteration:
 
 ```bash
 # Validate theorems only
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --entity-types theorems \
   --mode schema
 
 # Validate axioms and objects
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --entity-types axioms objects \
   --mode complete
@@ -123,7 +123,7 @@ python -m fragile.proofs.tools.validation \
 Treat warnings as errors (fails validation if any warnings):
 
 ```bash
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --mode complete \
   --strict
@@ -336,7 +336,7 @@ Transform and build registries: docs/source/1_euclidean_gas/03_cloning/
 ls -la docs/source/1_euclidean_gas/03_cloning/refined_data/
 
 # Use absolute path
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir /home/user/fragile/docs/source/1_euclidean_gas/03_cloning/refined_data/
 ```
 
@@ -400,7 +400,7 @@ After successful validation:
 
 Use in scripts:
 ```bash
-if python -m fragile.proofs.tools.validation --refined-dir PATH --mode schema; then
+if python -m fragile.mathster.tools.validation --refined-dir PATH --mode schema; then
     echo "Validation passed!"
     # Proceed with next steps...
 else

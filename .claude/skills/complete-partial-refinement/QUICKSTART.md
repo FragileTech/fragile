@@ -9,7 +9,7 @@ Copy-paste commands for completing partially refined entities.
 ### Step 1: Find Incomplete Entities (10 seconds)
 
 ```bash
-python -m fragile.proofs.tools.find_incomplete_entities \
+python -m fragile.mathster.tools.find_incomplete_entities \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --output incomplete_entities.json
 ```
@@ -21,7 +21,7 @@ python -m fragile.proofs.tools.find_incomplete_entities \
 ### Step 2: Generate Completion Plan (10 seconds)
 
 ```bash
-python -m fragile.proofs.tools.complete_refinement \
+python -m fragile.mathster.tools.complete_refinement \
   --incomplete-file incomplete_entities.json \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --output completion_plan.json \
@@ -60,11 +60,11 @@ Load the `completion_plan.json` and for each entity:
 
 ```bash
 # Run all steps at once (requires manual Gemini calls)
-python -m fragile.proofs.tools.find_incomplete_entities \
+python -m fragile.mathster.tools.find_incomplete_entities \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --output incomplete_entities.json
 
-python -m fragile.proofs.tools.complete_refinement \
+python -m fragile.mathster.tools.complete_refinement \
   --incomplete-file incomplete_entities.json \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --output completion_plan.json
@@ -78,7 +78,7 @@ python -m fragile.proofs.tools.complete_refinement \
 ## After Completion: Re-validate
 
 ```bash
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --mode complete \
   --output-report post_completion_validation.md
@@ -182,18 +182,18 @@ Process critical first, then high, then medium.
 
 ```bash
 # 1. Validation found incomplete entities
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir PATH \
   --mode schema
 # Result: 85 errors
 
 # 2. Find what's incomplete
-python -m fragile.proofs.tools.find_incomplete_entities \
+python -m fragile.mathster.tools.find_incomplete_entities \
   --refined-dir PATH \
   --output incomplete_entities.json
 
 # 3. Generate completion plan
-python -m fragile.proofs.tools.complete_refinement \
+python -m fragile.mathster.tools.complete_refinement \
   --incomplete-file incomplete_entities.json \
   --refined-dir PATH
 
@@ -201,7 +201,7 @@ python -m fragile.proofs.tools.complete_refinement \
 # (Use Gemini to fill fields)
 
 # 5. Re-validate
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir PATH \
   --mode complete
 # Expected: 0 errors
@@ -213,12 +213,12 @@ python -m fragile.proofs.tools.validation \
 # Old refined data may not have new schema fields
 
 # 1. Find incomplete
-python -m fragile.proofs.tools.find_incomplete_entities \
+python -m fragile.mathster.tools.find_incomplete_entities \
   --refined-dir old_refined_data/ \
   --output incomplete.json
 
 # 2. Generate plan
-python -m fragile.proofs.tools.complete_refinement \
+python -m fragile.mathster.tools.complete_refinement \
   --incomplete-file incomplete.json \
   --refined-dir old_refined_data/
 
@@ -226,7 +226,7 @@ python -m fragile.proofs.tools.complete_refinement \
 # (Claude Code + Gemini)
 
 # 4. Validate against new schema
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir old_refined_data/ \
   --mode complete
 ```
@@ -237,12 +237,12 @@ python -m fragile.proofs.tools.validation \
 # Only complete theorems
 
 # 1. Find incomplete (all types)
-python -m fragile.proofs.tools.find_incomplete_entities \
+python -m fragile.mathster.tools.find_incomplete_entities \
   --refined-dir PATH \
   --output incomplete.json
 
 # 2. Generate plan
-python -m fragile.proofs.tools.complete_refinement \
+python -m fragile.mathster.tools.complete_refinement \
   --incomplete-file incomplete.json \
   --refined-dir PATH
 
@@ -253,7 +253,7 @@ cat completion_plan.json | jq '.completion_tasks.theorems' > theorems_plan.json
 # (Claude Code + Gemini)
 
 # 5. Validate theorems
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir PATH \
   --entity-types theorems \
   --mode complete
@@ -291,7 +291,7 @@ cat post_completion_validation.md
 # Identify which entities still have errors
 # Manually edit those entity files
 # Re-validate
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir PATH \
   --mode complete
 ```
@@ -314,13 +314,13 @@ if [ -z "$REFINED_DIR" ]; then
 fi
 
 echo "Step 1: Finding incomplete entities..."
-python -m fragile.proofs.tools.find_incomplete_entities \
+python -m fragile.mathster.tools.find_incomplete_entities \
   --refined-dir "$REFINED_DIR" \
   --output incomplete_entities.json
 
 echo ""
 echo "Step 2: Generating completion plan..."
-python -m fragile.proofs.tools.complete_refinement \
+python -m fragile.mathster.tools.complete_refinement \
   --incomplete-file incomplete_entities.json \
   --refined-dir "$REFINED_DIR" \
   --output completion_plan.json
@@ -352,7 +352,7 @@ chmod +x complete_refinement_workflow.sh
 
 ```bash
 # Proceed to transformation
-python -m fragile.proofs.tools.enriched_to_math_types \
+python -m fragile.mathster.tools.enriched_to_math_types \
   --input docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --output docs/source/1_euclidean_gas/03_cloning/pipeline_data/
 
@@ -370,7 +370,7 @@ cat post_completion_validation.md
 # Manually edit entity files
 # Re-validate
 
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir PATH \
   --mode complete
 ```
@@ -406,13 +406,13 @@ After completion, verify:
 
 ```bash
 # Find incomplete
-python -m fragile.proofs.tools.find_incomplete_entities --refined-dir PATH
+python -m fragile.mathster.tools.find_incomplete_entities --refined-dir PATH
 
 # Generate plan
-python -m fragile.proofs.tools.complete_refinement --incomplete-file incomplete_entities.json --refined-dir PATH
+python -m fragile.mathster.tools.complete_refinement --incomplete-file incomplete_entities.json --refined-dir PATH
 
 # Execute: Use Claude Code with Gemini
 
 # Re-validate
-python -m fragile.proofs.tools.validation --refined-dir PATH --mode complete
+python -m fragile.mathster.tools.validation --refined-dir PATH --mode complete
 ```

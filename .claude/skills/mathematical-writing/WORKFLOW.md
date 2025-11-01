@@ -92,7 +92,7 @@ docs/source/1_euclidean_gas/02_euclidean_gas.md
 # Cloning operator details
 docs/source/1_euclidean_gas/03_cloning.md
 
-# Convergence proofs
+# Convergence mathster
 docs/source/1_euclidean_gas/04_convergence.md
 
 # Create new document if needed

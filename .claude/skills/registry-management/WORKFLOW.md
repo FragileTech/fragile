@@ -7,7 +7,7 @@
 ### Single Command Builds Everything
 
 ```bash
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 
 **What happens automatically**:
@@ -42,7 +42,7 @@ registries/
 ### Launch Dashboard
 
 ```bash
-panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
+panel serve src/fragile/mathster/proof_pipeline_dashboard.py --show
 ```
 
 ### Features
@@ -79,7 +79,7 @@ Run extract-and-refine workflow (see `../extract-and-refine/WORKFLOW.md`):
 ### Step 2: Build All Registries
 
 ```bash
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 
 **What happens**:
@@ -93,14 +93,14 @@ python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
 
 ```bash
 # 1. After creating refined_data/, run build_all
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 
 # 2. Verify new document appears
 ls -lh registries/per_document/
 # Expected: 01_fragile_gas_framework, 02_euclidean_gas
 
 # 3. Launch dashboard to view
-panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
+panel serve src/fragile/mathster/proof_pipeline_dashboard.py --show
 # Dropdown automatically shows: "02_euclidean_gas (Pipeline/Refined)"
 ```
 
@@ -114,17 +114,17 @@ panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
 
 ```bash
 # Transform refined → pipeline (if needed)
-python -m fragile.proofs.tools.enriched_to_math_types \
+python -m fragile.mathster.tools.enriched_to_math_types \
   --input docs/source/{chapter}/{document}/refined_data \
   --output docs/source/{chapter}/{document}/pipeline_data
 
 # Build refined registry
-python -m fragile.proofs.tools.build_refined_registry \
+python -m fragile.mathster.tools.build_refined_registry \
   --docs-root docs/source/{chapter} \
   --output registries/per_document/{document}/refined
 
 # Build pipeline registry
-python -m fragile.proofs.tools.build_pipeline_registry \
+python -m fragile.mathster.tools.build_pipeline_registry \
   --pipeline-dir docs/source/{chapter}/{document}/pipeline_data \
   --output registries/per_document/{document}/pipeline
 ```
@@ -133,13 +133,13 @@ python -m fragile.proofs.tools.build_pipeline_registry \
 
 ```bash
 # Aggregate refined registries
-python -m fragile.proofs.tools.aggregate_registries \
+python -m fragile.mathster.tools.aggregate_registries \
   --type refined \
   --per-document-root registries/per_document \
   --output registries/combined/refined
 
 # Aggregate pipeline registries
-python -m fragile.proofs.tools.aggregate_registries \
+python -m fragile.mathster.tools.aggregate_registries \
   --type pipeline \
   --per-document-root registries/per_document \
   --output registries/combined/pipeline

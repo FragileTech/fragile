@@ -19,6 +19,6 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "7. The Cemetery of Dead Walkers",
     "subsection": null,
-    "directive_label": "def-cemetery-state-measure"
+    "label": "def-cemetery-state-measure"
   }
 }

@@ -99,7 +99,7 @@ Task: Use the math-verifier agent to validate algebraic steps
 # 1. Extract raw data (Task tool OR Python CLI)
 Task: Use the document-parser agent to extract docs/source/1_euclidean_gas/03_cloning.md
 # OR
-python -m fragile.proofs.pipeline extract docs/source/1_euclidean_gas/03_cloning.md
+python -m fragile.mathster.pipeline extract docs/source/1_euclidean_gas/03_cloning.md
 
 # 2. Discover relationships
 Task: Use the cross-referencer agent to analyze docs/source/1_euclidean_gas/03_cloning

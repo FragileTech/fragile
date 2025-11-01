@@ -11,15 +11,19 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "chapter": "1",
-    "section": "15.2.3",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "thm-expected-cloning-action-continuity",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          4380,
+          4391
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      4349,
-      4369
-    ],
-    "url_fragment": "#thm-expected-cloning-action-continuity"
+    "url_fragment": null
   }
 }

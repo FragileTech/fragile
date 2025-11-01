@@ -40,7 +40,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework/01_fragile_gas_framework.md",
     "section": null,
-    "directive_label": "axiom-raw-value-mean-square-continuity",
+    "label": "axiom-raw-value-mean-square-continuity",
     "equation": null,
     "line_range": null,
     "url_fragment": null

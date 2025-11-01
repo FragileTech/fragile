@@ -139,10 +139,10 @@ Document: docs/source/1_euclidean_gas/09_kl_convergence.md
 /prove docs/source/1_euclidean_gas/sketcher/sketch_20251024_1530_proof_09_kl_convergence.md
 
 # 5. Validate proof algebra
-/math_verify docs/source/1_euclidean_gas/proofs/proof_20251024_1630_thm_kl_convergence_euclidean.md
+/math_verify docs/source/1_euclidean_gas/mathster/proof_20251024_1630_thm_kl_convergence_euclidean.md
 
 # 6. Final quality control
-/math_review docs/source/1_euclidean_gas/proofs/proof_20251024_1630_thm_kl_convergence_euclidean.md
+/math_review docs/source/1_euclidean_gas/mathster/proof_20251024_1630_thm_kl_convergence_euclidean.md
 Depth: exhaustive
 ```
 

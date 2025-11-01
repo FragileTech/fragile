@@ -38,7 +38,7 @@ Use this skill when you need to:
 Use the `find_incomplete_entities.py` tool to discover entities with missing or incomplete fields:
 
 ```bash
-python -m fragile.proofs.tools.find_incomplete_entities \
+python -m fragile.mathster.tools.find_incomplete_entities \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --output incomplete_entities.json
 ```
@@ -76,7 +76,7 @@ Top missing fields:
 Use the `complete_refinement.py` tool to generate a completion plan with Gemini prompts:
 
 ```bash
-python -m fragile.proofs.tools.complete_refinement \
+python -m fragile.mathster.tools.complete_refinement \
   --incomplete-file incomplete_entities.json \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --output completion_plan.json \
@@ -218,7 +218,7 @@ cat completion_log.json | jq '.failed_validation'
 After completing all entities, run full validation:
 
 ```bash
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/03_cloning/refined_data/ \
   --mode complete \
   --output-report post_completion_validation.md
@@ -497,12 +497,12 @@ Completion is successful when:
 
 ```bash
 # 1. Find incomplete (10 seconds)
-python -m fragile.proofs.tools.find_incomplete_entities \
+python -m fragile.mathster.tools.find_incomplete_entities \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --output incomplete_entities.json
 
 # 2. Generate completion plan (10 seconds)
-python -m fragile.proofs.tools.complete_refinement \
+python -m fragile.mathster.tools.complete_refinement \
   --incomplete-file incomplete_entities.json \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --output completion_plan.json
@@ -512,7 +512,7 @@ python -m fragile.proofs.tools.complete_refinement \
 # Call Gemini for each entity (~5 sec per entity)
 
 # 4. Re-validate (20 seconds)
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --mode complete \
   --output-report post_completion_validation.md
@@ -577,14 +577,14 @@ from pathlib import Path
 def complete_refinement_workflow(refined_dir: Path):
     # Step 1: Find incomplete
     subprocess.run([
-        "python", "-m", "fragile.proofs.tools.find_incomplete_entities",
+        "python", "-m", "fragile.mathster.tools.find_incomplete_entities",
         "--refined-dir", str(refined_dir),
         "--output", "incomplete_entities.json"
     ])
 
     # Step 2: Generate plan
     subprocess.run([
-        "python", "-m", "fragile.proofs.tools.complete_refinement",
+        "python", "-m", "fragile.mathster.tools.complete_refinement",
         "--incomplete-file", "incomplete_entities.json",
         "--refined-dir", str(refined_dir),
         "--output", "completion_plan.json"

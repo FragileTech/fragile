@@ -1,6 +1,6 @@
 ---
 name: refine-entity-type
-description: Granular entity-specific refinement workflows for each mathematical entity type. Use when refining specific entity categories, understanding entity-specific enrichment requirements, or fixing entity-type-specific validation errors. Covers all 7 types: theorems, axioms, objects, parameters, proofs, remarks, equations.
+description: Granular entity-specific refinement workflows for each mathematical entity type. Use when refining specific entity categories, understanding entity-specific enrichment requirements, or fixing entity-type-specific validation errors. Covers all 7 types: theorems, axioms, objects, parameters, mathster, remarks, equations.
 ---
 
 # Refine Entity Type Skill
@@ -542,7 +542,7 @@ Use Gemini to fill:
 ### 5. Validate Cross-References
 After enrichment, verify all referenced labels exist:
 ```bash
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir refined_data/ \
   --mode relationships
 ```

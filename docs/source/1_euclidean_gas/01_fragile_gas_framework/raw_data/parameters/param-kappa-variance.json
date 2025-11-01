@@ -10,13 +10,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": null,
     "section_name": null,
-    "directive_label": "param-kappa-variance",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          2139,
+          2143
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": null,
-    "url_fragment": null,
-    "chapter": "1_euclidean_gas"
+    "url_fragment": null
   },
   "meaning": "Maximum Measurement Variance",
   "full_text": "Maximum Measurement Variance. Symbol: $\\kappa^2_{\\text{variance}}$. Type: real. Constraints: $\\kappa^2_{\\text{variance}} \\ge 0$.",

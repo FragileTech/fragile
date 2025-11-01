@@ -111,7 +111,7 @@ The command accepts either a folder path or a single document path:
 3. **Create output directories** (if they don't exist):
    ```bash
    mkdir -p sketcher/
-   mkdir -p proofs/
+   mkdir -p mathster/
    mkdir -p reviewer/
    ```
 
@@ -614,7 +614,7 @@ For each dependency in theorem's dependency list:
 6. **Update theorem record**:
    ```json
    {
-     "proof_file": "proofs/proof_20251024_1850_thm_kl_convergence_euclidean.md",
+     "proof_file": "mathster/proof_20251024_1850_thm_kl_convergence_euclidean.md",
      "proof_timestamp": "2025-10-24T18:50:00",
      "expansion_time_minutes": 180,
      "status": "expanded",

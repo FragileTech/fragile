@@ -7,7 +7,7 @@ This example demonstrates the full SymPy integration:
 2. Define properties with dual representations (LaTeX + SymPy)
 3. Write proof steps with SymPy validation
 4. Validate transformations using SymPy
-5. Build complete proofs with automatic validation
+5. Build complete mathster with automatic validation
 6. Demonstrate graceful fallback when SymPy can't validate
 
 Expected output:

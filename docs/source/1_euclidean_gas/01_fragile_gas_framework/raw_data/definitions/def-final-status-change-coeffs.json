@@ -14,13 +14,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "17.2.2",
-    "section_name": "Sub-Lemma: Bounding the Final Positional Displacement (unconditional)",
-    "directive_label": "def-final-status-change-coeffs",
-    "line_range": [
-      4728,
-      4746
-    ],
-    "url_fragment": "#def-final-status-change-coeffs"
+    "section": null,
+    "section_name": null,
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          4792,
+          4793
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": null
   }
 }

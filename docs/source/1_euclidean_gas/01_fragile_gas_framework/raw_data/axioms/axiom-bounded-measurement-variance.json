@@ -35,16 +35,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "9.3",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "axiom-bounded-measurement-variance",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          2136,
+          2149
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      2126,
-      2139
-    ],
-    "url_fragment": "#axiom-bounded-measurement-variance",
-    "chapter": "1_euclidean_gas"
+    "url_fragment": null
   },
   "context": {
     "motivation": "A common and effective strategy to prove that an operator satisfies the Axiom of Mean-Square Continuity is to decompose the total expected squared error into a bound on the change of the operator's mean and a bound on its variance. This axiom provides a powerful tool for establishing the variance bound part of the proof.",

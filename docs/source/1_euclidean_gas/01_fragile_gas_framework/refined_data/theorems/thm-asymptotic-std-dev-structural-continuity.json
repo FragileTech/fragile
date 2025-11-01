@@ -6,7 +6,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "12",
-    "directive_label": "thm-asymptotic-std-dev-structural-continuity",
+    "label": "thm-asymptotic-std-dev-structural-continuity",
     "line_range": [2971, 3023]
   },
   "chapter": "1_euclidean_gas",

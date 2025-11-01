@@ -21,13 +21,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "12",
-    "section_name": "Standardization pipeline",
-    "directive_label": "def-value-error-coefficients",
-    "line_range": [
-      1127,
-      1143
-    ],
+    "section": null,
+    "section_name": null,
+    "label": "def-value-error-coefficients",
+    "line_range": {
+      "lines": [
+        [
+          3206,
+          3236
+        ]
+      ]
+    },
+    "equation": null,
     "url_fragment": "#def-value-error-coefficients"
   }
 }

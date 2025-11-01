@@ -1,7 +1,7 @@
 
 # The Mean-Field Limit and Continuous Forward Equation**
 
-## **Introduction**
+## Introduction
 
 The preceding chapters have established a rigorous axiomatic framework for Fragile Swarms, defined a concrete N-particle instantiation in the form of the Euclidean Gas, and proven its geometric ergodicity. This analysis, while complete for the finite-N system, is built upon the discrete interactions of a fixed number of walkers. To gain deeper insight into the macroscopic behavior of the swarm and to leverage the powerful analytical tools of mathematical physics and functional analysis, we now transition from this discrete, agent-based description to a continuous, macroscopic model. This is achieved by taking the mean-field limit, where the number of walkers N approaches infinity.
 
@@ -15,7 +15,7 @@ Our derivation is structured to build this equation from first principles, ensur
 *   **Section 3** assembles these components into the final, mass-conserving forward equation. We will pay special attention to the boundary conditions, deriving a novel boundary revival operator that exactly compensates for the probability flux leaving the valid domain, thereby ensuring the total population is conserved.
 *   **Section 4** will conclude by analyzing the key mathematical properties of the derived PDE and discussing its role as the foundation for future analyses of the system's long-term behavior and convergence properties.
 
-## **1. Foundations of the Mean-Field Model**
+## 1. Foundations of the Mean-Field Model
 
 Having established the concrete N-particle dynamics of the Euclidean Gas, we now build the theoretical bridge to its macroscopic, collective behavior. To leverage the powerful analytical tools of mathematical physics and functional analysis, we transition from the discrete, agent-based description to a continuous, macroscopic model. This is achieved by taking the mean-field limit, where the number of walkers N approaches infinity. This section lays the groundwork for this transition by translating the foundational objects of the N-particle system—the walker, the swarm, and the measurement pipeline—into their continuous analogues. Our primary objective is to establish the essential mathematical vocabulary required to derive the continuous forward equation, ensuring that each component of the final PDE is a faithful and verifiable representation of its discrete counterpart.
 
@@ -31,7 +31,7 @@ These two properties ensure that the final forward equation will be a complex, n
 *   **Subsection 1.2** will apply the sum-to-integral principle to translate the entire measurement pipeline, defining the **mean-field statistical moments** as integral functionals of the density.
 *   **Subsection 1.3** will assemble these components to construct the **density-dependent Fitness Potential** $V[f]$, highlighting the non-local and non-linear feedback mechanisms that are the mathematical heart of the system.
 
-### **1.1. Phase Space and Probability Density**
+### 1.1. Phase Space and Probability Density
 
 Before we can describe the continuous dynamics of the swarm, we must first define the mathematical "arena" in which a single, representative particle evolves. This section formalizes the shift from tracking N discrete walkers to describing the probability distribution of a single, typical particle. We begin by specifying this particle's state space and then introduce the central object of our analysis: the function that describes its probability distribution.
 
@@ -85,10 +85,9 @@ We assume that $f$ has sufficient regularity for all subsequent operations to be
 The assumption $f \in C([0, \infty); L^1(\Omega))$ has two key parts:
 *   **$L^1(\Omega)$:** The function must be integrable over the phase space. This is the minimum technical requirement for the normalization integral to be well-defined.
 *   **$C([0, \infty); \dots)$:** The density must evolve *continuously in time*. This means the "shape of the cloud" does not make instantaneous jumps, which is what allows us to describe its evolution using a *differential* equation involving a time derivative, $\partial_t f$.
-::: its evolution using a *differential* equation involving a time derivative, $\partial_t f$.
 :::
 
-### **1.2. Mean-Field Measurement Pipeline**
+### 1.2. Mean-Field Measurement Pipeline
 
 This section applies the core principle of the mean-field limit—the translation of discrete sums to continuous integrals—to the most critical component of the algorithm: the measurement pipeline. It is here that the interactions and feedback loops of the continuous model are born. We will proceed by first translating the statistical moments (mean and variance) for both the reward and distance channels into integral functionals of the density. We will then incorporate the crucial stability mechanisms from the discrete algorithm, such as the regularized standard deviation, ensuring our continuous model inherits the robustness of its discrete counterpart.
 
@@ -182,7 +181,7 @@ $$
 This ensures that the denominators in the mean-field standardization are also uniformly bounded away from zero, preserving the crucial stability properties of the discrete system.
 :::
 
-### **1.3. Density-Dependent Fitness Potential**
+### 1.3. Density-Dependent Fitness Potential
 
 The mean-field statistical moments derived in the previous section are not an end in themselves; they are the crucial inputs for constructing the central engine of the continuous model: the **Mean-Field Fitness Potential**. Unlike in simpler physical systems where potentials are fixed external fields (like gravity), this potential is dynamic. Its shape at any moment is determined by the shape of the swarm's own probability density, $f$. This creates the critical feedback loop that governs the system's evolution.
 
@@ -224,7 +223,7 @@ The definition of the **Mean-Field Fitness Potential** $V[f]$ reveals the two co
 These two properties guarantee that the resulting forward equation will not be a simple, linear Fokker-Planck equation. Instead, it will be a complex, non-local, non-linear **partial integro-differential equation** of the McKean-Vlasov type. The analysis of this equation requires a fundamentally different and more advanced set of mathematical tools than those used for the finite-N system, which we will begin to develop in the next section.
 :::
 
-## **2. The Continuous Forward Generator ($\mathcal{L}_{\text{FG}}$)**
+## 2. The Continuous Forward Generator ($\mathcal{L}_{\text{FG}}$)
 
 The evolution of the N-particle system from one discrete timestep to the next is governed by the Swarm Update Operator $\Psi_{\mathcal{F}}$, which is a composition of a cloning stage and a kinetic stage. To transition from this discrete-time map to a continuous-time evolution, we define an infinitesimal generator, $\mathcal{L}_{\text{FG}}$. This generator describes the instantaneous rate of change of any observable of the system and serves as the foundation for deriving the mean-field PDE.
 
@@ -234,7 +233,7 @@ $$
 $$
 where $\mathcal{L}_{\text{kin}}$ is a local, second-order differential operator representing the diffusive kinetic motion, and $\mathcal{L}_{\text{clone}}$ is a non-local, integro-differential operator representing the discontinuous jump process of cloning and revival.
 
-### **2.1. The Underlying Discrete-Time Integrator: BAOAB Splitting**
+### 2.1. The Underlying Discrete-Time Integrator: BAOAB Splitting
 
 Before defining the continuous generator, we first specify the high-fidelity discrete-time integrator whose continuous limit it represents. The kinetic stage of the Euclidean Gas algorithm is not a simple Euler-Maruyama step but a robust, time-reversible, and symmetric splitting integrator known as **BAOAB**. This scheme is specifically designed for the underdamped Langevin equation and provides excellent stability and sampling accuracy, making it a solid foundation for our continuous model.
 
@@ -294,7 +293,7 @@ This explicit definition of the BAOAB integrator provides the rigorous foundatio
 Therefore, the generator $\mathcal{L}_{\text{kin}}$ defined in the next section is not an arbitrary choice but is the unique infinitesimal generator for the continuous stochastic process that the BAOAB integrator faithfully approximates.
 :::
 
-### **2.2. The Kinetic Transport Operator ($L^\dagger$)**
+### 2.2. The Kinetic Transport Operator ($L^\dagger$)
 
 Between cloning events and death/revival transitions, the state of each alive walker evolves according to a continuous stochastic process. The kinetic stage of the Euclidean Gas algorithm, as defined by the BAOAB integrator, is a discrete-time approximation of a specific underdamped Langevin stochastic differential equation (SDE). This SDE governs the diffusive part of the generator.
 
@@ -329,7 +328,7 @@ A key property of this operator with reflecting boundary conditions is that it i
 In this formulation, the kinetic operator describes only the continuous transport of the alive population via drift and diffusion. Death at the boundary is handled separately by the interior killing rate operator (Section 2.3), which provides a smooth transition zone near $\partial X_{\text{valid}}$. This separation simplifies the PDE analysis by decoupling the local kinetic transport from the non-local revival mechanism.
 :::
 
-### **2.3. The Reaction Operators (Killing, Revival, and Cloning)**
+### 2.3. The Reaction Operators (Killing, Revival, and Cloning)
 
 In the two-population model, we explicitly separate the three distinct physical processes that modify the alive population: (1) **death** of walkers near the boundary, (2) **revival** of dead walkers back into the alive population, and (3) **internal cloning** that redistributes mass within the alive population. This section defines the three corresponding operators as "reaction" terms in the PDE.
 
@@ -390,7 +389,7 @@ $$
 since the normalized alive density integrates to unity: $\int_\Omega [f/m_a]\,\mathrm{d}z = 1$.
 :::
 
-#### **2.3.3. Derivation of the Internal Cloning Operator from First Principles**
+#### 2.3.3. Derivation of the Internal Cloning Operator from First Principles
 
 We now derive the continuous cloning operator $S[f]$ directly from the discrete algorithm's cloning mechanism. This derivation is essential to ensure mathematical rigor and eliminate potential inconsistencies.
 
@@ -529,13 +528,13 @@ $$
 Thus $\int_{\Omega} S[f]\,\mathrm{d}z = 0$, confirming mass conservation.
 :::
 
-## **3. The Mass-Conserving Forward Equation (PDE)**
+## 3. The Mass-Conserving Forward Equation (PDE)
 
 With the infinitesimal generator of the continuous-time Markov process now defined, we can derive the final mean-field equation that governs the evolution of the phase-space probability density $f(t,z)$. This is achieved by translating the generator $\mathcal{L}_{\text{FG}}$ into its corresponding forward equation, which describes how the density $f$ changes over time.
 
 Our derivation is guided by the fundamental physical principle of **conservation of probability**. The rate of change of probability mass within any region of the phase space must equal the net flux of probability across the region's boundary, plus any local creation or destruction of probability mass. The kinetic generator $\mathcal{L}_{\text{kin}}$ will give rise to the flux term, while the cloning generator $\mathcal{L}_{\text{clone}}$ will correspond to the local source and sink terms. A crucial third term will emerge from the boundary conditions to ensure that the total probability mass is conserved over time.
 
-### **3.1. The Transport Operator ($L^\dagger$) is Mass-Conservative**
+### 3.1. The Transport Operator ($L^\dagger$) is Mass-Conservative
 
 The kinetic part of the evolution, described by the generator $\mathcal{L}_{\text{kin}}$, corresponds to a local transport of probability density via drift and diffusion. Its representation in the forward equation is given by the formal adjoint of $\mathcal{L}_{\text{kin}}$, which is the Fokker-Planck operator.
 
@@ -584,7 +583,7 @@ Therefore, the boundary integral vanishes, proving the result.
 **Q.E.D.**
 :::
 
-### **3.2. The Coupled Population Dynamics**
+### 3.2. The Coupled Population Dynamics
 
 The three reaction operators defined in Section 2.3—interior killing ($-c(z)f$), revival ($B[f, m_d]$), and internal cloning ($S[f]$)—combine to describe all non-kinetic modifications to the alive population. Their key properties, established in Section 2.3, are:
 
@@ -594,7 +593,7 @@ The three reaction operators defined in Section 2.3—interior killing ($-c(z)f$
 
 These operators create a **coupled dynamical system** for the alive density $f(t,z)$ and the dead mass $m_d(t)$. The killing and revival terms allow the two populations to exchange mass and reach a dynamic equilibrium, faithfully representing the discrete algorithm's behavior where the number of alive walkers $k$ fluctuates over time.
 
-### **3.3. The Coupled Mean-Field Equations**
+### 3.3. The Coupled Mean-Field Equations
 
 By assembling all operators—kinetic transport, interior killing, revival, and internal cloning—we arrive at a **coupled system** that describes the evolution of both the alive density and the dead mass.
 
@@ -701,11 +700,11 @@ This demonstrates that the total mass is conserved for all time, completing the 
 **Q.E.D.**
 :::
 
-## **4. Analysis and Properties of the Mean-Field Equations**
+## 4. Analysis and Properties of the Mean-Field Equations
 
 The derivation in the preceding sections has culminated in a **coupled system of equations** that describes the evolution of the Euclidean Gas in the mean-field limit. This system provides a powerful macroscopic lens through which to analyze the collective behavior of both the alive and dead populations. This final section serves to summarize the essential mathematical properties of this coupled system, outline the path forward for its rigorous analysis, and formally connect the continuous model back to the discrete N-particle algorithm from which it was derived.
 
-### **4.1. Key Properties of the Coupled System**
+### 4.1. Key Properties of the Coupled System
 
 The Mean-Field Equations for the Euclidean Gas form a coupled system of a PDE (for $f$) and an ODE (for $m_d$), whose properties are a direct reflection of the algorithm's core mechanics.
 
@@ -719,7 +718,7 @@ The Mean-Field Equations for the Euclidean Gas form a coupled system of a PDE (f
 
 *   **Total Mass Conservation with Dynamic Equilibrium:** As proven in Theorem 3.3, the coupled system conserves the total population $m_a(t) + m_d(t) = 1$. However, unlike a model with instantaneous revival, the alive and dead masses can exchange and evolve towards a non-trivial **stationary state** where $\mathrm{d}/\mathrm{d}t\, m_a = 0$ and $\mathrm{d}/\mathrm{d}t\, m_d = 0$. At this stationary state, the killing and revival rates are balanced: $k_{\text{killed}}[f_\infty] = \lambda_{\text{revive}} m_{d,\infty}$. This faithfully represents the discrete algorithm's behavior where the number of alive walkers $k$ fluctuates and converges to a stationary distribution.
 
-### **4.2. Well-Posedness and Future Work**
+### 4.2. Well-Posedness and Future Work
 
 The rigorous analysis of the coupled mean-field system—proving the existence, uniqueness, and long-term behavior of its solutions—requires a set of standing technical assumptions on the regularity of its constituent parts.
 
@@ -741,7 +740,7 @@ Under these assumptions, the coupled mean-field system is of a class for which a
 3.  **Convergence to Equilibrium:** Proving that any initial state $(f_0, m_{d,0})$ converges to the unique stationary state $(f_\infty, m_{d,\infty})$ as $t \to \infty$.
 4.  **Functional Inequalities:** Establishing functional inequalities, such as a Logarithmic Sobolev Inequality (LSI), for the stationary measure. Proving an LSI would provide a quantitative and exponential rate of convergence to equilibrium.
 
-### **4.3. Connection to the N-Particle System via Lie-Trotter Splitting**
+### 4.3. Connection to the N-Particle System via Lie-Trotter Splitting
 
 The final step is to confirm that our derived continuous model is a faithful representation of the discrete-time algorithm defined in Chapter 2. This connection is formally established by the **Lie-Trotter product formula**, which relates the exponential of a sum of operators to the product of their individual exponentials.
 
@@ -757,11 +756,11 @@ We can interpret each operator on the right-hand side as a discrete stage of the
 
 The discrete-time **Swarm Update Operator**, $\Psi = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$, is therefore a first-order operator splitting scheme for integrating the continuous forward equation. This confirms that our mean-field PDE is not merely an analogy but the direct continuous-time limit of the N-particle algorithm, providing a rigorous foundation for the subsequent analysis of the system's macroscopic properties.
 
-### **4.4. Consistency of the Interior Killing Rate Approximation**
+### 4.4. Consistency of the Interior Killing Rate Approximation
 
 A critical assumption of our continuous model is that death at the hard boundary $\partial X_{\text{valid}}$ in the discrete algorithm can be faithfully approximated by an interior killing rate $c(z)$ in the continuous model. This section provides the rigorous mathematical justification for this approximation in the limit $\tau \to 0$.
 
-#### **4.4.1. Mathematical Setup and Regularity Assumptions**
+#### 4.4.1. Mathematical Setup and Regularity Assumptions
 
 We work with the following precise geometric and regularity framework:
 
@@ -798,7 +797,7 @@ The phase-space density $f^\tau(x,v)$ at the start of a discrete timestep satisf
 3. **Convergence**: As $\tau \to 0$, $f^\tau \to f$ in $L^1(\Omega)$ where $f$ is the solution to the continuous PDE.
 :::
 
-#### **4.4.2. Main Theorem: Rigorous Killing Rate Approximation**
+#### 4.4.2. Main Theorem: Killing Rate Approximation
 
 :::{prf:theorem} Consistency of the Interior Killing Rate Approximation
 :label: thm-killing-rate-consistency
@@ -859,13 +858,8 @@ $$
 for some constant $C$ depending only on $M_f, M_{\nabla f}, M_F, C_R$, and the geometry of $X_{\text{valid}}$.
 :::
 
-:::{prf:proof}
-
-We prove Parts (i) and (ii) separately, establishing both the pointwise limit and the uniform error bound. The key insight is that the BAOAB integrator includes a stochastic O-step (Definition [](#def-baoab-update-rule)), making $x^+$ a **Gaussian random variable** rather than a deterministic point. This fundamentally changes the exit probability calculation from a step function to a smooth Gaussian tail integral.
-
----
-
-**Proof of Part (i): Pointwise Convergence**
+:::{prf:proof} Proof of Part (i): Pointwise Convergence
+:label: proof-killing-rate-consistency-part-i
 
 Fix $(x,v) \in \Omega$ and consider the position after one timestep under the BAOAB integrator.
 
@@ -1053,11 +1047,11 @@ c(x,v) = \begin{cases}
 \end{cases}
 $$
 
-where $v_n^+ := \max(v \cdot n_x(x), 0)$. This completes the proof of Part (i).
+where $v_n^+ := \max(v \cdot n_x(x), 0)$. **Q.E.D.**
+:::
 
----
-
-**Proof of Part (ii): Uniform Convergence with Error Bound**
+:::{prf:proof} Proof of Part (ii): Uniform Convergence with Error Bound
+:label: proof-killing-rate-consistency-part-ii
 
 Define the error:
 
@@ -1213,7 +1207,7 @@ $$
 This completes the proof of Part (ii). **Q.E.D.**
 :::
 
-#### **4.4.3. Interpretation and Mathematical Implications**
+#### 4.4.3. Interpretation and Mathematical Implications
 
 :::{admonition} Physical Interpretation of the Killing Rate
 :class: note
@@ -1302,7 +1296,7 @@ The theorem predicts convergence at rate $O(\sqrt{\tau} + N^{-1/d})$ (where the 
 **Expected Behavior**: For $\tau = 10^{-3}$ and $N = 10^4$ in $d = 2$ dimensions, the relative error should be $O(3\%)$.
 :::
 
-#### **4.4.4. Connection to the Main Mean-Field Result**
+#### 4.4.4. Connection to the Main Mean-Field Result
 
 The killing rate consistency theorem (Theorem [](#thm-killing-rate-consistency)) provides the final piece needed to justify our mean-field model. Combined with the standard kinetic theory arguments for the transport operator $L^\dagger$ (Section 2.2) and the Law of Large Numbers for the cloning operators (Section 2.3), we obtain:
 

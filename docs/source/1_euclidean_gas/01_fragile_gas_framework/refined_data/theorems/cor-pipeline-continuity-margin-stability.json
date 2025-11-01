@@ -50,6 +50,6 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "13. Fitness potential operator",
     "subsection": "12.3.3 Corollary: Pipeline Continuity Under Margin-Based Status Stability",
-    "directive_label": "cor-pipeline-continuity-margin-stability"
+    "label": "cor-pipeline-continuity-margin-stability"
   }
 }

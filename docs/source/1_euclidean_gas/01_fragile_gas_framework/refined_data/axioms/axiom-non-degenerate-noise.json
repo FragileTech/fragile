@@ -35,7 +35,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "2.3.2",
-    "directive_label": "def-axiom-non-degenerate-noise",
+    "label": "def-axiom-non-degenerate-noise",
     "equation": null,
     "line_range": [860, 867],
     "url_fragment": "axiom-of-non-degenerate-noise"

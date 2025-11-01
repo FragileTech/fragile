@@ -459,7 +459,7 @@ Expand proof sketch for: thm-kl-convergence-euclidean
 
 # Step 4: Review proof
 Load math-reviewer agent.
-Review proof: docs/source/1_euclidean_gas/proofs/proof_thm_kl_convergence.md
+Review proof: docs/source/1_euclidean_gas/mathster/proof_thm_kl_convergence.md
 ```
 
 ### Workflow 2: Batch Processing → Analysis
@@ -472,7 +472,7 @@ Parse directory: docs/source/1_euclidean_gas/
 # Step 2: Analyze structure
 # Read all statistics.json files
 # Identify documents with most theorems
-# Identify documents with missing proofs
+# Identify documents with missing mathster
 
 # Step 3: Prioritize proof development
 # Use proof-sketcher on high-priority theorems

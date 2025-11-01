@@ -1,25 +1,29 @@
 {
+  "label": "thm-lipschitz-structural-error-bound",
+  "label_text": "Bounding the Squared Structural Error",
+  "statement_type": "theorem",
+  "full_statement_text": "Let **v** be a fixed raw value vector. Let S_1 and S_2 be two swarm states. The squared structural error, E_S^2(S_1, S_2; v) = ||z(S_1, v, M) - z(S_2, v, M)||_2^2, is deterministically bounded as follows:\n$$\n\nE_{S}^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}) \\le C_{S,\\text{direct}} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2\n\n$$\nwhere C_{S,direct} and C_{S,indirect}(S_1, S_2) are the **Structural Error Coefficients**, which are deterministic, finite coefficients formally defined in the subsequent section. The presence of the n_c^2 term confirms that the error is not linearly proportional to the number of status changes.",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "output_type": "",
+  "relations_established": [],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
+    "section": null,
+    "section_name": null,
     "label": "thm-lipschitz-structural-error-bound",
-    "label_text": "Bounding the Squared Structural Error",
-    "statement_type": "theorem",
-    "full_statement_text": "Let **v** be a fixed raw value vector. Let S_1 and S_2 be two swarm states. The squared structural error, E_S^2(S_1, S_2; v) = ||z(S_1, v, M) - z(S_2, v, M)||_2^2, is deterministically bounded as follows:\n$$\n\nE_{S}^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}) \\le C_{S,\\text{direct}} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2\n\n$$\nwhere C_{S,direct} and C_{S,indirect}(S_1, S_2) are the **Structural Error Coefficients**, which are deterministic, finite coefficients formally defined in the subsequent section. The presence of the n_c^2 term confirms that the error is not linearly proportional to the number of status changes.",
-    "input_objects": [],
-    "input_axioms": [],
-    "input_parameters": [],
-    "output_type": "",
-    "relations_established": [],
-    "source": {
-        "document_id": "01_fragile_gas_framework",
-        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-        "chapter": "1",
-        "section": "11.3.5",
-        "section_name": null,
-        "directive_label": "thm-lipschitz-structural-error-bound",
-        "equation": null,
-        "line_range": [
-            3577,
-            3585
-        ],
-        "url_fragment": "#thm-lipschitz-structural-error-bound"
-    }
+    "line_range": {
+      "lines": [
+        [
+          3591,
+          3600
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": "#thm-lipschitz-structural-error-bound"
+  }
 }

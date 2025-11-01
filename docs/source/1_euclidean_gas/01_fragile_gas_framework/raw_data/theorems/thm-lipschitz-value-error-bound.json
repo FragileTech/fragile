@@ -1,25 +1,29 @@
 {
+  "label": "thm-lipschitz-value-error-bound",
+  "label_text": "Bounding the Squared Value Error",
+  "statement_type": "theorem",
+  "full_statement_text": "Let **S** be a fixed swarm state. Let v_1 and v_2 be two raw value vectors. The squared value error, E_V^2(S; v_1, v_2) = ||z(S, v_1, M) - z(S, v_2, M)||_2^2, is deterministically bounded as follows:\n$$\n\nE_{V}^2(\\mathcal{S}; \\mathbf{v}_1, \\mathbf{v}_2) \\le C_{V,\\text{total}}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2\n\n$$\nwhere C_{V,total}(S) is the **Total Value Error Coefficient**, a deterministic, finite constant that depends on the state **S** but not on the raw value vectors, as formally defined in the subsequent section.",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "output_type": "",
+  "relations_established": [],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
+    "section": null,
+    "section_name": null,
     "label": "thm-lipschitz-value-error-bound",
-    "label_text": "Bounding the Squared Value Error",
-    "statement_type": "theorem",
-    "full_statement_text": "Let **S** be a fixed swarm state. Let v_1 and v_2 be two raw value vectors. The squared value error, E_V^2(S; v_1, v_2) = ||z(S, v_1, M) - z(S, v_2, M)||_2^2, is deterministically bounded as follows:\n$$\n\nE_{V}^2(\\mathcal{S}; \\mathbf{v}_1, \\mathbf{v}_2) \\le C_{V,\\text{total}}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2\n\n$$\nwhere C_{V,total}(S) is the **Total Value Error Coefficient**, a deterministic, finite constant that depends on the state **S** but not on the raw value vectors, as formally defined in the subsequent section.",
-    "input_objects": [],
-    "input_axioms": [],
-    "input_parameters": [],
-    "output_type": "",
-    "relations_established": [],
-    "source": {
-        "document_id": "01_fragile_gas_framework",
-        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-        "chapter": "1",
-        "section": "§11.3.3",
-        "section_name": null,
-        "directive_label": "thm-lipschitz-value-error-bound",
-        "equation": null,
-        "line_range": [
-            3495,
-            3503
-        ],
-        "url_fragment": "#thm-lipschitz-value-error-bound"
-    }
+    "line_range": {
+      "lines": [
+        [
+          3509,
+          3518
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": "#thm-lipschitz-value-error-bound"
+  }
 }

@@ -14,13 +14,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "14",
-    "section_name": "The Perturbation Operator",
-    "directive_label": "def-perturbation-fluctuation-bounds-reproof",
-    "line_range": [
-      4074,
-      4092
-    ],
+    "section": null,
+    "section_name": null,
+    "label": "def-perturbation-fluctuation-bounds-reproof",
+    "line_range": {
+      "lines": [
+        [
+          4090,
+          4108
+        ]
+      ]
+    },
+    "equation": null,
     "url_fragment": "#def-perturbation-fluctuation-bounds-reproof"
   }
 }

@@ -246,7 +246,7 @@ grep "thm-keystone-principle" docs/source/.../document.md
 ls docs/source/.../reports/sketcher/
 
 # Prover output
-ls docs/source/.../reports/proofs/
+ls docs/source/.../reports/mathster/
 
 # Reviewer output
 ls docs/source/.../reports/reviewer/

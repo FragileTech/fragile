@@ -9,15 +9,19 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "3",
+    "chapter": "1_euclidean_gas",
+    "section": "§3",
     "section_name": null,
-    "directive_label": "axiom-range-respecting-mean",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          814,
+          817
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      812,
-      821
-    ],
-    "url_fragment": "#def-axiom-range-respecting-mean",
-    "chapter": "1_euclidean_gas"
+    "url_fragment": null
   }
 }

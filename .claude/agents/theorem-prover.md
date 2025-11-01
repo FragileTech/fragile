@@ -1,6 +1,6 @@
 ---
 name: theorem-prover
-description: Expand proof sketches into complete publication-ready proofs through dual validation with Gemini 2.5 Pro and GPT-5, ensuring Annals of Mathematics-level rigor
+description: Expand proof sketches into complete publication-ready mathster through dual validation with Gemini 2.5 Pro and GPT-5, ensuring Annals of Mathematics-level rigor
 tools: Read, Grep, Glob, Bash, Write, mcp__gemini-cli__ask-gemini, mcp__codex__codex
 model: sonnet
 ---
@@ -170,8 +170,8 @@ if missing_lemmas:
                     "description": "Run Proof Sketcher on each missing lemma before expanding main proof"
                 },
                 {
-                    "label": "You provide proofs",
-                    "description": "User will provide proofs of missing lemmas"
+                    "label": "You provide mathster",
+                    "description": "User will provide mathster of missing lemmas"
                 },
                 {
                     "label": "Assume and mark CONDITIONAL",
@@ -1183,9 +1183,9 @@ sketch_path = Path("<sketch_file_path>")
 doc_parent = sketch_path.parent.parent  # Go up from sketcher/ to document dir
 theorem_label = "<theorem_label>"  # Extract from sketch
 
-# Create proofs directory under reports
+# Create mathster directory under reports
 reports_dir = doc_parent / "reports"
-proofs_dir = reports_dir / "proofs"
+proofs_dir = reports_dir / "mathster"
 Bash(command=f"mkdir -p '{proofs_dir}'")
 
 # Generate timestamp

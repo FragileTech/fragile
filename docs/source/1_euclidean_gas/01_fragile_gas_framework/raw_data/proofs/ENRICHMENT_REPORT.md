@@ -21,10 +21,10 @@ Successfully enriched all 17 proof entities in `docs/source/1_euclidean_gas/01_f
 
 #### Primary Tool: source_location_enricher.py
 ```bash
-python src/fragile/proofs/tools/source_location_enricher.py directory \
+python src/fragile/mathster/tools/source_location_enricher.py directory \
   docs/source/1_euclidean_gas/01_fragile_gas_framework/raw_data \
   docs/source/1_euclidean_gas/01_fragile_gas_framework.md \
-  01_fragile_gas_framework --types proofs
+  01_fragile_gas_framework --types mathster
 ```
 
 This tool successfully enriched all 17 proofs, but populated legacy fields with incorrect formats.

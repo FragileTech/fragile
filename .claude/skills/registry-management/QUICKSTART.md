@@ -5,7 +5,7 @@
 **One command builds everything automatically:**
 
 ```bash
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 
 **What happens**:
@@ -25,7 +25,7 @@ python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
 ### Use Case 1: Build Everything Automatically ⭐
 
 ```bash
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 
 **Time**: ~3-5 minutes (depends on number of documents)
@@ -39,7 +39,7 @@ python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
 
 ```bash
 # After building registries
-panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
+panel serve src/fragile/mathster/proof_pipeline_dashboard.py --show
 ```
 
 **Features**:
@@ -60,7 +60,7 @@ panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
 #    Creates: docs/source/{chapter}/{new_document}/refined_data/
 
 # 2. Build all registries (automatic discovery!)
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 
 **Result**: New document automatically:
@@ -155,7 +155,7 @@ ls -lh registries/combined/
 
 **Solution**: Run `build_all_registries.py` to create registries:
 ```bash
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 
 ---
@@ -164,7 +164,7 @@ python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
 
 ```bash
 # Check error messages in output
-python -m fragile.proofs.tools.build_all_registries \
+python -m fragile.mathster.tools.build_all_registries \
   --docs-root docs/source 2>&1 | grep "Error"
 ```
 
@@ -182,10 +182,10 @@ python -m fragile.proofs.tools.build_all_registries \
 #    Creates: docs/source/{chapter}/{document}/refined_data/
 
 # 2. Build all registries (automatic!)
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 
 # 3. Visualize in dashboard
-panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
+panel serve src/fragile/mathster/proof_pipeline_dashboard.py --show
 ```
 
 ### Programmatic Access

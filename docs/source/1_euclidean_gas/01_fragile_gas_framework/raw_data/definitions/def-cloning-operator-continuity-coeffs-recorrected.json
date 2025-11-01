@@ -13,13 +13,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "15.2.8",
-    "section_name": "Theorem: Lipschitz Continuity of the Cloning Transition Operator",
-    "directive_label": "def-cloning-operator-continuity-coeffs-recorrected",
-    "line_range": [
-      4448,
-      4463
-    ],
+    "section": null,
+    "section_name": null,
+    "label": "def-cloning-operator-continuity-coeffs-recorrected",
+    "line_range": {
+      "lines": [
+        [
+          4488,
+          4493
+        ]
+      ]
+    },
+    "equation": null,
     "url_fragment": "#def-cloning-operator-continuity-coeffs-recorrected"
   }
 }

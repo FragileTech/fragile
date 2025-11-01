@@ -266,7 +266,7 @@ class Proof(BaseModel):
     def check_consistency(cls, v, info: ValidationInfo):
         """Both fields must be set."""
         if info.field_name == 'rigor_level' and v < 5:
-            raise ValueError('Rigor level must be at least 5 for proofs')
+            raise ValueError('Rigor level must be at least 5 for mathster')
         return v
 ```
 
@@ -318,7 +318,7 @@ class Theorem(BaseModel):
 
     @model_validator(mode='after')
     def check_proof_required(self) -> 'Theorem':
-        """Non-trivial theorems require proofs."""
+        """Non-trivial theorems require mathster."""
         if len(self.hypotheses) > 2 and not self.proof_reference:
             raise ValueError('Theorems with >2 hypotheses must reference a proof')
         return self

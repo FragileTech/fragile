@@ -69,7 +69,7 @@ Interactive Visualization
 
 **Single Command Builds Everything**:
 ```bash
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 This automatically:
 1. Discovers all documents with `refined_data/`
@@ -85,7 +85,7 @@ Before building registries, always validate refined data:
 
 ```bash
 # Complete validation (recommended)
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/{chapter}/{document}/refined_data/ \
   --mode complete \
   --output-report validation_report.md
@@ -100,11 +100,11 @@ python -m fragile.proofs.tools.validation \
 **If validation fails**, use completion workflow:
 ```bash
 # Find incomplete entities
-python -m fragile.proofs.tools.find_incomplete_entities \
+python -m fragile.mathster.tools.find_incomplete_entities \
   --refined-dir docs/source/{chapter}/{document}/refined_data/
 
 # Generate completion plan
-python -m fragile.proofs.tools.complete_refinement \
+python -m fragile.mathster.tools.complete_refinement \
   --incomplete-file incomplete_entities.json \
   --refined-dir docs/source/{chapter}/{document}/refined_data/
 ```
@@ -132,15 +132,15 @@ See [validate-refinement](../validate-refinement/) and [complete-partial-refinem
 **Usage**:
 ```bash
 # Build everything automatically (RECOMMENDED)
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 
 # Custom output location
-python -m fragile.proofs.tools.build_all_registries \
+python -m fragile.mathster.tools.build_all_registries \
   --docs-root docs/source \
   --output-root registries
 
 # Skip aggregation (only build per-document)
-python -m fragile.proofs.tools.build_all_registries \
+python -m fragile.mathster.tools.build_all_registries \
   --docs-root docs/source \
   --skip-aggregate
 ```
@@ -173,13 +173,13 @@ python -m fragile.proofs.tools.build_all_registries \
 **Usage**:
 ```bash
 # Aggregate refined registries
-python -m fragile.proofs.tools.aggregate_registries \
+python -m fragile.mathster.tools.aggregate_registries \
   --type refined \
   --per-document-root registries/per_document \
   --output registries/combined/refined
 
 # Aggregate pipeline registries
-python -m fragile.proofs.tools.aggregate_registries \
+python -m fragile.mathster.tools.aggregate_registries \
   --type pipeline \
   --per-document-root registries/per_document \
   --output registries/combined/pipeline
@@ -229,12 +229,12 @@ from fragile.proofs.tools.registry_builders_common import (
 **Usage**:
 ```bash
 # Transform Chapter 1 refined data
-python -m fragile.proofs.tools.enriched_to_math_types \
+python -m fragile.mathster.tools.enriched_to_math_types \
   --input docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data \
   --output docs/source/1_euclidean_gas/01_fragile_gas_framework/pipeline_data
 
 # Transform only specific entity types
-python -m fragile.proofs.tools.enriched_to_math_types \
+python -m fragile.mathster.tools.enriched_to_math_types \
   --input docs/source/1_euclidean_gas/02_euclidean_gas/refined_data \
   --output docs/source/1_euclidean_gas/02_euclidean_gas/pipeline_data \
   --types objects theorems
@@ -259,12 +259,12 @@ python -m fragile.proofs.tools.enriched_to_math_types \
 **Usage**:
 ```bash
 # Build from all raw_data directories
-python -m fragile.proofs.tools.build_raw_registry \
+python -m fragile.mathster.tools.build_raw_registry \
   --docs-root docs/source \
   --output raw_registry
 
 # Custom docs root
-python -m fragile.proofs.tools.build_raw_registry \
+python -m fragile.mathster.tools.build_raw_registry \
   --docs-root /path/to/docs/source \
   --output my_raw_registry
 ```
@@ -289,12 +289,12 @@ python -m fragile.proofs.tools.build_raw_registry \
 **Usage**:
 ```bash
 # Build from all refined_data directories
-python -m fragile.proofs.tools.build_refined_registry \
+python -m fragile.mathster.tools.build_refined_registry \
   --docs-root docs/source \
   --output refined_registry
 
 # Custom docs root
-python -m fragile.proofs.tools.build_refined_registry \
+python -m fragile.mathster.tools.build_refined_registry \
   --docs-root /path/to/docs/source \
   --output my_refined_registry
 ```
@@ -319,12 +319,12 @@ python -m fragile.proofs.tools.build_refined_registry \
 **Usage**:
 ```bash
 # Build from Chapter 1 pipeline data
-python -m fragile.proofs.tools.build_pipeline_registry \
+python -m fragile.mathster.tools.build_pipeline_registry \
   --pipeline-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/pipeline_data \
   --output pipeline_registry
 
 # Build from multiple chapters (run separately)
-python -m fragile.proofs.tools.build_pipeline_registry \
+python -m fragile.mathster.tools.build_pipeline_registry \
   --pipeline-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/pipeline_data \
   --output chapter1_registry
 ```
@@ -341,7 +341,7 @@ python -m fragile.proofs.tools.build_pipeline_registry \
 **Step 1: Validate refined data (REQUIRED)**
 ```bash
 # Validate all refined data before building
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/{chapter}/{document}/refined_data/ \
   --mode complete \
   --output-report validation_report.md
@@ -352,7 +352,7 @@ python -m fragile.proofs.tools.validation \
 **Step 2: Build registries**
 ```bash
 # Single command builds everything automatically
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 
 **What happens**:
@@ -374,7 +374,7 @@ python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
 
 ```bash
 # After building registries, visualize them
-panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
+panel serve src/fragile/mathster/proof_pipeline_dashboard.py --show
 ```
 
 **Features**:
@@ -399,7 +399,7 @@ panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
 
 2. Validate refined data (REQUIRED)
    ```bash
-   python -m fragile.proofs.tools.validation \
+   python -m fragile.mathster.tools.validation \
      --refined-dir docs/source/{chapter}/{new_document}/refined_data/ \
      --mode complete
    ```
@@ -407,7 +407,7 @@ panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
 
 3. Build all registries (automatic discovery!)
    ```bash
-   python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+   python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
    ```
 
 **Result**: New document automatically included in:
@@ -418,12 +418,12 @@ panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
 **Example**: Adding `02_euclidean_gas`
 ```bash
 # After creating refined_data/, validate first:
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/02_euclidean_gas/refined_data/ \
   --mode complete
 
 # If validation passes, build registries:
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 
 # The document is automatically:
 # - Discovered (no hardcoded names)
@@ -441,7 +441,7 @@ python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
 
 ```bash
 # Build single document manually
-python -m fragile.proofs.tools.build_refined_registry \
+python -m fragile.mathster.tools.build_refined_registry \
   --docs-root docs/source/{chapter} \
   --output registries/per_document/{document}/refined
 ```
@@ -541,7 +541,7 @@ The dashboard automatically discovers all available registries at runtime:
 ### Launch Dashboard
 
 ```bash
-panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
+panel serve src/fragile/mathster/proof_pipeline_dashboard.py --show
 ```
 
 ### Data Source Dropdown (Auto-Generated)
@@ -570,14 +570,14 @@ Always validate refined data before building registries:
 
 ```bash
 # Step 1: Validate (REQUIRED)
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/{chapter}/{document}/refined_data/ \
   --mode complete \
   --output-report validation_report.md
 
 # Step 2: Build registries (only if validation passes)
 if [ $? -eq 0 ]; then
-  python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+  python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 else
   echo "❌ Validation failed - fix errors before building registries"
   echo "See validation_report.md for details"
@@ -603,7 +603,7 @@ Registry building tools:
 **Error handling example**:
 ```bash
 # Build registry and capture exit code
-python -m fragile.proofs.tools.build_refined_registry \
+python -m fragile.mathster.tools.build_refined_registry \
   --docs-root docs/source \
   --output refined_registry
 

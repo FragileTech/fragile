@@ -325,7 +325,7 @@ After refinement, use the automated registry pipeline:
 
 ```bash
 # Build all registries automatically
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 
 The automated pipeline:

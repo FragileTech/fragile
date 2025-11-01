@@ -8,16 +8,20 @@
   "source_section": "§3",
   "source": {
     "document_id": "01_fragile_gas_framework",
-    "chapter": "1_euclidean_gas",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "3",
+    "chapter": "1_euclidean_gas",
+    "section": "§3",
     "section_name": null,
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          666,
+          692
+        ]
+      ]
+    },
     "equation": null,
-    "directive_label": "axiom-boundary-regularity",
-    "line_range": [
-      666,
-      692
-    ],
-    "url_fragment": "#def-axiom-boundary-regularity"
+    "url_fragment": null
   }
 }

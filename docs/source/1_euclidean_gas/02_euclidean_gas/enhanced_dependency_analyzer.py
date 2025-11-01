@@ -247,7 +247,7 @@ class EnhancedDependencyAnalyzer:
         for directive in self.directives.values():
             self._extract_explicit_deps(directive)
 
-        print("  Analyzing proofs...")
+        print("  Analyzing mathster...")
         for directive in self.directives.values():
             if directive.type != "proof":
                 self._analyze_associated_proof(directive)

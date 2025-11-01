@@ -2,7 +2,7 @@
 """
 Handle Special Cases for Remaining Entities.
 
-Handles parameters, embedded proofs, remarks, and unlabeled entities.
+Handles parameters, embedded mathster, remarks, and unlabeled entities.
 """
 
 import argparse
@@ -114,7 +114,7 @@ def enrich_special_case(
             if line_range:
                 method = "parameter text search"
 
-        # Try 2: Embedded proofs
+        # Try 2: Embedded mathster
         elif "proof-" in entity_path.name:
             line_range = find_proof_in_theorem(markdown_content, label)
             if line_range:

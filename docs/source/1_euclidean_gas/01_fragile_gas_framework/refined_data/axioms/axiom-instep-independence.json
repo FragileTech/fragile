@@ -108,7 +108,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "3. Axiomatic Foundations",
-    "directive_label": "def-assumption-instep-independence",
+    "label": "def-assumption-instep-independence",
     "equation": null,
     "line_range": [551, 572],
     "url_fragment": "#assumption-a-in-step-independence"

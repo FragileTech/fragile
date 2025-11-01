@@ -77,7 +77,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "2.2.3",
-    "directive_label": "def-axiom-projection-compatibility",
+    "label": "def-axiom-projection-compatibility",
     "equation": null,
     "line_range": [
       792,

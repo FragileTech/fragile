@@ -70,7 +70,7 @@ def parse_line_range(line_str: str) -> tuple[int, int] | None:
 
 def extract_search_text(entity_data: dict[str, Any]) -> str | None:
     """Extract text for searching in markdown."""
-    # For proofs, use the content or proof_text field
+    # For mathster, use the content or proof_text field
     text = entity_data.get("content") or entity_data.get("proof_text")
     if text:
         # Take first 200 chars for better matching
@@ -188,7 +188,7 @@ def fix_proof_source_location(
 
 def main():
     # Paths
-    proofs_dir = Path("docs/source/1_euclidean_gas/01_fragile_gas_framework/raw_data/proofs")
+    proofs_dir = Path("docs/source/1_euclidean_gas/01_fragile_gas_framework/raw_data/mathster")
     markdown_file = Path("docs/source/1_euclidean_gas/01_fragile_gas_framework.md")
 
     if not proofs_dir.exists():

@@ -1,5 +1,5 @@
 """
-Transform document-parser output to pipeline schema (fragile.proofs.core.pipeline_types).
+Transform document-parser output to pipeline schema (fragile.mathster.core.pipeline_types).
 
 This script converts the deep dependency extraction JSON to fully compliant Pydantic models.
 """
@@ -331,7 +331,7 @@ def transform_extraction_to_pipeline_schema(extraction_file: Path, output_file: 
             })
 
         else:
-            # Store other types for reference (proofs, remarks, etc.)
+            # Store other types for reference (mathster, remarks, etc.)
             other.append({
                 "label": label,
                 "type": dtype,

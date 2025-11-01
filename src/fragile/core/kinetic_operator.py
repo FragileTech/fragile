@@ -41,7 +41,7 @@ def psi_v(v: Tensor, V_alg: float) -> Tensor:
     Design Rationale:
     Smooth squashing maps are chosen over hard radial projections to provide
     differentiability for both position and velocity coordinates, a prerequisite
-    for one-step minorization proofs and deriving continuum limits.
+    for one-step minorization mathster and deriving continuum limits.
 
     Args:
         v: Velocity vectors to squash. Shape: [N, d] or [d]

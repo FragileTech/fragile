@@ -28,16 +28,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "12",
     "section_name": null,
-    "directive_label": "thm-standardization-structural-error-mean-square",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          3290,
+          3293
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      3274,
-      3283
-    ],
-    "url_fragment": "#thm-standardization-structural-error-mean-square",
-    "chapter": "1"
+    "url_fragment": null
   },
   "label_text": "Bounding the Expected Squared Structural Error",
   "full_statement_text": "The expected squared structural error is bounded deterministically by a function of the number of status changes, $n_c$.\n\n$$\nE_{S,ms}^2(\\mathcal{S}_1, \\mathcal{S}_2) \\le C_{S,\\text{direct}} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2\n$$\n\nwhere $C_{S,\\text{direct}}$ and $C_{S,\\text{indirect}}$ are the **Structural Error Coefficients**, deterministic constants derived from the axiomatic properties of the aggregation operator and the global parameters, as formally defined in [](#def-structural-error-coefficients)."

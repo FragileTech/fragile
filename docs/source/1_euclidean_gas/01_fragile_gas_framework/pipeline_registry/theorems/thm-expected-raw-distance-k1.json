@@ -6,7 +6,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "§10.2.8",
-    "directive_label": "thm-expected-raw-distance-k1",
+    "label": "thm-expected-raw-distance-k1",
     "equation": null,
     "line_range": [
       2609,

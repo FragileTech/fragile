@@ -4,16 +4,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "13.2.5",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "thm-perturbation-operator-continuity-reproof",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          4111,
+          4121
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      4095,
-      4105
-    ],
-    "url_fragment": "#thm-perturbation-operator-continuity-reproof",
-    "chapter": "1"
+    "url_fragment": null
   },
   "input_objects": [
     "obj-stochastic-fluctuation-bound",

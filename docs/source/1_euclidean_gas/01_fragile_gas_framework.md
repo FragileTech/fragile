@@ -1097,21 +1097,19 @@ The margin-based axiom strengthens this near zero by ensuring $n_c=0$ whenever t
 | Theorem of Deterministic Potential Continuity ([](#thm-deterministic-potential-continuity)) | The fitness potential operator can be made globally Lipschitz continuous.                                          | The deterministic squared error $                                                                                                                                                                                                                |                                                                                                                                                 | V_1 - V_2 \|^2$ is bounded by a Lipschitz-Hölder function of the input displacement and raw value difference.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | The **Axiom of Variance Regularization** ($\kappa_{\text{var}},min$) and all other axiomatic parameters.                                                              | This is the **strongest continuity result**, available when using the patched standardization operator. It proves the potential is a well-behaved, deterministic function suitable for worst-case analysis. This property is the key prerequisite for validating stronger convergence results like those from Feynman-Kac theory. If the axiom is not enforced, this theorem does not hold. |
 ## 4. The Environment: State and Reward Measurement
 The environment provides the static context for the swarm's evolution. Its core properties—the state space and the reward function—are defined axiomatically in Section 2.2. The algorithm interacts with the environment through a formal measurement process.
-### 3.1 Reward Measurement
+### 4.1 Reward Measurement
 A walker determines the value of its location by evaluating the global Reward Function.
 :::{prf:definition} Reward Measurement
 :label: def-reward-measurement
 The reward value $r_i$ for walker $i$ at position $x_i$ is the result of integrating the global Reward Function $R$ against the walker's **positional measure**, which is the Dirac delta measure $\delta_{x_i}$ on $\mathcal{X}$.
 $$
-
 r_i := \mathbb{E}_{\delta_{x_i}}[R] = \int_{\mathcal{X}} R(x) \, d\delta_{x_i}(x) = R(x_i)
-
 $$
 This formalizes the act of "evaluating the reward" as a measurement process.
 :::
 ## 5. Algorithmic Noise Measures
 The algorithm's random movements are sourced from probability measures that must satisfy the core properties defined in the **Valid Noise Measure Axiom (Def. 2.3)**. The user is responsible for providing concrete instantiations of these measures.
-### 4.1 Algorithmic Instantiations
+### 5.1 Algorithmic Instantiations
 The algorithm uses two distinct noise measures, both of which are required to be instantiations of a Valid Noise Measure.
 :::{prf:definition} Perturbation Measure
 :label: def-perturbation-measure
@@ -1121,9 +1119,9 @@ For a given noise scale $\sigma > 0$, the **Perturbation Measure**, $\mathcal{P}
 :label: def-cloning-measure
 For a given cloning noise scale $\delta > 0$, the **Cloning Measure**, $\mathcal{Q}_\delta(x, \cdot)$, is a **Valid Noise Measure** according to Definition 2.3. It governs the displacement for newly created walkers during the cloning step.
 :::
-### 4.2 Guidance on Validating Noise Measures (Illustrative Examples)
+### 5.2 Guidance on Validating Noise Measures (Illustrative Examples)
 The axiomatic framework requires that any chosen noise measure satisfies two key properties: uniform displacement ([](#def-axiom-bounded-second-moment-perturbation)) and boundary regularity ([](#axiom-boundary-regularity)). The user of this framework is responsible for selecting a specific measure and providing a formal proof that it satisfies these axioms. The following lemmas are provided not as part of the core framework, but as illustrative templates for how such a validation proof would be constructed for two canonical examples.
-#### 4.2.1 Lemma: Validation of the Heat Kernel
+#### 5.2.1 Lemma: Validation of the Heat Kernel
 :::{prf:lemma} Validation of the Heat Kernel
 If the state space $(\mathcal{X}, d_{\mathcal{X}}, \mu)$ is a Polish metric measure space with a canonical heat kernel $p_t(x, \cdot)$ that has a uniformly bounded second moment, then defining the perturbation noise measure as $\mathcal{P}_\sigma(x, \cdot) := p_{\sigma^2}(x, \cdot)$ satisfies the required axioms, provided the boundary of the valid set $\mathcal{X}_{\mathrm{valid}}$ is sufficiently regular.
 :::{prf:proof}
@@ -1140,36 +1138,29 @@ For quick reference, the constants appearing in the deterministic and mean-squar
 - $L_{\sigma'_{\text{reg}}}$: $\sup_{V\ge 0} |(\sigma'_{\text{reg}})'(V)| = \frac{1}{2\sigma'_{\min}}$, the global Lipschitz constant of the regularized standard deviation from [](#lem-sigma-reg-derivative-bounds).
 These constants depend only on the fixed algorithmic parameters and the pair $(\mathcal{S}_1, \mathcal{S}_2)$ via the alive sets and aggregation Lipschitz functions, and are finite under the axioms stated in Section 2.
 :::
-#### 4.2.2 Lemma: Validation of the Uniform Ball Measure
+#### 5.2.2 Lemma: Validation of the Uniform Ball Measure
 :::{prf:lemma} Validation of the Uniform Ball Measure
 Let the noise measure $\mathcal{P}_\sigma(x, \cdot)$ be defined as the uniform probability measure over a ball of radius $\sigma$ centered at $x$ in the state space $\mathcal{X}$. This measure satisfies the required axioms, provided the boundary of the valid set is sufficiently regular. In particular, the death‑probability map is continuous under mild assumptions; to claim a global Lipschitz modulus with respect to $d_{\text{Disp},\mathcal{Y}}$, assume $\mathcal{X}_{\mathrm{valid}}$ has Lipschitz boundary or finite perimeter so that boundary layer estimates apply. In that case one obtains an explicit bound of the form
+
 $$
-
 L_{\text{death}}\;\le\; \frac{C_{\text{perim}}}{\sigma},
-
 $$
 where $C_{\text{perim}}$ depends on the perimeter (surface measure) of $\partial\mathcal{X}_{\mathrm{valid}}$ in the algorithmic metric.
 :::{prf:proof}
 **Proof.**
 1.  **Axiom of Bounded Second Moment of Perturbation ([](#def-axiom-bounded-second-moment-perturbation)):** A sample $x'$ is drawn from the ball $B(x, \sigma)$. The displacement is, by definition, $d_{\mathcal{X}}(x', x) \le \sigma$. The expected squared projected displacement is therefore bounded:
 $$
-
     \mathbb{E}_{x' \sim \mathcal{P}_\sigma(x, \cdot)} \left[ d_{\mathcal{Y}}(\varphi(x'), \varphi(x))^2 \right] \le L_\varphi^2 \sigma^2
-
-
 $$
 This bound holds for all $x \in \mathcal{X}$, so the supremum is also bounded. The axiom is satisfied.
 2.  **Axiom of Boundary Regularity ([](#axiom-boundary-regularity)):** Let $\mathbb{1}_{\text{invalid}}(x')$ be the indicator function for the invalid set. The death probability is the convolution of this indicator function with the indicator function of the ball:
 $$
-
     P(s_{\text{out}}=0 | x) = \frac{1}{\text{Volume}(B(x, \sigma))} \int_{B(x, \sigma)} \mathbb{1}_{\text{invalid}}(x') dx' = \frac{\text{Volume}(\mathcal{X}_{\mathrm{invalid}} \cap B(x, \sigma))}{\text{Volume}(B(x, \sigma))}
-
-
 $$
 The function $f(x) = \text{Volume}(\mathcal{X}_{\mathrm{invalid}} \cap B(x, \sigma))$ measures the volume of the intersection of a fixed set with a moving ball. As long as the boundary of $\mathcal{X}_{\mathrm{invalid}}$ is not pathological (e.g., is a Lipschitz submanifold), this function is continuous. For a small displacement of the ball's center, the change in the intersection volume is proportional to the surface area of the boundary segment that enters or leaves the ball. This geometric relationship ensures the function is locally Lipschitz, which implies it is also Hölder continuous with an exponent of 1. Thus, the axiom is satisfied.
 **Q.E.D.**
 :::
-#### 4.2.3 Lemma: BV/perimeter Lipschitz bound for uniform‑ball death probability
+#### 5.2.3 Lemma: BV/perimeter Lipschitz bound for uniform‑ball death probability
 :::{prf:lemma} Uniform‑ball death probability is Lipschitz under finite perimeter
 :label: lem-boundary-uniform-ball
 Let $E=\mathcal{X}_{\mathrm{invalid}}\subset\mathcal X$ have finite perimeter (BV boundary) and let $\mathcal P_\sigma(x,\cdot)$ be the uniform law on $B(x,\sigma)$. Define
@@ -1193,7 +1184,7 @@ In this document we take $\varphi=\mathrm{Id}$ so that $L_\varphi=1$ and no peri
 :::
 **Q.E.D.**
 :::
-#### 4.2.4 Lemma: Heat‑kernel Lipschitz bound via BV smoothing
+#### 5.2.4 Lemma: Heat‑kernel Lipschitz bound via BV smoothing
 :::{prf:lemma} Heat‑kernel death probability is Lipschitz with constant $\lesssim 1/\sigma$
 :label: lem-boundary-heat-kernel
 Let $E=\mathcal{X}_{\mathrm{invalid}}\subset\mathcal X$ have finite perimeter and let $p_{\sigma^2}$ be the heat kernel at scale $\sigma$. Define $P_\sigma(x)=\int \chi_E(y)\,p_{\sigma^2}(x,\mathrm dy)$. Then
@@ -1210,12 +1201,12 @@ As above, $P_\sigma=\chi_E * p_{\sigma^2}$ and $\nabla(\chi_E * p_{\sigma^2})=(D
 :::
 :::
 ## 6. Algorithm Space and Distance Measurement
-### 5.1 Specification of the Algorithmic Space
+### 6.1 Specification of the Algorithmic Space
 :::{prf:definition} Algorithmic Space
 :label: def-algorithmic-space-generic
 An **algorithmic space** is a pair $(\mathcal{Y}, d_{\mathcal{Y}})$ consisting of a real vector space $\mathcal{Y}$ and a true metric $d_{\mathcal{Y}}$ on $\mathcal{Y}$.
 :::
-### 5.2 Distance Between Positional Measures
+### 6.2 Distance Between Positional Measures
 The distance between two walkers is formally defined as the distance between the probability measures representing their positions.
 :::{prf:definition} Distance Between Positional Measures
 :label: def-distance-positional-measures
@@ -1228,7 +1219,7 @@ d(\varphi_* \delta_{x_i}, \varphi_* \delta_{x_j}) := W_1(\delta_{\varphi(x_i)}, 
 $$
 For Dirac measures, the Wasserstein distance simplifies to the ground metric distance between their points of support.
 :::
-### 5.3 Algorithmic Distance
+### 6.3 Algorithmic Distance
 :::{prf:definition} Algorithmic Distance
 :label: def-alg-distance
 The **algorithmic distance** $d_{\text{alg}}\colon\mathcal{X}\times\mathcal{X}\to\mathbb{R}_{\ge0}$ is the distance between the projected positional measures of two walkers. In practice, this is the distance or semidistance function $d_{\mathcal{Y}}$ applied to the projected points in the algorithmic space:
@@ -1259,27 +1250,26 @@ The configuration of alive walkers in a swarm can be represented as a measure in
 a discrete one capturing the exact positions, and a smoothed one for analyzing coarse-grained behavior.
 Each walker performs two key measurements at the start of the algorithmic pipeline: one of its own value (reward) and one of its
 relationship to the swarm (distance to a random companion). The stability of the entire algorithm is critically dependent on the continuity properties of the operators that map a swarm state $S$ to the N-dimensional vectors representing these measurements.
-### 6.1 N-Particle Displacement Metric
+### 7.1 N-Particle Displacement Metric
 The primary metric used to measure the distance between two N-particle swarm states is the **N-Particle Displacement Metric ($d_{\text{Disp},\mathcal{Y}}$)**. This metric is a foundational component of the framework and is established as a global convention in **Section 1.5**.
 :::{note}
 The formula $d_{\text{Disp},\mathcal{Y}}^2 = \frac{1}{N}\Delta_{\text{pos}}^2 + \frac{\lambda_{\text{status}}}{N}n_c$ reveals a fundamental trade-off: the parameter $\lambda_{\text{status}}$ controls how much we "care" about walker deaths versus position changes. A large $\lambda_{\text{status}}$ means the algorithm treats death as a major event; a small value means it focuses more on spatial exploration.
 :::
-### 6.2 Swarm Aggregation Operator
+### 7.2 Swarm Aggregation Operator
 :::{admonition} 💡 Intuitive Understanding
 :class: tip
 The Swarm Aggregation Operator is like taking a "group photo" of the swarm's measurements. Instead of tracking every individual walker's reward or distance, we compute summary statistics (mean, variance) that capture the collective behavior. This compression is essential—it reduces N-dimensional chaos to manageable 2D statistics while preserving the information needed for decision-making.
 :::
-#### 6.2.1 Definition: Swarm Aggregation Operator
+#### 7.2.1 Definition: Swarm Aggregation Operator
 :::{prf:definition} Swarm Aggregation Operator
 :label: def-swarm-aggregation-operator-axiomatic
 A **Swarm Aggregation Operator**, denoted $M$, is a function that maps a swarm state $\mathcal{S}$ and a raw value vector $\mathbf{v}$ (defined on the alive set $\mathcal{A}(\mathcal{S})$) to a probability measure $\mu_{\mathbf{v}}$ on $\mathbb{R}$.
 **Signature:** $M: \Sigma_N \times \mathbb{R}^{|\mathcal{A}(\mathcal{S})|} \to \mathcal{P}(\mathbb{R})$
 For the operator to be valid, it must satisfy the foundational axioms for aggregators defined in Section 2.3.4. Furthermore, the user must provide proofs and explicit functions for the following continuity and structural properties.
 1.  **Value Continuity (Lipschitz):** For a fixed swarm structure $\mathcal{S}$, the moment functions must be Lipschitz continuous with respect to the L2-norm of the input value vector $\mathbf{v}$. The user must provide the **Value Lipschitz Functions**, $L_{\mu,M}(\mathcal{S})$ and $L_{m_2,M}(\mathcal{S})$, such that for any two value vectors $\mathbf{v}_1, \mathbf{v}_2$:
+
 $$
-
 |\mu(\mathcal{S}, \mathbf{v}_1) - \mu(\mathcal{S}, \mathbf{v}_2)| \le L_{\mu,M}(\mathcal{S}) \cdot \|\mathbf{v}_1 - \mathbf{v}_2\|_2
-
 $$
 $$
 |m_2(\mathcal{S}, \mathbf{v}_1) - m_2(\mathcal{S}, \mathbf{v}_2)| \le L_{m_2,M}(\mathcal{S}) \cdot \|\mathbf{v}_1 - \mathbf{v}_2\|_2
@@ -1299,7 +1289,7 @@ $$
 Why quadratic dependence on status changes? When a walker dies or revives, it's like suddenly adding or removing a data point from your dataset. The resulting error in statistics (like the mean) jumps discontinuously. The quadratic form $n_c$ counts these discontinuous jumps, making it the natural measure for how much the aggregated statistics can change.
 :::
 :::
-#### 6.2.2 Example Instantiation: The Empirical Measure Aggregator
+#### 7.2.2 Example Instantiation: The Empirical Measure Aggregator
 :::{admonition} The "Simple Average" Operator
 :class: tip
 :open:
@@ -1309,8 +1299,10 @@ The empirical measure aggregator is just a fancy name for computing simple stati
 **Why "measure"?** In probability theory, a "measure" is a way of assigning weights to different outcomes. The empirical measure gives equal weight (1/k) to each of the k alive walkers' values.
 **Why this matters**: This is the "statistical engine" that turns individual walker measurements into collective swarm intelligence. It's the bridge between "what each walker sees" and "what the swarm as a whole believes."
 :::
-##### 6.2.2.a Lemma: Lipschitz constants for empirical moments (mean and second moment)
+##### 7.2.2.1 Lemma: Lipschitz constants for empirical moments (mean and second moment)
 :::{prf:lemma} Empirical moments are Lipschitz in L2
+:label: lem-empirical-moments-lipschitz
+
 Let $\mathbf v\in\mathbb R^k$ collect the values of the $k=|\mathcal A(\mathcal S)|$ alive walkers. Consider the empirical mean and second raw moment
 
 $$
@@ -1327,6 +1319,8 @@ $$
 In particular, for the empirical aggregator we may take $L_{\mu,M}=1/\sqrt{k}$ and $L_{m_2,M}=2V_{\max}/\sqrt{k}$.
 :::
 :::{prf:proof}
+:label: proof-lem-empirical-moments-lipschitz
+
 Gradients are $\nabla\mu = (1/k)\,\mathbf 1$ and $\nabla m_2 = (2/k)\,(v_1,\dots,v_k)$. Thus
 
 $$
@@ -1373,6 +1367,8 @@ This operator is a valid **Swarm Aggregation Operator**. Assuming the raw values
     *   Structural Growth Exponents: $p_{\mu,S} = -1$, $p_{m_2,S} = -1$, $p_{\text{worst-case}} = -1$
 :::
 :::{prf:proof}
+:label: proof-lem-empirical-aggregator-properties
+
 **Proof.**
 Let $k = |\mathcal{A}(\mathcal{S})|$, $k_1 = |\mathcal{A}(\mathcal{S}_1)|$, and $k_2 = |\mathcal{A}(\mathcal{S}_2)|$. Let the raw values be bounded by $|v_i| \le V_{\max}$.
 1.  **Value Continuity:**
@@ -1384,28 +1380,20 @@ $$
         $$
 Thus, $L_{\mu,M}(\mathcal{S}) = k^{-1/2}$.
     *   **Second Moment:**
+
 $$
-
         |m_{2,1} - m_{2,2}| = \frac{1}{k} \left| \sum_{i \in \mathcal{A}} (v_{1,i}^2 - v_{2,i}^2) \right| = \frac{1}{k} \left| \sum_{i \in \mathcal{A}} (v_{1,i} - v_{2,i})(v_{1,i} + v_{2,i}) \right|
-
-
 $$
 The term $|v_{1,i} + v_{2,i}| \le 2V_{\max}$. Applying Cauchy-Schwarz:
 $$
-
         \le \frac{1}{k} \sqrt{\sum (v_{1,i} - v_{2,i})^2} \sqrt{\sum (v_{1,i} + v_{2,i})^2} \le \frac{1}{k} \|\mathbf{v}_1 - \mathbf{v}_2\|_2 \sqrt{k(2V_{\max})^2} = 2V_{\max} k^{-1/2} \|\mathbf{v}_1 - \mathbf{v}_2\|_2
-
-
 $$
 Thus, $L_{m_2,M}(\mathcal{S}) \le 2V_{\max} k^{-1/2}$.
 2.  **Structural Continuity:**
     We bound the change in moments for a fixed value vector $\mathbf{v}$ and two swarms $\mathcal{S}_1, \mathcal{S}_2$. Let $n_c = \|\mathbf{s}_1 - \mathbf{s}_2\|_2^2 = |\mathcal{A}_1 \Delta \mathcal{A}_2|$. We decompose the error by adding and subtracting the intermediate term $\frac{1}{k_2}\sum_{i \in \mathcal{A}_1} v_i$.
     *   **Mean:**
 $$
-
         |\mu_1 - \mu_2| = \left| \frac{1}{k_1}\sum_{i \in \mathcal{A}_1} v_i - \frac{1}{k_2}\sum_{i \in \mathcal{A}_2} v_i \right| \le \left|\frac{1}{k_1}\sum_{i \in \mathcal{A}_1} v_i - \frac{1}{k_2}\sum_{i \in \mathcal{A}_1} v_i \right| + \left|\frac{1}{k_2}\sum_{i \in \mathcal{A}_1} v_i - \frac{1}{k_2}\sum_{i \in \mathcal{A}_2} v_i \right|
-
-
 $$
 The first term is bounded by $\left|\frac{1}{k_1} - \frac{1}{k_2}\right| |\sum_{\mathcal{A}_1} v_i| \le \frac{|k_2 - k_1|}{k_1 k_2} (k_1 V_{\max}) = \frac{|k_2 - k_1|}{k_2}V_{\max}$.
         The second term is $\frac{1}{k_2}|\sum_{i \in \mathcal{A}_1 \setminus \mathcal{A}_2} v_i - \sum_{i \in \mathcal{A}_2 \setminus \mathcal{A}_1} v_i| \le \frac{V_{\max}}{k_2}|\mathcal{A}_1 \Delta \mathcal{A}_2|$.
@@ -1423,21 +1411,20 @@ The first term is bounded by $\left|\frac{1}{k_1} - \frac{1}{k_2}\right| |\sum_{
     *   The worst-case exponent is $p_{\text{worst-case}} = \max(-1, -1) = -1$.
 **Q.E.D.**
 :::
-#### 6.2.3 Smoothed Gaussian Measure
+#### 7.3 Smoothed Gaussian Measure
 For analyses where the precise locations of individual walkers are less important than their overall density, we represent the swarm's state using a kernel density estimate.
 :::{prf:definition} Smoothed Gaussian Measure
 :label: def-smoothed-gaussian-measure
 The creation of a smoothed measure requires a key analytical parameter:
 *   **Smoothed Measure Kernel Scale ($\ell$):** The length scale (standard deviation), $\ell > 0$, of the Gaussian kernel used for smoothing. A larger $\ell$ results in a smoother, less detailed density estimate.
 Let $K_\ell(y, y')$ be a Gaussian kernel with length scale $\ell$. The **smoothed Gaussian measure**, denoted $\tilde{\nu}_{\mathcal{S}, \ell}$, is the probability measure whose density is given by:
+
 $$
-
 \tilde{\rho}_{\mathcal{S}, \ell}(y) := \frac{1}{|\mathcal{A}(\mathcal{S})|} \sum_{i \in \mathcal{A}(\mathcal{S})} K_\ell(y, \varphi(x_i))
-
 $$
 This representation provides a smooth, differentiable approximation of the swarm's distribution in the algorithmic space and is the foundation for the $d_{\Sigma_N, L_2}$ distance.
 :::
-### 6.4 The Cemetery State Measure
+### 7.4 The Cemetery State Measure
 To ensure that our swarm metrics are well-defined for all possible outcomes, including the absorption of the swarm into the cemetery state, we must formally define its distributional representation. This is achieved by introducing a unique, abstract measure that represents this terminal state.
 :::{prf:definition} Algorithmic space with cemetery point
 :label: def-algorithmic-cemetery-extension
@@ -1463,19 +1450,15 @@ The Cemetery State Measure $\nu_{\emptyset}$ is an abstract object that does not
 :label: def-distance-to-cemetery-state
 The distance between any valid probability measure $\nu$ (representing a living swarm) and the Cemetery State Measure $\nu_{\emptyset}$ is defined to be a maximal constant, ensuring that entering the cemetery state represents the largest possible jump in distributional terms.
 *   **For the Wasserstein Metric:** Using [](#def-algorithmic-cemetery-extension), for any measure $\nu$ corresponding to a living swarm:
+
 $$
-
     W_p(\nu, \nu_{\emptyset}) := D_{\mathrm{valid}} \quad \text{and} \quad W_p(\nu_{\emptyset}, \nu_{\emptyset}) := 0
-
-
 $$
 *   **For the MMD (on living swarms):** We evaluate $\mathrm{MMD}_k$ only between measures supported on $\mathcal Y$ (living swarms). No cemetery extension is defined here. If an extension is required, one must specify an explicit positive‑definite kernel $k^{\dagger}$ on $\mathcal Y^{\dagger}$ that yields the desired constant distances while preserving metric properties. When $k$ is characteristic (e.g., Gaussian/RBF), MMD is a true metric on probability measures over $\mathcal Y$.
 *   **For the $L_2$ Distance:** The distance is a pre-defined maximal value $M_{L2}$ for the norm. For any density $\tilde{\rho}$ corresponding to a living swarm:
+
 $$
-
     \|\tilde{\rho} - \tilde{\rho}_{\emptyset}\|_{L_2} := M_{L2} \quad \text{and} \quad \|\tilde{\rho}_{\emptyset} - \tilde{\rho}_{\emptyset}\|_{L2} := 0
-
-
 $$
 :::
 ## 8. Companion Selection
@@ -1486,7 +1469,7 @@ The process of choosing a companion is governed by a uniform probability measure
 Companion selection is where the "swarm intelligence" emerges! Each walker measures its distance to a randomly chosen companion, creating a web of pairwise comparisons. Think of it as each walker asking: "How different am I from a typical member of the swarm?" This creates pressure toward diversity—walkers that are far from others (high distance) get different treatment than those clustered together.
 The genius is in the randomness: by selecting companions uniformly at random, we get an unbiased estimate of the swarm's spatial distribution without expensive all-to-all comparisons.
 :::
-### 7.1 Companion Selection Measure
+### 8.1 Companion Selection Measure
 :::{note}
 The companion selection rules handle three distinct scenarios:
 1. **Normal operation** (multiple alive walkers): Choose from other alive walkers
@@ -1503,7 +1486,7 @@ For each walker $i \in \{1, \dots, N\}$ in a swarm $\mathcal{S}$ with alive set 
 *   If the swarm is empty ($|\mathcal{A}|=0$), the support set is empty: $S_i := \emptyset$.
 The measure is defined as $\mathbb{C}_i(\mathcal{S})(\{j\}) = 1/|S_i|$ if $j \in S_i$ and $|S_i|>0$, and 0 otherwise. The expectation of any function $f$ under this measure is $\mathbb{E}_{j \sim \mathbb{C}_i(\mathcal{S})}[f(j)] = \frac{1}{|S_i|} \sum_{j \in S_i} f(j)$.
 :::
-#### 7.1.1 Sampling Policy (with replacement; independent across walkers)
+#### 8.1.1 Sampling Policy (with replacement; independent across walkers)
 :::{admonition} Allowed sampling schemes for analysis under McDiarmid
 :class: important
 - Companions are drawn independently **with replacement**: for each walker $i$, draw an independent $U_i^{\mathrm{comp}}\sim \mathrm{Unif}(0,1)$ and map it through the per‑walker CDF of $\mathbb C_i(\mathcal S)$.
@@ -1511,13 +1494,13 @@ The measure is defined as $\mathbb{C}_i(\mathcal{S})(\{j\}) = 1/|S_i|$ if $j \in
 - **Disallowed for McDiarmid‑based analysis:** **systematic** resampling that uses a single shared uniform to generate all draws, as it induces within‑step dependence across walkers.
 If an implementation uses systematic resampling for efficiency, the per‑step independence in Assumption A is violated and the McDiarmid tail bound in the continuity section does not apply; use a dependent‑variables inequality instead.
 :::
-### 7.2 Lipschitz Continuity of the Companion Selection Operator
+### 8.2 Lipschitz Continuity of the Companion Selection Operator
 This section establishes a continuity bound for the expectation of a function under the **Companion Selection Measure**. The core challenge is to bound how much this expectation can change when the underlying swarm state changes from $\mathcal{S}_1$ to $\mathcal{S}_2$. This change is driven by the modification of the companion support set from $S_1$ to $S_2$. We derive the bound by decomposing the total error into two parts: error from the change in the set itself, and error from the change in the normalization constant.
 :::{admonition} 💡 Why Lipschitz Continuity Matters Here
 :class: tip
 Lipschitz continuity means "no sudden jumps"—if the swarm changes slightly, the companion selection statistics change proportionally. This is essential for algorithm stability. Without it, a single walker death could cause wild fluctuations in distance measurements, leading to chaotic, unpredictable behavior. The proof shows that the change is bounded by the number of status changes, ensuring smooth degradation rather than catastrophic failure.
 :::
-#### 7.2.1 Lemma: Bound on the Error from Companion Set Change
+#### 8.2.1 Lemma: Bound on the Error from Companion Set Change
 This lemma bounds the component of the error that arises purely from the change in the set of companions, holding the normalization constant fixed.
 :::{prf:lemma} Bound on the Error from Companion Set Change
 :label: lem-set-difference-bound
@@ -1534,28 +1517,19 @@ $$
 1.  **Isolate the Difference in Sums:** Factoring out the common normalization constant $1/|S_1|$, we need to bound $\frac{1}{|S_1|} \left| \sum_{j \in S_1} f_j - \sum_{j \in S_2} f_j \right|$.
 2.  **Decompose the Sums:** We partition the sums over disjoint regions: $S_1 = (S_1 \setminus S_2) \cup (S_1 \cap S_2)$ and $S_2 = (S_2 \setminus S_1) \cup (S_1 \cap S_2)$. The difference of sums becomes:
 $$
-
     \left( \sum_{j \in S_1 \setminus S_2} f_j + \sum_{j \in S_1 \cap S_2} f_j \right) - \left( \sum_{j \in S_2 \setminus S_1} f_j + \sum_{j \in S_1 \cap S_2} f_j \right) = \sum_{j \in S_1 \setminus S_2} f_j - \sum_{j \in S_2 \setminus S_1} f_j
-
-
 $$
 3.  **Apply Bounds:** By the triangle inequality and the uniform bound $|f_j| \le M_f$:
 $$
-
     \left| \sum_{j \in S_1 \setminus S_2} f_j - \sum_{j \in S_2 \setminus S_1} f_j \right| \le \sum_{j \in S_1 \setminus S_2} |f_j| + \sum_{j \in S_2 \setminus S_1} |f_j| \le M_f |S_1 \setminus S_2| + M_f |S_2 \setminus S_1|
-
-
 $$
 4.  **Relate to Symmetric Difference:** By definition, $|S_1 \setminus S_2| + |S_2 \setminus S_1| = |S_1 \Delta S_2|$. Combining this with the previous steps gives the final bound:
 $$
-
     \frac{1}{|S_1|} \left| \dots \right| \le \frac{M_f}{|S_1|} |S_1 \Delta S_2|
-
-
 $$
 **Q.E.D.**
 :::
-#### 7.2.2 Lemma: Bound on the Error from Normalization Change
+#### 8.2.2 Lemma: Bound on the Error from Normalization Change
 This lemma bounds the component of the error that arises from changing the normalization constants, from $1/|S_1|$ to $1/|S_2|$, while holding the summation set fixed.
 :::{prf:lemma} Bound on the Error from Normalization Change
 :label: lem-normalization-difference-bound
@@ -2039,6 +2013,8 @@ With $|\mu(\mathbf v_j)|\le V_{\max}$, we have $|\mu(\mathbf v_1)+\mu(\mathbf v_
 **Q.E.D.**
 :::
 :::{prf:corollary} Chain‑rule bound for \sigma\'_{\text{reg}}\circ \mathrm{Var}
+:label: cor-chain-rule-sigma-reg-var
+
 Under the conditions of the lemma and §8.2.2.9, the composite map \sigma\'_{\text{reg}}\circ\mathrm{Var} is Lipschitz with
 $$
 
@@ -2053,6 +2029,8 @@ L_{\sigma\'_{\text{reg}}\circ\mathrm{Var}}\;\le\; L_{\sigma\'_{\text{reg}}}\,\Bi
 $$
 :::
 :::{prf:corollary} Closed‑form bound for $L_{g_A\circ z}$ (empirical aggregator)
+:label: cor-closed-form-lipschitz-composite
+
 Let $k=|\mathcal A(\mathcal S)|$ and assume $|v_i|\le V_{\max}$. For the empirical aggregator of §6.2.2.a (see [](#lem-empirical-aggregator-properties)) with the regularized standardization and piecewise rescale of §8.2.2, the composite map $g_A\circ z$ is globally Lipschitz with
 $$
 
@@ -3193,8 +3171,11 @@ Combining these three bounds yields the final result.
 **Q.E.D.**
 :::
 ##### 11.2.2.5. Definition: Value Error Coefficients
+:::{prf:definition} Value Error Coefficients
 :label: def-value-error-coefficients
+
 Let $\mathcal{S}$ be a fixed swarm state with alive set $\mathcal{A}$ of size **k**, and let **M** be the chosen **Swarm Aggregation Operator**. The coefficients for the value error bounds are defined as follows:
+
 1.  **The Direct Shift Coefficient ($C_V,direct$):**
 
 $$
@@ -3220,6 +3201,7 @@ C_{V,\text{total}}(\mathcal{S}) := 3 \cdot \left( C_{V,\text{direct}} + C_{V,\mu
 $$
 
 where $L_{\mu,M}(S)$ and $L_{\sigma',M}(S)$ are the value Lipschitz functions for the aggregator's mean and regularized standard deviation, respectively.
+:::
 ##### 11.2.2.6. Proof of Theorem 11.2.2
 :label: proof-thm-standardization-value-error-mean-square
 :::{prf:proof} of Theorem 11.2.2
@@ -3814,13 +3796,17 @@ We take the expectation of both sides. By linearity of expectation, the total ex
 **Q.E.D.**
 :::
 #### 12.2.4. Sub-Lemma: Bounding the Expected Error from Unstable Walkers
+:::{prf:lemma} Bounding the Expected Error from Unstable Walkers
 :label: sub-lem-potential-unstable-error-mean-square
+
 The expected squared error component from walkers changing their survival status is bounded deterministically by the number of status changes.
+
 $$
 
 E_{\text{unstable,ms}}^2(\mathcal{S}_1, \mathcal{S}_2) := \mathbb{E}\left[\sum_{i \in \mathcal{A}_{\text{unstable}}} |V_{1,i} - V_{2,i}|^2\right] \le V_{\text{pot,max}}^2 \cdot n_c(\mathcal{S}_1, \mathcal{S}_2)
 
 $$
+:::
 :::{prf:proof}
 **Proof.**
 For any walker $i$ in the unstable set $\mathcal{A}_{\text{unstable}}$, its survival status changes. This means one of $V_{1,i}$ or $V_{2,i}$ is zero, while the other is a non-zero potential. From [](#lem-potential-boundedness), any non-zero potential is bounded by $V_{\text{pot,max}}$. Thus, the squared difference $|V_{1,i} - V_{2,i}|^2$ is deterministically bounded by $V_{\text{pot,max}}^2$.
@@ -3923,6 +3909,8 @@ where $C_{V,\text{total}}^{(*)}$ is defined in [](#def-lipschitz-value-error-coe
 :::
 #### 12.3.3 Corollary: Pipeline Continuity Under Margin-Based Status Stability
 :::{prf:corollary}
+:label: cor-pipeline-continuity-margin-stability
+
 Assume the **Axiom of Margin-Based Status Stability** ([](#axiom-margin-stability)). Then for all inputs
 $(\mathcal{S}_1, \mathbf{v}_{r1}, \mathbf{v}_{d1})$ and $(\mathcal{S}_2, \mathbf{v}_{r2}, \mathbf{v}_{d2})$,
 the deterministic bound $F_{\text{pot,det}}$ in [](#thm-deterministic-potential-continuity) satisfies
@@ -3986,6 +3974,8 @@ $$
 where $\Delta_{\text{pert}}^2(\mathcal{S})$ is the **Total Perturbation-Induced Displacement** from [](#def-perturbation-fluctuation-bounds-reproof).
 :::
 :::{prf:proof}
+:label: proof-sub-lem-perturbation-positional-bound-reproof
+
 **Proof.**
 For any walker $i$, by applying the triangle inequality to the distance $d_{\mathcal{Y}}(\varphi(x'_{1,i}), \varphi(x'_{2,i}))$ using the input positions as intermediate points, and then using the inequality $(a+b+c)^2 \le 3(a^2 + b^2 + c^2)$, we get the following bound on the squared distance for the $i$-th walker:
 $$
@@ -4008,6 +3998,8 @@ f_{\text{avg}}\;:=\;\frac{1}{N}\,\Delta_{\text{pert}}^2(\mathcal{S}_{\text{in}})
 $$
 Under [](#axiom-bounded-algorithmic-diameter), each term is bounded in $[0, D_{\mathcal{Y}}^2]$. Changing only the $i$‑th random input can change $f_{\text{avg}}$ by at most $c_i = D_{\mathcal{Y}}^2/N$. Assumption A supplies the required independence.
 :::{prf:lemma} Bounded differences for $f_{\text{avg}}$
+:label: lem-bounded-differences-favg
+
 Under [](#axiom-bounded-algorithmic-diameter), for the normalized functional $f_{\text{avg}}$ defined above, the McDiarmid bounded‑difference constants may be taken as $c_i=D_{\mathcal{Y}}^2/N$ for all $i$.
 :::
 ##### 13.2.3.1. McDiarmid's Inequality (Bounded Differences Inequality)
@@ -4038,6 +4030,8 @@ $$
 where $B_M(N)$ is the **Mean Displacement Bound** and $B_S(N, \delta')$ is the **Stochastic Fluctuation Bound**, as defined in the subsequent section.
 :::
 :::{prf:proof}
+:label: proof-sub-lem-probabilistic-bound-perturbation-displacement-reproof
+
 **Proof.**
 The proof proceeds by applying McDiarmid's Inequality to the function that computes the total perturbation-induced displacement.
 1.  **Define the Function and Independent Variables.**
@@ -4094,6 +4088,8 @@ d_{\text{Disp},\mathcal{Y}}(\mathcal{S}'_1, \mathcal{S}'_2)^2 \le 3 \frac{\Delta
 $$
 :::
 :::{prf:proof}
+:label: proof-thm-perturbation-operator-continuity-reproof
+
 **Proof.**
 The proof constructs a high-probability bound for the output displacement metric by composing the algebraic and probabilistic bounds from the preceding lemmas.
 1.  **Decomposition of the Output Metric.**
@@ -4275,9 +4271,10 @@ These choices ensure per‑walker independence in the cloning stage, consistent 
 ### 15.2. Continuity of the Cloning Transition Measure
 The Cloning Transition is a composite stochastic operator that determines the intermediate swarm state based on the calculated fitness potentials. Its continuity analysis is critical, as it governs how sensitively the cloning and revival mechanisms react to small changes in the swarm state. A discontinuous transition would imply chaotic behavior where small measurement fluctuations could lead to drastically different swarm configurations.
 This section proves that the operator is probabilistically continuous. The analysis is centered on the key insight that the continuity of the overall transition depends on the continuity of the **total probability** of cloning. We first define this total probability, which averages over all stochasticity in the measurement pipeline, and then prove that it is a continuous function of the input swarm state. This result is the foundation for proving the continuity of the full operator.
-:::{admonition} Scope and companion convention
-:class: note
-All bounds in §15.2.4–§15.2.8 are stated for the regime $k_1=|\mathcal A(\mathcal S_1)|\ge 2$ (at least two alive walkers), with the “no self‑companion” convention (an alive walker samples companions from $\mathcal A\setminus\{i\}$). The edge case $k=1$ is handled separately in §15 (single‑survivor revival), after which analysis resumes with $k\ge 2$. Where intermediate formulas feature denominators $k_1-1$, they are interpreted under this precondition; if a generic statement is needed, replace $k_1-1$ by $\max(1, k_1-1)$ and invoke the $k=1$ section.
+:::{prf:remark} Cloning Scope and Companion Convention
+:label: remark-cloning-scope-companion-convention
+
+All bounds in §15.2.4–§15.2.8 are stated for the regime $k_1=|\mathcal A(\mathcal S_1)|\ge 2$ (at least two alive walkers), with the "no self‑companion" convention (an alive walker samples companions from $\mathcal A\setminus\{i\}$). The edge case $k=1$ is handled separately in §15 (single‑survivor revival), after which analysis resumes with $k\ge 2$. Where intermediate formulas feature denominators $k_1-1$, they are interpreted under this precondition; if a generic statement is needed, replace $k_1-1$ by $\max(1, k_1-1)$ and invoke the $k=1$ section.
 :::
 #### 15.2.1. The Total Expected Cloning Action
 The ultimate probability of a "Clone" action for a walker depends on the outcome of the stochastic distance measurement and the random companion choice. To analyze the operator's continuity as a function of the input swarm state, we must average over all sources of randomness.
@@ -4328,6 +4325,8 @@ L_{\pi,i} := \frac{V_{\text{pot,max}} + \varepsilon_{\text{clone}}}{p_{\max} \cd
 $$
 :::
 :::{prf:proof}
+:label: proof-lem-cloning-probability-lipschitz
+
 **Proof.**
 The proof proceeds by finding the Lipschitz constant of the composition of the **clip** function and the normalized score function, $S(v_c, v_i)/p_{\max}$. The **clip** function (min(1, max(0, x))) has a Lipschitz constant of 1. Therefore, the Lipschitz constant of $\pi$ is bounded by the Lipschitz constant of the normalized score. We find this by bounding the partial derivatives of the score function $S(v_c, v_i)$.
 1.  **Partial Derivative with respect to $v_c$:** $\partial S/\partial v_c = 1/(v_i + \varepsilon_{\text{clone}})$. For alive walkers, [](#lem-potential-boundedness) gives $v_i\ge V_{\text{pot,min}}$, hence the bound $1/(V_{\text{pot,min}} + \varepsilon_{\text{clone}})$. For a dead walker ($v_i=0$), the bound is $1/\varepsilon_{\text{clone}}$. The worst case is the dead‑walker value $1/\varepsilon_{\text{clone}}$.
@@ -4359,6 +4358,8 @@ where the coefficients are:
 *   $C_{\text{val}}^{(\pi)} := \max(L_{\pi,c}, L_{\pi,i})$ (from potential vector change)
 :::
 :::{prf:proof}
+:label: proof-thm-expected-cloning-action-continuity
+
 **Proof.**
 The proof decomposes the total error into a structural component and a value component using the triangle inequality:
 $|E_1[π_1] - E_2[π_2]| \leq |E_1[π_1] - E_1[π_2]| + |E_1[π_2] - E_2[π_2]|$.
@@ -4380,6 +4381,8 @@ $$
 where the two error components are bounded in the subsequent lemmas.
 :::
 :::{prf:proof}
+:label: proof-thm-total-expected-cloning-action-continuity
+
 **Proof.**
 Let $\overline{P}_{k,i} = \overline{P}_{\text{clone}}(\mathcal{S}_k)_i$. We introduce an intermediate term and apply the triangle inequality to decompose the total error. Let $P_{k,i}(\mathbf{V}) := P_{\text{clone}}(\mathcal{S}_k, \mathbf{V})_i$ be the conditional expected action. The total error is $|\mathbb{E}_{\mathbf{V}_1}[P_{1,i}(\mathbf{V}_1)] - \mathbb{E}_{\mathbf{V}_2}[P_{2,i}(\mathbf{V}_2)]|$.
 We add and subtract the term $\mathbb{E}_{\mathbf{V}_1}[P_{2,i}(\mathbf{V}_1)]$:
@@ -4400,6 +4403,8 @@ E_{\text{struct}}^{(\overline{P})}(\mathcal{S}_1, \mathcal{S}_2) \le C_{\text{st
 
 $$
 :::{prf:proof}
+:label: proof-lem-total-clone-prob-structural-error
+
 **Proof.**
 The structural error is $|E_V_1[P_1,i(V_1) - P_2,i(V_1)]|$. By Jensen's inequality, this is $\leq E_V_1[|P_1,i(V_1) - P_2,i(V_1)|]$. From [](#thm-expected-cloning-action-continuity), the term inside the expectation is bounded by $C_{\text{struct}}^{(π)}(k_1) \cdot n_c$. Since this bound is a deterministic constant, its expectation is the bound itself.
 **Q.E.D.**
@@ -4413,6 +4418,8 @@ $$
 
 $$
 :::{prf:proof}
+:label: proof-thm-potential-operator-is-mean-square-continuous
+
 **Proof.**
 This property is established by the detailed analysis in Section 12.2, culminating in **[](#thm-fitness-potential-mean-square-continuity)**. The explicit form of $F_{\text{pot}}$ is constructed from the composition of the mean-square continuity bounds of all preceding operators.
 **Q.E.D.**
@@ -4427,6 +4434,8 @@ E_{\text{val}}^{(\overline{P})}(\mathcal{S}_1, \mathcal{S}_2) \le C_{\text{val}}
 $$
 where $F_{\text{pot}}$ is the **Expected Squared Potential Error Bound**.
 :::{prf:proof}
+:label: proof-lem-total-clone-prob-value-error
+
 **Proof.**
 The error is $|E_V_1[f(V_1)] - E_V_2[f(V_2)]|$ where $f(V) = P_{\text{clone}}(S_2, V)_i$.
 1.  **Lipschitz Continuity of **f**:** From [](#thm-expected-cloning-action-continuity), $|f(V_1) - f(V_2)| \leq C_{val}^{(π)} (E_c[|V_1,c-V_2,c|] + |V_1,i-V_2,i|)$. Using properties of L1/L2 norms, this is $\leq C_{val}^{(π)}√2\|V_1-V_2\|_1 \leq C_{val}^{(π)}√2√N\|V_1-V_2\|_2$. So, **f** is Lipschitz with constant $L_f = C_{val}^{(π)}√(2N)$.
@@ -4500,16 +4509,24 @@ This expression is of the required form $C_L V + C_H sqrt(V) + K$. By inspection
 **Q.E.D.**
 :::
 ##### 15.2.8.3. Sub-Lemma: Bounding the Sum of Total Cloning Probabilities
+:::{prf:lemma} Bounding the Sum of Total Cloning Probabilities
 :label: sub-lem-bound-sum-total-cloning-probs
+
 Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm states. Let $V_{\text{in}} := d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1, \mathcal{S}_2)^2$ be the initial squared displacement.
+
 The sum of the **Total Expected Cloning Probabilities**, $\sum_{i=1}^N (\overline{P}_{\text{clone}}(\mathcal{S}_1)_i + \overline{P}_{\text{clone}}(\mathcal{S}_2)_i)$, is bounded by a sum of a linear term, a Hölder term, and a constant offset of the initial displacement:
+
 $$
 
 \sum_{i=1}^N \left( \overline{P}_{\text{clone}}(\mathcal{S}_1)_i + \overline{P}_{\text{clone}}(\mathcal{S}_2)_i \right) \le C_P(\mathcal{S}_1, \mathcal{S}_2) \cdot V_{\text{in}} + H_P(\mathcal{S}_1, \mathcal{S}_2) \cdot \sqrt{V_{\text{in}}} + K_P(\mathcal{S}_1, \mathcal{S}_2)
 
 $$
+
 where $C_P$, $H_P$, and $K_P$ are finite, state-dependent, non-negative coefficients.
+:::
 :::{prf:proof}
+:label: proof-sub-lem-bound-sum-total-cloning-probs
+
 **Proof.**
 The proof proceeds by bounding the change in the cloning probability and then relating that change to the input displacement.
 1.  **Decompose the Sum.**
@@ -4553,11 +4570,13 @@ where $A_k$ are state-dependent coefficients.
 **Q.E.D.**
 :::
 ## 17. The Revival State: Dynamics at $k=1$
-:::{admonition} The Near-Extinction Recovery Mechanism
-:class: important
-:open:
+:::{prf:remark} The Near-Extinction Recovery Mechanism (Phoenix Effect)
+:label: remark-phoenix-effect
+
 This is perhaps the most dramatic moment in the swarm's life cycle: when disaster strikes and only one walker survives. Will the swarm go extinct, or can it rebuild itself from a single survivor?
+
 **The Beautiful Result**: Under the right conditions, one survivor is enough to resurrect the entire swarm! This section proves that the "last walker standing" scenario triggers a guaranteed revival mechanism that brings all dead walkers back to life in a single step.
+
 This is like having a "phoenix effect" built into the algorithm - the swarm can always rise from the ashes as long as one walker remains.
 :::
 The general continuity analysis presented in the preceding sections is valid for the regime where the number of alive walkers is at least two. The state where exactly one walker survives represents a critical boundary condition where the system's dynamics change fundamentally. This section provides a formal theorem to characterize the behavior in this "revival state," demonstrating how the foundational axioms ensure the swarm can recover from near-extinction events.
@@ -4585,6 +4604,8 @@ Then, the one-step transition $\mathcal{S}_t \to \mathcal{S}_{t+1}$ is character
 :::
 :::
 :::{prf:proof}
+:label: proof-thm-k1-revival-state
+
 **Proof.**
 The proof proceeds by analyzing the cloning decision for the single survivor and for an arbitrary dead walker, demonstrating that their actions are deterministic under the given conditions.
 1.  **Proof of Survivor Persistence (Walker **j**):**

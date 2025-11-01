@@ -6,13 +6,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "14",
-    "section_name": "The Perturbation Operator",
-    "directive_label": "proof-sub-lem-probabilistic-bound-perturbation-displacement-reproof",
-    "line_range": [
-      4050,
-      4071
-    ],
-    "url_fragment": null
+    "section": null,
+    "section_name": null,
+    "label": "proof-sub-lem-probabilistic-bound-perturbation-displacement-reproof",
+    "line_range": {
+      "lines": [
+        [
+          4064,
+          4087
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": "#proof-sub-lem-probabilistic-bound-perturbation-displacement-reproof"
   }
 }

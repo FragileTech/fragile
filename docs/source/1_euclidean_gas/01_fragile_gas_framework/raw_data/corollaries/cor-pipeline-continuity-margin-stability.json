@@ -18,13 +18,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "13",
+    "chapter": "1_euclidean_gas",
+    "section": "13. Fitness potential operator",
     "section_name": null,
-    "directive_label": "cor-pipeline-continuity-margin-stability",
+    "label": "cor-pipeline-continuity-margin-stability",
+    "line_range": {
+      "lines": [
+        [
+          3953,
+          3966
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": null,
-    "url_fragment": null,
-    "chapter": "1_euclidean_gas"
+    "url_fragment": "#cor-pipeline-continuity-margin-stability"
   },
   "has_proof": false,
   "proof_sketch": "This corollary follows directly from the theorem by invoking the Axiom of Margin-Based Status Stability, which guarantees that status changes are bounded when swarm displacement is small. Under this axiom, when displacement is within the margin radius, the number of status changes $n_c=0$, eliminating the unstable term. The remaining stable term vanishes continuously as the inputs converge.",

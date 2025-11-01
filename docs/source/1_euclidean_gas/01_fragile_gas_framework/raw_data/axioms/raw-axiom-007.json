@@ -9,12 +9,19 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "3",
+    "chapter": "1_euclidean_gas",
+    "section": "§3",
     "section_name": null,
-    "directive_label": "axiom-7",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          792,
+          793
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": null,
-    "url_fragment": null,
-    "chapter": "1_euclidean_gas"
+    "url_fragment": null
   }
 }

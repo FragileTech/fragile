@@ -37,16 +37,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "14",
+    "chapter": "1_euclidean_gas",
+    "section": "14. The Perturbation Operator",
     "section_name": null,
-    "directive_label": "def-axiom-bounded-second-moment-perturbation",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          3982,
+          3995
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      3974,
-      3974
-    ],
-    "url_fragment": null,
-    "chapter": "1_euclidean_gas"
+    "url_fragment": null
   },
   "label_text": "Def-Axiom 14",
   "core_assumption_text": "The expectation of the squared displacement caused by the **Perturbation Measure**, after being projected into the **Algorithmic Space**, is uniformly bounded across all possible starting positions. This ensures that, on average, walkers do not experience infinite displacement."

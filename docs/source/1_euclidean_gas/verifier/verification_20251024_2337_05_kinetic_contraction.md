@@ -239,13 +239,13 @@ src/proofs/05_kinetic_contraction/
 **Usage**:
 ```bash
 # Run all validations for document
-pytest src/proofs/05_kinetic_contraction/
+pytest src/mathster/05_kinetic_contraction/
 
 # Run specific validation
-python src/proofs/05_kinetic_contraction/lem_location_error_drift_kinetic.py
+python src/mathster/05_kinetic_contraction/lem_location_error_drift_kinetic.py
 
 # Run with pytest verbosity
-pytest -v src/proofs/05_kinetic_contraction/test_parallel_axis_theorem.py
+pytest -v src/mathster/05_kinetic_contraction/test_parallel_axis_theorem.py
 ```
 
 ---
@@ -312,7 +312,7 @@ Line 1428 (contraction rate formula):
 
 2. **Run Pytest Suite**:
    ```bash
-   pytest src/proofs/05_kinetic_contraction/ -v
+   pytest src/mathster/05_kinetic_contraction/ -v
    ```
 
 3. **Proceed to Semantic Review**:
@@ -325,7 +325,7 @@ Line 1428 (contraction rate formula):
 4. **Continuous Validation**:
    - After any edits to source document, re-run:
      ```bash
-     python src/proofs/05_kinetic_contraction/lem_location_error_drift_kinetic.py
+     python src/mathster/05_kinetic_contraction/lem_location_error_drift_kinetic.py
      ```
 
 5. **Future Enhancements**:

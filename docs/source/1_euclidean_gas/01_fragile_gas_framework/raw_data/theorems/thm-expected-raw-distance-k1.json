@@ -11,15 +11,19 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "chapter": "1",
-    "section": "10.2.8",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "thm-expected-raw-distance-k1",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          2619,
+          2634
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      2609,
-      2645
-    ],
-    "url_fragment": "#thm-expected-raw-distance-k1"
+    "url_fragment": null
   }
 }

@@ -117,7 +117,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "2.4.3",
-    "directive_label": "def-axiom-margin-stability",
+    "label": "def-axiom-margin-stability",
     "equation": null,
     "line_range": [1064, 1096],
     "url_fragment": "#axiom-of-position-only-status-margin"

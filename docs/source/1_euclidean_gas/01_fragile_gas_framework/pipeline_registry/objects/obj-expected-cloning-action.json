@@ -16,7 +16,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "15.2.3",
-    "directive_label": "def-expected-cloning-action",
+    "label": "def-expected-cloning-action",
     "equation": null,
     "line_range": null,
     "url_fragment": null

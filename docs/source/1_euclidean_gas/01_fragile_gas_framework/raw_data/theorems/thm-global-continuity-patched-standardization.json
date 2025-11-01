@@ -11,15 +11,19 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "chapter": "1",
-    "section": "11.3.7",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "thm-global-continuity-patched-standardization",
+    "label": "thm-global-continuity-patched-standardization",
+    "line_range": {
+      "lines": [
+        [
+          3659,
+          3669
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      3645,
-      3682
-    ],
     "url_fragment": "#thm-global-continuity-patched-standardization"
   }
 }

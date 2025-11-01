@@ -16,7 +16,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "15.1.2",
-    "directive_label": "def-stochastic-threshold-cloning",
+    "label": "def-stochastic-threshold-cloning",
     "equation": null,
     "line_range": null,
     "url_fragment": null

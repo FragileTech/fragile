@@ -11,15 +11,19 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "chapter": "1",
-    "section": "12.2.2",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "thm-fitness-potential-mean-square-continuity",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          3813,
+          3813
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      3788,
-      3815
-    ],
-    "url_fragment": "#thm-fitness-potential-mean-square-continuity"
+    "url_fragment": null
   }
 }

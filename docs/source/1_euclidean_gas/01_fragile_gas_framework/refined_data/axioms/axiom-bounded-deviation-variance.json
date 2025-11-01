@@ -173,7 +173,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "2.3.4",
-    "directive_label": "def-axiom-bounded-deviation-variance",
+    "label": "def-axiom-bounded-deviation-variance",
     "equation": null,
     "line_range": [926, 941],
     "url_fragment": "#def-axiom-bounded-deviation-variance"

@@ -133,7 +133,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "2.4.1",
-    "directive_label": "def-axiom-geometric-consistency",
+    "label": "def-axiom-geometric-consistency",
     "equation": null,
     "line_range": [963, 986],
     "url_fragment": "#axiom-of-geometric-consistency",

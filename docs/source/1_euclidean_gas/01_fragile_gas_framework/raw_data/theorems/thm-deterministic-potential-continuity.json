@@ -11,15 +11,19 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "chapter": "1",
-    "section": "13.2.2",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "thm-deterministic-potential-continuity",
+    "label": "thm-deterministic-potential-continuity",
+    "line_range": {
+      "lines": [
+        [
+          3890,
+          3899
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      3873,
-      3881
-    ],
-    "url_fragment": "#thm-deterministic-potential-continuity"
+    "url_fragment": null
   }
 }

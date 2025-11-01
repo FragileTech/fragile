@@ -127,7 +127,7 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "2.3.4",
     "section_name": null,
-    "directive_label": "def-axiom-bounded-relative-collapse",
+    "label": "def-axiom-bounded-relative-collapse",
     "equation": null,
     "line_range": [
       913,

@@ -109,7 +109,7 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "2.3.4",
     "section_title": "Axioms for Swarm Aggregation Operators",
-    "directive_label": "def-axiom-bounded-variance-production",
+    "label": "def-axiom-bounded-variance-production",
     "line_start": 943,
     "line_end": 955,
     "equation": null,

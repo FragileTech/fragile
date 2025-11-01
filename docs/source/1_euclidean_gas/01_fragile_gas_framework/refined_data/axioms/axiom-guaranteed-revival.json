@@ -88,7 +88,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "2.1.1",
-    "directive_label": "def-axiom-guaranteed-revival",
+    "label": "def-axiom-guaranteed-revival",
     "equation": null,
     "line_range": [583, 643],
     "url_fragment": "#axiom-of-guaranteed-revival"

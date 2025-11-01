@@ -6,7 +6,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "17.2.4.6",
-    "directive_label": "prop-coefficient-regularity",
+    "label": "prop-coefficient-regularity",
     "equation": null,
     "line_range": [
       5040,

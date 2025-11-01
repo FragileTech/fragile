@@ -25,13 +25,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "17.2.4.0",
-    "section_name": "Proof Strategy",
-    "directive_label": "def-composite-continuity-coeffs-recorrected",
-    "line_range": [
-      4837,
-      4877
-    ],
-    "url_fragment": "#def-composite-continuity-coeffs-recorrected"
+    "section": null,
+    "section_name": null,
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          4889,
+          4919
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": null
   }
 }

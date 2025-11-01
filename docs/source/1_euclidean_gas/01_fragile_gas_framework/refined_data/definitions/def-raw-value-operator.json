@@ -97,6 +97,6 @@
     "subsection": "9.1 The Raw Value Operator",
     "line_start": 2100,
     "line_end": 2108,
-    "directive_label": "def-raw-value-operator"
+    "label": "def-raw-value-operator"
   }
 }

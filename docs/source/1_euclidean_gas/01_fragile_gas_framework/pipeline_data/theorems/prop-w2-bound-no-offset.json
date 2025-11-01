@@ -7,7 +7,7 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "17.2.4.4",
     "section_name": null,
-    "directive_label": "prop-w2-bound-no-offset",
+    "label": "prop-w2-bound-no-offset",
     "equation": null,
     "line_range": [
       4992,

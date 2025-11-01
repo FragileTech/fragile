@@ -90,10 +90,10 @@ Document: docs/source/1_euclidean_gas/my_document.md
 /prove docs/source/1_euclidean_gas/sketcher/sketch_*.md
 
 # 4. Validate proof algebra (~30 min)
-/math_verify docs/source/1_euclidean_gas/proofs/proof_*.md
+/math_verify docs/source/1_euclidean_gas/mathster/proof_*.md
 
 # 5. Final quality control (~1 hour)
-/math_review docs/source/1_euclidean_gas/proofs/proof_*.md
+/math_review docs/source/1_euclidean_gas/mathster/proof_*.md
 Depth: exhaustive
 ```
 

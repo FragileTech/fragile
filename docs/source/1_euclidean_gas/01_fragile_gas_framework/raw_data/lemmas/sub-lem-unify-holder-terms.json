@@ -5,16 +5,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "17.2.4.3",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "lem-unify-holder-terms",
+    "label": "sub-lem-unify-holder-terms",
+    "line_range": {
+      "lines": [
+        [
+          5001,
+          5011
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      4959,
-      4988
-    ],
-    "url_fragment": null,
-    "chapter": "1_euclidean_gas"
+    "url_fragment": null
   },
   "document": "01_fragile_gas_framework",
   "proof": null,

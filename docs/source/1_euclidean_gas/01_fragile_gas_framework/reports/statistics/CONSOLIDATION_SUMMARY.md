@@ -81,7 +81,7 @@ Features:
 
 Usage:
 ```bash
-python src/fragile/proofs/tools/consolidate_raw_data.py <directory> [--dry-run]
+python src/fragile/mathster/tools/consolidate_raw_data.py <directory> [--dry-run]
 ```
 
 ### consolidate_extraction.py
@@ -95,7 +95,7 @@ Features:
 
 Usage:
 ```bash
-python src/fragile/proofs/tools/consolidate_extraction.py <extraction_dir> [output.json]
+python src/fragile/mathster/tools/consolidate_extraction.py <extraction_dir> [output.json]
 ```
 
 ## Key Achievements

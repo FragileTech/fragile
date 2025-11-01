@@ -18,7 +18,7 @@
       1886,
       1901
     ],
-    "directive_label": "obj-rescale-lipschitz-constants",
+    "label": "obj-rescale-lipschitz-constants",
     "equation": null,
     "url_fragment": null
   }

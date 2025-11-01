@@ -10,13 +10,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": null,
     "section_name": null,
-    "directive_label": "param-epsilon-std",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          357,
+          357
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": null,
-    "url_fragment": null,
-    "chapter": "1_euclidean_gas"
+    "url_fragment": null
   },
   "meaning": "Standardization Error Parameter",
   "full_text": "Standardization Error Parameter. Symbol: $\\varepsilon_{\\text{std}}$. Type: real. Constraints: $\\varepsilon_{\\text{std}} \\ge 0$.",

@@ -18,7 +18,7 @@
       2550,
       2600
     ],
-    "directive_label": "obj-distance-measurement-ms-constants",
+    "label": "obj-distance-measurement-ms-constants",
     "equation": null,
     "url_fragment": null
   }

@@ -6,13 +6,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "15.2.2",
-    "section_name": "Continuity of the Cloning Transition Measure",
-    "directive_label": "proof-lem-cloning-probability-lipschitz",
-    "line_range": [
-      4340,
-      4347
-    ],
-    "url_fragment": null
+    "section": null,
+    "section_name": null,
+    "label": "proof-lem-cloning-probability-lipschitz",
+    "line_range": {
+      "lines": [
+        [
+          4359,
+          4368
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": "#proof-lem-cloning-probability-lipschitz"
   }
 }

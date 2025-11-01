@@ -46,16 +46,16 @@ The document-parser agent has been successfully reconfigured to perform **Stage 
 **Commands**:
 ```bash
 # Basic extraction
-python -m fragile.proofs.pipeline extract <document_path>
+python -m fragile.mathster.pipeline extract <document_path>
 
 # With custom model
-python -m fragile.proofs.pipeline extract <document_path> --model claude-sonnet-4
+python -m fragile.mathster.pipeline extract <document_path> --model claude-sonnet-4
 
 # With custom output directory
-python -m fragile.proofs.pipeline extract <document_path> --output-dir /path/to/output
+python -m fragile.mathster.pipeline extract <document_path> --output-dir /path/to/output
 
 # Verbose mode
-python -m fragile.proofs.pipeline extract <document_path> -v
+python -m fragile.mathster.pipeline extract <document_path> -v
 ```
 
 ### 3. Agent Configuration (UPDATED)
@@ -137,13 +137,13 @@ results = extract_multiple_documents(docs)
 
 ```bash
 # Extract single document
-python -m fragile.proofs.pipeline extract docs/source/1_euclidean_gas/03_cloning.md
+python -m fragile.mathster.pipeline extract docs/source/1_euclidean_gas/03_cloning.md
 
 # With verbose output
-python -m fragile.proofs.pipeline extract docs/source/1_euclidean_gas/03_cloning.md -v
+python -m fragile.mathster.pipeline extract docs/source/1_euclidean_gas/03_cloning.md -v
 
 # Custom output directory
-python -m fragile.proofs.pipeline extract \
+python -m fragile.mathster.pipeline extract \
     docs/source/1_euclidean_gas/03_cloning.md \
     --output-dir /tmp/extraction_output
 ```
@@ -231,14 +231,14 @@ from fragile.agents.raw_document_parser import RawDocumentParser
 
 ✅ **Test 2**: CLI execution
 ```bash
-python -m fragile.proofs.pipeline extract /tmp/test_document.md --output-dir /tmp/test_output
+python -m fragile.mathster.pipeline extract /tmp/test_document.md --output-dir /tmp/test_output
 # Success
 ```
 
 ✅ **Test 3**: Directory structure verification
 ```bash
 ls /tmp/test_output/raw_data/
-# Output: axioms/ citations/ definitions/ equations/ parameters/ proofs/ remarks/ theorems/
+# Output: axioms/ citations/ definitions/ equations/ parameters/ mathster/ remarks/ theorems/
 ```
 
 ✅ **Test 4**: Statistics file creation

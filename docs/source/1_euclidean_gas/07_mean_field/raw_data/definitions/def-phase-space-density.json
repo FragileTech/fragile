@@ -1,0 +1,21 @@
+{
+  "label": "def-phase-space-density",
+  "source": {
+    "document_id": "07_mean_field",
+    "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+    "chapter": "1_euclidean_gas",
+    "section": null,
+    "section_name": null,
+    "label": "def-phase-space-density",
+    "line_range": {
+      "lines": [
+        [
+          61,
+          81
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": "#def-phase-space-density"
+  }
+}

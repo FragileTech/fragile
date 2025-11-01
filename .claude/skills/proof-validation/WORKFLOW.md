@@ -93,7 +93,7 @@ Document: docs/source/1_euclidean_gas/03_cloning.md
 #### Step 2.2: Review Expanded Proof
 
 ```bash
-cat docs/source/1_euclidean_gas/03_cloning/reports/proofs/proof_20251028_1230_thm_keystone_principle.md
+cat docs/source/1_euclidean_gas/03_cloning/reports/mathster/proof_20251028_1230_thm_keystone_principle.md
 ```
 
 **Check for**:
@@ -316,7 +316,7 @@ After proof development:
 from fragile.proofs import attach_proof_to_theorem
 
 theorem = registry.get_theorem_by_label('thm-keystone-principle')
-proof = load_proof_from_file('reports/proofs/proof_*.md')
+proof = load_proof_from_file('reports/mathster/proof_*.md')
 theorem = attach_proof_to_theorem(theorem, proof, validate=True)
 ```
 

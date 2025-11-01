@@ -454,7 +454,7 @@ doc_path = Path(file_path)  # e.g., docs/source/1_euclidean_gas/03_cloning.md
 doc_name = doc_path.stem  # e.g., "03_cloning"
 
 # Create validation script directory
-validation_dir = Path("/home/guillem/fragile/src/proofs") / doc_name
+validation_dir = Path("/home/guillem/fragile/src/mathster") / doc_name
 Bash(command=f"mkdir -p '{validation_dir}'")
 
 # For each theorem with validated steps
@@ -805,13 +805,13 @@ src/proofs/{doc_name}/
 **Usage**:
 ```bash
 # Run all validations for document
-pytest src/proofs/{doc_name}/
+pytest src/mathster/{doc_name}/
 
 # Run specific theorem validation
-python src/proofs/{doc_name}/{theorem_label}.py
+python src/mathster/{doc_name}/{theorem_label}.py
 
 # Run with pytest verbosity
-pytest -v src/proofs/{doc_name}/{theorem_label}.py
+pytest -v src/mathster/{doc_name}/{theorem_label}.py
 ```
 
 ---
@@ -873,7 +873,7 @@ $$
 
 2. **Run Pytest Suite**:
    ```bash
-   pytest src/proofs/{doc_name}/ -v
+   pytest src/mathster/{doc_name}/ -v
    ```
 
 3. **Proceed to Semantic Review**:
@@ -883,7 +883,7 @@ $$
 4. **Continuous Validation**:
    - After any edits to source document, re-run:
      ```bash
-     python src/proofs/{doc_name}/{affected_theorem}.py
+     python src/mathster/{doc_name}/{affected_theorem}.py
      ```
 
 ---

@@ -7,7 +7,7 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "\u00a711.3.3",
     "section_name": null,
-    "directive_label": "thm-lipschitz-value-error-bound",
+    "label": "thm-lipschitz-value-error-bound",
     "equation": null,
     "line_range": [
       3493,

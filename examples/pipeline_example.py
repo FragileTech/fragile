@@ -294,7 +294,7 @@ def main() -> None:
     print("  2. Property accumulation via theorems")
     print("  3. Computed conditionality (properties_required vs current_properties)")
     print("  4. Automatic upgrades when properties proved")
-    print("  5. Modular proofs (prove once, reuse everywhere)")
+    print("  5. Modular mathster (prove once, reuse everywhere)")
     print("  6. Self-contained theorems (internal assumption discharge)")
     print()
     print("✅ Lean-Compatible Patterns:")

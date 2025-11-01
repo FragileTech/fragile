@@ -129,7 +129,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "§2.2.3 Axiom of Bounded Algorithmic Diameter",
-    "directive_label": "def-axiom-bounded-algorithmic-diameter",
+    "label": "def-axiom-bounded-algorithmic-diameter",
     "equation": null,
     "line_range": [801, 808],
     "url_fragment": "#def-axiom-bounded-algorithmic-diameter"

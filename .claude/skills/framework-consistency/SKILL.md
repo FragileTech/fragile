@@ -446,7 +446,7 @@ find docs/source/1_euclidean_gas -name "*.md" -exec grep -l "euclidean-gas" {} \
 # → Contradiction needs resolution
 
 # Investigate:
-# 1. Read both proofs
+# 1. Read both mathster
 # 2. Check hypotheses (maybe different assumptions)
 # 3. Determine correct statement
 # 4. Fix incorrect one

@@ -139,12 +139,12 @@ docs/source/1_euclidean_gas/01_fragile_gas_framework/
 
 ```bash
 # Quick schema validation
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --mode schema
 
 # Complete validation (recommended)
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data/ \
   --mode complete \
   --output-report validation_report.md
@@ -185,16 +185,16 @@ See [validate-refinement](../validate-refinement/) skill for detailed validation
 
 ```bash
 # Validate refined entities
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir PATH \
   --mode complete
 
 # Find incomplete entities
-python -m fragile.proofs.tools.find_incomplete_entities \
+python -m fragile.mathster.tools.find_incomplete_entities \
   --refined-dir PATH
 
 # Generate completion plan
-python -m fragile.proofs.tools.complete_refinement \
+python -m fragile.mathster.tools.complete_refinement \
   --incomplete-file incomplete_entities.json \
   --refined-dir PATH
 ```
@@ -319,7 +319,7 @@ cat docs/source/.../data/statistics.json | grep validation_errors
 cat docs/source/.../relationships/index.json
 
 # After refinement - Comprehensive validation (RECOMMENDED)
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/.../refined_data/ \
   --mode complete \
   --output-report validation_report.md
@@ -423,19 +423,19 @@ python -m fragile.agents.cross_reference_analyzer docs/source/.../section_dir
 # Load document-refiner agent and refine
 
 # Stage 3: Validate
-python -m fragile.proofs.tools.validation \
+python -m fragile.mathster.tools.validation \
   --refined-dir docs/source/.../refined_data/ \
   --mode complete \
   --output-report validation_report.md
 
 # Stage 3a: Fix incomplete entities if needed
-python -m fragile.proofs.tools.find_incomplete_entities --refined-dir docs/source/.../refined_data/
-python -m fragile.proofs.tools.complete_refinement --incomplete-file incomplete_entities.json --refined-dir docs/source/.../refined_data/
+python -m fragile.mathster.tools.find_incomplete_entities --refined-dir docs/source/.../refined_data/
+python -m fragile.mathster.tools.complete_refinement --incomplete-file incomplete_entities.json --refined-dir docs/source/.../refined_data/
 # Execute completion with Claude Code + Gemini
 # Re-validate after completion
 
 # Stage 4: Build registries
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 
 ### To Validation Workflows
@@ -470,7 +470,7 @@ After **validation passes**, build registries:
 
 ```bash
 # Build all registries automatically
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 
 **IMPORTANT**: Only proceed to registry building after validation confirms 0 errors. This prevents downstream issues.

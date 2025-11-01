@@ -16,7 +16,7 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "5.3",
     "section_name": null,
-    "directive_label": "def-alg-distance",
+    "label": "def-alg-distance",
     "equation": null,
     "line_range": [
       1232,

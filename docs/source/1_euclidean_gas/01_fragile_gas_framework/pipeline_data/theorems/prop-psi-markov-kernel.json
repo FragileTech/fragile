@@ -7,7 +7,7 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "17.2.4.5",
     "section_name": null,
-    "directive_label": "prop-psi-markov-kernel",
+    "label": "prop-psi-markov-kernel",
     "equation": null,
     "line_range": [
       5026,
@@ -48,7 +48,7 @@
         "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
         "section": "17.2.4.5",
         "section_name": null,
-        "directive_label": "prop-psi-markov-kernel",
+        "label": "prop-psi-markov-kernel",
         "equation": null,
         "line_range": [
           5026,

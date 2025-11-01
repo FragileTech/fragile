@@ -169,12 +169,12 @@ This document requires results from two companion documents:
 
 The following drift inequalities are established in the prerequisite documents and used throughout:
 
-| Component | Cloning Drift (03_cloning.md) | Kinetic Drift (05_kinetic_contraction.md) |
-|:----------|:------------------------------|:-------------------------------------------|
-| $V_W$ | $\leq C_W$ | $\leq -\kappa_W V_W \tau + C_W'\tau$ |
-| $V_{\text{Var},x}$ | $\leq -\kappa_x V_{\text{Var},x} + C_x$ | $\leq C_{\text{kin},x}\tau$ |
-| $V_{\text{Var},v}$ | $\leq C_v$ | $\leq -2\gamma V_{\text{Var},v}\tau + d\sigma_{\max}^2\tau$ |
-| $W_b$ | $\leq -\kappa_b W_b + C_b$ | $\leq -\kappa_{\text{pot}} W_b \tau + C_{\text{pot}}\tau$ |
+| Component          | Cloning Drift (03_cloning.md)           | Kinetic Drift (05_kinetic_contraction.md)                   |
+|:-------------------|:----------------------------------------|:------------------------------------------------------------|
+| $V_W$              | $\leq C_W$                              | $\leq -\kappa_W V_W \tau + C_W'\tau$                        |
+| $V_{\text{Var},x}$ | $\leq -\kappa_x V_{\text{Var},x} + C_x$ | $\leq C_{\text{kin},x}\tau$                                 |
+| $V_{\text{Var},v}$ | $\leq C_v$                              | $\leq -2\gamma V_{\text{Var},v}\tau + d\sigma_{\max}^2\tau$ |
+| $W_b$              | $\leq -\kappa_b W_b + C_b$              | $\leq -\kappa_{\text{pot}} W_b \tau + C_{\text{pot}}\tau$   |
 
 **Key observation:** Each operator contracts what the other expands, enabling synergistic composition.
 :::
@@ -2906,13 +2906,13 @@ $$
 
 **Numerical example:** $\sigma_x = 0.01$, $\sigma_v = 0.2$, target $c_{\text{fit}} = 0.6$:
 
-| $\lambda_{\text{alg}}$ | Noise ratio | $\epsilon_c^*$ | Comments |
-|------------------------|-------------|----------------|----------|
-| 0 (position-only)      | 0           | 0.0024         | Tightest pairing possible |
-| 0.001                  | 0.04        | 0.0025         | Minimal velocity effect |
-| 0.01                   | 0.4         | 0.0034         | Moderate coupling |
+| $\lambda_{\text{alg}}$ | Noise ratio | $\epsilon_c^*$ | Comments                                       |
+|------------------------|-------------|----------------|------------------------------------------------|
+| 0 (position-only)      | 0           | 0.0024         | Tightest pairing possible                      |
+| 0.001                  | 0.04        | 0.0025         | Minimal velocity effect                        |
+| 0.01                   | 0.4         | 0.0034         | Moderate coupling                              |
 | 0.1                    | 4.0         | 0.0092         | Strong velocity coupling, loose pairing needed |
-| 1.0                    | 40.0        | 0.031          | Dominant velocity, very loose pairing |
+| 1.0                    | 40.0        | 0.031          | Dominant velocity, very loose pairing          |
 
 **Design rule:** Choose $\lambda_{\text{alg}} \sim \sigma_x^2 / \sigma_v^2$ to balance position and velocity contributions, then set $\epsilon_c \sim \sigma_x$.
 :::
@@ -2958,11 +2958,11 @@ So **10% parameter errors → ≤25% rate slowdown**.
 **Practical implications:**
 
 | Parameter precision | $\epsilon_{\max}$ | Max rate degradation | Convergence slowdown |
-|---------------------|-------------------|----------------------|---------------------|
-| Tight (±5%)         | 0.05              | 12%                  | Negligible          |
-| Moderate (±10%)     | 0.10              | 25%                  | Acceptable          |
-| Loose (±20%)        | 0.20              | 50%                  | Significant         |
-| Very loose (±50%)   | 0.50              | >100%                | System may fail     |
+|---------------------|-------------------|----------------------|----------------------|
+| Tight (±5%)         | 0.05              | 12%                  | Negligible           |
+| Moderate (±10%)     | 0.10              | 25%                  | Acceptable           |
+| Loose (±20%)        | 0.20              | 50%                  | Significant          |
+| Very loose (±50%)   | 0.50              | >100%                | System may fail      |
 
 **Design guideline:** Aim for ±10% parameter precision for robust performance.
 
@@ -3056,19 +3056,19 @@ $$
 
 **Final optimized parameters:**
 
-| Parameter | Value | Rationale |
-|-----------|-------|-----------|
-| $\gamma$ | 0.10 | Matches $\lambda_{\min}$ (hypocoercivity optimum) |
-| $\lambda$ | 0.15 | Reduced from 0.2 via smaller jitter |
-| $\sigma_v$ | 0.20 | Moderate exploration |
-| $\sigma_x$ | 0.005 | Small jitter, reduces cloning overhead |
-| $\alpha_{\text{rest}}$ | 0.25 | Moderate dissipation |
-| $\lambda_{\text{alg}}$ | 0.001 | Weak velocity coupling (position-dominated) |
-| $\epsilon_c$ | 0.005 | Tight pairing |
-| $\tau$ | 0.01 | Stability limit |
-| $N$ | 100 | Given |
-| $\kappa_{\text{wall}}$ | 5.0 | Moderate safety |
-| $d_{\text{safe}}$ | 0.2 | 3σ buffer |
+| Parameter              | Value | Rationale                                         |
+|------------------------|-------|---------------------------------------------------|
+| $\gamma$               | 0.10  | Matches $\lambda_{\min}$ (hypocoercivity optimum) |
+| $\lambda$              | 0.15  | Reduced from 0.2 via smaller jitter               |
+| $\sigma_v$             | 0.20  | Moderate exploration                              |
+| $\sigma_x$             | 0.005 | Small jitter, reduces cloning overhead            |
+| $\alpha_{\text{rest}}$ | 0.25  | Moderate dissipation                              |
+| $\lambda_{\text{alg}}$ | 0.001 | Weak velocity coupling (position-dominated)       |
+| $\epsilon_c$           | 0.005 | Tight pairing                                     |
+| $\tau$                 | 0.01  | Stability limit                                   |
+| $N$                    | 100   | Given                                             |
+| $\kappa_{\text{wall}}$ | 5.0   | Moderate safety                                   |
+| $d_{\text{safe}}$      | 0.2   | 3σ buffer                                         |
 
 **Performance:**
 
@@ -3365,12 +3365,12 @@ def compute_pareto_frontier(landscape, constraints, n_points=50):
 
 **Example Pareto curve:**
 
-| Point | $\kappa_{\text{total}}$ | $\lambda$ | $N$ | Cost | $T_{\text{mix}}$ (steps) |
-|-------|------------------------|-----------|-----|------|-------------------------|
-| Cheap | 0.005                  | 0.05      | 50  | 2.5  | 100,000                 |
-| Balanced | 0.012                | 0.15      | 100 | 15   | 42,000                  |
-| Fast | 0.018                  | 0.30      | 200 | 60   | 28,000                  |
-| Expensive | 0.020               | 0.50      | 500 | 250  | 25,000                  |
+| Point     | $\kappa_{\text{total}}$ | $\lambda$ | $N$ | Cost | $T_{\text{mix}}$ (steps) |
+|-----------|-------------------------|-----------|-----|------|--------------------------|
+| Cheap     | 0.005                   | 0.05      | 50  | 2.5  | 100,000                  |
+| Balanced  | 0.012                   | 0.15      | 100 | 15   | 42,000                   |
+| Fast      | 0.018                   | 0.30      | 200 | 60   | 28,000                   |
+| Expensive | 0.020                   | 0.50      | 500 | 250  | 25,000                   |
 
 **Observation:** Doubling cost improves speed by ~10-20%. Diminishing returns beyond cost ≈ 100.
 
@@ -3569,19 +3569,19 @@ $$
 
 **Optimal parameters:**
 
-| Parameter | Value | Justification |
-|-----------|-------|---------------|
-| $\gamma$ | 0.05 | Hypocoercivity optimum ($= \lambda_{\min}$) |
-| $\lambda$ | 0.15 | Balanced ($\approx 3\lambda_{\min}$) |
-| $\sigma_v$ | 0.071 | Moderate exploration |
-| $\sigma_x$ | 0.0032 | Crossover point |
-| $\alpha_{\text{rest}}$ | 0 | Fully inelastic (minimizes friction need) |
-| $\lambda_{\text{alg}}$ | 0.002 | Weak velocity coupling |
-| $\epsilon_c$ | 0.0032 | Tight pairing |
-| $\tau$ | 0.01 | Stability limit |
-| $N$ | **250** | Pareto-optimal (not 500!) |
-| $\kappa_{\text{wall}}$ | 0.5 | Moderate boundary |
-| $d_{\text{safe}}$ | 0.95 | 3σ buffer |
+| Parameter              | Value   | Justification                               |
+|------------------------|---------|---------------------------------------------|
+| $\gamma$               | 0.05    | Hypocoercivity optimum ($= \lambda_{\min}$) |
+| $\lambda$              | 0.15    | Balanced ($\approx 3\lambda_{\min}$)        |
+| $\sigma_v$             | 0.071   | Moderate exploration                        |
+| $\sigma_x$             | 0.0032  | Crossover point                             |
+| $\alpha_{\text{rest}}$ | 0       | Fully inelastic (minimizes friction need)   |
+| $\lambda_{\text{alg}}$ | 0.002   | Weak velocity coupling                      |
+| $\epsilon_c$           | 0.0032  | Tight pairing                               |
+| $\tau$                 | 0.01    | Stability limit                             |
+| $N$                    | **250** | Pareto-optimal (not 500!)                   |
+| $\kappa_{\text{wall}}$ | 0.5     | Moderate boundary                           |
+| $d_{\text{safe}}$      | 0.95    | 3σ buffer                                   |
 
 **Achieved performance:**
 - $\kappa_{\text{total}} \approx 0.0129$
@@ -3778,124 +3778,6 @@ Most QSD literature assumes **passive dynamics** or simple boundary-conditioned 
 - **Natural diversity maintenance** via variance targeting
 - **Safety guarantees** via boundary potential
 - **Theoretical foundation** for evolutionary algorithms
-
-### 7.4. Future Directions
-
-#### 7.4.1. Hessian-Based Anisotropic Diffusion
-
-**Motivation:** Adapt noise to the local fitness landscape geometry.
-
-**Proposal:** Use diffusion tensor:
-
-$$
-\Sigma(x,v) = (H_{\text{fitness}}(x,v) + \epsilon I)^{-1/2}
-$$
-
-where $H_{\text{fitness}}$ is the Hessian of the fitness landscape.
-
-**Expected benefits:**
-- **High curvature** directions → low noise (exploit)
-- **Low curvature** directions → high noise (explore)
-- **Natural gradient** interpretation
-- **Faster convergence** to optimal regions
-
-**Challenges:**
-- Hessian computation cost ($O(d^2)$ per walker)
-- Conditioning issues (need regularization $\epsilon$)
-- Stability analysis (eigenvalue variations)
-- Stratonovich framework (ready for this!)
-
-**Status:** Framework established (Axiom 1.3.2), awaits implementation and analysis.
-
-#### 7.4.2. Recursive Fitness Landscapes
-
-**Motivation:** Use the QSD itself to define the fitness landscape.
-
-**Proposal:** At iteration $k$:
-1. Run Euclidean Gas with fitness $V_k$ to approximate QSD $\nu_k$
-2. Define next fitness: $V_{k+1}(x) = -\log \rho_k(x)$ where $\rho_k \sim \nu_k$
-3. Repeat, creating a sequence $\{\nu_k\}$
-
-**Expected behavior:**
-- **Self-adaptation** to difficult regions
-- **Automatic annealing** schedules
-- **Recursive optimization** similar to cross-entropy method
-- **Provable convergence** via contraction mapping arguments
-
-**Challenges:**
-- Convergence of the recursive sequence
-- Computational cost of QSD estimation
-- Stability under finite-sample effects
-
-**Status:** Speculative, requires separate analysis.
-
-#### 7.4.3. Mean-Field Limit and PDE Connection
-
-**Goal:** Take $N \to \infty$ limit to obtain a **continuum PDE**.
-
-**Expected result:** The empirical measure $\mu_N = \frac{1}{N}\sum_i \delta_{(x_i,v_i)}$ converges to a deterministic measure $\mu_t$ satisfying a **nonlinear Fokker-Planck equation**:
-
-$$
-\partial_t \mu = -v \cdot \nabla_x \mu - \nabla_v \cdot [(F(x) - \gamma v)\mu] + \frac{1}{2}\text{Tr}(\Sigma\Sigma^T \nabla_v^2\mu) + \mathcal{C}_{\text{clone}}[\mu]
-$$
-
-where $\mathcal{C}_{\text{clone}}[\mu]$ is a **nonlocal cloning operator** that depends on the current measure $\mu$.
-
-**Challenges:**
-- Nonlinearity from fitness-dependent cloning
-- Boundary-induced death creates measure loss
-- Propagation of chaos arguments with adaptive selection
-
-**Status:** N-uniformity proven here is the prerequisite; PDE limit remains open.
-
-#### 7.4.4. Riemannian Manifold Extension
-
-**Goal:** Extend Euclidean Gas to **Riemannian manifolds** $\mathcal{M}$.
-
-**Modifications:**
-- Replace $\mathbb{R}^d$ with manifold $\mathcal{M}$
-- Use **Riemannian Langevin dynamics**:
-
-
-$$
-dv = -\nabla_g U(x) dt - \gamma v dt + \Sigma_g(x) \circ dW_t
-$$
-
-  where $\nabla_g$ is the Riemannian gradient and $\Sigma_g$ is the metric-compatible noise
-- Cloning uses **Riemannian distance** for companion selection
-
-**Applications:**
-- Optimization on **Stiefel/Grassmann manifolds** (orthogonal constraints)
-- **Shape spaces** (image registration, computer vision)
-- **Quantum state optimization** (density matrices)
-
-**Challenges:**
-- Geodesic distance computations
-- Parallel transport for cloning
-- Curvature effects on hypocoercivity
-
-**Status:** Stratonovich formulation (this document) is manifold-compatible; needs implementation.
-
-#### 7.4.5. Multi-Scale and Hierarchical Swarms
-
-**Goal:** **Nested swarms** at different scales for multi-resolution optimization.
-
-**Proposal:**
-- **Level 1:** Coarse swarm explores global landscape
-- **Level 2:** Fine swarms refine local regions identified by Level 1
-- **Information flow:** Fitness from fine → coarse, cloning from coarse → fine
-
-**Expected benefits:**
-- **Global exploration + local exploitation** naturally separated
-- **Computational efficiency** (fewer particles at fine scale)
-- **Multi-modal optimization** (each coarse particle spawns a fine swarm)
-
-**Challenges:**
-- Coupling between levels
-- Convergence theory for hierarchical system
-- Load balancing (adaptive refinement)
-
-**Status:** Conceptual; requires new analysis framework.
 
 ### 7.5. Open Problems
 

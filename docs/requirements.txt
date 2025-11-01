@@ -25,6 +25,7 @@ charset-normalizer==3.4.0
 choreographer==1.1.2
 click==8.1.7
 cloudpickle==3.1.1
+cloup==3.0.8
 colorcet==3.1.0
 comm==0.2.2
 contourpy==1.3.2
@@ -49,6 +50,7 @@ fqdn==1.5.1
 -e file:///home/guillem/fragile
 fragile-gym==1.21.1
 fsspec==2025.9.0
+glcontext==3.0.0
 greenlet==3.1.1
 gymnasium==0.29.1
 h11==0.16.0
@@ -70,6 +72,7 @@ ipython==8.28.0
 ipywidgets==8.1.7
 ipywidgets-bokeh==1.6.0
 isoduration==20.11.0
+isosurfaces==0.1.2
 jedi==0.19.1
 jinja2==3.1.4
 joblib==1.5.2
@@ -98,6 +101,9 @@ latexcodec==3.0.0
 linkify-it-py==2.0.3
 llvmlite==0.45.1
 logistro==2.0.0
+manim==0.18.1
+manimpango==0.6.1
+mapbox-earcut==1.0.3
 markdown==3.9
 markdown-it-py==3.0.0
 markupsafe==3.0.1
@@ -106,8 +112,11 @@ matplotlib-inline==0.1.7
 mdit-py-plugins==0.4.2
 mdurl==0.1.2
 mistune==3.1.4
+moderngl==5.12.0
+moderngl-window==2.4.1
 mpmath==1.3.0
 msgpack==1.1.2
+multipledispatch==1.0.0
 myst-nb==1.1.2
 myst-parser==2.0.0
 narwhals==2.7.0
@@ -120,7 +129,7 @@ nodeenv==1.9.1
 notebook==7.4.7
 notebook-shim==0.2.4
 numba==0.62.1
-numpy==2.2.6
+numpy==1.26.4
 nvidia-cublas-cu12==12.8.4.1
 nvidia-cuda-cupti-cu12==12.8.90
 nvidia-cuda-nvrtc-cu12==12.8.93
@@ -136,7 +145,7 @@ nvidia-nccl-cu12==2.27.3
 nvidia-nvjitlink-cu12==12.8.93
 nvidia-nvtx-cu12==12.8.90
 omegaconf==2.3.0
-opencv-python==4.12.0.88
+opencv-python==4.11.0.86
 orjson==3.11.3
 overrides==7.7.0
 packaging==24.1
@@ -163,14 +172,17 @@ pure-eval==0.2.3
 pyarrow==21.0.0
 pybtex==0.24.0
 pybtex-docutils==1.0.3
+pycairo==1.28.0
 pycparser==2.23
 pydantic==2.12.0
 pydantic-core==2.41.1
 pydata-sphinx-theme==0.15.4
+pydub==0.25.1
 pyglet==1.5.11
 pygments==2.18.0
 pygraphviz==1.14
 pyparsing==3.2.5
+pyrr==0.10.3
 pytest==8.4.2
 pytest-timeout==2.4.0
 python-dateutil==2.9.0.post0
@@ -185,10 +197,12 @@ referencing==0.35.1
 requests==2.32.3
 rfc3339-validator==0.1.4
 rfc3986-validator==0.1.1
+rich==14.2.0
 rpds-py==0.20.0
 ruyaml==0.91.0
 scikit-learn==1.7.2
 scipy==1.15.3
+screeninfo==0.8.1
 seaborn==0.13.2
 send2trash==1.8.3
 setuptools==75.1.0
@@ -196,6 +210,7 @@ shaolin==0.0.3
 shimmy==0.2.1
 simplejson==3.20.2
 six==1.16.0
+skia-pathops==0.8.0.post2
 sniffio==1.3.1
 snowballstemmer==2.2.0
 soupsieve==2.6
@@ -226,8 +241,10 @@ sphinxcontrib-qthelp==2.0.0
 sphinxcontrib-serializinghtml==2.0.0
 sphinxext-opengraph==0.9.1
 sqlalchemy==2.0.35
+srt==3.5.3
 stack-data==0.6.3
 streamz==0.6.4
+svgelements==1.9.6
 sympy==1.14.0
 tabulate==0.9.0
 terminado==0.18.1
@@ -248,6 +265,7 @@ uc-micro-py==1.0.3
 uri-template==1.3.0
 urllib3==2.2.3
 virtualenv==20.26.6
+watchdog==6.0.0
 wcwidth==0.2.13
 webcolors==24.11.1
 webencodings==0.5.1

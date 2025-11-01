@@ -7,7 +7,7 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "14. The Perturbation Operator",
     "section_name": null,
-    "directive_label": "thm-perturbation-operator-continuity-reproof",
+    "label": "thm-perturbation-operator-continuity-reproof",
     "equation": null,
     "line_range": [
       4085,
@@ -76,7 +76,7 @@
         "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
         "section": "14. The Perturbation Operator",
         "section_name": null,
-        "directive_label": "thm-perturbation-operator-continuity-reproof",
+        "label": "thm-perturbation-operator-continuity-reproof",
         "equation": null,
         "line_range": [
           4085,

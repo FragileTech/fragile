@@ -132,24 +132,77 @@ The `docs/source/` directory contains rigorous mathematical specifications organ
 
 **MANDATORY BEFORE TRANSFORMATION**: Source locations are REQUIRED for all enriched and core math types.
 
+**Agent**: `text-location-enricher` (Stage 1.5 agent)
+- **Purpose**: Enriches raw JSON entities with precise TextLocation metadata
+- **When to use**: After extraction (Stage 1), before refinement (Stage 2)
+- **Can be invoked**: Standalone, by document-parser, or by document-refiner
+- **Documentation**: `.claude/agents/text-location-enricher.md`
+
 **Workflow:**
 1. **Extract** entities → `raw_data/` (staging types with optional source)
-2. **Enrich** sources → Run enricher to populate source fields (**MANDATORY**)
+2. **Enrich** sources → Run text-location-enricher agent (**MANDATORY**)
 3. **Transform** → `.from_raw()` requires source, errors if missing
 4. **Validate** → Verify all enriched types have sources
 
 **When enriching raw data:**
 
-**Step 1: After extraction** - Run enricher on raw_data/ (**REQUIRED**):
+**Option A: Use TextLocationEnricher Agent (Recommended)**
+
+```python
+from fragile.agents import TextLocationEnricher, EnrichmentConfig
+
+# Create agent
+agent = TextLocationEnricher(
+    EnrichmentConfig(
+        entity_types=["theorems", "definitions", "axioms"],
+        validate_after=True,
+        verbose=True
+    )
+)
+
+# Single document
+result = agent.enrich_directory(
+    raw_data_dir=Path("docs/source/.../raw_data/"),
+    markdown_file=Path("docs/source/.../document.md"),
+    document_id="document_id"
+)
+
+# Entire corpus
+results = agent.batch_enrich_corpus(Path("docs/source/"))
+```
+
+**Option B: Use CLI Tool**
+
 ```bash
 # Single document
-python src/fragile/proofs/tools/source_location_enricher.py directory \
+python -m fragile.agents.text_location_enricher directory \
+    docs/source/.../raw_data/ \
+    --source docs/source/.../document.md \
+    --document-id document_id
+
+# Entire corpus
+python -m fragile.agents.text_location_enricher batch docs/source/
+
+# With custom options
+python -m fragile.agents.text_location_enricher directory \
+    docs/source/.../raw_data/ \
+    --source docs/source/.../document.md \
+    --document-id document_id \
+    --types theorems definitions axioms \
+    --force
+```
+
+**Option C: Use Low-Level Tool (Legacy)**
+
+```bash
+# Single document
+python src/fragile/mathster/tools/source_location_enricher.py directory \
     docs/source/.../raw_data \
     docs/source/.../document.md \
     document_id
 
 # Entire corpus
-python src/fragile/proofs/tools/source_location_enricher.py batch docs/source/
+python src/fragile/mathster/tools/source_location_enricher.py batch docs/source/
 ```
 
 **Step 2: Manual lookup** (if needed) - Use interactive tool:
@@ -167,14 +220,22 @@ python src/tools/find_source_location.py find-directive \
 ```python
 from fragile.proofs.tools.line_finder import validate_line_range, extract_lines
 # Check line_range points to correct content
+
+# Or use agent validation
+from fragile.agents import TextLocationEnricher
+agent = TextLocationEnricher()
+result = agent.enrich_directory(...)  # Validates automatically if config.validate_after=True
 ```
 
 **Error handling:** If `.from_raw()` raises "requires source location":
 1. Check raw JSON has `source` field populated
-2. If missing, run source_location_enricher
+2. If missing, run TextLocationEnricher agent
 3. If present but invalid, use find_source_location.py to fix
 
-See `.claude/skills/source-location-enrichment/skill.md` for complete workflow documentation.
+**Documentation:**
+- Agent specification: `.claude/agents/text-location-enricher.md`
+- Skill guide: `.claude/skills/source-location-enrichment/skill.md`
+- Example usage: `examples/text_location_enrichment_example.py`
 
 ## Development Commands
 

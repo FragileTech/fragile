@@ -1,6 +1,6 @@
 ---
 name: document-parser
-description: Extract raw mathematical content from MyST markdown documents into structured JSON files, performing verbatim transcription of definitions, theorems, axioms, and proofs
+description: Extract raw mathematical content from MyST markdown documents into structured JSON files, performing verbatim transcription of definitions, theorems, axioms, and mathster
 tools: Read, Grep, Glob, Bash, Write
 model: sonnet
 ---
@@ -62,7 +62,7 @@ Parse: docs/source/1_euclidean_gas/03_cloning.md
 
 **Command:**
 ```bash
-python -m fragile.proofs.pipeline extract docs/source/1_euclidean_gas/03_cloning.md
+python -m fragile.mathster.pipeline extract docs/source/1_euclidean_gas/03_cloning.md
 ```
 
 **Python API:**
@@ -190,9 +190,9 @@ for raw_thm in merged_staging.theorems:
     file_path = f"raw_data/theorems/{raw_thm.label}.json"
     write_json(file_path, raw_thm.dict())
 
-# Export proofs
+# Export mathster
 for raw_proof in merged_staging.proofs:
-    file_path = f"raw_data/proofs/{raw_proof.label}.json"
+    file_path = f"raw_data/mathster/{raw_proof.label}.json"
     write_json(file_path, raw_proof.dict())
 
 # ... repeat for all entity types
@@ -207,7 +207,7 @@ stats = {
         "definitions": len(merged_staging.definitions),
         "theorems": len(merged_staging.theorems),
         "axioms": len(merged_staging.axioms),
-        "proofs": len(merged_staging.proofs),
+        "mathster": len(merged_staging.proofs),
         "equations": len(merged_staging.equations),
         "parameters": len(merged_staging.parameters),
         "remarks": len(merged_staging.remarks),
@@ -599,9 +599,9 @@ document-parser (Stage 1) → raw_data/ → document-refiner (Stage 2) → refin
 **Parallelization:**
 ```bash
 # Process 3 documents simultaneously
-python -m fragile.proofs.pipeline extract docs/source/1_euclidean_gas/03_cloning.md &
-python -m fragile.proofs.pipeline extract docs/source/1_euclidean_gas/04_convergence.md &
-python -m fragile.proofs.pipeline extract docs/source/1_euclidean_gas/05_mean_field.md &
+python -m fragile.mathster.pipeline extract docs/source/1_euclidean_gas/03_cloning.md &
+python -m fragile.mathster.pipeline extract docs/source/1_euclidean_gas/04_convergence.md &
+python -m fragile.mathster.pipeline extract docs/source/1_euclidean_gas/05_mean_field.md &
 wait
 ```
 
@@ -614,7 +614,7 @@ wait
 After extraction completes, you **MUST** run source location enrichment before transformation:
 
 ```bash
-python src/fragile/proofs/tools/source_location_enricher.py directory \
+python src/fragile/mathster/tools/source_location_enricher.py directory \
     docs/source/.../raw_data \
     docs/source/.../document.md \
     document_id

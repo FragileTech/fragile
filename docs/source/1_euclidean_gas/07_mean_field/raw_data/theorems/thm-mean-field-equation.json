@@ -1,0 +1,21 @@
+{
+  "label": "thm-mean-field-equation",
+  "source": {
+    "document_id": "07_mean_field",
+    "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+    "chapter": "1_euclidean_gas",
+    "section": null,
+    "section_name": null,
+    "label": "thm-mean-field-equation",
+    "line_range": {
+      "lines": [
+        [
+          600,
+          637
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": "#thm-mean-field-equation"
+  }
+}

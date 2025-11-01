@@ -16,7 +16,7 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "14. The Perturbation Operator",
     "section_name": null,
-    "directive_label": "def-perturbation-fluctuation-bounds-reproof",
+    "label": "def-perturbation-fluctuation-bounds-reproof",
     "equation": null,
     "line_range": null,
     "url_fragment": null

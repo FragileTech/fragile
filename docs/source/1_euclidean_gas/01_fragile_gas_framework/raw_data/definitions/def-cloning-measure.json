@@ -11,13 +11,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "4.1",
-    "section_name": "Algorithmic Instantiations",
-    "directive_label": "def-cloning-measure",
-    "line_range": [
-      1120,
-      1123
-    ],
-    "url_fragment": "#def-cloning-measure"
+    "section": null,
+    "section_name": null,
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          1120,
+          1123
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": null
   }
 }

@@ -18,7 +18,7 @@
       4000,
       4020
     ],
-    "directive_label": "obj-perturbation-constants",
+    "label": "obj-perturbation-constants",
     "equation": null,
     "url_fragment": null
   }

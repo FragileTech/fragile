@@ -75,7 +75,7 @@ def extract_section_7_simple():
         "definitions": output_base / "definitions",
         "theorems": output_base / "theorems",
         "lemmas": output_base / "lemmas",
-        "proofs": output_base / "proofs",
+        "mathster": output_base / "mathster",
         "remarks": output_base / "remarks",
     }
 
@@ -143,11 +143,11 @@ def extract_section_7_simple():
 
         elif directive.directive_type == "proof":
             filename = f"{directive.label}.json"
-            file_path = output_dirs["proofs"] / filename
+            file_path = output_dirs["mathster"] / filename
             with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(entity_data, f, indent=2)
-            stats["entities_extracted"]["proofs"] = (
-                stats["entities_extracted"].get("proofs", 0) + 1
+            stats["entities_extracted"]["mathster"] = (
+                stats["entities_extracted"].get("mathster", 0) + 1
             )
 
         elif directive.directive_type == "remark":

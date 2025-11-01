@@ -25,7 +25,7 @@
       3618,
       3629
     ],
-    "directive_label": "obj-lipschitz-structural-error-coefficients",
+    "label": "obj-lipschitz-structural-error-coefficients",
     "equation": null,
     "url_fragment": null
   }

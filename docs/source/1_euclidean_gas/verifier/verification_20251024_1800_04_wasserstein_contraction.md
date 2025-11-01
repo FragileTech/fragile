@@ -284,13 +284,13 @@ src/proofs/04_wasserstein_contraction/
 **Usage**:
 ```bash
 # Run all validations for document
-pytest src/proofs/04_wasserstein_contraction/
+pytest src/mathster/04_wasserstein_contraction/
 
 # Run specific theorem validation
-python src/proofs/04_wasserstein_contraction/test_variance_decomposition.py
+python src/mathster/04_wasserstein_contraction/test_variance_decomposition.py
 
 # Run with pytest verbosity
-pytest -v src/proofs/04_wasserstein_contraction/
+pytest -v src/mathster/04_wasserstein_contraction/
 ```
 
 ---
@@ -353,7 +353,7 @@ Dividing by $k$ gives the result. □
 
 2. **Run Pytest Suite**:
    ```bash
-   pytest src/proofs/04_wasserstein_contraction/ -v
+   pytest src/mathster/04_wasserstein_contraction/ -v
    ```
 
 3. **Proceed to Semantic Review**:
@@ -365,9 +365,9 @@ Dividing by $k$ gives the result. □
 4. **Continuous Validation**:
    - After any edits to source document, re-run:
      ```bash
-     python src/proofs/04_wasserstein_contraction/test_variance_decomposition.py
-     python src/proofs/04_wasserstein_contraction/test_quadratic_identity.py
-     python src/proofs/04_wasserstein_contraction/test_separation_constant.py
+     python src/mathster/04_wasserstein_contraction/test_variance_decomposition.py
+     python src/mathster/04_wasserstein_contraction/test_quadratic_identity.py
+     python src/mathster/04_wasserstein_contraction/test_separation_constant.py
      ```
 
 5. **GPT-5/Codex MCP Investigation**:

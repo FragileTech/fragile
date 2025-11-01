@@ -6,7 +6,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "11.3.5",
-    "directive_label": "thm-lipschitz-structural-error-bound",
+    "label": "thm-lipschitz-structural-error-bound",
     "line_range": [3577, 3615]
   },
   "chapter": "1_euclidean_gas",

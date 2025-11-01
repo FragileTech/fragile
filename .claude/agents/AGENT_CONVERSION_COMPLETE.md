@@ -120,10 +120,10 @@ Task: Use the proof-sketcher agent to sketch proof for theorem thm-kl-convergenc
 Task: Use the theorem-prover agent to expand sketcher/sketch_20251027_1200_proof_09_kl_convergence.md
 
 # 3. Review the proof
-Task: Use the math-reviewer agent to review proofs/proof_20251027_1230_thm-kl-convergence.md
+Task: Use the math-reviewer agent to review mathster/proof_20251027_1230_thm-kl-convergence.md
 
 # 4. Validate algebra
-Task: Use the math-verifier agent to validate proofs/proof_20251027_1230_thm-kl-convergence.md
+Task: Use the math-verifier agent to validate mathster/proof_20251027_1230_thm-kl-convergence.md
 ```
 
 ### Document Processing Workflow
@@ -132,7 +132,7 @@ Task: Use the math-verifier agent to validate proofs/proof_20251027_1230_thm-kl-
 # 1. Extract raw data (Task tool OR Python CLI)
 Task: Use the document-parser agent to extract docs/source/1_euclidean_gas/03_cloning.md
 # OR
-python -m fragile.proofs.pipeline extract docs/source/1_euclidean_gas/03_cloning.md
+python -m fragile.mathster.pipeline extract docs/source/1_euclidean_gas/03_cloning.md
 
 # 2. Discover relationships
 Task: Use the cross-referencer agent to analyze docs/source/1_euclidean_gas/03_cloning

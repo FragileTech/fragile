@@ -212,9 +212,9 @@ def main():
 
     print(f"\n  Total: {edges_fixed}/{len(theorem_files_to_fix)} files fixed")
 
-    # 4. Check incomplete proofs
+    # 4. Check incomplete mathster
     print("\n📝 Checking Incomplete Proofs...")
-    proofs_dir = refined_data_dir / "proofs"
+    proofs_dir = refined_data_dir / "mathster"
     proof_files = list(proofs_dir.glob("*.json")) if proofs_dir.exists() else []
 
     incomplete_proofs = []
@@ -225,7 +225,7 @@ def main():
         if check_incomplete_proof(file_path, data):
             incomplete_proofs.append(file_path.name)
 
-    print(f"\n  Total: {len(incomplete_proofs)}/{len(proof_files)} proofs are incomplete")
+    print(f"\n  Total: {len(incomplete_proofs)}/{len(proof_files)} mathster are incomplete")
 
     if incomplete_proofs:
         print("\n  💡 Recommendation: These proof stubs should either be:")
@@ -239,11 +239,11 @@ def main():
     print(f"  ✅ Axioms fixed: {axioms_fixed}")
     print(f"  ✅ Remarks fixed: {remarks_fixed}")
     print(f"  ✅ Lemma edges fixed: {edges_fixed}")
-    print(f"  ⚠️  Incomplete proofs: {len(incomplete_proofs)}")
+    print(f"  ⚠️  Incomplete mathster: {len(incomplete_proofs)}")
     print("=" * 70)
 
     print("\n💡 Next step: Re-run validation to check remaining errors")
-    print("   python -m fragile.proofs.tools.validation \\")
+    print("   python -m fragile.mathster.tools.validation \\")
     print(
         "     --refined-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/refined_data \\"
     )

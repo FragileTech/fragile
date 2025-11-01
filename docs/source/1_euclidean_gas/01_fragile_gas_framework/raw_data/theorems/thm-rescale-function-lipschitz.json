@@ -20,16 +20,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "8.2.2.7",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "thm-rescale-function-lipschitz",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          1977,
+          1988
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      1971,
-      1982
-    ],
-    "url_fragment": "#thm-rescale-function-lipschitz",
-    "chapter": "1"
+    "url_fragment": null
   },
   "label_text": "Global Lipschitz Continuity of the Smooth Rescale Function",
   "full_statement_text": "The **Smooth Piecewise Rescale Function** $g_A(z)$ is globally Lipschitz continuous on $\\mathbb{R}$. Its Lipschitz constant, $L_{g_A}$, is the supremum of the absolute value of its first derivative, and is given by:\n$$\n\\boxed{\nL_{g_A} = \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054\n}\n$$\nwhere $L_P$ is the uniform upper bound on the derivative of the polynomial patch from lem-cubic-patch-derivative-bounds."

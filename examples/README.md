@@ -374,7 +374,7 @@ step = ProofStep(
     status=ProofStepStatus.EXPANDED
 )
 
-# Create proof box (can contain sub-proofs recursively)
+# Create proof box (can contain sub-mathster recursively)
 proof = ProofBox(
     proof_id="proof-thm-mean-field",
     label="Mean Field Limit",

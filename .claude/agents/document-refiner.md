@@ -67,16 +67,16 @@ The Stage 2 enrichment agent is specified but not yet implemented.
 
 **Planned Command:**
 ```bash
-python -m fragile.proofs.pipeline refine docs/source/1_euclidean_gas/03_cloning/raw_data/
+python -m fragile.mathster.pipeline refine docs/source/1_euclidean_gas/03_cloning/raw_data/
 ```
 
 **Planned Mode:**
 ```bash
 # Full enrichment (with LLM)
-python -m fragile.proofs.pipeline refine docs/source/1_euclidean_gas/03_cloning/raw_data/ --mode full
+python -m fragile.mathster.pipeline refine docs/source/1_euclidean_gas/03_cloning/raw_data/ --mode full
 
 # Quick enrichment (no LLM)
-python -m fragile.proofs.pipeline refine docs/source/1_euclidean_gas/03_cloning/raw_data/ --mode quick
+python -m fragile.mathster.pipeline refine docs/source/1_euclidean_gas/03_cloning/raw_data/ --mode quick
 ```
 
 **Implementation Note:**
@@ -735,9 +735,9 @@ Markdown → document-parser → raw_data/ → document-refiner → refined_data
 **Parallelization:**
 ```bash
 # Refine 3 documents simultaneously
-python -m fragile.proofs.pipeline refine docs/source/1_euclidean_gas/03_cloning/raw_data/ &
-python -m fragile.proofs.pipeline refine docs/source/1_euclidean_gas/04_convergence/raw_data/ &
-python -m fragile.proofs.pipeline refine docs/source/1_euclidean_gas/05_mean_field/raw_data/ &
+python -m fragile.mathster.pipeline refine docs/source/1_euclidean_gas/03_cloning/raw_data/ &
+python -m fragile.mathster.pipeline refine docs/source/1_euclidean_gas/04_convergence/raw_data/ &
+python -m fragile.mathster.pipeline refine docs/source/1_euclidean_gas/05_mean_field/raw_data/ &
 wait
 ```
 

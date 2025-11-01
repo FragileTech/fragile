@@ -78,7 +78,7 @@ docs/source/
 ### Test 1: Only finds correct directories
 
 ```bash
-$ python -m fragile.proofs.tools.build_refined_registry --docs-root docs/source --output test_registry
+$ python -m fragile.mathster.tools.build_refined_registry --docs-root docs/source --output test_registry
 
 Found 2 chapters:
   - 1_euclidean_gas

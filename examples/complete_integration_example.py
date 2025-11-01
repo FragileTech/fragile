@@ -325,7 +325,7 @@ Two-step strategy:
     print("Proof breakdown:")
     print(f"  Total steps: {stats['total_steps']}")
     print(f"  - Direct derivations: {stats['direct_derivations']}")
-    print(f"  - Sub-proofs: {stats['sub_proofs']}")
+    print(f"  - Sub-mathster: {stats['sub_proofs']}")
     print(f"  - Lemma applications: {stats['lemma_applications']}")
     print()
     print("Status breakdown:")
@@ -336,7 +336,7 @@ Two-step strategy:
     print("Dataflow:")
     print(f"  - Inputs: {stats['total_inputs']}")
     print(f"  - Outputs: {stats['total_outputs']}")
-    print(f"  - Nested sub-proofs: {stats['nested_sub_proofs']}")
+    print(f"  - Nested sub-mathster: {stats['nested_sub_proofs']}")
     print()
 
     # ==========================================================================
@@ -469,7 +469,7 @@ Two-step strategy:
     print("🎯 Integration features:")
     print("  ✓ TheoremBox ↔ ProofBox validation")
     print("  ✓ Automatic proof input/output creation from theorem")
-    print("  ✓ Relationship extraction from proofs")
+    print("  ✓ Relationship extraction from mathster")
     print("  ✓ Proof statistics and analysis")
     print("  ✓ Registry integration")
     print("  ✓ Relationship graph integration")

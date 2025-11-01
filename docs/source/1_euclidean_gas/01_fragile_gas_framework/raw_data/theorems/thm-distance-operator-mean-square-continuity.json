@@ -11,15 +11,19 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "chapter": "1",
-    "section": "10.2.1",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "thm-distance-operator-mean-square-continuity",
+    "label": "thm-distance-operator-mean-square-continuity",
+    "line_range": {
+      "lines": [
+        [
+          2698,
+          2716
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      2688,
-      2705
-    ],
     "url_fragment": "#thm-distance-operator-mean-square-continuity"
   }
 }

@@ -7,7 +7,7 @@
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "\u00a712.2.3 Mean-Square Continuity of the Fitness Potential Operator",
     "section_name": null,
-    "directive_label": "thm-fitness-potential-mean-square-continuity",
+    "label": "thm-fitness-potential-mean-square-continuity",
     "equation": null,
     "line_range": [
       3787,

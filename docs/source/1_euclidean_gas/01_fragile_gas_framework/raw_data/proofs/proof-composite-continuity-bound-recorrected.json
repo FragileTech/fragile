@@ -6,13 +6,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "17.2.4.2",
-    "section_name": "Proof of Composite Continuity Bound",
-    "directive_label": "proof-composite-continuity-bound-recorrected",
-    "line_range": [
-      4881,
-      4881
-    ],
-    "url_fragment": null
+    "section": null,
+    "section_name": null,
+    "label": "proof-composite-continuity-bound-recorrected",
+    "line_range": {
+      "lines": [
+        [
+          4932,
+          4998
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": "#proof-composite-continuity-bound-recorrected"
   }
 }

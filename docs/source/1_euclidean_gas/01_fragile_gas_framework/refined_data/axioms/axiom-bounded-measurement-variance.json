@@ -119,7 +119,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "9.3",
-    "directive_label": "axiom-bounded-measurement-variance",
+    "label": "axiom-bounded-measurement-variance",
     "equation": null,
     "line_range": [2126, 2139],
     "url_fragment": "#axiom-of-bounded-measurement-variance",

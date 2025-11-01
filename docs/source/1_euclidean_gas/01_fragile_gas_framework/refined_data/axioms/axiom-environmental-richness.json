@@ -119,7 +119,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "Section 2.2.1 Environmental Axioms",
-    "directive_label": "def-axiom-environmental-richness",
+    "label": "def-axiom-environmental-richness",
     "line_range": {
       "start": 741,
       "end": 759

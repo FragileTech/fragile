@@ -38,16 +38,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "15.2.5",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "thm-potential-operator-is-mean-square-continuous",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          4405,
+          4414
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      4408,
-      4425
-    ],
-    "url_fragment": null,
-    "chapter": "1"
+    "url_fragment": null
   },
   "label_text": "The Fitness Potential Operator is Mean-Square Continuous",
   "full_statement_text": "The **Fitness Potential Operator** is **mean-square continuous**. There exists a deterministic function $F_{\\text{pot}}(\\mathcal{S}_1, \\mathcal{S}_2)$, the **Expected Squared Potential Error Bound**, such that:\n\n$$\n\\mathbb{E}[\\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2] \\le F_{\\text{pot}}(\\mathcal{S}_1, \\mathcal{S}_2)\n$$"

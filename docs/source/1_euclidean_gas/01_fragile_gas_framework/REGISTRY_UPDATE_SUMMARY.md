@@ -68,13 +68,13 @@ axiom = registry.get_axiom('axiom-boundary-regularity')
 ### Visualize with Dashboard
 
 ```bash
-panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
+panel serve src/fragile/mathster/proof_pipeline_dashboard.py --show
 ```
 
 ### Regenerate Registry
 
 ```bash
-python -m fragile.proofs.tools.build_pipeline_registry \
+python -m fragile.mathster.tools.build_pipeline_registry \
   --pipeline-dir docs/source/1_euclidean_gas/01_fragile_gas_framework/pipeline_data \
   --output docs/source/1_euclidean_gas/01_fragile_gas_framework/pipeline_registry
 ```

@@ -6,13 +6,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "15.2.7",
-    "section_name": "Value Error in Expected Cloning Action",
-    "directive_label": "proof-lem-total-clone-prob-value-error",
-    "line_range": [
-      4439,
-      4446
-    ],
-    "url_fragment": null
+    "section": null,
+    "section_name": null,
+    "label": "proof-lem-total-clone-prob-value-error",
+    "line_range": {
+      "lines": [
+        [
+          4478,
+          4487
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": "#proof-lem-total-clone-prob-value-error"
   }
 }

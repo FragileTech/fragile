@@ -1,25 +1,29 @@
 {
+  "label": "thm-k1-revival-state",
+  "label_text": "Theorem of Guaranteed Revival from a Single Survivor",
+  "statement_type": "theorem",
+  "full_statement_text": "Let S_t be a swarm state with exactly one alive walker, such that |A(S_t)| = 1. Let the index of this single survivor be j, so A(S_t) = {j}.\nAssume the **Axiom of Guaranteed Revival ([](#def-axiom-guaranteed-revival))** holds, such that the revival score ratio kappa_{revival} > 1.\nThen, the one-step transition S_t -> S_{t+1} is characterized by the following three properties with probability 1:\n1.  **Survivor Persistence:** The single alive walker j will be assigned the \"Persist\" action. Its intermediate position will be its current position, x_j^{(t+0.5)} = x_j^{(t)}. Its subsequent evolution is that of a single, persistent random walker for the remainder of the timestep.\n2.  **Dead Walker Revival:** Every dead walker i in D(S_t) (for i != j) will be assigned the \"Clone\" action. Its intermediate position x_i^{(t+0.5)} will be sampled from the **Cloning Measure** centered on the survivor's position, Q_delta(x_j^{(t)}, .).\n3.  **Swarm Revival and Failure Condition:** The swarm is guaranteed to enter the intermediate state S_{t+0.5} with all N walkers alive (|A(S_{t+0.5})| = N). The risk of swarm extinction (|A(S_{t+1})|=0) is therefore isolated to the single, simultaneous event where all N walkers in the revived intermediate swarm independently move to an invalid state during the final perturbation and status update phase.",
+  "input_objects": [],
+  "input_axioms": [],
+  "input_parameters": [],
+  "output_type": "",
+  "relations_established": [],
+  "source": {
+    "document_id": "01_fragile_gas_framework",
+    "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
+    "section": null,
+    "section_name": null,
     "label": "thm-k1-revival-state",
-    "label_text": "Theorem of Guaranteed Revival from a Single Survivor",
-    "statement_type": "theorem",
-    "full_statement_text": "Let S_t be a swarm state with exactly one alive walker, such that |A(S_t)| = 1. Let the index of this single survivor be j, so A(S_t) = {j}.\nAssume the **Axiom of Guaranteed Revival ([](#def-axiom-guaranteed-revival))** holds, such that the revival score ratio kappa_{revival} > 1.\nThen, the one-step transition S_t -> S_{t+1} is characterized by the following three properties with probability 1:\n1.  **Survivor Persistence:** The single alive walker j will be assigned the \"Persist\" action. Its intermediate position will be its current position, x_j^{(t+0.5)} = x_j^{(t)}. Its subsequent evolution is that of a single, persistent random walker for the remainder of the timestep.\n2.  **Dead Walker Revival:** Every dead walker i in D(S_t) (for i != j) will be assigned the \"Clone\" action. Its intermediate position x_i^{(t+0.5)} will be sampled from the **Cloning Measure** centered on the survivor's position, Q_delta(x_j^{(t)}, .).\n3.  **Swarm Revival and Failure Condition:** The swarm is guaranteed to enter the intermediate state S_{t+0.5} with all N walkers alive (|A(S_{t+0.5})| = N). The risk of swarm extinction (|A(S_{t+1})|=0) is therefore isolated to the single, simultaneous event where all N walkers in the revived intermediate swarm independently move to an invalid state during the final perturbation and status update phase.",
-    "input_objects": [],
-    "input_axioms": [],
-    "input_parameters": [],
-    "output_type": "",
-    "relations_established": [],
-    "source": {
-        "document_id": "01_fragile_gas_framework",
-        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-        "chapter": "1",
-        "section": "§16.1",
-        "section_name": null,
-        "directive_label": "thm-k1-revival-state",
-        "equation": null,
-        "line_range": [
-            4565,
-            4586
-        ],
-        "url_fragment": "#thm-k1-revival-state"
-    }
+    "line_range": {
+      "lines": [
+        [
+          4626,
+          4637
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": "#thm-k1-revival-state"
+  }
 }

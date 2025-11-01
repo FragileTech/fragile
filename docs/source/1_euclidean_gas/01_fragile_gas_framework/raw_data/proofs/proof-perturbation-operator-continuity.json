@@ -6,13 +6,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "14",
-    "section_name": "The Perturbation Operator",
-    "directive_label": "proof-thm-perturbation-operator-continuity-reproof",
-    "line_range": [
-      4106,
-      4124
-    ],
-    "url_fragment": null
+    "section": null,
+    "section_name": null,
+    "label": "proof-thm-perturbation-operator-continuity-reproof",
+    "line_range": {
+      "lines": [
+        [
+          4122,
+          4142
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": "#proof-thm-perturbation-operator-continuity-reproof"
   }
 }

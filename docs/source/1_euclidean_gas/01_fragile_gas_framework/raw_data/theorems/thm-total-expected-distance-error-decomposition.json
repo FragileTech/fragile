@@ -32,16 +32,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "10.2.3",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "thm-total-expected-distance-error-decomposition",
+    "label": "thm-total-expected-distance-error-decomposition",
+    "line_range": {
+      "lines": [
+        [
+          2264,
+          2271
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      2245,
-      2262
-    ],
-    "url_fragment": null,
-    "chapter": "1"
+    "url_fragment": null
   },
   "label_text": "Total Expected Distance Error Decomposition",
   "full_statement_text": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. The total squared difference between their expected raw distance vectors is the sum of the squared differences over all walkers. This sum can be partitioned into a sum over the set of *stable walkers*, $\\mathcal{A}_{\\text{stable}} = \\mathcal{A}(\\mathcal{S}_1) \\cap \\mathcal{A}(\\mathcal{S}_2)$, and a sum over the set of *unstable walkers*, $\\mathcal{A}_{\\text{unstable}} = \\mathcal{A}(\\mathcal{S}_1) \\Delta \\mathcal{A}(\\mathcal{S}_2)$.\n$$\n\n\\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] - \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_2)] \\|_2^2 = \\underbrace{\\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]|^2}_{\\text{Error from Stable Walkers}} + \\underbrace{\\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]|^2}_{\\text{Error from Unstable Walkers}}\n\n$$"

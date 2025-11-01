@@ -3,7 +3,7 @@ Proof System Example: Compositional Proofs with Property-Level Dataflow.
 
 This example demonstrates the proof system's core features:
 1. Property-level granularity (object has 10 properties, proof needs 2)
-2. Hierarchical/recursive architecture (ProofBox contains sub-proofs)
+2. Hierarchical/recursive architecture (ProofBox contains sub-mathster)
 3. Three expansion modes (DirectDerivation, SubProof, LemmaApplication)
 4. Dataflow validation (properties flow correctly through steps)
 5. Integration with relationship system
@@ -538,7 +538,7 @@ def main() -> None:
     # ==========================================================================
     # STEP 6: Validate complete proof
     # ==========================================================================
-    print("STEP 6: Validate Complete Proof (with sub-proofs)")
+    print("STEP 6: Validate Complete Proof (with sub-mathster)")
     print("-" * 80)
 
     validation_errors = engine.validate_proof(proof.proof_id)
@@ -546,7 +546,7 @@ def main() -> None:
     if not validation_errors:
         print("✓ Complete proof is valid!")
         print("  Main proof dataflow: ✓")
-        print("  All sub-proofs dataflow: ✓")
+        print("  All sub-mathster dataflow: ✓")
     else:
         print(f"✗ Found {len(validation_errors)} validation errors:")
         for error in validation_errors:
@@ -657,9 +657,9 @@ def main() -> None:
 
     print("📊 Proof Statistics:")
     print(f"  Main proof: {len(proof.steps)} steps")
-    print(f"  Sub-proofs: {len(proof.sub_proofs)}")
+    print(f"  Sub-mathster: {len(proof.sub_proofs)}")
     print(
-        f"  Total steps (including sub-proofs): {len(proof.steps) + sum(len(sp.steps) for sp in proof.sub_proofs.values())}"
+        f"  Total steps (including sub-mathster): {len(proof.steps) + sum(len(sp.steps) for sp in proof.sub_proofs.values())}"
     )
     print(f"  Input objects: {len(proof.inputs)}")
     print(f"  Output objects: {len(proof.outputs)}")

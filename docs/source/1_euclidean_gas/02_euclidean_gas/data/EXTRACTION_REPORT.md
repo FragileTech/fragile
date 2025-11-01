@@ -355,7 +355,7 @@ graph TD
 
 2. **Theorem Proving** (Use theorem-prover agent)
    ```bash
-   # Expand proofs to publication standard
+   # Expand mathster to publication standard
    python -m fragile.agents.theorem_prover \
      --input /home/guillem/fragile/docs/source/1_euclidean_gas/02_euclidean_gas/data/extraction_inventory.json
    ```

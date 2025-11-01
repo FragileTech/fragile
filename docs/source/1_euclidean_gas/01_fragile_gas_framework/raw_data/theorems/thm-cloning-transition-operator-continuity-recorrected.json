@@ -11,15 +11,19 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "chapter": "1",
-    "section": "15.2.8",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "thm-cloning-transition-operator-continuity-recorrected",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          4405,
+          4414
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      4437,
-      4446
-    ],
-    "url_fragment": "#thm-cloning-transition-operator-continuity-recorrected"
+    "url_fragment": null
   }
 }

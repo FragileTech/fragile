@@ -26,16 +26,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "12",
     "section_name": null,
-    "directive_label": "thm-z-score-norm-bound",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          2922,
+          2932
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      2922,
-      2932
-    ],
-    "url_fragment": "#thm-z-score-norm-bound",
-    "chapter": "1"
+    "url_fragment": null
   },
   "label_text": "General Bound on the Norm of the Standardized Vector",
   "full_statement_text": "Let $\\mathbf{v} = (v_i)_{i \\in \\mathcal{A}}$ be a $k$-dimensional vector of raw values from an alive set $\\mathcal{A}$ of size $k=|\\mathcal{A}| \\ge 1$. The raw values are bounded such that $|v_i| \\le V_{\\max}$. Let the statistical properties $(\\mu_{\\mathcal{A}}, \\sigma'_{\\mathcal{A}})$ be calculated using any valid **Swarm Aggregation Operator** $M$ that guarantees the mean is bounded by the values, i.e., $|\\mu_{\\mathcal{A}}| \\le V_{\\max}$.\nLet $\\mathbf{z}$ be the corresponding $k$-dimensional standardized vector, where each component is $z_i = (v_i - \\mu_{\\mathcal{A}}) / \\sigma'_{\\mathcal{A}}$ and the regularized standard deviation is $\\sigma'_{\\mathcal{A}} = \\sigma'_{\\text{reg}}(\\operatorname{Var}[\\mu_{\\mathbf{v}}])$ from [](#def-statistical-properties-measurement). Denote the minimal value of this map by $\\sigma'_{\\min\\,\\text{bound}} := \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\mathrm{std}}^2}$.\nThe squared Euclidean norm of the standardized vector $\\mathbf{z}$ is strictly bounded by a constant that depends on the number of alive walkers and the global parameters:\n\n$$\n\\|\\mathbf{z}\\|_2^2 \\le k \\left( \\frac{2V_{\\max}}{\\varepsilon_{\\mathrm{std}}} \\right)^2\n$$"

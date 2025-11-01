@@ -111,12 +111,12 @@ cat docs/source/.../reports/sketcher/sketch_*.md | head -50
 
 ```bash
 # Check proof created
-ls -lh docs/source/.../reports/proofs/
+ls -lh docs/source/.../reports/mathster/
 
 # Expected: proof_YYYYMMDD_HHMM_thm_*.md file
 
 # Check proof length (should be detailed)
-wc -l docs/source/.../reports/proofs/proof_*.md
+wc -l docs/source/.../reports/mathster/proof_*.md
 ```
 
 ### After Review

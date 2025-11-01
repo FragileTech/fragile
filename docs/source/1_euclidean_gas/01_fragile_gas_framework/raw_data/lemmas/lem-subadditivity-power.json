@@ -5,16 +5,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "17.2.4.2",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "lem-subadditivity-power",
+    "label": "lem-subadditivity-power",
+    "line_range": {
+      "lines": [
+        [
+          5008,
+          5011
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      4946,
-      4958
-    ],
-    "url_fragment": null,
-    "chapter": "1_euclidean_gas"
+    "url_fragment": "#lem-subadditivity-power"
   },
   "document": "01_fragile_gas_framework",
   "proof": null,

@@ -1,0 +1,21 @@
+{
+  "label": "thm-mass-conservation",
+  "source": {
+    "document_id": "07_mean_field",
+    "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+    "chapter": "1_euclidean_gas",
+    "section": null,
+    "section_name": null,
+    "label": "thm-mass-conservation",
+    "line_range": {
+      "lines": [
+        [
+          641,
+          661
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": "#thm-mass-conservation"
+  }
+}

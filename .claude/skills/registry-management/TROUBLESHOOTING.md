@@ -72,7 +72,7 @@ find registries -name "index.json"
 
 **Solution**: Build registries first
 ```bash
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 
 ---
@@ -93,7 +93,7 @@ cat registries/per_document/01_fragile_gas_framework/pipeline/index.json | pytho
 
 **Solution**: Rebuild registries
 ```bash
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 
 ---
@@ -108,7 +108,7 @@ python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
 ```bash
 # Stop dashboard (Ctrl+C)
 # Restart
-panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
+panel serve src/fragile/mathster/proof_pipeline_dashboard.py --show
 ```
 
 ---
@@ -122,7 +122,7 @@ panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
 **Solution**: Run dashboard from project root
 ```bash
 cd /path/to/fragile
-panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
+panel serve src/fragile/mathster/proof_pipeline_dashboard.py --show
 ```
 
 ---
@@ -141,7 +141,7 @@ panel serve src/fragile/proofs/proof_pipeline_dashboard.py --show
 **Diagnosis**:
 ```bash
 # Check error details in output
-python -m fragile.proofs.tools.build_all_registries \
+python -m fragile.mathster.tools.build_all_registries \
   --docs-root docs/source 2>&1 | grep "Error"
 ```
 
@@ -192,7 +192,7 @@ ls -lh registries/per_document/
 **Solution**:
 ```bash
 # Manually run aggregation
-python -m fragile.proofs.tools.aggregate_registries \
+python -m fragile.mathster.tools.aggregate_registries \
   --type pipeline \
   --per-document-root registries/per_document \
   --output registries/combined/pipeline
@@ -217,7 +217,7 @@ python -m fragile.proofs.tools.aggregate_registries \
 rm -rf docs/source/{chapter}/{document}/pipeline_data
 
 # Then rebuild
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 
 ---
@@ -285,7 +285,7 @@ print(f'Matches: {matches}')
 **Diagnosis**:
 ```bash
 # Check aggregation output for duplicate warnings
-python -m fragile.proofs.tools.aggregate_registries \
+python -m fragile.mathster.tools.aggregate_registries \
   --type pipeline \
   --per-document-root registries/per_document \
   --output registries/combined/pipeline
@@ -316,7 +316,7 @@ find registries/per_document -name "*.json" | wc -l
 
 **Solution**: Build per-document registries first
 ```bash
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 
 ---
@@ -332,7 +332,7 @@ python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
 **Solution**: Check progress
 ```bash
 # Run with verbose output (watch console)
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 
 # Check what's taking time:
 # - Discovery: Should be <1 second
@@ -346,13 +346,13 @@ python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
 # Transform all documents first (one-time)
 for doc in docs/source/*/*/refined_data; do
   doc_dir=$(dirname "$doc")
-  python -m fragile.proofs.tools.enriched_to_math_types \
+  python -m fragile.mathster.tools.enriched_to_math_types \
     --input "$doc" \
     --output "$doc_dir/pipeline_data"
 done
 
 # Then build (faster)
-python -m fragile.proofs.tools.build_all_registries --docs-root docs/source
+python -m fragile.mathster.tools.build_all_registries --docs-root docs/source
 ```
 
 ---

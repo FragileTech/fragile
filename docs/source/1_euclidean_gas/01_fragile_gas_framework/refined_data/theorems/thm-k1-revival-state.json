@@ -6,7 +6,7 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "section": "§16.1",
-    "directive_label": "thm-k1-revival-state",
+    "label": "thm-k1-revival-state",
     "equation": null,
     "line_range": [4565, 4626],
     "url_fragment": "#thm-k1-revival-state"

@@ -255,13 +255,13 @@ src/proofs/06_convergence/
 **Usage**:
 ```bash
 # Run all validations for document
-pytest src/proofs/06_convergence/ -v
+pytest src/mathster/06_convergence/ -v
 
 # Run specific validation
-python src/proofs/06_convergence/test_equilibrium_variance_bounds.py
+python src/mathster/06_convergence/test_equilibrium_variance_bounds.py
 
 # Run with pytest
-pytest src/proofs/06_convergence/test_equilibrium_variance_bounds.py::test_positional_variance_equilibrium -v
+pytest src/mathster/06_convergence/test_equilibrium_variance_bounds.py::test_positional_variance_equilibrium -v
 ```
 
 ---
@@ -356,7 +356,7 @@ Line 512 (Foster-Lyapunov consequence):
 
 2. **Run Pytest Suite**:
    ```bash
-   pytest src/proofs/06_convergence/ -v
+   pytest src/mathster/06_convergence/ -v
    ```
 
 3. **Proceed to Semantic Review**:
@@ -371,7 +371,7 @@ Line 512 (Foster-Lyapunov consequence):
 4. **Continuous Validation**:
    - After any edits to equilibrium formulas, re-run:
      ```bash
-     python src/proofs/06_convergence/test_equilibrium_variance_bounds.py
+     python src/mathster/06_convergence/test_equilibrium_variance_bounds.py
      ```
 
 5. **Future Enhancements**:

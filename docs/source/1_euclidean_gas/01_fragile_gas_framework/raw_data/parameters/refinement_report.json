@@ -4,11 +4,12 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": null,
     "section_name": null,
-    "directive_label": null,
-    "equation": null,
+    "label": null,
     "line_range": null,
+    "equation": null,
     "url_fragment": null
   },
   "statistics": {

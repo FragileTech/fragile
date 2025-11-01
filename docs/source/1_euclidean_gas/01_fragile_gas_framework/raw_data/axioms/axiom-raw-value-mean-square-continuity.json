@@ -40,16 +40,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "9.2",
+    "chapter": "1_euclidean_gas",
+    "section": null,
     "section_name": null,
-    "directive_label": "axiom-raw-value-mean-square-continuity",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          2121,
+          2133
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      2111,
-      2123
-    ],
-    "url_fragment": "#axiom-raw-value-mean-square-continuity",
-    "chapter": "1_euclidean_gas"
+    "url_fragment": null
   },
   "context": {
     "motivation": "For the standardization pipeline to be stable, the Raw Value Operator cannot change arbitrarily with small changes in the swarm state. This axiom formalizes the requirement for mean-square continuity.",

@@ -17,13 +17,18 @@
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
     "chapter": "1_euclidean_gas",
-    "section": "6.2.3",
-    "section_name": "Smoothed Gaussian Measure",
-    "directive_label": "def-smoothed-gaussian-measure",
-    "line_range": [
-      1428,
-      1439
-    ],
-    "url_fragment": "#def-smoothed-gaussian-measure"
+    "section": null,
+    "section_name": null,
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          1436,
+          1437
+        ]
+      ]
+    },
+    "equation": null,
+    "url_fragment": null
   }
 }

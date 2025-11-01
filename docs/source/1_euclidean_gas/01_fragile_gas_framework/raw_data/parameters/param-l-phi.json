@@ -10,13 +10,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": null,
     "section_name": null,
-    "directive_label": "param-l-phi",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          314,
+          314
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": null,
-    "url_fragment": null,
-    "chapter": "1_euclidean_gas"
+    "url_fragment": null
   },
   "meaning": "Displacement Lipschitz Constant",
   "full_text": "Displacement Lipschitz Constant. Symbol: $L_\\varphi$. Type: real. Constraints: $L_\\varphi \\le 1$.",

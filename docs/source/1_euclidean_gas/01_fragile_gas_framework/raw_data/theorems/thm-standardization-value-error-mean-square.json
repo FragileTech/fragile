@@ -32,16 +32,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+    "chapter": "1_euclidean_gas",
     "section": "12",
     "section_name": null,
-    "directive_label": "thm-standardization-value-error-mean-square",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          3086,
+          3158
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      3086,
-      3096
-    ],
-    "url_fragment": "#thm-standardization-value-error-mean-square",
-    "chapter": "1"
+    "url_fragment": null
   },
   "label_text": "Bounding the Expected Squared Value Error",
   "full_statement_text": "Let $S_1$ be a fixed swarm state. Let $V$ be a raw value operator that is mean-square continuous, such that $\\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)$ for some deterministic bounding function $F_{V,ms}$.\nThe expected squared value error is bounded as follows:\n\n$$\nE_{V,ms}^2(\\mathcal{S}_1, \\mathcal{S}_2) \\le C_{V,\\text{total}}(\\mathcal{S}_1) \\cdot F_{V,ms}(\\mathcal{S}_1, \\mathcal{S}_2)\n$$\n\nwhere $C_{V,\\text{total}}(\\mathcal{S}_1)$ is the **Total Value Error Coefficient**, a deterministic constant derived from the axiomatic properties of the aggregation operator and the global parameters, as formally defined in [](#def-lipschitz-value-error-coefficients)."

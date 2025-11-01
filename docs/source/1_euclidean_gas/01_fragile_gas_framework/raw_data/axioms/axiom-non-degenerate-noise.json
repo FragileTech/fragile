@@ -9,15 +9,19 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "3",
+    "chapter": "1_euclidean_gas",
+    "section": "§3",
     "section_name": null,
-    "directive_label": "axiom-non-degenerate-noise",
+    "label": null,
+    "line_range": {
+      "lines": [
+        [
+          860,
+          867
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": [
-      860,
-      867
-    ],
-    "url_fragment": "#def-axiom-non-degenerate-noise",
-    "chapter": "1_euclidean_gas"
+    "url_fragment": null
   }
 }

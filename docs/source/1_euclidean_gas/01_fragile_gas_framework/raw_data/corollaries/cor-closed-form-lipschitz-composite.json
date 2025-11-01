@@ -19,13 +19,20 @@
   "source": {
     "document_id": "01_fragile_gas_framework",
     "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-    "section": "9",
+    "chapter": "1_euclidean_gas",
+    "section": "9. Rescale Transformation",
     "section_name": null,
-    "directive_label": "cor-closed-form-lipschitz-composite",
+    "label": "cor-closed-form-lipschitz-composite",
+    "line_range": {
+      "lines": [
+        [
+          2063,
+          2073
+        ]
+      ]
+    },
     "equation": null,
-    "line_range": null,
-    "url_fragment": null,
-    "chapter": "1_euclidean_gas"
+    "url_fragment": "#cor-closed-form-lipschitz-composite"
   },
   "has_proof": true,
   "depends_on": [
