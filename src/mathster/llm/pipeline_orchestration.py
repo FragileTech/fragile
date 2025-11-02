@@ -38,7 +38,7 @@ from mathster.llm.llm_interface import (
     call_main_extraction_llm,
 )
 from mathster.prompts import MAIN_EXTRACTION_PROMPT
-from mathster.core.raw_data import StagingDocument
+from mathster.core.raw_data import RawDocument
 from mathster.tools import (
     DocumentSection,
     format_directive_hints_for_llm,
@@ -59,7 +59,7 @@ def process_section(
     prompt_template: str = MAIN_EXTRACTION_PROMPT,
     model: str = "claude-sonnet-4",
     **llm_kwargs,
-) -> StagingDocument:
+) -> RawDocument:
     """
     Process a single section through Stage 1 extraction.
 
@@ -112,14 +112,14 @@ def process_section(
         )
 
         # Validate and return
-        staging_doc = StagingDocument.model_validate(result)
+        staging_doc = RawDocument.model_validate(result)
         logger.info(f"  Extracted {staging_doc.total_entities} entities")
         return staging_doc
 
     except Exception as e:
         logger.error(f"Error processing section {section.section_id}: {e}")
         # Return empty staging document on error
-        return StagingDocument(
+        return RawDocument(
             section_id=section.section_id,
             definitions=[],
             theorems=[],
@@ -137,7 +137,7 @@ def process_sections_parallel(
     prompt_template: str = MAIN_EXTRACTION_PROMPT,
     model: str = "claude-sonnet-4",
     **llm_kwargs,
-) -> list[StagingDocument]:
+) -> list[RawDocument]:
     """
     Process multiple sections in parallel.
 
@@ -174,7 +174,7 @@ def process_sections_parallel(
     return staging_docs
 
 
-def merge_sections(staging_docs: list[StagingDocument]) -> StagingDocument:
+def merge_sections(staging_docs: list[RawDocument]) -> RawDocument:
     """
     Merge multiple section StagingDocuments into a single document.
 
@@ -214,7 +214,7 @@ def merge_sections(staging_docs: list[StagingDocument]) -> StagingDocument:
         all_parameters.extend(doc.parameters)
         all_remarks.extend(doc.remarks)
 
-    merged = StagingDocument(
+    merged = RawDocument(
         section_id="merged-document",
         definitions=all_definitions,
         theorems=all_theorems,
@@ -236,7 +236,7 @@ def merge_sections(staging_docs: list[StagingDocument]) -> StagingDocument:
 
 
 def enrich_and_assemble(
-    staging_doc: StagingDocument,
+    staging_doc: RawDocument,
     chapter: str | None = None,
     document: str | None = None,
     error_logger: ErrorLogger | None = None,

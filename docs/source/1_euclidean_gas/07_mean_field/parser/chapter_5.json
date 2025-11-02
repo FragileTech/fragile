@@ -1,0 +1,36 @@
+{
+  "source": {
+    "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+    "line_range": {
+      "lines": [
+        [
+          703,
+          1416
+        ]
+      ]
+    },
+    "label": "section-chapter-5",
+    "volume": "1_euclidean_gas",
+    "article_id": "07_mean_field",
+    "section": "3.3",
+    "section_name": "The Coupled Mean-Field Equations"
+  },
+  "full_text": "",
+  "section_id": "Chapter 5",
+  "definitions": [],
+  "theorems": [],
+  "proofs": [],
+  "citations": [],
+  "parameters": [],
+  "remarks": [],
+  "axioms": [],
+  "_improvement_metadata": {
+    "changes": [],
+    "summary": {
+      "entities_added": 0,
+      "entities_modified": 0,
+      "entities_deleted": 0,
+      "entities_unchanged": 0
+    }
+  }
+}

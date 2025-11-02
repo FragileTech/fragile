@@ -33,21 +33,6 @@ class TextLocation(BaseModel):
     A lightweight primitive for tracking text that spans multiple non-contiguous
     line ranges. Used by SourceLocation to represent precise text locations.
 
-    Examples:
-        >>> # Single continuous range
-        >>> loc = TextLocation(lines=[(10, 15)])
-        >>> loc.format_ranges()
-        '10-15'
-        >>> loc.get_total_line_count()
-        6
-
-        >>> # Multiple discontinuous ranges
-        >>> loc = TextLocation(lines=[(10, 15), (20, 25), (30, 32)])
-        >>> loc.format_ranges()
-        '10-15, 20-25, 30-32'
-        >>> loc.get_total_line_count()
-        15
-
     Invariants:
         - All ranges are well-formed: start ≤ end, all line numbers ≥ 1
         - Ranges are sorted and non-overlapping
@@ -318,55 +303,11 @@ class SourceLocation(BaseModel):
     All mathematical entities must provide:
     - file_path: Path to source markdown file
     - line_range: Precise line ranges where the entity is defined
-    - label: Jupyter Book directive label for the entity
+    - label: Jupyter Book directive label for the entity or a new one if missing
     - article_id: Document identifier
 
     This enables bidirectional navigation and source traceability for all
     mathematical entities in the framework.
-
-    Examples:
-        >>> # Complete source location with all required fields
-        >>> loc = SourceLocation(
-        ...     file_path="docs/source/1_euclidean_gas/03_cloning.md",
-        ...     line_range=TextLocation.from_single_range(115, 130),
-        ...     label="thm-keystone",
-        ...     article_id="03_cloning",
-        ...     section="3.2",
-        ... )
-        >>> loc.get_full_url()
-        'https://docs.example.com/03_cloning.html#thm-keystone'
-
-        >>> # With discontinuous line ranges
-        >>> loc2 = SourceLocation(
-        ...     file_path="docs/source/1_euclidean_gas/03_cloning.md",
-        ...     line_range=TextLocation(lines=[(142, 158), (165, 170)]),
-        ...     label="def-fitness",
-        ...     article_id="03_cloning",
-        ...     section="3.2.1",
-        ... )
-        >>> loc2.get_display_location()
-        '03_cloning (lines 142-158, 165-170)'
-
-        >>> # Auto-extract optional fields using from_required_fields()
-        >>> loc3 = SourceLocation.from_required_fields(
-        ...     file_path="docs/source/1_euclidean_gas/03_cloning.md",
-        ...     line_range=TextLocation.from_single_range(621, 635),
-        ...     label="lem-sx-implies-variance"
-        ... )
-        >>> # Optional fields are automatically extracted:
-        >>> loc3.volume  # Extracted from file_path
-        '1_euclidean_gas'
-        >>> loc3.article_id  # Extracted from filename
-        '03_cloning'
-        >>> loc3.section  # Extracted from markdown headers
-        '3.2.4'
-        >>> loc3.section_name  # Extracted from markdown headers
-        'From Structural Error to Internal Swarm Variance'
-
-    Note:
-        Use the classmethod `from_required_fields()` to automatically extract
-        optional fields (volume, article_id, section, section_name) from the
-        required fields (file_path, line_range, label).
     """
 
     model_config = ConfigDict(frozen=True)
@@ -386,9 +327,10 @@ class SourceLocation(BaseModel):
     label: str = Field(
         ...,
         pattern=r"^[a-z][a-z0-9-]*$",
-        description="Jupyter Book directive label (e.g., 'thm-keystone', 'def-walker'). "
+        description="Jupyter Book directive label (e.g., 'thm-keystone', 'def-walker', 'section-introduction'). "
         "Required for all entities. If a directive doesn't exist in the source document, "
-        "create one following the pattern: {type}-{short-name} (e.g., 'thm-convergence', 'def-fitness').",
+        "create one following the pattern: {type}-{short-name} (e.g., 'thm-convergence', 'def-fitness'). "
+        "For section labels, use pattern: section-{normalized-title} (e.g., 'section-introduction', 'section-cloning').",
     )
 
     # Optional fields (can be None)

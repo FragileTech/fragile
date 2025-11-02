@@ -267,32 +267,8 @@ class RawTheorem(RawDataModel):
         description="Unique statement label (e.g., 'thm-main-result', 'lem-gradient-bound'). "
         "If the concept has no assigned label then we should create one for it.",
     )
-
-    label_text: str = Field(
-        ...,
-        min_length=1,
-        description="The exact label from the text (e.g., 'Theorem 1.1', 'Lemma 3.4', 'Proposition 2.9'). "
-        "Preserve the exact formatting including numbers and optional name in parentheses.",
-    )
-
     statement_type: Literal["theorem", "lemma", "proposition", "corollary"] = Field(
         ..., description="The type of mathematical statement. Inferred from the label prefix."
-    )
-
-    context_before: TextLocation | None = Field(
-        None,
-        description="Line ranges for the paragraph(s) immediately preceding the theorem statement. "
-        "Provides context for understanding assumptions and setup. "
-        "The LLM should identify start and end lines of contextual paragraphs. "
-        "None if theorem starts a new section without prior context.",
-    )
-
-    full_statement_text: TextLocation = Field(
-        ...,
-        description="Line ranges for the entire theorem statement text. "
-        "The LLM should identify the start and end lines from the opening "
-        "(e.g., 'Let...', 'Assume...', 'For all...') to the final formula or conclusion. "
-        "Text extraction will preserve all LaTeX, numbered equations, and formatting.",
     )
 
     conclusion_formula_latex: str | None = Field(
@@ -300,12 +276,6 @@ class RawTheorem(RawDataModel):
         description="The primary mathematical formula of the conclusion, isolated in raw LaTeX. "
         "Example: '||f1_x||_2 \\leq C h^\\beta ||f||_2'. "
         "Can be None if conclusion is stated in prose rather than formula.",
-    )
-
-    equation_label: str | None = Field(
-        None,
-        description="The equation number if the conclusion has one (e.g., '(1.1)', '(3.5a)', 'Eq. (12)'). "
-        "None if conclusion is unnumbered.",
     )
 
     explicit_definition_references: list[str] = Field(
@@ -334,11 +304,11 @@ class RawProof(RawDataModel):
         "If the concept has no assigned label then we should create one for it.",
     )
 
-    proves_label_text: str = Field(
+    proves_label: str = Field(
         ...,
         min_length=1,
         description="The label of the theorem this proof is for (e.g., 'Theorem 1.1', 'Lemma 3.4'). "
-        "Should match the label_text from the corresponding RawTheorem. "
+        "Should match the label from the corresponding RawTheorem. "
         "If proof says just 'Proof.' without explicit label, infer from context.",
     )
 
@@ -490,15 +460,6 @@ class RawParameter(RawDataModel):
         "Example: 'a small parameter', 'the number of walkers', 'porosity constant'. "
         "Extract the key semantic content.",
     )
-
-    full_text: TextLocation = Field(
-        ...,
-        description="Line ranges for the complete parameter definition text. "
-        "The LLM should identify start and end lines of the parameter statement. "
-        "Example: Text like 'Throughout this paper, h > 0 denotes a small parameter'. "
-        "Text extraction will preserve full context.",
-    )
-
     scope: Literal["global", "local"] = Field(
         ...,
         description="Whether this parameter is defined globally (for the whole document) "
@@ -528,14 +489,6 @@ class RawRemark(RawDataModel):
         ...,
         description="The type of informal statement. "
         "Typically inferred from the label prefix (e.g., 'Remark', 'Note', 'Observation').",
-    )
-
-    full_text: TextLocation = Field(
-        ...,
-        description="Line ranges for the complete remark text, including the label. "
-        "The LLM should identify start and end lines of the remark block. "
-        "Example: Text like 'Remark 2.1. The condition v > 0 is essential because...'. "
-        "Text extraction will preserve all mathematical content and references.",
     )
 
 
@@ -600,21 +553,21 @@ class RawAxiom(RawDataModel):
 # =============================================================================
 
 
-class StagingDocument(RawDataModel):
+class RawDocumentSection(RawDataModel):
     """
     Aggregates all raw extractions from a document section.
 
     This is the top-level output from Stage 1 (raw extraction). It contains
     lists of all identified mathematical entities in their raw, unprocessed form.
 
-    The orchestrator will process sections in parallel, producing one StagingDocument
+    The orchestrator will process sections in parallel, producing one RawDocumentSection
     per section, then merge them into a single document-level registry.
     """
 
     section_id: str = Field(
         ...,
         description="Identifier for the section this extraction covers. "
-        "Examples: '§1-intro', '§2.1-preliminaries', '§4-main-results'. "
+        "Examples: '## 2 The Cloning Operator', '## 3 Measuring Pipeline'. "
         "Used for organizing parallel processing.",
     )
 
@@ -628,7 +581,7 @@ class StagingDocument(RawDataModel):
     )
 
     proofs: list[RawProof] = Field(
-        default_factory=list, description="All mathster extracted from this section."
+        default_factory=list, description="All proofs extracted from this section."
     )
 
     citations: list[RawCitation] = Field(
@@ -637,10 +590,10 @@ class StagingDocument(RawDataModel):
         "May be empty for non-bibliography sections.",
     )
 
-    equations: list[RawEquation] = Field(
-        default_factory=list,
-        description="All standalone equations (numbered or significant unnumbered) extracted from this section.",
-    )
+    # equations: list[RawEquation] = Field(
+    #     default_factory=list,
+    #     description="All standalone equations (numbered or significant unnumbered) extracted from this section.",
+    # )
 
     parameters: list[RawParameter] = Field(
         default_factory=list,
@@ -665,7 +618,7 @@ class StagingDocument(RawDataModel):
             + len(self.theorems)
             + len(self.proofs)
             + len(self.citations)
-            + len(self.equations)
+            # + len(self.equations)
             + len(self.parameters)
             + len(self.remarks)
             + len(self.axioms)
@@ -680,7 +633,7 @@ class StagingDocument(RawDataModel):
             f"  - Proofs: {len(self.proofs)}\n"
             f"  - Axioms: {len(self.axioms)}\n"
             f"  - Citations: {len(self.citations)}\n"
-            f"  - Equations: {len(self.equations)}\n"
+            # f"  - Equations: {len(self.equations)}\n"
             f"  - Parameters: {len(self.parameters)}\n"
             f"  - Remarks: {len(self.remarks)}"
         )

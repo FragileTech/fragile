@@ -100,11 +100,11 @@ def validate_llm_response(response: dict[str, Any], schema_name: str) -> bool:
         RawDefinition,
         RawProof,
         RawTheorem,
-        StagingDocument,
+        RawDocument,
     )
 
     schema_map = {
-        "StagingDocument": StagingDocument,
+        "StagingDocument": RawDocument,
         "RawDefinition": RawDefinition,
         "RawTheorem": RawTheorem,
         "RawProof": RawProof,

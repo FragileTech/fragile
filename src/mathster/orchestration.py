@@ -41,7 +41,7 @@ from mathster.core.raw_data import (
     RawProof,
     RawRemark,
     RawTheorem,
-    StagingDocument,
+    RawDocument,
 )
 
 
@@ -156,7 +156,7 @@ class ResolutionContext(BaseModel):
         """Add a citation."""
         self.citations[citation.key_in_text] = citation
 
-    def add_staging_document(self, doc: StagingDocument) -> None:
+    def add_staging_document(self, doc: RawDocument) -> None:
         """
         Batch-add all entities from a StagingDocument.
 

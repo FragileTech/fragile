@@ -37,7 +37,7 @@ from mathster.core.enriched_data import (
     RemarkBox,
 )
 from mathster.core.raw_data import (
-    StagingDocument,
+    RawDocument,
 )
 
 
@@ -178,7 +178,7 @@ class MathematicalDocument(BaseModel):
 
     file_path: str | None = Field(None, description="Path to the source markdown file")
 
-    staging_documents: list[StagingDocument] = Field(
+    staging_documents: list[RawDocument] = Field(
         default_factory=list,
         description="Raw staging documents from Stage 1 extraction (one per section)",
     )
@@ -225,7 +225,7 @@ class MathematicalDocument(BaseModel):
     # INCREMENTAL CONSTRUCTION METHODS
     # =============================================================================
 
-    def add_staging_document(self, staging_doc: StagingDocument) -> "MathematicalDocument":
+    def add_staging_document(self, staging_doc: RawDocument) -> "MathematicalDocument":
         """
         Add a staging document from section processing.
 
