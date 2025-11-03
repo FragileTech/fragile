@@ -1,0 +1,215 @@
+{
+  "source": {
+    "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+    "line_range": {
+      "lines": [
+        [
+          539,
+          712
+        ]
+      ]
+    },
+    "label": "section-3-the-mass-conserving-forward-equation-pde",
+    "volume": "1_euclidean_gas",
+    "article_id": "07_mean_field",
+    "section": "2.3.3",
+    "section_name": "Derivation of the Internal Cloning Operator from First Principles"
+  },
+  "full_text": "",
+  "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)",
+  "definitions": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              549,
+              563
+            ]
+          ]
+        },
+        "label": "def-transport-operator",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.1",
+        "section_name": "The Transport Operator ($L^\\dagger$) is Mass-Conservative"
+      },
+      "full_text": {
+        "lines": [
+          [
+            549,
+            563
+          ]
+        ]
+      },
+      "label": "def-transport-operator",
+      "term": "Transport Operator",
+      "parameters_mentioned": []
+    }
+  ],
+  "theorems": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              609,
+              646
+            ]
+          ]
+        },
+        "label": "thm-mean-field-equation",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.3",
+        "section_name": "The Coupled Mean-Field Equations"
+      },
+      "full_text": "",
+      "label": "thm-mean-field-equation",
+      "statement_type": "theorem",
+      "conclusion_formula_latex": null,
+      "explicit_definition_references": []
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              650,
+              670
+            ]
+          ]
+        },
+        "label": "thm-mass-conservation",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.3",
+        "section_name": "The Coupled Mean-Field Equations"
+      },
+      "full_text": "",
+      "label": "thm-mass-conservation",
+      "statement_type": "theorem",
+      "conclusion_formula_latex": null,
+      "explicit_definition_references": []
+    }
+  ],
+  "proofs": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              577,
+              593
+            ]
+          ]
+        },
+        "label": "proof-lem-mass-conservation-transport",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.1",
+        "section_name": "The Transport Operator ($L^\\dagger$) is Mass-Conservative"
+      },
+      "full_text": "",
+      "label": "proof-lem-mass-conservation-transport",
+      "proves_label": "lem-mass-conservation-transport",
+      "strategy_text": null,
+      "steps": null,
+      "full_body_text": null,
+      "explicit_theorem_references": [],
+      "citations_in_text": []
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              672,
+              711
+            ]
+          ]
+        },
+        "label": "proof-thm-mass-conservation",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.3",
+        "section_name": "The Coupled Mean-Field Equations"
+      },
+      "full_text": "",
+      "label": "proof-thm-mass-conservation",
+      "proves_label": "thm-mass-conservation",
+      "strategy_text": null,
+      "steps": null,
+      "full_body_text": null,
+      "explicit_theorem_references": [],
+      "citations_in_text": []
+    }
+  ],
+  "citations": [],
+  "parameters": [],
+  "remarks": [],
+  "axioms": [],
+  "assumptions": [],
+  "_improvement_metadata": {
+    "changes": [
+      {
+        "entity_type": "definition",
+        "label": "def-transport-operator",
+        "operation": "ADD",
+        "reason": "New entity found in chapter text",
+        "old_data": null,
+        "new_data": {
+          "label": "def-transport-operator",
+          "line_start": 549,
+          "line_end": 563,
+          "term": "Transport Operator",
+          "parameters_mentioned": []
+        }
+      },
+      {
+        "entity_type": "theorem",
+        "label": "thm-mean-field-equation",
+        "operation": "ADD",
+        "reason": "New entity found in chapter text",
+        "old_data": null,
+        "new_data": {
+          "label": "thm-mean-field-equation",
+          "line_start": 609,
+          "line_end": 646,
+          "statement_type": "theorem",
+          "conclusion_formula_latex": null,
+          "definition_references": []
+        }
+      },
+      {
+        "entity_type": "theorem",
+        "label": "thm-mass-conservation",
+        "operation": "ADD",
+        "reason": "New entity found in chapter text",
+        "old_data": null,
+        "new_data": {
+          "label": "thm-mass-conservation",
+          "line_start": 650,
+          "line_end": 670,
+          "statement_type": "theorem",
+          "conclusion_formula_latex": null,
+          "definition_references": []
+        }
+      }
+    ],
+    "summary": {
+      "entities_added": 3,
+      "entities_modified": 0,
+      "entities_deleted": 0,
+      "entities_unchanged": 0
+    }
+  },
+  "_improvement_errors": [
+    "Failed to parse existing extraction: 12 validation errors for ChapterExtraction\ndefinitions.0.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...rameters_mentioned': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndefinitions.0.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...rameters_mentioned': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ntheorems.0.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...inition_references': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ntheorems.0.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...inition_references': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ntheorems.1.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...inition_references': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ntheorems.1.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...inition_references': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nproofs.0.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...'citations_in_text': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nproofs.0.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...'citations_in_text': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nproofs.0.steps\n  Input should be a valid list [type=list_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nproofs.1.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...'citations_in_text': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nproofs.1.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...'citations_in_text': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nproofs.1.steps\n  Input should be a valid list [type=list_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type"
+  ]
+}

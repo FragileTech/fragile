@@ -53,6 +53,7 @@ The properties of this space are inherited directly from the discrete model's sp
 
 :::{admonition} From a Finite Swarm to a Continuous Cloud
 :class: note
+:label: remark-mean-field-cloud
 In the N-particle framework, the system state is a single point in a high-dimensional space $\Sigma_N$, representing the specific configuration of $N$ walkers. The mean-field limit trades this for a function on the much lower-dimensional space $\Omega$. This is a shift from tracking a complex configuration of many bodies to tracking the shape of a single, continuous entity—a "probability cloud." The function that describes the shape of this cloud is the phase-space density.
 :::
 
@@ -82,6 +83,7 @@ We assume that $f$ has sufficient regularity for all subsequent operations to be
 
 :::{admonition} A Note on Regularity
 :class: note
+:label: remark-mean-field-regularity
 The assumption $f \in C([0, \infty); L^1(\Omega))$ has two key parts:
 *   **$L^1(\Omega)$:** The function must be integrable over the phase space. This is the minimum technical requirement for the normalization integral to be well-defined.
 *   **$C([0, \infty); \dots)$:** The density must evolve *continuously in time*. This means the "shape of the cloud" does not make instantaneous jumps, which is what allows us to describe its evolution using a *differential* equation involving a time derivative, $\partial_t f$.
@@ -93,6 +95,7 @@ This section applies the core principle of the mean-field limit—the translatio
 
 :::{admonition} The Core Principle: From Empirical Sums to Density Integrals
 :class: important
+:label: remark-mean-field-sum-to-integral
 :open:
 The fundamental "translation dictionary" of the mean-field limit is the replacement of discrete averages with continuous integrals. This is the bridge from statistics to functional analysis.
 
@@ -140,6 +143,7 @@ The moments are computed with respect to the **normalized density of the alive p
 :::
 
 :::{admonition} Remark on Well-Posedness and the Cemetery State Regularization
+:label: remark-cemetery-state
 :class: important
 
 **Positivity Requirement:** The definitions of the statistical moments rely on the normalization by the alive mass $m_a(t)$. These functionals are well-defined for all $t$ such that $m_a(t) > 0$. The global well-posedness of the PDE system requires regularizing the behavior as $m_a(t) \to 0$.
@@ -213,6 +217,7 @@ This potential inherits the floor from the N-particle algorithm, ensuring it is 
 
 :::{admonition} The Non-Local and Non-Linear Heart of the System
 :class: important
+:label: remark-important-nonlocal-nonlinear
 :open:
 The definition of the **Mean-Field Fitness Potential** $V[f]$ reveals the two core mathematical challenges—and the defining characteristics—of the continuous model:
 
@@ -283,6 +288,7 @@ An optional velocity cap, $\psi_v$, is applied after the final B-step to ensure 
 
 :::{admonition} Fidelity of the Continuous Generator
 :class: important
+:label: remark-fidelity-generator
 :open:
 This explicit definition of the BAOAB integrator provides the rigorous foundation for the continuous generator that follows. Each part of the BAOAB scheme corresponds directly to a term in the Fokker-Planck operator that we will derive in the next section:
 
@@ -325,6 +331,7 @@ A key property of this operator with reflecting boundary conditions is that it i
 
 :::{admonition} Separation of Kinetic Transport and Death
 :class: note
+:label: remark-separation-kinetic-death
 In this formulation, the kinetic operator describes only the continuous transport of the alive population via drift and diffusion. Death at the boundary is handled separately by the interior killing rate operator (Section 2.3), which provides a smooth transition zone near $\partial X_{\text{valid}}$. This separation simplifies the PDE analysis by decoupling the local kinetic transport from the non-local revival mechanism.
 :::
 
@@ -334,6 +341,7 @@ In the two-population model, we explicitly separate the three distinct physical 
 
 :::{admonition} Separation of Death, Revival, and Internal Dynamics
 :class: important
+:label: remark-separation-death-revival-cloning
 :open:
 The key innovation of this formulation is the explicit decoupling of boundary death from the revival and cloning mechanisms. In the discrete algorithm, a walker dies when it leaves $X_{\text{valid}}$, setting its status to 0. In the continuous model, we represent this as:
 
@@ -567,6 +575,7 @@ $$
 
 :::
 :::{prf:proof}
+:label: proof-lem-mass-conservation-transport
 **Proof.**
 Integrating $L^\dagger f = -\nabla \cdot J[f]$ over $\Omega$ and applying the divergence theorem yields:
 
@@ -661,6 +670,7 @@ where $k_{\text{killed}}[f] = \int_\Omega c(z)f(z)\,\mathrm{d}z$ is the instanta
 :::
 
 :::{prf:proof}
+:label: proof-thm-mass-conservation
 **Proof.**
 We compute the time derivatives of both components and show they sum to zero.
 
@@ -723,7 +733,7 @@ The Mean-Field Equations for the Euclidean Gas form a coupled system of a PDE (f
 The rigorous analysis of the coupled mean-field system—proving the existence, uniqueness, and long-term behavior of its solutions—requires a set of standing technical assumptions on the regularity of its constituent parts.
 
 :::{prf:assumption} Summary of Regularity Assumptions
-:label: asmp-regularity-summary
+:label: assumption-regularity-summary
 
 The well-posedness of the coupled mean-field system relies on the following assumptions, which are satisfied by the Canonical Euclidean Gas:
 *   **(H1)** The domains $X_{\text{valid}}$ and $V_{\text{alg}}$ are bounded and have smooth ($C^2$) boundaries.
@@ -765,7 +775,7 @@ A critical assumption of our continuous model is that death at the hard boundary
 We work with the following precise geometric and regularity framework:
 
 :::{prf:assumption} Regularity of the Valid Domain
-:label: asmp-domain-regularity
+:label: assumption-domain-regularity
 
 The valid position domain $X_{\text{valid}} \subset \mathbb{R}^d$ satisfies:
 
@@ -776,7 +786,7 @@ The valid position domain $X_{\text{valid}} \subset \mathbb{R}^d$ satisfies:
 :::
 
 :::{prf:assumption} Regularity of the Discrete Integrator
-:label: asmp-integrator-regularity
+:label: assumption-integrator-regularity
 
 The discrete kinetic integrator (BAOAB) produces position updates of the form:
 
@@ -788,7 +798,7 @@ where the remainder satisfies $\|R_{\text{pos}}(\tau; x,v)\| \le C_R \tau^{5/2}$
 :::
 
 :::{prf:assumption} Density Regularity
-:label: asmp-density-regularity-killing
+:label: assumption-density-regularity-killing
 
 The phase-space density $f^\tau(x,v)$ at the start of a discrete timestep satisfies:
 
@@ -859,7 +869,7 @@ for some constant $C$ depending only on $M_f, M_{\nabla f}, M_F, C_R$, and the g
 :::
 
 :::{prf:proof} Proof of Part (i): Pointwise Convergence
-:label: proof-killing-rate-consistency-part-i
+:label: proof-thm-killing-rate-consistency-part-i
 
 Fix $(x,v) \in \Omega$ and consider the position after one timestep under the BAOAB integrator.
 
@@ -1051,7 +1061,7 @@ where $v_n^+ := \max(v \cdot n_x(x), 0)$. **Q.E.D.**
 :::
 
 :::{prf:proof} Proof of Part (ii): Uniform Convergence with Error Bound
-:label: proof-killing-rate-consistency-part-ii
+:label: proof-thm-killing-rate-consistency-part-ii
 
 Define the error:
 
@@ -1211,6 +1221,7 @@ This completes the proof of Part (ii). **Q.E.D.**
 
 :::{admonition} Physical Interpretation of the Killing Rate
 :class: note
+:label: remark-killing-rate-interpretation
 
 **Geometric Structure**: The killing rate $c(x,v) = v_n^+ / d(x)$ has a natural geometric interpretation:
 
@@ -1229,6 +1240,7 @@ The key insight is that the discrete hard boundary at $\partial X_{\text{valid}}
 
 :::{admonition} Mathematical Implications for Well-Posedness
 :class: important
+:label: remark-important-killing-rate-well-posedness
 
 **Mollification and Smoothness**: The formula $c(x,v) = v_n^+ / d(x)$ contains a singularity as $d(x) \to 0$. For rigorous PDE analysis, we replace $c$ with a mollified version:
 
@@ -1262,6 +1274,7 @@ For typical regularity assumptions (e.g., $f \in H^1(\Omega)$), the convergence 
 
 :::{admonition} Numerical Validation Strategy
 :class: tip
+:label: remark-numerical-validation-killing-rate
 
 The rigorous result in Theorem [](#thm-killing-rate-consistency) provides a concrete validation protocol:
 

@@ -280,9 +280,11 @@ class RawTheorem(RawDataModel):
 
     explicit_definition_references: list[str] = Field(
         default_factory=list,
-        description="Terms mentioned that are clearly defined elsewhere, as they appear in text. "
-        "Examples: ['v-porous on lines', 'Lipschitz continuous', 'uniformly convex']. "
-        "LLM should identify formal terminology that likely has a Definition.",
+        description=(
+            "Labels of definitions referenced in this theorem (e.g., ['def-lipschitz-continuous', 'def-v-porous-on-balls']). "
+            "ALWAYS use label format (def-*), extracted from :label: directives or generated from term names. "
+            "LLM should identify formal terminology that likely has a Definition."
+        ),
     )
 
 
@@ -307,9 +309,12 @@ class RawProof(RawDataModel):
     proves_label: str = Field(
         ...,
         min_length=1,
-        description="The label of the theorem this proof is for (e.g., 'Theorem 1.1', 'Lemma 3.4'). "
-        "Should match the label from the corresponding RawTheorem. "
-        "If proof says just 'Proof.' without explicit label, infer from context.",
+        description=(
+            "The label of the theorem this proof proves (e.g., 'thm-main-result', 'lem-gradient-bound'). "
+            "MUST match the label from the corresponding RawTheorem exactly. "
+            "Pattern: thm-*|lem-*|prop-*|cor-*. "
+            "If proof header says 'Proof of Theorem 1.1', extract or generate the theorem's label."
+        ),
     )
 
     strategy_text: TextLocation | None = Field(
@@ -337,9 +342,11 @@ class RawProof(RawDataModel):
 
     explicit_theorem_references: list[str] = Field(
         default_factory=list,
-        description="Explicit references to other results in the paper. "
-        "Examples: ['Theorem 1.4', 'Lemma 2.3', 'Proposition 3.9', 'Corollary 1.2']. "
-        "Preserve exact text as cited.",
+        description=(
+            "Labels of theorems/lemmas referenced in this proof (e.g., ['thm-convergence', 'lem-gradient-bound']). "
+            "ALWAYS use label format (thm-*|lem-*|prop-*|cor-*), extracted from :label: directives or generated from numbering. "
+            "Preserve theorem references in label format for downstream cross-referencing."
+        ),
     )
 
     citations_in_text: list[str] = Field(
@@ -492,6 +499,31 @@ class RawRemark(RawDataModel):
     )
 
 
+class RawAssumption(RawDataModel):
+    """
+    Local mathematical assumption or hypothesis.
+
+    Assumptions are local conditions or hypotheses that apply to specific theorems,
+    lemmas, or proofs. Unlike axioms (which are global framework principles),
+    assumptions are statement-specific and may vary between results.
+
+    Examples:
+    - "Assume the domain is bounded"
+    - "Suppose f is Lipschitz continuous"
+    - "Let N > 100"
+
+    The LLM should extract assumptions as simple statements with their line ranges.
+    The full text content is extracted automatically from the source location.
+    """
+
+    label: str = Field(
+        ...,
+        pattern=r"^assumption-[a-z0-9-]+$",
+        description="Unique assumption label (e.g., 'assumption-bounded-domain', 'assumption-lipschitz-regularity'). "
+        "If the concept has no assigned label then we should create one for it.",
+    )
+
+
 class RawAxiom(RawDataModel):
     """
     Direct transcription of an axiom block.
@@ -609,6 +641,11 @@ class RawDocumentSection(RawDataModel):
         default_factory=list, description="All axioms extracted from this section."
     )
 
+    assumptions: list[RawAssumption] = Field(
+        default_factory=list,
+        description="All local assumptions and hypotheses extracted from this section.",
+    )
+
     # Statistics for validation
     @property
     def total_entities(self) -> int:
@@ -622,6 +659,7 @@ class RawDocumentSection(RawDataModel):
             + len(self.parameters)
             + len(self.remarks)
             + len(self.axioms)
+            + len(self.assumptions)
         )
 
     def get_summary(self) -> str:
@@ -632,6 +670,7 @@ class RawDocumentSection(RawDataModel):
             f"  - Theorems/Lemmas/Props: {len(self.theorems)}\n"
             f"  - Proofs: {len(self.proofs)}\n"
             f"  - Axioms: {len(self.axioms)}\n"
+            f"  - Assumptions: {len(self.assumptions)}\n"
             f"  - Citations: {len(self.citations)}\n"
             # f"  - Equations: {len(self.equations)}\n"
             f"  - Parameters: {len(self.parameters)}\n"

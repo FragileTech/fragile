@@ -1,0 +1,148 @@
+{
+  "source": {
+    "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+    "line_range": {
+      "lines": [
+        [
+          4,
+          17
+        ]
+      ]
+    },
+    "label": "section-introduction",
+    "volume": "1_euclidean_gas",
+    "article_id": "07_mean_field",
+    "section": null,
+    "section_name": null
+  },
+  "full_text": "",
+  "section_id": "## Introduction",
+  "definitions": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              8,
+              8
+            ]
+          ]
+        },
+        "label": "def-mvfp-equation",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": "Introduction"
+      },
+      "full_text": {
+        "lines": [
+          [
+            8,
+            8
+          ]
+        ]
+      },
+      "label": "def-mvfp-equation",
+      "term": "McKean-Vlasov-Fokker-Planck equation",
+      "parameters_mentioned": []
+    }
+  ],
+  "theorems": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              8,
+              8
+            ]
+          ]
+        },
+        "label": "thm-lsi-existence",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": "Introduction"
+      },
+      "full_text": "",
+      "label": "thm-lsi-existence",
+      "statement_type": "theorem",
+      "conclusion_formula_latex": null,
+      "explicit_definition_references": []
+    }
+  ],
+  "proofs": [],
+  "citations": [],
+  "parameters": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              8,
+              8
+            ]
+          ]
+        },
+        "label": "param-f-density",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": "Introduction"
+      },
+      "full_text": "",
+      "label": "param-f-density",
+      "symbol": "$f(t,x,v)$",
+      "meaning": "single-particle phase-space probability density",
+      "scope": "global"
+    }
+  ],
+  "remarks": [],
+  "axioms": [],
+  "assumptions": [],
+  "_improvement_metadata": {
+    "changes": [
+      {
+        "entity_type": "definition",
+        "label": "def-mvfp-equation",
+        "operation": "ADD",
+        "reason": "New entity found in chapter text",
+        "old_data": null,
+        "new_data": {
+          "label": "def-mvfp-equation",
+          "line_start": 8,
+          "line_end": 8,
+          "term": "McKean-Vlasov-Fokker-Planck equation",
+          "parameters_mentioned": []
+        }
+      },
+      {
+        "entity_type": "theorem",
+        "label": "thm-lsi-existence",
+        "operation": "ADD",
+        "reason": "New entity found in chapter text",
+        "old_data": null,
+        "new_data": {
+          "label": "thm-lsi-existence",
+          "line_start": 8,
+          "line_end": 8,
+          "statement_type": "theorem",
+          "conclusion_formula_latex": null,
+          "definition_references": []
+        }
+      }
+    ],
+    "summary": {
+      "entities_added": 2,
+      "entities_modified": 0,
+      "entities_deleted": 0,
+      "entities_unchanged": 0
+    }
+  },
+  "_improvement_errors": [
+    "Failed to parse existing extraction: 6 validation errors for ChapterExtraction\ndefinitions.0.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...rameters_mentioned': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndefinitions.0.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...rameters_mentioned': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ntheorems.0.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...inition_references': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ntheorems.0.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...inition_references': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparameters.0.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...ity', 'scope': 'global'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparameters.0.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...ity', 'scope': 'global'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing"
+  ]
+}

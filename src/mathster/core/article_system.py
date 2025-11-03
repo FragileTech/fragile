@@ -326,10 +326,11 @@ class SourceLocation(BaseModel):
     )
     label: str = Field(
         ...,
-        pattern=r"^[a-z][a-z0-9-]*$",
+        pattern=r"^[a-z][a-z0-9_-]*$",
         description="Jupyter Book directive label (e.g., 'thm-keystone', 'def-walker', 'section-introduction'). "
-        "Required for all entities. If a directive doesn't exist in the source document, "
-        "create one following the pattern: {type}-{short-name} (e.g., 'thm-convergence', 'def-fitness'). "
+        "Required for all entities. Must be lowercase with letters, digits, underscores, and hyphens only. "
+        "If a directive doesn't exist in the source document, "
+        "create one following the pattern: {type}-{short-name} (e.g., 'thm-convergence', 'def-fitness', 'param_theta'). "
         "For section labels, use pattern: section-{normalized-title} (e.g., 'section-introduction', 'section-cloning').",
     )
 
@@ -410,16 +411,20 @@ class SourceLocation(BaseModel):
         computed_section, computed_section_name = extract_section_from_markdown(
             self.file_path, self.line_range
         )
-        if computed_section is None:
-            raise ValueError(
-                f"Cannot extract section from {self.file_path} at {self.line_range}. "
-                "File must contain numbered section headers before the target line."
-            )
-        if computed_section_name is None:
+
+        # Allow None for section number (unnumbered sections like "Introduction")
+        # But require section_name if there's any header before the target line
+        if computed_section is None and computed_section_name is None:
+            # Special case: no headers at all before target (e.g., preamble/chapter 0)
+            # This is valid for document metadata
+            pass  # Allow both to be None - will use object.__setattr__ below
+        elif computed_section_name is None:
+            # Header exists but couldn't parse name - this is an actual error
             raise ValueError(
                 f"Cannot extract section_name from {self.file_path} at {self.line_range}. "
-                "File must contain section headers with names before the target line."
+                "File contains unparseable section headers before the target line."
             )
+        # Note: computed_section can be None for unnumbered sections - this is valid
 
         # Step 2: Compare user-provided values with computed values and warn on mismatches
         # Volume validation

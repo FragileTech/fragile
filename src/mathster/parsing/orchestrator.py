@@ -1,77 +1,21 @@
 """
-DSPy pipeline orchestration for mathematical concept extraction and improvement.
+Document processing orchestration.
 
-**⚠️ DEPRECATED: This file is legacy code. Use the modular API instead:**
-
-```python
-# OLD (deprecated):
-from mathster.parsing.dspy_pipeline import process_document, configure_dspy
-
-# NEW (recommended):
-from mathster.parsing import process_document, configure_dspy
-# Or use CLI:
-from mathster.parsing import cli_main
-```
-
-**Command-line usage:**
-```bash
-# OLD (deprecated):
-python -m mathster.parsing.dspy_pipeline <file>
-
-# NEW (recommended):
-python -m mathster.parsing.cli <file>
-```
-
-This module provides the main orchestration logic that routes between two workflows:
-1. EXTRACT workflow: Fresh extraction of mathematical concepts from documents
-   - Batch mode (default): Extract all labels at once (fast, 1 LLM call)
-   - Single-label mode: Extract one label at a time (slower, N LLM calls, more accurate)
-2. IMPROVE workflow: Enhancement of existing extractions
-
-The pipeline automatically detects whether a chapter has been previously processed
-and routes to the appropriate workflow.
-
-Architecture:
-    process_document()
-      ├─> For each chapter:
-      │     ├─> Check if chapter_{N}.json exists
-      │     ├─> If NEW: extract_workflow.extract_chapter() OR extract_chapter_by_labels()
-      │     └─> If EXISTS: improve_workflow.improve_chapter()
-      └─> Save results with error metadata and change tracking
-
-⚠️ For new code, use: `from mathster.parsing import process_document, cli_main`
-        docs/source/1_euclidean_gas/01_fragile_gas_framework.md \\
-        --extraction-mode single_label
-
-    # Re-run on existing data (improves extractions)
-    python -m mathster.parsing.dspy_pipeline \\
-        docs/source/1_euclidean_gas/01_fragile_gas_framework.md
-
-Output:
-    - chapter_0.json, chapter_1.json, ... (one per chapter)
-    - Each JSON contains RawDocumentSection with entity metadata
-    - Metadata includes extraction errors and improvement changes
+Provides high-level orchestration for the complete extraction/improvement
+pipeline, coordinating DSPy workflows, retry logic, and file I/O.
 """
 
 import json
-import os
 import re
 from pathlib import Path
 
-import dspy
-from dotenv import load_dotenv
-
-from mathster.parsing.extract_workflow import extract_chapter, extract_chapter_by_labels
-from mathster.parsing.improve_workflow import improve_chapter
-from mathster.parsing.tools import split_markdown_by_chapters_with_line_numbers
-
-# Load environment variables from .env file at import time
-load_dotenv()
-
-
-# =============================================================================
-# SHARED UTILITIES
-# =============================================================================
+from mathster.parsing.config import configure_dspy
+from mathster.parsing.text_processing.splitting import split_markdown_by_chapters_with_line_numbers
+from mathster.parsing.workflows import (
+    extract_chapter,
+    extract_chapter_by_labels,
+    improve_chapter,
+)
 
 
 def parse_line_number(line: str) -> int | None:
@@ -83,6 +27,12 @@ def parse_line_number(line: str) -> int | None:
 
     Returns:
         The line number or None if format doesn't match
+
+    Example:
+        >>> parse_line_number("  123: This is a line")
+        123
+        >>> parse_line_number("Not numbered")
+        None
     """
     # Match patterns like "  123: " or "123: "
     match = re.match(r"\s*(\d+):\s", line)
@@ -101,6 +51,11 @@ def extract_section_id(chapter_text: str, chapter_number: int) -> str:
 
     Returns:
         Section identifier (e.g., "## 1. Introduction" or "Chapter 0 - Preamble")
+
+    Example:
+        >>> text = "  1: ## 1. Introduction\\n  2: This chapter..."
+        >>> extract_section_id(text, 1)
+        '## 1. Introduction'
     """
     # Find first line with "##" header
     for line in chapter_text.split('\n')[:20]:  # Check first 20 lines
@@ -113,63 +68,10 @@ def extract_section_id(chapter_text: str, chapter_number: int) -> str:
     return f"Chapter {chapter_number}" if chapter_number > 0 else "Preamble"
 
 
-def configure_dspy(
-    model: str = "gemini/gemini-flash-lite-latest",
-    temperature: float = 0.5,
-    max_tokens: int = 50000
-) -> None:
-    """
-    Configure DSPy with Claude or Gemini model.
-
-    Args:
-        model: Model identifier (default: gemini-flash-lite-latest)
-               Supports: anthropic/claude-*, gemini/*
-        temperature: Sampling temperature (0.0 for deterministic)
-        max_tokens: Maximum tokens per response
-    """
-    # Ensure environment variables are loaded
-    load_dotenv()
-
-    # Determine which API key to use based on model
-    if "anthropic" in model.lower():
-        api_key = os.environ.get('ANTHROPIC_API_KEY')
-        if not api_key:
-            raise ValueError(
-                "ANTHROPIC_API_KEY environment variable not set. "
-                "Please set it to your Anthropic API key."
-            )
-    elif "gemini" in model.lower():
-        api_key = os.environ.get('GEMINI_API_KEY')
-        if not api_key:
-            raise ValueError(
-                "GEMINI_API_KEY environment variable not set. "
-                "Please set it to your Google API key."
-            )
-    else:
-        raise ValueError(
-            f"Unsupported model: {model}. "
-            "Supported models: anthropic/claude-*, gemini/*"
-        )
-
-    lm = dspy.LM(
-        model=model,
-        api_key=api_key,
-        temperature=temperature,
-        max_tokens=max_tokens
-    )
-    dspy.configure(lm=lm)
-    print(f"✓ Configured DSPy with model: {model}")
-
-
-# =============================================================================
-# MAIN PROCESSING PIPELINE
-# =============================================================================
-
-
 def process_document(
     markdown_file: str | Path,
     output_dir: str | Path,
-    model: str = "gemini/gemini-flash-lite-latest", #"anthropic/claude-haiku-4-5",
+    model: str = "gemini/gemini-flash-lite-latest",
     max_iters: int = 3,
     skip_chapters: list[int] | None = None,
     extraction_mode: str = "batch",
@@ -201,6 +103,14 @@ def process_document(
 
     Output:
         Creates/updates chapter_{N}.json files in output_dir
+
+    Example:
+        >>> process_document(
+        ...     markdown_file="docs/source/01_framework.md",
+        ...     output_dir="docs/source/raw_data",
+        ...     model="gemini/gemini-flash-lite-latest",
+        ...     verbose=True
+        ... )
     """
     markdown_file = Path(markdown_file)
     output_dir = Path(output_dir)
@@ -470,148 +380,3 @@ def process_document(
         print("=" * 80)
         print("✓ Processing complete!")
         print("=" * 80)
-
-
-# =============================================================================
-# CLI INTERFACE
-# =============================================================================
-
-
-def main():
-    """Command-line interface for the DSPy pipeline."""
-    import argparse
-
-    parser = argparse.ArgumentParser(
-        description="Extract/improve mathematical concepts from markdown documents using DSPy",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  # Fresh extraction (batch mode - fast, all labels at once)
-  python -m mathster.parsing.dspy_pipeline \\
-      docs/source/1_euclidean_gas/01_fragile_gas_framework.md
-
-  # Single-label extraction (slower but more accurate)
-  python -m mathster.parsing.dspy_pipeline \\
-      docs/source/1_euclidean_gas/01_fragile_gas_framework.md \\
-      --extraction-mode single_label
-
-  # Re-run to improve existing extractions
-  python -m mathster.parsing.dspy_pipeline \\
-      docs/source/1_euclidean_gas/01_fragile_gas_framework.md
-
-  # Specify custom output directory
-  python -m mathster.parsing.dspy_pipeline \\
-      docs/source/1_euclidean_gas/01_fragile_gas_framework.md \\
-      --output-dir custom/output/path
-
-  # Skip certain chapters
-  python -m mathster.parsing.dspy_pipeline \\
-      docs/source/1_euclidean_gas/01_fragile_gas_framework.md \\
-      --skip-chapters 0 1
-
-  # Use Sonnet instead of Haiku
-  python -m mathster.parsing.dspy_pipeline \\
-      docs/source/1_euclidean_gas/01_fragile_gas_framework.md \\
-      --model anthropic/claude-sonnet-4-20250514
-        """
-    )
-
-    parser.add_argument(
-        "markdown_file",
-        type=str,
-        help="Path to markdown file to process"
-    )
-    parser.add_argument(
-        "--output-dir",
-        type=str,
-        default=None,
-        help="Output directory for chapter JSON files (default: <file_dir>/parser/)"
-    )
-    parser.add_argument(
-        "--model",
-        type=str,
-        default= "gemini/gemini-flash-lite-latest", #"anthropic/claude-haiku-4-5",
-        help="DSPy model identifier (default: claude-haiku-4-5)"
-    )
-    parser.add_argument(
-        "--max-iters",
-        type=int,
-        default=3,
-        help="Maximum ReAct iterations per chapter (default: 3)"
-    )
-    parser.add_argument(
-        "--max-retries",
-        type=int,
-        default=3,
-        help="Maximum number of retry attempts on extraction failure (default: 3)"
-    )
-    parser.add_argument(
-        "--fallback-model",
-        type=str,
-        default="anthropic/claude-haiku-4-5",
-        help="Model to use after first extraction failure (default: anthropic/claude-haiku-4-5)"
-    )
-    parser.add_argument(
-        "--skip-chapters",
-        type=int,
-        nargs="+",
-        default=None,
-        help="Chapter indices to skip (e.g., --skip-chapters 0 1)"
-    )
-    parser.add_argument(
-        "--extraction-mode",
-        type=str,
-        choices=["batch", "single_label"],
-        default="batch",
-        help="Extraction strategy: 'batch' (all labels at once, fast) or "
-             "'single_label' (one label at a time, slower but more accurate, default: batch)"
-    )
-    parser.add_argument(
-        "--improvement-mode",
-        type=str,
-        choices=["batch", "single_label"],
-        default="batch",
-        help="Improvement strategy: 'batch' (all missed labels at once) or "
-             "'single_label' (one missed label at a time with per-label retry, default: batch)"
-    )
-    parser.add_argument(
-        "--quiet",
-        action="store_true",
-        help="Suppress progress output"
-    )
-
-    args = parser.parse_args()
-
-    # Determine output directory
-    markdown_path = Path(args.markdown_file)
-    if args.output_dir:
-        output_dir = Path(args.output_dir)
-    else:
-        # Default: create 'parser' subdirectory next to source file
-        output_dir = markdown_path.parent / "parser"
-
-    # Process document
-    try:
-        process_document(
-            markdown_file=markdown_path,
-            output_dir=output_dir,
-            model=args.model,
-            max_iters=args.max_iters,
-            skip_chapters=args.skip_chapters,
-            extraction_mode=args.extraction_mode,
-            improvement_mode=args.improvement_mode,
-            max_retries=args.max_retries,
-            fallback_model=args.fallback_model,
-            verbose=not args.quiet
-        )
-    except Exception as e:
-        print(f"Error: {e}")
-        import traceback
-        traceback.print_exc()
-        return 1
-
-    return 0
-
-
-if __name__ == "__main__":
-    exit(main())

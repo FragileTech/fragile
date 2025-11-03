@@ -4,19 +4,19 @@
     "line_range": {
       "lines": [
         [
-          713,
-          1429
+          18,
+          230
         ]
       ]
     },
-    "label": "section-4-analysis-and-properties-of-the-mean-field-equations",
+    "label": "section-1-foundations-of-the-mean-field-model",
     "volume": "1_euclidean_gas",
     "article_id": "07_mean_field",
-    "section": "3.3",
-    "section_name": "The Coupled Mean-Field Equations"
+    "section": null,
+    "section_name": "Introduction"
   },
   "full_text": "",
-  "section_id": "## 4. Analysis and Properties of the Mean-Field Equations",
+  "section_id": "## 1. Foundations of the Mean-Field Model",
   "definitions": [],
   "theorems": [],
   "proofs": [],
