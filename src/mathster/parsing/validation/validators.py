@@ -10,10 +10,7 @@ from mathster.parsing.models.results import ValidationResult
 
 
 def validate_extraction(
-    extraction_dict: dict,
-    file_path: str,
-    article_id: str,
-    chapter_text: str
+    extraction_dict: dict, file_path: str, article_id: str, chapter_text: str
 ) -> ValidationResult:
     """
     Validation tool that attempts to build RawDocumentSection from extraction.
@@ -43,7 +40,7 @@ def validate_extraction(
         "assumptions": 0,
         "parameters": 0,
         "remarks": 0,
-        "citations": 0
+        "citations": 0,
     }
 
     try:
@@ -53,10 +50,7 @@ def validate_extraction(
         # Attempt to convert to RawDocumentSection
         try:
             raw_section, conversion_warnings = convert_to_raw_document_section(
-                extraction,
-                file_path=file_path,
-                article_id=article_id,
-                chapter_text=chapter_text
+                extraction, file_path=file_path, article_id=article_id, chapter_text=chapter_text
             )
 
             # Add conversion warnings to warnings list
@@ -76,7 +70,9 @@ def validate_extraction(
             # Check if we got any entities
             total_entities = sum(entities_validated.values())
             if total_entities == 0:
-                warnings.append("No entities were extracted from this chapter. Is the chapter empty?")
+                warnings.append(
+                    "No entities were extracted from this chapter. Is the chapter empty?"
+                )
 
             # Validate label patterns
             for defn in extraction.definitions:
@@ -85,7 +81,9 @@ def validate_extraction(
 
             for thm in extraction.theorems:
                 if not any(thm.label.startswith(p) for p in ["thm-", "lem-", "prop-", "cor-"]):
-                    errors.append(f"Theorem label '{thm.label}' must start with thm-/lem-/prop-/cor-")
+                    errors.append(
+                        f"Theorem label '{thm.label}' must start with thm-/lem-/prop-/cor-"
+                    )
 
             for proof in extraction.proofs:
                 if not proof.label.startswith("proof-"):
@@ -93,7 +91,9 @@ def validate_extraction(
 
             for axiom in extraction.axioms:
                 if not any(axiom.label.startswith(p) for p in ["axiom-", "ax-", "def-axiom-"]):
-                    errors.append(f"Axiom label '{axiom.label}' must start with axiom-/ax-/def-axiom-")
+                    errors.append(
+                        f"Axiom label '{axiom.label}' must start with axiom-/ax-/def-axiom-"
+                    )
 
             for param in extraction.parameters:
                 if not param.label.startswith("param-"):
@@ -105,7 +105,9 @@ def validate_extraction(
 
             for assumption in extraction.assumptions:
                 if not assumption.label.startswith("assumption-"):
-                    errors.append(f"Assumption label '{assumption.label}' must start with 'assumption-'")
+                    errors.append(
+                        f"Assumption label '{assumption.label}' must start with 'assumption-'"
+                    )
 
             # Validate reference formats
             # PERMISSIVE: Validate theorem definition_references (warnings only)
@@ -120,7 +122,9 @@ def validate_extraction(
             # Validate proofs
             for proof in extraction.proofs:
                 # STRICT: Validate proves_label (MUST be label format)
-                if not any(proof.proves_label.startswith(p) for p in ["thm-", "lem-", "prop-", "cor-"]):
+                if not any(
+                    proof.proves_label.startswith(p) for p in ["thm-", "lem-", "prop-", "cor-"]
+                ):
                     errors.append(
                         f"Proof '{proof.label}': proves_label MUST be a theorem label "
                         f"(thm-*|lem-*|prop-*|cor-*), got '{proof.proves_label}'. "
@@ -151,16 +155,13 @@ def validate_extraction(
                     )
 
         except Exception as e:
-            errors.append(f"Failed to convert to RawDocumentSection: {str(e)}")
+            errors.append(f"Failed to convert to RawDocumentSection: {e!s}")
 
     except Exception as e:
-        errors.append(f"Failed to parse ChapterExtraction: {str(e)}")
+        errors.append(f"Failed to parse ChapterExtraction: {e!s}")
 
     is_valid = len(errors) == 0
 
     return ValidationResult(
-        is_valid=is_valid,
-        errors=errors,
-        warnings=warnings,
-        entities_validated=entities_validated
+        is_valid=is_valid, errors=errors, warnings=warnings, entities_validated=entities_validated
     )

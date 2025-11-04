@@ -96,7 +96,9 @@ class AxiomExtraction(ExtractedEntity):
     """Extracted axiom with structured components."""
 
     name: str = Field(..., description="Title/name of the axiom")
-    core_assumption_line_start: int = Field(..., description="Starting line of core assumption text")
+    core_assumption_line_start: int = Field(
+        ..., description="Starting line of core assumption text"
+    )
     core_assumption_line_end: int = Field(..., description="Ending line of core assumption text")
     parameters: list[str] = Field(
         default_factory=list,
@@ -119,12 +121,8 @@ class AxiomExtraction(ExtractedEntity):
 class ParameterExtraction(ExtractedEntity):
     """Extracted parameter/notation definition."""
 
-    symbol: str = Field(
-        ..., description="Mathematical symbol (e.g., 'h', '\\beta', 'N')"
-    )
-    meaning: str = Field(
-        ..., description="Definition/meaning of the symbol"
-    )
+    symbol: str = Field(..., description="Mathematical symbol (e.g., 'h', '\\beta', 'N')")
+    meaning: str = Field(..., description="Definition/meaning of the symbol")
     scope: Literal["global", "local"] = Field(
         ..., description="Whether parameter is global (whole document) or local (section/proof)"
     )
@@ -145,7 +143,6 @@ class AssumptionExtraction(ExtractedEntity):
     such as 'Assume the domain is bounded' or 'Suppose f is Lipschitz continuous'.
     Unlike axioms (global framework principles), assumptions are statement-specific.
     """
-    pass
 
 
 class CitationExtraction(ExtractedEntity):

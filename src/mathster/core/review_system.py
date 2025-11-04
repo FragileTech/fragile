@@ -8,4 +8,4 @@ New code should import directly from mathster.core.reviews.
 """
 
 # Re-export everything from reviews
-from mathster.core.reviews import *  # noqa: F403, F401
+from mathster.core.reviews import *  # noqa: F403

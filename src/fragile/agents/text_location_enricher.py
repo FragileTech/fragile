@@ -51,24 +51,22 @@ Maps to Lean:
     end TextLocationEnricher
 """
 
+from dataclasses import dataclass
 import json
 import logging
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+import sys
 
+from fragile.proofs.tools.line_finder import extract_lines, validate_line_range
 from fragile.proofs.tools.source_location_enricher import (
     batch_enrich_all_documents,
     enrich_directory,
     enrich_single_entity,
 )
-from fragile.proofs.tools.line_finder import extract_lines, validate_line_range
 
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(levelname)s: %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -96,7 +94,7 @@ class EnrichmentConfig:
     """
 
     force_re_enrich: bool = False
-    entity_types: Optional[list[str]] = None
+    entity_types: list[str] | None = None
     validate_after: bool = True
     verbose: bool = True
 
@@ -146,7 +144,7 @@ class TextLocationEnricher:
         >>> result = agent.enrich_directory(
         ...     raw_data_dir=Path("docs/source/.../raw_data/"),
         ...     markdown_file=Path("docs/source/.../doc.md"),
-        ...     document_id="doc_id"
+        ...     document_id="doc_id",
         ... )
         >>> print(f"Coverage: {result.coverage:.1f}%")
         Coverage: 98.5%
@@ -156,7 +154,7 @@ class TextLocationEnricher:
           config : EnrichmentConfig
     """
 
-    def __init__(self, config: Optional[EnrichmentConfig] = None):
+    def __init__(self, config: EnrichmentConfig | None = None):
         """
         Initialize the text location enricher agent.
 
@@ -170,9 +168,7 @@ class TextLocationEnricher:
         else:
             logger.setLevel(logging.WARNING)
 
-    def enrich_single_file(
-        self, json_file: Path, markdown_file: Path, document_id: str
-    ) -> bool:
+    def enrich_single_file(self, json_file: Path, markdown_file: Path, document_id: str) -> bool:
         """
         Enrich a single JSON file with TextLocation metadata.
 
@@ -189,7 +185,7 @@ class TextLocationEnricher:
             >>> success = agent.enrich_single_file(
             ...     json_file=Path("raw_data/theorems/thm-keystone.json"),
             ...     markdown_file=Path("docs/source/.../03_cloning.md"),
-            ...     document_id="03_cloning"
+            ...     document_id="03_cloning",
             ... )
             >>> assert success
 
@@ -208,7 +204,7 @@ class TextLocationEnricher:
             with open(json_file, encoding="utf-8") as f:
                 data = json.load(f)
                 if "source" in data and data["source"] is not None:
-                    logger.info(f"  ⏭️  Skipping (already has source)")
+                    logger.info("  ⏭️  Skipping (already has source)")
                     return True
 
         # Enrich using existing tool
@@ -241,7 +237,7 @@ class TextLocationEnricher:
             >>> result = agent.enrich_directory(
             ...     raw_data_dir=Path("docs/source/.../raw_data/"),
             ...     markdown_file=Path("docs/source/.../doc.md"),
-            ...     document_id="doc_id"
+            ...     document_id="doc_id",
             ... )
             >>> print(f"Coverage: {result.coverage:.1f}%")
             Coverage: 98.0%
@@ -254,7 +250,7 @@ class TextLocationEnricher:
               (document_id : String)
               : IO EnrichmentResult
         """
-        logger.info(f"\n🔍 Text Location Enricher - Directory Mode")
+        logger.info("\n🔍 Text Location Enricher - Directory Mode")
         logger.info(f"   Source: {markdown_file.name}")
         logger.info(f"   Target: {raw_data_dir.name}\n")
 
@@ -274,16 +270,14 @@ class TextLocationEnricher:
             self._validate_directory(raw_data_dir, markdown_file)
 
         # Report
-        logger.info(f"\n✅ Enrichment complete!")
+        logger.info("\n✅ Enrichment complete!")
         logger.info(f"   Total: {result.total} entities")
         logger.info(f"   Succeeded: {result.succeeded}")
         logger.info(f"   Coverage: {result.coverage:.1f}%")
 
         return result
 
-    def batch_enrich_corpus(
-        self, docs_source_dir: Path
-    ) -> dict[str, EnrichmentResult]:
+    def batch_enrich_corpus(self, docs_source_dir: Path) -> dict[str, EnrichmentResult]:
         """
         Batch enrich all documents in the corpus.
 
@@ -310,7 +304,7 @@ class TextLocationEnricher:
               (docs_dir : Path)
               : IO (Map String EnrichmentResult)
         """
-        logger.info(f"\n🔍 Text Location Enricher - Batch Mode")
+        logger.info("\n🔍 Text Location Enricher - Batch Mode")
         logger.info(f"   Corpus: {docs_source_dir}\n")
 
         # Enrich using existing tool
@@ -338,9 +332,7 @@ class TextLocationEnricher:
             logger.info(f"{doc_id:30s}: {result}")
 
         logger.info(f"\n{'-' * 70}")
-        logger.info(
-            f"{'TOTAL':30s}: {total_succeeded}/{total_count} ({total_coverage:.1f}%)"
-        )
+        logger.info(f"{'TOTAL':30s}: {total_succeeded}/{total_count} ({total_coverage:.1f}%)")
         logger.info(f"{'=' * 70}\n")
 
         return results
@@ -379,9 +371,7 @@ class TextLocationEnricher:
             if "full_statement_text" in entity:
                 key_text = entity["full_statement_text"][:100]
                 if key_text.lower() not in extracted.lower():
-                    logger.warning(
-                        f"  ⚠️  Text mismatch at lines {start}-{end}: {json_file.name}"
-                    )
+                    logger.warning(f"  ⚠️  Text mismatch at lines {start}-{end}: {json_file.name}")
                     return
 
             logger.debug(f"  ✓ Valid line range {start}-{end}: {json_file.name}")
@@ -424,9 +414,7 @@ def main():
         description="Enrich raw JSON entities with TextLocation metadata"
     )
 
-    parser.add_argument(
-        "mode", choices=["single", "directory", "batch"], help="Enrichment mode"
-    )
+    parser.add_argument("mode", choices=["single", "directory", "batch"], help="Enrichment mode")
 
     parser.add_argument("target", type=Path, help="Target JSON file, directory, or corpus")
 
@@ -459,7 +447,7 @@ def main():
     args = parser.parse_args()
 
     # Validate required arguments
-    if args.mode in ["single", "directory"]:
+    if args.mode in {"single", "directory"}:
         if not args.source or not args.document_id:
             parser.error(f"{args.mode} mode requires --source and --document-id")
 
@@ -477,18 +465,18 @@ def main():
     # Execute based on mode
     if args.mode == "single":
         success = agent.enrich_single_file(args.target, args.source, args.document_id)
-        exit(0 if success else 1)
+        sys.exit(0 if success else 1)
 
     elif args.mode == "directory":
         result = agent.enrich_directory(args.target, args.source, args.document_id)
-        exit(0 if result.coverage > 90.0 else 1)
+        sys.exit(0 if result.coverage > 90.0 else 1)
 
     elif args.mode == "batch":
         results = agent.batch_enrich_corpus(args.target)
         total_succeeded = sum(r.succeeded for r in results.values())
         total_count = sum(r.total for r in results.values())
         coverage = 100.0 * total_succeeded / total_count if total_count > 0 else 0.0
-        exit(0 if coverage > 90.0 else 1)
+        sys.exit(0 if coverage > 90.0 else 1)
 
 
 if __name__ == "__main__":

@@ -55,15 +55,17 @@ Output:
 
 import json
 import os
-import re
 from pathlib import Path
+import re
+import sys
 
-import dspy
 from dotenv import load_dotenv
+import dspy
 
 from mathster.parsing.extract_workflow import extract_chapter, extract_chapter_by_labels
 from mathster.parsing.improve_workflow import improve_chapter
 from mathster.parsing.tools import split_markdown_by_chapters_with_line_numbers
+
 
 # Load environment variables from .env file at import time
 load_dotenv()
@@ -103,7 +105,7 @@ def extract_section_id(chapter_text: str, chapter_number: int) -> str:
         Section identifier (e.g., "## 1. Introduction" or "Chapter 0 - Preamble")
     """
     # Find first line with "##" header
-    for line in chapter_text.split('\n')[:20]:  # Check first 20 lines
+    for line in chapter_text.split("\n")[:20]:  # Check first 20 lines
         # Remove line number prefix
         content = re.sub(r"^\s*\d+:\s*", "", line)
         if content.startswith("## "):
@@ -116,7 +118,7 @@ def extract_section_id(chapter_text: str, chapter_number: int) -> str:
 def configure_dspy(
     model: str = "gemini/gemini-flash-lite-latest",
     temperature: float = 0.5,
-    max_tokens: int = 50000
+    max_tokens: int = 50000,
 ) -> None:
     """
     Configure DSPy with Claude or Gemini model.
@@ -132,31 +134,27 @@ def configure_dspy(
 
     # Determine which API key to use based on model
     if "anthropic" in model.lower():
-        api_key = os.environ.get('ANTHROPIC_API_KEY')
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
         if not api_key:
-            raise ValueError(
+            msg = (
                 "ANTHROPIC_API_KEY environment variable not set. "
                 "Please set it to your Anthropic API key."
             )
+            raise ValueError(msg)
     elif "gemini" in model.lower():
-        api_key = os.environ.get('GEMINI_API_KEY')
+        api_key = os.environ.get("GEMINI_API_KEY")
         if not api_key:
-            raise ValueError(
+            msg = (
                 "GEMINI_API_KEY environment variable not set. "
                 "Please set it to your Google API key."
             )
+            raise ValueError(msg)
     else:
         raise ValueError(
-            f"Unsupported model: {model}. "
-            "Supported models: anthropic/claude-*, gemini/*"
+            f"Unsupported model: {model}. " "Supported models: anthropic/claude-*, gemini/*"
         )
 
-    lm = dspy.LM(
-        model=model,
-        api_key=api_key,
-        temperature=temperature,
-        max_tokens=max_tokens
-    )
+    lm = dspy.LM(model=model, api_key=api_key, temperature=temperature, max_tokens=max_tokens)
     dspy.configure(lm=lm)
     print(f"✓ Configured DSPy with model: {model}")
 
@@ -169,14 +167,14 @@ def configure_dspy(
 def process_document(
     markdown_file: str | Path,
     output_dir: str | Path,
-    model: str = "gemini/gemini-flash-lite-latest", #"anthropic/claude-haiku-4-5",
+    model: str = "gemini/gemini-flash-lite-latest",  # "anthropic/claude-haiku-4-5",
     max_iters: int = 3,
     skip_chapters: list[int] | None = None,
     extraction_mode: str = "batch",
     improvement_mode: str = "batch",
     max_retries: int = 3,
     fallback_model: str = "anthropic/claude-haiku-4-5",
-    verbose: bool = True
+    verbose: bool = True,
 ) -> None:
     """
     Process entire markdown document chapter by chapter.
@@ -228,7 +226,7 @@ def process_document(
 
     # Split into chapters with line numbers
     if verbose:
-        print(f"Splitting document into chapters...")
+        print("Splitting document into chapters...")
     chapters = split_markdown_by_chapters_with_line_numbers(markdown_file)
     if verbose:
         print(f"✓ Found {len(chapters)} chapters")
@@ -253,15 +251,15 @@ def process_document(
         if output_file.exists():
             # IMPROVE WORKFLOW
             if verbose:
-                print(f"  → IMPROVE mode (file exists)")
+                print("  → IMPROVE mode (file exists)")
 
             # Load existing extraction (we'll preserve this as fallback)
             try:
-                with open(output_file, 'r', encoding='utf-8') as f:
+                with open(output_file, encoding="utf-8") as f:
                     existing_data = json.load(f)
             except Exception as e:
                 print(f"  ✗ Failed to load existing data: {e}")
-                print(f"  → Switching to EXTRACT mode")
+                print("  → Switching to EXTRACT mode")
                 # Treat as new file if we can't load existing data
                 existing_data = None
 
@@ -277,7 +275,7 @@ def process_document(
                         improvement_mode=improvement_mode,
                         max_retries=max_retries,
                         fallback_model=fallback_model,
-                        verbose=verbose
+                        verbose=verbose,
                     )
 
                     # ALWAYS preserve original data as base
@@ -293,15 +291,15 @@ def process_document(
                                 "entities_added": improvement_result.entities_added,
                                 "entities_modified": improvement_result.entities_modified,
                                 "entities_deleted": improvement_result.entities_deleted,
-                                "entities_unchanged": improvement_result.entities_unchanged
-                            }
+                                "entities_unchanged": improvement_result.entities_unchanged,
+                            },
                         }
 
                         if errors:
                             save_data["_improvement_errors"] = errors
 
                         if verbose:
-                            print(f"  ✓ Improvement successful")
+                            print("  ✓ Improvement successful")
                     else:
                         # Improvement conversion failed - PRESERVE ORIGINAL DATA
                         save_data = existing_data.copy()
@@ -313,14 +311,16 @@ def process_document(
                         save_data["_improvement_attempts"].append({
                             "status": "failed",
                             "errors": errors,
-                            "summary": improvement_result.get_summary() if improvement_result else "No result"
+                            "summary": improvement_result.get_summary()
+                            if improvement_result
+                            else "No result",
                         })
 
                         if verbose:
-                            print(f"  ⚠ Improvement failed - preserving original data")
+                            print("  ⚠ Improvement failed - preserving original data")
 
                     # Save data (either improved or original with error metadata)
-                    with open(output_file, 'w', encoding='utf-8') as f:
+                    with open(output_file, "w", encoding="utf-8") as f:
                         json.dump(save_data, f, indent=2, ensure_ascii=False)
 
                     if verbose:
@@ -335,11 +335,13 @@ def process_document(
 
                         if raw_section:
                             print(f"  Entities: {raw_section.total_entities}")
-                            print(f"  Changes: +{improvement_result.entities_added} "
-                                  f"±{improvement_result.entities_modified} "
-                                  f"-{improvement_result.entities_deleted}")
+                            print(
+                                f"  Changes: +{improvement_result.entities_added} "
+                                f"±{improvement_result.entities_modified} "
+                                f"-{improvement_result.entities_deleted}"
+                            )
                         else:
-                            print(f"  Original data preserved (no changes)")
+                            print("  Original data preserved (no changes)")
                         print()
 
                 except Exception as e:
@@ -347,6 +349,7 @@ def process_document(
                     print(f"  ✗ Critical error in improvement workflow: {e}")
                     if verbose:
                         import traceback
+
                         traceback.print_exc()
 
                     # Save original data with error metadata
@@ -358,13 +361,13 @@ def process_document(
                     save_data["_improvement_attempts"].append({
                         "status": "critical_error",
                         "error": str(e),
-                        "traceback": traceback.format_exc() if verbose else None
+                        "traceback": traceback.format_exc() if verbose else None,
                     })
 
-                    with open(output_file, 'w', encoding='utf-8') as f:
+                    with open(output_file, "w", encoding="utf-8") as f:
                         json.dump(save_data, f, indent=2, ensure_ascii=False)
 
-                    print(f"  ✓ Original data preserved despite error")
+                    print("  ✓ Original data preserved despite error")
                     print()
             else:
                 # existing_data is None - fall through to extract mode
@@ -394,7 +397,7 @@ def process_document(
                         max_iters_per_label=max_iters,
                         max_retries=max_retries,
                         fallback_model=fallback_model,
-                        verbose=verbose
+                        verbose=verbose,
                     )
                 else:
                     # Batch extraction: extract all labels at once (default)
@@ -406,7 +409,7 @@ def process_document(
                         max_iters=max_iters,
                         max_retries=max_retries,
                         fallback_model=fallback_model,
-                        verbose=verbose
+                        verbose=verbose,
                     )
 
                 # Prepare save data
@@ -419,11 +422,11 @@ def process_document(
                         "status": "extraction_failed",
                         "chapter_number": i,
                         "section_id": section_id,
-                        "errors": errors
+                        "errors": errors,
                     }
 
                 # Save extracted data
-                with open(output_file, 'w', encoding='utf-8') as f:
+                with open(output_file, "w", encoding="utf-8") as f:
                     json.dump(save_data, f, indent=2, ensure_ascii=False)
 
                 if verbose:
@@ -452,6 +455,7 @@ def process_document(
                 print(f"  ✗ Critical error in extraction workflow: {e}")
                 if verbose:
                     import traceback
+
                     traceback.print_exc()
 
                 # Save error report
@@ -459,9 +463,9 @@ def process_document(
                     "status": "failed",
                     "chapter_number": i,
                     "error": str(e),
-                    "traceback": traceback.format_exc() if verbose else None
+                    "traceback": traceback.format_exc() if verbose else None,
                 }
-                with open(output_file, 'w', encoding='utf-8') as f:
+                with open(output_file, "w", encoding="utf-8") as f:
                     json.dump(error_data, f, indent=2, ensure_ascii=False)
                 print(f"  ✗ Saved error report to {output_file.name}")
                 print()
@@ -513,50 +517,46 @@ Examples:
   python -m mathster.parsing.dspy_pipeline \\
       docs/source/1_euclidean_gas/01_fragile_gas_framework.md \\
       --model anthropic/claude-sonnet-4-20250514
-        """
+        """,
     )
 
-    parser.add_argument(
-        "markdown_file",
-        type=str,
-        help="Path to markdown file to process"
-    )
+    parser.add_argument("markdown_file", type=str, help="Path to markdown file to process")
     parser.add_argument(
         "--output-dir",
         type=str,
         default=None,
-        help="Output directory for chapter JSON files (default: <file_dir>/parser/)"
+        help="Output directory for chapter JSON files (default: <file_dir>/parser/)",
     )
     parser.add_argument(
         "--model",
         type=str,
-        default= "gemini/gemini-flash-lite-latest", #"anthropic/claude-haiku-4-5",
-        help="DSPy model identifier (default: claude-haiku-4-5)"
+        default="gemini/gemini-flash-lite-latest",  # "anthropic/claude-haiku-4-5",
+        help="DSPy model identifier (default: claude-haiku-4-5)",
     )
     parser.add_argument(
         "--max-iters",
         type=int,
         default=3,
-        help="Maximum ReAct iterations per chapter (default: 3)"
+        help="Maximum ReAct iterations per chapter (default: 3)",
     )
     parser.add_argument(
         "--max-retries",
         type=int,
         default=3,
-        help="Maximum number of retry attempts on extraction failure (default: 3)"
+        help="Maximum number of retry attempts on extraction failure (default: 3)",
     )
     parser.add_argument(
         "--fallback-model",
         type=str,
         default="anthropic/claude-haiku-4-5",
-        help="Model to use after first extraction failure (default: anthropic/claude-haiku-4-5)"
+        help="Model to use after first extraction failure (default: anthropic/claude-haiku-4-5)",
     )
     parser.add_argument(
         "--skip-chapters",
         type=int,
         nargs="+",
         default=None,
-        help="Chapter indices to skip (e.g., --skip-chapters 0 1)"
+        help="Chapter indices to skip (e.g., --skip-chapters 0 1)",
     )
     parser.add_argument(
         "--extraction-mode",
@@ -564,7 +564,7 @@ Examples:
         choices=["batch", "single_label"],
         default="batch",
         help="Extraction strategy: 'batch' (all labels at once, fast) or "
-             "'single_label' (one label at a time, slower but more accurate, default: batch)"
+        "'single_label' (one label at a time, slower but more accurate, default: batch)",
     )
     parser.add_argument(
         "--improvement-mode",
@@ -572,13 +572,9 @@ Examples:
         choices=["batch", "single_label"],
         default="batch",
         help="Improvement strategy: 'batch' (all missed labels at once) or "
-             "'single_label' (one missed label at a time with per-label retry, default: batch)"
+        "'single_label' (one missed label at a time with per-label retry, default: batch)",
     )
-    parser.add_argument(
-        "--quiet",
-        action="store_true",
-        help="Suppress progress output"
-    )
+    parser.add_argument("--quiet", action="store_true", help="Suppress progress output")
 
     args = parser.parse_args()
 
@@ -602,11 +598,12 @@ Examples:
             improvement_mode=args.improvement_mode,
             max_retries=args.max_retries,
             fallback_model=args.fallback_model,
-            verbose=not args.quiet
+            verbose=not args.quiet,
         )
     except Exception as e:
         print(f"Error: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 
@@ -614,4 +611,4 @@ Examples:
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

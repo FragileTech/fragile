@@ -15,16 +15,17 @@ Core types:
 - SourceLocation: Links mathematical objects to their exact source location
 - Article: Represents a mathematical document with metadata and organization
 """
-import re
-import warnings
+
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+import re
+import warnings
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 LINE_BLOCK_SEPARATOR = "\n[...]\n"
+
 
 class TextLocation(BaseModel):
     """
@@ -62,7 +63,8 @@ class TextLocation(BaseModel):
             Validated list of line ranges
         """
         if not v:
-            raise ValueError("TextLocation must have at least one line range")
+            msg = "TextLocation must have at least one line range"
+            raise ValueError(msg)
 
         # Check well-formedness
         for start, end in v:
@@ -77,7 +79,7 @@ class TextLocation(BaseModel):
             next_start = v[i + 1][0]
             if curr_end >= next_start:
                 raise ValueError(
-                    f"Overlapping ranges: {v[i]} and {v[i+1]} (ranges must be sorted and non-overlapping)"
+                    f"Overlapping ranges: {v[i]} and {v[i + 1]} (ranges must be sorted and non-overlapping)"
                 )
 
         return v
@@ -167,11 +169,11 @@ def extract_volume_from_path(file_path: str) -> str | None:
         Volume name (e.g., '1_euclidean_gas') or None if not found
 
     Examples:
-        >>> extract_volume_from_path('docs/source/1_euclidean_gas/03_cloning.md')
+        >>> extract_volume_from_path("docs/source/1_euclidean_gas/03_cloning.md")
         '1_euclidean_gas'
-        >>> extract_volume_from_path('docs/source/2_geometric_gas/11_geometric.md')
+        >>> extract_volume_from_path("docs/source/2_geometric_gas/11_geometric.md")
         '2_geometric_gas'
-        >>> extract_volume_from_path('other/path/file.md')
+        >>> extract_volume_from_path("other/path/file.md")
         None
     """
     pattern = r"(?:docs/source/)?(\d+_[a-z_]+)/"
@@ -193,11 +195,11 @@ def extract_article_id_from_path(file_path: str) -> str:
         ValueError: If filename doesn't match pattern NN_name.md
 
     Examples:
-        >>> extract_article_id_from_path('docs/source/1_euclidean_gas/03_cloning.md')
+        >>> extract_article_id_from_path("docs/source/1_euclidean_gas/03_cloning.md")
         '03_cloning'
-        >>> extract_article_id_from_path('docs/source/2_geometric_gas/11_geometric_gas.md')
+        >>> extract_article_id_from_path("docs/source/2_geometric_gas/11_geometric_gas.md")
         '11_geometric_gas'
-        >>> extract_article_id_from_path('invalid/path.md')
+        >>> extract_article_id_from_path("invalid/path.md")
         Traceback (most recent call last):
             ...
         ValueError: Cannot extract article_id from path 'invalid/path.md'...
@@ -236,14 +238,14 @@ def extract_section_from_markdown(
         >>> # Assuming line 625 is in section "#### 3.2.4 From Structural Error..."
         >>> extract_section_from_markdown(
         ...     "docs/source/1_euclidean_gas/03_cloning.md",
-        ...     TextLocation.from_single_range(625, 635)
+        ...     TextLocation.from_single_range(625, 635),
         ... )
         ('3.2.4', 'From Structural Error to Internal Swarm Variance')
 
         >>> # If no headers before the line
         >>> extract_section_from_markdown(
         ...     "docs/source/1_euclidean_gas/03_cloning.md",
-        ...     TextLocation.from_single_range(1, 2)
+        ...     TextLocation.from_single_range(1, 2),
         ... )
         (None, None)
 
@@ -385,7 +387,7 @@ class SourceLocation(BaseModel):
             ...     file_path="docs/source/1_euclidean_gas/03_cloning.md",
             ...     line_range=TextLocation.from_single_range(100, 120),
             ...     label="thm-test",
-            ...     article_id="03_cloning"
+            ...     article_id="03_cloning",
             ... )
             >>> # volume, section, section_name auto-populated from source
 
@@ -395,7 +397,7 @@ class SourceLocation(BaseModel):
             ...     line_range=TextLocation.from_single_range(100, 120),
             ...     label="thm-test",
             ...     article_id="03_cloning",
-            ...     volume="2_geometric_gas"  # Wrong volume!
+            ...     volume="2_geometric_gas",  # Wrong volume!
             ... )
             # UserWarning: SourceLocation field mismatch: User provided volume='2_geometric_gas'
             # but computed volume='1_euclidean_gas' from file_path. Using user value.
@@ -496,7 +498,7 @@ class SourceLocation(BaseModel):
             ...     line_range=TextLocation.from_single_range(142, 158),
             ...     label="thm-keystone",
             ...     article_id="03_cloning",
-            ...     section="3.2.1"
+            ...     section="3.2.1",
             ... )
             >>> loc.get_display_location()
             '03_cloning 3.2.1'
@@ -505,7 +507,7 @@ class SourceLocation(BaseModel):
             ...     file_path="docs/source/1_euclidean_gas/03_cloning.md",
             ...     line_range=TextLocation.from_single_range(142, 158),
             ...     label="thm-keystone",
-            ...     article_id="03_cloning"
+            ...     article_id="03_cloning",
             ... )
             >>> loc2.get_display_location()
             '03_cloning (lines 142-158)'
@@ -613,7 +615,7 @@ class SourceLocation(BaseModel):
             >>> loc = SourceLocation.from_required_fields(
             ...     file_path="docs/source/1_euclidean_gas/03_cloning.md",
             ...     line_range=TextLocation.from_single_range(621, 635),
-            ...     label="lem-sx-implies-variance"
+            ...     label="lem-sx-implies-variance",
             ... )
             >>> loc.volume
             '1_euclidean_gas'
@@ -628,7 +630,7 @@ class SourceLocation(BaseModel):
             >>> loc2 = SourceLocation.from_required_fields(
             ...     file_path="other/path/03_test.md",
             ...     line_range=TextLocation.from_single_range(10, 20),
-            ...     label="def-example"
+            ...     label="def-example",
             ... )
             >>> loc2.volume is None
             True

@@ -32,13 +32,13 @@ from mathster.core import (
     ProofBox,
     TheoremBox,
 )
+from mathster.core.raw_data import RawDocument
 from mathster.error_tracking import create_logger_for_document, ErrorLogger
 from mathster.llm.document_container import MathematicalDocument
 from mathster.llm.llm_interface import (
     call_main_extraction_llm,
 )
 from mathster.prompts import MAIN_EXTRACTION_PROMPT
-from mathster.core.raw_data import RawDocument
 from mathster.tools import (
     DocumentSection,
     format_directive_hints_for_llm,

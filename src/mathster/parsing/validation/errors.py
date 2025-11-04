@@ -40,10 +40,7 @@ def make_error_dict(error_msg: str, value: Any = None) -> dict:
 
 
 def generate_detailed_error_report(
-    error: Exception,
-    attempt_number: int,
-    max_retries: int,
-    extraction_context: dict | None = None
+    error: Exception, attempt_number: int, max_retries: int, extraction_context: dict | None = None
 ) -> str:
     """
     Generate a detailed, LLM-friendly error report for failed extractions.
@@ -83,7 +80,7 @@ def generate_detailed_error_report(
         "",
         f"Attempt: {attempt_number}/{max_retries}",
         f"Error Type: {type(error).__name__}",
-        ""
+        "",
     ]
 
     # Add context if provided
@@ -100,8 +97,7 @@ def generate_detailed_error_report(
     # Parse error based on type
     if isinstance(error, ValidationError):
         # Pydantic validation error - parse into detailed field-level feedback
-        report_lines.append("VALIDATION ERRORS:")
-        report_lines.append("")
+        report_lines.extend(("VALIDATION ERRORS:", ""))
 
         for i, err in enumerate(error.errors(), 1):
             # Extract error details
@@ -109,28 +105,33 @@ def generate_detailed_error_report(
             error_type = err["type"]
             error_msg = err["msg"]
 
-            report_lines.append(f"{i}. Field: {field_path}")
-            report_lines.append(f"   Problem: {error_msg}")
+            report_lines.extend((f"{i}. Field: {field_path}", f"   Problem: {error_msg}"))
 
             # Provide specific fix guidance based on error type
             if error_type == "missing":
-                report_lines.append(f"   Fix: This is a REQUIRED field. You must provide a value.")
-                report_lines.append(f"   → Ensure the field '{field_path}' is present in your output")
+                report_lines.extend((
+                    "   Fix: This is a REQUIRED field. You must provide a value.",
+                    f"   → Ensure the field '{field_path}' is present in your output",
+                ))
 
-            elif error_type in ["string_type", "int_type", "float_type", "bool_type"]:
+            elif error_type in {"string_type", "int_type", "float_type", "bool_type"}:
                 expected_type = error_type.replace("_type", "")
-                report_lines.append(f"   Fix: Field must be of type '{expected_type}'")
-                report_lines.append(f"   → Check that '{field_path}' has the correct data type")
+                report_lines.extend((
+                    f"   Fix: Field must be of type '{expected_type}'",
+                    f"   → Check that '{field_path}' has the correct data type",
+                ))
 
             elif "literal_error" in error_type:
                 # Extract allowed values from error message
-                report_lines.append(f"   Fix: Field must match one of the allowed literal values")
+                report_lines.append("   Fix: Field must match one of the allowed literal values")
                 if "Input should be" in error_msg:
                     report_lines.append(f"   → {error_msg}")
 
             elif "list_type" in error_type:
-                report_lines.append(f"   Fix: Field must be a list/array")
-                report_lines.append(f"   → Wrap value in square brackets: [{field_path}]")
+                report_lines.extend((
+                    "   Fix: Field must be a list/array",
+                    f"   → Wrap value in square brackets: [{field_path}]",
+                ))
 
             else:
                 # Generic guidance
@@ -138,60 +139,67 @@ def generate_detailed_error_report(
 
             # Add field-specific examples
             if "term" in field_path:
-                report_lines.append(f'   Example: "term": "Lipschitz continuous"')
+                report_lines.append('   Example: "term": "Lipschitz continuous"')
             elif "label" in field_path:
-                report_lines.append(f'   Example: "label": "def-lipschitz" (must match :label: directive)')
+                report_lines.append(
+                    '   Example: "label": "def-lipschitz" (must match :label: directive)'
+                )
             elif "statement_type" in field_path:
-                report_lines.append(f'   Example: "statement_type": "theorem"')
-                report_lines.append(f'   Allowed values: "theorem", "lemma", "proposition", "corollary"')
+                report_lines.extend((
+                    '   Example: "statement_type": "theorem"',
+                    '   Allowed values: "theorem", "lemma", "proposition", "corollary"',
+                ))
             elif "line_start" in field_path or "line_end" in field_path:
-                report_lines.append(f'   Example: "line_start": 42, "line_end": 58')
-                report_lines.append(f'   → Must be integers within document line range')
+                report_lines.extend((
+                    '   Example: "line_start": 42, "line_end": 58',
+                    "   → Must be integers within document line range",
+                ))
 
             report_lines.append("")
 
     elif isinstance(error, json.JSONDecodeError):
         # JSON parsing error
-        report_lines.append("JSON PARSING ERROR:")
-        report_lines.append("")
-        report_lines.append(f"Problem: Invalid JSON syntax at line {error.lineno}, column {error.colno}")
-        report_lines.append(f"Message: {error.msg}")
-        report_lines.append("")
-        report_lines.append("Common JSON Errors:")
-        report_lines.append("  - Missing closing bracket/brace: }, ], )")
-        report_lines.append("  - Trailing comma in last array/object element")
-        report_lines.append("  - Unquoted string values")
-        report_lines.append("  - Single quotes instead of double quotes")
-        report_lines.append("")
-        report_lines.append("Fix: Ensure valid JSON formatting:")
-        report_lines.append('  - All strings use double quotes: "string"')
-        report_lines.append("  - All brackets/braces are properly closed")
-        report_lines.append("  - No trailing commas")
-        report_lines.append("")
+        report_lines.extend((
+            "JSON PARSING ERROR:",
+            "",
+            f"Problem: Invalid JSON syntax at line {error.lineno}, column {error.colno}",
+            f"Message: {error.msg}",
+            "",
+            "Common JSON Errors:",
+            "  - Missing closing bracket/brace: }, ], )",
+            "  - Trailing comma in last array/object element",
+            "  - Unquoted string values",
+            "  - Single quotes instead of double quotes",
+            "",
+            "Fix: Ensure valid JSON formatting:",
+            '  - All strings use double quotes: "string"',
+            "  - All brackets/braces are properly closed",
+            "  - No trailing commas",
+            "",
+        ))
 
     elif "timeout" in str(error).lower():
         # Timeout error
-        report_lines.append("TIMEOUT ERROR:")
-        report_lines.append("")
-        report_lines.append("Problem: Extraction took too long and timed out")
-        report_lines.append("")
-        report_lines.append("Possible Causes:")
-        report_lines.append("  - Chapter is very large (too many entities)")
-        report_lines.append("  - Agent got stuck in reasoning loop")
-        report_lines.append("  - Network/API latency issues")
-        report_lines.append("")
-        report_lines.append("Fix: Try to:")
-        report_lines.append("  - Focus on extracting only the most important entities")
-        report_lines.append("  - Use more concise reasoning steps")
-        report_lines.append("  - Validate early to catch errors quickly")
-        report_lines.append("")
+        report_lines.extend((
+            "TIMEOUT ERROR:",
+            "",
+            "Problem: Extraction took too long and timed out",
+            "",
+            "Possible Causes:",
+            "  - Chapter is very large (too many entities)",
+            "  - Agent got stuck in reasoning loop",
+            "  - Network/API latency issues",
+            "",
+            "Fix: Try to:",
+            "  - Focus on extracting only the most important entities",
+            "  - Use more concise reasoning steps",
+            "  - Validate early to catch errors quickly",
+            "",
+        ))
 
     else:
         # Generic exception
-        report_lines.append("GENERAL ERROR:")
-        report_lines.append("")
-        report_lines.append(f"Problem: {str(error)}")
-        report_lines.append("")
+        report_lines.extend(("GENERAL ERROR:", "", f"Problem: {error!s}", ""))
 
         # Include truncated traceback
         tb_lines = traceback.format_exception(type(error), error, error.__traceback__)
@@ -201,18 +209,20 @@ def generate_detailed_error_report(
         report_lines.append("")
 
     # Add general retry guidance
-    report_lines.append("=" * 70)
-    report_lines.append("RETRY GUIDANCE:")
-    report_lines.append("=" * 70)
-    report_lines.append("")
-    report_lines.append("Read the errors above CAREFULLY and:")
-    report_lines.append("1. Fix each field issue mentioned")
-    report_lines.append("2. Verify data types match requirements")
-    report_lines.append("3. Ensure all required fields are present")
-    report_lines.append("4. Validate labels match :label: directives in source")
-    report_lines.append("5. Call validate_extraction_tool to check before submitting")
-    report_lines.append("")
-    report_lines.append(f"Remaining attempts: {max_retries - attempt_number}")
-    report_lines.append("=" * 70)
+    report_lines.extend((
+        "=" * 70,
+        "RETRY GUIDANCE:",
+        "=" * 70,
+        "",
+        "Read the errors above CAREFULLY and:",
+        "1. Fix each field issue mentioned",
+        "2. Verify data types match requirements",
+        "3. Ensure all required fields are present",
+        "4. Validate labels match :label: directives in source",
+        "5. Call validate_extraction_tool to check before submitting",
+        "",
+        f"Remaining attempts: {max_retries - attempt_number}",
+        "=" * 70,
+    ))
 
     return "\n".join(report_lines)

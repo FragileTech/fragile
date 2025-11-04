@@ -8,15 +8,16 @@ This test verifies that:
 4. Validation tools are called appropriately
 """
 
-import sys
 from pathlib import Path
+import sys
+
 
 sys.path.insert(0, "src")
 
 from mathster.parsing.extract_workflow import (
     extract_chapter_by_labels,
-    SingleLabelExtractor,
     ExtractSingleLabel,
+    SingleLabelExtractor,
 )
 from mathster.parsing.tools import analyze_labels_in_chapter
 
@@ -24,13 +25,13 @@ from mathster.parsing.tools import analyze_labels_in_chapter
 def test_single_label_extractor_signature():
     """Test that SingleLabelExtractor has correct signature."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: SingleLabelExtractor Signature")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Check signature fields
     signature = ExtractSingleLabel
-    annotations = signature.__annotations__ if hasattr(signature, '__annotations__') else {}
+    annotations = signature.__annotations__ if hasattr(signature, "__annotations__") else {}
 
     print(f"✓ Signature class: {signature.__name__}")
     print(f"  - Input fields: {[k for k in annotations.keys() if not k.startswith('_')]}")
@@ -65,12 +66,12 @@ def test_label_discovery():
  16: :::
 """
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Label Discovery")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Discover labels
-    labels_by_type, report = analyze_labels_in_chapter(chapter_text)
+    labels_by_type, _report = analyze_labels_in_chapter(chapter_text)
 
     print("✓ Label discovery completed")
     print(f"  - Found {sum(len(v) for v in labels_by_type.values())} total labels")
@@ -92,15 +93,16 @@ def test_label_discovery():
 def test_extract_chapter_by_labels_structure():
     """Test the structure of extract_chapter_by_labels function."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: extract_chapter_by_labels Structure")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Check function exists and has correct signature
     import inspect
+
     sig = inspect.signature(extract_chapter_by_labels)
 
-    print(f"✓ Function exists: extract_chapter_by_labels")
+    print("✓ Function exists: extract_chapter_by_labels")
     print(f"  - Parameters: {list(sig.parameters.keys())}")
 
     # Verify required parameters
@@ -118,19 +120,20 @@ def test_extract_chapter_by_labels_structure():
 def test_pipeline_integration():
     """Test that extraction_mode is wired through dspy_pipeline."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Pipeline Integration")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Import process_document
-    from mathster.parsing.dspy_pipeline import process_document
     import inspect
+
+    from mathster.parsing.dspy_pipeline import process_document
 
     # Check signature
     sig = inspect.signature(process_document)
     params = list(sig.parameters.keys())
 
-    print(f"✓ process_document signature:")
+    print("✓ process_document signature:")
     print(f"  - Parameters: {params}")
 
     # Verify extraction_mode parameter exists
@@ -147,9 +150,9 @@ def test_pipeline_integration():
 def test_workflow_components_complete():
     """Test that all components for single-label extraction are in place."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Complete Workflow Components")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Component 1: ExtractSingleLabel signature
     print("✓ Component 1: ExtractSingleLabel signature")
@@ -162,6 +165,7 @@ def test_workflow_components_complete():
 
     # Component 3: validate_single_entity_tool
     from mathster.parsing.extract_workflow import validate_single_entity_tool
+
     print("\n✓ Component 3: validate_single_entity_tool")
     print("  - Function available: Yes")
 
@@ -171,11 +175,13 @@ def test_workflow_components_complete():
 
     # Component 5: convert_dict_to_extraction_entity helper
     from mathster.parsing.extract_workflow import convert_dict_to_extraction_entity
+
     print("\n✓ Component 5: convert_dict_to_extraction_entity")
     print("  - Function available: Yes")
 
     # Component 6: Pipeline integration
     from mathster.parsing.dspy_pipeline import process_document
+
     print("\n✓ Component 6: Pipeline integration")
     print("  - extraction_mode parameter: Yes")
 
@@ -185,9 +191,9 @@ def test_workflow_components_complete():
 def test_workflow_description():
     """Display the complete workflow for single-label extraction."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Single-Label Extraction Workflow")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     print("Complete workflow:")
     print("\n1. User calls pipeline with --extraction-mode single_label")
@@ -222,7 +228,7 @@ def test_workflow_description():
 def main():
     """Run all tests."""
     print("\nTesting single-label extraction implementation")
-    print("="*70)
+    print("=" * 70)
 
     try:
         test_single_label_extractor_signature()
@@ -232,9 +238,9 @@ def main():
         test_workflow_components_complete()
         test_workflow_description()
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("✓ All tests passed!")
-        print("="*70)
+        print("=" * 70)
         print("\nSummary:")
         print("  - ExtractSingleLabel signature correct")
         print("  - Label discovery working")
@@ -248,21 +254,23 @@ def main():
         print("  ✓ Step 4: Pipeline integration with extraction_mode parameter")
         print("  ✓ Step 5: CLI argument --extraction-mode added")
         print("\nNext: Test with actual LLM on small chapter")
-        print("="*70)
+        print("=" * 70)
         return 0
 
     except AssertionError as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Test failed: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
     except Exception as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Unexpected error: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
 

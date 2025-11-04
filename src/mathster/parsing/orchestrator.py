@@ -6,8 +6,8 @@ pipeline, coordinating DSPy workflows, retry logic, and file I/O.
 """
 
 import json
-import re
 from pathlib import Path
+import re
 
 from mathster.parsing.config import configure_dspy
 from mathster.parsing.text_processing.splitting import split_markdown_by_chapters_with_line_numbers
@@ -58,7 +58,7 @@ def extract_section_id(chapter_text: str, chapter_number: int) -> str:
         '## 1. Introduction'
     """
     # Find first line with "##" header
-    for line in chapter_text.split('\n')[:20]:  # Check first 20 lines
+    for line in chapter_text.split("\n")[:20]:  # Check first 20 lines
         # Remove line number prefix
         content = re.sub(r"^\s*\d+:\s*", "", line)
         if content.startswith("## "):
@@ -78,7 +78,7 @@ def process_document(
     improvement_mode: str = "batch",
     max_retries: int = 3,
     fallback_model: str = "anthropic/claude-haiku-4-5",
-    verbose: bool = True
+    verbose: bool = True,
 ) -> None:
     """
     Process entire markdown document chapter by chapter.
@@ -109,7 +109,7 @@ def process_document(
         ...     markdown_file="docs/source/01_framework.md",
         ...     output_dir="docs/source/raw_data",
         ...     model="gemini/gemini-flash-lite-latest",
-        ...     verbose=True
+        ...     verbose=True,
         ... )
     """
     markdown_file = Path(markdown_file)
@@ -138,7 +138,7 @@ def process_document(
 
     # Split into chapters with line numbers
     if verbose:
-        print(f"Splitting document into chapters...")
+        print("Splitting document into chapters...")
     chapters = split_markdown_by_chapters_with_line_numbers(markdown_file)
     if verbose:
         print(f"✓ Found {len(chapters)} chapters")
@@ -163,15 +163,15 @@ def process_document(
         if output_file.exists():
             # IMPROVE WORKFLOW
             if verbose:
-                print(f"  → IMPROVE mode (file exists)")
+                print("  → IMPROVE mode (file exists)")
 
             # Load existing extraction (we'll preserve this as fallback)
             try:
-                with open(output_file, 'r', encoding='utf-8') as f:
+                with open(output_file, encoding="utf-8") as f:
                     existing_data = json.load(f)
             except Exception as e:
                 print(f"  ✗ Failed to load existing data: {e}")
-                print(f"  → Switching to EXTRACT mode")
+                print("  → Switching to EXTRACT mode")
                 # Treat as new file if we can't load existing data
                 existing_data = None
 
@@ -187,7 +187,7 @@ def process_document(
                         improvement_mode=improvement_mode,
                         max_retries=max_retries,
                         fallback_model=fallback_model,
-                        verbose=verbose
+                        verbose=verbose,
                     )
 
                     # ALWAYS preserve original data as base
@@ -203,15 +203,15 @@ def process_document(
                                 "entities_added": improvement_result.entities_added,
                                 "entities_modified": improvement_result.entities_modified,
                                 "entities_deleted": improvement_result.entities_deleted,
-                                "entities_unchanged": improvement_result.entities_unchanged
-                            }
+                                "entities_unchanged": improvement_result.entities_unchanged,
+                            },
                         }
 
                         if errors:
                             save_data["_improvement_errors"] = errors
 
                         if verbose:
-                            print(f"  ✓ Improvement successful")
+                            print("  ✓ Improvement successful")
                     else:
                         # Improvement conversion failed - PRESERVE ORIGINAL DATA
                         save_data = existing_data.copy()
@@ -223,14 +223,16 @@ def process_document(
                         save_data["_improvement_attempts"].append({
                             "status": "failed",
                             "errors": errors,
-                            "summary": improvement_result.get_summary() if improvement_result else "No result"
+                            "summary": improvement_result.get_summary()
+                            if improvement_result
+                            else "No result",
                         })
 
                         if verbose:
-                            print(f"  ⚠ Improvement failed - preserving original data")
+                            print("  ⚠ Improvement failed - preserving original data")
 
                     # Save data (either improved or original with error metadata)
-                    with open(output_file, 'w', encoding='utf-8') as f:
+                    with open(output_file, "w", encoding="utf-8") as f:
                         json.dump(save_data, f, indent=2, ensure_ascii=False)
 
                     if verbose:
@@ -245,11 +247,13 @@ def process_document(
 
                         if raw_section:
                             print(f"  Entities: {raw_section.total_entities}")
-                            print(f"  Changes: +{improvement_result.entities_added} "
-                                  f"±{improvement_result.entities_modified} "
-                                  f"-{improvement_result.entities_deleted}")
+                            print(
+                                f"  Changes: +{improvement_result.entities_added} "
+                                f"±{improvement_result.entities_modified} "
+                                f"-{improvement_result.entities_deleted}"
+                            )
                         else:
-                            print(f"  Original data preserved (no changes)")
+                            print("  Original data preserved (no changes)")
                         print()
 
                 except Exception as e:
@@ -257,6 +261,7 @@ def process_document(
                     print(f"  ✗ Critical error in improvement workflow: {e}")
                     if verbose:
                         import traceback
+
                         traceback.print_exc()
 
                     # Save original data with error metadata
@@ -268,13 +273,13 @@ def process_document(
                     save_data["_improvement_attempts"].append({
                         "status": "critical_error",
                         "error": str(e),
-                        "traceback": traceback.format_exc() if verbose else None
+                        "traceback": traceback.format_exc() if verbose else None,
                     })
 
-                    with open(output_file, 'w', encoding='utf-8') as f:
+                    with open(output_file, "w", encoding="utf-8") as f:
                         json.dump(save_data, f, indent=2, ensure_ascii=False)
 
-                    print(f"  ✓ Original data preserved despite error")
+                    print("  ✓ Original data preserved despite error")
                     print()
             else:
                 # existing_data is None - fall through to extract mode
@@ -304,7 +309,7 @@ def process_document(
                         max_iters_per_label=max_iters,
                         max_retries=max_retries,
                         fallback_model=fallback_model,
-                        verbose=verbose
+                        verbose=verbose,
                     )
                 else:
                     # Batch extraction: extract all labels at once (default)
@@ -316,7 +321,7 @@ def process_document(
                         max_iters=max_iters,
                         max_retries=max_retries,
                         fallback_model=fallback_model,
-                        verbose=verbose
+                        verbose=verbose,
                     )
 
                 # Prepare save data
@@ -329,11 +334,11 @@ def process_document(
                         "status": "extraction_failed",
                         "chapter_number": i,
                         "section_id": section_id,
-                        "errors": errors
+                        "errors": errors,
                     }
 
                 # Save extracted data
-                with open(output_file, 'w', encoding='utf-8') as f:
+                with open(output_file, "w", encoding="utf-8") as f:
                     json.dump(save_data, f, indent=2, ensure_ascii=False)
 
                 if verbose:
@@ -362,6 +367,7 @@ def process_document(
                 print(f"  ✗ Critical error in extraction workflow: {e}")
                 if verbose:
                     import traceback
+
                     traceback.print_exc()
 
                 # Save error report
@@ -369,9 +375,9 @@ def process_document(
                     "status": "failed",
                     "chapter_number": i,
                     "error": str(e),
-                    "traceback": traceback.format_exc() if verbose else None
+                    "traceback": traceback.format_exc() if verbose else None,
                 }
-                with open(output_file, 'w', encoding='utf-8') as f:
+                with open(output_file, "w", encoding="utf-8") as f:
                     json.dump(error_data, f, indent=2, ensure_ascii=False)
                 print(f"  ✗ Saved error report to {output_file.name}")
                 print()

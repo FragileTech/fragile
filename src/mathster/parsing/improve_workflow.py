@@ -9,6 +9,7 @@ from mathster.parsing.improve_workflow import improve_chapter
 
 # NEW (recommended):
 from mathster.parsing import workflows
+
 workflows.improve_chapter(...)
 
 # Or directly:
@@ -35,24 +36,21 @@ Key Components:
 ⚠️ For new code, use: `from mathster.parsing.workflows import improve_chapter`
 """
 
-import json
 from enum import Enum
+import json
 from typing import Literal
 
 import dspy
 from pydantic import BaseModel, Field
 
-from mathster.core.article_system import SourceLocation, TextLocation
 from mathster.core.raw_data import RawDocumentSection
 
 # Import extraction workflow components we reuse
 from mathster.parsing.extract_workflow import (
     ChapterExtraction,
-    ValidationResult,
     convert_to_raw_document_section,
-    validate_extraction,
-    generate_detailed_error_report,
     make_error_dict,
+    validate_extraction,
 )
 
 
@@ -63,6 +61,7 @@ from mathster.parsing.extract_workflow import (
 
 class ChangeOperation(str, Enum):
     """Type of change operation."""
+
     ADD = "ADD"
     MODIFY = "MODIFY"
     DELETE = "DELETE"
@@ -72,7 +71,9 @@ class ChangeOperation(str, Enum):
 class EntityChange(BaseModel):
     """Record of a change to a single entity."""
 
-    entity_type: Literal["definition", "theorem", "proof", "axiom", "parameter", "remark", "citation"]
+    entity_type: Literal[
+        "definition", "theorem", "proof", "axiom", "parameter", "remark", "citation"
+    ]
     label: str
     operation: ChangeOperation
     reason: str = Field(..., description="Why this change was made")
@@ -119,11 +120,7 @@ class ImprovementResult(BaseModel):
 # =============================================================================
 
 
-def compare_extractions_tool(
-    existing_json: str,
-    proposed_json: str,
-    context: str
-) -> str:
+def compare_extractions_tool(existing_json: str, proposed_json: str, context: str) -> str:
     """
     Tool to compare existing extraction with proposed improvements.
 
@@ -161,7 +158,7 @@ def compare_extractions_tool(
                     modified_defs.append(d.label)
 
         if new_defs or removed_defs or modified_defs:
-            feedback.append(f"\nDefinitions:")
+            feedback.append("\nDefinitions:")
             if new_defs:
                 feedback.append(f"  + Added: {', '.join(new_defs)}")
             if modified_defs:
@@ -183,7 +180,7 @@ def compare_extractions_tool(
                     modified_thms.append(t.label)
 
         if new_thms or removed_thms or modified_thms:
-            feedback.append(f"\nTheorems:")
+            feedback.append("\nTheorems:")
             if new_thms:
                 feedback.append(f"  + Added: {', '.join(new_thms)}")
             if modified_thms:
@@ -200,13 +197,10 @@ def compare_extractions_tool(
         return "\n".join(feedback)
 
     except Exception as e:
-        return f"Comparison error: {str(e)}"
+        return f"Comparison error: {e!s}"
 
 
-def validate_improvement_tool(
-    proposed_json: str,
-    context: str
-) -> str:
+def validate_improvement_tool(proposed_json: str, context: str) -> str:
     """
     Tool to validate proposed improvements.
 
@@ -230,16 +224,13 @@ def validate_improvement_tool(
 
         # Validate using existing validation logic
         validation = validate_extraction(
-            proposed_dict,
-            file_path=file_path,
-            article_id=article_id,
-            chapter_text=chapter_text
+            proposed_dict, file_path=file_path, article_id=article_id, chapter_text=chapter_text
         )
 
         return validation.get_feedback()
 
     except Exception as e:
-        return f"Validation error: {str(e)}"
+        return f"Validation error: {e!s}"
 
 
 # =============================================================================
@@ -340,8 +331,8 @@ class ImproveMathematicalConcepts(dspy.Signature):
     )
     missed_labels_list: str = dspy.InputField(
         desc="Comma-separated list of labels that were missed in extraction. "
-             "Extract ONLY these specific labels. Do NOT modify existing entities. "
-             "Empty string means general improvement mode."
+        "Extract ONLY these specific labels. Do NOT modify existing entities. "
+        "Empty string means general improvement mode."
     )
 
     improved_extraction: ChapterExtraction = dspy.OutputField(
@@ -369,16 +360,16 @@ class MathematicalConceptImprover(dspy.Module):
         self.react_agent = dspy.ReAct(
             ImproveMathematicalConcepts,
             tools=[compare_extractions_tool, validate_improvement_tool],
-            max_iters=max_iters
+            max_iters=max_iters,
         )
 
     def forward(
         self,
         chapter_with_lines: str,
         existing_extraction: ChapterExtraction,
-        missed_labels: list[str] = None,  # NEW
+        missed_labels: list[str] | None = None,  # NEW
         file_path: str = "",
-        article_id: str = ""
+        article_id: str = "",
     ) -> ChapterExtraction:
         """
         Improve existing extraction using ReAct agent.
@@ -409,7 +400,7 @@ class MathematicalConceptImprover(dspy.Module):
                 chapter_with_lines=chapter_with_lines,
                 existing_extraction_json=existing_json,
                 validation_context=validation_context,
-                missed_labels_list=missed_labels_str  # NEW
+                missed_labels_list=missed_labels_str,  # NEW
             )
 
             return result.improved_extraction
@@ -425,10 +416,7 @@ class MathematicalConceptImprover(dspy.Module):
 # =============================================================================
 
 
-def compute_changes(
-    existing: ChapterExtraction,
-    improved: ChapterExtraction
-) -> ImprovementResult:
+def compute_changes(existing: ChapterExtraction, improved: ChapterExtraction) -> ImprovementResult:
     """
     Compute changes between existing and improved extractions.
 
@@ -448,42 +436,50 @@ def compute_changes(
     for label in improved_defs:
         if label not in existing_defs:
             # Added
-            result.add_change(EntityChange(
-                entity_type="definition",
-                label=label,
-                operation=ChangeOperation.ADD,
-                reason="New entity found in chapter text",
-                new_data=improved_defs[label].model_dump()
-            ))
+            result.add_change(
+                EntityChange(
+                    entity_type="definition",
+                    label=label,
+                    operation=ChangeOperation.ADD,
+                    reason="New entity found in chapter text",
+                    new_data=improved_defs[label].model_dump(),
+                )
+            )
         elif improved_defs[label].model_dump() != existing_defs[label].model_dump():
             # Modified
-            result.add_change(EntityChange(
-                entity_type="definition",
-                label=label,
-                operation=ChangeOperation.MODIFY,
-                reason="Entity data corrected",
-                old_data=existing_defs[label].model_dump(),
-                new_data=improved_defs[label].model_dump()
-            ))
+            result.add_change(
+                EntityChange(
+                    entity_type="definition",
+                    label=label,
+                    operation=ChangeOperation.MODIFY,
+                    reason="Entity data corrected",
+                    old_data=existing_defs[label].model_dump(),
+                    new_data=improved_defs[label].model_dump(),
+                )
+            )
         else:
             # Unchanged
-            result.add_change(EntityChange(
-                entity_type="definition",
-                label=label,
-                operation=ChangeOperation.NO_CHANGE,
-                reason="Entity already correct"
-            ))
+            result.add_change(
+                EntityChange(
+                    entity_type="definition",
+                    label=label,
+                    operation=ChangeOperation.NO_CHANGE,
+                    reason="Entity already correct",
+                )
+            )
 
     for label in existing_defs:
         if label not in improved_defs:
             # Deleted
-            result.add_change(EntityChange(
-                entity_type="definition",
-                label=label,
-                operation=ChangeOperation.DELETE,
-                reason="Invalid or duplicate entity removed",
-                old_data=existing_defs[label].model_dump()
-            ))
+            result.add_change(
+                EntityChange(
+                    entity_type="definition",
+                    label=label,
+                    operation=ChangeOperation.DELETE,
+                    reason="Invalid or duplicate entity removed",
+                    old_data=existing_defs[label].model_dump(),
+                )
+            )
 
     # Track theorem changes (same pattern)
     existing_thms = {t.label: t for t in existing.theorems}
@@ -491,39 +487,47 @@ def compute_changes(
 
     for label in improved_thms:
         if label not in existing_thms:
-            result.add_change(EntityChange(
-                entity_type="theorem",
-                label=label,
-                operation=ChangeOperation.ADD,
-                reason="New entity found in chapter text",
-                new_data=improved_thms[label].model_dump()
-            ))
+            result.add_change(
+                EntityChange(
+                    entity_type="theorem",
+                    label=label,
+                    operation=ChangeOperation.ADD,
+                    reason="New entity found in chapter text",
+                    new_data=improved_thms[label].model_dump(),
+                )
+            )
         elif improved_thms[label].model_dump() != existing_thms[label].model_dump():
-            result.add_change(EntityChange(
-                entity_type="theorem",
-                label=label,
-                operation=ChangeOperation.MODIFY,
-                reason="Entity data corrected",
-                old_data=existing_thms[label].model_dump(),
-                new_data=improved_thms[label].model_dump()
-            ))
+            result.add_change(
+                EntityChange(
+                    entity_type="theorem",
+                    label=label,
+                    operation=ChangeOperation.MODIFY,
+                    reason="Entity data corrected",
+                    old_data=existing_thms[label].model_dump(),
+                    new_data=improved_thms[label].model_dump(),
+                )
+            )
         else:
-            result.add_change(EntityChange(
-                entity_type="theorem",
-                label=label,
-                operation=ChangeOperation.NO_CHANGE,
-                reason="Entity already correct"
-            ))
+            result.add_change(
+                EntityChange(
+                    entity_type="theorem",
+                    label=label,
+                    operation=ChangeOperation.NO_CHANGE,
+                    reason="Entity already correct",
+                )
+            )
 
     for label in existing_thms:
         if label not in improved_thms:
-            result.add_change(EntityChange(
-                entity_type="theorem",
-                label=label,
-                operation=ChangeOperation.DELETE,
-                reason="Invalid or duplicate entity removed",
-                old_data=existing_thms[label].model_dump()
-            ))
+            result.add_change(
+                EntityChange(
+                    entity_type="theorem",
+                    label=label,
+                    operation=ChangeOperation.DELETE,
+                    reason="Invalid or duplicate entity removed",
+                    old_data=existing_thms[label].model_dump(),
+                )
+            )
 
     # Similar for proofs, axioms, parameters, remarks, citations
     # (abbreviated for brevity - same pattern)
@@ -544,7 +548,7 @@ def improve_chapter_with_retry(
     max_iters: int = 3,
     max_retries: int = 3,
     fallback_model: str = "anthropic/claude-haiku-4-5",
-    verbose: bool = True
+    verbose: bool = True,
 ) -> tuple[ChapterExtraction, ImprovementResult, list[str]]:
     """
     Improve chapter extraction with retry logic and fallback model support.
@@ -570,7 +574,9 @@ def improve_chapter_with_retry(
 
     # Parse existing extraction to ChapterExtraction
     try:
-        if "definitions" in existing_extraction and isinstance(existing_extraction["definitions"], list):
+        if "definitions" in existing_extraction and isinstance(
+            existing_extraction["definitions"], list
+        ):
             if len(existing_extraction["definitions"]) > 0:
                 first_def = existing_extraction["definitions"][0]
                 if "term" in first_def:
@@ -584,7 +590,7 @@ def improve_chapter_with_retry(
                         axioms=[],
                         parameters=[],
                         remarks=[],
-                        citations=[]
+                        citations=[],
                     )
             else:
                 existing_chapter = ChapterExtraction(**existing_extraction)
@@ -597,21 +603,21 @@ def improve_chapter_with_retry(
                 axioms=[],
                 parameters=[],
                 remarks=[],
-                citations=[]
+                citations=[],
             )
     except Exception as e:
-        error_msg = f"Failed to parse existing extraction: {str(e)}"
-        errors_encountered.append(make_error_dict(
-            error_msg,
-            value={"existing_extraction": existing_extraction}
-        ))
+        error_msg = f"Failed to parse existing extraction: {e!s}"
+        errors_encountered.append(
+            make_error_dict(error_msg, value={"existing_extraction": existing_extraction})
+        )
         if verbose:
             print(f"  ✗ {error_msg}")
 
         # Start with empty extraction
         import re
+
         section_id = "Unknown"
-        for line in chapter_text.split('\n')[:20]:
+        for line in chapter_text.split("\n")[:20]:
             content = re.sub(r"^\s*\d+:\s*", "", line)
             if content.startswith("## "):
                 section_id = content.strip()
@@ -625,17 +631,14 @@ def improve_chapter_with_retry(
             axioms=[],
             parameters=[],
             remarks=[],
-            citations=[]
+            citations=[],
         )
 
     # Detect missed labels
     from mathster.parsing.tools import compare_extraction_with_source
 
     existing_dict = existing_chapter.model_dump()
-    comparison, validation_report = compare_extraction_with_source(
-        existing_dict,
-        chapter_text
-    )
+    comparison, _validation_report = compare_extraction_with_source(existing_dict, chapter_text)
 
     missed_labels = []
     for entity_type, data in comparison.items():
@@ -663,7 +666,7 @@ def improve_chapter_with_retry(
                 existing_extraction=existing_chapter,
                 missed_labels=missed_labels,
                 file_path=file_path,
-                article_id=article_id
+                article_id=article_id,
             )
 
             if verbose:
@@ -675,18 +678,20 @@ def improve_chapter_with_retry(
             return improved_chapter, improvement_result, errors_encountered
 
         except Exception as e:
-            error_msg = f"Attempt {attempt}/{max_retries} failed: {type(e).__name__}: {str(e)}"
-            errors_encountered.append(make_error_dict(
-                error_msg,
-                value={
-                    "attempt": attempt,
-                    "max_retries": max_retries,
-                    "exception_type": type(e).__name__,
-                    "exception_message": str(e),
-                    "chapter_info": {"file_path": file_path, "article_id": article_id},
-                    "missed_labels_count": len(missed_labels) if missed_labels else 0
-                }
-            ))
+            error_msg = f"Attempt {attempt}/{max_retries} failed: {type(e).__name__}: {e!s}"
+            errors_encountered.append(
+                make_error_dict(
+                    error_msg,
+                    value={
+                        "attempt": attempt,
+                        "max_retries": max_retries,
+                        "exception_type": type(e).__name__,
+                        "exception_message": str(e),
+                        "chapter_info": {"file_path": file_path, "article_id": article_id},
+                        "missed_labels_count": len(missed_labels) if missed_labels else 0,
+                    },
+                )
+            )
 
             if verbose:
                 print(f"  ✗ {error_msg}")
@@ -707,7 +712,7 @@ def improve_chapter_with_retry(
                 except Exception as switch_error:
                     if verbose:
                         print(f"  ⚠ Failed to switch model: {switch_error}")
-                        print(f"  → Continuing with current model")
+                        print("  → Continuing with current model")
 
             # If this was the last attempt, raise
             if attempt == max_retries:
@@ -730,7 +735,7 @@ def improve_label_with_retry(
     max_iters_per_label: int = 3,
     max_retries: int = 3,
     fallback_model: str = "anthropic/claude-haiku-4-5",
-    verbose: bool = True
+    verbose: bool = True,
 ) -> tuple[ChapterExtraction, ImprovementResult, list[str]]:
     """
     Improve a single missed label with retry logic and fallback model support.
@@ -755,7 +760,9 @@ def improve_label_with_retry(
 
     # Parse existing extraction
     try:
-        if "definitions" in existing_extraction and isinstance(existing_extraction["definitions"], list):
+        if "definitions" in existing_extraction and isinstance(
+            existing_extraction["definitions"], list
+        ):
             if len(existing_extraction["definitions"]) > 0:
                 first_def = existing_extraction["definitions"][0]
                 if "term" in first_def:
@@ -763,30 +770,44 @@ def improve_label_with_retry(
                 else:
                     existing_chapter = ChapterExtraction(
                         section_id=existing_extraction.get("section_id", "Unknown"),
-                        definitions=[], theorems=[], proofs=[], axioms=[],
-                        parameters=[], remarks=[], citations=[]
+                        definitions=[],
+                        theorems=[],
+                        proofs=[],
+                        axioms=[],
+                        parameters=[],
+                        remarks=[],
+                        citations=[],
                     )
             else:
                 existing_chapter = ChapterExtraction(**existing_extraction)
         else:
             existing_chapter = ChapterExtraction(
                 section_id=existing_extraction.get("section_id", "Unknown"),
-                definitions=[], theorems=[], proofs=[], axioms=[],
-                parameters=[], remarks=[], citations=[]
+                definitions=[],
+                theorems=[],
+                proofs=[],
+                axioms=[],
+                parameters=[],
+                remarks=[],
+                citations=[],
             )
     except Exception as e:
-        error_msg = f"Failed to parse existing extraction: {str(e)}"
-        errors_encountered.append(make_error_dict(
-            error_msg,
-            value={"existing_extraction": existing_extraction}
-        ))
+        error_msg = f"Failed to parse existing extraction: {e!s}"
+        errors_encountered.append(
+            make_error_dict(error_msg, value={"existing_extraction": existing_extraction})
+        )
         if verbose:
             print(f"      ✗ {error_msg}")
 
         existing_chapter = ChapterExtraction(
             section_id="Unknown",
-            definitions=[], theorems=[], proofs=[], axioms=[],
-            parameters=[], remarks=[], citations=[]
+            definitions=[],
+            theorems=[],
+            proofs=[],
+            axioms=[],
+            parameters=[],
+            remarks=[],
+            citations=[],
         )
 
     if verbose:
@@ -810,7 +831,7 @@ def improve_label_with_retry(
                 existing_extraction=existing_chapter,
                 missed_labels=[target_label],  # Single label focus
                 file_path=file_path,
-                article_id=article_id
+                article_id=article_id,
             )
 
             if verbose:
@@ -823,8 +844,15 @@ def improve_label_with_retry(
             improved_dict = improved_chapter.model_dump()
             target_found = False
 
-            for entity_list_name in ["definitions", "theorems", "proofs", "axioms",
-                                     "parameters", "remarks", "citations"]:
+            for entity_list_name in [
+                "definitions",
+                "theorems",
+                "proofs",
+                "axioms",
+                "parameters",
+                "remarks",
+                "citations",
+            ]:
                 entity_list = improved_dict.get(entity_list_name, [])
                 if any(e.get("label") == target_label for e in entity_list):
                     target_found = True
@@ -836,18 +864,20 @@ def improve_label_with_retry(
             return improved_chapter, improvement_result, errors_encountered
 
         except Exception as e:
-            error_msg = f"Attempt {attempt}/{max_retries} failed: {type(e).__name__}: {str(e)}"
-            errors_encountered.append(make_error_dict(
-                error_msg,
-                value={
-                    "attempt": attempt,
-                    "max_retries": max_retries,
-                    "exception_type": type(e).__name__,
-                    "exception_message": str(e),
-                    "target_label": target_label,
-                    "entity_type": entity_type
-                }
-            ))
+            error_msg = f"Attempt {attempt}/{max_retries} failed: {type(e).__name__}: {e!s}"
+            errors_encountered.append(
+                make_error_dict(
+                    error_msg,
+                    value={
+                        "attempt": attempt,
+                        "max_retries": max_retries,
+                        "exception_type": type(e).__name__,
+                        "exception_message": str(e),
+                        "target_label": target_label,
+                        "entity_type": entity_type,
+                    },
+                )
+            )
 
             if verbose:
                 print(f"      ✗ {error_msg}")
@@ -867,7 +897,7 @@ def improve_label_with_retry(
                 except Exception as switch_error:
                     if verbose:
                         print(f"      ⚠ Failed to switch model: {switch_error}")
-                        print(f"      → Continuing with current model")
+                        print("      → Continuing with current model")
 
             # If this was the last attempt, raise
             if attempt == max_retries:
@@ -888,7 +918,7 @@ def improve_chapter_by_labels(
     max_iters_per_label: int = 3,
     max_retries: int = 3,
     fallback_model: str = "anthropic/claude-haiku-4-5",
-    verbose: bool = True
+    verbose: bool = True,
 ) -> tuple[RawDocumentSection | None, ImprovementResult, list[str]]:
     """
     Improve chapter by processing missed labels one at a time.
@@ -914,7 +944,9 @@ def improve_chapter_by_labels(
 
     # Parse existing extraction
     try:
-        if "definitions" in existing_extraction and isinstance(existing_extraction["definitions"], list):
+        if "definitions" in existing_extraction and isinstance(
+            existing_extraction["definitions"], list
+        ):
             if len(existing_extraction["definitions"]) > 0:
                 first_def = existing_extraction["definitions"][0]
                 if "term" in first_def:
@@ -922,40 +954,51 @@ def improve_chapter_by_labels(
                 else:
                     current_extraction = ChapterExtraction(
                         section_id=existing_extraction.get("section_id", "Unknown"),
-                        definitions=[], theorems=[], proofs=[], axioms=[],
-                        parameters=[], remarks=[], citations=[]
+                        definitions=[],
+                        theorems=[],
+                        proofs=[],
+                        axioms=[],
+                        parameters=[],
+                        remarks=[],
+                        citations=[],
                     )
             else:
                 current_extraction = ChapterExtraction(**existing_extraction)
         else:
             current_extraction = ChapterExtraction(
                 section_id=existing_extraction.get("section_id", "Unknown"),
-                definitions=[], theorems=[], proofs=[], axioms=[],
-                parameters=[], remarks=[], citations=[]
+                definitions=[],
+                theorems=[],
+                proofs=[],
+                axioms=[],
+                parameters=[],
+                remarks=[],
+                citations=[],
             )
     except Exception as e:
-        error_msg = f"Failed to parse existing extraction: {str(e)}"
-        errors_encountered.append(make_error_dict(
-            error_msg,
-            value={"existing_extraction": existing_extraction}
-        ))
+        error_msg = f"Failed to parse existing extraction: {e!s}"
+        errors_encountered.append(
+            make_error_dict(error_msg, value={"existing_extraction": existing_extraction})
+        )
         if verbose:
             print(f"  ✗ {error_msg}")
 
         current_extraction = ChapterExtraction(
             section_id="Unknown",
-            definitions=[], theorems=[], proofs=[], axioms=[],
-            parameters=[], remarks=[], citations=[]
+            definitions=[],
+            theorems=[],
+            proofs=[],
+            axioms=[],
+            parameters=[],
+            remarks=[],
+            citations=[],
         )
 
     # Discover missed labels
     from mathster.parsing.tools import compare_extraction_with_source
 
     current_dict = current_extraction.model_dump()
-    comparison, validation_report = compare_extraction_with_source(
-        current_dict,
-        chapter_text
-    )
+    comparison, _validation_report = compare_extraction_with_source(current_dict, chapter_text)
 
     # Build label→entity_type mapping
     labels_by_type = {}
@@ -973,7 +1016,7 @@ def improve_chapter_by_labels(
             current_extraction,
             file_path=file_path,
             article_id=article_id,
-            chapter_text=chapter_text
+            chapter_text=chapter_text,
         )
         if conversion_warnings:
             errors_encountered.extend(conversion_warnings)
@@ -982,7 +1025,7 @@ def improve_chapter_by_labels(
 
     if verbose:
         print(f"  → Found {len(labels_by_type)} missed labels for single-label improvement")
-        print(f"  → Strategy: Improve one label at a time with retries + fallback per label")
+        print("  → Strategy: Improve one label at a time with retries + fallback per label")
 
     # Accumulate all improvements
     cumulative_improvement = ImprovementResult()
@@ -1006,7 +1049,7 @@ def improve_chapter_by_labels(
                 max_iters_per_label=max_iters_per_label,
                 max_retries=max_retries,
                 fallback_model=fallback_model,
-                verbose=verbose
+                verbose=verbose,
             )
 
             # Accumulate errors
@@ -1026,16 +1069,18 @@ def improve_chapter_by_labels(
                 print(f"      ✓ {target_label} successfully improved")
 
         except Exception as e:
-            error_msg = f"Failed to improve {target_label} after {max_retries} retries: {str(e)}"
-            errors_encountered.append(make_error_dict(
-                error_msg,
-                value={
-                    "target_label": target_label,
-                    "entity_type": entity_type,
-                    "exception": str(e),
-                    "label_errors": label_errors  # Errors from retry attempts
-                }
-            ))
+            error_msg = f"Failed to improve {target_label} after {max_retries} retries: {e!s}"
+            errors_encountered.append(
+                make_error_dict(
+                    error_msg,
+                    value={
+                        "target_label": target_label,
+                        "entity_type": entity_type,
+                        "exception": str(e),
+                        "label_errors": label_errors,  # Errors from retry attempts
+                    },
+                )
+            )
             failed_labels.append(target_label)
 
             if verbose:
@@ -1045,7 +1090,7 @@ def improve_chapter_by_labels(
 
     # Final summary
     if verbose:
-        print(f"\n  ✓ Single-label improvement completed")
+        print("\n  ✓ Single-label improvement completed")
         print(f"    - Successful: {len(successful_labels)}/{len(labels_by_type)}")
         if failed_labels:
             print(f"    - Failed: {', '.join(failed_labels)}")
@@ -1057,7 +1102,7 @@ def improve_chapter_by_labels(
             current_extraction,
             file_path=file_path,
             article_id=article_id,
-            chapter_text=chapter_text
+            chapter_text=chapter_text,
         )
 
         if conversion_warnings:
@@ -1069,11 +1114,10 @@ def improve_chapter_by_labels(
         return raw_section, cumulative_improvement, errors_encountered
 
     except Exception as e:
-        error_msg = f"Conversion failed: {str(e)}"
-        errors_encountered.append(make_error_dict(
-            error_msg,
-            value=current_extraction.model_dump()
-        ))
+        error_msg = f"Conversion failed: {e!s}"
+        errors_encountered.append(
+            make_error_dict(error_msg, value=current_extraction.model_dump())
+        )
         if verbose:
             print(f"  ✗ {error_msg}")
 
@@ -1094,7 +1138,7 @@ def improve_chapter(
     improvement_mode: str = "batch",
     max_retries: int = 3,
     fallback_model: str = "anthropic/claude-haiku-4-5",
-    verbose: bool = True
+    verbose: bool = True,
 ) -> tuple[RawDocumentSection | None, ImprovementResult, list[str]]:
     """
     Improve an existing mathematical concept extraction.
@@ -1134,46 +1178,39 @@ def improve_chapter(
             max_iters_per_label=max_iters,
             max_retries=max_retries,
             fallback_model=fallback_model,
-            verbose=verbose
+            verbose=verbose,
         )
-    else:
-        # Batch mode: Process all missed labels at once with retry + fallback
-        improved_chapter, improvement_result, errors_encountered = improve_chapter_with_retry(
-            chapter_text=chapter_text,
-            existing_extraction=existing_extraction,
-            file_path=file_path,
-            article_id=article_id,
-            max_iters=max_iters,
-            max_retries=max_retries,
-            fallback_model=fallback_model,
-            verbose=verbose
+    # Batch mode: Process all missed labels at once with retry + fallback
+    improved_chapter, improvement_result, errors_encountered = improve_chapter_with_retry(
+        chapter_text=chapter_text,
+        existing_extraction=existing_extraction,
+        file_path=file_path,
+        article_id=article_id,
+        max_iters=max_iters,
+        max_retries=max_retries,
+        fallback_model=fallback_model,
+        verbose=verbose,
+    )
+
+    # Convert to RawDocumentSection
+    try:
+        raw_section, conversion_warnings = convert_to_raw_document_section(
+            improved_chapter, file_path=file_path, article_id=article_id, chapter_text=chapter_text
         )
 
-        # Convert to RawDocumentSection
-        try:
-            raw_section, conversion_warnings = convert_to_raw_document_section(
-                improved_chapter,
-                file_path=file_path,
-                article_id=article_id,
-                chapter_text=chapter_text
-            )
+        if conversion_warnings:
+            errors_encountered.extend(conversion_warnings)
 
-            if conversion_warnings:
-                errors_encountered.extend(conversion_warnings)
+        if verbose and raw_section:
+            print(f"  ✓ Conversion completed: {raw_section.total_entities} entities")
+            print(improvement_result.get_summary())
 
-            if verbose and raw_section:
-                print(f"  ✓ Conversion completed: {raw_section.total_entities} entities")
-                print(improvement_result.get_summary())
+        return raw_section, improvement_result, errors_encountered
 
-            return raw_section, improvement_result, errors_encountered
+    except Exception as e:
+        error_msg = f"Conversion failed: {e!s}"
+        errors_encountered.append(make_error_dict(error_msg, value=improved_chapter.model_dump()))
+        if verbose:
+            print(f"  ✗ {error_msg}")
 
-        except Exception as e:
-            error_msg = f"Conversion failed: {str(e)}"
-            errors_encountered.append(make_error_dict(
-                error_msg,
-                value=improved_chapter.model_dump()
-            ))
-            if verbose:
-                print(f"  ✗ {error_msg}")
-
-            return None, improvement_result, errors_encountered
+        return None, improvement_result, errors_encountered

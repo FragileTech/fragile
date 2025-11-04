@@ -8,8 +8,9 @@ This test verifies that:
 4. CLI argument for fallback model works
 """
 
-import sys
 from pathlib import Path
+import sys
+
 
 sys.path.insert(0, "src")
 
@@ -17,21 +18,22 @@ sys.path.insert(0, "src")
 def test_retry_wrappers_accept_fallback_model():
     """Test that retry wrappers have fallback_model parameter."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Retry Wrappers Accept fallback_model")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
+
+    import inspect
 
     from mathster.parsing.extract_workflow import (
         extract_chapter_with_retry,
-        extract_label_with_retry
+        extract_label_with_retry,
     )
-    import inspect
 
     # Check extract_chapter_with_retry
     sig1 = inspect.signature(extract_chapter_with_retry)
     params1 = list(sig1.parameters.keys())
 
-    print(f"✓ extract_chapter_with_retry parameters:")
+    print("✓ extract_chapter_with_retry parameters:")
     print(f"  {params1}")
 
     assert "fallback_model" in params1, "Should have fallback_model parameter"
@@ -45,7 +47,7 @@ def test_retry_wrappers_accept_fallback_model():
     sig2 = inspect.signature(extract_label_with_retry)
     params2 = list(sig2.parameters.keys())
 
-    print(f"\n✓ extract_label_with_retry parameters:")
+    print("\n✓ extract_label_with_retry parameters:")
     print(f"  {params2}")
 
     assert "fallback_model" in params2, "Should have fallback_model parameter"
@@ -61,21 +63,19 @@ def test_retry_wrappers_accept_fallback_model():
 def test_main_functions_accept_fallback_model():
     """Test that main extraction functions have fallback_model parameter."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Main Functions Accept fallback_model")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
-    from mathster.parsing.extract_workflow import (
-        extract_chapter,
-        extract_chapter_by_labels
-    )
     import inspect
+
+    from mathster.parsing.extract_workflow import extract_chapter, extract_chapter_by_labels
 
     # Check extract_chapter
     sig1 = inspect.signature(extract_chapter)
     params1 = list(sig1.parameters.keys())
 
-    print(f"✓ extract_chapter parameters:")
+    print("✓ extract_chapter parameters:")
     print(f"  {params1}")
 
     assert "fallback_model" in params1, "Should have fallback_model parameter"
@@ -84,7 +84,7 @@ def test_main_functions_accept_fallback_model():
     sig2 = inspect.signature(extract_chapter_by_labels)
     params2 = list(sig2.parameters.keys())
 
-    print(f"\n✓ extract_chapter_by_labels parameters:")
+    print("\n✓ extract_chapter_by_labels parameters:")
     print(f"  {params2}")
 
     assert "fallback_model" in params2, "Should have fallback_model parameter"
@@ -95,17 +95,18 @@ def test_main_functions_accept_fallback_model():
 def test_pipeline_accepts_fallback_model():
     """Test that process_document accepts fallback_model parameter."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Pipeline Accepts fallback_model")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
+
+    import inspect
 
     from mathster.parsing.dspy_pipeline import process_document
-    import inspect
 
     sig = inspect.signature(process_document)
     params = list(sig.parameters.keys())
 
-    print(f"✓ process_document parameters:")
+    print("✓ process_document parameters:")
     print(f"  {params}")
 
     assert "fallback_model" in params, "Should have fallback_model parameter"
@@ -121,9 +122,9 @@ def test_pipeline_accepts_fallback_model():
 def test_fallback_model_workflow_description():
     """Display complete fallback model workflow documentation."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Fallback Model Workflow Description")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     print("Complete fallback model workflow:")
     print()
@@ -189,7 +190,7 @@ def test_fallback_model_workflow_description():
 def main():
     """Run all tests."""
     print("\nTesting fallback model switching")
-    print("="*70)
+    print("=" * 70)
 
     try:
         test_retry_wrappers_accept_fallback_model()
@@ -197,9 +198,9 @@ def main():
         test_pipeline_accepts_fallback_model()
         test_fallback_model_workflow_description()
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("✓ All tests passed!")
-        print("="*70)
+        print("=" * 70)
         print("\nSummary:")
         print("  - Retry wrappers accept fallback_model parameter")
         print("  - Main extraction functions pass fallback_model correctly")
@@ -218,21 +219,23 @@ def main():
         print("  (e.g., Claude Haiku) for remaining retry attempts.")
         print()
         print("Next: Test with actual LLM calls to verify model switching")
-        print("="*70)
+        print("=" * 70)
         return 0
 
     except AssertionError as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Test failed: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
     except Exception as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Unexpected error: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
 

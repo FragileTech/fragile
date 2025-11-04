@@ -16,16 +16,17 @@ Usage Example:
     import asyncio
     from mathster.mcp_client import GeminiMCPClient
 
+
     async def main():
         # Create client (will auto-discover server or use provided path)
         client = GeminiMCPClient(server_command="gemini-cli")
 
         # Invoke Gemini
         response = await client.ask(
-            prompt="Explain the Keystone Principle",
-            model="gemini-2.5-pro"
+            prompt="Explain the Keystone Principle", model="gemini-2.5-pro"
         )
         print(response)
+
 
     asyncio.run(main())
     ```
@@ -46,13 +47,13 @@ Requirements:
 """
 
 import asyncio
+from contextlib import asynccontextmanager
 import logging
 from pathlib import Path
-from typing import Optional, Dict, Any, List
-from contextlib import asynccontextmanager
+from typing import Any
 
 from mcp import ClientSession
-from mcp.client.stdio import StdioServerParameters, stdio_client
+from mcp.client.stdio import stdio_client, StdioServerParameters
 
 
 logger = logging.getLogger(__name__)
@@ -60,7 +61,6 @@ logger = logging.getLogger(__name__)
 
 class MCPConnectionError(Exception):
     """Raised when MCP server connection fails."""
-    pass
 
 
 class BaseMCPClient:
@@ -79,10 +79,10 @@ class BaseMCPClient:
 
     def __init__(
         self,
-        server_command: Optional[str] = None,
-        server_args: Optional[List[str]] = None,
-        env: Optional[Dict[str, str]] = None,
-        auto_discover: bool = True
+        server_command: str | None = None,
+        server_args: list[str] | None = None,
+        env: dict[str, str] | None = None,
+        auto_discover: bool = True,
     ):
         """
         Initialize MCP client.
@@ -100,18 +100,19 @@ class BaseMCPClient:
         self.server_command = server_command
         self.server_args = server_args or []
         self.env = env
-        self._session: Optional[ClientSession] = None
+        self._session: ClientSession | None = None
 
         if self.server_command is None and auto_discover:
             self.server_command = self._discover_server()
 
         if self.server_command is None:
-            raise MCPConnectionError(
-                f"MCP server not found. Please install the server or "
-                f"provide server_command parameter."
+            msg = (
+                "MCP server not found. Please install the server or "
+                "provide server_command parameter."
             )
+            raise MCPConnectionError(msg)
 
-    def _discover_server(self) -> Optional[str]:
+    def _discover_server(self) -> str | None:
         """
         Attempt to discover MCP server in common locations.
 
@@ -134,9 +135,7 @@ class BaseMCPClient:
             MCPConnectionError: If connection fails
         """
         server_params = StdioServerParameters(
-            command=self.server_command,
-            args=self.server_args,
-            env=self.env
+            command=self.server_command, args=self.server_args, env=self.env
         )
 
         try:
@@ -151,7 +150,7 @@ class BaseMCPClient:
                 f"Failed to connect to MCP server '{self.server_command}': {e}"
             ) from e
 
-    async def list_tools(self) -> List[str]:
+    async def list_tools(self) -> list[str]:
         """
         List available tools on the MCP server.
 
@@ -165,11 +164,7 @@ class BaseMCPClient:
             response = await session.list_tools()
             return [tool.name for tool in response.tools]
 
-    async def call_tool(
-        self,
-        tool_name: str,
-        arguments: Dict[str, Any]
-    ) -> str:
+    async def call_tool(self, tool_name: str, arguments: dict[str, Any]) -> str:
         """
         Call a tool on the MCP server.
 
@@ -190,16 +185,13 @@ class BaseMCPClient:
                 # Extract text from response
                 if result.content:
                     # Content can be text or structured data
-                    if hasattr(result.content[0], 'text'):
+                    if hasattr(result.content[0], "text"):
                         return result.content[0].text
-                    else:
-                        return str(result.content[0])
+                    return str(result.content[0])
                 return ""
 
             except Exception as e:
-                raise MCPConnectionError(
-                    f"Tool call '{tool_name}' failed: {e}"
-                ) from e
+                raise MCPConnectionError(f"Tool call '{tool_name}' failed: {e}") from e
 
 
 class GeminiMCPClient(BaseMCPClient):
@@ -219,6 +211,7 @@ class GeminiMCPClient(BaseMCPClient):
         ```python
         import asyncio
 
+
         async def main():
             client = GeminiMCPClient()
 
@@ -228,21 +221,16 @@ class GeminiMCPClient(BaseMCPClient):
 
             # With specific model
             response = await client.ask(
-                prompt="Prove the Keystone Principle",
-                model="gemini-2.5-pro"
+                prompt="Prove the Keystone Principle", model="gemini-2.5-pro"
             )
             print(response)
+
 
         asyncio.run(main())
         ```
     """
 
-    def __init__(
-        self,
-        server_command: Optional[str] = None,
-        api_key: Optional[str] = None,
-        **kwargs
-    ):
+    def __init__(self, server_command: str | None = None, api_key: str | None = None, **kwargs):
         """
         Initialize Gemini MCP client.
 
@@ -253,18 +241,18 @@ class GeminiMCPClient(BaseMCPClient):
             **kwargs: Additional arguments passed to BaseMCPClient
         """
         # Set up environment with API key if provided
-        env = kwargs.get('env', {})
+        env = kwargs.get("env", {})
         if api_key:
-            env['GEMINI_API_KEY'] = api_key
-        kwargs['env'] = env if env else None
+            env["GEMINI_API_KEY"] = api_key
+        kwargs["env"] = env or None
 
         # Default server args for gemini-cli
-        if 'server_args' not in kwargs:
-            kwargs['server_args'] = []  # gemini-cli doesn't need special args
+        if "server_args" not in kwargs:
+            kwargs["server_args"] = []  # gemini-cli doesn't need special args
 
         super().__init__(server_command=server_command, **kwargs)
 
-    def _discover_server(self) -> Optional[str]:
+    def _discover_server(self) -> str | None:
         """
         Discover gemini-cli in common locations.
 
@@ -300,11 +288,9 @@ class GeminiMCPClient(BaseMCPClient):
         # Try npm global bin
         try:
             import subprocess
+
             result = subprocess.run(
-                ["npm", "bin", "-g"],
-                capture_output=True,
-                text=True,
-                timeout=5
+                ["npm", "bin", "-g"], capture_output=True, text=True, timeout=5, check=False
             )
             if result.returncode == 0:
                 npm_bin = Path(result.stdout.strip()) / "gemini-cli"
@@ -317,11 +303,7 @@ class GeminiMCPClient(BaseMCPClient):
         logger.warning("gemini-cli not found. Install with: npm install -g @google/gemini-cli")
         return None
 
-    async def ask(
-        self,
-        prompt: str,
-        model: str = "gemini-2.5-pro"
-    ) -> str:
+    async def ask(self, prompt: str, model: str = "gemini-2.5-pro") -> str:
         """
         Ask Gemini a question via MCP.
 
@@ -337,10 +319,7 @@ class GeminiMCPClient(BaseMCPClient):
         """
         return await self.call_tool(
             tool_name="ask-gemini",  # Tool name from gemini-cli MCP server
-            arguments={
-                "model": model,
-                "prompt": prompt
-            }
+            arguments={"model": model, "prompt": prompt},
         )
 
 
@@ -354,22 +333,19 @@ class CodexMCPClient(BaseMCPClient):
         ```python
         import asyncio
 
+
         async def main():
             client = CodexMCPClient(server_command="codex-mcp")
 
             response = await client.ask("Explain the halting problem")
             print(response)
 
+
         asyncio.run(main())
         ```
     """
 
-    def __init__(
-        self,
-        server_command: Optional[str] = None,
-        api_key: Optional[str] = None,
-        **kwargs
-    ):
+    def __init__(self, server_command: str | None = None, api_key: str | None = None, **kwargs):
         """
         Initialize Codex MCP client.
 
@@ -379,14 +355,14 @@ class CodexMCPClient(BaseMCPClient):
             **kwargs: Additional arguments passed to BaseMCPClient
         """
         # Set up environment with API key if provided
-        env = kwargs.get('env', {})
+        env = kwargs.get("env", {})
         if api_key:
-            env['OPENAI_API_KEY'] = api_key
-        kwargs['env'] = env if env else None
+            env["OPENAI_API_KEY"] = api_key
+        kwargs["env"] = env or None
 
         super().__init__(server_command=server_command, **kwargs)
 
-    def _discover_server(self) -> Optional[str]:
+    def _discover_server(self) -> str | None:
         """
         Discover codex MCP server in common locations.
 
@@ -407,11 +383,7 @@ class CodexMCPClient(BaseMCPClient):
         logger.warning("Codex MCP server not found")
         return None
 
-    async def ask(
-        self,
-        prompt: str,
-        model: str = "gpt-5-codex"
-    ) -> str:
+    async def ask(self, prompt: str, model: str = "gpt-5-codex") -> str:
         """
         Ask Codex/GPT a question via MCP.
 
@@ -429,20 +401,18 @@ class CodexMCPClient(BaseMCPClient):
         # This is a placeholder - actual tool name should match server
         return await self.call_tool(
             tool_name="ask",  # Or "codex", "complete", etc.
-            arguments={
-                "model": model,
-                "prompt": prompt
-            }
+            arguments={"model": model, "prompt": prompt},
         )
 
 
 # Synchronous wrappers for non-async contexts
 
+
 def sync_ask_gemini(
     prompt: str,
     model: str = "gemini-2.5-pro",
-    server_command: Optional[str] = None,
-    api_key: Optional[str] = None
+    server_command: str | None = None,
+    api_key: str | None = None,
 ) -> str:
     """
     Synchronous wrapper for Gemini MCP client.
@@ -462,6 +432,7 @@ def sync_ask_gemini(
         print(response)
         ```
     """
+
     async def _ask():
         client = GeminiMCPClient(server_command=server_command, api_key=api_key)
         return await client.ask(prompt=prompt, model=model)
@@ -472,8 +443,8 @@ def sync_ask_gemini(
 def sync_ask_codex(
     prompt: str,
     model: str = "gpt-5-codex",
-    server_command: Optional[str] = None,
-    api_key: Optional[str] = None
+    server_command: str | None = None,
+    api_key: str | None = None,
 ) -> str:
     """
     Synchronous wrapper for Codex MCP client.
@@ -493,6 +464,7 @@ def sync_ask_codex(
         print(response)
         ```
     """
+
     async def _ask():
         client = CodexMCPClient(server_command=server_command, api_key=api_key)
         return await client.ask(prompt=prompt, model=model)
@@ -508,7 +480,7 @@ if __name__ == "__main__":
         """Test Gemini MCP client."""
         try:
             client = GeminiMCPClient()
-            print(f"✓ Connected to Gemini MCP server")
+            print("✓ Connected to Gemini MCP server")
 
             # List available tools
             tools = await client.list_tools()

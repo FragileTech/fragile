@@ -10,8 +10,9 @@ This test verifies that:
 6. CLI argument for improvement mode works
 """
 
-import sys
 from pathlib import Path
+import sys
+
 
 sys.path.insert(0, "src")
 
@@ -19,21 +20,22 @@ sys.path.insert(0, "src")
 def test_retry_wrappers_accept_fallback_model():
     """Test that retry wrappers have fallback_model parameter."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Retry Wrappers Accept fallback_model")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
+
+    import inspect
 
     from mathster.parsing.improve_workflow import (
         improve_chapter_with_retry,
-        improve_label_with_retry
+        improve_label_with_retry,
     )
-    import inspect
 
     # Check improve_chapter_with_retry
     sig1 = inspect.signature(improve_chapter_with_retry)
     params1 = list(sig1.parameters.keys())
 
-    print(f"✓ improve_chapter_with_retry parameters:")
+    print("✓ improve_chapter_with_retry parameters:")
     print(f"  {params1}")
 
     assert "fallback_model" in params1, "Should have fallback_model parameter"
@@ -51,7 +53,7 @@ def test_retry_wrappers_accept_fallback_model():
     sig2 = inspect.signature(improve_label_with_retry)
     params2 = list(sig2.parameters.keys())
 
-    print(f"\n✓ improve_label_with_retry parameters:")
+    print("\n✓ improve_label_with_retry parameters:")
     print(f"  {params2}")
 
     assert "fallback_model" in params2, "Should have fallback_model parameter"
@@ -71,17 +73,18 @@ def test_retry_wrappers_accept_fallback_model():
 def test_single_label_improvement_orchestrator():
     """Test that improve_chapter_by_labels orchestrator exists with correct signature."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Single-Label Improvement Orchestrator")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
+
+    import inspect
 
     from mathster.parsing.improve_workflow import improve_chapter_by_labels
-    import inspect
 
     sig = inspect.signature(improve_chapter_by_labels)
     params = list(sig.parameters.keys())
 
-    print(f"✓ improve_chapter_by_labels parameters:")
+    print("✓ improve_chapter_by_labels parameters:")
     print(f"  {params}")
 
     assert "chapter_text" in params, "Should have chapter_text parameter"
@@ -96,7 +99,7 @@ def test_single_label_improvement_orchestrator():
     # Check default values
     default_retries = sig.parameters["max_retries"].default
     default_fallback = sig.parameters["fallback_model"].default
-    print(f"\n✓ Default values:")
+    print("\n✓ Default values:")
     print(f"  → max_retries: {default_retries}")
     print(f"  → fallback_model: {default_fallback}")
 
@@ -109,17 +112,18 @@ def test_single_label_improvement_orchestrator():
 def test_main_improve_chapter_accepts_improvement_mode():
     """Test that main improve_chapter() function accepts improvement_mode parameter."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Main improve_chapter() Accepts improvement_mode")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
+
+    import inspect
 
     from mathster.parsing.improve_workflow import improve_chapter
-    import inspect
 
     sig = inspect.signature(improve_chapter)
     params = list(sig.parameters.keys())
 
-    print(f"✓ improve_chapter parameters:")
+    print("✓ improve_chapter parameters:")
     print(f"  {params}")
 
     assert "improvement_mode" in params, "Should have improvement_mode parameter"
@@ -131,7 +135,7 @@ def test_main_improve_chapter_accepts_improvement_mode():
     default_retries = sig.parameters["max_retries"].default
     default_fallback = sig.parameters["fallback_model"].default
 
-    print(f"\n✓ Default values:")
+    print("\n✓ Default values:")
     print(f"  → improvement_mode: {default_mode}")
     print(f"  → max_retries: {default_retries}")
     print(f"  → fallback_model: {default_fallback}")
@@ -146,17 +150,18 @@ def test_main_improve_chapter_accepts_improvement_mode():
 def test_pipeline_accepts_improvement_mode():
     """Test that process_document() accepts improvement_mode parameter."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Pipeline Accepts improvement_mode")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
+
+    import inspect
 
     from mathster.parsing.dspy_pipeline import process_document
-    import inspect
 
     sig = inspect.signature(process_document)
     params = list(sig.parameters.keys())
 
-    print(f"✓ process_document parameters:")
+    print("✓ process_document parameters:")
     print(f"  {params}")
 
     assert "improvement_mode" in params, "Should have improvement_mode parameter"
@@ -170,7 +175,7 @@ def test_pipeline_accepts_improvement_mode():
     default_retries = sig.parameters["max_retries"].default
     default_fallback = sig.parameters["fallback_model"].default
 
-    print(f"\n✓ Default values:")
+    print("\n✓ Default values:")
     print(f"  → improvement_mode: {default_improvement_mode}")
     print(f"  → extraction_mode: {default_extraction_mode}")
     print(f"  → max_retries: {default_retries}")
@@ -187,9 +192,9 @@ def test_pipeline_accepts_improvement_mode():
 def test_improvement_workflow_description():
     """Display complete improvement workflow documentation."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Improvement Workflow Description")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     print("Complete improvement workflow with retry + fallback:")
     print()
@@ -341,7 +346,7 @@ def test_improvement_workflow_description():
 def main():
     """Run all tests."""
     print("\nTesting improvement workflow with retry and fallback model support")
-    print("="*70)
+    print("=" * 70)
 
     try:
         test_retry_wrappers_accept_fallback_model()
@@ -350,9 +355,9 @@ def main():
         test_pipeline_accepts_improvement_mode()
         test_improvement_workflow_description()
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("✓ All tests passed!")
-        print("="*70)
+        print("=" * 70)
         print("\nSummary:")
         print("  - Retry wrappers accept fallback_model and max_retries parameters")
         print("  - Single-label improvement orchestrator has correct signature")
@@ -376,21 +381,23 @@ def main():
         print("  ✓ Resilient: Partial success in single-label mode")
         print()
         print("Next: Test with actual LLM calls to verify model switching and retry logic")
-        print("="*70)
+        print("=" * 70)
         return 0
 
     except AssertionError as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Test failed: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
     except Exception as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Unexpected error: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
 

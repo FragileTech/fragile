@@ -27,6 +27,7 @@ Usage Example (Standalone Python):
 
     # Use optimizers
     from dspy.teleprompt import BootstrapFewShot
+
     optimizer = BootstrapFewShot(metric=accuracy_metric)
     optimized = optimizer.compile(module, trainset=examples)
     ```
@@ -74,13 +75,15 @@ Notes:
     - For Claude Code context, use declarative agent instructions instead
 """
 
-from typing import Callable, Optional, Any, List
+from typing import Callable
+
 import dspy
-from dspy.primitives.prediction import Prediction
+
 
 # Import MCP client for standalone scripts
 try:
-    from mathster.mcp_client import sync_ask_gemini, sync_ask_codex, MCPConnectionError
+    from mathster.mcp_client import MCPConnectionError, sync_ask_codex, sync_ask_gemini
+
     MCP_CLIENT_AVAILABLE = True
 except ImportError:
     MCP_CLIENT_AVAILABLE = False
@@ -118,24 +121,18 @@ class ClaudeCodeLM(dspy.LM):
         ```python
         import dspy
 
+
         def my_mcp_invoker(model: str, prompt: str) -> str:
             # Invoke MCP in Claude Code environment
-            return mcp__gemini-cli__ask-gemini(model=model, prompt=prompt)
+            return mcp__gemini - cli__ask - gemini(model=model, prompt=prompt)
 
-        lm = ClaudeCodeLM(
-            mcp_callable=my_mcp_invoker,
-            model="gemini-2.5-pro"
-        )
+
+        lm = ClaudeCodeLM(mcp_callable=my_mcp_invoker, model="gemini-2.5-pro")
         dspy.configure(lm=lm)
         ```
     """
 
-    def __init__(
-        self,
-        mcp_callable: MCPCallable,
-        model: str = "gemini-2.5-pro",
-        **kwargs
-    ):
+    def __init__(self, mcp_callable: MCPCallable, model: str = "gemini-2.5-pro", **kwargs):
         """
         Initialize ClaudeCodeLM.
 
@@ -151,14 +148,11 @@ class ClaudeCodeLM(dspy.LM):
         super().__init__(model=model, **kwargs)
         self.mcp_callable = mcp_callable
         self.model_name = model
-        self.history: List[dict] = []
+        self.history: list[dict] = []
 
     def __call__(
-        self,
-        prompt: Optional[str] = None,
-        messages: Optional[List[dict]] = None,
-        **kwargs
-    ) -> List[str]:
+        self, prompt: str | None = None, messages: list[dict] | None = None, **kwargs
+    ) -> list[str]:
         """
         Invoke the LM via MCP server.
 
@@ -178,16 +172,15 @@ class ClaudeCodeLM(dspy.LM):
         # Build prompt from messages if needed
         if prompt is None:
             if messages is None:
-                raise ValueError("Must provide either 'prompt' or 'messages'")
+                msg = "Must provide either 'prompt' or 'messages'"
+                raise ValueError(msg)
             prompt = self._messages_to_prompt(messages)
 
         # Invoke MCP
         try:
             response = self.mcp_callable(self.model_name, prompt)
         except Exception as e:
-            raise RuntimeError(
-                f"MCP invocation failed for model '{self.model_name}': {e}"
-            ) from e
+            raise RuntimeError(f"MCP invocation failed for model '{self.model_name}': {e}") from e
 
         # Record in history for DSPy introspection
         self.history.append({
@@ -200,7 +193,7 @@ class ClaudeCodeLM(dspy.LM):
         # DSPy expects list of completions
         return [response]
 
-    def _messages_to_prompt(self, messages: List[dict]) -> str:
+    def _messages_to_prompt(self, messages: list[dict]) -> str:
         """
         Convert DSPy message format to plain text prompt.
 
@@ -239,10 +232,10 @@ class ClaudeCodeLM(dspy.LM):
         return ClaudeCodeLM(
             mcp_callable=new_callable,
             model=new_model,
-            **{k: v for k, v in kwargs.items() if k not in ["model", "mcp_callable"]}
+            **{k: v for k, v in kwargs.items() if k not in {"model", "mcp_callable"}},
         )
 
-    def inspect_history(self, n: int = 1) -> List[dict]:
+    def inspect_history(self, n: int = 1) -> list[dict]:
         """
         Inspect recent call history.
 
@@ -300,7 +293,7 @@ class GeminiMCP(ClaudeCodeLM):
         super().__init__(
             mcp_callable=mcp_callable,
             model="gemini-2.5-pro",
-            **{k: v for k, v in kwargs.items() if k != "model"}
+            **{k: v for k, v in kwargs.items() if k != "model"},
         )
 
     def __repr__(self) -> str:
@@ -338,11 +331,7 @@ class CodexMCP(ClaudeCodeLM):
             **kwargs: Additional arguments (model defaults to "gpt-5-codex")
         """
         model = kwargs.pop("model", "gpt-5-codex")
-        super().__init__(
-            mcp_callable=mcp_callable,
-            model=model,
-            **kwargs
-        )
+        super().__init__(mcp_callable=mcp_callable, model=model, **kwargs)
 
     def __repr__(self) -> str:
         """String representation."""
@@ -351,9 +340,9 @@ class CodexMCP(ClaudeCodeLM):
 
 # Utility functions
 
+
 def create_mcp_callable(
-    mcp_function: Callable[[str, str], str],
-    default_model: Optional[str] = None
+    mcp_function: Callable[[str, str], str], default_model: str | None = None
 ) -> MCPCallable:
     """
     Create an MCP callable with optional model override.
@@ -372,18 +361,19 @@ def create_mcp_callable(
         ```python
         # In Claude Code context
         gemini_callable = create_mcp_callable(
-            mcp__gemini-cli__ask-gemini,
-            default_model="gemini-2.5-pro"
+            mcp__gemini - cli__ask - gemini, default_model="gemini-2.5-pro"
         )
 
         lm = GeminiMCP(mcp_callable=gemini_callable)
         ```
     """
+
     def callable_wrapper(model: str, prompt: str) -> str:
         """Wrapper that invokes MCP with model and prompt."""
-        use_model = model if model else default_model
+        use_model = model or default_model
         if not use_model:
-            raise ValueError("No model specified and no default model set")
+            msg = "No model specified and no default model set"
+            raise ValueError(msg)
 
         return mcp_function(model=use_model, prompt=prompt)
 
@@ -404,7 +394,7 @@ def get_gemini_lm(mcp_invoker: Callable) -> GeminiMCP:
         ```python
         import dspy
 
-        lm = get_gemini_lm(mcp__gemini-cli__ask-gemini)
+        lm = get_gemini_lm(mcp__gemini - cli__ask - gemini)
         dspy.configure(lm=lm)
         ```
     """
@@ -434,9 +424,9 @@ def get_codex_lm(mcp_invoker: Callable) -> CodexMCP:
 
 # Factory functions using real MCP client (for standalone scripts)
 
+
 def create_gemini_invoker(
-    server_command: Optional[str] = None,
-    api_key: Optional[str] = None
+    server_command: str | None = None, api_key: str | None = None
 ) -> MCPCallable:
     """
     Create Gemini MCP invoker using real MCP client.
@@ -469,26 +459,23 @@ def create_gemini_invoker(
         ```
     """
     if not MCP_CLIENT_AVAILABLE:
-        raise ImportError(
+        msg = (
             "MCP client not available. Install with: uv add mcp\n"
             "Also ensure MCP server installed: npm install -g @google/gemini-cli"
         )
+        raise ImportError(msg)
 
     def invoker(model: str, prompt: str) -> str:
         """Invoke Gemini via real MCP client."""
         return sync_ask_gemini(
-            prompt=prompt,
-            model=model,
-            server_command=server_command,
-            api_key=api_key
+            prompt=prompt, model=model, server_command=server_command, api_key=api_key
         )
 
     return invoker
 
 
 def create_codex_invoker(
-    server_command: Optional[str] = None,
-    api_key: Optional[str] = None
+    server_command: str | None = None, api_key: str | None = None
 ) -> MCPCallable:
     """
     Create Codex MCP invoker using real MCP client.
@@ -518,27 +505,22 @@ def create_codex_invoker(
         ```
     """
     if not MCP_CLIENT_AVAILABLE:
-        raise ImportError(
+        msg = (
             "MCP client not available. Install with: uv add mcp\n"
             "Also ensure codex MCP server is installed and configured"
         )
+        raise ImportError(msg)
 
     def invoker(model: str, prompt: str) -> str:
         """Invoke Codex via real MCP client."""
         return sync_ask_codex(
-            prompt=prompt,
-            model=model,
-            server_command=server_command,
-            api_key=api_key
+            prompt=prompt, model=model, server_command=server_command, api_key=api_key
         )
 
     return invoker
 
 
-def create_gemini_lm(
-    server_command: Optional[str] = None,
-    api_key: Optional[str] = None
-) -> GeminiMCP:
+def create_gemini_lm(server_command: str | None = None, api_key: str | None = None) -> GeminiMCP:
     """
     One-step setup for Gemini LM with real MCP client.
 
@@ -573,10 +555,7 @@ def create_gemini_lm(
     return GeminiMCP(mcp_callable=invoker)
 
 
-def create_codex_lm(
-    server_command: Optional[str] = None,
-    api_key: Optional[str] = None
-) -> CodexMCP:
+def create_codex_lm(server_command: str | None = None, api_key: str | None = None) -> CodexMCP:
     """
     One-step setup for Codex LM with real MCP client.
 

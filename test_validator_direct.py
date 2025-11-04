@@ -2,9 +2,11 @@
 Direct test of RawDefinition mode='before' validator.
 Bypasses package imports to avoid unrelated import errors.
 """
+
+from pathlib import Path
 import sys
 import warnings
-from pathlib import Path
+
 
 # Add src directories to path to import modules directly
 sys.path.insert(0, str(Path(__file__).parent / "src" / "mathster" / "core"))
@@ -12,6 +14,7 @@ sys.path.insert(0, str(Path(__file__).parent / "src" / "mathster" / "core"))
 # Import modules directly without package init
 import article_system
 import raw_data
+
 
 # Get the classes we need
 RawDefinition = raw_data.RawDefinition

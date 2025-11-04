@@ -22,10 +22,11 @@ Usage:
     python scripts/test_mcp.py --test full      # Test full program
 """
 
-import sys
-import asyncio
 import argparse
+import asyncio
 from pathlib import Path
+import sys
+
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -46,7 +47,7 @@ def test_mcp_client():
             try:
                 # Create client
                 client = GeminiMCPClient()
-                print(f"✓ GeminiMCPClient created")
+                print("✓ GeminiMCPClient created")
 
                 # List tools
                 tools = await client.list_tools()
@@ -54,8 +55,7 @@ def test_mcp_client():
 
                 # Ask simple question
                 response = await client.ask(
-                    prompt="What is 2+2? Answer briefly.",
-                    model="gemini-2.5-pro"
+                    prompt="What is 2+2? Answer briefly.", model="gemini-2.5-pro"
                 )
                 print(f"✓ Response received: {response[:100]}...")
 
@@ -92,6 +92,7 @@ def test_dspy_integration():
 
     try:
         import dspy
+
         from mathster.mcps import create_gemini_lm, MCPConnectionError
 
         print("\n✓ DSPy and MCP imports successful")
@@ -103,11 +104,11 @@ def test_dspy_integration():
 
             # Configure DSPy
             dspy.configure(lm=lm)
-            print(f"✓ DSPy configured")
+            print("✓ DSPy configured")
 
             # Test with Predict
-            predictor = dspy.Predict("question -> answer")
-            print(f"✓ Predictor created")
+            dspy.Predict("question -> answer")
+            print("✓ Predictor created")
 
             # Note: This will fail if gemini-cli not found
             # We're testing the integration, not making actual calls
@@ -137,6 +138,7 @@ def test_full_program():
 
     try:
         import dspy
+
         from mathster.mcps import create_gemini_lm, MCPConnectionError
 
         print("\n✓ Imports successful")
@@ -161,7 +163,7 @@ def test_full_program():
             print("✓ LM configured")
 
             # Create module
-            qa = MathQuestionAnswerer()
+            MathQuestionAnswerer()
             print("✓ Module instantiated")
 
             # Test (this would make actual API call)
@@ -199,6 +201,7 @@ def test_live_call():
 
     try:
         import dspy
+
         from mathster.mcps import create_gemini_lm
 
         # Create LM
@@ -209,7 +212,7 @@ def test_live_call():
         predictor = dspy.Predict("question -> answer")
         result = predictor(question="What is the capital of France? Answer in one word.")
 
-        print(f"\n✓ Question: What is the capital of France?")
+        print("\n✓ Question: What is the capital of France?")
         print(f"✓ Answer: {result.answer}")
 
         print("\n✅ Live API Call test PASSED")
@@ -227,12 +230,10 @@ def main():
         "--test",
         choices=["client", "dspy", "full", "live", "all"],
         default="all",
-        help="Which test to run (default: all)"
+        help="Which test to run (default: all)",
     )
     parser.add_argument(
-        "--live",
-        action="store_true",
-        help="Make live API calls (requires API key)"
+        "--live", action="store_true", help="Make live API calls (requires API key)"
     )
 
     args = parser.parse_args()
@@ -243,13 +244,13 @@ def main():
 
     results = {}
 
-    if args.test in ["client", "all"]:
+    if args.test in {"client", "all"}:
         results["client"] = test_mcp_client()
 
-    if args.test in ["dspy", "all"]:
+    if args.test in {"dspy", "all"}:
         results["dspy"] = test_dspy_integration()
 
-    if args.test in ["full", "all"]:
+    if args.test in {"full", "all"}:
         results["full"] = test_full_program()
 
     if args.test == "live" or args.live:
@@ -270,9 +271,8 @@ def main():
     if all_passed:
         print("🎉 All tests PASSED!")
         return 0
-    else:
-        print("⚠️  Some tests FAILED - see details above")
-        return 1
+    print("⚠️  Some tests FAILED - see details above")
+    return 1
 
 
 if __name__ == "__main__":

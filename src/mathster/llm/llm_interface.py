@@ -98,9 +98,9 @@ def validate_llm_response(response: dict[str, Any], schema_name: str) -> bool:
     """
     from mathster.core.raw_data import (
         RawDefinition,
+        RawDocument,
         RawProof,
         RawTheorem,
-        RawDocument,
     )
 
     schema_map = {

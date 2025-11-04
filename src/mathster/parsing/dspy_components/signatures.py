@@ -24,9 +24,7 @@ class ExtractMathematicalConcepts(dspy.Signature):
     chapter_with_lines: str = dspy.InputField(
         desc="Chapter text with line numbers in format 'NNN: content'"
     )
-    chapter_number: int = dspy.InputField(
-        desc="Chapter number (0 for preamble, 1+ for sections)"
-    )
+    chapter_number: int = dspy.InputField(desc="Chapter number (0 for preamble, 1+ for sections)")
 
     extraction: ChapterExtraction = dspy.OutputField(
         desc="All mathematical entities found with precise line ranges"
@@ -41,13 +39,10 @@ class ExtractWithValidation(dspy.Signature):
     feedback to guide the agent's extraction process.
     """
 
-    chapter_with_lines: str = dspy.InputField(
-        desc="Chapter text with line numbers"
-    )
+    chapter_with_lines: str = dspy.InputField(desc="Chapter text with line numbers")
     chapter_number: int = dspy.InputField(desc="Chapter number")
     previous_error_report: str = dspy.InputField(
-        default="",
-        desc="Error report from previous attempt (empty on first attempt)"
+        default="", desc="Error report from previous attempt (empty on first attempt)"
     )
 
     extraction: ChapterExtraction = dspy.OutputField(
@@ -63,18 +58,13 @@ class ExtractSingleLabel(dspy.Signature):
     or re-extracted (e.g., during improvement workflow).
     """
 
-    chapter_with_lines: str = dspy.InputField(
-        desc="Chapter text with line numbers"
-    )
+    chapter_with_lines: str = dspy.InputField(desc="Chapter text with line numbers")
     target_label: str = dspy.InputField(
         desc="Specific entity label to extract (e.g., 'def-lipschitz')"
     )
-    entity_type: str = dspy.InputField(
-        desc="Entity type (definitions, theorems, proofs, etc.)"
-    )
+    entity_type: str = dspy.InputField(desc="Entity type (definitions, theorems, proofs, etc.)")
     previous_error_report: str = dspy.InputField(
-        default="",
-        desc="Error report from previous attempt"
+        default="", desc="Error report from previous attempt"
     )
 
     extraction: ChapterExtraction = dspy.OutputField(
@@ -90,18 +80,11 @@ class ImproveMathematicalConcepts(dspy.Signature):
     any mathematical entities that were missed in the original extraction.
     """
 
-    chapter_with_lines: str = dspy.InputField(
-        desc="Chapter text with line numbers"
-    )
-    existing_extraction: str = dspy.InputField(
-        desc="JSON string of current extraction"
-    )
-    missed_labels: str = dspy.InputField(
-        desc="Comma-separated list of labels that were missed"
-    )
+    chapter_with_lines: str = dspy.InputField(desc="Chapter text with line numbers")
+    existing_extraction: str = dspy.InputField(desc="JSON string of current extraction")
+    missed_labels: str = dspy.InputField(desc="Comma-separated list of labels that were missed")
     previous_error_report: str = dspy.InputField(
-        default="",
-        desc="Error report from previous attempt"
+        default="", desc="Error report from previous attempt"
     )
 
     improved_extraction: ChapterExtraction = dspy.OutputField(

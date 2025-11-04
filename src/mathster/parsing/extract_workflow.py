@@ -9,6 +9,7 @@ from mathster.parsing.extract_workflow import extract_chapter
 
 # NEW (recommended):
 from mathster.parsing import workflows
+
 workflows.extract_chapter(...)
 
 # Or directly:
@@ -33,6 +34,7 @@ Key Components:
 ⚠️ For new code, use: `from mathster.parsing.workflows import extract_chapter`
 """
 
+from itertools import starmap
 import json
 from typing import Literal
 
@@ -58,7 +60,7 @@ from mathster.core.raw_data import (
 # =============================================================================
 
 
-def make_error_dict(error_msg: str, value: any = None) -> dict:
+def make_error_dict(error_msg: str, value: any | None = None) -> dict:
     """
     Create structured error dictionary for tracking extraction/improvement failures.
 
@@ -282,7 +284,9 @@ class AxiomExtraction(ExtractedEntity):
     """Extracted axiom with structured components."""
 
     name: str = Field(..., description="Title/name of the axiom")
-    core_assumption_line_start: int = Field(..., description="Starting line of core assumption text")
+    core_assumption_line_start: int = Field(
+        ..., description="Starting line of core assumption text"
+    )
     core_assumption_line_end: int = Field(..., description="Ending line of core assumption text")
     parameters: list[str] = Field(
         default_factory=list,
@@ -305,12 +309,8 @@ class AxiomExtraction(ExtractedEntity):
 class ParameterExtraction(ExtractedEntity):
     """Extracted parameter/notation definition."""
 
-    symbol: str = Field(
-        ..., description="Mathematical symbol (e.g., 'h', '\\beta', 'N')"
-    )
-    meaning: str = Field(
-        ..., description="Definition/meaning of the symbol"
-    )
+    symbol: str = Field(..., description="Mathematical symbol (e.g., 'h', '\\beta', 'N')")
+    meaning: str = Field(..., description="Definition/meaning of the symbol")
     scope: Literal["global", "local"] = Field(
         ..., description="Whether parameter is global (whole document) or local (section/proof)"
     )
@@ -331,7 +331,6 @@ class AssumptionExtraction(ExtractedEntity):
     such as 'Assume the domain is bounded' or 'Suppose f is Lipschitz continuous'.
     Unlike axioms (global framework principles), assumptions are statement-specific.
     """
-    pass
 
 
 class CitationExtraction(ExtractedEntity):
@@ -370,8 +369,7 @@ class ValidationResult(BaseModel):
     errors: list[str] = Field(default_factory=list, description="List of validation errors")
     warnings: list[str] = Field(default_factory=list, description="List of warnings")
     entities_validated: dict[str, int] = Field(
-        default_factory=dict,
-        description="Count of successfully validated entities by type"
+        default_factory=dict, description="Count of successfully validated entities by type"
     )
 
     def get_feedback(self) -> str:
@@ -395,10 +393,7 @@ class ValidationResult(BaseModel):
 
 
 def validate_extraction(
-    extraction_dict: dict,
-    file_path: str,
-    article_id: str,
-    chapter_text: str
+    extraction_dict: dict, file_path: str, article_id: str, chapter_text: str
 ) -> ValidationResult:
     """
     Validation tool that attempts to build RawDocumentSection from extraction.
@@ -425,7 +420,7 @@ def validate_extraction(
         "assumptions": 0,
         "parameters": 0,
         "remarks": 0,
-        "citations": 0
+        "citations": 0,
     }
 
     try:
@@ -435,10 +430,7 @@ def validate_extraction(
         # Attempt to convert to RawDocumentSection
         try:
             raw_section, conversion_warnings = convert_to_raw_document_section(
-                extraction,
-                file_path=file_path,
-                article_id=article_id,
-                chapter_text=chapter_text
+                extraction, file_path=file_path, article_id=article_id, chapter_text=chapter_text
             )
 
             # Add conversion warnings to warnings list
@@ -458,7 +450,9 @@ def validate_extraction(
             # Check if we got any entities
             total_entities = sum(entities_validated.values())
             if total_entities == 0:
-                warnings.append("No entities were extracted from this chapter. Is the chapter empty?")
+                warnings.append(
+                    "No entities were extracted from this chapter. Is the chapter empty?"
+                )
 
             # Validate label patterns
             for defn in extraction.definitions:
@@ -467,7 +461,9 @@ def validate_extraction(
 
             for thm in extraction.theorems:
                 if not any(thm.label.startswith(p) for p in ["thm-", "lem-", "prop-", "cor-"]):
-                    errors.append(f"Theorem label '{thm.label}' must start with thm-/lem-/prop-/cor-")
+                    errors.append(
+                        f"Theorem label '{thm.label}' must start with thm-/lem-/prop-/cor-"
+                    )
 
             for proof in extraction.proofs:
                 if not proof.label.startswith("proof-"):
@@ -475,7 +471,9 @@ def validate_extraction(
 
             for axiom in extraction.axioms:
                 if not any(axiom.label.startswith(p) for p in ["axiom-", "ax-", "def-axiom-"]):
-                    errors.append(f"Axiom label '{axiom.label}' must start with axiom-/ax-/def-axiom-")
+                    errors.append(
+                        f"Axiom label '{axiom.label}' must start with axiom-/ax-/def-axiom-"
+                    )
 
             for param in extraction.parameters:
                 if not param.label.startswith("param-"):
@@ -487,7 +485,9 @@ def validate_extraction(
 
             for assumption in extraction.assumptions:
                 if not assumption.label.startswith("assumption-"):
-                    errors.append(f"Assumption label '{assumption.label}' must start with 'assumption-'")
+                    errors.append(
+                        f"Assumption label '{assumption.label}' must start with 'assumption-'"
+                    )
 
             # NEW: Validate reference formats
             # PERMISSIVE: Validate theorem definition_references (warnings only)
@@ -502,7 +502,9 @@ def validate_extraction(
             # Validate proofs
             for proof in extraction.proofs:
                 # STRICT: Validate proves_label (MUST be label format)
-                if not any(proof.proves_label.startswith(p) for p in ["thm-", "lem-", "prop-", "cor-"]):
+                if not any(
+                    proof.proves_label.startswith(p) for p in ["thm-", "lem-", "prop-", "cor-"]
+                ):
                     errors.append(
                         f"Proof '{proof.label}': proves_label MUST be a theorem label "
                         f"(thm-*|lem-*|prop-*|cor-*), got '{proof.proves_label}'. "
@@ -533,18 +535,15 @@ def validate_extraction(
                     )
 
         except Exception as e:
-            errors.append(f"Failed to convert to RawDocumentSection: {str(e)}")
+            errors.append(f"Failed to convert to RawDocumentSection: {e!s}")
 
     except Exception as e:
-        errors.append(f"Failed to parse ChapterExtraction: {str(e)}")
+        errors.append(f"Failed to parse ChapterExtraction: {e!s}")
 
     is_valid = len(errors) == 0
 
     return ValidationResult(
-        is_valid=is_valid,
-        errors=errors,
-        warnings=warnings,
-        entities_validated=entities_validated
+        is_valid=is_valid, errors=errors, warnings=warnings, entities_validated=entities_validated
     )
 
 
@@ -572,16 +571,13 @@ def validate_extraction_tool(extraction_json: str, context: str) -> str:
 
         # Validate
         validation = validate_extraction(
-            extraction_dict,
-            file_path=file_path,
-            article_id=article_id,
-            chapter_text=chapter_text
+            extraction_dict, file_path=file_path, article_id=article_id, chapter_text=chapter_text
         )
 
         return validation.get_feedback()
 
     except Exception as e:
-        return f"Validation error: {str(e)}"
+        return f"Validation error: {e!s}"
 
 
 def compare_labels_tool(extraction_json: str, context: str) -> str:
@@ -611,22 +607,19 @@ def compare_labels_tool(extraction_json: str, context: str) -> str:
         if len(parts) != 3:
             return "Error: Invalid context format"
 
-        file_path, article_id, chapter_text = parts
+        _file_path, _article_id, chapter_text = parts
 
         # Parse extraction JSON
         extraction_dict = json.loads(extraction_json)
 
         # Compare extraction with source
-        comparison, report = compare_extraction_with_source(
-            extraction_dict,
-            chapter_text
-        )
+        _comparison, report = compare_extraction_with_source(extraction_dict, chapter_text)
 
         # Return report with actionable feedback
         return report
 
     except Exception as e:
-        return f"Label comparison error: {str(e)}"
+        return f"Label comparison error: {e!s}"
 
 
 # =============================================================================
@@ -757,9 +750,7 @@ class ExtractMathematicalConcepts(dspy.Signature):
     chapter_with_lines: str = dspy.InputField(
         desc="Chapter text with line numbers in format 'NNN: content'"
     )
-    chapter_number: int = dspy.InputField(
-        desc="Chapter number (0 for preamble, 1+ for sections)"
-    )
+    chapter_number: int = dspy.InputField(desc="Chapter number (0 for preamble, 1+ for sections)")
 
     extraction: ChapterExtraction = dspy.OutputField(
         desc="All mathematical entities found with precise line ranges"
@@ -798,9 +789,7 @@ class ExtractWithValidation(dspy.Signature):
     chapter_with_lines: str = dspy.InputField(
         desc="Chapter text with line numbers in format 'NNN: content'"
     )
-    chapter_number: int = dspy.InputField(
-        desc="Chapter number (0 for preamble, 1+ for sections)"
-    )
+    chapter_number: int = dspy.InputField(desc="Chapter number (0 for preamble, 1+ for sections)")
     validation_context: str = dspy.InputField(
         desc="Context for validation: file_path|||article_id|||chapter_text"
     )
@@ -810,7 +799,7 @@ class ExtractWithValidation(dspy.Signature):
             "Error report from previous failed extraction attempt. "
             "If provided, READ THIS CAREFULLY and fix all issues mentioned. "
             "Empty string means this is the first attempt."
-        )
+        ),
     )
 
     extraction: ChapterExtraction = dspy.OutputField(
@@ -844,7 +833,7 @@ class MathematicalConceptExtractor(dspy.Module):
         self.react_agent = dspy.ReAct(
             ExtractWithValidation,
             tools=[compare_labels_tool, validate_extraction_tool],
-            max_iters=max_iters
+            max_iters=max_iters,
         )
 
     def forward(
@@ -853,7 +842,7 @@ class MathematicalConceptExtractor(dspy.Module):
         chapter_number: int,
         file_path: str = "",
         article_id: str = "",
-        previous_error_report: str = ""
+        previous_error_report: str = "",
     ) -> ChapterExtraction:
         """
         Extract concepts from a numbered chapter using ReAct agent.
@@ -877,11 +866,10 @@ class MathematicalConceptExtractor(dspy.Module):
                 chapter_with_lines=chapter_with_lines,
                 chapter_number=chapter_number,
                 validation_context=validation_context,
-                previous_error_report=previous_error_report
+                previous_error_report=previous_error_report,
             )
 
-            extraction = result.extraction
-            return extraction
+            return result.extraction
 
         except Exception as e:
             print(f"  ✗ ReAct agent failed: {e}")
@@ -895,10 +883,7 @@ class MathematicalConceptExtractor(dspy.Module):
 
 
 def generate_detailed_error_report(
-    error: Exception,
-    attempt_number: int,
-    max_retries: int,
-    extraction_context: dict | None = None
+    error: Exception, attempt_number: int, max_retries: int, extraction_context: dict | None = None
 ) -> str:
     """
     Generate a detailed, LLM-friendly error report for failed extractions.
@@ -930,8 +915,9 @@ def generate_detailed_error_report(
            Example: "term": "Lipschitz continuous"
         ```
     """
-    from pydantic import ValidationError
     import traceback
+
+    from pydantic import ValidationError
 
     # Build header
     report_lines = [
@@ -941,7 +927,7 @@ def generate_detailed_error_report(
         "",
         f"Attempt: {attempt_number}/{max_retries}",
         f"Error Type: {type(error).__name__}",
-        ""
+        "",
     ]
 
     # Add context if provided
@@ -958,8 +944,7 @@ def generate_detailed_error_report(
     # Parse error based on type
     if isinstance(error, ValidationError):
         # Pydantic validation error - parse into detailed field-level feedback
-        report_lines.append("VALIDATION ERRORS:")
-        report_lines.append("")
+        report_lines.extend(("VALIDATION ERRORS:", ""))
 
         for i, err in enumerate(error.errors(), 1):
             # Extract error details
@@ -967,28 +952,33 @@ def generate_detailed_error_report(
             error_type = err["type"]
             error_msg = err["msg"]
 
-            report_lines.append(f"{i}. Field: {field_path}")
-            report_lines.append(f"   Problem: {error_msg}")
+            report_lines.extend((f"{i}. Field: {field_path}", f"   Problem: {error_msg}"))
 
             # Provide specific fix guidance based on error type
             if error_type == "missing":
-                report_lines.append(f"   Fix: This is a REQUIRED field. You must provide a value.")
-                report_lines.append(f"   → Ensure the field '{field_path}' is present in your output")
+                report_lines.extend((
+                    "   Fix: This is a REQUIRED field. You must provide a value.",
+                    f"   → Ensure the field '{field_path}' is present in your output",
+                ))
 
-            elif error_type in ["string_type", "int_type", "float_type", "bool_type"]:
+            elif error_type in {"string_type", "int_type", "float_type", "bool_type"}:
                 expected_type = error_type.replace("_type", "")
-                report_lines.append(f"   Fix: Field must be of type '{expected_type}'")
-                report_lines.append(f"   → Check that '{field_path}' has the correct data type")
+                report_lines.extend((
+                    f"   Fix: Field must be of type '{expected_type}'",
+                    f"   → Check that '{field_path}' has the correct data type",
+                ))
 
             elif "literal_error" in error_type:
                 # Extract allowed values from error message
-                report_lines.append(f"   Fix: Field must match one of the allowed literal values")
+                report_lines.append("   Fix: Field must match one of the allowed literal values")
                 if "Input should be" in error_msg:
                     report_lines.append(f"   → {error_msg}")
 
             elif "list_type" in error_type:
-                report_lines.append(f"   Fix: Field must be a list/array")
-                report_lines.append(f"   → Wrap value in square brackets: [{field_path}]")
+                report_lines.extend((
+                    "   Fix: Field must be a list/array",
+                    f"   → Wrap value in square brackets: [{field_path}]",
+                ))
 
             else:
                 # Generic guidance
@@ -996,60 +986,67 @@ def generate_detailed_error_report(
 
             # Add field-specific examples
             if "term" in field_path:
-                report_lines.append(f'   Example: "term": "Lipschitz continuous"')
+                report_lines.append('   Example: "term": "Lipschitz continuous"')
             elif "label" in field_path:
-                report_lines.append(f'   Example: "label": "def-lipschitz" (must match :label: directive)')
+                report_lines.append(
+                    '   Example: "label": "def-lipschitz" (must match :label: directive)'
+                )
             elif "statement_type" in field_path:
-                report_lines.append(f'   Example: "statement_type": "theorem"')
-                report_lines.append(f'   Allowed values: "theorem", "lemma", "proposition", "corollary"')
+                report_lines.extend((
+                    '   Example: "statement_type": "theorem"',
+                    '   Allowed values: "theorem", "lemma", "proposition", "corollary"',
+                ))
             elif "line_start" in field_path or "line_end" in field_path:
-                report_lines.append(f'   Example: "line_start": 42, "line_end": 58')
-                report_lines.append(f'   → Must be integers within document line range')
+                report_lines.extend((
+                    '   Example: "line_start": 42, "line_end": 58',
+                    "   → Must be integers within document line range",
+                ))
 
             report_lines.append("")
 
     elif isinstance(error, json.JSONDecodeError):
         # JSON parsing error
-        report_lines.append("JSON PARSING ERROR:")
-        report_lines.append("")
-        report_lines.append(f"Problem: Invalid JSON syntax at line {error.lineno}, column {error.colno}")
-        report_lines.append(f"Message: {error.msg}")
-        report_lines.append("")
-        report_lines.append("Common JSON Errors:")
-        report_lines.append("  - Missing closing bracket/brace: }, ], )")
-        report_lines.append("  - Trailing comma in last array/object element")
-        report_lines.append("  - Unquoted string values")
-        report_lines.append("  - Single quotes instead of double quotes")
-        report_lines.append("")
-        report_lines.append("Fix: Ensure valid JSON formatting:")
-        report_lines.append('  - All strings use double quotes: "string"')
-        report_lines.append("  - All brackets/braces are properly closed")
-        report_lines.append("  - No trailing commas")
-        report_lines.append("")
+        report_lines.extend((
+            "JSON PARSING ERROR:",
+            "",
+            f"Problem: Invalid JSON syntax at line {error.lineno}, column {error.colno}",
+            f"Message: {error.msg}",
+            "",
+            "Common JSON Errors:",
+            "  - Missing closing bracket/brace: }, ], )",
+            "  - Trailing comma in last array/object element",
+            "  - Unquoted string values",
+            "  - Single quotes instead of double quotes",
+            "",
+            "Fix: Ensure valid JSON formatting:",
+            '  - All strings use double quotes: "string"',
+            "  - All brackets/braces are properly closed",
+            "  - No trailing commas",
+            "",
+        ))
 
     elif "timeout" in str(error).lower():
         # Timeout error
-        report_lines.append("TIMEOUT ERROR:")
-        report_lines.append("")
-        report_lines.append("Problem: Extraction took too long and timed out")
-        report_lines.append("")
-        report_lines.append("Possible Causes:")
-        report_lines.append("  - Chapter is very large (too many entities)")
-        report_lines.append("  - Agent got stuck in reasoning loop")
-        report_lines.append("  - Network/API latency issues")
-        report_lines.append("")
-        report_lines.append("Fix: Try to:")
-        report_lines.append("  - Focus on extracting only the most important entities")
-        report_lines.append("  - Use more concise reasoning steps")
-        report_lines.append("  - Validate early to catch errors quickly")
-        report_lines.append("")
+        report_lines.extend((
+            "TIMEOUT ERROR:",
+            "",
+            "Problem: Extraction took too long and timed out",
+            "",
+            "Possible Causes:",
+            "  - Chapter is very large (too many entities)",
+            "  - Agent got stuck in reasoning loop",
+            "  - Network/API latency issues",
+            "",
+            "Fix: Try to:",
+            "  - Focus on extracting only the most important entities",
+            "  - Use more concise reasoning steps",
+            "  - Validate early to catch errors quickly",
+            "",
+        ))
 
     else:
         # Generic exception
-        report_lines.append("GENERAL ERROR:")
-        report_lines.append("")
-        report_lines.append(f"Problem: {str(error)}")
-        report_lines.append("")
+        report_lines.extend(("GENERAL ERROR:", "", f"Problem: {error!s}", ""))
 
         # Include truncated traceback
         tb_lines = traceback.format_exception(type(error), error, error.__traceback__)
@@ -1059,19 +1056,21 @@ def generate_detailed_error_report(
         report_lines.append("")
 
     # Add general retry guidance
-    report_lines.append("=" * 70)
-    report_lines.append("RETRY GUIDANCE:")
-    report_lines.append("=" * 70)
-    report_lines.append("")
-    report_lines.append("Read the errors above CAREFULLY and:")
-    report_lines.append("1. Fix each field issue mentioned")
-    report_lines.append("2. Verify data types match requirements")
-    report_lines.append("3. Ensure all required fields are present")
-    report_lines.append("4. Validate labels match :label: directives in source")
-    report_lines.append("5. Call validate_extraction_tool to check before submitting")
-    report_lines.append("")
-    report_lines.append(f"Remaining attempts: {max_retries - attempt_number}")
-    report_lines.append("=" * 70)
+    report_lines.extend((
+        "=" * 70,
+        "RETRY GUIDANCE:",
+        "=" * 70,
+        "",
+        "Read the errors above CAREFULLY and:",
+        "1. Fix each field issue mentioned",
+        "2. Verify data types match requirements",
+        "3. Ensure all required fields are present",
+        "4. Validate labels match :label: directives in source",
+        "5. Call validate_extraction_tool to check before submitting",
+        "",
+        f"Remaining attempts: {max_retries - attempt_number}",
+        "=" * 70,
+    ))
 
     return "\n".join(report_lines)
 
@@ -1089,7 +1088,7 @@ def extract_chapter_with_retry(
     max_iters: int = 10,
     max_retries: int = 3,
     fallback_model: str = "anthropic/claude-haiku-4-5",
-    verbose: bool = True
+    verbose: bool = True,
 ) -> tuple[ChapterExtraction, list[str]]:
     """
     Extract chapter with automatic retry on failure.
@@ -1136,7 +1135,7 @@ def extract_chapter_with_retry(
                 chapter_number=chapter_number,
                 file_path=file_path,
                 article_id=article_id,
-                previous_error_report=previous_error_report
+                previous_error_report=previous_error_report,
             )
 
             if verbose and attempt > 1:
@@ -1149,31 +1148,33 @@ def extract_chapter_with_retry(
             extraction_context = {
                 "chapter_number": chapter_number,
                 "file_path": file_path,
-                "article_id": article_id
+                "article_id": article_id,
             }
 
             error_report = generate_detailed_error_report(
                 error=e,
                 attempt_number=attempt,
                 max_retries=max_retries,
-                extraction_context=extraction_context
+                extraction_context=extraction_context,
             )
 
-            error_msg = f"Attempt {attempt} failed: {type(e).__name__}: {str(e)}"
-            errors_encountered.append(make_error_dict(
-                error_msg,
-                value={
-                    "attempt": attempt,
-                    "max_retries": max_retries,
-                    "exception_type": type(e).__name__,
-                    "exception_message": str(e),
-                    "chapter_info": {
-                        "chapter_number": chapter_number,
-                        "file_path": file_path,
-                        "article_id": article_id
-                    }
-                }
-            ))
+            error_msg = f"Attempt {attempt} failed: {type(e).__name__}: {e!s}"
+            errors_encountered.append(
+                make_error_dict(
+                    error_msg,
+                    value={
+                        "attempt": attempt,
+                        "max_retries": max_retries,
+                        "exception_type": type(e).__name__,
+                        "exception_message": str(e),
+                        "chapter_info": {
+                            "chapter_number": chapter_number,
+                            "file_path": file_path,
+                            "article_id": article_id,
+                        },
+                    },
+                )
+            )
 
             if verbose:
                 print(f"  ✗ Attempt {attempt}/{max_retries} failed: {type(e).__name__}")
@@ -1196,7 +1197,7 @@ def extract_chapter_with_retry(
                 except Exception as switch_error:
                     if verbose:
                         print(f"  ⚠ Failed to switch model: {switch_error}")
-                        print(f"  → Continuing with current model")
+                        print("  → Continuing with current model")
 
             # If this was the last attempt, raise with full context
             if attempt == max_retries:
@@ -1205,7 +1206,7 @@ def extract_chapter_with_retry(
                     print(f"\n{error_report}\n")
                 raise Exception(
                     f"Extraction failed after {max_retries} attempts. "
-                    f"Last error: {type(e).__name__}: {str(e)}"
+                    f"Last error: {type(e).__name__}: {e!s}"
                 ) from e
 
     # Should never reach here, but for safety
@@ -1221,7 +1222,7 @@ def extract_label_with_retry(
     max_iters_per_label: int = 3,
     max_retries: int = 3,
     fallback_model: str = "anthropic/claude-haiku-4-5",
-    verbose: bool = False
+    verbose: bool = False,
 ) -> tuple[dict, list[str]]:
     """
     Extract single label with automatic retry on failure.
@@ -1266,7 +1267,7 @@ def extract_label_with_retry(
                 target_label=target_label,
                 file_path=file_path,
                 article_id=article_id,
-                previous_error_report=previous_error_report
+                previous_error_report=previous_error_report,
             )
 
             # Check if extraction returned an error marker
@@ -1284,28 +1285,30 @@ def extract_label_with_retry(
                 "target_label": target_label,
                 "entity_type": entity_type,
                 "file_path": file_path,
-                "article_id": article_id
+                "article_id": article_id,
             }
 
             error_report = generate_detailed_error_report(
                 error=e,
                 attempt_number=attempt,
                 max_retries=max_retries,
-                extraction_context=extraction_context
+                extraction_context=extraction_context,
             )
 
-            error_msg = f"Attempt {attempt} failed: {type(e).__name__}: {str(e)}"
-            errors_encountered.append(make_error_dict(
-                error_msg,
-                value={
-                    "attempt": attempt,
-                    "max_retries": max_retries,
-                    "exception_type": type(e).__name__,
-                    "exception_message": str(e),
-                    "target_label": target_label,
-                    "entity_type": entity_type
-                }
-            ))
+            error_msg = f"Attempt {attempt} failed: {type(e).__name__}: {e!s}"
+            errors_encountered.append(
+                make_error_dict(
+                    error_msg,
+                    value={
+                        "attempt": attempt,
+                        "max_retries": max_retries,
+                        "exception_type": type(e).__name__,
+                        "exception_message": str(e),
+                        "target_label": target_label,
+                        "entity_type": entity_type,
+                    },
+                )
+            )
 
             if verbose:
                 print(f"      ✗ Attempt {attempt}/{max_retries} failed: {type(e).__name__}")
@@ -1328,7 +1331,7 @@ def extract_label_with_retry(
                 except Exception as switch_error:
                     if verbose:
                         print(f"      ⚠ Failed to switch model: {switch_error}")
-                        print(f"      → Continuing with current model")
+                        print("      → Continuing with current model")
 
             # If this was the last attempt, raise with full context
             if attempt == max_retries:
@@ -1336,7 +1339,7 @@ def extract_label_with_retry(
                     print(f"      ✗ All {max_retries} attempts failed for {target_label}")
                 raise Exception(
                     f"Failed to extract {target_label} after {max_retries} attempts. "
-                    f"Last error: {type(e).__name__}: {str(e)}"
+                    f"Last error: {type(e).__name__}: {e!s}"
                 ) from e
 
     # Should never reach here
@@ -1367,7 +1370,7 @@ def validate_single_entity_tool(entity_json: str, context: str) -> str:
         if len(parts) != 3:
             return "Error: Invalid context format. Expected: file_path|||article_id|||target_label"
 
-        file_path, article_id, target_label = parts
+        _file_path, _article_id, target_label = parts
 
         # Parse entity
         entity = json.loads(entity_json)
@@ -1392,13 +1395,15 @@ def validate_single_entity_tool(entity_json: str, context: str) -> str:
         # Check line numbers valid
         if "line_start" in entity and "line_end" in entity:
             if entity["line_start"] > entity["line_end"]:
-                errors.append(f"Invalid line range: line_start ({entity['line_start']}) > line_end ({entity['line_end']})")
+                errors.append(
+                    f"Invalid line range: line_start ({entity['line_start']}) > line_end ({entity['line_end']})"
+                )
 
         # Check label pattern (basic check)
         if entity_label:
             if not entity_label[0].isalpha():
                 errors.append(f"Label must start with a letter: '{entity_label}'")
-            if not all(c.isalnum() or c in '-_' for c in entity_label):
+            if not all(c.isalnum() or c in "-_" for c in entity_label):
                 errors.append(f"Label contains invalid characters: '{entity_label}'")
 
         # Build report
@@ -1461,7 +1466,7 @@ class ExtractSingleLabel(dspy.Signature):
     )
     target_label: str = dspy.InputField(
         desc="The specific label to extract (e.g., 'def-lipschitz', 'thm-main'). "
-             "Extract ONLY this label, no others."
+        "Extract ONLY this label, no others."
     )
     validation_context: str = dspy.InputField(
         desc="Context for validation: file_path|||article_id|||target_label"
@@ -1472,7 +1477,7 @@ class ExtractSingleLabel(dspy.Signature):
             "Error report from previous failed extraction attempt for this label. "
             "If provided, READ THIS CAREFULLY and fix all issues mentioned. "
             "Empty string means this is the first attempt."
-        )
+        ),
     )
 
     entity: dict = dspy.OutputField(
@@ -1497,9 +1502,7 @@ class SingleLabelExtractor(dspy.Module):
         """
         super().__init__()
         self.react_agent = dspy.ReAct(
-            ExtractSingleLabel,
-            tools=[validate_single_entity_tool],
-            max_iters=max_iters
+            ExtractSingleLabel, tools=[validate_single_entity_tool], max_iters=max_iters
         )
 
     def forward(
@@ -1508,7 +1511,7 @@ class SingleLabelExtractor(dspy.Module):
         target_label: str,
         file_path: str = "",
         article_id: str = "",
-        previous_error_report: str = ""
+        previous_error_report: str = "",
     ) -> dict:
         """
         Extract a single entity by its label.
@@ -1532,7 +1535,7 @@ class SingleLabelExtractor(dspy.Module):
                 chapter_with_lines=chapter_with_lines,
                 target_label=target_label,
                 validation_context=validation_context,
-                previous_error_report=previous_error_report
+                previous_error_report=previous_error_report,
             )
 
             return result.entity
@@ -1588,21 +1591,34 @@ def sanitize_label(raw_label: str) -> str:
     label = raw_label.lower()
 
     # Remove leading markdown headers (##, ###, etc.)
-    label = re.sub(r'^#+\s*', '', label)
+    label = re.sub(r"^#+\s*", "", label)
 
     # Replace any sequence of non-alphanumeric characters (except underscores/hyphens) with a single hyphen
     # This preserves underscores and hyphens while converting other special chars
-    label = re.sub(r'[^a-z0-9_-]+', '-', label)
+    label = re.sub(r"[^a-z0-9_-]+", "-", label)
 
     # Remove leading/trailing hyphens and underscores
-    label = label.strip('-_')
+    label = label.strip("-_")
 
     # Known tag prefixes that should be separated from names with hyphens
     # Format: {prefix}-{name}, where name can contain underscores
     prefixes = [
-        'param', 'def', 'thm', 'lem', 'cor', 'ax', 'axiom',
-        'section', 'prop', 'rem', 'remark', 'cite', 'eq',
-        'obj', 'const', 'notation'
+        "param",
+        "def",
+        "thm",
+        "lem",
+        "cor",
+        "ax",
+        "axiom",
+        "section",
+        "prop",
+        "rem",
+        "remark",
+        "cite",
+        "eq",
+        "obj",
+        "const",
+        "notation",
     ]
 
     # If label starts with a known prefix followed by underscore,
@@ -1610,7 +1626,7 @@ def sanitize_label(raw_label: str) -> str:
     for prefix in prefixes:
         # Match: prefix + underscore + rest
         # Example: "param_my_param" → "param" + "_" + "my_param"
-        pattern = f'^({prefix})_(.+)$'
+        pattern = f"^({prefix})_(.+)$"
         match = re.match(pattern, label)
         if match:
             # Convert prefix_name to prefix-name
@@ -1618,23 +1634,17 @@ def sanitize_label(raw_label: str) -> str:
             break
 
     # Ensure it starts with a letter (not a digit or underscore)
-    if label and (label[0].isdigit() or label[0] == '_'):
+    if label and (label[0].isdigit() or label[0] == "_"):
         label = f"section-{label}"
     elif not label or not label[0].isalpha():
         label = f"section-{label}" if label else "section-unknown"
 
     # Collapse multiple consecutive hyphens (but preserve underscores)
-    label = re.sub(r'-+', '-', label)
-
-    return label
+    return re.sub(r"-+", "-", label)
 
 
 def create_source_location(
-    label: str,
-    line_start: int,
-    line_end: int,
-    file_path: str,
-    article_id: str
+    label: str, line_start: int, line_end: int, file_path: str, article_id: str
 ) -> SourceLocation:
     """
     Create a SourceLocation object from line range information.
@@ -1653,7 +1663,7 @@ def create_source_location(
         file_path=file_path,
         line_range=TextLocation.from_single_range(line_start, line_end),
         label=label,
-        article_id=article_id
+        article_id=article_id,
     )
 
 
@@ -1706,10 +1716,7 @@ def convert_to_raw_document_section(
             raw_definitions.append(raw_def)
         except Exception as e:
             warning = f"Failed to convert definition {d.label}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=d.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=d.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Convert theorems
@@ -1729,10 +1736,7 @@ def convert_to_raw_document_section(
             raw_theorems.append(raw_thm)
         except Exception as e:
             warning = f"Failed to convert theorem {t.label}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=t.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=t.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Convert proofs
@@ -1749,10 +1753,7 @@ def convert_to_raw_document_section(
             # Handle steps
             steps = None
             if p.steps:
-                steps = [
-                    TextLocation.from_single_range(start, end)
-                    for start, end in p.steps
-                ]
+                steps = list(starmap(TextLocation.from_single_range, p.steps))
 
             # Handle full body
             full_body_text = None
@@ -1779,10 +1780,7 @@ def convert_to_raw_document_section(
             raw_proofs.append(raw_proof)
         except Exception as e:
             warning = f"Failed to convert proof {p.label}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=p.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=p.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Convert axioms
@@ -1821,10 +1819,7 @@ def convert_to_raw_document_section(
             raw_axioms.append(raw_axiom)
         except Exception as e:
             warning = f"Failed to convert axiom {a.label}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=a.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=a.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Convert parameters
@@ -1844,10 +1839,7 @@ def convert_to_raw_document_section(
             raw_parameters.append(raw_param)
         except Exception as e:
             warning = f"Failed to convert parameter {param.label}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=param.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=param.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Convert remarks
@@ -1865,10 +1857,7 @@ def convert_to_raw_document_section(
             raw_remarks.append(raw_remark)
         except Exception as e:
             warning = f"Failed to convert remark {r.label}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=r.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=r.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Convert citations
@@ -1886,10 +1875,7 @@ def convert_to_raw_document_section(
             raw_citations.append(raw_citation)
         except Exception as e:
             warning = f"Failed to convert citation {c.key_in_text}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=c.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=c.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Convert assumptions
@@ -1906,19 +1892,17 @@ def convert_to_raw_document_section(
             raw_assumptions.append(raw_assumption)
         except Exception as e:
             warning = f"Failed to convert assumption {assumption.label}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=assumption.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=assumption.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Create section source (use first line of chapter)
     import re
+
     first_line = 1
     last_line = 1
 
     # Parse line numbers from chapter text
-    lines = chapter_text.split('\n')
+    lines = chapter_text.split("\n")
     if lines:
         first_match = re.match(r"\s*(\d+):\s", lines[0])
         if first_match:
@@ -1933,11 +1917,7 @@ def convert_to_raw_document_section(
     if not section_label.startswith("section-"):
         section_label = f"section-{section_label}"
 
-    section_source = make_source(
-        section_label,
-        first_line,
-        last_line
-    )
+    section_source = make_source(section_label, first_line, last_line)
 
     # Create RawDocumentSection (full_text can be extracted later from source location)
     raw_section = RawDocumentSection(
@@ -1970,7 +1950,7 @@ def extract_chapter(
     max_iters: int = 10,
     max_retries: int = 3,
     fallback_model: str = "anthropic/claude-haiku-4-5",
-    verbose: bool = True
+    verbose: bool = True,
 ) -> tuple[RawDocumentSection | None, list[str]]:
     """
     Extract mathematical concepts from a chapter using ReAct agent with retry logic.
@@ -2005,7 +1985,7 @@ def extract_chapter(
             max_iters=max_iters,
             max_retries=max_retries,
             fallback_model=fallback_model,
-            verbose=verbose
+            verbose=verbose,
         )
 
         # Add retry errors to our error list
@@ -2015,27 +1995,30 @@ def extract_chapter(
             if retry_errors:
                 print(f"  ✓ Extraction completed after {len(retry_errors) + 1} attempts")
             else:
-                print(f"  ✓ Extraction completed")
+                print("  ✓ Extraction completed")
 
     except Exception as e:
-        error_msg = f"Extraction failed after {max_retries} attempts: {str(e)}"
-        errors_encountered.append(make_error_dict(
-            error_msg,
-            value={
-                "chapter_number": chapter_number,
-                "file_path": file_path,
-                "article_id": article_id,
-                "exception": str(e)
-            }
-        ))
+        error_msg = f"Extraction failed after {max_retries} attempts: {e!s}"
+        errors_encountered.append(
+            make_error_dict(
+                error_msg,
+                value={
+                    "chapter_number": chapter_number,
+                    "file_path": file_path,
+                    "article_id": article_id,
+                    "exception": str(e),
+                },
+            )
+        )
         if verbose:
             print(f"  ✗ {error_msg}")
 
         # Create empty extraction as fallback
         import re
+
         section_id = f"Chapter {chapter_number}"
         # Try to extract section ID from chapter text
-        for line in chapter_text.split('\n')[:20]:
+        for line in chapter_text.split("\n")[:20]:
             content = re.sub(r"^\s*\d+:\s*", "", line)
             if content.startswith("## "):
                 section_id = content.strip()
@@ -2050,16 +2033,13 @@ def extract_chapter(
             assumptions=[],
             parameters=[],
             remarks=[],
-            citations=[]
+            citations=[],
         )
 
     # Convert to RawDocumentSection
     try:
         raw_section, conversion_warnings = convert_to_raw_document_section(
-            extraction,
-            file_path=file_path,
-            article_id=article_id,
-            chapter_text=chapter_text
+            extraction, file_path=file_path, article_id=article_id, chapter_text=chapter_text
         )
 
         if conversion_warnings:
@@ -2071,23 +2051,21 @@ def extract_chapter(
             # Display extraction report showing which labels were parsed
             try:
                 from mathster.parsing.tools import compare_extraction_with_source
+
                 _, report = compare_extraction_with_source(raw_section, chapter_text)
-                print("\n" + "="*70)
+                print("\n" + "=" * 70)
                 print("EXTRACTION REPORT")
-                print("="*70)
+                print("=" * 70)
                 print(report)
-                print("="*70 + "\n")
+                print("=" * 70 + "\n")
             except Exception as e:
                 print(f"  ⚠ Could not generate extraction report: {e}")
 
         return raw_section, errors_encountered
 
     except Exception as e:
-        error_msg = f"Conversion failed: {str(e)}"
-        errors_encountered.append(make_error_dict(
-            error_msg,
-            value=extraction.model_dump()
-        ))
+        error_msg = f"Conversion failed: {e!s}"
+        errors_encountered.append(make_error_dict(error_msg, value=extraction.model_dump()))
         if verbose:
             print(f"  ✗ {error_msg}")
 
@@ -2102,7 +2080,7 @@ def extract_chapter_by_labels(
     max_iters_per_label: int = 3,
     max_retries: int = 3,
     fallback_model: str = "anthropic/claude-haiku-4-5",
-    verbose: bool = True
+    verbose: bool = True,
 ) -> tuple[RawDocumentSection | None, list[str]]:
     """
     Extract chapter by iterating over individual labels (single-label mode) with retry logic.
@@ -2134,7 +2112,7 @@ def extract_chapter_by_labels(
     errors_encountered = []
 
     # STEP 1: Discover all labels in chapter
-    from mathster.parsing.tools import analyze_labels_in_chapter, classify_label
+    from mathster.parsing.tools import analyze_labels_in_chapter
 
     labels_by_type, report = analyze_labels_in_chapter(chapter_text)
 
@@ -2148,11 +2126,12 @@ def extract_chapter_by_labels(
 
     if total_labels == 0:
         if verbose:
-            print(f"  ⚠ No labels found in chapter")
+            print("  ⚠ No labels found in chapter")
         # Return empty extraction
         import re
+
         section_id = f"Chapter {chapter_number}"
-        for line in chapter_text.split('\n')[:20]:
+        for line in chapter_text.split("\n")[:20]:
             content = re.sub(r"^\s*\d+:\s*", "", line)
             if content.startswith("## "):
                 section_id = content.strip()
@@ -2160,8 +2139,14 @@ def extract_chapter_by_labels(
 
         extraction = ChapterExtraction(
             section_id=section_id,
-            definitions=[], theorems=[], proofs=[], axioms=[],
-            assumptions=[], parameters=[], remarks=[], citations=[]
+            definitions=[],
+            theorems=[],
+            proofs=[],
+            axioms=[],
+            assumptions=[],
+            parameters=[],
+            remarks=[],
+            citations=[],
         )
         raw_section, _ = convert_to_raw_document_section(
             extraction, file_path, article_id, chapter_text
@@ -2170,8 +2155,9 @@ def extract_chapter_by_labels(
 
     # STEP 2: Initialize accumulator
     import re
+
     section_id = f"Chapter {chapter_number}"
-    for line in chapter_text.split('\n')[:20]:
+    for line in chapter_text.split("\n")[:20]:
         content = re.sub(r"^\s*\d+:\s*", "", line)
         if content.startswith("## "):
             section_id = content.strip()
@@ -2179,8 +2165,14 @@ def extract_chapter_by_labels(
 
     extraction = ChapterExtraction(
         section_id=section_id,
-        definitions=[], theorems=[], proofs=[], axioms=[],
-        assumptions=[], parameters=[], remarks=[], citations=[]
+        definitions=[],
+        theorems=[],
+        proofs=[],
+        axioms=[],
+        assumptions=[],
+        parameters=[],
+        remarks=[],
+        citations=[],
     )
 
     # STEP 3: **NESTED LOOP** - Iterate over each label with retry
@@ -2204,7 +2196,7 @@ def extract_chapter_by_labels(
                     max_iters_per_label=max_iters_per_label,
                     max_retries=max_retries,
                     fallback_model=fallback_model,
-                    verbose=True  # Suppress verbose retry output for cleaner display
+                    verbose=True,  # Suppress verbose retry output for cleaner display
                 )
 
                 # Add retry errors to our error list
@@ -2228,16 +2220,18 @@ def extract_chapter_by_labels(
 
             except Exception as e:
                 error_msg = f"Failed to extract {label} after {max_retries} attempts: {e}"
-                errors_encountered.append(make_error_dict(
-                    error_msg,
-                    value={
-                        "target_label": label,
-                        "entity_type": entity_type_key,
-                        "exception": str(e)
-                    }
-                ))
+                errors_encountered.append(
+                    make_error_dict(
+                        error_msg,
+                        value={
+                            "target_label": label,
+                            "entity_type": entity_type_key,
+                            "exception": str(e),
+                        },
+                    )
+                )
                 if verbose:
-                    print(f"✗")
+                    print("✗")
                     print(f"      Error: {error_msg}")
 
     if verbose:
@@ -2246,10 +2240,7 @@ def extract_chapter_by_labels(
     # STEP 5: Convert accumulated extraction to RawDocumentSection
     try:
         raw_section, conversion_warnings = convert_to_raw_document_section(
-            extraction,
-            file_path=file_path,
-            article_id=article_id,
-            chapter_text=chapter_text
+            extraction, file_path=file_path, article_id=article_id, chapter_text=chapter_text
         )
 
         if conversion_warnings:
@@ -2261,23 +2252,21 @@ def extract_chapter_by_labels(
             # Display extraction report
             try:
                 from mathster.parsing.tools import compare_extraction_with_source
+
                 _, report = compare_extraction_with_source(raw_section, chapter_text)
-                print("\n" + "="*70)
+                print("\n" + "=" * 70)
                 print("EXTRACTION REPORT")
-                print("="*70)
+                print("=" * 70)
                 print(report)
-                print("="*70 + "\n")
+                print("=" * 70 + "\n")
             except Exception as e:
                 print(f"  ⚠ Could not generate extraction report: {e}")
 
         return raw_section, errors_encountered
 
     except Exception as e:
-        error_msg = f"Conversion failed: {str(e)}"
-        errors_encountered.append(make_error_dict(
-            error_msg,
-            value=extraction.model_dump()
-        ))
+        error_msg = f"Conversion failed: {e!s}"
+        errors_encountered.append(make_error_dict(error_msg, value=extraction.model_dump()))
         if verbose:
             print(f"  ✗ {error_msg}")
 
@@ -2298,20 +2287,19 @@ def convert_dict_to_extraction_entity(entity_dict: dict, entity_type: str):
     # Map entity type to extraction class
     if entity_type == "definitions":
         return DefinitionExtraction(**entity_dict)
-    elif entity_type == "theorems" or entity_type == "lemmas" or entity_type == "propositions" or entity_type == "corollaries":
+    if entity_type in {"theorems", "lemmas", "propositions", "corollaries"}:
         # All theorem-like entities use TheoremExtraction
         return TheoremExtraction(**entity_dict)
-    elif entity_type == "proofs":
+    if entity_type == "proofs":
         return ProofExtraction(**entity_dict)
-    elif entity_type == "axioms":
+    if entity_type == "axioms":
         return AxiomExtraction(**entity_dict)
-    elif entity_type == "assumptions":
+    if entity_type == "assumptions":
         return AssumptionExtraction(**entity_dict)
-    elif entity_type == "parameters":
+    if entity_type == "parameters":
         return ParameterExtraction(**entity_dict)
-    elif entity_type == "remarks":
+    if entity_type == "remarks":
         return RemarkExtraction(**entity_dict)
-    elif entity_type == "citations":
+    if entity_type == "citations":
         return CitationExtraction(**entity_dict)
-    else:
-        raise ValueError(f"Unknown entity type: {entity_type}")
+    raise ValueError(f"Unknown entity type: {entity_type}")

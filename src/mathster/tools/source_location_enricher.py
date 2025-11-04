@@ -28,8 +28,8 @@ Maps to Lean:
 
 import json
 import logging
-import re
 from pathlib import Path
+import re
 import sys
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -245,9 +245,7 @@ def find_entity_location(
     if label:
         line_range = find_directive_lines(markdown_content, label)
         if line_range and validate_line_range(line_range, max_lines):
-            logger.debug(
-                f"Found entity at lines {line_range} using directive label '{label}'"
-            )
+            logger.debug(f"Found entity at lines {line_range} using directive label '{label}'")
             section = entity_data.get("source_section")
             return SourceLocation(
                 document_id=document_id,

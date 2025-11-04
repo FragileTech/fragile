@@ -17,13 +17,14 @@ from mathster.parsing.conversion.converters import (
 from mathster.parsing.conversion.labels import lookup_label_from_context, sanitize_label
 from mathster.parsing.conversion.sources import create_source_location
 
+
 __all__ = [
-    # Label utilities
-    "sanitize_label",
-    "lookup_label_from_context",
-    # Source utilities
-    "create_source_location",
+    "convert_dict_to_extraction_entity",
     # Converters
     "convert_to_raw_document_section",
-    "convert_dict_to_extraction_entity",
+    # Source utilities
+    "create_source_location",
+    "lookup_label_from_context",
+    # Label utilities
+    "sanitize_label",
 ]

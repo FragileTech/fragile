@@ -7,15 +7,15 @@ extraction and improvement workflows.
 
 import os
 
-import dspy
 from dotenv import load_dotenv
+import dspy
 
 
 def configure_dspy(
     model: str = "gemini/gemini-2.0-flash-exp",
     temperature: float = 0.0,
     max_tokens: int = 8192,
-    verbose: bool = False
+    verbose: bool = False,
 ) -> None:
     """
     Configure DSPy with the specified model and settings.

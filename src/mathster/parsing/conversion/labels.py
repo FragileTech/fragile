@@ -47,21 +47,34 @@ def sanitize_label(raw_label: str) -> str:
     label = raw_label.lower()
 
     # Remove leading markdown headers (##, ###, etc.)
-    label = re.sub(r'^#+\s*', '', label)
+    label = re.sub(r"^#+\s*", "", label)
 
     # Replace any sequence of non-alphanumeric characters (except underscores/hyphens) with a single hyphen
     # This preserves underscores and hyphens while converting other special chars
-    label = re.sub(r'[^a-z0-9_-]+', '-', label)
+    label = re.sub(r"[^a-z0-9_-]+", "-", label)
 
     # Remove leading/trailing hyphens and underscores
-    label = label.strip('-_')
+    label = label.strip("-_")
 
     # Known tag prefixes that should be separated from names with hyphens
     # Format: {prefix}-{name}, where name can contain underscores
     prefixes = [
-        'param', 'def', 'thm', 'lem', 'cor', 'ax', 'axiom',
-        'section', 'prop', 'rem', 'remark', 'cite', 'eq',
-        'obj', 'const', 'notation'
+        "param",
+        "def",
+        "thm",
+        "lem",
+        "cor",
+        "ax",
+        "axiom",
+        "section",
+        "prop",
+        "rem",
+        "remark",
+        "cite",
+        "eq",
+        "obj",
+        "const",
+        "notation",
     ]
 
     # If label starts with a known prefix followed by underscore,
@@ -69,7 +82,7 @@ def sanitize_label(raw_label: str) -> str:
     for prefix in prefixes:
         # Match: prefix + underscore + rest
         # Example: "param_my_param" → "param" + "_" + "my_param"
-        pattern = f'^({prefix})_(.+)$'
+        pattern = f"^({prefix})_(.+)$"
         match = re.match(pattern, label)
         if match:
             # Convert prefix_name to prefix-name
@@ -77,15 +90,13 @@ def sanitize_label(raw_label: str) -> str:
             break
 
     # Ensure it starts with a letter (not a digit or underscore)
-    if label and (label[0].isdigit() or label[0] == '_'):
+    if label and (label[0].isdigit() or label[0] == "_"):
         label = f"section-{label}"
     elif not label or not label[0].isalpha():
         label = f"section-{label}" if label else "section-unknown"
 
     # Collapse multiple consecutive hyphens (but preserve underscores)
-    label = re.sub(r'-+', '-', label)
-
-    return label
+    return re.sub(r"-+", "-", label)
 
 
 def lookup_label_from_context(

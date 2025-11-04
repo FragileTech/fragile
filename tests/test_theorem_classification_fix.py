@@ -17,9 +17,10 @@ Solution:
 
 import sys
 
+
 sys.path.insert(0, "src")
 
-from mathster.parsing.tools import compare_extraction_with_source, _extract_labels_from_data
+from mathster.parsing.tools import _extract_labels_from_data, compare_extraction_with_source
 
 
 def test_lemma_classification():
@@ -36,9 +37,9 @@ def test_lemma_classification():
   9: :::
  10: """
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Lemma Classification Fix (Dictionary Format)")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Create extraction data with theorems list containing both theorem and lemma
     # This simulates what convert_to_raw_document_section() produces
@@ -48,11 +49,11 @@ def test_lemma_classification():
         "theorems": [
             {
                 "label": "thm-mass-conservation",
-                "statement_type": "theorem"  # This is a theorem
+                "statement_type": "theorem",  # This is a theorem
             },
             {
                 "label": "lem-mass-conservation-transport",
-                "statement_type": "lemma"  # This is a LEMMA in theorems list
+                "statement_type": "lemma",  # This is a LEMMA in theorems list
             },
         ],
         "proofs": [],
@@ -69,7 +70,7 @@ def test_lemma_classification():
 
     # Test _extract_labels_from_data() directly
     labels = _extract_labels_from_data(extraction_data)
-    print(f"\n✓ Extracted labels by type:")
+    print("\n✓ Extracted labels by type:")
     for entity_type, label_list in labels.items():
         print(f"  - {entity_type}: {label_list}")
 
@@ -78,18 +79,20 @@ def test_lemma_classification():
     assert "lemmas" in labels, "Should have lemmas key"
     assert "thm-mass-conservation" in labels["theorems"], "Theorem should be in theorems"
     assert "lem-mass-conservation-transport" in labels["lemmas"], "Lemma should be in lemmas"
-    assert "lem-mass-conservation-transport" not in labels["theorems"], "Lemma should NOT be in theorems"
+    assert (
+        "lem-mass-conservation-transport" not in labels["theorems"]
+    ), "Lemma should NOT be in theorems"
 
     print("\n✓ Classification correct: lemma separated from theorems")
 
     # Generate comparison report
     comparison, report = compare_extraction_with_source(extraction_data, chapter_text)
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("EXTRACTION REPORT")
-    print("="*70)
+    print("=" * 70)
     print(report)
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Verify the bug is fixed
     assert comparison["summary"]["correct_matches"] == 2, "Both entities should match"
@@ -97,15 +100,20 @@ def test_lemma_classification():
     assert comparison["summary"]["missed"] == 0, "No missed labels"
 
     assert "thm-mass-conservation" in comparison["theorems"]["found"], "Theorem should be found"
-    assert "lem-mass-conservation-transport" in comparison["lemmas"]["found"], "Lemma should be found"
+    assert (
+        "lem-mass-conservation-transport" in comparison["lemmas"]["found"]
+    ), "Lemma should be found"
 
     # Verify lemma is NOT in wrong categories
-    assert "lem-mass-conservation-transport" not in comparison["theorems"].get("found", []), \
-        "Lemma should NOT be in theorems found"
-    assert "lem-mass-conservation-transport" not in comparison["theorems"].get("missing_from_text", []), \
-        "Lemma should NOT be hallucinated in theorems"
-    assert "lem-mass-conservation-transport" not in comparison["lemmas"].get("not_extracted", []), \
-        "Lemma should NOT be missed in lemmas"
+    assert "lem-mass-conservation-transport" not in comparison["theorems"].get(
+        "found", []
+    ), "Lemma should NOT be in theorems found"
+    assert "lem-mass-conservation-transport" not in comparison["theorems"].get(
+        "missing_from_text", []
+    ), "Lemma should NOT be hallucinated in theorems"
+    assert "lem-mass-conservation-transport" not in comparison["lemmas"].get(
+        "not_extracted", []
+    ), "Lemma should NOT be missed in lemmas"
 
     print("✓ Test passed: Bug is fixed!")
     print("  - Lemma correctly classified as lemma (not as theorem)")
@@ -130,31 +138,19 @@ def test_all_theorem_types():
  13: :::
  14: """
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: All Theorem-Like Types Classification")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Create extraction data with all types in theorems list
     extraction_data = {
         "section_id": "Test Chapter",
         "definitions": [],
         "theorems": [
-            {
-                "label": "thm-main",
-                "statement_type": "theorem"
-            },
-            {
-                "label": "lem-helper",
-                "statement_type": "lemma"
-            },
-            {
-                "label": "prop-key",
-                "statement_type": "proposition"
-            },
-            {
-                "label": "cor-direct",
-                "statement_type": "corollary"
-            },
+            {"label": "thm-main", "statement_type": "theorem"},
+            {"label": "lem-helper", "statement_type": "lemma"},
+            {"label": "prop-key", "statement_type": "proposition"},
+            {"label": "cor-direct", "statement_type": "corollary"},
         ],
         "proofs": [],
         "axioms": [],
@@ -168,7 +164,7 @@ def test_all_theorem_types():
 
     # Test extraction
     labels = _extract_labels_from_data(extraction_data)
-    print(f"\n✓ Extracted labels by type:")
+    print("\n✓ Extracted labels by type:")
     for entity_type, label_list in labels.items():
         print(f"  - {entity_type}: {label_list}")
 
@@ -183,11 +179,11 @@ def test_all_theorem_types():
     # Generate comparison report
     comparison, report = compare_extraction_with_source(extraction_data, chapter_text)
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("EXTRACTION REPORT (ALL TYPES)")
-    print("="*70)
+    print("=" * 70)
     print(report)
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Verify perfect match
     assert comparison["summary"]["correct_matches"] == 4, "All 4 entities should match"
@@ -200,35 +196,37 @@ def test_all_theorem_types():
 def main():
     """Run all tests."""
     print("\nTesting theorem-like entity classification fix")
-    print("="*70)
+    print("=" * 70)
 
     try:
         test_lemma_classification()
         test_all_theorem_types()
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("✓ All tests passed!")
-        print("="*70)
+        print("=" * 70)
         print("\nSummary:")
         print("  - Lemmas correctly classified (not misidentified as theorems)")
         print("  - All theorem-like types (theorem/lemma/proposition/corollary) work")
         print("  - No false hallucinations or missed labels")
         print("  - Bug fixed: statement_type field now used for classification")
-        print("="*70)
+        print("=" * 70)
         return 0
 
     except AssertionError as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Test failed: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
     except Exception as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Unexpected error: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
 

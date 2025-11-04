@@ -2,18 +2,19 @@
 
 from pathlib import Path
 
-import pytest
-from pydantic import ValidationError
-
 # Direct import to avoid broken package dependencies
 import sys
-from pathlib import Path
+
+from pydantic import ValidationError
+import pytest
+
 
 # Import article_system module directly
 article_system_path = Path(__file__).parents[3] / "src" / "mathster" / "core"
 sys.path.insert(0, str(article_system_path))
 
 import article_system
+
 
 # Import what we need
 TextLocation = article_system.TextLocation
@@ -298,9 +299,7 @@ class TestExtractSectionFromMarkdown:
         if not Path(file_path).exists():
             pytest.skip(f"Test file not found: {file_path}")
 
-        result = extract_section_from_markdown(
-            file_path, TextLocation.from_single_range(15, 30)
-        )
+        result = extract_section_from_markdown(file_path, TextLocation.from_single_range(15, 30))
         # Line 15 starts "### 1.1. Goal and Scope"
         # But function finds LAST header BEFORE line 15, which is line 13 "## 1. Introduction"
         assert result[0] == "1"
@@ -312,9 +311,7 @@ class TestExtractSectionFromMarkdown:
         if not Path(file_path).exists():
             pytest.skip(f"Test file not found: {file_path}")
 
-        result = extract_section_from_markdown(
-            file_path, TextLocation.from_single_range(138, 145)
-        )
+        result = extract_section_from_markdown(file_path, TextLocation.from_single_range(138, 145))
         # Line 138 is "## 2. Global Conventions..."
         # But function finds LAST header BEFORE line 138, which is line 52 "### 1.3. Overview..."
         assert result[0] == "1.3"
@@ -326,9 +323,7 @@ class TestExtractSectionFromMarkdown:
         if not Path(file_path).exists():
             pytest.skip(f"Test file not found: {file_path}")
 
-        result = extract_section_from_markdown(
-            file_path, TextLocation.from_single_range(617, 635)
-        )
+        result = extract_section_from_markdown(file_path, TextLocation.from_single_range(617, 635))
         # Line 617 is "#### 3.2.4 From Structural Error..."
         # But function finds LAST header BEFORE line 617, which is line 462 "#### 3.2.3. The Decomposition..."
         assert result[0] == "3.2.3"
@@ -340,9 +335,7 @@ class TestExtractSectionFromMarkdown:
         if not Path(file_path).exists():
             pytest.skip(f"Test file not found: {file_path}")
 
-        result = extract_section_from_markdown(
-            file_path, TextLocation.from_single_range(422, 430)
-        )
+        result = extract_section_from_markdown(file_path, TextLocation.from_single_range(422, 430))
         # Line 422 is "#### 3.2.1. The Location Error Component"
         # But function finds LAST header BEFORE line 422, which is line 418 "### 3.2. Permutation-Invariant Error Components"
         assert result[0] == "3.2"
@@ -416,7 +409,9 @@ class TestSourceLocation:
 
     def test_mismatch_warning_volume(self):
         """Test warning when user-provided volume doesn't match computed value."""
-        with pytest.warns(UserWarning, match="volume='2_geometric_gas'.*computed volume='1_euclidean_gas'"):
+        with pytest.warns(
+            UserWarning, match="volume='2_geometric_gas'.*computed volume='1_euclidean_gas'"
+        ):
             loc = SourceLocation(
                 file_path="docs/source/1_euclidean_gas/03_cloning.md",
                 line_range=TextLocation.from_single_range(100, 120),
@@ -489,6 +484,7 @@ class TestSourceLocation:
 
         # Now create with matching values - should not warn
         import warnings as warnings_module
+
         with warnings_module.catch_warnings(record=True) as w:
             warnings_module.simplefilter("always")
             loc = SourceLocation(

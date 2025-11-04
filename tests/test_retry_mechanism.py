@@ -8,21 +8,23 @@ This test verifies that:
 4. CLI parameters for max_retries work correctly
 """
 
-import sys
 from pathlib import Path
+import sys
+
 
 sys.path.insert(0, "src")
 
+from pydantic import BaseModel, Field, ValidationError
+
 from mathster.parsing.extract_workflow import generate_detailed_error_report
-from pydantic import BaseModel, ValidationError, Field
 
 
 def test_error_report_generation_validation_error():
     """Test error report generation for Pydantic ValidationError."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Error Report Generation (ValidationError)")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Create a simple Pydantic model with validation rules
     class TestModel(BaseModel):
@@ -39,7 +41,7 @@ def test_error_report_generation_validation_error():
             error=e,
             attempt_number=2,
             max_retries=3,
-            extraction_context={"test_entity": "def-test"}
+            extraction_context={"test_entity": "def-test"},
         )
 
         print("Generated Error Report:")
@@ -62,9 +64,9 @@ def test_error_report_generation_validation_error():
 def test_error_report_generation_json_error():
     """Test error report generation for JSONDecodeError."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Error Report Generation (JSONDecodeError)")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     import json
 
@@ -74,10 +76,7 @@ def test_error_report_generation_json_error():
     except json.JSONDecodeError as e:
         # Generate error report
         report = generate_detailed_error_report(
-            error=e,
-            attempt_number=1,
-            max_retries=3,
-            extraction_context={"parsing": "chapter_0"}
+            error=e, attempt_number=1, max_retries=3, extraction_context={"parsing": "chapter_0"}
         )
 
         print("Generated Error Report:")
@@ -96,19 +95,16 @@ def test_error_report_generation_json_error():
 def test_error_report_generation_generic_error():
     """Test error report generation for generic Exception."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Error Report Generation (Generic Exception)")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Create a generic exception (with "timeout" in message - will be categorized as timeout error)
     error = Exception("Failed to connect to API: timeout after 30s")
 
     # Generate error report
     report = generate_detailed_error_report(
-        error=error,
-        attempt_number=3,
-        max_retries=3,
-        extraction_context={"chapter": 5}
+        error=error, attempt_number=3, max_retries=3, extraction_context={"chapter": 5}
     )
 
     print("Generated Error Report:")
@@ -117,7 +113,7 @@ def test_error_report_generation_generic_error():
 
     # Verify report contains error information
     # Note: This error contains "timeout" so it will be categorized as TIMEOUT ERROR
-    assert ("TIMEOUT ERROR:" in report or "GENERAL ERROR:" in report)
+    assert "TIMEOUT ERROR:" in report or "GENERAL ERROR:" in report
     assert "Failed to connect to API" in report or "timeout" in report.lower()
     assert "Remaining attempts: 0" in report
 
@@ -127,21 +123,22 @@ def test_error_report_generation_generic_error():
 def test_retry_wrapper_signature():
     """Test that retry wrapper functions have correct signatures."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Retry Wrapper Signatures")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
+
+    import inspect
 
     from mathster.parsing.extract_workflow import (
         extract_chapter_with_retry,
-        extract_label_with_retry
+        extract_label_with_retry,
     )
-    import inspect
 
     # Check extract_chapter_with_retry signature
     sig1 = inspect.signature(extract_chapter_with_retry)
     params1 = list(sig1.parameters.keys())
 
-    print(f"✓ extract_chapter_with_retry parameters:")
+    print("✓ extract_chapter_with_retry parameters:")
     print(f"  {params1}")
 
     assert "chapter_text" in params1
@@ -156,7 +153,7 @@ def test_retry_wrapper_signature():
     sig2 = inspect.signature(extract_label_with_retry)
     params2 = list(sig2.parameters.keys())
 
-    print(f"\n✓ extract_label_with_retry parameters:")
+    print("\n✓ extract_label_with_retry parameters:")
     print(f"  {params2}")
 
     assert "chapter_text" in params2
@@ -174,21 +171,19 @@ def test_retry_wrapper_signature():
 def test_main_extraction_functions_accept_max_retries():
     """Test that main extraction functions accept max_retries parameter."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Main Extraction Functions Accept max_retries")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
-    from mathster.parsing.extract_workflow import (
-        extract_chapter,
-        extract_chapter_by_labels
-    )
     import inspect
+
+    from mathster.parsing.extract_workflow import extract_chapter, extract_chapter_by_labels
 
     # Check extract_chapter signature
     sig1 = inspect.signature(extract_chapter)
     params1 = list(sig1.parameters.keys())
 
-    print(f"✓ extract_chapter parameters:")
+    print("✓ extract_chapter parameters:")
     print(f"  {params1}")
 
     assert "max_retries" in params1, "extract_chapter should have max_retries parameter"
@@ -197,7 +192,7 @@ def test_main_extraction_functions_accept_max_retries():
     sig2 = inspect.signature(extract_chapter_by_labels)
     params2 = list(sig2.parameters.keys())
 
-    print(f"\n✓ extract_chapter_by_labels parameters:")
+    print("\n✓ extract_chapter_by_labels parameters:")
     print(f"  {params2}")
 
     assert "max_retries" in params2, "extract_chapter_by_labels should have max_retries parameter"
@@ -208,34 +203,33 @@ def test_main_extraction_functions_accept_max_retries():
 def test_dspy_signatures_accept_error_report():
     """Test that DSPy signatures accept previous_error_report field."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: DSPy Signatures Accept previous_error_report")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
-    from mathster.parsing.extract_workflow import (
-        ExtractWithValidation,
-        ExtractSingleLabel
-    )
+    from mathster.parsing.extract_workflow import ExtractSingleLabel, ExtractWithValidation
 
     # Check ExtractWithValidation signature
     sig1 = ExtractWithValidation
-    annotations1 = sig1.__annotations__ if hasattr(sig1, '__annotations__') else {}
+    annotations1 = sig1.__annotations__ if hasattr(sig1, "__annotations__") else {}
 
-    print(f"✓ ExtractWithValidation input fields:")
+    print("✓ ExtractWithValidation input fields:")
     print(f"  {list(annotations1.keys())}")
 
-    assert "previous_error_report" in annotations1, \
-        "ExtractWithValidation should have previous_error_report field"
+    assert (
+        "previous_error_report" in annotations1
+    ), "ExtractWithValidation should have previous_error_report field"
 
     # Check ExtractSingleLabel signature
     sig2 = ExtractSingleLabel
-    annotations2 = sig2.__annotations__ if hasattr(sig2, '__annotations__') else {}
+    annotations2 = sig2.__annotations__ if hasattr(sig2, "__annotations__") else {}
 
-    print(f"\n✓ ExtractSingleLabel input fields:")
+    print("\n✓ ExtractSingleLabel input fields:")
     print(f"  {list(annotations2.keys())}")
 
-    assert "previous_error_report" in annotations2, \
-        "ExtractSingleLabel should have previous_error_report field"
+    assert (
+        "previous_error_report" in annotations2
+    ), "ExtractSingleLabel should have previous_error_report field"
 
     print("\n✓ Test passed: Both signatures accept previous_error_report")
 
@@ -243,17 +237,18 @@ def test_dspy_signatures_accept_error_report():
 def test_pipeline_accepts_max_retries():
     """Test that process_document() accepts max_retries parameter."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Pipeline Accepts max_retries")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
+
+    import inspect
 
     from mathster.parsing.dspy_pipeline import process_document
-    import inspect
 
     sig = inspect.signature(process_document)
     params = list(sig.parameters.keys())
 
-    print(f"✓ process_document parameters:")
+    print("✓ process_document parameters:")
     print(f"  {params}")
 
     assert "max_retries" in params, "process_document should have max_retries parameter"
@@ -269,9 +264,9 @@ def test_pipeline_accepts_max_retries():
 def test_retry_workflow_description():
     """Display complete retry workflow documentation."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Retry Workflow Description")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     print("Complete retry workflow:")
     print()
@@ -321,12 +316,12 @@ def test_retry_workflow_description():
     print("  1. Field: definitions[0].term")
     print("     Problem: Field required")
     print("     Fix: This is a REQUIRED field. You must provide a value.")
-    print("     Example: \"term\": \"Lipschitz continuous\"")
+    print('     Example: "term": "Lipschitz continuous"')
     print()
     print("  2. Field: theorems[1].statement_type")
     print("     Problem: Input should be 'theorem', 'lemma', 'proposition' or 'corollary'")
     print("     Fix: Field must match one of the allowed literal values")
-    print("     Example: \"statement_type\": \"theorem\"")
+    print('     Example: "statement_type": "theorem"')
     print()
     print("  ======================================================================")
     print("  RETRY GUIDANCE:")
@@ -348,7 +343,7 @@ def test_retry_workflow_description():
 def main():
     """Run all tests."""
     print("\nTesting retry mechanism with detailed error reporting")
-    print("="*70)
+    print("=" * 70)
 
     try:
         test_error_report_generation_validation_error()
@@ -360,9 +355,9 @@ def main():
         test_pipeline_accepts_max_retries()
         test_retry_workflow_description()
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("✓ All tests passed!")
-        print("="*70)
+        print("=" * 70)
         print("\nSummary:")
         print("  - Error report generation working for all error types")
         print("  - Retry wrappers have correct signatures")
@@ -379,21 +374,23 @@ def main():
         print("  ✓ Step 6: CLI parameter --max-retries added")
         print()
         print("Next: Test with actual LLM on intentional validation errors")
-        print("="*70)
+        print("=" * 70)
         return 0
 
     except AssertionError as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Test failed: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
     except Exception as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Unexpected error: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
 

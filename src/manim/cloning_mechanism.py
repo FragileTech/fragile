@@ -1,5 +1,6 @@
-from manim import *
 import numpy as np
+
+from manim import *
 
 
 class CloningMechanismScene(MovingCameraScene):
@@ -130,7 +131,9 @@ class CloningMechanismScene(MovingCameraScene):
         formula.next_to(title, DOWN, buff=0.4)
 
         explanation_lines = [
-            Text("Positive S → companion is better → cloning pressure", font_size=28, color=TEAL_B),
+            Text(
+                "Positive S → companion is better → cloning pressure", font_size=28, color=TEAL_B
+            ),
             Text("Negative S → walker is stronger → stay put", font_size=28, color=GREY_B),
         ]
         for line in explanation_lines:
@@ -163,16 +166,25 @@ class CloningMechanismScene(MovingCameraScene):
             stroke_width=0,
         ).next_to(origin + RIGHT * 1.8, LEFT, buff=0)
 
-        walker_label = Text("walker", font_size=24, color=TEAL_B).next_to(walker_bar, DOWN, buff=0.2)
+        walker_label = Text("walker", font_size=24, color=TEAL_B).next_to(
+            walker_bar, DOWN, buff=0.2
+        )
         companion_label = Text("companion", font_size=24, color=YELLOW_B).next_to(
             companion_bar, DOWN, buff=0.2
         )
 
         self.play(FadeIn(title, shift=DOWN * 0.2))
         self.play(Write(formula))
-        self.play(LaggedStart(*[FadeIn(line, shift=DOWN * 0.2) for line in explanation], lag_ratio=0.2))
+        self.play(
+            LaggedStart(*[FadeIn(line, shift=DOWN * 0.2) for line in explanation], lag_ratio=0.2)
+        )
         self.play(Create(number_line))
-        self.play(FadeIn(walker_bar), FadeIn(companion_bar), FadeIn(walker_label), FadeIn(companion_label))
+        self.play(
+            FadeIn(walker_bar),
+            FadeIn(companion_bar),
+            FadeIn(walker_label),
+            FadeIn(companion_label),
+        )
         self.wait(1.0)
         self.play(
             FadeOut(title),
@@ -229,7 +241,9 @@ class CloningMechanismScene(MovingCameraScene):
         self.play(FadeIn(title, shift=DOWN * 0.2))
         self.play(Write(curve_label))
         self.play(Create(axes), Create(graph))
-        self.play(LaggedStart(*[FadeIn(note, shift=UP * 0.1) for note in annotations], lag_ratio=0.2))
+        self.play(
+            LaggedStart(*[FadeIn(note, shift=UP * 0.1) for note in annotations], lag_ratio=0.2)
+        )
         self.wait(1.0)
         self.play(
             FadeOut(title),
@@ -246,7 +260,11 @@ class CloningMechanismScene(MovingCameraScene):
         explanation_parts = [
             MathTex(r"U_i \sim \mathcal{U}(0,1)", font_size=34, color=GREY_B),
             MathTex(r"\text{clone if } \pi(S_i) > U_i", font_size=34, color=WHITE),
-            Text("Dead walkers are forced to clone so the swarm stays alive.", font_size=26, color=RED_B),
+            Text(
+                "Dead walkers are forced to clone so the swarm stays alive.",
+                font_size=26,
+                color=RED_B,
+            ),
         ]
         for part in explanation_parts:
             self.limit_width(part, 4.6)
@@ -475,8 +493,16 @@ class CloningMechanismScene(MovingCameraScene):
         summary_box.move_to(ORIGIN)
 
         bullet_lines = [
-            Text("Cloning senses when walkers fall behind the local champions.", font_size=30, color=WHITE),
-            Text("The pressure curve ensures gentle nudges before drastic replacements.", font_size=30, color=YELLOW_B),
+            Text(
+                "Cloning senses when walkers fall behind the local champions.",
+                font_size=30,
+                color=WHITE,
+            ),
+            Text(
+                "The pressure curve ensures gentle nudges before drastic replacements.",
+                font_size=30,
+                color=YELLOW_B,
+            ),
             Text(
                 "Random thresholds keep diversity; jitter and momentum mixing smooth the reset.",
                 font_size=30,
@@ -489,7 +515,9 @@ class CloningMechanismScene(MovingCameraScene):
         bullets.move_to(summary_box.get_center())
 
         self.play(Create(summary_box))
-        self.play(LaggedStart(*[FadeIn(line, shift=RIGHT * 0.2) for line in bullets], lag_ratio=0.2))
+        self.play(
+            LaggedStart(*[FadeIn(line, shift=RIGHT * 0.2) for line in bullets], lag_ratio=0.2)
+        )
         self.wait(1.4)
         self.play(FadeOut(summary_box), FadeOut(bullets))
 

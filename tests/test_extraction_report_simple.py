@@ -4,6 +4,7 @@ Simple test for CLI extraction report display (no DSPy required).
 
 import sys
 
+
 sys.path.insert(0, "src")
 
 from mathster.parsing.tools import compare_extraction_with_source
@@ -34,22 +35,16 @@ def test_report_generation():
  19: This lemma helps...
  20: """
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Report Generation from Extraction")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Create extraction data with correct labels (as dictionary)
     extraction_data = {
         "section_id": "Test Chapter",
-        "definitions": [
-            {"label": "def-lipschitz"}
-        ],
-        "theorems": [
-            {"label": "thm-main-result"}
-        ],
-        "lemmas": [
-            {"label": "lem-helper"}
-        ],
+        "definitions": [{"label": "def-lipschitz"}],
+        "theorems": [{"label": "thm-main-result"}],
+        "lemmas": [{"label": "lem-helper"}],
         "proofs": [],
         "axioms": [],
         "assumptions": [],
@@ -63,11 +58,11 @@ def test_report_generation():
     # Generate comparison report
     comparison, report = compare_extraction_with_source(extraction_data, chapter_text)
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("EXTRACTION REPORT")
-    print("="*70)
+    print("=" * 70)
     print(report)
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Verify report content
     assert "def-lipschitz" in report, "Definition label should be in report"
@@ -83,7 +78,7 @@ def test_report_generation():
 
     print("✓ Test passed: Report generated correctly")
     print(f"  - Found {comparison['summary']['correct_matches']} matching labels")
-    print(f"  - Perfect extraction: all labels matched")
+    print("  - Perfect extraction: all labels matched")
 
 
 def test_report_with_missed_labels():
@@ -104,9 +99,9 @@ def test_report_with_missed_labels():
  13: :::
  14: """
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Report with Missed Labels")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Create extraction that MISSED def-second and thm-main
     extraction_data = {
@@ -129,11 +124,11 @@ def test_report_with_missed_labels():
     # Generate report
     comparison, report = compare_extraction_with_source(extraction_data, chapter_text)
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("EXTRACTION REPORT (WITH MISSED LABELS)")
-    print("="*70)
+    print("=" * 70)
     print(report)
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Verify missed labels are reported
     assert "def-second" in report, "Missed definition should be in report"
@@ -156,9 +151,9 @@ def test_report_with_hallucinated_labels():
   5: :::
   6: """
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Report with Hallucinated Labels")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Create extraction with HALLUCINATED labels
     extraction_data = {
@@ -181,11 +176,11 @@ def test_report_with_hallucinated_labels():
     # Generate report
     comparison, report = compare_extraction_with_source(extraction_data, chapter_text)
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("EXTRACTION REPORT (WITH HALLUCINATED LABELS)")
-    print("="*70)
+    print("=" * 70)
     print(report)
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Verify hallucinated labels are reported
     assert "def-fake" in report, "Hallucinated definition should be in report"
@@ -201,16 +196,16 @@ def test_report_with_hallucinated_labels():
 def main():
     """Run all tests."""
     print("\nTesting extraction report display functionality")
-    print("="*70)
+    print("=" * 70)
 
     try:
         test_report_generation()
         test_report_with_missed_labels()
         test_report_with_hallucinated_labels()
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("✓ All tests passed!")
-        print("="*70)
+        print("=" * 70)
         print("\nSummary:")
         print("  - Report correctly displays parsed labels by entity type")
         print("  - Report detects and displays hallucinated labels (in data, not in text)")
@@ -222,21 +217,23 @@ def main():
         print("  - Automatic comparison of extracted labels vs source document")
         print("  - Formatted report displayed in CLI with clear status indicators")
         print("  - Helps verify extraction quality immediately after processing")
-        print("="*70)
+        print("=" * 70)
         return 0
 
     except AssertionError as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Test failed: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
     except Exception as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Unexpected error: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
 

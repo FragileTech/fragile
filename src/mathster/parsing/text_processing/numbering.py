@@ -31,8 +31,7 @@ def add_line_numbers(document: str, padding: bool = True, offset: int = 0) -> st
 
     if padding:
         numbered_lines = [
-            f"{str(i + 1 + offset).rjust(max_digits)}: {line}"
-            for i, line in enumerate(lines)
+            f"{str(i + 1 + offset).rjust(max_digits)}: {line}" for i, line in enumerate(lines)
         ]
     else:
         numbered_lines = [f"{i + 1 + offset}: {line}" for i, line in enumerate(lines)]

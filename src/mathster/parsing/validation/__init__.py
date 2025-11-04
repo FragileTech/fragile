@@ -16,10 +16,11 @@ from mathster.parsing.validation.errors import (
 )
 from mathster.parsing.validation.validators import validate_extraction
 
+
 __all__ = [
-    # Validators
-    "validate_extraction",
+    "generate_detailed_error_report",
     # Error handling
     "make_error_dict",
-    "generate_detailed_error_report",
+    # Validators
+    "validate_extraction",
 ]

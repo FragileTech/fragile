@@ -1,23 +1,25 @@
 """Comprehensive tests for raw_data module."""
 
-import warnings as warnings_module
 from pathlib import Path
-
-import pytest
-from pydantic import ValidationError
 
 # Direct imports to avoid package-level import issues
 # Similar pattern to test_article_system.py
-
 # First, ensure article_system is importable
 import sys
+import warnings as warnings_module
+
+from pydantic import ValidationError
+import pytest
+
+
 article_system_path = Path(__file__).parents[3] / "src" / "mathster" / "core"
 if str(article_system_path) not in sys.path:
     sys.path.insert(0, str(article_system_path))
 
 # Import modules directly without going through mathster package
-import article_system  # noqa: E402
-import raw_data  # noqa: E402
+import article_system
+import raw_data
+
 
 # Import what we need
 RawDefinition = raw_data.RawDefinition
@@ -210,9 +212,7 @@ class TestRawDefinitionAutoPopulation:
             )
 
             # Filter to UserWarnings only
-            user_warnings = [
-                warning for warning in w if issubclass(warning.category, UserWarning)
-            ]
+            user_warnings = [warning for warning in w if issubclass(warning.category, UserWarning)]
 
         assert len(user_warnings) == 0
         assert definition.label == source_label
@@ -291,8 +291,9 @@ class TestRawDefinitionAutoPopulation:
                 term="Any Term",
             )
 
-            assert definition.label == source_label, \
-                f"Failed for source_label '{source_label}': got '{definition.label}'"
+            assert (
+                definition.label == source_label
+            ), f"Failed for source_label '{source_label}': got '{definition.label}'"
 
     def test_warning_includes_source_path(self, sample_source_location):
         """Test that warning message includes source file path for context."""

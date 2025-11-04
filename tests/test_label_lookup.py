@@ -4,6 +4,7 @@ Tests for label lookup functionality in DSPy extraction workflow.
 
 import sys
 
+
 sys.path.insert(0, "src")
 
 from mathster.parsing.extract_workflow import lookup_label_from_context
@@ -37,7 +38,9 @@ def test_lookup_label_definition():
     """Test definition label generation."""
     context = "Some text without labels"
     label = lookup_label_from_context("Lipschitz continuous", context, "definition")
-    assert label == "def-lipschitz-continuous", f"Expected 'def-lipschitz-continuous', got '{label}'"
+    assert (
+        label == "def-lipschitz-continuous"
+    ), f"Expected 'def-lipschitz-continuous', got '{label}'"
     print("✓ Test 3 passed: Generated definition label")
 
 
@@ -62,7 +65,10 @@ def test_lookup_label_with_line_numbers():
 """
     label = lookup_label_from_context("Lipschitz continuous", context, "definition")
     # Should find def-lipschitz in the context
-    assert label in ["def-lipschitz", "def-lipschitz-continuous"], f"Expected definition label, got '{label}'"
+    assert label in {
+        "def-lipschitz",
+        "def-lipschitz-continuous",
+    }, f"Expected definition label, got '{label}'"
     print(f"✓ Test 5 passed: Found definition label: {label}")
 
 

@@ -36,12 +36,12 @@ from pydantic import BaseModel, ConfigDict, Field
 from mathster.core.raw_data import (
     RawCitation,
     RawDefinition,
+    RawDocument,
     RawEquation,
     RawParameter,
     RawProof,
     RawRemark,
     RawTheorem,
-    RawDocument,
 )
 
 

@@ -17,8 +17,7 @@ class ValidationResult(BaseModel):
     errors: list[str] = Field(default_factory=list, description="List of validation errors")
     warnings: list[str] = Field(default_factory=list, description="List of warnings")
     entities_validated: dict[str, int] = Field(
-        default_factory=dict,
-        description="Count of successfully validated entities by type"
+        default_factory=dict, description="Count of successfully validated entities by type"
     )
 
     def get_feedback(self) -> str:

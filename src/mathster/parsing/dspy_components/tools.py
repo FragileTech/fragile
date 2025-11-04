@@ -7,7 +7,6 @@ and improvement workflows for self-validation and comparison.
 
 import json
 
-from mathster.parsing.models.entities import ChapterExtraction
 from mathster.parsing.validation.validators import validate_extraction
 
 
@@ -17,7 +16,7 @@ def validate_extraction_tool(extraction_json: str, context: str) -> str:
 
     Args:
         extraction_json: JSON string representing ChapterExtraction
-        context: Context string containing file_path, article_id, chapter_text
+        context: Context JSON dict as a string containing file_path, article_id, chapter_text
 
     Returns:
         Validation feedback string for the agent
@@ -34,16 +33,13 @@ def validate_extraction_tool(extraction_json: str, context: str) -> str:
 
         # Validate
         result = validate_extraction(
-            extraction_dict,
-            file_path=file_path,
-            article_id=article_id,
-            chapter_text=chapter_text
+            extraction_dict, file_path=file_path, article_id=article_id, chapter_text=chapter_text
         )
 
         return result.get_feedback()
 
     except Exception as e:
-        return f"Validation tool error: {str(e)}"
+        return f"Validation tool error: {e!s}"
 
 
 def compare_labels_tool(extraction_json: str, context: str) -> str:
@@ -66,12 +62,10 @@ def compare_labels_tool(extraction_json: str, context: str) -> str:
         chapter_text = context_dict.get("chapter_text", "")
 
         # Compare using text processing tools
-        result = compare_extraction_with_source(extraction_dict, chapter_text)
-
-        return result
+        return compare_extraction_with_source(extraction_dict, chapter_text)
 
     except Exception as e:
-        return f"Comparison tool error: {str(e)}"
+        return f"Comparison tool error: {e!s}"
 
 
 def validate_single_entity_tool(entity_json: str, context: str) -> str:
@@ -90,11 +84,11 @@ def validate_single_entity_tool(entity_json: str, context: str) -> str:
         context_dict = json.loads(context)
 
         entity_type = context_dict.get("entity_type", "")
-        
+
         # Basic validation checks
         if "label" not in entity_dict:
             return "Error: Entity missing 'label' field"
-        
+
         if "line_start" not in entity_dict or "line_end" not in entity_dict:
             return "Error: Entity missing line range fields"
 
@@ -117,7 +111,7 @@ def validate_single_entity_tool(entity_json: str, context: str) -> str:
         return f"✓ Entity '{label}' validated successfully"
 
     except Exception as e:
-        return f"Entity validation error: {str(e)}"
+        return f"Entity validation error: {e!s}"
 
 
 def compare_extractions_tool(existing_json: str, improved_json: str) -> str:
@@ -138,10 +132,18 @@ def compare_extractions_tool(existing_json: str, improved_json: str) -> str:
         improved = json.loads(improved_json)
 
         changes = []
-        
+
         # Compare each entity type
-        entity_types = ["definitions", "theorems", "proofs", "axioms", 
-                       "parameters", "remarks", "citations", "assumptions"]
+        entity_types = [
+            "definitions",
+            "theorems",
+            "proofs",
+            "axioms",
+            "parameters",
+            "remarks",
+            "citations",
+            "assumptions",
+        ]
 
         for etype in entity_types:
             existing_labels = {e.get("label") for e in existing.get(etype, [])}
@@ -161,7 +163,7 @@ def compare_extractions_tool(existing_json: str, improved_json: str) -> str:
         return "\n".join(changes)
 
     except Exception as e:
-        return f"Comparison error: {str(e)}"
+        return f"Comparison error: {e!s}"
 
 
 def validate_improvement_tool(improved_json: str, context: str) -> str:

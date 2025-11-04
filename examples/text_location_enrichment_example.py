@@ -18,9 +18,9 @@ from pathlib import Path
 
 from fragile.agents import (
     EnrichmentConfig,
+    extract_document,
     RawDocumentParser,
     TextLocationEnricher,
-    extract_document,
 )
 
 
@@ -203,9 +203,7 @@ def example_agent_integration():
     # Stage 1.5: Automatically enrich with locations
     print("🔍 document-parser: Auto-enriching with source locations...")
 
-    enricher = TextLocationEnricher(
-        EnrichmentConfig(validate_after=True, verbose=False)
-    )
+    enricher = TextLocationEnricher(EnrichmentConfig(validate_after=True, verbose=False))
 
     enrich_result = enricher.enrich_directory(
         raw_data_dir=extraction_result.raw_data_dir,

@@ -27,7 +27,7 @@ class MathematicalConceptImprover(dspy.Module):
         chapter_with_lines: str,
         existing_extraction: str,
         missed_labels: str,
-        previous_error_report: str = ""
+        previous_error_report: str = "",
     ):
         """
         Improve existing extraction by adding missed entities.
@@ -45,5 +45,5 @@ class MathematicalConceptImprover(dspy.Module):
             chapter_with_lines=chapter_with_lines,
             existing_extraction=existing_extraction,
             missed_labels=missed_labels,
-            previous_error_report=previous_error_report
+            previous_error_report=previous_error_report,
         )

@@ -5,10 +5,16 @@ Text processing tools for mathematical document parsing.
 
 ```python
 # OLD (deprecated):
-from mathster.parsing.tools import add_line_numbers, split_markdown_by_chapters_with_line_numbers
+from mathster.parsing.tools import (
+    add_line_numbers,
+    split_markdown_by_chapters_with_line_numbers,
+)
 
 # NEW (recommended):
-from mathster.parsing.text_processing import add_line_numbers, split_markdown_by_chapters_with_line_numbers
+from mathster.parsing.text_processing import (
+    add_line_numbers,
+    split_markdown_by_chapters_with_line_numbers,
+)
 ```
 
 ⚠️ For new code, use: `from mathster.parsing.text_processing import ...`
@@ -17,8 +23,10 @@ from mathster.parsing.text_processing import add_line_numbers, split_markdown_by
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+
 if TYPE_CHECKING:
     from mathster.core.raw_data import RawDocumentSection
+
 
 def add_line_numbers(document: str, padding: bool = True, offset: int = 0) -> str:
     """Add line numbers to each line of a document.
@@ -67,10 +75,10 @@ def split_markdown_by_chapters(file_path: str | Path, header: str = "##") -> lis
     file_path = Path(file_path)
 
     # Read the file content
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
-    lines = content.split('\n')
+    lines = content.split("\n")
     chapters = []
     current_chapter = []
 
@@ -79,7 +87,7 @@ def split_markdown_by_chapters(file_path: str | Path, header: str = "##") -> lis
         if line.startswith(header + " "):
             # Save the current chapter if it has content
             if current_chapter or not chapters:
-                chapters.append('\n'.join(current_chapter))
+                chapters.append("\n".join(current_chapter))
                 current_chapter = []
             # Start a new chapter with this header line
             current_chapter.append(line)
@@ -88,15 +96,13 @@ def split_markdown_by_chapters(file_path: str | Path, header: str = "##") -> lis
 
     # Add the last chapter
     if current_chapter:
-        chapters.append('\n'.join(current_chapter))
+        chapters.append("\n".join(current_chapter))
 
     return chapters
 
 
 def split_markdown_by_chapters_with_line_numbers(
-    file_path: str | Path,
-    header: str = "##",
-    padding: bool = True
+    file_path: str | Path, header: str = "##", padding: bool = True
 ) -> list[str]:
     """
     Split a markdown file by chapters and add continuous line numbers across all chapters.
@@ -130,7 +136,7 @@ def split_markdown_by_chapters_with_line_numbers(
         numbered_chapters.append(numbered_chapter)
 
         # Update offset for next chapter (count lines in current chapter)
-        current_offset += len(chapter.split('\n'))
+        current_offset += len(chapter.split("\n"))
 
     return numbered_chapters
 
@@ -146,43 +152,42 @@ def classify_label(label: str) -> str:
         Entity type string (e.g., 'definitions', 'theorems')
 
     Examples:
-        >>> classify_label('def-lipschitz')
+        >>> classify_label("def-lipschitz")
         'definitions'
-        >>> classify_label('thm-main-result')
+        >>> classify_label("thm-main-result")
         'theorems'
-        >>> classify_label('lem-gradient-bound')
+        >>> classify_label("lem-gradient-bound")
         'lemmas'
-        >>> classify_label('def-axiom-bounded')
+        >>> classify_label("def-axiom-bounded")
         'axioms'
     """
     # Check more specific prefixes first to avoid incorrect matches
     # (e.g., "def-axiom-" should match "axioms", not "definitions")
     if label.startswith("def-axiom-"):
         return "axioms"
-    elif label.startswith("axiom-") or label.startswith("ax-"):
+    if label.startswith(("axiom-", "ax-")):
         return "axioms"
-    elif label.startswith("assumption-"):
+    if label.startswith("assumption-"):
         return "assumptions"
-    elif label.startswith("def-"):
+    if label.startswith("def-"):
         return "definitions"
-    elif label.startswith("thm-"):
+    if label.startswith("thm-"):
         return "theorems"
-    elif label.startswith("lem-"):
+    if label.startswith("lem-"):
         return "lemmas"
-    elif label.startswith("prop-"):
+    if label.startswith("prop-"):
         return "propositions"
-    elif label.startswith("cor-"):
+    if label.startswith("cor-"):
         return "corollaries"
-    elif label.startswith("param-"):
+    if label.startswith("param-"):
         return "parameters"
-    elif label.startswith("remark-"):
+    if label.startswith("remark-"):
         return "remarks"
-    elif label.startswith("proof-"):
+    if label.startswith("proof-"):
         return "proofs"
-    elif label.startswith("cite-"):
+    if label.startswith("cite-"):
         return "citations"
-    else:
-        return "other"
+    return "other"
 
 
 def analyze_labels_in_chapter(chapter_text: str) -> tuple[dict[str, list[str]], str]:
@@ -232,7 +237,7 @@ def analyze_labels_in_chapter(chapter_text: str) -> tuple[dict[str, list[str]], 
 
     # Extract all :label: directives using regex
     # Pattern matches ":label: <label-name>" where label follows pattern ^[a-z]+-[a-z0-9-]+$
-    label_pattern = r':label:\s+([a-z][a-z0-9_-]+)'
+    label_pattern = r":label:\s+([a-z][a-z0-9_-]+)"
     matches = re.findall(label_pattern, chapter_text, re.MULTILINE)
 
     # Classify labels by entity type
@@ -244,11 +249,7 @@ def analyze_labels_in_chapter(chapter_text: str) -> tuple[dict[str, list[str]], 
         labels_by_type[entity_type].append(label)
 
     # Build report string
-    report_lines = [
-        "LABELS FOUND IN DOCUMENT:",
-        "=" * 50,
-        ""
-    ]
+    report_lines = ["LABELS FOUND IN DOCUMENT:", "=" * 50, ""]
 
     # Sort entity types for consistent output
     entity_order = [
@@ -263,12 +264,12 @@ def analyze_labels_in_chapter(chapter_text: str) -> tuple[dict[str, list[str]], 
         "remarks",
         "proofs",
         "citations",
-        "other"
+        "other",
     ]
 
     total_count = 0
     for entity_type in entity_order:
-        if entity_type in labels_by_type and labels_by_type[entity_type]:
+        if labels_by_type.get(entity_type):
             labels = labels_by_type[entity_type]
             count = len(labels)
             total_count += count
@@ -281,21 +282,22 @@ def analyze_labels_in_chapter(chapter_text: str) -> tuple[dict[str, list[str]], 
             report_lines.append("")
 
     # Add summary
-    report_lines.append("=" * 50)
-    report_lines.append(f"TOTAL: {total_count} labeled entities")
-    report_lines.append("=" * 50)
-    report_lines.append("")
+    report_lines.extend(("=" * 50, f"TOTAL: {total_count} labeled entities", "=" * 50, ""))
 
     # Add instruction for LLM
     if total_count > 0:
-        report_lines.append("EXTRACTION INSTRUCTIONS:")
-        report_lines.append("- Extract ALL entities listed above using their EXACT labels")
-        report_lines.append("- Use these labels verbatim in your extraction output")
-        report_lines.append("- For entities without explicit :label: directives, generate standardized labels")
-        report_lines.append("- Cross-check: your extraction should include all labels listed above")
+        report_lines.extend((
+            "EXTRACTION INSTRUCTIONS:",
+            "- Extract ALL entities listed above using their EXACT labels",
+            "- Use these labels verbatim in your extraction output",
+            "- For entities without explicit :label: directives, generate standardized labels",
+            "- Cross-check: your extraction should include all labels listed above",
+        ))
     else:
-        report_lines.append("NOTE: No explicit :label: directives found in this chapter.")
-        report_lines.append("Generate appropriate labels for all entities you extract.")
+        report_lines.extend((
+            "NOTE: No explicit :label: directives found in this chapter.",
+            "Generate appropriate labels for all entities you extract.",
+        ))
 
     report_lines.append("")
 
@@ -344,7 +346,7 @@ def _extract_labels_from_data(data: "RawDocumentSection | dict") -> dict[str, li
     if isinstance(data, dict):
         # Extract from dictionary format
         for entity_type in entity_types:
-            if entity_type in data and data[entity_type]:
+            if data.get(entity_type):
                 # Special handling for theorems: classify by statement_type if present
                 if entity_type == "theorems":
                     for entity in data[entity_type]:
@@ -445,15 +447,17 @@ def _format_comparison_report(comparison: dict) -> str:
 
     # Summary section
     summary = comparison.get("summary", {})
-    report_lines.append("SUMMARY:")
-    report_lines.append(f"  Labels in source text: {summary.get('total_in_text', 0)}")
-    report_lines.append(f"  Labels in extracted data: {summary.get('total_in_data', 0)}")
-    report_lines.append(f"  ✓ Correct matches: {summary.get('correct_matches', 0)}")
-    report_lines.append(f"  ✗ Hallucinated (in data, not in text): {summary.get('hallucinated', 0)}")
-    report_lines.append(f"  ⚠ Missed (in text, not in data): {summary.get('missed', 0)}")
-    report_lines.append("")
-    report_lines.append("=" * 70)
-    report_lines.append("")
+    report_lines.extend((
+        "SUMMARY:",
+        f"  Labels in source text: {summary.get('total_in_text', 0)}",
+        f"  Labels in extracted data: {summary.get('total_in_data', 0)}",
+        f"  ✓ Correct matches: {summary.get('correct_matches', 0)}",
+        f"  ✗ Hallucinated (in data, not in text): {summary.get('hallucinated', 0)}",
+        f"  ⚠ Missed (in text, not in data): {summary.get('missed', 0)}",
+        "",
+        "=" * 70,
+        "",
+    ))
 
     # Detailed breakdown by entity type
     entity_order = [
@@ -488,12 +492,16 @@ def _format_comparison_report(comparison: dict) -> str:
                     report_lines.append(f"      {label}")
 
             if missing:
-                report_lines.append(f"  ✗ HALLUCINATED ({len(missing)}) - in data but NOT in text:")
+                report_lines.append(
+                    f"  ✗ HALLUCINATED ({len(missing)}) - in data but NOT in text:"
+                )
                 for label in missing:
                     report_lines.append(f"      {label}")
 
             if not_extracted:
-                report_lines.append(f"  ⚠ MISSED ({len(not_extracted)}) - in text but NOT extracted:")
+                report_lines.append(
+                    f"  ⚠ MISSED ({len(not_extracted)}) - in text but NOT extracted:"
+                )
                 for label in not_extracted:
                     report_lines.append(f"      {label}")
 
@@ -507,26 +515,30 @@ def _format_comparison_report(comparison: dict) -> str:
     if hallucinated == 0 and missed == 0:
         report_lines.append("✓ VALIDATION PASSED: Perfect match between text and data")
     elif hallucinated > 0 and missed > 0:
-        report_lines.append("✗ VALIDATION FAILED: Both hallucinations and missed extractions detected")
-        report_lines.append("  Action required:")
-        report_lines.append(f"    - Remove {hallucinated} hallucinated label(s) from data")
-        report_lines.append(f"    - Re-extract to capture {missed} missed label(s)")
+        report_lines.extend((
+            "✗ VALIDATION FAILED: Both hallucinations and missed extractions detected",
+            "  Action required:",
+            f"    - Remove {hallucinated} hallucinated label(s) from data",
+            f"    - Re-extract to capture {missed} missed label(s)",
+        ))
     elif hallucinated > 0:
-        report_lines.append("✗ VALIDATION FAILED: Hallucinated labels detected")
-        report_lines.append(f"  Action required: Remove {hallucinated} hallucinated label(s) from data")
+        report_lines.extend((
+            "✗ VALIDATION FAILED: Hallucinated labels detected",
+            f"  Action required: Remove {hallucinated} hallucinated label(s) from data",
+        ))
     elif missed > 0:
-        report_lines.append("⚠ VALIDATION WARNING: Some labels missed in extraction")
-        report_lines.append(f"  Action recommended: Re-extract to capture {missed} missed label(s)")
+        report_lines.extend((
+            "⚠ VALIDATION WARNING: Some labels missed in extraction",
+            f"  Action recommended: Re-extract to capture {missed} missed label(s)",
+        ))
 
-    report_lines.append("=" * 70)
-    report_lines.append("")
+    report_lines.extend(("=" * 70, ""))
 
     return "\n".join(report_lines)
 
 
 def compare_extraction_with_source(
-    extracted_data: "RawDocumentSection | dict",
-    chapter_text: str
+    extracted_data: "RawDocumentSection | dict", chapter_text: str
 ) -> tuple[dict[str, dict], str]:
     """
     Compare extracted labels against source document to validate extraction quality.

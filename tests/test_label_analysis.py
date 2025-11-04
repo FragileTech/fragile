@@ -4,9 +4,10 @@ Tests for label analysis functionality in DSPy extraction workflow.
 
 import sys
 
+
 sys.path.insert(0, "src")
 
-from mathster.parsing.tools import classify_label, analyze_labels_in_chapter
+from mathster.parsing.tools import analyze_labels_in_chapter, classify_label
 
 
 def test_classify_label_definitions():
@@ -229,7 +230,7 @@ def test_analyze_labels_sorting():
 :label: def-middle
 """
 
-    labels_dict, report = analyze_labels_in_chapter(chapter_text)
+    _labels_dict, report = analyze_labels_in_chapter(chapter_text)
 
     # Check labels are sorted in report
     lines = report.split("\n")
@@ -320,6 +321,7 @@ def main():
         print(f"✗ Test failed: {e}")
         print("=" * 60)
         import traceback
+
         traceback.print_exc()
         return 1
 

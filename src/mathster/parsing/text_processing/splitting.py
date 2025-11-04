@@ -32,10 +32,10 @@ def split_markdown_by_chapters(file_path: str | Path, header: str = "##") -> lis
     file_path = Path(file_path)
 
     # Read the file content
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
-    lines = content.split('\n')
+    lines = content.split("\n")
     chapters = []
     current_chapter = []
 
@@ -44,7 +44,7 @@ def split_markdown_by_chapters(file_path: str | Path, header: str = "##") -> lis
         if line.startswith(header + " "):
             # Save the current chapter if it has content
             if current_chapter or not chapters:
-                chapters.append('\n'.join(current_chapter))
+                chapters.append("\n".join(current_chapter))
                 current_chapter = []
             # Start a new chapter with this header line
             current_chapter.append(line)
@@ -53,15 +53,13 @@ def split_markdown_by_chapters(file_path: str | Path, header: str = "##") -> lis
 
     # Add the last chapter
     if current_chapter:
-        chapters.append('\n'.join(current_chapter))
+        chapters.append("\n".join(current_chapter))
 
     return chapters
 
 
 def split_markdown_by_chapters_with_line_numbers(
-    file_path: str | Path,
-    header: str = "##",
-    padding: bool = True
+    file_path: str | Path, header: str = "##", padding: bool = True
 ) -> list[str]:
     """
     Split a markdown file by chapters and add continuous line numbers across all chapters.
@@ -95,6 +93,6 @@ def split_markdown_by_chapters_with_line_numbers(
         numbered_chapters.append(numbered_chapter)
 
         # Update offset for next chapter (count lines in current chapter)
-        current_offset += len(chapter.split('\n'))
+        current_offset += len(chapter.split("\n"))
 
     return numbered_chapters

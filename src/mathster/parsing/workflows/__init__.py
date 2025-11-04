@@ -22,14 +22,16 @@ from mathster.parsing.extract_workflow import (
     extract_label_with_retry,
 )
 from mathster.parsing.improve_workflow import (
+    compute_changes,
     improve_chapter,
     improve_chapter_by_labels,
     improve_chapter_with_retry,
     improve_label_with_retry,
-    compute_changes,
 )
 
+
 __all__ = [
+    "compute_changes",
     # Extract workflows
     "extract_chapter",
     "extract_chapter_by_labels",
@@ -40,5 +42,4 @@ __all__ = [
     "improve_chapter_by_labels",
     "improve_chapter_with_retry",
     "improve_label_with_retry",
-    "compute_changes",
 ]

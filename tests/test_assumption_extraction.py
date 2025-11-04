@@ -4,13 +4,14 @@ Tests for Assumption entity extraction in DSPy workflow.
 
 import sys
 
+
 sys.path.insert(0, "src")
 
 from mathster.parsing.extract_workflow import (
     AssumptionExtraction,
     ChapterExtraction,
-    validate_extraction,
     convert_to_raw_document_section,
+    validate_extraction,
 )
 
 
@@ -94,7 +95,10 @@ def test_assumption_label_validation():
     )
 
     assert not result.is_valid
-    assert any("assumption" in err.lower() and "must start with 'assumption-'" in err for err in result.errors)
+    assert any(
+        "assumption" in err.lower() and "must start with 'assumption-'" in err
+        for err in result.errors
+    )
     print("✓ Test 3 passed: Invalid assumption label caught by validation")
 
 
@@ -132,7 +136,9 @@ def test_assumption_label_validation_valid():
     )
 
     # Should not have assumption label errors
-    assumption_errors = [err for err in result.errors if "assumption" in err.lower() and "must start" in err.lower()]
+    assumption_errors = [
+        err for err in result.errors if "assumption" in err.lower() and "must start" in err.lower()
+    ]
     assert len(assumption_errors) == 0
     print("✓ Test 4 passed: Valid assumption label passes validation")
 
@@ -163,7 +169,7 @@ def test_assumption_conversion_to_raw():
         citations=[],
     )
 
-    raw_section, warnings = convert_to_raw_document_section(
+    raw_section, _warnings = convert_to_raw_document_section(
         extraction,
         file_path=file_path,
         article_id="05_kinetic_contraction",
@@ -204,7 +210,7 @@ def test_assumption_in_entity_count():
         citations=[],
     )
 
-    raw_section, warnings = convert_to_raw_document_section(
+    raw_section, _warnings = convert_to_raw_document_section(
         extraction,
         file_path=file_path,
         article_id="05_kinetic_contraction",

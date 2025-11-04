@@ -8,11 +8,7 @@ from mathster.core.article_system import SourceLocation, TextLocation
 
 
 def create_source_location(
-    label: str,
-    line_start: int,
-    line_end: int,
-    file_path: str,
-    article_id: str
+    label: str, line_start: int, line_end: int, file_path: str, article_id: str
 ) -> SourceLocation:
     """
     Create a SourceLocation object from line range information.
@@ -31,5 +27,5 @@ def create_source_location(
         file_path=file_path,
         line_range=TextLocation.from_single_range(line_start, line_end),
         label=label,
-        article_id=article_id
+        article_id=article_id,
     )

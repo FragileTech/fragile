@@ -10,9 +10,10 @@ This script completes the modularization by:
 Run this after Phases 1-3 are complete (models, validation created).
 """
 
+from pathlib import Path
 import subprocess
 import sys
-from pathlib import Path
+
 
 # Get project root
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -34,20 +35,19 @@ def print_status(message: str, status: str = "INFO"):
 def run_command(cmd: list[str], description: str) -> bool:
     """Run a shell command and return success status."""
     print_status(f"Running: {description}", "INFO")
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, capture_output=True, text=True, check=False)
     if result.returncode == 0:
         print_status(f"✓ {description} completed", "SUCCESS")
         return True
-    else:
-        print_status(f"✗ {description} failed: {result.stderr}", "ERROR")
-        return False
+    print_status(f"✗ {description} failed: {result.stderr}", "ERROR")
+    return False
 
 
 def main():
     """Execute complete refactoring."""
-    print("="*70)
+    print("=" * 70)
     print("MATHSTER PARSING MODULE REFACTORING")
-    print("="*70)
+    print("=" * 70)
     print()
 
     # Check that Phases 1-3 are complete
@@ -94,7 +94,7 @@ def main():
     print_status("Phase 10: Running test suite...", "INFO")
     success = run_command(
         ["python", "-m", "pytest", "tests/test_error_dict_format.py", "-v"],
-        "Test error dict format"
+        "Test error dict format",
     )
 
     if not success:
@@ -102,9 +102,9 @@ def main():
         return 1
 
     print()
-    print("="*70)
+    print("=" * 70)
     print("✓ REFACTORING COMPLETE")
-    print("="*70)
+    print("=" * 70)
     print()
     print("Summary:")
     print("  - models/ created with entities, results, changes")

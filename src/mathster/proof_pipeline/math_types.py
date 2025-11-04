@@ -470,7 +470,7 @@ class DefinitionBox(BaseModel):
     )
 
     # The formal statement defining the term
-    formal_statement: "DualStatement | None" = Field(
+    formal_statement: DualStatement | None = Field(
         None,
         description="The 'if and only if' or 'we say that...' statement expressing the definition formally. "
         "None if using simple from_raw() enrichment; populated by LLM enrichment pipeline.",
@@ -782,7 +782,7 @@ class Axiom(BaseModel):
     # Optional structured fields (from Extract-then-Enrich pipeline)
     name: str | None = Field(None, description="Human-readable title/name of the axiom")
 
-    core_assumption: "DualStatement | None" = Field(
+    core_assumption: DualStatement | None = Field(
         None, description="The fundamental assumption or claim, enriched to dual representation"
     )
 
@@ -790,7 +790,7 @@ class Axiom(BaseModel):
         None, description="Mathematical objects and symbols used in the axiom definition"
     )
 
-    condition: "DualStatement | None" = Field(
+    condition: DualStatement | None = Field(
         None,
         description="Formal statement of when the axiom applies, enriched to dual representation",
     )
@@ -1110,7 +1110,7 @@ class TheoremBox(BaseModel):
         "combining LaTeX and SymPy representations.",
     )
 
-    conclusion: "DualStatement | None" = Field(
+    conclusion: DualStatement | None = Field(
         None,
         description="The core conclusion of the theorem, as a machine-readable dual LaTeX/SymPy statement. "
         "For example, the main inequality or identity that the theorem establishes.",

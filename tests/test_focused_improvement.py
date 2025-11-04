@@ -9,6 +9,7 @@ This test verifies that:
 
 import sys
 
+
 sys.path.insert(0, "src")
 
 from mathster.parsing.improve_workflow import ImproveMathematicalConcepts
@@ -36,9 +37,7 @@ def test_missed_label_detection():
     # Existing extraction is missing def-second and thm-main
     existing_extraction = {
         "section_id": "Test Chapter",
-        "definitions": [
-            {"label": "def-first"}
-        ],
+        "definitions": [{"label": "def-first"}],
         "theorems": [],
         "proofs": [],
         "axioms": [],
@@ -48,12 +47,12 @@ def test_missed_label_detection():
         "citations": [],
     }
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Missed Label Detection")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Run comparison
-    comparison, report = compare_extraction_with_source(existing_extraction, chapter_text)
+    comparison, _report = compare_extraction_with_source(existing_extraction, chapter_text)
 
     # Extract missed labels
     missed_labels = []
@@ -61,7 +60,7 @@ def test_missed_label_detection():
         if entity_type != "summary":
             missed_labels.extend(data.get("not_extracted", []))
 
-    print(f"✓ Validation comparison completed")
+    print("✓ Validation comparison completed")
     print(f"  - Found {len(missed_labels)} missed labels")
     print(f"  - Missed labels: {missed_labels}")
 
@@ -77,18 +76,18 @@ def test_missed_label_detection():
 def test_signature_has_missed_labels_field():
     """Test that the agent signature accepts missed_labels_list."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Signature Has Missed Labels Field")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Check signature fields
     signature = ImproveMathematicalConcepts
 
     # Get input fields from signature
-    input_fields = signature.input_fields if hasattr(signature, 'input_fields') else {}
+    signature.input_fields if hasattr(signature, "input_fields") else {}
 
     # Check if missed_labels_list is in the signature's annotations
-    annotations = signature.__annotations__ if hasattr(signature, '__annotations__') else {}
+    annotations = signature.__annotations__ if hasattr(signature, "__annotations__") else {}
 
     print(f"✓ Signature class: {signature.__name__}")
     print(f"  - Input fields defined: {list(annotations.keys())}")
@@ -102,9 +101,9 @@ def test_signature_has_missed_labels_field():
 def test_missed_labels_string_formatting():
     """Test conversion of missed labels list to comma-separated string."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Missed Labels String Formatting")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Test cases
     test_cases = [
@@ -125,9 +124,9 @@ def test_missed_labels_string_formatting():
 def test_focused_extraction_workflow_components():
     """Test that all components for focused extraction are in place."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Focused Extraction Workflow Components")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Component 1: compare_extraction_with_source function
     print("✓ Component 1: compare_extraction_with_source")
@@ -156,7 +155,7 @@ def test_focused_extraction_workflow_components():
 def main():
     """Run all tests."""
     print("\nTesting focused improvement workflow")
-    print("="*70)
+    print("=" * 70)
 
     try:
         test_missed_label_detection()
@@ -164,9 +163,9 @@ def main():
         test_missed_labels_string_formatting()
         test_focused_extraction_workflow_components()
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("✓ All tests passed!")
-        print("="*70)
+        print("=" * 70)
         print("\nSummary:")
         print("  - Missed labels correctly detected from validation report")
         print("  - Agent signature accepts missed_labels_list field")
@@ -178,21 +177,23 @@ def main():
         print("  ✓ Step 3: forward() method accepts and passes missed labels")
         print("  ✓ Step 4: improve_chapter() passes missed labels to improver")
         print("\nNext: Test with actual LLM to verify agent follows instructions")
-        print("="*70)
+        print("=" * 70)
         return 0
 
     except AssertionError as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Test failed: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
     except Exception as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Unexpected error: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
 

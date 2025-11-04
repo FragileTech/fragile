@@ -9,9 +9,14 @@ import dspy
 
 from mathster.parsing.dspy_components.signatures import (
     ExtractMathematicalConcepts,
-    ExtractWithValidation,
     ExtractSingleLabel,
+    ExtractWithValidation,
 )
+from mathster.parsing.dspy_components.tools import (
+    validate_extraction_tool,
+    validate_single_entity_tool,
+)
+from mathster.parsing.text_processing import analyze_labels_in_chapter
 
 
 class MathematicalConceptExtractor(dspy.Module):
@@ -24,7 +29,14 @@ class MathematicalConceptExtractor(dspy.Module):
 
     def __init__(self):
         super().__init__()
-        self.prog = dspy.ReAct(ExtractMathematicalConcepts)
+        self.prog = dspy.ReAct(
+            signature=ExtractMathematicalConcepts,
+            tools=[
+                analyze_labels_in_chapter,
+                validate_extraction_tool,
+                validate_single_entity_tool,
+            ],
+        )
 
     def forward(self, chapter_with_lines: str, chapter_number: int):
         """
@@ -37,10 +49,7 @@ class MathematicalConceptExtractor(dspy.Module):
         Returns:
             ChapterExtraction with all found entities
         """
-        return self.prog(
-            chapter_with_lines=chapter_with_lines,
-            chapter_number=chapter_number
-        )
+        return self.prog(chapter_with_lines=chapter_with_lines, chapter_number=chapter_number)
 
 
 class MathematicalConceptExtractorWithValidation(dspy.Module):
@@ -52,13 +61,17 @@ class MathematicalConceptExtractorWithValidation(dspy.Module):
 
     def __init__(self):
         super().__init__()
-        self.prog = dspy.ReAct(ExtractWithValidation)
+        self.prog = dspy.ReAct(
+            ExtractWithValidation,
+            tools=[
+                analyze_labels_in_chapter,
+                validate_extraction_tool,
+                validate_single_entity_tool,
+            ],
+        )
 
     def forward(
-        self,
-        chapter_with_lines: str,
-        chapter_number: int,
-        previous_error_report: str = ""
+        self, chapter_with_lines: str, chapter_number: int, previous_error_report: str = ""
     ):
         """
         Extract with validation feedback.
@@ -74,7 +87,7 @@ class MathematicalConceptExtractorWithValidation(dspy.Module):
         return self.prog(
             chapter_with_lines=chapter_with_lines,
             chapter_number=chapter_number,
-            previous_error_report=previous_error_report
+            previous_error_report=previous_error_report,
         )
 
 
@@ -87,14 +100,19 @@ class SingleLabelExtractor(dspy.Module):
 
     def __init__(self):
         super().__init__()
-        self.prog = dspy.ReAct(ExtractSingleLabel)
+        self.prog = dspy.ReAct(
+            ExtractSingleLabel,
+            tools=[
+                validate_single_entity_tool,
+            ],
+        )
 
     def forward(
         self,
         chapter_with_lines: str,
         target_label: str,
         entity_type: str,
-        previous_error_report: str = ""
+        previous_error_report: str = "",
     ):
         """
         Extract a single entity by label.
@@ -112,5 +130,5 @@ class SingleLabelExtractor(dspy.Module):
             chapter_with_lines=chapter_with_lines,
             target_label=target_label,
             entity_type=entity_type,
-            previous_error_report=previous_error_report
+            previous_error_report=previous_error_report,
         )

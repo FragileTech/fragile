@@ -4,6 +4,7 @@ Tests for reference validation in DSPy extraction workflow.
 
 import sys
 
+
 sys.path.insert(0, "src")
 
 from mathster.parsing.extract_workflow import validate_extraction
@@ -50,13 +51,14 @@ def test_strict_proves_label_validation():
         extraction_dict,
         file_path=file_path,
         article_id="05_kinetic_contraction",
-        chapter_text=chapter_text
+        chapter_text=chapter_text,
     )
 
     # Should have validation error for proves_label
     assert not result.is_valid, "Expected validation to fail"
-    assert any("proves_label" in err and "MUST be a theorem label" in err for err in result.errors), \
-        f"Expected proves_label error, got: {result.errors}"
+    assert any(
+        "proves_label" in err and "MUST be a theorem label" in err for err in result.errors
+    ), f"Expected proves_label error, got: {result.errors}"
     print("✓ Test 1 passed: Strict validation catches invalid proves_label")
 
 
@@ -89,12 +91,16 @@ def test_proves_label_with_valid_label():
         extraction_dict,
         file_path=file_path,
         article_id="05_kinetic_contraction",
-        chapter_text=chapter_text
+        chapter_text=chapter_text,
     )
 
     # Should not have proves_label error
-    proves_label_errors = [err for err in result.errors if "proves_label" in err and "MUST be" in err]
-    assert len(proves_label_errors) == 0, f"Expected no proves_label errors, got: {proves_label_errors}"
+    proves_label_errors = [
+        err for err in result.errors if "proves_label" in err and "MUST be" in err
+    ]
+    assert (
+        len(proves_label_errors) == 0
+    ), f"Expected no proves_label errors, got: {proves_label_errors}"
     print("✓ Test 2 passed: Valid proves_label passes validation")
 
 
@@ -112,7 +118,9 @@ def test_permissive_definition_references():
                 "statement_type": "theorem",
                 "line_start": 1,
                 "line_end": 2,
-                "definition_references": ["Lipschitz continuous"],  # ⚠ Text reference - should warn
+                "definition_references": [
+                    "Lipschitz continuous"
+                ],  # ⚠ Text reference - should warn
             }
         ],
         "proofs": [],
@@ -126,16 +134,20 @@ def test_permissive_definition_references():
         extraction_dict,
         file_path=file_path,
         article_id="05_kinetic_contraction",
-        chapter_text=chapter_text
+        chapter_text=chapter_text,
     )
 
     # Should have warning (not error) for definition_references
     def_ref_warnings = [w for w in result.warnings if "definition_references" in w]
-    assert len(def_ref_warnings) > 0, f"Expected definition_references warning, got warnings: {result.warnings}"
+    assert (
+        len(def_ref_warnings) > 0
+    ), f"Expected definition_references warning, got warnings: {result.warnings}"
 
     # Should NOT have error (permissive)
     def_ref_errors = [err for err in result.errors if "definition_references" in err]
-    assert len(def_ref_errors) == 0, f"Expected no definition_references errors (permissive), got: {def_ref_errors}"
+    assert (
+        len(def_ref_errors) == 0
+    ), f"Expected no definition_references errors (permissive), got: {def_ref_errors}"
 
     print("✓ Test 3 passed: Permissive validation warns on text definition_references")
 
@@ -155,7 +167,10 @@ def test_permissive_theorem_references():
                 "proves_label": "thm-main",  # Valid
                 "line_start": 1,
                 "line_end": 2,
-                "theorem_references": ["Theorem 1.4", "Lemma 2.3"],  # ⚠ Text references - should warn
+                "theorem_references": [
+                    "Theorem 1.4",
+                    "Lemma 2.3",
+                ],  # ⚠ Text references - should warn
                 "citations": [],
             }
         ],
@@ -169,16 +184,22 @@ def test_permissive_theorem_references():
         extraction_dict,
         file_path=file_path,
         article_id="05_kinetic_contraction",
-        chapter_text=chapter_text
+        chapter_text=chapter_text,
     )
 
     # Should have warnings (not errors) for theorem_references
     thm_ref_warnings = [w for w in result.warnings if "theorem_references" in w]
-    assert len(thm_ref_warnings) > 0, f"Expected theorem_references warnings, got: {result.warnings}"
+    assert (
+        len(thm_ref_warnings) > 0
+    ), f"Expected theorem_references warnings, got: {result.warnings}"
 
     # Should NOT have errors (permissive)
-    thm_ref_errors = [err for err in result.errors if "theorem_references" in err and "should be labels" in err]
-    assert len(thm_ref_errors) == 0, f"Expected no theorem_references errors (permissive), got: {thm_ref_errors}"
+    thm_ref_errors = [
+        err for err in result.errors if "theorem_references" in err and "should be labels" in err
+    ]
+    assert (
+        len(thm_ref_errors) == 0
+    ), f"Expected no theorem_references errors (permissive), got: {thm_ref_errors}"
 
     print("✓ Test 4 passed: Permissive validation warns on text theorem_references")
 
@@ -225,12 +246,16 @@ def test_valid_references_no_warnings():
         extraction_dict,
         file_path=file_path,
         article_id="05_kinetic_contraction",
-        chapter_text=chapter_text
+        chapter_text=chapter_text,
     )
 
     # Should have no reference-related warnings
-    ref_warnings = [w for w in result.warnings if "definition_references" in w or "theorem_references" in w]
-    assert len(ref_warnings) == 0, f"Expected no reference warnings for valid labels, got: {ref_warnings}"
+    ref_warnings = [
+        w for w in result.warnings if "definition_references" in w or "theorem_references" in w
+    ]
+    assert (
+        len(ref_warnings) == 0
+    ), f"Expected no reference warnings for valid labels, got: {ref_warnings}"
 
     print("✓ Test 5 passed: Valid label-based references produce no warnings")
 

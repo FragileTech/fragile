@@ -125,7 +125,7 @@ class EquationBox(BaseModel):
     # Mathematical Content
     latex_content: str = Field(..., min_length=1, description="LaTeX content (verbatim)")
 
-    dual_statement: "DualStatement | None" = Field(
+    dual_statement: DualStatement | None = Field(
         None, description="Dual LaTeX/SymPy representation if parseable"
     )
 

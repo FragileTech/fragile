@@ -24,14 +24,12 @@ Design Principles:
 """
 
 import re
-import warnings
 from typing import Literal
+import warnings
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-
-from mathster.core.article_system import TextLocation, SourceLocation
-
+from mathster.core.article_system import SourceLocation, TextLocation
 
 
 # =============================================================================
@@ -62,7 +60,8 @@ def normalize_term_to_label(term: str, prefix: str = "def") -> str:
         ValueError: If normalization produces empty or invalid label
     """
     if not term or not term.strip():
-        raise ValueError(f"Cannot normalize empty term to label")
+        msg = "Cannot normalize empty term to label"
+        raise ValueError(msg)
 
     # Step 1: Convert to lowercase
     normalized = term.lower()
@@ -82,9 +81,7 @@ def normalize_term_to_label(term: str, prefix: str = "def") -> str:
 
     # Validate result
     if not normalized:
-        raise ValueError(
-            f"Term normalization produced empty label. Original term: '{term}'"
-        )
+        raise ValueError(f"Term normalization produced empty label. Original term: '{term}'")
 
     # Construct final label
     label = f"{prefix}-{normalized}"
@@ -121,9 +118,7 @@ class RawDataModel(BaseModel):
     full_text: str = Field(..., description="Full verbatim text content of this entity.")
 
     @classmethod
-    def from_source(
-        cls, source: SourceLocation
-    ) -> "RawDataModel":
+    def from_source(cls, source: SourceLocation) -> "RawDataModel":
         """Create instance from source location and full text."""
         full_text = source.extract_full_text()
         return cls(source=source, full_text=full_text)
@@ -141,7 +136,6 @@ class RawDataModel(BaseModel):
                         f"Invalid label format: '{label}'. Must match pattern '{pattern}'."
                     )
         return self
-
 
 
 # =============================================================================

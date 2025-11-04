@@ -8,9 +8,10 @@ This test verifies that:
 4. Errors are properly formatted when saved to output files
 """
 
-import sys
 import json
 from pathlib import Path
+import sys
+
 
 sys.path.insert(0, "src")
 
@@ -18,9 +19,9 @@ sys.path.insert(0, "src")
 def test_make_error_dict_basic():
     """Test basic make_error_dict() functionality."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: make_error_dict() Basic Functionality")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     from mathster.parsing.extract_workflow import make_error_dict
 
@@ -43,7 +44,7 @@ def test_make_error_dict_basic():
     complex_value = {
         "attempt": 1,
         "exception_type": "ValueError",
-        "context": {"chapter": 0, "label": "thm-main"}
+        "context": {"chapter": 0, "label": "thm-main"},
     }
     error3 = make_error_dict("LLM extraction failed", value=complex_value)
     assert error3["error"] == "LLM extraction failed"
@@ -56,9 +57,9 @@ def test_make_error_dict_basic():
 def test_error_dict_json_serializable():
     """Test that error dicts are JSON-serializable."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Error Dict JSON Serialization")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     from mathster.parsing.extract_workflow import make_error_dict
 
@@ -91,9 +92,9 @@ def test_error_dict_json_serializable():
 def test_error_dict_structure_consistency():
     """Test that error dicts maintain consistent structure."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Error Dict Structure Consistency")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     from mathster.parsing.extract_workflow import make_error_dict
 
@@ -108,10 +109,11 @@ def test_error_dict_structure_consistency():
     # Verify all have the same structure
     for i, error in enumerate(errors, 1):
         assert isinstance(error, dict), f"Error {i} should be dict"
-        assert set(error.keys()) == {"error", "value"}, \
-            f"Error {i} should have exactly 'error' and 'value' keys"
-        assert isinstance(error["error"], str), \
-            f"Error {i} 'error' should be string"
+        assert set(error.keys()) == {
+            "error",
+            "value",
+        }, f"Error {i} should have exactly 'error' and 'value' keys"
+        assert isinstance(error["error"], str), f"Error {i} 'error' should be string"
         print(f"  ✓ Error {i} has consistent structure")
 
     print("\n✓ Test passed: All error dicts have consistent structure")
@@ -120,9 +122,9 @@ def test_error_dict_structure_consistency():
 def test_error_dict_in_error_list():
     """Test that error lists contain properly structured dicts."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Error List Structure")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     from mathster.parsing.extract_workflow import make_error_dict
 
@@ -130,24 +132,24 @@ def test_error_dict_in_error_list():
     errors_encountered = []
 
     # Add various error types
-    errors_encountered.append(make_error_dict(
-        "Failed to parse existing extraction: ValueError",
-        value={"existing_extraction": {"section_id": "test"}}
-    ))
-
-    errors_encountered.append(make_error_dict(
-        "Attempt 1 failed: ValidationError",
-        value={
-            "attempt": 1,
-            "max_retries": 3,
-            "exception_type": "ValidationError",
-            "exception_message": "Invalid label format"
-        }
-    ))
-
-    errors_encountered.append(make_error_dict(
-        "Failed to convert definition def-lipschitz: KeyError",
-        value={"label": "def-lipschitz", "statement": "..."}
+    errors_encountered.extend((
+        make_error_dict(
+            "Failed to parse existing extraction: ValueError",
+            value={"existing_extraction": {"section_id": "test"}},
+        ),
+        make_error_dict(
+            "Attempt 1 failed: ValidationError",
+            value={
+                "attempt": 1,
+                "max_retries": 3,
+                "exception_type": "ValidationError",
+                "exception_message": "Invalid label format",
+            },
+        ),
+        make_error_dict(
+            "Failed to convert definition def-lipschitz: KeyError",
+            value={"label": "def-lipschitz", "statement": "..."},
+        ),
     ))
 
     # Verify list structure
@@ -173,9 +175,9 @@ def test_error_dict_in_error_list():
 def test_error_dict_display_format():
     """Test that error dicts can be displayed properly."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Error Dict Display Format")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     from mathster.parsing.extract_workflow import make_error_dict
 
@@ -200,9 +202,9 @@ def test_error_dict_display_format():
 def test_error_dict_backward_incompatibility():
     """Test that new format is NOT backward compatible (as specified)."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Error Dict Backward Incompatibility")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     from mathster.parsing.extract_workflow import make_error_dict
 
@@ -218,7 +220,7 @@ def test_error_dict_backward_incompatibility():
     try:
         result = "Test" in error  # This checks if "Test" is a key in the dict
         # For dicts, "in" checks keys, not values, so this should be False
-        assert result == False, "Old pattern should not work on dict"
+        assert result is False, "Old pattern should not work on dict"
         print("  ✓ Old string-in-error pattern doesn't work (as expected)")
     except TypeError:
         # Some operations might raise TypeError
@@ -226,7 +228,7 @@ def test_error_dict_backward_incompatibility():
 
     # New pattern should work
     result = "Test" in error["error"]
-    assert result == True, "New pattern should work"
+    assert result is True, "New pattern should work"
     print("  ✓ New error['error'] pattern works correctly")
 
     print("\n✓ Test passed: New format is not backward compatible (as specified)")
@@ -235,9 +237,9 @@ def test_error_dict_backward_incompatibility():
 def test_error_dict_documentation():
     """Display complete error dict format documentation."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST: Error Dict Format Documentation")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     print("Error Dictionary Format:")
     print()
@@ -262,7 +264,7 @@ def test_error_dict_documentation():
     print("   }")
     print()
     print("3. Entity Conversion Errors:")
-    print('   value = entity.model_dump()  # The malformed entity data')
+    print("   value = entity.model_dump()  # The malformed entity data")
     print()
     print("4. Label-Level Failures:")
     print("   value = {")
@@ -273,7 +275,7 @@ def test_error_dict_documentation():
     print("   }")
     print()
     print("5. Overall Conversion Failures:")
-    print('   value = extraction.model_dump()  # Complete extraction data')
+    print("   value = extraction.model_dump()  # Complete extraction data")
     print()
     print("Usage Examples:")
     print()
@@ -281,11 +283,11 @@ def test_error_dict_documentation():
     print('  make_error_dict("Parsing failed", value={"extraction": data})')
     print()
     print("# Displaying errors:")
-    print('  for error in errors:')
+    print("  for error in errors:")
     print('      print(f"- {error["error"]}")')
     print()
     print("# Accessing error data for debugging:")
-    print('  for error in errors:')
+    print("  for error in errors:")
     print('      print(f"Error: {error["error"]}")')
     print('      print(f"Value: {error["value"]}")')
     print()
@@ -295,7 +297,7 @@ def test_error_dict_documentation():
 def main():
     """Run all tests."""
     print("\nTesting structured error dictionary format")
-    print("="*70)
+    print("=" * 70)
 
     try:
         test_make_error_dict_basic()
@@ -306,9 +308,9 @@ def main():
         test_error_dict_backward_incompatibility()
         test_error_dict_documentation()
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("✓ All tests passed!")
-        print("="*70)
+        print("=" * 70)
         print("\nSummary:")
         print("  - make_error_dict() creates properly structured dicts")
         print("  - All error dicts have consistent {error, value} structure")
@@ -325,21 +327,23 @@ def main():
         print("  ✓ Comprehensive test coverage added")
         print()
         print("Next: Run extraction/improvement workflows to verify error handling")
-        print("="*70)
+        print("=" * 70)
         return 0
 
     except AssertionError as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Test failed: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
     except Exception as e:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"✗ Unexpected error: {e}")
-        print("="*70)
+        print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
 

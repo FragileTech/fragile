@@ -5,6 +5,7 @@ Provides converters to transform DSPy extraction outputs (ChapterExtraction) int
 RawDocumentSection structures with proper SourceLocation metadata.
 """
 
+from itertools import starmap
 import re
 
 from mathster.core.article_system import SourceLocation, TextLocation
@@ -84,10 +85,7 @@ def convert_to_raw_document_section(
             raw_definitions.append(raw_def)
         except Exception as e:
             warning = f"Failed to convert definition {d.label}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=d.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=d.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Convert theorems
@@ -107,10 +105,7 @@ def convert_to_raw_document_section(
             raw_theorems.append(raw_thm)
         except Exception as e:
             warning = f"Failed to convert theorem {t.label}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=t.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=t.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Convert proofs
@@ -127,10 +122,7 @@ def convert_to_raw_document_section(
             # Handle steps
             steps = None
             if p.steps:
-                steps = [
-                    TextLocation.from_single_range(start, end)
-                    for start, end in p.steps
-                ]
+                steps = list(starmap(TextLocation.from_single_range, p.steps))
 
             # Handle full body
             full_body_text = None
@@ -157,10 +149,7 @@ def convert_to_raw_document_section(
             raw_proofs.append(raw_proof)
         except Exception as e:
             warning = f"Failed to convert proof {p.label}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=p.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=p.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Convert axioms
@@ -199,10 +188,7 @@ def convert_to_raw_document_section(
             raw_axioms.append(raw_axiom)
         except Exception as e:
             warning = f"Failed to convert axiom {a.label}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=a.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=a.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Convert parameters
@@ -222,10 +208,7 @@ def convert_to_raw_document_section(
             raw_parameters.append(raw_param)
         except Exception as e:
             warning = f"Failed to convert parameter {param.label}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=param.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=param.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Convert remarks
@@ -243,10 +226,7 @@ def convert_to_raw_document_section(
             raw_remarks.append(raw_remark)
         except Exception as e:
             warning = f"Failed to convert remark {r.label}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=r.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=r.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Convert citations
@@ -264,10 +244,7 @@ def convert_to_raw_document_section(
             raw_citations.append(raw_citation)
         except Exception as e:
             warning = f"Failed to convert citation {c.key_in_text}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=c.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=c.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Convert assumptions
@@ -284,10 +261,7 @@ def convert_to_raw_document_section(
             raw_assumptions.append(raw_assumption)
         except Exception as e:
             warning = f"Failed to convert assumption {assumption.label}: {e}"
-            conversion_warnings.append(make_error_dict(
-                warning,
-                value=assumption.model_dump()
-            ))
+            conversion_warnings.append(make_error_dict(warning, value=assumption.model_dump()))
             print(f"  ⚠ {warning}")
 
     # Create section source (use first line of chapter)
@@ -295,7 +269,7 @@ def convert_to_raw_document_section(
     last_line = 1
 
     # Parse line numbers from chapter text
-    lines = chapter_text.split('\n')
+    lines = chapter_text.split("\n")
     if lines:
         first_match = re.match(r"\s*(\d+):\s", lines[0])
         if first_match:
@@ -310,11 +284,7 @@ def convert_to_raw_document_section(
     if not section_label.startswith("section-"):
         section_label = f"section-{section_label}"
 
-    section_source = make_source(
-        section_label,
-        first_line,
-        last_line
-    )
+    section_source = make_source(section_label, first_line, last_line)
 
     # Create RawDocumentSection (full_text can be extracted later from source location)
     raw_section = RawDocumentSection(
@@ -348,20 +318,19 @@ def convert_dict_to_extraction_entity(entity_dict: dict, entity_type: str):
     # Map entity type to extraction class
     if entity_type == "definitions":
         return DefinitionExtraction(**entity_dict)
-    elif entity_type in ("theorems", "lemmas", "propositions", "corollaries"):
+    if entity_type in {"theorems", "lemmas", "propositions", "corollaries"}:
         # All theorem-like entities use TheoremExtraction
         return TheoremExtraction(**entity_dict)
-    elif entity_type == "proofs":
+    if entity_type == "proofs":
         return ProofExtraction(**entity_dict)
-    elif entity_type == "axioms":
+    if entity_type == "axioms":
         return AxiomExtraction(**entity_dict)
-    elif entity_type == "assumptions":
+    if entity_type == "assumptions":
         return AssumptionExtraction(**entity_dict)
-    elif entity_type == "parameters":
+    if entity_type == "parameters":
         return ParameterExtraction(**entity_dict)
-    elif entity_type == "remarks":
+    if entity_type == "remarks":
         return RemarkExtraction(**entity_dict)
-    elif entity_type == "citations":
+    if entity_type == "citations":
         return CitationExtraction(**entity_dict)
-    else:
-        raise ValueError(f"Unknown entity type: {entity_type}")
+    raise ValueError(f"Unknown entity type: {entity_type}")

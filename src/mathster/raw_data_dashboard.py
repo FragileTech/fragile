@@ -27,6 +27,7 @@ from typing import Any
 
 import panel as pn
 
+
 hv_extension = "bokeh"  # Using bokeh for consistency
 
 # Enable MathJax for LaTeX rendering in Markdown panes
@@ -130,7 +131,7 @@ class RawDataDashboard:
         default_value = None
         if available_docs:
             # Prefer 01_fragile_gas_framework
-            for display, identifier in available_docs.items():
+            for identifier in available_docs.values():
                 if "01_fragile_gas_framework" in identifier:
                     default_value = identifier
                     break
@@ -228,7 +229,7 @@ class RawDataDashboard:
             pn.pane.Markdown(
                 "**No entity selected**\n\n*Click an entity from the list to view its JSON data*",
                 sizing_mode="stretch_width",
-                styles={"text-align": "center", "color": "#666"}
+                styles={"text-align": "center", "color": "#666"},
             ),
             sizing_mode="stretch_width",
         )
@@ -318,11 +319,15 @@ class RawDataDashboard:
 
             for json_file in entity_type_dir.glob("*.json"):
                 # Skip metadata files
-                if json_file.name in ["refinement_report.json", "object_refinement_report.json", "object_fix_report.json"]:
+                if json_file.name in {
+                    "refinement_report.json",
+                    "object_refinement_report.json",
+                    "object_fix_report.json",
+                }:
                     continue
 
                 try:
-                    with open(json_file, "r", encoding="utf-8") as f:
+                    with open(json_file, encoding="utf-8") as f:
                         data = json.load(f)
 
                     # Add metadata
@@ -430,7 +435,7 @@ class RawDataDashboard:
                 line_info = "No line range"
 
             # Color badge
-            color = ENTITY_TYPE_COLORS.get(entity_type, "#888888")
+            ENTITY_TYPE_COLORS.get(entity_type, "#888888")
 
             # Create clickable button with custom styling
             button = pn.widgets.Button(
@@ -489,20 +494,20 @@ class RawDataDashboard:
                 pn.pane.Markdown(
                     "**No entity selected**\n\n*Click an entity from the list to view its JSON data*",
                     sizing_mode="stretch_width",
-                    styles={"text-align": "center", "color": "#666"}
+                    styles={"text-align": "center", "color": "#666"},
                 )
             ]
             return
 
         label = self.selected_entity.get("label", "unknown")
         entity_type = self.selected_entity.get("_entity_type", "unknown")
-        file_path = self.selected_entity.get("_file_path", "")
+        self.selected_entity.get("_file_path", "")
 
         # Header (compact for narrow column)
         header = pn.pane.Markdown(
             f"**{label}**\n\n*Type:* {entity_type}",
             sizing_mode="stretch_width",
-            styles={"font-size": "0.9em"}
+            styles={"font-size": "0.9em"},
         )
 
         # JSON viewer
@@ -540,7 +545,7 @@ class RawDataDashboard:
 
         start, end = line_range[0]
 
-        with open(full_path, "r", encoding="utf-8") as f:
+        with open(full_path, encoding="utf-8") as f:
             lines = f.readlines()
 
         # Validate bounds
@@ -573,7 +578,7 @@ class RawDataDashboard:
             return f"<p><i>File not found: {target_path}</i></p>"
 
         try:
-            with open(target_path, "r", encoding="utf-8") as f:
+            with open(target_path, encoding="utf-8") as f:
                 lines = f.readlines()
 
             # Build HTML with line numbers
@@ -648,7 +653,9 @@ class RawDataDashboard:
                     .replace('"', "&quot;")
                 )
 
-                line_class = "markdown-line highlighted-line" if is_highlighted else "markdown-line"
+                line_class = (
+                    "markdown-line highlighted-line" if is_highlighted else "markdown-line"
+                )
 
                 # Add anchor ID to first highlighted line for scroll targeting
                 anchor_id = f' id="line-{i}"' if (is_highlighted and i == highlight_start) else ""

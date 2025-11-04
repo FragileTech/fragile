@@ -4,9 +4,10 @@ Tests for label comparison and validation functionality.
 
 import sys
 
+
 sys.path.insert(0, "src")
 
-from mathster.parsing.tools import compare_extraction_with_source, _extract_labels_from_data
+from mathster.parsing.tools import _extract_labels_from_data, compare_extraction_with_source
 
 
 def test_perfect_match_dict():
@@ -213,7 +214,7 @@ def test_empty_data():
         "citations": [],
     }
 
-    comparison, report = compare_extraction_with_source(extracted_data, chapter_text)
+    comparison, _report = compare_extraction_with_source(extracted_data, chapter_text)
 
     assert comparison["summary"]["total_in_text"] == 1
     assert comparison["summary"]["total_in_data"] == 0
@@ -243,7 +244,7 @@ Some content without any labeled entities.
         "citations": [],
     }
 
-    comparison, report = compare_extraction_with_source(extracted_data, chapter_text)
+    comparison, _report = compare_extraction_with_source(extracted_data, chapter_text)
 
     assert comparison["summary"]["total_in_text"] == 0
     assert comparison["summary"]["total_in_data"] == 1
@@ -289,7 +290,7 @@ def test_multiple_entity_types():
         "citations": [],
     }
 
-    comparison, report = compare_extraction_with_source(extracted_data, chapter_text)
+    comparison, _report = compare_extraction_with_source(extracted_data, chapter_text)
 
     # Check all correct
     assert comparison["summary"]["correct_matches"] == 4
@@ -369,7 +370,7 @@ def test_assumptions_entity_type():
         "citations": [],
     }
 
-    comparison, report = compare_extraction_with_source(extracted_data, chapter_text)
+    comparison, _report = compare_extraction_with_source(extracted_data, chapter_text)
 
     assert comparison["summary"]["correct_matches"] == 2
     assert comparison["summary"]["hallucinated"] == 0
@@ -420,6 +421,7 @@ def main():
         print(f"✗ Test failed: {e}")
         print("=" * 70)
         import traceback
+
         traceback.print_exc()
         return 1
 
