@@ -1,111 +1,63 @@
 {
   "document_id": "07_mean_field",
-  "document_path": "/home/guillem/fragile/docs/source/1_euclidean_gas/07_mean_field.md",
-  "build_timestamp": "2025-11-06T00:58:50.056440",
+  "document_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+  "build_timestamp": "2025-11-06T22:50:00.493212",
   "sources": {
-    "parser_dir": "/home/guillem/fragile/docs/source/1_euclidean_gas/parser",
-    "raw_data_dir": "/home/guillem/fragile/docs/source/1_euclidean_gas/07_mean_field/raw_data"
+    "parser_dir": "docs/source/1_euclidean_gas/parser",
+    "enriched_dir": "docs/source/1_euclidean_gas/07_mean_field/enriched",
+    "raw_data_dir": "docs/source/1_euclidean_gas/07_mean_field/raw_data"
   },
   "statistics": {
-    "total_entities": 72,
-    "parser_entities": 62,
+    "total_entities": 123,
+    "parser_entities": 98,
+    "enriched_entities": 0,
     "raw_data_entities": 25,
-    "chapters_processed": 6,
-    "duplicates_resolved": 13,
+    "parser_chapters_processed": 8,
+    "enriched_chapters_processed": 1,
     "by_type": {
-      "definition": 12,
-      "parameter": 35,
-      "remark": 6,
-      "lemma": 1,
-      "theorem": 4,
-      "proof": 6,
-      "assumption": 8
-    },
-    "by_source": {
-      "parser_only": 47,
-      "raw_data_only": 12,
-      "both_sources": 13
+      "proof": {
+        "parsed": 4,
+        "enriched": 0,
+        "raw_data": 4,
+        "total": 8
+      },
+      "assumption": {
+        "parsed": 4,
+        "enriched": 0,
+        "raw_data": 4,
+        "total": 8
+      },
+      "remark": {
+        "parsed": 9,
+        "enriched": 0,
+        "raw_data": 0,
+        "total": 9
+      },
+      "definition": {
+        "parsed": 11,
+        "enriched": 0,
+        "raw_data": 12,
+        "total": 23
+      },
+      "theorem": {
+        "parsed": 5,
+        "enriched": 0,
+        "raw_data": 4,
+        "total": 9
+      },
+      "lemma": {
+        "parsed": 0,
+        "enriched": 0,
+        "raw_data": 1,
+        "total": 1
+      },
+      "parameter": {
+        "parsed": 65,
+        "enriched": 0,
+        "raw_data": 0,
+        "total": 65
+      }
     }
   },
-  "conflicts": [
-    {
-      "label": "def-baoab-update-rule",
-      "parser_type": "definition",
-      "raw_data_type": "definition",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "def-transport-operator",
-      "parser_type": "definition",
-      "raw_data_type": "definition",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "def-cloning-generator",
-      "parser_type": "definition",
-      "raw_data_type": "definition",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "def-kinetic-generator",
-      "parser_type": "definition",
-      "raw_data_type": "definition",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "def-killing-operator",
-      "parser_type": "definition",
-      "raw_data_type": "definition",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "def-revival-operator",
-      "parser_type": "definition",
-      "raw_data_type": "definition",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "lem-mass-conservation-transport",
-      "parser_type": "theorem",
-      "raw_data_type": "lemma",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "proof-lem-mass-conservation-transport",
-      "parser_type": "proof",
-      "raw_data_type": "proof",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "proof-thm-mass-conservation",
-      "parser_type": "proof",
-      "raw_data_type": "proof",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "thm-mean-field-equation",
-      "parser_type": "theorem",
-      "raw_data_type": "theorem",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "thm-mean-field-limit-informal",
-      "parser_type": "theorem",
-      "raw_data_type": "theorem",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "thm-mass-conservation",
-      "parser_type": "theorem",
-      "raw_data_type": "theorem",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "thm-killing-rate-consistency",
-      "parser_type": "theorem",
-      "raw_data_type": "theorem",
-      "resolution": "Prefer raw_data"
-    }
-  ],
   "errors": []
 }

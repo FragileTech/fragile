@@ -1,119 +1,123 @@
-[
-  {
-    "label": "prop-psi-markov-kernel",
-    "name": "The Swarm Update defines a Markov kernel",
-    "section": "18",
-    "subsection": "17.2.4.5",
-    "source_file": "01_fragile_gas_framework.md",
-    "source_lines": "4627-5086",
-    "extraction_date": "2025-10-27",
-    "status": "extracted",
-    "source": {
-      "document_id": "01_fragile_gas_framework",
-      "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-      "chapter": "1_euclidean_gas",
-      "section": null,
-      "section_name": null,
-      "label": null,
-      "line_range": {
-        "lines": [
-          [
-            5079,
-            5082
+{
+  "parsed": [],
+  "enriched": [],
+  "raw_data": [
+    {
+      "label": "prop-psi-markov-kernel",
+      "name": "The Swarm Update defines a Markov kernel",
+      "section": "18",
+      "subsection": "17.2.4.5",
+      "source_file": "01_fragile_gas_framework.md",
+      "source_lines": "4627-5086",
+      "extraction_date": "2025-10-27",
+      "status": "extracted",
+      "source": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "chapter": "1_euclidean_gas",
+        "section": null,
+        "section_name": null,
+        "label": null,
+        "line_range": {
+          "lines": [
+            [
+              5079,
+              5082
+            ]
           ]
-        ]
+        },
+        "equation": null,
+        "url_fragment": null
       },
-      "equation": null,
-      "url_fragment": null
+      "label_text": "Proposition 17.2.4.5",
+      "full_statement_text": "The Swarm Update defines a Markov kernel",
+      "statement_type": "proposition",
+      "_entity_type": "proposition",
+      "_source_type": "raw_data",
+      "_section_id": null,
+      "_chapter_number": null,
+      "_raw_data_file": "prop-psi-markov-kernel.json",
+      "_document_id": "01_fragile_gas_framework",
+      "_chapter": "1_euclidean_gas",
+      "_line_number": 5079
     },
-    "label_text": "Proposition 17.2.4.5",
-    "full_statement_text": "The Swarm Update defines a Markov kernel",
-    "statement_type": "proposition",
-    "_entity_type": "proposition",
-    "_source_type": "raw_data",
-    "_section_id": null,
-    "_chapter_number": null,
-    "_raw_data_file": "prop-psi-markov-kernel.json",
-    "_document_id": "01_fragile_gas_framework",
-    "_chapter": "1_euclidean_gas",
-    "_line_number": 5079
-  },
-  {
-    "label": "prop-w2-bound-no-offset",
-    "name": "W2 continuity bound without offset (for k\u22652)",
-    "section": "18",
-    "subsection": "17.2.4.4",
-    "source_file": "01_fragile_gas_framework.md",
-    "source_lines": "4627-5086",
-    "extraction_date": "2025-10-27",
-    "status": "extracted",
-    "source": {
-      "document_id": "01_fragile_gas_framework",
-      "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-      "chapter": "1_euclidean_gas",
-      "section": null,
-      "section_name": null,
+    {
       "label": "prop-w2-bound-no-offset",
-      "line_range": {
-        "lines": [
-          [
-            5045,
-            5056
+      "name": "W2 continuity bound without offset (for k\u22652)",
+      "section": "18",
+      "subsection": "17.2.4.4",
+      "source_file": "01_fragile_gas_framework.md",
+      "source_lines": "4627-5086",
+      "extraction_date": "2025-10-27",
+      "status": "extracted",
+      "source": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "chapter": "1_euclidean_gas",
+        "section": null,
+        "section_name": null,
+        "label": "prop-w2-bound-no-offset",
+        "line_range": {
+          "lines": [
+            [
+              5045,
+              5056
+            ]
           ]
-        ]
+        },
+        "equation": null,
+        "url_fragment": "#prop-w2-bound-no-offset"
       },
-      "equation": null,
-      "url_fragment": "#prop-w2-bound-no-offset"
+      "label_text": "Proposition 17.2.4.4",
+      "full_statement_text": "W2 continuity bound without offset (for k\u22652)",
+      "statement_type": "proposition",
+      "_entity_type": "proposition",
+      "_source_type": "raw_data",
+      "_section_id": null,
+      "_chapter_number": null,
+      "_raw_data_file": "prop-w2-bound-no-offset.json",
+      "_document_id": "01_fragile_gas_framework",
+      "_chapter": "1_euclidean_gas",
+      "_line_number": 5045
     },
-    "label_text": "Proposition 17.2.4.4",
-    "full_statement_text": "W2 continuity bound without offset (for k\u22652)",
-    "statement_type": "proposition",
-    "_entity_type": "proposition",
-    "_source_type": "raw_data",
-    "_section_id": null,
-    "_chapter_number": null,
-    "_raw_data_file": "prop-w2-bound-no-offset.json",
-    "_document_id": "01_fragile_gas_framework",
-    "_chapter": "1_euclidean_gas",
-    "_line_number": 5045
-  },
-  {
-    "label": "prop-coefficient-regularity",
-    "name": "Boundedness and continuity of composite coefficients",
-    "section": "18",
-    "subsection": "17.2.4.6",
-    "source_file": "01_fragile_gas_framework.md",
-    "source_lines": "4627-5086",
-    "extraction_date": "2025-10-27",
-    "status": "extracted",
-    "source": {
-      "document_id": "01_fragile_gas_framework",
-      "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-      "chapter": "1_euclidean_gas",
-      "section": null,
-      "section_name": null,
-      "label": null,
-      "line_range": {
-        "lines": [
-          [
-            5093,
-            5102
+    {
+      "label": "prop-coefficient-regularity",
+      "name": "Boundedness and continuity of composite coefficients",
+      "section": "18",
+      "subsection": "17.2.4.6",
+      "source_file": "01_fragile_gas_framework.md",
+      "source_lines": "4627-5086",
+      "extraction_date": "2025-10-27",
+      "status": "extracted",
+      "source": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "chapter": "1_euclidean_gas",
+        "section": null,
+        "section_name": null,
+        "label": null,
+        "line_range": {
+          "lines": [
+            [
+              5093,
+              5102
+            ]
           ]
-        ]
+        },
+        "equation": null,
+        "url_fragment": null
       },
-      "equation": null,
-      "url_fragment": null
-    },
-    "label_text": "Proposition 17.2.4.6",
-    "full_statement_text": "Boundedness and continuity of composite coefficients",
-    "statement_type": "proposition",
-    "_entity_type": "proposition",
-    "_source_type": "raw_data",
-    "_section_id": null,
-    "_chapter_number": null,
-    "_raw_data_file": "prop-coefficient-regularity.json",
-    "_document_id": "01_fragile_gas_framework",
-    "_chapter": "1_euclidean_gas",
-    "_line_number": 5093
-  }
-]
+      "label_text": "Proposition 17.2.4.6",
+      "full_statement_text": "Boundedness and continuity of composite coefficients",
+      "statement_type": "proposition",
+      "_entity_type": "proposition",
+      "_source_type": "raw_data",
+      "_section_id": null,
+      "_chapter_number": null,
+      "_raw_data_file": "prop-coefficient-regularity.json",
+      "_document_id": "01_fragile_gas_framework",
+      "_chapter": "1_euclidean_gas",
+      "_line_number": 5093
+    }
+  ]
+}

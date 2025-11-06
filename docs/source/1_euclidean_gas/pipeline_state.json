@@ -1,0 +1,90 @@
+{
+  "version": "1.0",
+  "mode": "single_document",
+  "target_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+  "start_time": "2025-11-06T00:00:00",
+  "last_update": "2025-11-06T00:00:00",
+  "status": "in_progress",
+  "execution_plan": {
+    "total_theorems": 5,
+    "needs_proof": 2,
+    "has_complete_proof": 3,
+    "has_informal_proof": 1,
+    "execution_order": [
+      "thm-mean-field-equation",
+      "thm-mean-field-limit-informal"
+    ],
+    "estimated_time_hours": 7.5
+  },
+  "theorems": [
+    {
+      "label": "lem-mass-conservation-transport",
+      "type": "lemma",
+      "line_number": 572,
+      "title": "Mass Conservation of Transport",
+      "has_proof": true,
+      "proof_complete": true,
+      "status": "completed",
+      "needs_work": false
+    },
+    {
+      "label": "thm-mean-field-equation",
+      "type": "theorem",
+      "line_number": 614,
+      "title": "The Mean-Field Equations for the Euclidean Gas",
+      "has_proof": false,
+      "proof_complete": false,
+      "status": "pending",
+      "needs_work": true,
+      "dependencies": ["lem-mass-conservation-transport"],
+      "attempts": 0,
+      "difficulty": "medium"
+    },
+    {
+      "label": "thm-mass-conservation",
+      "type": "theorem",
+      "line_number": 655,
+      "title": "Total Mass Conservation and Population Dynamics",
+      "has_proof": true,
+      "proof_complete": true,
+      "status": "completed",
+      "needs_work": false
+    },
+    {
+      "label": "thm-killing-rate-consistency",
+      "type": "theorem",
+      "line_number": 817,
+      "title": "Consistency of the Interior Killing Rate Approximation",
+      "has_proof": true,
+      "proof_complete": true,
+      "status": "completed",
+      "needs_work": false
+    },
+    {
+      "label": "thm-mean-field-limit-informal",
+      "type": "theorem",
+      "line_number": 1321,
+      "title": "Mean-Field Limit (Informal Statement)",
+      "has_proof": true,
+      "proof_complete": false,
+      "proof_informal": true,
+      "status": "pending",
+      "needs_work": true,
+      "dependencies": ["thm-mean-field-equation", "thm-killing-rate-consistency"],
+      "attempts": 0,
+      "difficulty": "high"
+    }
+  ],
+  "statistics": {
+    "total_theorems": 5,
+    "completed": 3,
+    "in_progress": 0,
+    "pending": 2,
+    "failed": 0,
+    "auto_integrated": 0,
+    "manual_review": 0
+  },
+  "current_theorem": null,
+  "errors": [],
+  "resume_instructions": "Run '/math_pipeline docs/source/1_euclidean_gas/07_mean_field.md' to resume"
+}

@@ -154,18 +154,24 @@ def _extract_text_from_source(source, all_lines: list[str]) -> str:
 def enrich_chapter_file(
     chapter_file: Path,
     output_file: Path | None = None,
-) -> Path:
+    save_to_document_folder: bool = True,
+) -> tuple[Path, Path | None]:
     """
     Enrich a chapter_N.json file with full text content.
+
+    Saves to TWO locations for backward compatibility:
+    1. parser/chapter_N_enriched.json (backward compat)
+    2. {document}/enriched/chapter_N.json (new per-document structure)
 
     Works with raw JSON dicts to avoid Pydantic validation issues.
 
     Args:
         chapter_file: Path to chapter_N.json
-        output_file: Optional output path (default: chapter_N_enriched.json)
+        output_file: Optional output path (default: chapter_N_enriched.json in parser/)
+        save_to_document_folder: If True, also save to per-document enriched/ folder
 
     Returns:
-        Path to enriched file
+        Tuple of (backward_compat_path, per_document_path)
     """
     logger.info(f"Enriching: {chapter_file}")
 
@@ -176,16 +182,76 @@ def enrich_chapter_file(
     # Extract text using dict-based approach
     enriched_data = extract_full_text_from_dict(section_data)
 
-    # Determine output file
+    # Add enrichment timestamp
+    from datetime import datetime
+
+    enriched_data["_enrichment_timestamp"] = datetime.now().isoformat()
+
+    # === Save 1: Backward compatibility (parser/chapter_N_enriched.json) ===
     if output_file is None:
         output_file = chapter_file.parent / f"{chapter_file.stem}_enriched.json"
 
-    # Save enriched data
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(enriched_data, f, indent=2)
+    logger.info(f"✓ Saved (backward compat): {output_file}")
 
-    logger.info(f"✓ Saved to: {output_file}")
-    return output_file
+    # === Save 2: Per-document structure ({document}/enriched/chapter_N.json) ===
+    per_document_path = None
+    if save_to_document_folder:
+        per_document_path = _save_to_document_enriched_folder(
+            chapter_file, enriched_data, section_data
+        )
+
+    return output_file, per_document_path
+
+
+def _save_to_document_enriched_folder(
+    chapter_file: Path, enriched_data: dict, original_data: dict
+) -> Path | None:
+    """
+    Save enriched data to per-document enriched/ folder.
+
+    Resolves document ID from source.file_path and creates structure:
+    docs/source/{chapter}/{document}/enriched/chapter_N.json
+
+    Args:
+        chapter_file: Path to chapter_N.json in parser/ folder
+        enriched_data: Enriched chapter dict with full_text
+        original_data: Original chapter dict (for extracting source info)
+
+    Returns:
+        Path to saved file, or None if document ID cannot be resolved
+    """
+    # Extract document ID from source.file_path
+    source_dict = original_data.get("source", {})
+    file_path = source_dict.get("file_path")
+
+    if not file_path:
+        logger.warning("No file_path in source, cannot save to per-document folder")
+        return None
+
+    # Extract document ID (filename without extension)
+    # e.g., "docs/source/1_euclidean_gas/07_mean_field.md" → "07_mean_field"
+    document_id = Path(file_path).stem
+
+    # Resolve chapter folder (parent of parser/ folder)
+    chapter_dir = chapter_file.parent.parent
+
+    # Create per-document enriched folder
+    # e.g., docs/source/1_euclidean_gas/07_mean_field/enriched/
+    document_folder = chapter_dir / document_id
+    enriched_folder = document_folder / "enriched"
+    enriched_folder.mkdir(parents=True, exist_ok=True)
+
+    # Save with same filename as chapter file
+    # e.g., chapter_0.json, chapter_1.json
+    output_path = enriched_folder / chapter_file.name
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(enriched_data, f, indent=2)
+
+    logger.info(f"✓ Saved (per-document): {output_path}")
+    return output_path
 
 
 def extract_full_text_from_dict(section_data: dict) -> dict:
@@ -274,3 +340,96 @@ def _extract_text_from_lines(line_ranges: list[list[int]], all_lines: list[str])
         text_blocks.append(block.rstrip())
 
     return "\n[...]\n".join(text_blocks)
+
+
+def save_enrichment_metadata(
+    parser_dir: Path,
+    enriched_chapters: list[tuple[Path, dict]],
+    errors: list[dict] | None = None,
+) -> Path:
+    """
+    Generate and save enrichment metadata for a chapter.
+
+    Creates parser/enrichment_metadata.json with statistics about the enrichment process.
+
+    Args:
+        parser_dir: Path to parser/ directory containing chapter files
+        enriched_chapters: List of (chapter_file_path, enriched_data_dict) tuples
+        errors: Optional list of error dicts
+
+    Returns:
+        Path to saved metadata file
+    """
+    from datetime import datetime
+
+    if errors is None:
+        errors = []
+
+    # Calculate statistics across all chapters
+    total_entities = 0
+    entities_with_text = 0
+    entities_empty = 0
+    by_type = {}
+
+    entity_types = [
+        "definitions",
+        "theorems",
+        "proofs",
+        "axioms",
+        "assumptions",
+        "parameters",
+        "remarks",
+        "citations",
+    ]
+
+    for chapter_path, enriched_data in enriched_chapters:
+        for entity_type in entity_types:
+            entities = enriched_data.get(entity_type, [])
+            type_count = len(entities)
+
+            # Update by_type count
+            by_type[entity_type] = by_type.get(entity_type, 0) + type_count
+            total_entities += type_count
+
+            # Count entities with/without text
+            for entity in entities:
+                full_text = entity.get("full_text", "")
+                if full_text and full_text != "":
+                    entities_with_text += 1
+                else:
+                    entities_empty += 1
+
+    # Extract document info from first chapter
+    document_id = "unknown"
+    source_file = None
+    if enriched_chapters:
+        first_chapter_data = enriched_chapters[0][1]
+        source_dict = first_chapter_data.get("source", {})
+        file_path = source_dict.get("file_path")
+        if file_path:
+            document_id = Path(file_path).stem
+            source_file = file_path
+
+    # Build metadata
+    metadata = {
+        "document_id": document_id,
+        "source_parser_dir": str(parser_dir),
+        "enrichment_timestamp": datetime.now().isoformat(),
+        "statistics": {
+            "chapters_enriched": len(enriched_chapters),
+            "total_entities": total_entities,
+            "entities_with_text": entities_with_text,
+            "entities_empty": entities_empty,
+            "by_type": by_type,
+        },
+        "source_file": source_file,
+        "errors": errors,
+    }
+
+    # Save metadata
+    metadata_file = parser_dir / "enrichment_metadata.json"
+    with open(metadata_file, "w", encoding="utf-8") as f:
+        json.dump(metadata, f, indent=2)
+
+    logger.info(f"✓ Saved enrichment metadata: {metadata_file}")
+    return metadata_file

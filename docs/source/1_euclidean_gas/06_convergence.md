@@ -1722,6 +1722,23 @@ $$
 **Q.E.D.**
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Synergistic Rate Derivation from Component Drifts](proofs/proof_20251025_093500_thm_synergistic_rate_derivation.md)
+
+**Includes:**
+- Rigorous composition of all component drift bounds (cloning + kinetic operators)
+- Complete cross-component coupling analysis: $C_{xv}, C_{xW}, C_{vx}$ explicit derivation
+- Optimal weight selection via coupling domination: $\alpha_v \geq C_{xv}/(\kappa_v V_{\text{Var},v}^{\text{eq}})$, etc.
+- Synergistic rate formula: $\kappa_{\text{total}} = \min(\kappa_x, \alpha_v \kappa_v, \alpha_W \kappa_W, \alpha_b \kappa_b) \cdot (1 - \epsilon_{\text{coupling}})$
+- Physical interpretation: bottleneck principle, coupling penalty, equilibrium analysis
+- N-uniformity verification for all components
+- Explicit QSD variance formula: $V_{\text{total}}^{\text{QSD}} = C_{\text{total}}/\kappa_{\text{total}}$
+:::
+
 :::{prf:theorem} Total Convergence Rate (Parameter-Explicit)
 :label: thm-total-rate-explicit
 
@@ -1799,6 +1816,23 @@ The equilibrium is determined by balancing all source terms:
 $$
 V_{\text{total}}^{\text{eq}} = \frac{C_{\text{total}}}{\kappa_{\text{total}}}
 $$
+:::
+
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Total Convergence Rate (Parameter-Explicit)](proofs/proof_20251025_093300_thm_total_rate_explicit.md)
+
+**Includes:**
+- Rigorous explicit formula derivation: $\kappa_{\text{total}} = \min(\kappa_x, \kappa_v, \kappa_W, \kappa_b) \cdot (1 - \epsilon_{\text{coupling}})$
+- Complete coupling ratio analysis: $\epsilon_{\text{coupling}} = \max(\alpha_v C_{xv}/(\kappa_v V_{\text{Var},v}), \ldots)$
+- Bottleneck principle justification (weakest contraction dominates)
+- Parameter-by-parameter sensitivity analysis ($\gamma, \lambda, \sigma_v, \tau, N$)
+- Optimal parameter scaling for balanced convergence: $\lambda \sim \gamma \sim \lambda_{\min}$
+- Equilibrium constant formula: $C_{\text{total}} = (C_x + \alpha_v C_v' + \alpha_W C_W' + \alpha_b C_b)/\kappa_{\text{total}}$
+- Practical tuning guidelines for smooth vs rough optimization problems
 :::
 
 **Parameter effects on total rate:**
@@ -1882,6 +1916,21 @@ T_{\text{mix}} \sim \frac{\ln(1/\epsilon)}{\kappa_{\text{total}}}
 $$
 
 With $\epsilon = 0.01$: $\ln(1/\epsilon) \approx 4.6 \approx 5$.
+:::
+
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Mixing Time (Parameter-Explicit)](proofs/proof_20251025_095500_prop_mixing_time_explicit.md)
+
+**Includes:**
+- Rigorous derivation from Foster-Lyapunov exponential convergence
+- Complete error decay analysis: $|\mathbb{E}[V_{\text{total}}(t)] - V_{\text{total}}^{\text{eq}}| \leq e^{-\kappa_{\text{total}} t} V_{\text{total}}^{\text{init}}$
+- Explicit mixing time formula: $T_{\text{mix}}(\epsilon) = \frac{1}{\kappa_{\text{total}}} \ln\left(\frac{V_{\text{total}}^{\text{init}}}{\epsilon C_{\text{total}}}\right)$
+- Practical approximation: $T_{\text{mix}} \sim 5/\kappa_{\text{total}}$ for typical cases
+- Numerical examples for various parameter regimes (fast/slow smooth, rough, underdamped)
 :::
 
 **Numerical examples:**

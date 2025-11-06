@@ -1,199 +1,203 @@
-[
-  {
-    "label": "cor-pipeline-continuity-margin-stability",
-    "label_text": "Corollary: Pipeline Continuity Under Margin-Based Status Stability",
-    "name": "Pipeline Continuity Under Margin-Based Status Stability",
-    "statement_type": "corollary",
-    "statement": "Assume the **Axiom of Margin-Based Status Stability**. Then for all inputs $(\\mathcal{S}_1, \\mathbf{v}_{r1}, \\mathbf{v}_{d1})$ and $(\\mathcal{S}_2, \\mathbf{v}_{r2}, \\mathbf{v}_{d2})$, the deterministic bound $F_{\\text{pot,det}}$ in the Deterministic Continuity theorem satisfies: $F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2}) \\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0$. Moreover, for $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2\\le r_{\\mathrm{status}}$ we have $n_c=0$ and the unstable term vanishes exactly; the remaining terms are controlled by the deterministic continuity of the patched standardization operator and the Lipschitz continuity of the potential map $F$.",
-    "full_statement_text": "Assume the **Axiom of Margin-Based Status Stability** ([](#def-axiom-margin-stability)). Then for all inputs $(\\mathcal{S}_1, \\mathbf{v}_{r1}, \\mathbf{v}_{d1})$ and $(\\mathcal{S}_2, \\mathbf{v}_{r2}, \\mathbf{v}_{d2})$, the deterministic bound $F_{\\text{pot,det}}$ in [](#thm-deterministic-potential-continuity) satisfies\n$$\n\nF_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})\n\\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0.\n\n$$\nMoreover, for $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2\\le r_{\\mathrm{status}}$ we have $n_c=0$ and the unstable term vanishes exactly; the remaining terms are controlled by the deterministic continuity of the patched standardization operator and the Lipschitz continuity of the potential map $F$.",
-    "context_before": null,
-    "conclusion_formula_latex": "F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})\\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0",
-    "equation_label": null,
-    "explicit_definition_references": [
-      "def-axiom-margin-stability"
-    ],
-    "explicit_theorem_references": [
-      "thm-deterministic-potential-continuity"
-    ],
-    "source_section": "13. Fitness potential operator",
-    "source": {
-      "document_id": "01_fragile_gas_framework",
-      "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-      "chapter": "1_euclidean_gas",
-      "section": "13. Fitness potential operator",
-      "section_name": null,
+{
+  "parsed": [],
+  "enriched": [],
+  "raw_data": [
+    {
       "label": "cor-pipeline-continuity-margin-stability",
-      "line_range": {
-        "lines": [
-          [
-            3953,
-            3966
+      "label_text": "Corollary: Pipeline Continuity Under Margin-Based Status Stability",
+      "name": "Pipeline Continuity Under Margin-Based Status Stability",
+      "statement_type": "corollary",
+      "statement": "Assume the **Axiom of Margin-Based Status Stability**. Then for all inputs $(\\mathcal{S}_1, \\mathbf{v}_{r1}, \\mathbf{v}_{d1})$ and $(\\mathcal{S}_2, \\mathbf{v}_{r2}, \\mathbf{v}_{d2})$, the deterministic bound $F_{\\text{pot,det}}$ in the Deterministic Continuity theorem satisfies: $F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2}) \\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0$. Moreover, for $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2\\le r_{\\mathrm{status}}$ we have $n_c=0$ and the unstable term vanishes exactly; the remaining terms are controlled by the deterministic continuity of the patched standardization operator and the Lipschitz continuity of the potential map $F$.",
+      "full_statement_text": "Assume the **Axiom of Margin-Based Status Stability** ([](#def-axiom-margin-stability)). Then for all inputs $(\\mathcal{S}_1, \\mathbf{v}_{r1}, \\mathbf{v}_{d1})$ and $(\\mathcal{S}_2, \\mathbf{v}_{r2}, \\mathbf{v}_{d2})$, the deterministic bound $F_{\\text{pot,det}}$ in [](#thm-deterministic-potential-continuity) satisfies\n$$\n\nF_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})\n\\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0.\n\n$$\nMoreover, for $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2\\le r_{\\mathrm{status}}$ we have $n_c=0$ and the unstable term vanishes exactly; the remaining terms are controlled by the deterministic continuity of the patched standardization operator and the Lipschitz continuity of the potential map $F$.",
+      "context_before": null,
+      "conclusion_formula_latex": "F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})\\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0",
+      "equation_label": null,
+      "explicit_definition_references": [
+        "def-axiom-margin-stability"
+      ],
+      "explicit_theorem_references": [
+        "thm-deterministic-potential-continuity"
+      ],
+      "source_section": "13. Fitness potential operator",
+      "source": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "chapter": "1_euclidean_gas",
+        "section": "13. Fitness potential operator",
+        "section_name": null,
+        "label": "cor-pipeline-continuity-margin-stability",
+        "line_range": {
+          "lines": [
+            [
+              3953,
+              3966
+            ]
           ]
-        ]
+        },
+        "equation": null,
+        "url_fragment": "#cor-pipeline-continuity-margin-stability"
       },
-      "equation": null,
-      "url_fragment": "#cor-pipeline-continuity-margin-stability"
+      "has_proof": false,
+      "proof_sketch": "This corollary follows directly from the theorem by invoking the Axiom of Margin-Based Status Stability, which guarantees that status changes are bounded when swarm displacement is small. Under this axiom, when displacement is within the margin radius, the number of status changes $n_c=0$, eliminating the unstable term. The remaining stable term vanishes continuously as the inputs converge.",
+      "depends_on": [
+        "thm-deterministic-potential-continuity",
+        "def-axiom-margin-stability"
+      ],
+      "input_objects": [
+        "obj-algorithmic-space-generic",
+        "def-swarm-potential-assembly-operator",
+        "def-status-update-operator",
+        "obj-alg-distance"
+      ],
+      "input_axioms": [
+        "def-axiom-margin-stability"
+      ],
+      "input_parameters": [],
+      "output_type": "Continuity",
+      "relations_established": [
+        "For d_Disp^2 <= r_status: unstable term vanishes (n_c = 0)",
+        "Under Axiom of Margin-Based Status Stability, deterministic bound F_pot,det -> 0 as inputs converge"
+      ],
+      "tags": [
+        "fitness-potential",
+        "continuity",
+        "margin-stability",
+        "corollary"
+      ],
+      "_entity_type": "corollarie",
+      "_source_type": "raw_data",
+      "_section_id": null,
+      "_chapter_number": null,
+      "_raw_data_file": "cor-pipeline-continuity-margin-stability.json",
+      "_document_id": "01_fragile_gas_framework",
+      "_chapter": "1_euclidean_gas",
+      "_line_number": 3953
     },
-    "has_proof": false,
-    "proof_sketch": "This corollary follows directly from the theorem by invoking the Axiom of Margin-Based Status Stability, which guarantees that status changes are bounded when swarm displacement is small. Under this axiom, when displacement is within the margin radius, the number of status changes $n_c=0$, eliminating the unstable term. The remaining stable term vanishes continuously as the inputs converge.",
-    "depends_on": [
-      "thm-deterministic-potential-continuity",
-      "def-axiom-margin-stability"
-    ],
-    "input_objects": [
-      "obj-algorithmic-space-generic",
-      "def-swarm-potential-assembly-operator",
-      "def-status-update-operator",
-      "obj-alg-distance"
-    ],
-    "input_axioms": [
-      "def-axiom-margin-stability"
-    ],
-    "input_parameters": [],
-    "output_type": "Continuity",
-    "relations_established": [
-      "For d_Disp^2 <= r_status: unstable term vanishes (n_c = 0)",
-      "Under Axiom of Margin-Based Status Stability, deterministic bound F_pot,det -> 0 as inputs converge"
-    ],
-    "tags": [
-      "fitness-potential",
-      "continuity",
-      "margin-stability",
-      "corollary"
-    ],
-    "_entity_type": "corollarie",
-    "_source_type": "raw_data",
-    "_section_id": null,
-    "_chapter_number": null,
-    "_raw_data_file": "cor-pipeline-continuity-margin-stability.json",
-    "_document_id": "01_fragile_gas_framework",
-    "_chapter": "1_euclidean_gas",
-    "_line_number": 3953
-  },
-  {
-    "label": "cor-chain-rule-sigma-reg-var",
-    "label_text": "Corollary: Chain\u2011rule bound for \u03c3'_reg \u2218 Var",
-    "name": "Chain\u2011rule bound for \u03c3'_reg \u2218 Var",
-    "statement_type": "corollary",
-    "statement": "Under the conditions of the lemma and \u00a78.2.2.9, the composite map \u03c3'_{text{reg}}\u2218Var is Lipschitz with\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( L_{m_2,M}+2 V_{\\max} L_{\\mu,M}\\Big).\n$$\nIn particular, for the empirical aggregator of \u00a76.2.2.a (see lem-empirical-aggregator-properties), $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$, hence\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( \\tfrac{2 V_{\\max}}{\\sqrt{k}} + 2 V_{\\max}\\,\\tfrac{1}{\\sqrt{k}}\\Big)\n\\;=\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}.\n$$",
-    "full_statement_text": "Under the conditions of the lemma and \u00a78.2.2.9, the composite map \u03c3'_{text{reg}}\u2218Var is Lipschitz with\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( L_{m_2,M}+2 V_{\\max} L_{\\mu,M}\\Big).\n$$\nIn particular, for the empirical aggregator of \u00a76.2.2.a (see lem-empirical-aggregator-properties), $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$, hence\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( \\tfrac{2 V_{\\max}}{\\sqrt{k}} + 2 V_{\\max}\\,\\tfrac{1}{\\sqrt{k}}\\Big)\n\\;=\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}.\n$$",
-    "context_before": null,
-    "conclusion_formula_latex": "L_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}",
-    "equation_label": null,
-    "explicit_definition_references": [
-      "lem-empirical-aggregator-properties"
-    ],
-    "explicit_theorem_references": [
-      "lem-lipschitz-variance-functional",
-      "lem-sigma-patch-derivative-bound"
-    ],
-    "source_section": "9. Rescale Transformation",
-    "source": {
-      "document_id": "01_fragile_gas_framework",
-      "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-      "chapter": "1_euclidean_gas",
-      "section": "9. Rescale Transformation",
-      "section_name": null,
+    {
       "label": "cor-chain-rule-sigma-reg-var",
-      "line_range": {
-        "lines": [
-          [
-            2047,
-            2062
+      "label_text": "Corollary: Chain\u2011rule bound for \u03c3'_reg \u2218 Var",
+      "name": "Chain\u2011rule bound for \u03c3'_reg \u2218 Var",
+      "statement_type": "corollary",
+      "statement": "Under the conditions of the lemma and \u00a78.2.2.9, the composite map \u03c3'_{text{reg}}\u2218Var is Lipschitz with\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( L_{m_2,M}+2 V_{\\max} L_{\\mu,M}\\Big).\n$$\nIn particular, for the empirical aggregator of \u00a76.2.2.a (see lem-empirical-aggregator-properties), $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$, hence\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( \\tfrac{2 V_{\\max}}{\\sqrt{k}} + 2 V_{\\max}\\,\\tfrac{1}{\\sqrt{k}}\\Big)\n\\;=\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}.\n$$",
+      "full_statement_text": "Under the conditions of the lemma and \u00a78.2.2.9, the composite map \u03c3'_{text{reg}}\u2218Var is Lipschitz with\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( L_{m_2,M}+2 V_{\\max} L_{\\mu,M}\\Big).\n$$\nIn particular, for the empirical aggregator of \u00a76.2.2.a (see lem-empirical-aggregator-properties), $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$, hence\n$$\nL_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma'_{\\text{reg}}}\\,\\Big( \\tfrac{2 V_{\\max}}{\\sqrt{k}} + 2 V_{\\max}\\,\\tfrac{1}{\\sqrt{k}}\\Big)\n\\;=\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}.\n$$",
+      "context_before": null,
+      "conclusion_formula_latex": "L_{\\sigma'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}",
+      "equation_label": null,
+      "explicit_definition_references": [
+        "lem-empirical-aggregator-properties"
+      ],
+      "explicit_theorem_references": [
+        "lem-lipschitz-variance-functional",
+        "lem-sigma-patch-derivative-bound"
+      ],
+      "source_section": "9. Rescale Transformation",
+      "source": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "chapter": "1_euclidean_gas",
+        "section": "9. Rescale Transformation",
+        "section_name": null,
+        "label": "cor-chain-rule-sigma-reg-var",
+        "line_range": {
+          "lines": [
+            [
+              2047,
+              2062
+            ]
           ]
-        ]
+        },
+        "equation": null,
+        "url_fragment": "#cor-chain-rule-sigma-reg-var"
       },
-      "equation": null,
-      "url_fragment": "#cor-chain-rule-sigma-reg-var"
+      "depends_on": [
+        "lem-lipschitz-variance-functional",
+        "lem-sigma-patch-derivative-bound"
+      ],
+      "input_objects": [
+        "obj-rescale-lipschitz-constants",
+        "obj-potential-bounds",
+        "obj-aggregator-lipschitz-constants"
+      ],
+      "input_axioms": [],
+      "input_parameters": [],
+      "output_type": "Lipschitz Bound",
+      "relations_established": [
+        "Provides Lipschitz bound for composite map sigma'_reg o Var",
+        "Chain rule bound: L_{sigma'_reg o Var} <= L_{sigma'_reg}(L_{m2,M} + 2V_max*L_{mu,M})"
+      ],
+      "_entity_type": "corollarie",
+      "_source_type": "raw_data",
+      "_section_id": null,
+      "_chapter_number": null,
+      "_raw_data_file": "cor-chain-rule-sigma-reg-var.json",
+      "_document_id": "01_fragile_gas_framework",
+      "_chapter": "1_euclidean_gas",
+      "_line_number": 2047
     },
-    "depends_on": [
-      "lem-lipschitz-variance-functional",
-      "lem-sigma-patch-derivative-bound"
-    ],
-    "input_objects": [
-      "obj-rescale-lipschitz-constants",
-      "obj-potential-bounds",
-      "obj-aggregator-lipschitz-constants"
-    ],
-    "input_axioms": [],
-    "input_parameters": [],
-    "output_type": "Lipschitz Bound",
-    "relations_established": [
-      "Provides Lipschitz bound for composite map sigma'_reg o Var",
-      "Chain rule bound: L_{sigma'_reg o Var} <= L_{sigma'_reg}(L_{m2,M} + 2V_max*L_{mu,M})"
-    ],
-    "_entity_type": "corollarie",
-    "_source_type": "raw_data",
-    "_section_id": null,
-    "_chapter_number": null,
-    "_raw_data_file": "cor-chain-rule-sigma-reg-var.json",
-    "_document_id": "01_fragile_gas_framework",
-    "_chapter": "1_euclidean_gas",
-    "_line_number": 2047
-  },
-  {
-    "label": "cor-closed-form-lipschitz-composite",
-    "label_text": "Corollary: Closed\u2011form bound for L_{g_A\u2218z} (empirical aggregator)",
-    "name": "Closed\u2011form bound for L_{g_A\u2218z} (empirical aggregator)",
-    "statement_type": "corollary",
-    "statement": "Let $k=|\\mathcal A(\\mathcal S)|$ and assume $|v_i|\\le V_{\\max}$. For the empirical aggregator of \u00a76.2.2.a (see lem-empirical-aggregator-properties) with the regularized standardization and piecewise rescale of \u00a78.2.2, the composite map $g_A\\circ z$ is globally Lipschitz with\n$$\n\\boxed{\\;L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}\\;}\n$$\nwhere $L_P=\\|P'\\|_\\infty$ is the uniform derivative bound of the cubic patch from \u00a78.2.2.5.",
-    "full_statement_text": "Let $k=|\\mathcal A(\\mathcal S)|$ and assume $|v_i|\\le V_{\\max}$. For the empirical aggregator of \u00a76.2.2.a (see lem-empirical-aggregator-properties) with the regularized standardization and piecewise rescale of \u00a78.2.2, the composite map $g_A\\circ z$ is globally Lipschitz with\n$$\n\\boxed{\\;L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}\\;}\n$$\nwhere $L_P=\\|P'\\|_\\infty$ is the uniform derivative bound of the cubic patch from \u00a78.2.2.5.",
-    "context_before": null,
-    "conclusion_formula_latex": "L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}",
-    "equation_label": null,
-    "explicit_definition_references": [
-      "lem-empirical-aggregator-properties"
-    ],
-    "explicit_theorem_references": [
-      "cor-chain-rule-sigma-reg-var",
-      "thm-rescale-function-lipschitz"
-    ],
-    "source_section": "9. Rescale Transformation",
-    "source": {
-      "document_id": "01_fragile_gas_framework",
-      "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
-      "chapter": "1_euclidean_gas",
-      "section": "9. Rescale Transformation",
-      "section_name": null,
+    {
       "label": "cor-closed-form-lipschitz-composite",
-      "line_range": {
-        "lines": [
-          [
-            2063,
-            2073
+      "label_text": "Corollary: Closed\u2011form bound for L_{g_A\u2218z} (empirical aggregator)",
+      "name": "Closed\u2011form bound for L_{g_A\u2218z} (empirical aggregator)",
+      "statement_type": "corollary",
+      "statement": "Let $k=|\\mathcal A(\\mathcal S)|$ and assume $|v_i|\\le V_{\\max}$. For the empirical aggregator of \u00a76.2.2.a (see lem-empirical-aggregator-properties) with the regularized standardization and piecewise rescale of \u00a78.2.2, the composite map $g_A\\circ z$ is globally Lipschitz with\n$$\n\\boxed{\\;L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}\\;}\n$$\nwhere $L_P=\\|P'\\|_\\infty$ is the uniform derivative bound of the cubic patch from \u00a78.2.2.5.",
+      "full_statement_text": "Let $k=|\\mathcal A(\\mathcal S)|$ and assume $|v_i|\\le V_{\\max}$. For the empirical aggregator of \u00a76.2.2.a (see lem-empirical-aggregator-properties) with the regularized standardization and piecewise rescale of \u00a78.2.2, the composite map $g_A\\circ z$ is globally Lipschitz with\n$$\n\\boxed{\\;L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}\\;}\n$$\nwhere $L_P=\\|P'\\|_\\infty$ is the uniform derivative bound of the cubic patch from \u00a78.2.2.5.",
+      "context_before": null,
+      "conclusion_formula_latex": "L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}",
+      "equation_label": null,
+      "explicit_definition_references": [
+        "lem-empirical-aggregator-properties"
+      ],
+      "explicit_theorem_references": [
+        "cor-chain-rule-sigma-reg-var",
+        "thm-rescale-function-lipschitz"
+      ],
+      "source_section": "9. Rescale Transformation",
+      "source": {
+        "document_id": "01_fragile_gas_framework",
+        "file_path": "docs/source/1_euclidean_gas/01_fragile_gas_framework.md",
+        "chapter": "1_euclidean_gas",
+        "section": "9. Rescale Transformation",
+        "section_name": null,
+        "label": "cor-closed-form-lipschitz-composite",
+        "line_range": {
+          "lines": [
+            [
+              2063,
+              2073
+            ]
           ]
-        ]
+        },
+        "equation": null,
+        "url_fragment": "#cor-closed-form-lipschitz-composite"
       },
-      "equation": null,
-      "url_fragment": "#cor-closed-form-lipschitz-composite"
-    },
-    "has_proof": true,
-    "depends_on": [
-      "cor-chain-rule-sigma-reg-var",
-      "thm-rescale-function-lipschitz"
-    ],
-    "input_objects": [
-      "obj-rescale-lipschitz-constants",
-      "obj-potential-bounds",
-      "obj-aggregator-lipschitz-constants",
-      "obj-cubic-patch-polynomial"
-    ],
-    "input_axioms": [
-      "axiom-rescale-function"
-    ],
-    "input_parameters": [],
-    "output_type": "Lipschitz Bound",
-    "relations_established": [
-      "Establishes global Lipschitz bound for composite map g_A o z",
-      "Bound: L_{g_A o z} <= max{L_P, 1} * (2L_{sigma'_reg}V_max)/sqrt(k)"
-    ],
-    "_entity_type": "corollarie",
-    "_source_type": "raw_data",
-    "_section_id": null,
-    "_chapter_number": null,
-    "_raw_data_file": "cor-closed-form-lipschitz-composite.json",
-    "_document_id": "01_fragile_gas_framework",
-    "_chapter": "1_euclidean_gas",
-    "_line_number": 2063
-  }
-]
+      "has_proof": true,
+      "depends_on": [
+        "cor-chain-rule-sigma-reg-var",
+        "thm-rescale-function-lipschitz"
+      ],
+      "input_objects": [
+        "obj-rescale-lipschitz-constants",
+        "obj-potential-bounds",
+        "obj-aggregator-lipschitz-constants",
+        "obj-cubic-patch-polynomial"
+      ],
+      "input_axioms": [
+        "axiom-rescale-function"
+      ],
+      "input_parameters": [],
+      "output_type": "Lipschitz Bound",
+      "relations_established": [
+        "Establishes global Lipschitz bound for composite map g_A o z",
+        "Bound: L_{g_A o z} <= max{L_P, 1} * (2L_{sigma'_reg}V_max)/sqrt(k)"
+      ],
+      "_entity_type": "corollarie",
+      "_source_type": "raw_data",
+      "_section_id": null,
+      "_chapter_number": null,
+      "_raw_data_file": "cor-closed-form-lipschitz-composite.json",
+      "_document_id": "01_fragile_gas_framework",
+      "_chapter": "1_euclidean_gas",
+      "_line_number": 2063
+    }
+  ]
+}

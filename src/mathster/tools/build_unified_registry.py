@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 """
-Build global unified mathematical entity registry from parser and raw_data sources.
+Build global unified mathematical entity registry from parser, enriched, and raw_data sources.
 
-This script creates a GLOBAL preprocessed registry that merges:
+This script creates a GLOBAL preprocessed registry that loads from:
 - Parser output: chapter_N.json files (from mathster.parsing pipeline)
+- Enriched output: chapter_N.json files (from mathster.enrichment pipeline)
 - Raw data: individual entity JSON files (from manual extraction)
+
+The registry stores sources SEPARATELY (not merged) to enable independent visualization
+and debugging of each pipeline stage.
 
 The registry is FLAT BY ENTITY TYPE - all definitions together, all theorems together, etc.
 Entities include metadata for chapter/document filtering in the dashboard.
@@ -28,6 +32,8 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+from mathster.tools.enriched_data_loader import EnrichedDataLoader
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -315,17 +321,23 @@ class RegistryMerger:
 
 
 class UnifiedRegistryBuilder:
-    """Build unified registry from parser and raw_data sources."""
+    """Build unified registry from parser, enriched, and raw_data sources."""
 
     def __init__(self, deduplicate: bool = True):
         self.deduplicate = deduplicate
         self.parser_loader = ParserLoader()
+        self.enriched_data_loader = EnrichedDataLoader()
         self.raw_data_loader = RawDataLoader()
         self.merger = RegistryMerger(deduplicate=deduplicate)
 
     def build_for_document(self, document_path: Path) -> dict[str, Any]:
         """
         Build unified registry for a single document.
+
+        Loads from THREE sources and stores them SEPARATELY (not merged):
+        - Parser: docs/source/{chapter}/parser/chapter_N.json
+        - Enriched: docs/source/{chapter}/{document}/enriched/chapter_N.json
+        - Raw data: docs/source/{chapter}/{document}/raw_data/{entity_type}/*.json
 
         Args:
             document_path: Path to markdown document
@@ -343,16 +355,25 @@ class UnifiedRegistryBuilder:
         parent_dir = document_path.parent
         doc_name = document_path.stem
         parser_dir = parent_dir / "parser"
+        enriched_dir = parent_dir / doc_name / "enriched"
         raw_data_dir = parent_dir / doc_name / "raw_data"
 
-        # Load from both sources
+        # Load from THREE sources
         parser_entities = []
+        enriched_entities = []
         raw_data_entities = []
 
         if parser_dir.exists():
             parser_entities = self.parser_loader.load_from_parser_directory(parser_dir, doc_name)
         else:
             logger.warning(f"No parser directory found at {parser_dir}")
+
+        if enriched_dir.exists():
+            enriched_entities = self.enriched_data_loader.load_from_enriched_directory(
+                enriched_dir, doc_name
+            )
+        else:
+            logger.info(f"No enriched directory found at {enriched_dir}")
 
         if raw_data_dir.exists():
             raw_data_entities = self.raw_data_loader.load_from_raw_data_directory(
@@ -361,23 +382,59 @@ class UnifiedRegistryBuilder:
         else:
             logger.warning(f"No raw_data directory found at {raw_data_dir}")
 
-        # Merge
-        merged_entities = self.merger.merge(parser_entities, raw_data_entities)
-
-        # Group by entity type
-        entities_by_type = self._group_by_entity_type(merged_entities)
+        # Store sources SEPARATELY (not merged)
+        # Group each source by entity type
+        parser_by_type = self._group_by_entity_type(parser_entities)
+        enriched_by_type = self._group_by_entity_type(enriched_entities)
+        raw_data_by_type = self._group_by_entity_type(raw_data_entities)
 
         # Create output directory
         output_dir = parent_dir / doc_name / "unified_registry"
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Save entity files
-        for entity_type, entities in entities_by_type.items():
-            if entities:
-                output_file = output_dir / f"{entity_type}s.json"
-                with open(output_file, "w") as f:
-                    json.dump(entities, f, indent=2)
-                logger.info(f"  Saved {len(entities)} {entity_type}s to {output_file.name}")
+        # Get all entity types across all sources
+        all_entity_types = set(parser_by_type.keys()) | set(enriched_by_type.keys()) | set(raw_data_by_type.keys())
+
+        # Save entity files with sources stored separately
+        for entity_type in sorted(all_entity_types):
+            parser_entities_typed = parser_by_type.get(entity_type, [])
+            enriched_entities_typed = enriched_by_type.get(entity_type, [])
+            raw_data_entities_typed = raw_data_by_type.get(entity_type, [])
+
+            # Create combined structure with separate sources
+            entity_file_data = {
+                "parsed": parser_entities_typed,
+                "enriched": enriched_entities_typed,
+                "raw_data": raw_data_entities_typed,
+            }
+
+            output_file = output_dir / f"{entity_type}s.json"
+            with open(output_file, "w") as f:
+                json.dump(entity_file_data, f, indent=2)
+
+            total_count = len(parser_entities_typed) + len(enriched_entities_typed) + len(raw_data_entities_typed)
+            logger.info(
+                f"  Saved {entity_type}s: {len(parser_entities_typed)} parsed, "
+                f"{len(enriched_entities_typed)} enriched, {len(raw_data_entities_typed)} raw_data "
+                f"({total_count} total)"
+            )
+
+        # Calculate total entities across all sources
+        total_entities = len(parser_entities) + len(enriched_entities) + len(raw_data_entities)
+
+        # Calculate by_type statistics
+        by_type_stats = {}
+        for entity_type in all_entity_types:
+            by_type_stats[entity_type] = {
+                "parsed": len(parser_by_type.get(entity_type, [])),
+                "enriched": len(enriched_by_type.get(entity_type, [])),
+                "raw_data": len(raw_data_by_type.get(entity_type, [])),
+                "total": (
+                    len(parser_by_type.get(entity_type, []))
+                    + len(enriched_by_type.get(entity_type, []))
+                    + len(raw_data_by_type.get(entity_type, []))
+                ),
+            }
 
         # Generate metadata
         metadata = {
@@ -386,23 +443,23 @@ class UnifiedRegistryBuilder:
             "build_timestamp": datetime.now().isoformat(),
             "sources": {
                 "parser_dir": str(parser_dir) if parser_dir.exists() else None,
+                "enriched_dir": str(enriched_dir) if enriched_dir.exists() else None,
                 "raw_data_dir": str(raw_data_dir) if raw_data_dir.exists() else None,
             },
             "statistics": {
-                "total_entities": len(merged_entities),
+                "total_entities": total_entities,
                 "parser_entities": len(parser_entities),
+                "enriched_entities": len(enriched_entities),
                 "raw_data_entities": len(raw_data_entities),
-                "chapters_processed": self.parser_loader.chapters_processed,
-                "duplicates_resolved": self.merger.duplicates_found,
-                "by_type": {k: len(v) for k, v in entities_by_type.items()},
-                "by_source": {
-                    "parser_only": len([e for e in merged_entities if e.get("_source_type") == "parser" and not e.get("_in_both_sources")]),
-                    "raw_data_only": len([e for e in merged_entities if e.get("_source_type") == "raw_data" and not e.get("_in_both_sources")]),
-                    "both_sources": self.merger.duplicates_found,
-                },
+                "parser_chapters_processed": self.parser_loader.chapters_processed,
+                "enriched_chapters_processed": self.enriched_data_loader.chapters_processed,
+                "by_type": by_type_stats,
             },
-            "conflicts": self.merger.conflicts,
-            "errors": self.parser_loader.errors + self.raw_data_loader.errors,
+            "errors": (
+                self.parser_loader.errors
+                + self.enriched_data_loader.errors
+                + self.raw_data_loader.errors
+            ),
         }
 
         # Save metadata
@@ -412,9 +469,9 @@ class UnifiedRegistryBuilder:
 
         logger.info(f"\n✓ Registry built: {output_dir}")
         logger.info(f"  Total entities: {metadata['statistics']['total_entities']}")
-        logger.info(f"  Parser: {metadata['statistics']['parser_entities']}")
+        logger.info(f"  Parsed: {metadata['statistics']['parser_entities']}")
+        logger.info(f"  Enriched: {metadata['statistics']['enriched_entities']}")
         logger.info(f"  Raw data: {metadata['statistics']['raw_data_entities']}")
-        logger.info(f"  Duplicates: {metadata['statistics']['duplicates_resolved']}")
 
         return metadata
 
@@ -486,10 +543,12 @@ class UnifiedRegistryBuilder:
 
                 # Paths
                 parser_dir = chapter_dir / "parser"
+                enriched_dir = chapter_dir / doc_name / "enriched"
                 raw_data_dir = chapter_dir / doc_name / "raw_data"
 
-                # Load entities
+                # Load entities from THREE sources (keep separate)
                 parser_entities = []
+                enriched_entities = []
                 raw_data_entities = []
 
                 if parser_dir.exists():
@@ -500,6 +559,14 @@ class UnifiedRegistryBuilder:
                     for e in parser_entities:
                         e["_chapter"] = chapter_name
 
+                if enriched_dir.exists():
+                    enriched_entities = self.enriched_data_loader.load_from_enriched_directory(
+                        enriched_dir, doc_name
+                    )
+                    # Add chapter metadata
+                    for e in enriched_entities:
+                        e["_chapter"] = chapter_name
+
                 if raw_data_dir.exists():
                     raw_data_entities = self.raw_data_loader.load_from_raw_data_directory(
                         raw_data_dir, doc_name
@@ -508,34 +575,77 @@ class UnifiedRegistryBuilder:
                     for e in raw_data_entities:
                         e["_chapter"] = chapter_name
 
-                # Merge for this document
-                doc_entities = self.merger.merge(parser_entities, raw_data_entities)
-                all_entities.extend(doc_entities)
+                # Store all entities (SEPARATE, not merged)
+                all_entities.extend(parser_entities)
+                all_entities.extend(enriched_entities)
+                all_entities.extend(raw_data_entities)
 
                 documents_processed.append(
                     {
                         "chapter": chapter_name,
                         "document": doc_name,
-                        "entities": len(doc_entities),
+                        "entities": len(parser_entities) + len(enriched_entities) + len(raw_data_entities),
                         "parser": len(parser_entities),
+                        "enriched": len(enriched_entities),
                         "raw_data": len(raw_data_entities),
                     }
                 )
 
-        # Group all entities by type (FLAT)
-        entities_by_type = self._group_by_entity_type(all_entities)
+        # Group entities by type AND source (NESTED format)
+        # First, separate by source type
+        parsed_entities = [e for e in all_entities if e.get("_source_type") == "parser"]
+        enriched_entities = [e for e in all_entities if e.get("_source_type") == "enriched"]
+        raw_data_entities = [e for e in all_entities if e.get("_source_type") == "raw_data"]
+
+        # Then group each source by entity type
+        parsed_by_type = self._group_by_entity_type(parsed_entities)
+        enriched_by_type = self._group_by_entity_type(enriched_entities)
+        raw_data_by_type = self._group_by_entity_type(raw_data_entities)
+
+        # Get all entity types across all sources
+        all_entity_types = set(parsed_by_type.keys()) | set(enriched_by_type.keys()) | set(raw_data_by_type.keys())
 
         # Create global output directory
         output_dir = project_root / "unified_registry"
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Save entity files (flat by type)
-        for entity_type, entities in entities_by_type.items():
-            if entities:
-                output_file = output_dir / f"{entity_type}s.json"
-                with open(output_file, "w") as f:
-                    json.dump(entities, f, indent=2)
-                logger.info(f"  Saved {len(entities)} {entity_type}s to {output_file.name}")
+        # Save entity files in NESTED format
+        for entity_type in sorted(all_entity_types):
+            parsed_typed = parsed_by_type.get(entity_type, [])
+            enriched_typed = enriched_by_type.get(entity_type, [])
+            raw_data_typed = raw_data_by_type.get(entity_type, [])
+
+            # Create nested structure
+            entity_file_data = {
+                "parsed": parsed_typed,
+                "enriched": enriched_typed,
+                "raw_data": raw_data_typed,
+            }
+
+            output_file = output_dir / f"{entity_type}s.json"
+            with open(output_file, "w") as f:
+                json.dump(entity_file_data, f, indent=2)
+
+            total_count = len(parsed_typed) + len(enriched_typed) + len(raw_data_typed)
+            logger.info(
+                f"  Saved {entity_type}s: {len(parsed_typed)} parsed, "
+                f"{len(enriched_typed)} enriched, {len(raw_data_typed)} raw_data "
+                f"({total_count} total)"
+            )
+
+        # Calculate statistics by type
+        by_type_stats = {}
+        for entity_type in all_entity_types:
+            by_type_stats[entity_type] = {
+                "parsed": len(parsed_by_type.get(entity_type, [])),
+                "enriched": len(enriched_by_type.get(entity_type, [])),
+                "raw_data": len(raw_data_by_type.get(entity_type, [])),
+                "total": (
+                    len(parsed_by_type.get(entity_type, []))
+                    + len(enriched_by_type.get(entity_type, []))
+                    + len(raw_data_by_type.get(entity_type, []))
+                ),
+            }
 
         # Generate global metadata
         metadata = {
@@ -544,17 +654,20 @@ class UnifiedRegistryBuilder:
             "corpus_root": str(docs_source_dir),
             "statistics": {
                 "total_entities": len(all_entities),
-                "total_parser": sum(1 for e in all_entities if e.get("_source_type") == "parser"),
-                "total_raw_data": sum(1 for e in all_entities if e.get("_source_type") == "raw_data"),
+                "total_parsed": len(parsed_entities),
+                "total_enriched": len(enriched_entities),
+                "total_raw_data": len(raw_data_entities),
                 "documents_processed": len(documents_processed),
                 "chapters_processed": len(set(d["chapter"] for d in documents_processed)),
-                "duplicates_resolved": self.merger.duplicates_found,
-                "by_type": {k: len(v) for k, v in entities_by_type.items()},
+                "by_type": by_type_stats,
                 "by_chapter": self._count_by_chapter(all_entities),
             },
             "documents": documents_processed,
-            "conflicts": self.merger.conflicts,
-            "errors": self.parser_loader.errors + self.raw_data_loader.errors,
+            "errors": (
+                self.parser_loader.errors
+                + self.enriched_data_loader.errors
+                + self.raw_data_loader.errors
+            ),
         }
 
         # Save metadata
@@ -567,9 +680,9 @@ class UnifiedRegistryBuilder:
         logger.info(f"  Total entities: {metadata['statistics']['total_entities']}")
         logger.info(f"  Documents: {metadata['statistics']['documents_processed']}")
         logger.info(f"  Chapters: {metadata['statistics']['chapters_processed']}")
-        logger.info(f"  Parser: {metadata['statistics']['total_parser']}")
+        logger.info(f"  Parsed: {metadata['statistics']['total_parsed']}")
+        logger.info(f"  Enriched: {metadata['statistics']['total_enriched']}")
         logger.info(f"  Raw data: {metadata['statistics']['total_raw_data']}")
-        logger.info(f"  Duplicates: {metadata['statistics']['duplicates_resolved']}")
         logger.info(f"{'='*80}")
 
         return metadata

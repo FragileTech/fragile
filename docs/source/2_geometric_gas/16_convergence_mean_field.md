@@ -764,6 +764,23 @@ which is the Data Processing Inequality. ∎
 
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Data Processing Inequality](proofs/proof_thm_data_processing.md)
+
+**Includes:**
+- Rigorous construction of joint distributions on product space $\mathcal{X} \times \mathcal{Y}$
+- Detailed verification of absolute continuity $P \ll Q$ using Fubini's theorem
+- Complete Radon-Nikodym derivative factorization and disintegration theorem application
+- Full derivation using chain rule for KL-divergence (Cover & Thomas 2006, Theorem 2.5.3)
+- Verification of nonnegativity conditions ensuring inequality holds
+- Historical context and primary references (Shannon, Kullback, Csiszár & Körner)
+- Treatment of standard Borel spaces and regular conditional probabilities
+:::
+
 :::{admonition} Non-Applicability to the Revival Operator
 :class: warning
 
@@ -1336,6 +1353,23 @@ The kinetic dissipation must dominate the jump expansion. This completes the pro
 
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Stage 0 Completion - KL-Expansiveness and Kinetic Dominance](proofs/proof_thm_stage0_complete.md)
+
+**Includes:**
+- Rigorous Gateaux derivative analysis for KL-divergence under revival operator
+- Complete decomposition of unnormalized KL-divergence into shape and mass terms
+- Detailed entropy production sign analysis for combined killing-revival operators
+- Proof that revival is always expansive when $m_d > 0$ and $\rho \not\propto \pi$
+- Demonstration that joint jump operator can have either sign depending on mass level
+- Necessity proof for kinetic dominance condition $|\frac{d}{dt} D_{KL}|_{kin}| > |\frac{d}{dt} D_{KL}|_{jump}|$
+- Framework context relating to mean-field convergence strategy
+:::
+
 ### 8.2. Decision: GO with Revised Strategy
 
 **DECISION**: Proceed with **kinetic dominance approach**
@@ -1734,6 +1768,23 @@ X_0 = v \cdot \nabla_x - \nabla_x U \cdot \nabla_v - \gamma v \cdot \nabla_v, \q
 $$
 
 generate the full tangent space at every point through repeated Lie brackets.
+:::
+
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Hörmander's Condition for Geometric Gas Kinetic Operator](proofs/proof_lem_hormander.md)
+
+**Includes:**
+- Rigorous reformulation of backward kinetic operator in Hörmander canonical form $L = \frac{1}{2}\sum_j X_j^2 + X_0$
+- Explicit Lie bracket computation for all commutators $[X_0, X_j]$ with detailed derivations
+- Complete verification that brackets generate position derivatives despite no direct x-diffusion
+- Tangent space span proof showing full-rank condition at every point $(x,v) \in \Omega$
+- Application of Hörmander's theorem (1967) to establish hypoellipticity
+- Detailed treatment of adjoint operators and duality between forward/backward formulations
+- Extension to potential-modified Langevin dynamics with confinement $U(x)$
 :::
 
 **Proof sketch**:
@@ -2471,6 +2522,23 @@ $$
 
 **This rigorously completes R4 and R5**. $\square$ ✅
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Complete Gradient and Laplacian Bounds](proofs/proof_prop_complete_gradient_bounds.md)
+
+**Includes:**
+- Rigorous Bernstein maximum principle application to spatial gradient $Z = |\nabla_x \log \rho_\infty|^2$
+- Detailed computation of adjoint operator $\mathcal{L}^*[Z]$ with all derivative terms
+- Complete treatment of mixed derivative bounds $\|\nabla_x \nabla_v \psi\|$ using velocity gradient bounds
+- Third derivative analysis $\|\nabla_x \Delta_v \psi\|$ via stationarity equation
+- Gagliardo-Nirenberg interpolation for obtaining uniform bound from integral constraint
+- Laplacian bound derivation by solving stationarity equation for $\Delta_v \psi$
+- Explicit constant dependencies on $\|U\|_{C^3}$, $\sigma$, $\gamma$, and problem parameters
+:::
+
 **Status**: RIGOROUSLY COMPLETE with explicit constant dependencies ✅
 
 **Literature to cite**:
@@ -2855,6 +2923,24 @@ $$
 with $\alpha = \theta \kappa_0 / 2$ and $C$ depending on all problem parameters.
 
 $\square$ ✅
+
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Exponential Tails for QSD](proofs/proof_thm_exponential_tails.md)
+
+**Includes:**
+- Rigorous quadratic Lyapunov function construction $V = a|x|^2 + 2bx \cdot v + c|v|^2$
+- Complete drift condition derivation $\mathcal{L}^*[V] \leq -\beta V + C$ using adjoint operator
+- Detailed exponential moment analysis via auxiliary function $W_\theta = e^{\theta V}$
+- Chain rule computation for $\mathcal{L}^*[W_\theta]$ with careful tracking of diffusion term
+- Bootstrap argument establishing $\int e^{\theta V} \rho_\infty < \infty$ for $\theta < \theta_0$
+- Chebyshev-type inequality for tail probability bounds
+- Pointwise exponential decay via smoothness and positivity (Villani 2009 techniques)
+- Explicit constant dependencies on $\gamma$, $\sigma^2$, $\kappa_{\text{conf}}$, $\kappa_{\max}$
+:::
 
 **Status**: COMPLETE with full rigorous proof ✅
 

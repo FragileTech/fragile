@@ -1150,6 +1150,23 @@ The key mechanisms are:
 See Section 2.1 of [04_convergence.md](../1_euclidean_gas/06_convergence.md) for the complete drift analysis.
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Geometric Ergodicity of the Backbone](proofs/proof_thm_backbone_convergence.md)
+
+**Includes:**
+- Rigorous composite Lyapunov function construction with optimal coupling weights $\alpha_x, \alpha_v, \alpha_D, \alpha_R$
+- Complete cloning operator drift analysis showing positional variance contraction and velocity perturbation
+- Detailed kinetic operator drift analysis demonstrating velocity contraction and positional perturbation
+- Synergistic composition via AM-GM inequality balancing contractions against expansions
+- Discretization theorem application converting continuous-time generator drift to discrete-time per-step drift
+- Meyn-Tweedie theory application establishing exponential convergence to unique QSD
+- Explicit constant derivation for $\kappa_{\text{backbone}}$ and $C_{\text{backbone}}$ in terms of friction $\gamma$, potential $U$, and cloning parameters
+:::
+
 ### 5.3. Quantitative Drift Inequalities
 
 For reference in the perturbation analysis, we summarize the quantitative drift bounds for the backbone system. These are derived from the corrected analysis in [04_convergence.md](../1_euclidean_gas/06_convergence.md).
@@ -1178,6 +1195,31 @@ $$
 \kappa_{\text{backbone}} = \min\left\{ \frac{\alpha_v \gamma \Delta t}{\alpha_x + \alpha_v}, \, \kappa_D, \, \ldots \right\} > 0
 
 $$
+
+:::{dropdown} 📚 **Foundational Proofs in Chapter 1**
+:icon: book-16
+:color: primary
+
+The backbone drift inequalities above are established through a combination of results from the Euclidean Gas theory (Chapter 1):
+
+**From [03_cloning.md](../1_euclidean_gas/03_cloning.md):**
+- Keystone Principle (Theorem 8.1): Spatial variance contraction via diversity-to-measurement signal chain
+- Cloning operator drift analysis for variance components
+- Safe Harbor mechanism providing boundary safety (Axiom EG-2)
+
+**From [05_kinetic_contraction.md](../1_euclidean_gas/05_kinetic_contraction.md):**
+- Velocity variance contraction via friction dissipation
+- Hypocoercive coupling between position and velocity
+- Wasserstein contraction theory for kinetic operator
+
+**From [06_convergence.md](../1_euclidean_gas/06_convergence.md):**
+- Foster-Lyapunov drift composition (Theorem 1.4.2, Section 2.1)
+- Discretization Theorem (Theorem 1.7.2) relating continuous-time to discrete-time drift
+- Geometric ergodicity via Meyn-Tweedie theory (Theorem 1.4.3)
+- Complete synergistic rate derivation with explicit constants
+
+These foundational results form the "stable backbone" that enables the perturbation analysis in Chapters 6-7.
+:::
 
 $$
 C_{\text{backbone}} = \alpha_x C_x + \alpha_v C_v + \alpha_D C_D + \alpha_R C_R + O(\Delta t)
@@ -1852,6 +1894,22 @@ $$
 In particular, the expected distance from the QSD decays exponentially with rate $\lambda = 1 - \kappa_{\text{total}}$.
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Exponential Convergence to QSD](proofs/proof_cor_exp_convergence.md)
+
+**Includes:**
+- Rigorous conversion of conditional Foster-Lyapunov drift to unconditional recursion
+- Complete solution of affine recursion using discrete Grönwall's lemma
+- Detailed state-measure consistency lemma establishing $V_{\text{total}}(S_k) = V_{\text{total}}(\mu_N(k))$
+- Equilibrium level identification showing convergence to $\frac{C_{\text{total}}}{\kappa_{\text{total}}}$ neighborhood
+- QSD uniqueness application from Meyn-Tweedie theory
+- Explicit decay rate $\lambda = 1 - \kappa_{\text{total}}$ verification
+:::
+
 This is the main practical result: the algorithm is guaranteed to converge, and we have explicit control over the convergence rate through the parameters $\epsilon_F$, $\gamma$, and $\sigma$.
 
 ## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening
@@ -2447,6 +2505,34 @@ where:
 The mean-field LSI constant $\lambda_{\text{LSI}}$ has the explicit formula derived in [16_convergence_mean_field.md](16_convergence_mean_field.md), Stage 2, Section 1.2.
 :::
 
+:::{dropdown} 📚 **Chapter 1 Foundations for Mean-Field LSI**
+:icon: book-16
+:color: primary
+
+The mean-field LSI theorem builds on rigorous results from the Euclidean Gas theory (Chapter 1):
+
+**From [07_mean_field.md](../1_euclidean_gas/07_mean_field.md):**
+- Mean-field limit derivation via BBGKY hierarchy
+- Propagation of chaos for exchangeable particle systems
+- Convergence rate estimates in Wasserstein distance
+- Uniform-in-time propagation of chaos bounds
+
+**From [08_propagation_chaos.md](../1_euclidean_gas/08_propagation_chaos.md):**
+- Coupling construction for N-particle and mean-field dynamics
+- Grönwall inequality techniques for error propagation
+- Exchange able particle system theory (de Finetti)
+- LSI preservation under mean-field limit
+
+**From [09_kl_convergence.md](../1_euclidean_gas/09_kl_convergence.md):**
+- N-particle LSI for Euclidean Gas via hypocoercivity
+- Bakry-Émery Γ₂ calculus for entropy production
+- Kinetic-dissipation microscopic coercivity bounds
+- Explicit LSI constant computation
+
+**Integration:**
+These results establish the backbone LSI, which is then extended to the Geometric Gas via perturbation theory (Sections 6-8 above), with propagation of chaos ensuring the adaptive perturbations remain controlled in the mean-field limit.
+:::
+
 ### 9.3.1. Proof Strategy via Hypocoercivity
 
 :::{note}
@@ -2626,6 +2712,24 @@ with $C_1 = \frac{2}{\sqrt{\kappa_x c_v}}$ and $C_{\text{aux}} = \frac{1}{\kappa
 
 **References**: Villani (2009, Memoirs AMS), Hérau-Nier (2004, ARMA), Bakry-Gentil-Ledoux (2014), Holley-Stroock (1987). ∎
 
+:::
+
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Macroscopic Transport in Absorption Form](proofs/proof_lem_macro_transport.md)
+
+**Includes:**
+- Rigorous position Poincaré inequality via Holley-Stroock perturbation theorem
+- Complete velocity covariance lower bound derivation via Lyapunov equation for Ornstein-Uhlenbeck process
+- Detailed orthogonality lemma for centered velocities under QSD
+- Step-by-step absorption technique using Cauchy-Schwarz and Young's inequality
+- Optimal choice of coupling parameter $\epsilon = 1$ for balanced absorption
+- Explicit constant derivation: $C_1 = \frac{2}{\sqrt{\kappa_x c_v}}$, $C_{\text{aux}} = \frac{1}{\kappa_x c_v}$
+- Complete treatment of assumptions A1-A3 (uniform convexity, centered velocities, bounded perturbation)
+- Classical hypocoercivity framework following Villani (2009), Hérau-Nier (2004)
 :::
 
 :::{admonition} Note on Absorption Form vs. Clean Form
@@ -3616,6 +3720,23 @@ For bounded support, this supremum is attained by Step 1, yielding the statement
 
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Variance-to-Gap Universal Statistical Inequality](proofs/proof_lem_variance_to_gap_adaptive.md)
+
+**Includes:**
+- Rigorous support radius definition and well-definedness for extended real numbers
+- Complete extreme value theorem application for bounded support
+- Detailed variance bounding via squared radius inequality
+- Monotonicity of expectation verification step-by-step
+- Square root function monotonicity application
+- Sharpness demonstration via symmetric two-point distribution
+- Universality proof showing only basic statistical properties are required
+:::
+
 **Tightness**: The bound is **sharp** (cannot be improved), as demonstrated by the symmetric two-point distribution:
 
 $$
@@ -3945,6 +4066,27 @@ where:
 3. Intelligent Targeting (Theorem {prf:ref}`thm-stability-condition-rho`) ✓
 
 The Keystone Lemma follows by the same logical structure as the backbone proof, with ρ-dependent constants replacing the global constants.
+:::
+
+:::{dropdown} 📚 **Foundation: Keystone Principle from Chapter 1**
+:icon: book-16
+:color: primary
+
+This theorem extends the **Keystone Principle** from [03_cloning.md](../1_euclidean_gas/03_cloning.md) (Theorem 8.1) to the ρ-localized adaptive model.
+
+**Original Keystone Principle (Euclidean Gas):**
+Proven for the backbone model (ρ → ∞) with global measurements, establishing that structural variance reliably generates diversity-reduction through the cloning operator via three mechanisms:
+1. **Signal Generation** (Theorem 7.2.1): Geometric variance-to-diversity partition
+2. **Signal Integrity** (Lemma 7.3.1): Variance-to-gap propagation
+3. **Intelligent Targeting** (Theorem 7.4.1): Gap-based fitness identification
+
+**Extension to Adaptive Model:**
+This theorem proves all three mechanisms remain valid with ρ-localized measurements, with constants becoming ρ-dependent but maintaining:
+- N-uniformity (independent of swarm size)
+- Positivity for all finite ρ > 0
+- Continuity in ρ parameter
+
+The ρ-dependence propagates through the entire convergence analysis, ultimately determining the adaptive force threshold $\epsilon_F^*(\rho)$ in the Foster-Lyapunov theorem.
 :::
 
 :::{admonition} Significance for Convergence Proof

@@ -1338,6 +1338,21 @@ $$
 where the interchange is valid by Fubini's theorem for finite sums. Each walker contributes total weight 1 distributed across all clusters.
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Bounds on Effective Cluster Size](proofs/proof_lem_effective_cluster_size_bounds_full.md)
+
+**Includes:**
+- Rigorous application of uniform density bounds from measure theory
+- Detailed support-based estimates using phase-space ball volumes
+- Complete treatment of partition-of-unity properties (Fubini interchange justification)
+- Total population conservation with explicit index manipulation
+- Extension to general cluster geometries beyond balls
+:::
+
 ---
 
 ## 4. Exponential Locality and Effective Interactions
@@ -1421,6 +1436,21 @@ $$
 Solving for $R_{\text{eff}}$: $\exp(-(R_{\text{eff}}^2 - R_{\max}^2)/(2\varepsilon_c^2)) = k^{-2}$, thus $(R_{\text{eff}}^2 - R_{\max}^2)/(2\varepsilon_c^2) = 2\log k$, giving $R_{\text{eff}} = \sqrt{R_{\max}^2 + 2\varepsilon_c^2 \log(k^2)}$.
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Effective Interaction Radius](proofs/proof_cor_effective_interaction_radius_full.md)
+
+**Includes:**
+- Detailed inversion of exponential tail bounds
+- Explicit logarithmic factor derivation
+- Practical parameter scaling for typical swarm sizes ($k \leq 10^4$)
+- Connection to softmax partition function bounds
+- Numerical estimates for concrete parameter values
+:::
+
 ### 4.2 Effective Number of Interacting Companions
 
 :::{prf:lemma} Effective Companion Count
@@ -1447,6 +1477,21 @@ For fixed $\varepsilon_c$ and moderate $k$, this is a **small constant** (e.g., 
 :label: proof-lem-effective-companion-count-corrected-full
 
 The effective companion count equals the number of walkers in the phase-space ball $B_i = \{(x,v) : d_{\text{alg}}((x,v), (x_i, v_i)) \leq R_{\text{eff}}\}$. Under the uniform density bound, $k_{\text{eff}}(i) \leq \rho_{\max} \cdot \text{Vol}(B_i)$. The ball has dimension $2d$ (position + velocity), so $\text{Vol}(B_i) = C_{\text{vol}} R_{\text{eff}}^{2d}$. Substituting $R_{\text{eff}} = \varepsilon_c \sqrt{C_{\text{comp}}^2 + 2\log(k^2)}$ from {prf:ref}`cor-effective-interaction-radius-full` gives $R_{\text{eff}}^{2d} = \mathcal{O}(\varepsilon_c^{2d} (\log k)^d)$.
+:::
+
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Effective Companion Count](proofs/proof_lem_effective_companion_count_corrected_full.md)
+
+**Includes:**
+- Rigorous application of phase-space ball volume estimates
+- Detailed derivation of logarithmic scaling $\mathcal{O}((\log k)^d)$
+- Uniform density bound application with explicit constants
+- Numerical estimates for practical parameter regimes ($k = 100$ to $k = 10^4$)
+- Connection between effective radius and companion count
 :::
 
 :::{important}
@@ -2706,6 +2751,24 @@ where $f_i(M)$ is a measurement value associated with the matching $M$.
 
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Statistical Equivalence Preserves C^∞ Regularity](proofs/proof_lem_greedy_ideal_equivalence.md)
+
+**Includes:**
+- Rigorous exponential tail bounds for exterior walker contributions
+- Detailed coupling argument on good events ($\mathbb{P}(\bar{G}_R) = O(k^{-\beta})$)
+- Complete derivation of statistical equivalence rate $O(k^{-\beta})$
+- Proof that analytical structure is identical (rational functions of exponential weights)
+- Regularity transfer theorem showing derivative bounds are preserved
+- Convergence rate estimates for practical swarm sizes
+- Explicit computation of $\beta$ dependence on dimension $d$
+- Connection to sequential stochastic greedy pairing algorithm implementation
+:::
+
 :::{admonition} Practical Consequence
 :class: note
 
@@ -3082,6 +3145,24 @@ The interchange of sum and differentiation is justified because:
 - The alive set $\mathcal{A}$ is **fixed** (independent of $x_i$)
 - Each $w_{ij}$ is C^∞
 - The sum has **finitely many terms** ($|\mathcal{A}| = k < \infty$)
+:::
+
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Telescoping Identity for Derivatives](proofs/proof_lem_telescoping_derivatives.md)
+
+**Includes:**
+- Rigorous regularity verification for localization weights (quotient rule application)
+- Detailed justification for exchanging sum and differentiation (finiteness + continuity)
+- Extension to all derivative orders $m \geq 1$ (not just low orders)
+- Connection to partition-of-unity properties and measure theory
+- Complete treatment of edge cases (boundary behavior, kernel singularities)
+- Application to both position and velocity derivatives
+
+**Note**: This proof establishes the telescoping property for general smooth localization weights with partition-of-unity normalization, applying identically to both the C³ analysis (Document 13) and the C^∞ analysis (this document).
 :::
 
 This telescoping identity is the **foundation** for k-uniform bounds at $\rho$-scale (localization), as shown next.
@@ -4614,6 +4695,22 @@ where $A = C_{V,1}(\rho)$ and $B = \rho^{-1}$ depend on $\rho$ but are **indepen
 From {prf:ref}`thm-main-cinf-regularity-fitness-potential-full`, $\|\nabla^m V_{\text{fit}}\| \leq C_{V,m}(\rho) \cdot m!$ where $C_{V,m} = \mathcal{O}(\rho^{-m})$. Define $A = C_{V,1}$ and $B = \max(\rho^{-1}, \varepsilon_d^{-1})$. Then $\|\nabla^m V_{\text{fit}}\| \leq A \cdot B^m \cdot m!$, which is the Gevrey-1 bound. Constants $A, B$ are k-uniform and N-uniform by the main theorem.
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Gevrey-1 Classification](proofs/proof_cor_gevrey_1_fitness_potential_full.md)
+
+**Includes:**
+- Explicit construction of Gevrey constants from pipeline bounds
+- Detailed verification of factorial growth rate $m!$ at all derivative orders
+- Analysis of convergence radius for Taylor series (real analyticity)
+- Comparison with standard Gevrey classes (Gevrey-s for $s > 1$)
+- Connection to holomorphic extensions and complexification
+- Practical implications for numerical methods (spectral convergence)
+:::
+
 ### 12.3 Propagation Summary: ε_d Dependency Chain
 
 :::{important}
@@ -4869,6 +4966,23 @@ is hypoelliptic.
 **Conclusion**: Solutions to the Kolmogorov equation are automatically smooth, enabling spectral analysis.
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Hörmander's Condition for Geometric Gas Kinetic Operator](proofs/proof_lem_hormander.md)
+
+**Includes:**
+- Rigorous reformulation of backward kinetic operator in Hörmander canonical form $L = \frac{1}{2}\sum_j X_j^2 + X_0$
+- Explicit Lie bracket computation for all commutators $[X_0, X_j]$ with detailed derivations
+- Complete verification that brackets generate position derivatives despite no direct x-diffusion
+- Tangent space span proof showing full-rank condition at every point $(x,v) \in \Omega$
+- Application of Hörmander's theorem (1967) to establish hypoellipticity
+- Detailed treatment of adjoint operators and duality between forward/backward formulations
+- Extension to potential-modified Langevin dynamics with confinement $U(x)$
+:::
+
 ---
 
 ## 15. Logarithmic Sobolev Inequality
@@ -4962,6 +5076,24 @@ This follows from the classical Poincaré-to-LSI relationship in Bakry-Émery th
 :label: proof-cor-exponential-qsd-companion-dependent-full
 
 By classical Bakry-Émery theory (Bakry & Émery, 1985), if the Log-Sobolev Inequality holds with constant $\alpha > 0$, then the Poincaré inequality holds with spectral gap $\lambda_{\text{gap}} \geq \alpha$. The Poincaré inequality implies exponential $L^2$ convergence to the unique invariant measure (here, the QSD). Since all derivative bounds are k-uniform and N-uniform by {prf:ref}`thm-main-cinf-regularity-fitness-potential-full`, the spectral gap $\lambda_{\text{gap}}$ is also k-uniform and N-uniform (conditional on the LSI).
+:::
+
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Exponential Convergence to QSD (Conditional)](proofs/proof_cor_exponential_qsd_companion_dependent_full.md)
+
+**Includes:**
+- Rigorous application of classical Bakry-Émery theory (LSI → Poincaré → exponential convergence)
+- Detailed statement of Log-Sobolev Inequality conjecture and evidence supporting it
+- Complete derivation of k-uniform and N-uniform spectral gap estimates
+- Proof that LSI with constant $\alpha$ independent of $k, N$ implies spectral gap $\lambda_{\text{gap}} \geq \alpha$
+- Bakry-Émery $\Gamma_2$ criterion for LSI constant estimation using Hessian bounds
+- Comparison to known results (Euclidean Gas, simplified Geometric Gas models)
+- Physical interpretation of convergence time scales and practical implications
+- Discussion of why the conjecture is plausible (exponential locality, Gevrey-1 regularity, numerical evidence)
 :::
 
 ---
@@ -5177,6 +5309,23 @@ The number of partitions is the $m$-th Bell number: $|\mathcal{P}_m| = B_m$, whi
 :label: proof-thm-faa-di-bruno-appendix
 
 This is a classical result in mathematical analysis (Faà di Bruno, 1855). **Standard references**: Hardy "A Course of Pure Mathematics" (1952) §205; Comtet "Advanced Combinatorics" (1974) Chapter 3; Constantine & Savits "A multivariate Faà di Bruno formula" Trans. AMS 348 (1996) for the multivariate case used here. **Application to Gevrey-1**: If $|f^{(k)}| \leq C_f B_f^k k!$ and $\|\nabla^j g\| \leq C_g B_g^j j!$, then the composition satisfies $\|\nabla^m h\| \leq C_h B_h^m m!$ with $C_h = \mathcal{O}(C_f C_g^m)$ and $B_h = B_f B_g$, preserving factorial growth despite Bell number combinatorics. **Verification for Geometric Gas**: All compositions ($\sigma' \circ \sigma^2$, $Z \circ (\mu, \sigma', d)$, $V_{\text{fit}} \circ Z$) use $C^\infty$ functions with Gevrey-1 bounds, ensuring the fitness potential is real-analytic.
+:::
+
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Faà di Bruno Formula for Higher-Order Chain Rule](proofs/proof_thm_faa_di_bruno_appendix.md)
+
+**Includes:**
+- Complete derivation from first principles (not just citation)
+- Detailed construction of Bell polynomials and partition structures
+- Rigorous combinatorial counting of partition contributions ($|\mathcal{P}_m| = B_m$)
+- Explicit factorial bound verification for nested compositions
+- Application to quotient rules, square roots, and general smooth functions
+- Proof that Gevrey-1 class is closed under composition (key for pipeline)
+- Connection to automatic differentiation and symbolic computation
 :::
 
 ### A.2 Detailed Example: Regularized Standard Deviation

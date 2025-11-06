@@ -7746,6 +7746,23 @@ where:
 3. **Complementary to variance contraction:** While variance contraction (Chapter 10) pulls walkers together, boundary contraction pulls them away from danger - both contribute to stability
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Boundary Potential Drift Characterization](proofs/proof_20251025_0130_thm_complete_boundary_drift.md)
+
+**Includes:**
+- Rigorous synthesis from Theorem 11.3.1 (boundary potential contraction)
+- Explicit derivation of contraction rate $\kappa_b = p_{\text{boundary}}(\phi_{\text{thresh}}) > 0$ from Lemma 11.4.1
+- Complete jitter bound analysis $C_b = O(\sigma_x^2 + N^{-1})$ from Lemma 11.4.2
+- N-uniformity verification for all constants
+- Detailed measure-theoretic justifications for all expectations
+- Edge case analysis (k=1, N→∞, boundary cases)
+- Framework dependency verification (Safe Harbor Axiom, domain regularity)
+:::
+
 :::{admonition} The Safe Harbor Mechanism in Action
 :class: important
 
@@ -8340,6 +8357,23 @@ $$
 
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Existence of Valid Coupling Constants](proofs/proof_20251025_0148_prop_coupling_constant_existence.md)
+
+**Includes:**
+- Constructive proof via explicit coupling constant values $c_V, c_B$
+- Lyapunov drift composition method in Δ-form (change notation)
+- Complete collection of component drift bounds from Chapters 10-12
+- Global contraction rate extraction via minimum-coefficient inequality
+- N-uniformity verification for all 12 constants ($\kappa_x, \kappa_v, \kappa_W, \kappa_b$, etc.)
+- Formalization of informal "balance condition" as rigorous requirements
+- Foster-Lyapunov drift inequality derivation $V_{\text{total}}' \leq (1-\kappa_{\text{total}})V_{\text{total}} + C_{\text{total}}$
+:::
+
 :::{prf:remark} Tuning Guidance
 :label: rem-tuning-guidance
 
@@ -8396,6 +8430,23 @@ This document has established the following results for the cloning operator $\P
 - Foundation for **synergistic Foster-Lyapunov condition**
 
 All results hold under the foundational axioms (Chapter 4) and are **constructive** with explicit constants.
+:::
+
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Main Results of Cloning Analysis](proofs/proof_20251025_0227_thm_main_results_summary.md)
+
+**Includes:**
+- Meta-proof via systematic citation of all component theorems (Chapters 5-12)
+- Complete verification of Keystone Principle causal chain (variance → structure → fitness → pressure)
+- Detailed consolidation of all five summary items with N-uniformity tracking
+- Framework dependency verification (Axioms EG-0, EG-2, EG-3, EG-4)
+- Explicit constant formulas: $\kappa_x = \chi(\epsilon)c_{\text{struct}}$, $\kappa_b = c_{\text{fit}}c_{\text{barrier}}$, $C_v = 4(1+\alpha_{\text{restitution}})^2 V_{\max}^2$
+- No circular reasoning verification (summary after all components proven)
+- Complete scoping of synergistic Foster-Lyapunov foundation
 :::
 
 :::{prf:proof}

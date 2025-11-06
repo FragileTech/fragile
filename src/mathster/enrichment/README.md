@@ -173,14 +173,88 @@ flowchart LR
 
 ---
 
+## 📁 Data Storage Structure
+
+### Per-Document Enriched Folders
+
+Enrichment now saves data to **per-document folders** following the same pattern as `raw_data/` and `unified_registry/`:
+
+```
+docs/source/{chapter}/
+├── parser/                                    # Chapter-level parser output
+│   ├── chapter_0.json                         # Parsed entities (line ranges)
+│   ├── chapter_1.json
+│   ├── chapter_N.json
+│   ├── chapter_N_enriched.json                # ← Backward compatibility
+│   └── enrichment_metadata.json               # ← Per-chapter statistics
+│
+├── {document_id}/                             # Per-document folders
+│   ├── enriched/                              # ← NEW: Enriched data
+│   │   ├── chapter_0.json                     # Enriched entities (full text)
+│   │   ├── chapter_1.json
+│   │   └── chapter_N.json
+│   ├── raw_data/                              # Manual entity files
+│   │   ├── definitions/
+│   │   ├── theorems/
+│   │   └── ...
+│   └── unified_registry/                      # Merged data for dashboard
+│       ├── definitions.json                   # Contains: parsed, enriched, raw_data
+│       ├── theorems.json
+│       └── registry_metadata.json             # Statistics by source
+│
+└── {document_id}.md                           # Source markdown
+```
+
+### Storage Locations
+
+**Backward Compatibility (OLD)**:
+- `parser/chapter_N_enriched.json` - Kept for existing code
+
+**Per-Document Structure (NEW)**:
+- `{document}/enriched/chapter_N.json` - Per-document enriched data
+- Enables independent visualization and debugging of pipeline stages
+
+**Metadata**:
+- `parser/enrichment_metadata.json` - Per-chapter statistics
+  - Total entities enriched
+  - Entities with/without text
+  - Breakdown by entity type
+  - Error tracking
+
+### Unified Registry Integration
+
+The unified registry now stores **parsed, enriched, and raw_data separately** instead of merging them:
+
+```json
+{
+  "parsed": [
+    {"label": "def-lipschitz", "full_text": "", "_source_type": "parser"}
+  ],
+  "enriched": [
+    {"label": "def-lipschitz", "full_text": "A function f...", "_source_type": "enriched"}
+  ],
+  "raw_data": [
+    {"label": "def-custom", "full_text": "Manual entry...", "_source_type": "raw_data"}
+  ]
+}
+```
+
+**Benefits**:
+- ✅ Independent debugging of each pipeline stage
+- ✅ Easy visualization of data evolution
+- ✅ Compare parsed vs enriched vs manual data
+- ✅ Track where each entity came from
+
+---
+
 ## 📁 Module Structure
 
 ### Directory Layout
 
 ```
 src/mathster/enrichment/
-├── __init__.py              # Main exports: extract_full_text, enrich_chapter_file, validate_chapter
-├── text_extractor.py        # Core text extraction logic (276 lines)
+├── __init__.py              # Main exports: extract_full_text, enrich_chapter_file, save_enrichment_metadata
+├── text_extractor.py        # Core text extraction + per-document saving (350 lines)
 ├── workflows/               # Validation workflows (176 lines)
 │   ├── __init__.py
 │   └── validate.py          # Semantic validation using DSPy
@@ -188,6 +262,15 @@ src/mathster/enrichment/
     ├── __init__.py
     ├── signatures.py        # DSPy signature definitions
     └── validators.py        # Semantic validator agents
+```
+
+### Registry Integration
+
+```
+src/mathster/tools/
+├── enriched_data_loader.py         # NEW: Load from enriched/ folders
+├── build_unified_registry.py       # UPDATED: Load from 3 sources
+└── registry_builders_common.py     # Shared registry building logic
 ```
 
 ### Module Responsibilities
@@ -332,12 +415,16 @@ from mathster.enrichment import enrich_chapter_file
 from pathlib import Path
 
 # Enrich a single chapter file
-output_path = enrich_chapter_file(
+# Returns tuple: (backward_compat_path, per_document_path)
+compat_path, enriched_path = enrich_chapter_file(
     Path("docs/source/1_euclidean_gas/parser/chapter_3.json")
 )
 
-# Output: docs/source/1_euclidean_gas/parser/chapter_3_enriched.json
-print(f"Enriched file: {output_path}")
+# Output 1 (backward compat): docs/source/1_euclidean_gas/parser/chapter_3_enriched.json
+print(f"Backward compat: {compat_path}")
+
+# Output 2 (per-document): docs/source/1_euclidean_gas/07_mean_field/enriched/chapter_3.json
+print(f"Per-document: {enriched_path}")
 ```
 
 #### Programmatic Enrichment (Advanced)
@@ -427,6 +514,46 @@ report = validate_enriched_chapter(
 # Statistics by entity type
 for entity_type, stats in report['by_type'].items():
     print(f"{entity_type}: {stats['valid']} valid, {stats['invalid']} invalid")
+```
+
+#### Metadata Generation
+
+```python
+from mathster.enrichment import save_enrichment_metadata, enrich_chapter_file
+from pathlib import Path
+import json
+
+parser_dir = Path("docs/source/1_euclidean_gas/parser")
+
+# Enrich all chapters
+enriched_chapters = []
+for chapter_file in sorted(parser_dir.glob("chapter_*.json")):
+    compat_path, enriched_path = enrich_chapter_file(chapter_file)
+
+    # Load enriched data for metadata
+    with open(compat_path) as f:
+        enriched_data = json.load(f)
+
+    enriched_chapters.append((chapter_file, enriched_data))
+
+# Generate metadata
+metadata_path = save_enrichment_metadata(
+    parser_dir=parser_dir,
+    enriched_chapters=enriched_chapters,
+    errors=[]  # Add any errors encountered
+)
+
+print(f"Metadata saved: {metadata_path}")
+
+# Read and display statistics
+with open(metadata_path) as f:
+    metadata = json.load(f)
+
+print(f"Document: {metadata['document_id']}")
+print(f"Chapters enriched: {metadata['statistics']['chapters_enriched']}")
+print(f"Total entities: {metadata['statistics']['total_entities']}")
+print(f"With text: {metadata['statistics']['entities_with_text']}")
+print(f"Empty: {metadata['statistics']['entities_empty']}")
 ```
 
 ---
@@ -680,14 +807,28 @@ with open("chapter_3_enriched.json", "w") as f:
 
 ```python
 from pathlib import Path
-from mathster.enrichment import enrich_chapter_file
+from mathster.enrichment import enrich_chapter_file, save_enrichment_metadata
+import json
 
 parser_dir = Path("docs/source/1_euclidean_gas/parser")
 
+# Track enriched chapters for metadata
+enriched_chapters = []
+
 for chapter_file in sorted(parser_dir.glob("chapter_*.json")):
     print(f"Enriching: {chapter_file.name}")
-    output = enrich_chapter_file(chapter_file)
-    print(f"  → {output.name}")
+    compat_path, enriched_path = enrich_chapter_file(chapter_file)
+    print(f"  → Backward compat: {compat_path.name}")
+    print(f"  → Per-document: {enriched_path}")
+
+    # Load for metadata generation
+    with open(compat_path) as f:
+        enriched_data = json.load(f)
+    enriched_chapters.append((chapter_file, enriched_data))
+
+# Generate metadata summary
+metadata_path = save_enrichment_metadata(parser_dir, enriched_chapters)
+print(f"\n✓ Metadata: {metadata_path}")
 ```
 
 ### Check What Needs Enrichment

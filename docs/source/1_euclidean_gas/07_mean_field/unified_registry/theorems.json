@@ -1,33 +1,39 @@
-[
-  {
-    "label": "thm-mean-field-equation",
-    "source": {
-      "document_id": "07_mean_field",
-      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-      "chapter": "1_euclidean_gas",
-      "section": null,
-      "section_name": null,
-      "label": "thm-mean-field-equation",
-      "line_range": {
-        "lines": [
-          [
-            600,
-            637
+{
+  "parsed": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              567,
+              576
+            ]
           ]
-        ]
+        },
+        "label": "lem-mass-conservation-transport",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.1",
+        "section_name": "The Transport Operator ($L^\\dagger$) is Mass-Conservative"
       },
-      "equation": null,
-      "url_fragment": "#thm-mean-field-equation"
+      "full_text": "",
+      "label": "lem-mass-conservation-transport",
+      "statement_type": "lemma",
+      "conclusion_formula_latex": "\\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0",
+      "explicit_definition_references": [
+        "def-transport-operator"
+      ],
+      "_entity_type": "theorem",
+      "_source_type": "parser",
+      "_section_id": "## 3. The Mass-Conserving Forward Equation (PDE)",
+      "_chapter_number": 4,
+      "_parser_file": "chapter_4.json",
+      "_document_id": "07_mean_field",
+      "_chapter": null,
+      "_line_number": 567
     },
-    "_entity_type": "theorem",
-    "_source_type": "raw_data",
-    "_section_id": null,
-    "_chapter_number": null,
-    "_raw_data_file": "thm-mean-field-equation.json",
-    "_document_id": "07_mean_field",
-    "_line_number": 600,
-    "_in_both_sources": true,
-    "_parser_version": {
+    {
       "source": {
         "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
         "line_range": {
@@ -57,38 +63,10 @@
       "_chapter_number": 4,
       "_parser_file": "chapter_4.json",
       "_document_id": "07_mean_field",
+      "_chapter": null,
       "_line_number": 609
-    }
-  },
-  {
-    "label": "thm-mass-conservation",
-    "source": {
-      "document_id": "07_mean_field",
-      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-      "chapter": "1_euclidean_gas",
-      "section": null,
-      "section_name": null,
-      "label": "thm-mass-conservation",
-      "line_range": {
-        "lines": [
-          [
-            641,
-            661
-          ]
-        ]
-      },
-      "equation": null,
-      "url_fragment": "#thm-mass-conservation"
     },
-    "_entity_type": "theorem",
-    "_source_type": "raw_data",
-    "_section_id": null,
-    "_chapter_number": null,
-    "_raw_data_file": "thm-mass-conservation.json",
-    "_document_id": "07_mean_field",
-    "_line_number": 641,
-    "_in_both_sources": true,
-    "_parser_version": {
+    {
       "source": {
         "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
         "line_range": {
@@ -116,38 +94,10 @@
       "_chapter_number": 4,
       "_parser_file": "chapter_4.json",
       "_document_id": "07_mean_field",
+      "_chapter": null,
       "_line_number": 650
-    }
-  },
-  {
-    "label": "thm-killing-rate-consistency",
-    "source": {
-      "document_id": "07_mean_field",
-      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-      "chapter": "1_euclidean_gas",
-      "section": null,
-      "section_name": null,
-      "label": "thm-killing-rate-consistency",
-      "line_range": {
-        "lines": [
-          [
-            802,
-            859
-          ]
-        ]
-      },
-      "equation": null,
-      "url_fragment": "#thm-killing-rate-consistency"
     },
-    "_entity_type": "theorem",
-    "_source_type": "raw_data",
-    "_section_id": null,
-    "_chapter_number": null,
-    "_raw_data_file": "thm-killing-rate-consistency.json",
-    "_document_id": "07_mean_field",
-    "_line_number": 802,
-    "_in_both_sources": true,
-    "_parser_version": {
+    {
       "source": {
         "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
         "line_range": {
@@ -175,38 +125,10 @@
       "_chapter_number": 5,
       "_parser_file": "chapter_5.json",
       "_document_id": "07_mean_field",
+      "_chapter": null,
       "_line_number": 812
-    }
-  },
-  {
-    "label": "thm-mean-field-limit-informal",
-    "source": {
-      "document_id": "07_mean_field",
-      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-      "chapter": "1_euclidean_gas",
-      "section": null,
-      "section_name": null,
-      "label": "thm-mean-field-limit-informal",
-      "line_range": {
-        "lines": [
-          [
-            1303,
-            1319
-          ]
-        ]
-      },
-      "equation": null,
-      "url_fragment": "#thm-mean-field-limit-informal"
     },
-    "_entity_type": "theorem",
-    "_source_type": "raw_data",
-    "_section_id": null,
-    "_chapter_number": null,
-    "_raw_data_file": "thm-mean-field-limit-informal.json",
-    "_document_id": "07_mean_field",
-    "_line_number": 1303,
-    "_in_both_sources": true,
-    "_parser_version": {
+    {
       "source": {
         "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
         "line_range": {
@@ -234,7 +156,127 @@
       "_chapter_number": 5,
       "_parser_file": "chapter_5.json",
       "_document_id": "07_mean_field",
+      "_chapter": null,
       "_line_number": 1316
     }
-  }
-]
+  ],
+  "enriched": [],
+  "raw_data": [
+    {
+      "label": "thm-mean-field-equation",
+      "source": {
+        "document_id": "07_mean_field",
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "chapter": "1_euclidean_gas",
+        "section": null,
+        "section_name": null,
+        "label": "thm-mean-field-equation",
+        "line_range": {
+          "lines": [
+            [
+              600,
+              637
+            ]
+          ]
+        },
+        "equation": null,
+        "url_fragment": "#thm-mean-field-equation"
+      },
+      "_entity_type": "theorem",
+      "_source_type": "raw_data",
+      "_section_id": null,
+      "_chapter_number": null,
+      "_raw_data_file": "thm-mean-field-equation.json",
+      "_document_id": "07_mean_field",
+      "_chapter": null,
+      "_line_number": 600
+    },
+    {
+      "label": "thm-mean-field-limit-informal",
+      "source": {
+        "document_id": "07_mean_field",
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "chapter": "1_euclidean_gas",
+        "section": null,
+        "section_name": null,
+        "label": "thm-mean-field-limit-informal",
+        "line_range": {
+          "lines": [
+            [
+              1303,
+              1319
+            ]
+          ]
+        },
+        "equation": null,
+        "url_fragment": "#thm-mean-field-limit-informal"
+      },
+      "_entity_type": "theorem",
+      "_source_type": "raw_data",
+      "_section_id": null,
+      "_chapter_number": null,
+      "_raw_data_file": "thm-mean-field-limit-informal.json",
+      "_document_id": "07_mean_field",
+      "_chapter": null,
+      "_line_number": 1303
+    },
+    {
+      "label": "thm-mass-conservation",
+      "source": {
+        "document_id": "07_mean_field",
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "chapter": "1_euclidean_gas",
+        "section": null,
+        "section_name": null,
+        "label": "thm-mass-conservation",
+        "line_range": {
+          "lines": [
+            [
+              641,
+              661
+            ]
+          ]
+        },
+        "equation": null,
+        "url_fragment": "#thm-mass-conservation"
+      },
+      "_entity_type": "theorem",
+      "_source_type": "raw_data",
+      "_section_id": null,
+      "_chapter_number": null,
+      "_raw_data_file": "thm-mass-conservation.json",
+      "_document_id": "07_mean_field",
+      "_chapter": null,
+      "_line_number": 641
+    },
+    {
+      "label": "thm-killing-rate-consistency",
+      "source": {
+        "document_id": "07_mean_field",
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "chapter": "1_euclidean_gas",
+        "section": null,
+        "section_name": null,
+        "label": "thm-killing-rate-consistency",
+        "line_range": {
+          "lines": [
+            [
+              802,
+              859
+            ]
+          ]
+        },
+        "equation": null,
+        "url_fragment": "#thm-killing-rate-consistency"
+      },
+      "_entity_type": "theorem",
+      "_source_type": "raw_data",
+      "_section_id": null,
+      "_chapter_number": null,
+      "_raw_data_file": "thm-killing-rate-consistency.json",
+      "_document_id": "07_mean_field",
+      "_chapter": null,
+      "_line_number": 802
+    }
+  ]
+}

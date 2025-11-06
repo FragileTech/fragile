@@ -1,0 +1,38 @@
+{
+  "source": {
+    "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+    "line_range": {
+      "lines": [
+        [
+          1,
+          3
+        ]
+      ]
+    },
+    "label": "section-07_mean_field",
+    "volume": "1_euclidean_gas",
+    "article_id": "07_mean_field",
+    "section": null,
+    "section_name": null
+  },
+  "full_text": "# The Mean-Field Limit and Continuous Forward Equation**\n\n## Introduction",
+  "section_id": "07_mean_field",
+  "definitions": [],
+  "theorems": [],
+  "proofs": [],
+  "citations": [],
+  "parameters": [],
+  "remarks": [],
+  "axioms": [],
+  "assumptions": [],
+  "_improvement_metadata": {
+    "changes": [],
+    "summary": {
+      "entities_added": 0,
+      "entities_modified": 0,
+      "entities_deleted": 0,
+      "entities_unchanged": 0
+    }
+  },
+  "_enrichment_timestamp": "2025-11-06T22:47:31.503455"
+}

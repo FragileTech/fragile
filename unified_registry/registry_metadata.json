@@ -1,113 +1,175 @@
 {
   "registry_type": "global",
-  "build_timestamp": "2025-11-06T11:40:20.690767",
+  "build_timestamp": "2025-11-06T23:39:16.852261",
   "corpus_root": "/home/guillem/fragile/docs/source",
   "statistics": {
-    "total_entities": 896,
-    "total_parser": 707,
-    "total_raw_data": 189,
-    "documents_processed": 68,
+    "total_entities": 1376,
+    "total_parsed": 1176,
+    "total_enriched": 0,
+    "total_raw_data": 200,
+    "documents_processed": 59,
     "chapters_processed": 6,
-    "duplicates_resolved": 24,
     "by_type": {
-      "definition": 109,
-      "parameter": 428,
-      "remark": 80,
-      "theorem": 90,
-      "proof": 65,
-      "assumption": 52,
-      "axiom": 21,
-      "corollarie": 3,
-      "lemma": 45,
-      "proposition": 3
+      "theorem": {
+        "parsed": 60,
+        "enriched": 0,
+        "raw_data": 37,
+        "total": 97
+      },
+      "corollarie": {
+        "parsed": 0,
+        "enriched": 0,
+        "raw_data": 3,
+        "total": 3
+      },
+      "axiom": {
+        "parsed": 0,
+        "enriched": 0,
+        "raw_data": 21,
+        "total": 21
+      },
+      "assumption": {
+        "parsed": 48,
+        "enriched": 0,
+        "raw_data": 4,
+        "total": 52
+      },
+      "proposition": {
+        "parsed": 0,
+        "enriched": 0,
+        "raw_data": 3,
+        "total": 3
+      },
+      "lemma": {
+        "parsed": 0,
+        "enriched": 0,
+        "raw_data": 48,
+        "total": 48
+      },
+      "definition": {
+        "parsed": 132,
+        "enriched": 0,
+        "raw_data": 43,
+        "total": 175
+      },
+      "parameter": {
+        "parsed": 780,
+        "enriched": 0,
+        "raw_data": 14,
+        "total": 794
+      },
+      "proof": {
+        "parsed": 48,
+        "enriched": 0,
+        "raw_data": 19,
+        "total": 67
+      },
+      "remark": {
+        "parsed": 108,
+        "enriched": 0,
+        "raw_data": 8,
+        "total": 116
+      }
     },
     "by_chapter": {
-      "1_euclidean_gas": 896
+      "1_euclidean_gas": 1376
     }
   },
   "documents": [
     {
       "chapter": "1_euclidean_gas",
       "document": "01_fragile_gas_framework",
-      "entities": 224,
-      "parser": 62,
+      "entities": 273,
+      "parser": 98,
+      "enriched": 0,
       "raw_data": 175
     },
     {
       "chapter": "1_euclidean_gas",
       "document": "02_euclidean_gas",
-      "entities": 60,
-      "parser": 62,
+      "entities": 98,
+      "parser": 98,
+      "enriched": 0,
       "raw_data": 0
     },
     {
       "chapter": "1_euclidean_gas",
       "document": "03_cloning",
-      "entities": 60,
-      "parser": 62,
+      "entities": 98,
+      "parser": 98,
+      "enriched": 0,
       "raw_data": 0
     },
     {
       "chapter": "1_euclidean_gas",
       "document": "04_wasserstein_contraction",
-      "entities": 60,
-      "parser": 62,
+      "entities": 98,
+      "parser": 98,
+      "enriched": 0,
       "raw_data": 0
     },
     {
       "chapter": "1_euclidean_gas",
       "document": "05_kinetic_contraction",
-      "entities": 60,
-      "parser": 62,
+      "entities": 98,
+      "parser": 98,
+      "enriched": 0,
       "raw_data": 0
     },
     {
       "chapter": "1_euclidean_gas",
       "document": "06_convergence",
-      "entities": 60,
-      "parser": 62,
+      "entities": 98,
+      "parser": 98,
+      "enriched": 0,
       "raw_data": 0
     },
     {
       "chapter": "1_euclidean_gas",
       "document": "07_mean_field",
-      "entities": 72,
-      "parser": 62,
+      "entities": 123,
+      "parser": 98,
+      "enriched": 0,
       "raw_data": 25
     },
     {
       "chapter": "1_euclidean_gas",
       "document": "08_propagation_chaos",
-      "entities": 60,
-      "parser": 62,
+      "entities": 98,
+      "parser": 98,
+      "enriched": 0,
       "raw_data": 0
     },
     {
       "chapter": "1_euclidean_gas",
       "document": "09_kl_convergence",
-      "entities": 60,
-      "parser": 62,
+      "entities": 98,
+      "parser": 98,
+      "enriched": 0,
       "raw_data": 0
     },
     {
       "chapter": "1_euclidean_gas",
       "document": "10_qsd_exchangeability_theory",
-      "entities": 60,
-      "parser": 62,
+      "entities": 98,
+      "parser": 98,
+      "enriched": 0,
       "raw_data": 0
     },
     {
       "chapter": "1_euclidean_gas",
       "document": "11_hk_convergence",
-      "entities": 60,
-      "parser": 62,
+      "entities": 98,
+      "parser": 98,
+      "enriched": 0,
       "raw_data": 0
     },
     {
       "chapter": "1_euclidean_gas",
       "document": "12_quantitative_error_bounds",
-      "entities": 60,
-      "parser": 62,
+      "entities": 98,
+      "parser": 98,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -115,6 +177,7 @@
       "document": "00_intro_geometric_gas",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -122,6 +185,7 @@
       "document": "11_geometric_gas",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -129,6 +193,7 @@
       "document": "12_symmetries_geometric_gas",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -136,13 +201,15 @@
       "document": "13_geometric_gas_c3_regularity",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
       "chapter": "2_geometric_gas",
-      "document": "14_geometric_gas_c4_regularity",
+      "document": "14_geometric_gas_cinf_regularity_full",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -150,6 +217,7 @@
       "document": "15_geometric_gas_lsi_proof",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -157,6 +225,7 @@
       "document": "16_convergence_mean_field",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -164,6 +233,7 @@
       "document": "17_qsd_exchangeability_geometric",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -171,69 +241,7 @@
       "document": "18_emergent_geometry",
       "entities": 0,
       "parser": 0,
-      "raw_data": 0
-    },
-    {
-      "chapter": "2_geometric_gas",
-      "document": "19_geometric_gas_cinf_regularity_simplified",
-      "entities": 0,
-      "parser": 0,
-      "raw_data": 0
-    },
-    {
-      "chapter": "2_geometric_gas",
-      "document": "20_geometric_gas_cinf_regularity_full",
-      "entities": 0,
-      "parser": 0,
-      "raw_data": 0
-    },
-    {
-      "chapter": "2_geometric_gas",
-      "document": "CORRECTIONS_APPLIED_20_cinf_regularity",
-      "entities": 0,
-      "parser": 0,
-      "raw_data": 0
-    },
-    {
-      "chapter": "2_geometric_gas",
-      "document": "DEPENDENCY_ANALYSIS",
-      "entities": 0,
-      "parser": 0,
-      "raw_data": 0
-    },
-    {
-      "chapter": "2_geometric_gas",
-      "document": "DEPENDENCY_LAYERS",
-      "entities": 0,
-      "parser": 0,
-      "raw_data": 0
-    },
-    {
-      "chapter": "2_geometric_gas",
-      "document": "DUAL_MECHANISM_ADDITIONS",
-      "entities": 0,
-      "parser": 0,
-      "raw_data": 0
-    },
-    {
-      "chapter": "2_geometric_gas",
-      "document": "DUAL_REVIEW_CORRECTIONS_20_cinf_regularity",
-      "entities": 0,
-      "parser": 0,
-      "raw_data": 0
-    },
-    {
-      "chapter": "2_geometric_gas",
-      "document": "PIPELINE_EXECUTION_PLAN",
-      "entities": 0,
-      "parser": 0,
-      "raw_data": 0
-    },
-    {
-      "chapter": "2_geometric_gas",
-      "document": "pipeline_report_final",
-      "entities": 0,
-      "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -241,6 +249,7 @@
       "document": "COMPLETE_REVISION_v2",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -248,6 +257,7 @@
       "document": "CORRECTIONS_APPLIED_SUMMARY",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -255,6 +265,7 @@
       "document": "PIPELINE_COMPLETION_REPORT",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -262,6 +273,7 @@
       "document": "README",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -269,6 +281,7 @@
       "document": "REVISION_v2_APPLIED",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -276,6 +289,7 @@
       "document": "THEOREM_ASSESSMENT_REPORT",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -283,6 +297,7 @@
       "document": "brascamp_lieb_proof",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -290,6 +305,7 @@
       "document": "eigenvalue_gap_CORRECTIONS",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -297,6 +313,7 @@
       "document": "eigenvalue_gap_complete_proof",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -304,6 +321,7 @@
       "document": "geometric_foundations_lsi",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -311,6 +329,7 @@
       "document": "hierarchical_clustering_proof",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -318,6 +337,7 @@
       "document": "roadmap",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -325,6 +345,7 @@
       "document": "01_yang_mills_dynamic_lattice",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -332,6 +353,7 @@
       "document": "strategy",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -339,6 +361,7 @@
       "document": "04_wasserstein_contraction_ASSEMBLED",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -346,6 +369,7 @@
       "document": "ASSEMBLY_INSTRUCTIONS",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -353,6 +377,7 @@
       "document": "COMPREHENSIVE_FIX_PLAN",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -360,6 +385,7 @@
       "document": "DUAL_REVIEW_ANALYSIS",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -367,6 +393,7 @@
       "document": "EXECUTIVE_SUMMARY",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -374,6 +401,7 @@
       "document": "FINAL_STATUS_AND_NEXT_STEPS",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -381,6 +409,7 @@
       "document": "FIXED_SECTION_0_COMPLETE",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -388,6 +417,7 @@
       "document": "FIXED_SECTION_2_COMPLETE",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -395,6 +425,7 @@
       "document": "FIXED_SECTION_4_UPDATES",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -402,6 +433,7 @@
       "document": "FIXED_SECTION_5_COMPLETE",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -409,6 +441,7 @@
       "document": "FIXED_SECTION_8_COMPLETE",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -416,6 +449,7 @@
       "document": "IMPLEMENTATION_STATUS",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -423,6 +457,7 @@
       "document": "IMPLEMENTATION_SUMMARY",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -430,6 +465,7 @@
       "document": "REVIEW_SUMMARY",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -437,6 +473,7 @@
       "document": "ROUND2_REVIEW_ANALYSIS",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -444,6 +481,7 @@
       "document": "01_crystalline_gas_yang_mills_mass_gap_proof",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -451,6 +489,7 @@
       "document": "04_rigorous_gauge_symmetry_emergence",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -458,6 +497,7 @@
       "document": "05_osterwalder_schrader_verification",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -465,6 +505,7 @@
       "document": "ARGMAX_VS_SOFTMAX_ANALYSIS",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -472,6 +513,7 @@
       "document": "FIXES_FOR_DUAL_REVIEW",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -479,6 +521,7 @@
       "document": "MILLENNIUM_PRIZE_ROADMAP",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -486,6 +529,7 @@
       "document": "PATH_C_IMPLEMENTATION_SUMMARY",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -493,6 +537,7 @@
       "document": "PROGRESS_SUMMARY",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
     },
     {
@@ -500,153 +545,8 @@
       "document": "SOFTMAX_IMPLEMENTATION_COMPLETE",
       "entities": 0,
       "parser": 0,
+      "enriched": 0,
       "raw_data": 0
-    }
-  ],
-  "conflicts": [
-    {
-      "label": "lem-probabilistic-bound-perturbation-displacement-reproof",
-      "parser_type": "lemma",
-      "raw_data_type": "lemma",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "lem-empirical-aggregator-properties",
-      "parser_type": "lemma",
-      "raw_data_type": "lemma",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "lem-perturbation-positional-bound-reproof",
-      "parser_type": "lemma",
-      "raw_data_type": "lemma",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "param-n",
-      "parser_type": "parameter",
-      "raw_data_type": "parameter",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "param-p-worst-case",
-      "parser_type": "parameter",
-      "raw_data_type": "parameter",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "param-kappa-revival",
-      "parser_type": "parameter",
-      "raw_data_type": "parameter",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "param-l-r",
-      "parser_type": "parameter",
-      "raw_data_type": "parameter",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "param-l-phi",
-      "parser_type": "parameter",
-      "raw_data_type": "parameter",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "param-epsilon-std",
-      "parser_type": "parameter",
-      "raw_data_type": "parameter",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "thm-revival-guarantee",
-      "parser_type": "theorem",
-      "raw_data_type": "theorem",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "thm-mean-square-standardization-error",
-      "parser_type": "theorem",
-      "raw_data_type": "theorem",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "def-baoab-update-rule",
-      "parser_type": "definition",
-      "raw_data_type": "definition",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "def-transport-operator",
-      "parser_type": "definition",
-      "raw_data_type": "definition",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "def-cloning-generator",
-      "parser_type": "definition",
-      "raw_data_type": "definition",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "def-kinetic-generator",
-      "parser_type": "definition",
-      "raw_data_type": "definition",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "def-killing-operator",
-      "parser_type": "definition",
-      "raw_data_type": "definition",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "def-revival-operator",
-      "parser_type": "definition",
-      "raw_data_type": "definition",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "lem-mass-conservation-transport",
-      "parser_type": "theorem",
-      "raw_data_type": "lemma",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "proof-lem-mass-conservation-transport",
-      "parser_type": "proof",
-      "raw_data_type": "proof",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "proof-thm-mass-conservation",
-      "parser_type": "proof",
-      "raw_data_type": "proof",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "thm-mean-field-equation",
-      "parser_type": "theorem",
-      "raw_data_type": "theorem",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "thm-mean-field-limit-informal",
-      "parser_type": "theorem",
-      "raw_data_type": "theorem",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "thm-mass-conservation",
-      "parser_type": "theorem",
-      "raw_data_type": "theorem",
-      "resolution": "Prefer raw_data"
-    },
-    {
-      "label": "thm-killing-rate-consistency",
-      "parser_type": "theorem",
-      "raw_data_type": "theorem",
-      "resolution": "Prefer raw_data"
     }
   ],
   "errors": []

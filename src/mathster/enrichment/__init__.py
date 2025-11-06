@@ -30,6 +30,7 @@ from mathster.enrichment.text_extractor import (
     enrich_chapter_file,
     extract_full_text,
     extract_full_text_from_dict,
+    save_enrichment_metadata,
 )
 from mathster.enrichment.workflows.validate import validate_enriched_chapter
 
@@ -41,6 +42,7 @@ __all__ = [
     "enrich_chapter_file",
     "extract_full_text",
     "extract_full_text_from_dict",
+    "save_enrichment_metadata",
     "validate_chapter",
     "validate_enriched_chapter",
     "workflows",

@@ -1,222 +1,235 @@
-[
-  {
-    "source": {
-      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-      "line_range": {
-        "lines": [
-          [
-            735,
-            745
+{
+  "parsed": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              735,
+              745
+            ]
           ]
-        ]
+        },
+        "label": "assumption-regularity-summary",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.2",
+        "section_name": "Well-Posedness and Future Work"
       },
+      "full_text": "",
       "label": "assumption-regularity-summary",
-      "volume": "1_euclidean_gas",
-      "article_id": "07_mean_field",
-      "section": "4.2",
-      "section_name": "Well-Posedness and Future Work"
+      "_entity_type": "assumption",
+      "_source_type": "parser",
+      "_section_id": "## 4. Analysis and Properties of the Mean-Field Equations",
+      "_chapter_number": 5,
+      "_parser_file": "chapter_5.json",
+      "_document_id": "07_mean_field",
+      "_chapter": null,
+      "_line_number": 735
     },
-    "full_text": "",
-    "label": "assumption-regularity-summary",
-    "_entity_type": "assumption",
-    "_source_type": "parser",
-    "_section_id": "## 4. Analysis and Properties of the Mean-Field Equations",
-    "_chapter_number": 5,
-    "_parser_file": "chapter_5.json",
-    "_document_id": "07_mean_field",
-    "_line_number": 735
-  },
-  {
-    "source": {
-      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-      "line_range": {
-        "lines": [
-          [
-            777,
-            786
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              777,
+              786
+            ]
           ]
-        ]
+        },
+        "label": "assumption-domain-regularity",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.1",
+        "section_name": "Mathematical Setup and Regularity Assumptions"
       },
+      "full_text": "",
       "label": "assumption-domain-regularity",
-      "volume": "1_euclidean_gas",
-      "article_id": "07_mean_field",
-      "section": "4.4.1",
-      "section_name": "Mathematical Setup and Regularity Assumptions"
+      "_entity_type": "assumption",
+      "_source_type": "parser",
+      "_section_id": "## 4. Analysis and Properties of the Mean-Field Equations",
+      "_chapter_number": 5,
+      "_parser_file": "chapter_5.json",
+      "_document_id": "07_mean_field",
+      "_chapter": null,
+      "_line_number": 777
     },
-    "full_text": "",
-    "label": "assumption-domain-regularity",
-    "_entity_type": "assumption",
-    "_source_type": "parser",
-    "_section_id": "## 4. Analysis and Properties of the Mean-Field Equations",
-    "_chapter_number": 5,
-    "_parser_file": "chapter_5.json",
-    "_document_id": "07_mean_field",
-    "_line_number": 777
-  },
-  {
-    "source": {
-      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-      "line_range": {
-        "lines": [
-          [
-            788,
-            798
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              788,
+              798
+            ]
           ]
-        ]
+        },
+        "label": "assumption-integrator-regularity",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.1",
+        "section_name": "Mathematical Setup and Regularity Assumptions"
       },
+      "full_text": "",
       "label": "assumption-integrator-regularity",
-      "volume": "1_euclidean_gas",
-      "article_id": "07_mean_field",
-      "section": "4.4.1",
-      "section_name": "Mathematical Setup and Regularity Assumptions"
+      "_entity_type": "assumption",
+      "_source_type": "parser",
+      "_section_id": "## 4. Analysis and Properties of the Mean-Field Equations",
+      "_chapter_number": 5,
+      "_parser_file": "chapter_5.json",
+      "_document_id": "07_mean_field",
+      "_chapter": null,
+      "_line_number": 788
     },
-    "full_text": "",
-    "label": "assumption-integrator-regularity",
-    "_entity_type": "assumption",
-    "_source_type": "parser",
-    "_section_id": "## 4. Analysis and Properties of the Mean-Field Equations",
-    "_chapter_number": 5,
-    "_parser_file": "chapter_5.json",
-    "_document_id": "07_mean_field",
-    "_line_number": 788
-  },
-  {
-    "source": {
-      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-      "line_range": {
-        "lines": [
-          [
-            800,
-            808
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              800,
+              808
+            ]
           ]
-        ]
+        },
+        "label": "assumption-density-regularity-killing",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.1",
+        "section_name": "Mathematical Setup and Regularity Assumptions"
       },
+      "full_text": "",
       "label": "assumption-density-regularity-killing",
-      "volume": "1_euclidean_gas",
-      "article_id": "07_mean_field",
-      "section": "4.4.1",
-      "section_name": "Mathematical Setup and Regularity Assumptions"
-    },
-    "full_text": "",
-    "label": "assumption-density-regularity-killing",
-    "_entity_type": "assumption",
-    "_source_type": "parser",
-    "_section_id": "## 4. Analysis and Properties of the Mean-Field Equations",
-    "_chapter_number": 5,
-    "_parser_file": "chapter_5.json",
-    "_document_id": "07_mean_field",
-    "_line_number": 800
-  },
-  {
-    "label": "asmp-domain-regularity",
-    "source": {
-      "document_id": "07_mean_field",
-      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-      "chapter": "1_euclidean_gas",
-      "section": null,
-      "section_name": null,
+      "_entity_type": "assumption",
+      "_source_type": "parser",
+      "_section_id": "## 4. Analysis and Properties of the Mean-Field Equations",
+      "_chapter_number": 5,
+      "_parser_file": "chapter_5.json",
+      "_document_id": "07_mean_field",
+      "_chapter": null,
+      "_line_number": 800
+    }
+  ],
+  "enriched": [],
+  "raw_data": [
+    {
       "label": "asmp-domain-regularity",
-      "line_range": {
-        "lines": [
-          [
-            767,
-            776
+      "source": {
+        "document_id": "07_mean_field",
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "chapter": "1_euclidean_gas",
+        "section": null,
+        "section_name": null,
+        "label": "asmp-domain-regularity",
+        "line_range": {
+          "lines": [
+            [
+              767,
+              776
+            ]
           ]
-        ]
+        },
+        "equation": null,
+        "url_fragment": "#asmp-domain-regularity"
       },
-      "equation": null,
-      "url_fragment": "#asmp-domain-regularity"
+      "_entity_type": "assumption",
+      "_source_type": "raw_data",
+      "_section_id": null,
+      "_chapter_number": null,
+      "_raw_data_file": "asmp-domain-regularity.json",
+      "_document_id": "07_mean_field",
+      "_chapter": null,
+      "_line_number": 767
     },
-    "_entity_type": "assumption",
-    "_source_type": "raw_data",
-    "_section_id": null,
-    "_chapter_number": null,
-    "_raw_data_file": "asmp-domain-regularity.json",
-    "_document_id": "07_mean_field",
-    "_line_number": 767
-  },
-  {
-    "label": "asmp-regularity-summary",
-    "source": {
-      "document_id": "07_mean_field",
-      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-      "chapter": "1_euclidean_gas",
-      "section": null,
-      "section_name": null,
+    {
       "label": "asmp-regularity-summary",
-      "line_range": {
-        "lines": [
-          [
-            725,
-            735
+      "source": {
+        "document_id": "07_mean_field",
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "chapter": "1_euclidean_gas",
+        "section": null,
+        "section_name": null,
+        "label": "asmp-regularity-summary",
+        "line_range": {
+          "lines": [
+            [
+              725,
+              735
+            ]
           ]
-        ]
+        },
+        "equation": null,
+        "url_fragment": "#asmp-regularity-summary"
       },
-      "equation": null,
-      "url_fragment": "#asmp-regularity-summary"
+      "_entity_type": "assumption",
+      "_source_type": "raw_data",
+      "_section_id": null,
+      "_chapter_number": null,
+      "_raw_data_file": "asmp-regularity-summary.json",
+      "_document_id": "07_mean_field",
+      "_chapter": null,
+      "_line_number": 725
     },
-    "_entity_type": "assumption",
-    "_source_type": "raw_data",
-    "_section_id": null,
-    "_chapter_number": null,
-    "_raw_data_file": "asmp-regularity-summary.json",
-    "_document_id": "07_mean_field",
-    "_line_number": 725
-  },
-  {
-    "label": "asmp-integrator-regularity",
-    "source": {
-      "document_id": "07_mean_field",
-      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-      "chapter": "1_euclidean_gas",
-      "section": null,
-      "section_name": null,
+    {
       "label": "asmp-integrator-regularity",
-      "line_range": {
-        "lines": [
-          [
-            778,
-            788
+      "source": {
+        "document_id": "07_mean_field",
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "chapter": "1_euclidean_gas",
+        "section": null,
+        "section_name": null,
+        "label": "asmp-integrator-regularity",
+        "line_range": {
+          "lines": [
+            [
+              778,
+              788
+            ]
           ]
-        ]
+        },
+        "equation": null,
+        "url_fragment": "#asmp-integrator-regularity"
       },
-      "equation": null,
-      "url_fragment": "#asmp-integrator-regularity"
+      "_entity_type": "assumption",
+      "_source_type": "raw_data",
+      "_section_id": null,
+      "_chapter_number": null,
+      "_raw_data_file": "asmp-integrator-regularity.json",
+      "_document_id": "07_mean_field",
+      "_chapter": null,
+      "_line_number": 778
     },
-    "_entity_type": "assumption",
-    "_source_type": "raw_data",
-    "_section_id": null,
-    "_chapter_number": null,
-    "_raw_data_file": "asmp-integrator-regularity.json",
-    "_document_id": "07_mean_field",
-    "_line_number": 778
-  },
-  {
-    "label": "asmp-density-regularity-killing",
-    "source": {
-      "document_id": "07_mean_field",
-      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-      "chapter": "1_euclidean_gas",
-      "section": null,
-      "section_name": null,
+    {
       "label": "asmp-density-regularity-killing",
-      "line_range": {
-        "lines": [
-          [
-            790,
-            798
+      "source": {
+        "document_id": "07_mean_field",
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "chapter": "1_euclidean_gas",
+        "section": null,
+        "section_name": null,
+        "label": "asmp-density-regularity-killing",
+        "line_range": {
+          "lines": [
+            [
+              790,
+              798
+            ]
           ]
-        ]
+        },
+        "equation": null,
+        "url_fragment": "#asmp-density-regularity-killing"
       },
-      "equation": null,
-      "url_fragment": "#asmp-density-regularity-killing"
-    },
-    "_entity_type": "assumption",
-    "_source_type": "raw_data",
-    "_section_id": null,
-    "_chapter_number": null,
-    "_raw_data_file": "asmp-density-regularity-killing.json",
-    "_document_id": "07_mean_field",
-    "_line_number": 790
-  }
-]
+      "_entity_type": "assumption",
+      "_source_type": "raw_data",
+      "_section_id": null,
+      "_chapter_number": null,
+      "_raw_data_file": "asmp-density-regularity-killing.json",
+      "_document_id": "07_mean_field",
+      "_chapter": null,
+      "_line_number": 790
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "document_id": "07_mean_field",
+  "source_parser_dir": "docs/source/1_euclidean_gas/parser",
+  "enrichment_timestamp": "2025-11-06T22:49:17.738916",
+  "statistics": {
+    "chapters_enriched": 1,
+    "total_entities": 0,
+    "entities_with_text": 0,
+    "entities_empty": 0,
+    "by_type": {
+      "definitions": 0,
+      "theorems": 0,
+      "proofs": 0,
+      "axioms": 0,
+      "assumptions": 0,
+      "parameters": 0,
+      "remarks": 0,
+      "citations": 0
+    }
+  },
+  "source_file": "docs/source/1_euclidean_gas/07_mean_field.md",
+  "errors": []
+}

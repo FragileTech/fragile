@@ -1232,6 +1232,23 @@ $$
 For typical parameters $(\gamma = 1, \sigma_v = 1, \kappa \sim 0.1)$, taking $\tau = 0.01$ is safe.
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Explicit Discretization Constants](proofs/proof_20251024_2348_prop_explicit_constants.md)
+
+**Includes:**
+- Rigorous Taylor expansion analysis for BAOAB integrator up to 3rd order
+- Complete Itô calculus justifications for stochastic terms
+- Explicit constant derivation $K_{\text{integ}} \leq C_d \cdot \max(\kappa^2, L_F^2, \sigma_{\max}^2/\tau, \gamma^2) \cdot K_V$
+- Dimension-dependent polynomial bounds on $C_d$
+- Practical timestep selection guidelines $\tau_* \sim 1/\max(\kappa, L_F, \sigma_{\max}, \gamma)$
+- Verification of all regularity assumptions (Lipschitz force, bounded growth, diffusion bounds)
+- Application to specific Lyapunov components with component-specific timestep bounds
+:::
+
 ---
 
 #### 3.7.5. Application to Each Lyapunov Component
@@ -2316,6 +2333,23 @@ $$
 - Cloning perturbations ($C_v$)
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Net Velocity Variance Contraction](proofs/proof_20251025_093103_cor_net_velocity_contraction.md)
+
+**Includes:**
+- Rigorous composition of kinetic and cloning operator drift inequalities
+- Detailed equilibrium analysis via drift-zero condition
+- Explicit threshold derivation $V_{\text{Var},v} > \frac{d\sigma_{\max}^2}{2\gamma} + \frac{C_v}{2\gamma\tau}$ for net contraction
+- Physical interpretation of three-way balance: friction dissipation vs thermal noise vs cloning perturbations
+- N-uniformity verification (all constants independent of swarm size)
+- Synergistic composition analysis with positional variance contraction
+- Practical parameter regime identification for guaranteed contraction
+:::
+
 ### 5.6. Summary
 
 This chapter has proven:
@@ -3166,6 +3200,23 @@ $$
 $$
 
 **Result:** **Layered defense** - even if one mechanism temporarily fails, the other provides safety.
+:::
+
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Total Boundary Safety from Dual Mechanisms](proofs/proof_20251025_093110_cor_total_boundary_safety.md)
+
+**Includes:**
+- Rigorous composition of Safe Harbor (cloning) and confining potential (kinetics) mechanisms
+- Complete drift inequality synthesis: $\mathbb{E}_{\text{total}}[\Delta W_b] \leq -(\kappa_b + \kappa_{\text{pot}}\tau) W_b + (C_b + C_{\text{pot}}\tau)$
+- Explicit contraction rate formulas for both mechanisms
+- Layered defense analysis: failure resilience when one mechanism is temporarily weak
+- Physical interpretation of dual protection (discrete cloning removal + continuous potential pushing)
+- N-uniformity verification for combined system
+- Parameter regime identification for optimal safety balance
 :::
 
 ### 7.6. Summary

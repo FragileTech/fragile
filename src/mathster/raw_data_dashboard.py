@@ -92,7 +92,12 @@ class RawDataDashboard:
         self._apply_filters()
 
     def _load_global_registry(self):
-        """Load all entities from global unified registry."""
+        """Load all entities from global unified registry.
+
+        Supports both formats:
+        - Old: Flat list of entities
+        - New: Nested dict with {"parsed": [], "enriched": [], "raw_data": []}
+        """
         logger.info(f"Project root: {self.project_root}")
         logger.info(f"Registry root: {self.registry_root}")
         logger.info(f"Registry exists: {self.registry_root.exists()}")
@@ -115,11 +120,29 @@ class RawDataDashboard:
 
             try:
                 with open(entity_file, encoding="utf-8") as f:
-                    entity_list = json.load(f)
+                    data = json.load(f)
 
-                # entity_list is already a list of dicts with metadata
-                entities.extend(entity_list)
-                logger.info(f"  Loaded {len(entity_list)} entities from {entity_file.name}")
+                # Detect format and flatten
+                if isinstance(data, list):
+                    # Old format: flat list
+                    entities.extend(data)
+                    logger.info(f"  Loaded {len(data)} entities from {entity_file.name} (flat format)")
+                elif isinstance(data, dict) and any(k in data for k in ["parsed", "enriched", "raw_data"]):
+                    # New format: nested dict with sources
+                    parsed = data.get("parsed", [])
+                    enriched = data.get("enriched", [])
+                    raw_data = data.get("raw_data", [])
+
+                    entities.extend(parsed)
+                    entities.extend(enriched)
+                    entities.extend(raw_data)
+
+                    logger.info(
+                        f"  Loaded from {entity_file.name} (nested format): "
+                        f"{len(parsed)} parsed, {len(enriched)} enriched, {len(raw_data)} raw_data"
+                    )
+                else:
+                    logger.warning(f"  Unknown format in {entity_file.name}, skipping")
 
             except Exception as e:
                 logger.warning(f"Failed to load {entity_file}: {e}")
@@ -129,7 +152,17 @@ class RawDataDashboard:
 
     def _create_filter_widgets(self):
         """Create filter control widgets."""
-        # Chapter filter (NEW - replaces document selector)
+        # Stage selector (NEW - primary pipeline stage selection)
+        self.stage_selector = pn.widgets.RadioButtonGroup(
+            name="Pipeline Stage",
+            options=["Parsed", "Enriched", "Raw Data"],
+            value="Raw Data",  # Default to raw data
+            button_type="primary",
+            width=380,
+        )
+        self.stage_selector.param.watch(self._on_filter_change, "value")
+
+        # Chapter filter
         available_chapters = sorted(set(e.get("_chapter") for e in self.all_entities if e.get("_chapter")))
         self.chapter_filter = pn.widgets.MultiChoice(
             name="Chapters",
@@ -140,7 +173,7 @@ class RawDataDashboard:
         )
         self.chapter_filter.param.watch(self._on_filter_change, "value")
 
-        # Document filter (NEW - replaces document selector)
+        # Document filter
         available_documents = sorted(set(e.get("_document_id") for e in self.all_entities if e.get("_document_id")))
         self.document_filter = pn.widgets.MultiChoice(
             name="Documents",
@@ -161,16 +194,6 @@ class RawDataDashboard:
             description="Filter by entity type",
         )
         self.entity_type_filter.param.watch(self._on_filter_change, "value")
-
-        # Source type filter (NEW)
-        self.source_filter = pn.widgets.MultiChoice(
-            name="Source",
-            options=["parser", "raw_data"],
-            value=["parser", "raw_data"],  # Start with both selected
-            width=380,
-            description="Filter by data source",
-        )
-        self.source_filter.param.watch(self._on_filter_change, "value")
 
         # Search input
         self.search_input = pn.widgets.TextInput(
@@ -214,6 +237,7 @@ class RawDataDashboard:
         # Entity list view (reactive)
         self.entity_list_view = pn.bind(
             self._render_entity_list,
+            stage=self.stage_selector,
             entity_types=self.entity_type_filter,
             search_text=self.search_input,
             sort_by=self.sort_selector,
@@ -223,6 +247,7 @@ class RawDataDashboard:
         # Statistics view (reactive)
         self.stats_view = pn.bind(
             self._render_statistics,
+            stage=self.stage_selector,
             entity_types=self.entity_type_filter,
             search_text=self.search_input,
         )
@@ -253,6 +278,9 @@ class RawDataDashboard:
 
     def _on_reset_filters(self, event):
         """Reset all filters to defaults."""
+        # Reset stage selector
+        self.stage_selector.value = "Raw Data"
+
         # Reset chapter filter
         chapters = list(self.chapter_filter.options)
         self.chapter_filter.value = chapters
@@ -260,9 +288,6 @@ class RawDataDashboard:
         # Reset document filter
         documents = list(self.document_filter.options)
         self.document_filter.value = documents
-
-        # Reset source filter
-        self.source_filter.value = ["parser", "raw_data"]
 
         # Reset entity type filter
         entity_types = list(self.entity_type_filter.options)
@@ -280,17 +305,22 @@ class RawDataDashboard:
 
         filtered = self.all_entities
 
-        # Filter by chapter (NEW)
+        # Filter by pipeline stage (PRIMARY FILTER)
+        stage = self.stage_selector.value
+        if stage == "Parsed":
+            filtered = [e for e in filtered if e.get("_source_type") == "parser"]
+        elif stage == "Enriched":
+            filtered = [e for e in filtered if e.get("_source_type") == "enriched"]
+        elif stage == "Raw Data":
+            filtered = [e for e in filtered if e.get("_source_type") == "raw_data"]
+
+        # Filter by chapter
         chapters = set(self.chapter_filter.value)
         filtered = [e for e in filtered if e.get("_chapter") in chapters]
 
-        # Filter by document (NEW)
+        # Filter by document
         documents = set(self.document_filter.value)
         filtered = [e for e in filtered if e.get("_document_id") in documents]
-
-        # Filter by source type (NEW)
-        sources = set(self.source_filter.value)
-        filtered = [e for e in filtered if e.get("_source_type") in sources]
 
         # Filter by entity type
         entity_types = set(self.entity_type_filter.value)
@@ -332,7 +362,7 @@ class RawDataDashboard:
         self.filtered_entities = filtered
 
     def _render_entity_list(
-        self, entity_types: list[str], search_text: str, sort_by: str, show_missing: bool
+        self, stage: str, entity_types: list[str], search_text: str, sort_by: str, show_missing: bool
     ):
         """Render the entity list based on current filters."""
         if not self.filtered_entities:
@@ -366,16 +396,22 @@ class RawDataDashboard:
             else:
                 line_info = "No line range"
 
-            # Source badge (NEW: show parser vs raw_data)
+            # Stage badge with enrichment status
             source_type = entity.get("_source_type", "unknown")
-            in_both = entity.get("_in_both_sources", False)
 
-            if in_both:
-                source_badge = '<span style="background: #9c27b0; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.75em; font-weight: bold;">BOTH</span>'
-            elif source_type == "parser":
-                source_badge = '<span style="background: #2196f3; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.75em; font-weight: bold;">PARSER</span>'
+            # Check if entity has full_text populated (for enriched stage)
+            full_text = entity.get("full_text", "")
+            has_full_text = bool(full_text) and full_text != ""
+
+            if source_type == "parser":
+                source_badge = '<span style="background: #2196f3; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.75em; font-weight: bold;">PARSED</span>'
+            elif source_type == "enriched":
+                if has_full_text:
+                    source_badge = '<span style="background: #4caf50; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.75em; font-weight: bold;">ENRICHED ✓</span>'
+                else:
+                    source_badge = '<span style="background: #ff9800; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.75em; font-weight: bold;">ENRICHED ✗</span>'
             elif source_type == "raw_data":
-                source_badge = '<span style="background: #4caf50; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.75em; font-weight: bold;">RAW</span>'
+                source_badge = '<span style="background: #9c27b0; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.75em; font-weight: bold;">RAW DATA</span>'
             else:
                 source_badge = ""
 
@@ -680,7 +716,7 @@ class RawDataDashboard:
             logger.exception(f"Error rendering markdown with line numbers: {e}")
             return f"<p><i>Error rendering document: {e}</i></p>"
 
-    def _render_statistics(self, entity_types: list[str], search_text: str):
+    def _render_statistics(self, stage: str, entity_types: list[str], search_text: str):
         """Render statistics panel."""
         if not self.all_entities:
             return pn.pane.Markdown("**No data loaded**", width=400)
@@ -704,22 +740,36 @@ class RawDataDashboard:
         without_ranges = total - with_ranges
         coverage = (with_ranges / total * 100) if total > 0 else 0
 
-        # Count by source type (NEW)
-        parser_count = sum(1 for e in self.all_entities if e.get("_source_type") == "parser")
+        # Count by pipeline stage
+        parsed_count = sum(1 for e in self.all_entities if e.get("_source_type") == "parser")
+        enriched_count = sum(1 for e in self.all_entities if e.get("_source_type") == "enriched")
         raw_data_count = sum(1 for e in self.all_entities if e.get("_source_type") == "raw_data")
-        both_count = sum(1 for e in self.all_entities if e.get("_in_both_sources", False))
 
-        # Build markdown
+        # Count enriched entities with full_text
+        enriched_with_text = sum(
+            1
+            for e in self.all_entities
+            if e.get("_source_type") == "enriched" and e.get("full_text") and e.get("full_text") != ""
+        )
+        enriched_without_text = enriched_count - enriched_with_text
+
+        # Get current stage for highlighting
+        current_stage = self.stage_selector.value
+
+        # Build markdown with stage highlighting
         md = f"""
 ## Statistics
 
 **Total Entities:** {total}
 **Filtered (visible):** {filtered}
+**Current Stage:** <span style="background: #3498db; color: white; padding: 2px 8px; border-radius: 3px;">{current_stage}</span>
 
-### By Source
-- <span style="background: #2196f3; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8em;">PARSER</span> **Parser only:** {parser_count - both_count}
-- <span style="background: #4caf50; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8em;">RAW</span> **Raw data only:** {raw_data_count - both_count}
-- <span style="background: #9c27b0; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8em;">BOTH</span> **In both sources:** {both_count}
+### By Pipeline Stage
+- <span style="background: #2196f3; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8em;">PARSED</span> **Parsed:** {parsed_count}
+- <span style="background: #4caf50; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8em;">ENRICHED</span> **Enriched:** {enriched_count}
+  - ✓ With full_text: {enriched_with_text}
+  - ✗ Missing full_text: {enriched_without_text}
+- <span style="background: #9c27b0; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8em;">RAW DATA</span> **Raw Data:** {raw_data_count}
 
 ### Coverage
 - **With line ranges:** {with_ranges} ({coverage:.1f}%)
@@ -735,25 +785,109 @@ class RawDataDashboard:
 
         return pn.pane.Markdown(md, width=400, sizing_mode="stretch_width")
 
+    def _create_header_tabs(self):
+        """Create header-style stage tabs."""
+        # Create styled buttons for each stage
+        parsed_btn = pn.widgets.Button(
+            name="📊 Parsed",
+            button_type="primary" if self.stage_selector.value == "Parsed" else "default",
+            width=150,
+            height=50,
+            styles={
+                "font-size": "16px",
+                "font-weight": "bold",
+            },
+        )
+        enriched_btn = pn.widgets.Button(
+            name="✨ Enriched",
+            button_type="primary" if self.stage_selector.value == "Enriched" else "default",
+            width=150,
+            height=50,
+            styles={
+                "font-size": "16px",
+                "font-weight": "bold",
+            },
+        )
+        raw_data_btn = pn.widgets.Button(
+            name="📝 Raw Data",
+            button_type="primary" if self.stage_selector.value == "Raw Data" else "default",
+            width=150,
+            height=50,
+            styles={
+                "font-size": "16px",
+                "font-weight": "bold",
+            },
+        )
+
+        # Click handlers
+        def on_parsed_click(event):
+            self.stage_selector.value = "Parsed"
+
+        def on_enriched_click(event):
+            self.stage_selector.value = "Enriched"
+
+        def on_raw_data_click(event):
+            self.stage_selector.value = "Raw Data"
+
+        parsed_btn.on_click(on_parsed_click)
+        enriched_btn.on_click(on_enriched_click)
+        raw_data_btn.on_click(on_raw_data_click)
+
+        # Store button references for reactive updates
+        self.header_buttons = {
+            "Parsed": parsed_btn,
+            "Enriched": enriched_btn,
+            "Raw Data": raw_data_btn,
+        }
+
+        # Watch stage selector to update button styles
+        self.stage_selector.param.watch(self._update_header_button_styles, "value")
+
+        return pn.Row(
+            pn.pane.Markdown(
+                "**Pipeline Stage:**",
+                styles={"font-size": "18px", "font-weight": "bold", "margin-top": "15px"},
+                width=150,
+            ),
+            parsed_btn,
+            enriched_btn,
+            raw_data_btn,
+            styles={
+                "background": "#f8f9fa",
+                "padding": "15px",
+                "border-bottom": "3px solid #3498db",
+                "margin-bottom": "20px",
+            },
+            sizing_mode="stretch_width",
+        )
+
+    def _update_header_button_styles(self, event):
+        """Update header button styles when stage changes."""
+        current_stage = event.new
+        for stage, button in self.header_buttons.items():
+            if stage == current_stage:
+                button.button_type = "primary"
+            else:
+                button.button_type = "default"
+
     def create_dashboard(self):
         """Create and return the dashboard template."""
-        # Sidebar
+        # Sidebar (NO stage selector - moved to header)
         sidebar_content = [
             pn.pane.Markdown(
-                "# Raw Data Explorer\n*Browse raw mathematical entities*",
+                "# Pipeline Explorer\n*Multi-stage entity visualization*",
                 styles={"font-size": "1.1em"},
             ),
             pn.layout.Divider(),
             # Filters
             pn.pane.Markdown(
-                "## Filters\n*Global registry - filter by chapter/document/type*",
+                "## Filters\n*Filter by chapter/document/type*",
                 styles={"font-size": "0.95em"},
                 margin=(10, 0, 10, 0),
             ),
             self.chapter_filter,
             self.document_filter,
             pn.layout.Divider(),
-            self.source_filter,
             self.entity_type_filter,
             pn.layout.Divider(),
             self.search_input,
@@ -762,6 +896,9 @@ class RawDataDashboard:
             pn.layout.Divider(),
             self.reset_button,
         ]
+
+        # Create header tabs
+        header_tabs = self._create_header_tabs()
 
         # Main content: Three-column layout (1:2:3 ratio)
         # Column 1: Entity list (16.67% ~ 1/6)
@@ -797,6 +934,8 @@ class RawDataDashboard:
 
         # Main content
         main_content = [
+            # Header tabs (at the very top)
+            header_tabs,
             # Three-column row (1:2:3 ratio - entity list : JSON : markdown)
             pn.Row(
                 entity_list_column,
@@ -817,7 +956,7 @@ class RawDataDashboard:
 
         # Create template
         return pn.template.FastListTemplate(
-            title="Raw Data Visualization Dashboard",
+            title="Multi-Stage Pipeline Dashboard",
             sidebar=sidebar_content,
             main=main_content,
             accent_base_color="#3498db",
