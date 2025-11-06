@@ -48,8 +48,8 @@ parts:
     title: Symmetries of Geometric Gas
   - file: source/2_geometric_gas/13_geometric_gas_c3_regularity
     title: C³ Regularity
-  - file: source/2_geometric_gas/14_geometric_gas_c4_regularity
-    title: C⁴ Regularity
+  - file: source/2_geometric_gas/14_geometric_gas_cinf_regularity_full
+    title: C∞ Regularity (Full Model)
   - file: source/2_geometric_gas/15_geometric_gas_lsi_proof
     title: LSI Proof for Geometric Gas
   - file: source/2_geometric_gas/16_convergence_mean_field
@@ -58,10 +58,6 @@ parts:
     title: QSD Exchangeability Theory
   - file: source/2_geometric_gas/18_emergent_geometry
     title: Emergent Geometry
-  - file: source/2_geometric_gas/19_geometric_gas_cinf_regularity_simplified
-    title: C^∞ Regularity (Simplified)
-  - file: source/2_geometric_gas/20_geometric_gas_cinf_regularity_full
-    title: C^∞ Regularity (Full)
 
 - caption: Part III - Analytical Foundations
   numbered: false

@@ -130,10 +130,10 @@ This "centering" allows kernel localization to yield k-uniform bounds. Used in:
 
 **Dependency Type**: Application target for C³ regularity result
 
-### Forward Reference to `14_geometric_gas_c4_regularity.md`
+### Forward Reference to `14_geometric_gas_cinf_regularity_full.md`
 **Critical for scaling analysis**:
 - `prop-scaling-kv3` depends on "corrected" scaling C_{μ,∇^m}(ρ) = O(ρ^{-(m-1)})
-- Rigorous proof is in Lemma 5.1 of the C⁴ document
+- Rigorous proof is in Lemma 5.1 of the C∞ document
 - **Without this**, naive analysis gives wrong scaling
 
 **Dependency Type**: Forward reference for asymptotic analysis
@@ -151,7 +151,7 @@ This "centering" allows kernel localization to yield k-uniform bounds. Used in:
 :::{prf:proposition}
 ...
 This result depends on the corrected moment scaling established in
-{prf:ref}`14_geometric_gas_c4_regularity.md::lem-corrected-moment-scaling`.
+{prf:ref}`14_geometric_gas_cinf_regularity_full.md::lem-corrected-moment-scaling`.
 :::
 ```
 
@@ -288,7 +288,7 @@ From `prop-timestep-constraint`:
 ## Recommendations
 
 ### For Document Improvement
-1. **Add Forward Reference**: Explicitly cite 14_geometric_gas_c4_regularity.md in `prop-scaling-kv3`
+1. **Add Forward Reference**: Explicitly cite 14_geometric_gas_cinf_regularity_full.md in `prop-scaling-kv3`
 2. **Formalize Telescoping Pattern**: Consider standalone lemma for centered sum technique
 3. **Standardize Cross-Refs**: Use consistent format for external document references
 4. **Add Scaling Summary Table**: Include ρ-scaling table in main theorem section
@@ -296,7 +296,7 @@ From `prop-timestep-constraint`:
 
 ### For Framework Integration
 1. **Update Glossary**: Add all 22 entries with proper tags (c3-regularity, hypoelliptic, etc.)
-2. **Link to C⁴ Analysis**: Ensure bidirectional references with forward document
+2. **Link to C∞ Analysis**: Ensure bidirectional references with forward document
 3. **Dashboard Integration**: Visualize dependency graph in theorem dashboard
 4. **Proof Validation**: Extract embedded proofs for formal verification
 5. **Example Computations**: Add numerical verification of bounds for standard test cases
@@ -341,7 +341,7 @@ From `prop-timestep-constraint`:
 ## Next Steps
 
 ### Immediate Actions
-- [ ] Add forward reference to C⁴ document in `prop-scaling-kv3`
+- [ ] Add forward reference to C∞ document in `prop-scaling-kv3`
 - [ ] Update glossary with 22 new entries
 - [ ] Verify external references in 11_geometric_gas.md exist
 
@@ -361,7 +361,7 @@ From `prop-timestep-constraint`:
 
 ## Conclusion
 
-The C³ regularity document is **mathematically rigorous, well-structured, and validation-clean**. The sequential pipeline architecture is pedagogically excellent and computationally verifiable. The main issue is the **forward reference to C⁴ scaling analysis**, which should be made explicit.
+The C³ regularity document is **mathematically rigorous, well-structured, and validation-clean**. The sequential pipeline architecture is pedagogically excellent and computationally verifiable. The main issue is the **forward reference to C∞ scaling analysis**, which should be made explicit.
 
 **Overall Assessment**: ✅ **Production-Ready** (with minor citation improvements)
 

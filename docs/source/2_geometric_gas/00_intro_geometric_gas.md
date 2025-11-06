@@ -34,7 +34,7 @@ The six core documents in Part II establish a complete convergence theory for th
 
 **Chapter 13 (C³ Regularity)**: Proves the fitness potential is three times continuously differentiable with k-uniform and N-uniform bounds, validating BAOAB discretization and completing the regularity hierarchy required for stability analysis.
 
-**Chapter 14 (C⁴ Regularity)**: Extends to fourth derivatives with same $O(\rho^{-3})$ scaling as third derivatives, establishing Hessian Lipschitz continuity and enabling advanced functional inequalities (Brascamp-Lieb, Bakry-Émery calculus).
+**Chapter 14 (C∞ Regularity - Full Model)**: Proves infinite differentiability with Gevrey-1 bounds for the full companion-dependent measurement model, establishing Hessian Lipschitz continuity and enabling advanced functional inequalities (Brascamp-Lieb, Bakry-Émery calculus).
 
 **Chapter 15 (LSI Proof)**: Resolves Framework Conjecture 8.3 by proving N-uniform Log-Sobolev inequality for state-dependent diffusion, establishing exponential KL-convergence with explicit parameter thresholds.
 
@@ -95,7 +95,7 @@ graph TB
 
         C13["<b>Ch 13: C³ Regularity</b><br>Third derivative bounds<br>k-uniform, N-uniform<br>BAOAB validation<br>K_{V,3}(ρ) ~ O(ρ⁻³)"]:::regularityStyle
 
-        C14["<b>Ch 14: C⁴ Regularity</b><br>Fourth derivative bounds<br>Hessian Lipschitz<br>Brascamp-Lieb conditions<br>K_{V,4}(ρ) ~ O(ρ⁻³)"]:::regularityStyle
+        C14["<b>Ch 14: C∞ Regularity</b><br>Infinite differentiability<br>Gevrey-1 bounds<br>Full companion-dependent<br>Brascamp-Lieb conditions"]:::regularityStyle
 
         C15["<b>Ch 15: LSI Proof</b><br>N-uniform LSI<br>State-dependent diffusion<br>Hypocoercivity extension<br>Framework Conj 8.3 resolved"]:::lsiStyle
 
@@ -233,7 +233,7 @@ This extends geometric ergodicity to the adaptive system.
 **Step 4: Functional Inequalities**
 (Part II, Chapters 13-15)
 
-Regularity bounds (C³, C⁴) and uniform ellipticity enable:
+Regularity bounds (C³, C∞) and uniform ellipticity enable:
 - BAOAB discretization validity (Chapter 13)
 - Log-Sobolev inequality (Chapter 15)
 - Mean-field KL-convergence (Chapter 16)
@@ -276,9 +276,9 @@ Every constant has an explicit definition in terms of system parameters.
 
 While Part II establishes a complete stability theory, several questions remain open:
 
-**Extension to Full Swarm-Dependent Measurement** (Chapter 14 Warning):
+**Extension to Time-Dependent Adaptive Parameters** (Chapter 14 Note):
 
-Current C⁴ analysis assumes measurement $d(x_i)$ depends only on position, not on companion selection $c(i)$. Extending to the full algorithmic distance $d_{\text{alg}}(i, c(i))$ requires additional combinatorial analysis.
+Chapter 14 establishes C∞ regularity for the full companion-dependent measurement model with Gevrey-1 bounds. Extension to time-dependent adaptive parameters $\epsilon_F(t), \rho(t)$ remains open for the regularity analysis.
 
 **Global Convergence to QSD** (Chapter 16 §1.1):
 
@@ -290,7 +290,7 @@ We prove the condition $\sigma^2 > \sigma_{\text{crit}}^2$ is **sufficient** for
 
 **Higher-Order Integrators** (Chapter 14 §1.2):
 
-C⁴ regularity enables 4th-order splitting schemes (BABAB) but requires C⁵ or C⁶ for full validation. Extension to higher regularity classes is straightforward but not yet completed.
+C∞ regularity with Gevrey-1 bounds enables arbitrary-order splitting schemes with explicit time-step constraints. Detailed validation for specific higher-order integrators (e.g., 4th-order BABAB) can be completed using the established regularity bounds.
 
 **Brascamp-Lieb and Bakry-Émery Extensions** (Chapter 14 §1.2):
 
@@ -312,10 +312,10 @@ Advanced functional inequalities are proven **conditional** on uniform convexity
 - **For practitioners**: §10 (ρ-scaling analysis) for time-step constraints
 - **Skip on first read**: §4-7 (detailed derivative calculations) unless verifying bounds
 
-**Chapter 14: C⁴ Regularity** (Advanced, ~70 pages)
-- **Warning**: Read §0 scope limitation carefully (simplified model only)
-- **Must read**: §1.2 (why C⁴ matters), §1.5 (time-step implications)
-- **Optional**: §2-8 (proof details) unless working on functional inequalities
+**Chapter 14: C∞ Regularity (Full Model)** (Advanced, ~70 pages)
+- **Note**: Proves infinite differentiability with Gevrey-1 bounds for full companion-dependent model
+- **Must read**: §1.2 (why C∞ matters), §1.5 (time-step implications)
+- **Optional**: §2-8 (proof details) unless working on functional inequalities or higher-order integrators
 
 **Chapter 15: LSI Proof** (Core theory, ~120 pages)
 - **Must read**: §0-1 (TLDR and Introduction), §1.2 (resolution strategy), §9 (main theorem)
@@ -440,18 +440,19 @@ Proves fitness potential is three times continuously differentiable with k-unifo
 
 ---
 
-### Chapter 14: C⁴ Regularity Analysis
+### Chapter 14: C∞ Regularity Analysis (Full Model)
 
-**Length**: ~70 pages | **Difficulty**: High (technical) | **Status**: Complete (simplified model)
+**Length**: ~70 pages | **Difficulty**: High (technical) | **Status**: Complete (full companion-dependent model)
 
-Extends to fourth derivatives, proves Hessian Lipschitz continuity, establishes conditions for Brascamp-Lieb and Bakry-Émery inequalities. **Warning**: Assumes simplified position-dependent measurement, not full swarm-dependent measurement.
+Proves infinite differentiability with Gevrey-1 bounds for the full companion-dependent measurement model, establishes Hessian Lipschitz continuity and arbitrary-order derivatives, enables Brascamp-Lieb and Bakry-Émery inequalities.
 
 **Key Results**:
-- Theorem 3.1: C⁴ regularity with $K_{V,4}(\rho) = O(\rho^{-3})$
-- Corollary 4.1: Hessian Lipschitz
-- Conditional results for advanced functional inequalities
+- Theorem: C∞ regularity with Gevrey-1 bounds uniformly in N and k
+- Corollary: Hessian Lipschitz with explicit constants
+- Full companion-dependent measurement model validated
+- Enables arbitrary-order integrators with time-step constraints
 
-**Reading Priority**: Optional unless working on functional inequalities
+**Reading Priority**: Optional unless working on functional inequalities or higher-order methods
 
 ---
 

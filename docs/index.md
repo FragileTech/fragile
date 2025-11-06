@@ -64,9 +64,11 @@ graph TB
             C08["<b>08: Propagation of Chaos</b><br>Weak convergence<br>Empirical measure<br>Chaoticity preservation"]:::meanfieldStyle
         end
 
-        subgraph "Advanced Theory (Ch 09-10)"
+        subgraph "Advanced Theory (Ch 09-12)"
             C09["<b>09: KL-Convergence & LSI</b><br>N-uniform LSI<br>Exponential KL-decay<br>Entropy production"]:::advancedStyle
             C10["<b>10: QSD Exchangeability</b><br>Permutation symmetry<br>de Finetti theorem<br>Empirical measure limit"]:::advancedStyle
+            C11_E["<b>11: HK Convergence</b><br>Hellinger-Kantorovich metric<br>Mass + transport dynamics<br>Bounded density ratio (PROVEN)<br>Tripartite decomposition<br>d_HK exponential convergence"]:::advancedStyle
+            C12_E["<b>12: Quantitative Error Bounds</b><br>O(1/√N) mean-field error<br>BAOAB O(τ²) discretization<br>Total error decomposition<br>Explicit constants"]:::advancedStyle
         end
     end
 
@@ -80,7 +82,7 @@ graph TB
 
         subgraph "Regularity Analysis (Ch 13-14)"
             C13["<b>13: C³ Regularity</b><br>Third derivative bounds<br>Telescoping identities<br>k-uniform, N-uniform<br>K_{V,3}(ρ) ~ O(ρ⁻³)<br>BAOAB validation<br>Time-step constraints"]:::regularityStyle
-            C14["<b>14: C⁴ Regularity</b><br>Fourth derivative bounds<br>Hessian Lipschitz<br>K_{V,4}(ρ) ~ O(ρ⁻³)<br>Brascamp-Lieb conditions<br>Bakry-Émery calculus"]:::regularityStyle
+            C14["<b>14: C∞ Regularity (Full Model)</b><br>Infinite differentiability<br>Gevrey-1 bounds<br>Full companion-dependent<br>Brascamp-Lieb conditions<br>Bakry-Émery calculus"]:::regularityStyle
         end
 
         subgraph "Convergence Theory (Ch 15-17)"
@@ -112,6 +114,17 @@ graph TB
     C08 --> C09
     C03 --> C10
     C09 --> C10
+
+    %% HK convergence builds on multiple prior results
+    C03 --"Cloning<br>mechanism"--> C11_E
+    C04 --"Wasserstein<br>bounds"--> C11_E
+    C05 --"Hypocoercivity<br>structure"--> C11_E
+    C06 --"Foster-Lyapunov<br>framework"--> C11_E
+    C07 --"Mean-field<br>theory"--> C11_E
+
+    %% Quantitative bounds build on LSI and HK
+    C09 --"N-uniform<br>LSI"--> C12_E
+    C11_E --"HK metric<br>convergence"--> C12_E
 
     %% Part II builds on Part I backbone
     C02 --"Provides stable<br>backbone dynamics"--> C11
@@ -153,7 +166,7 @@ graph TB
 
 ## The Two-Part Architecture
 
-### Part I: The Euclidean Gas (Chapters 01-10)
+### Part I: The Euclidean Gas (Chapters 01-12)
 
 The **Euclidean Gas** is the provably stable backbone of the framework. It combines:
 
@@ -167,7 +180,7 @@ The **Euclidean Gas** is the provably stable backbone of the framework. It combi
 - **Mean-field limit** via McKean-Vlasov PDE with propagation of chaos
 - **Multiple convergence proofs** using complementary techniques (coupling, Lyapunov, hypocoercivity)
 
-**Reading Path**: 01 → 02 → 03 → (04 or 05 or 06) → 07 → 08 → 09 → 10
+**Reading Path**: 01 → 02 → 03 → (04 or 05 or 06) → 07 → 08 → 09 → 10 → 11 → 12
 
 **Key Innovation**: Extension of hypocoercivity theory to quasi-stationary distributions with absorbing boundaries.
 
@@ -184,7 +197,7 @@ The **Geometric Gas** extends the stable backbone with three adaptive mechanisms
 **Main Results**:
 - **Uniform ellipticity by construction** (avoids probabilistic arguments)
 - **Perturbation theory** with explicit threshold $\epsilon_F^*(\rho)$
-- **C³ and C⁴ regularity** with k-uniform, N-uniform bounds
+- **C³ and C∞ regularity** with k-uniform, N-uniform bounds
 - **N-uniform LSI for state-dependent diffusion** (resolves Framework Conjecture 8.3)
 - **Mean-field KL-convergence** with explicit rate formula
 
@@ -210,6 +223,8 @@ The **Geometric Gas** extends the stable backbone with three adaptive mechanisms
 | **08** | Propagation of Chaos | Mean-Field Proof | Optional | 45 min |
 | **09** | KL-Convergence & LSI | Functional Inequalities | ✅ Yes | 75 min |
 | **10** | QSD Exchangeability | Symmetry Theory | Optional | 30 min |
+| **11** | Hellinger-Kantorovich Convergence | HK Metric Theory | ✅ Yes | 90 min |
+| **12** | Quantitative Error Bounds | Finite-N Analysis | ✅ Yes | 75 min |
 
 *Choose at least one of Ch 04, 05, or 06 to understand convergence proofs.
 
@@ -222,7 +237,7 @@ The **Geometric Gas** extends the stable backbone with three adaptive mechanisms
 | **11** | Geometric Gas Framework | Core Extension | ✅ Yes | 90 min |
 | **12** | Symmetries of Geometric Gas | Structural Theory | Optional | 30 min |
 | **13** | C³ Regularity Analysis | Technical Bounds | ✅ Yes | 60 min |
-| **14** | C⁴ Regularity Analysis | Advanced Theory | Optional | 45 min |
+| **14** | C∞ Regularity Analysis (Full Model) | Advanced Theory | Optional | 60 min |
 | **15** | N-Uniform LSI Proof | Convergence Theory | ✅ Yes | 90 min |
 | **16** | Mean-Field KL-Convergence | Continuum Limit | ✅ Yes | 60 min |
 | **17** | QSD Exchangeability (Geometric) | Symmetry Theory | Optional | 30 min |
@@ -286,6 +301,35 @@ $$
 - Kinetic dominance condition: $\sigma^2 > \sigma_{\text{crit}}^2$
 - Residual convergence (offset term remains)
 - Explicit formulas for all constants
+
+**Hellinger-Kantorovich Convergence** (Chapter 11):
+
+$$
+d_{\text{HK}}(\mu_t, \pi_{\text{QSD}}) \leq e^{-\kappa_{\text{HK}} t/2} d_{\text{HK}}(\mu_0, \pi) + O\left(\sqrt{\frac{C_{\text{HK}}}{\kappa_{\text{HK}}}}\right)
+$$
+
+- Unifies mass dynamics (Hellinger) and spatial transport (Wasserstein)
+- **Bounded density ratio rigorously proven** via hypoelliptic regularity
+- Tripartite decomposition: mass contraction + structural variance + Hellinger shape
+- Explicit parameter dependence: $\kappa_{\text{HK}} = f(\gamma, \sigma, U, \tau)$
+- Stronger than Wasserstein alone: captures alive mass fluctuations
+
+**Quantitative Error Bounds** (Chapter 12):
+
+$$
+\text{Error}_{\text{total}} = O\left(\frac{1}{\sqrt{N}}\right) + O(\tau^2) + O(e^{-\kappa_{\text{mix}} t})
+$$
+
+where:
+- **Mean-field error**: $O(1/\sqrt{N})$ from quantitative propagation of chaos
+- **Discretization error**: $O(\tau^2)$ from BAOAB weak convergence
+- **Mixing error**: $O(e^{-\kappa_{\text{mix}} t})$ from geometric ergodicity
+
+Provides explicit constants for:
+- Practical algorithm design (balance N vs τ)
+- Computational complexity analysis
+- Finite-sample guarantees
+- Parameter tuning guidance
 
 ---
 
@@ -396,10 +440,12 @@ All bounds are **independent of swarm size** $N$:
 2. Part I Ch 05 (Hypocoercivity for kinetic operator)
 3. Part I Ch 06 (Foster-Lyapunov framework)
 4. Part I Ch 09 (LSI proof for Euclidean Gas)
-5. Part II Ch 11 §5-7 (Perturbation analysis)
-6. Part II Ch 15 (LSI extension to state-dependent diffusion)
+5. Part I Ch 11 (Hellinger-Kantorovich convergence)
+6. Part I Ch 12 (Quantitative error bounds)
+7. Part II Ch 11 §5-7 (Perturbation analysis)
+8. Part II Ch 15 (LSI extension to state-dependent diffusion)
 
-**Time**: ~8 hours
+**Time**: ~11 hours
 
 ---
 
@@ -412,10 +458,11 @@ All bounds are **independent of swarm size** $N$:
 2. Part I Ch 07 (McKean-Vlasov PDE derivation)
 3. Part I Ch 08 (Propagation of chaos)
 4. Part I Ch 09 §7-8 (Mean-field LSI)
-5. Part II Ch 11 §1-3 (ρ-framework)
-6. Part II Ch 16 (Mean-field KL-convergence)
+5. Part I Ch 12 (Quantitative propagation of chaos)
+6. Part II Ch 11 §1-3 (ρ-framework)
+7. Part II Ch 16 (Mean-field KL-convergence)
 
-**Time**: ~6 hours
+**Time**: ~7.5 hours
 
 ---
 
@@ -442,11 +489,12 @@ All bounds are **independent of swarm size** $N$:
 1. **Week 1**: Part I Ch 01-03 (Foundations)
 2. **Week 2**: Part I Ch 04-06 (Convergence proofs, choose your favorite)
 3. **Week 3**: Part I Ch 07-09 (Mean-field and LSI)
-4. **Week 4**: Part I Ch 10 + Part II Ch 11 (Symmetry + Geometric Gas)
-5. **Week 5**: Part II Ch 12-14 (Symmetries and regularity)
-6. **Week 6**: Part II Ch 15-17 (Geometric convergence theory)
+4. **Week 4**: Part I Ch 10-12 (Symmetry, HK convergence, quantitative bounds)
+5. **Week 5**: Part II Ch 11-12 (Geometric Gas + Symmetries)
+6. **Week 6**: Part II Ch 13-14 (Regularity analysis)
+7. **Week 7**: Part II Ch 15-17 (Geometric convergence theory)
 
-**Total Time**: ~30-40 hours of focused reading
+**Total Time**: ~36-48 hours of focused reading
 
 ---
 
@@ -486,11 +534,15 @@ All bounds are **independent of swarm size** $N$:
 - $\pi_{\text{QSD}}$: Quasi-stationary distribution
 - $D_{\text{KL}}(\mu \| \nu)$: Kullback-Leibler divergence
 - $W_2(\mu, \nu)$: Wasserstein-2 distance
+- $d_{\text{HK}}(\mu, \nu)$: Hellinger-Kantorovich distance
+- $d_H(\mu, \nu)$: Hellinger distance
 
 ### Constants
 - $\kappa_{\text{backbone}}$: Backbone stability rate
+- $\kappa_{\text{HK}}$: Hellinger-Kantorovich convergence rate
 - $\epsilon_F^*(\rho)$: Critical adaptation rate threshold
 - $\lambda_{\text{LSI}}$: Log-Sobolev constant
+- $M$: Bounded density ratio constant (QSD/transition kernel)
 - $K_{V,3}(\rho), K_{V,4}(\rho)$: Regularity bound constants
 
 ---
@@ -518,13 +570,19 @@ See `CLAUDE.md` for detailed development guidelines.
 
 While the framework establishes complete convergence theory, several frontiers remain:
 
+**Recent Achievements**:
+- ✅ **Bounded density ratio proven** (Ch 11): Hypoelliptic regularity establishes uniform bounds
+- ✅ **Convergence trilogy complete** (Ch 04, 05, 11): TV, Wasserstein, and Hellinger-Kantorovich
+- ✅ **Quantitative error bounds** (Ch 12): Explicit O(1/√N) + O(τ²) decomposition
+
 **From Part I**:
 - Sharpness of convergence rate constants (optimality of LSI constant)
 - Extension to non-convex confining potentials
 - Adaptive selection of kinetic parameters $(\gamma, \sigma)$
+- Tightness of HK convergence residual term
 
 **From Part II**:
-- C⁴ regularity for full swarm-dependent measurement (currently simplified model)
+- Extension of C∞ regularity to time-dependent adaptive parameters
 - Global convergence to QSD (currently residual neighborhood)
 - Necessity of kinetic dominance condition (currently sufficient only)
 - Uniform convexity verification for Brascamp-Lieb inequalities

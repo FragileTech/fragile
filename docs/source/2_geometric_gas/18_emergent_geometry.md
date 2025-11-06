@@ -37,7 +37,7 @@ This document focuses exclusively on the **convergence proof for the anisotropic
 **This document does NOT prove** (deferred to other documents):
 - The mean-field limit as $N \to \infty$ (`16_convergence_mean_field.md`)
 - KL-divergence convergence with Log-Sobolev inequality (`15_geometric_gas_lsi_proof.md`)
-- Regularity conditions ($C^3$, $C^4$) for the fitness potential (`13_geometric_gas_c3_regularity.md`, `14_geometric_gas_c4_regularity.md`)
+- Regularity conditions ($C^3$, $C^\infty$) for the fitness potential (`13_geometric_gas_c3_regularity.md`, `14_geometric_gas_cinf_regularity_full.md`)
 - Symmetry structure and conservation laws (`12_symmetries_geometric_gas.md`)
 
 This separation allows each document to focus on one major result with complete, self-contained proofs.

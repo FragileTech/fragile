@@ -1,16 +1,16 @@
 # 📄 Mathster Enrichment Module
 
-**Text enrichment for mathematical entity extraction - populating full_text fields from source locations.**
+**Text enrichment and semantic validation for mathematical entity extraction - populating full_text fields from source locations and verifying correctness.**
 
 [![Production Ready](https://img.shields.io/badge/status-production-green.svg)]()
-[![Python Only](https://img.shields.io/badge/approach-python--only-blue.svg)]()
+[![Python + DSPy](https://img.shields.io/badge/approach-python+dspy-blue.svg)]()
 [![Fast](https://img.shields.io/badge/speed-<1s-success.svg)]()
 
 ---
 
 ## 🎯 Overview
 
-The `mathster.enrichment` module is **Stage 1.5** of the mathematical entity extraction pipeline. It bridges the gap between parsing (which extracts structure and line ranges) and downstream processing (which needs actual text content).
+The `mathster.enrichment` module is **Stage 1.5** of the mathematical entity extraction pipeline. It bridges the gap between parsing (which extracts structure and line ranges) and downstream processing (which needs actual text content). The module provides both fast text extraction and optional semantic validation using DSPy agents.
 
 ### Purpose
 
@@ -36,20 +36,22 @@ After **Stage 1 (Parsing)** extracts entity structure with line ranges:
 
 ### Key Features
 
-✅ **Pure Python** - No LLM required, just file I/O
+✅ **Pure Python Text Extraction** - Fast file I/O, no LLM required for extraction
 ✅ **Fast** - Reads file once, extracts all text (<1 second)
 ✅ **Handles TextLocation** - Converts line range dicts to actual text
 ✅ **Discontinuous Ranges** - Handles multiple line ranges per entity
 ✅ **Batch Processing** - Process all chapters at once
 ✅ **Preserves Structure** - All other fields unchanged
+✅ **Optional Semantic Validation** - DSPy-based verification of extracted content
+✅ **Confidence Scoring** - High/medium/low confidence ratings with detailed errors
 
 ### Quick Stats
 
-- **~260 lines** of Python code
-- **1 main module** (text_extractor.py)
-- **No LLM calls** (pure file I/O)
-- **<1 second** per chapter
-- **100% deterministic** results
+- **~670 lines** of Python code across 7 modules
+- **3 main modules** (text_extractor.py, workflows, dspy_components)
+- **Optional LLM validation** (DSPy-based semantic checking)
+- **<1 second** per chapter (text extraction only)
+- **100% deterministic** text extraction (validation uses LLM)
 
 ---
 
@@ -135,6 +137,40 @@ flowchart LR
     style OUT fill:#004d40,stroke:#00695c,stroke-width:2px,color:#fff
 ```
 
+### Validation Workflow (Optional)
+
+```mermaid
+%%{init: {'theme':'dark'}}%%
+flowchart LR
+    subgraph "Input"
+        ENRICHED[chapter_N_enriched.json<br/>With full_text]
+    end
+
+    subgraph "Validation"
+        LOAD[Load Enriched Data]
+        CONFIG[Configure DSPy<br/>Gemini 2.5 Flash Lite]
+        VALIDATE[Semantic Validator<br/>ChainOfThought]
+        CHECK[Verify Type Match<br/>Check Completeness<br/>Assess Confidence]
+    end
+
+    subgraph "Output"
+        REPORT[Validation Report<br/>Valid/Invalid counts<br/>Confidence scores<br/>Error details]
+    end
+
+    ENRICHED --> LOAD
+    LOAD --> CONFIG
+    CONFIG --> VALIDATE
+    VALIDATE --> CHECK
+    CHECK --> REPORT
+
+    style ENRICHED fill:#004d40,stroke:#00695c,stroke-width:2px,color:#fff
+    style LOAD fill:#1565c0,stroke:#1976d2,stroke-width:2px,color:#fff
+    style CONFIG fill:#1976d2,stroke:#42a5f5,stroke-width:2px,color:#fff
+    style VALIDATE fill:#6a1b9a,stroke:#8e24aa,stroke-width:2px,color:#fff
+    style CHECK fill:#8e24aa,stroke:#ab47bc,stroke-width:2px,color:#fff
+    style REPORT fill:#1b5e20,stroke:#2e7d32,stroke-width:2px,color:#fff
+```
+
 ---
 
 ## 📁 Module Structure
@@ -143,10 +179,15 @@ flowchart LR
 
 ```
 src/mathster/enrichment/
-├── __init__.py              # Main exports: extract_full_text, enrich_chapter_file
-├── text_extractor.py        # Core text extraction logic (260 lines)
-├── workflows/               # Future: Batch processing workflows
-└── dspy_components/         # Future: Optional semantic validation
+├── __init__.py              # Main exports: extract_full_text, enrich_chapter_file, validate_chapter
+├── text_extractor.py        # Core text extraction logic (276 lines)
+├── workflows/               # Validation workflows (176 lines)
+│   ├── __init__.py
+│   └── validate.py          # Semantic validation using DSPy
+└── dspy_components/         # DSPy agents for validation (163 lines)
+    ├── __init__.py
+    ├── signatures.py        # DSPy signature definitions
+    └── validators.py        # Semantic validator agents
 ```
 
 ### Module Responsibilities
@@ -167,6 +208,42 @@ src/mathster/enrichment/
 - Handles discontinuous ranges (`[[10,15], [20,25]]`)
 - Preserves all existing fields
 - Fast (file I/O only, no parsing)
+
+#### **workflows/validate.py** - Semantic Validation
+
+**Purpose**: DSPy-based validation to verify extracted text matches entity types
+
+**Key Functions**:
+- `validate_enriched_chapter(enriched_file)` - Validate all entities in a chapter
+- Supports entity type filtering (e.g., only validate parameters)
+- Confidence scoring: high/medium/low
+- Detailed error reporting with suggestions
+
+**Features**:
+- Uses DSPy with Gemini 2.5 Flash Lite (fast and cheap)
+- Especially important for parameters (lack directive markers)
+- Optional validation step (not required for pipeline)
+- Returns comprehensive validation report with statistics
+
+#### **dspy_components/** - DSPy Validation Agents
+
+**Purpose**: DSPy signatures and agents for semantic validation
+
+**Components**:
+- `signatures.py` - `ValidateEntityText` signature definition
+- `validators.py` - `SemanticValidator` agent with ChainOfThought reasoning
+
+**Validation Checks**:
+- Type correctness: Text matches stated entity type
+- Content accuracy: Text matches entity metadata
+- Completeness: Line ranges capture full entity
+- Precision: No extra unrelated text included
+
+**Use Cases**:
+- Validate parameters (which lack structural markers)
+- Verify line ranges are correct
+- Quality assurance for extraction pipeline
+- Debugging extraction issues
 
 ---
 
@@ -303,20 +380,53 @@ with open("chapter_3_enriched.json", "w") as f:
     json.dump(enriched_data, f, indent=2)
 ```
 
-### CLI Usage
+#### Semantic Validation (Optional)
 
-```bash
-# Enrich a single chapter
-python -m mathster.enrichment.enrich docs/source/1_euclidean_gas/parser/chapter_3.json
+```python
+from mathster.enrichment import enrich_chapter_file, validate_chapter
+from pathlib import Path
 
-# Enrich all chapters in directory
-python -m mathster.enrichment.enrich docs/source/1_euclidean_gas/parser/ --all
+# Step 1: Enrich chapter
+enriched_file = enrich_chapter_file(
+    Path("docs/source/1_euclidean_gas/parser/chapter_3.json")
+)
 
-# Specify output location
-python -m mathster.enrichment.enrich chapter_3.json --output enriched/chapter_3.json
+# Step 2: Validate enriched entities (optional)
+report = validate_chapter(
+    enriched_file,
+    entity_types=["parameters"],  # Focus on parameters (lack directive markers)
+    confidence_threshold="medium",
+    max_entities=10  # Limit for testing
+)
 
-# Verbose logging
-python -m mathster.enrichment.enrich chapter_3.json --verbose
+# Check results
+print(f"Validated: {report['total_validated']}")
+print(f"Valid: {report['valid']}, Invalid: {report['invalid']}")
+print(f"Low confidence: {report['low_confidence']}")
+
+# Review errors
+for error in report['errors']:
+    print(f"\n{error['label']} ({error['type']}):")
+    print(f"  Errors: {error['errors']}")
+    if 'suggestions' in error:
+        print(f"  Suggestions: {error['suggestions']}")
+```
+
+#### Validation-Only Workflow
+
+```python
+from mathster.enrichment.workflows import validate_enriched_chapter
+
+# Validate already-enriched file
+report = validate_enriched_chapter(
+    "docs/source/1_euclidean_gas/parser/chapter_3_enriched.json",
+    entity_types=["definitions", "theorems", "parameters"],
+    confidence_threshold="high"
+)
+
+# Statistics by entity type
+for entity_type, stats in report['by_type'].items():
+    print(f"{entity_type}: {stats['valid']} valid, {stats['invalid']} invalid")
 ```
 
 ---
@@ -614,6 +724,34 @@ for chapter_file in parser_dir.glob("chapter_*.json"):
     print(f"✓ {chapter_file.name} → {output_file}")
 ```
 
+### Batch Enrichment with Validation
+
+```python
+from mathster.enrichment import enrich_chapter_file, validate_chapter
+from pathlib import Path
+
+parser_dir = Path("docs/source/1_euclidean_gas/parser")
+
+for chapter_file in sorted(parser_dir.glob("chapter_*.json")):
+    # Enrich
+    enriched = enrich_chapter_file(chapter_file)
+    print(f"✓ Enriched: {chapter_file.name}")
+
+    # Validate (optional - focus on parameters)
+    report = validate_chapter(
+        enriched,
+        entity_types=["parameters"],
+        max_entities=None  # Validate all
+    )
+
+    print(f"  Valid: {report['valid']}, Invalid: {report['invalid']}, "
+          f"Low confidence: {report['low_confidence']}")
+
+    # Report issues
+    if report['errors']:
+        print(f"  ⚠️ {len(report['errors'])} issues found")
+```
+
 ---
 
 ## 🔧 Integration with Pipeline
@@ -630,6 +768,7 @@ for chapter_file in parser_dir.glob("chapter_*.json"):
       ↓
 📄 Stage 1.5: Enrichment (mathster.enrichment) ← THIS MODULE
   → chapter_N_enriched.json (with actual text)
+  → [Optional] Semantic validation with DSPy
       ↓
 📐 Stage 2: Parameter Extraction (mathster.parameter_extraction)
   → Add parameters
@@ -640,16 +779,27 @@ for chapter_file in parser_dir.glob("chapter_*.json"):
 
 ### When to Use Enrichment
 
-**Use enrichment when**:
+**Use text enrichment when**:
 ✅ Downstream processing needs actual text (not just line numbers)
 ✅ Building self-contained data packages
 ✅ Preparing data for external tools
 ✅ Debugging extraction results (verify text matches expectations)
 
+**Use semantic validation when**:
+✅ Verifying parameters (which lack directive markers)
+✅ Quality assurance for extraction pipeline
+✅ Identifying incorrect line ranges
+✅ Debugging entity type mismatches
+
 **Skip enrichment when**:
 ⏸️ Working with large corpora (save storage space)
 ⏸️ Text can be extracted on-demand
 ⏸️ Only need metadata and structure
+
+**Skip validation when**:
+⏸️ High confidence in extraction (e.g., definitions with directive markers)
+⏸️ Minimizing LLM costs
+⏸️ Processing speed is critical
 
 ---
 
@@ -705,6 +855,58 @@ Output: "Lines 10-15 text\n[...]\nLines 30-35 text"
 
 The `[...]` separator indicates discontinuous blocks.
 
+### Issue 3: Validation Low Confidence
+
+**Symptom**: Many entities marked as "low confidence" during validation
+
+**Cause**: Extracted text may be incomplete or incorrect line ranges
+
+**Solution**: Review the suggestions in validation report
+
+```python
+report = validate_chapter(enriched_file, entity_types=["parameters"])
+
+# Check low confidence entities
+for error in report['errors']:
+    if error.get('confidence') == 'low':
+        print(f"{error['label']}: {error['errors']}")
+        print(f"Suggestions: {error.get('suggestions', 'None')}")
+```
+
+### Issue 4: DSPy Configuration Error
+
+**Symptom**: `ValueError: Model not configured` or API key errors
+
+**Cause**: DSPy not configured with valid API keys
+
+**Solution**: Set up environment variables for DSPy
+
+```bash
+# Set Gemini API key (for validation)
+export GEMINI_API_KEY="your-api-key"
+
+# Or configure in code before validation
+from mathster.dspy_integration import configure_dspy
+configure_dspy(model="gemini/gemini-2.5-flash-lite")
+```
+
+### Issue 5: Validation Takes Too Long
+
+**Symptom**: Validation is slow for large chapters
+
+**Cause**: Validating all entities with LLM calls
+
+**Solution**: Limit validation to specific entity types or use max_entities
+
+```python
+# Only validate parameters (most error-prone)
+report = validate_chapter(
+    enriched_file,
+    entity_types=["parameters"],
+    max_entities=10  # Test with small batch first
+)
+```
+
 ---
 
 ## 📈 Statistics
@@ -730,10 +932,10 @@ The `[...]` separator indicates discontinuous blocks.
 ## 🧪 Testing
 
 ```bash
-# Run enrichment tests
+# Run all enrichment tests
 pytest tests/mathster/enrichment/ -v
 
-# Test on sample chapter
+# Test text extraction only
 python -c "
 from mathster.enrichment import enrich_chapter_file
 from pathlib import Path
@@ -741,33 +943,61 @@ from pathlib import Path
 output = enrich_chapter_file(Path('docs/source/1_euclidean_gas/parser/chapter_3.json'))
 print(f'✓ Enriched: {output}')
 "
+
+# Test enrichment + validation
+python -c "
+from mathster.enrichment import enrich_chapter_file, validate_chapter
+from pathlib import Path
+
+# Enrich
+enriched = enrich_chapter_file(Path('docs/source/1_euclidean_gas/parser/chapter_3.json'))
+print(f'✓ Enriched: {enriched}')
+
+# Validate
+report = validate_chapter(enriched, entity_types=['parameters'], max_entities=5)
+print(f'✓ Validated: {report[\"total_validated\"]} entities')
+print(f'  Valid: {report[\"valid\"]}, Invalid: {report[\"invalid\"]}')
+"
 ```
 
 ---
 
 ## 🚧 Future Enhancements
 
-### Planned Features
+### Implemented Features
 
-- [ ] **Semantic Validation** (DSPy-based)
+- [x] **Semantic Validation** (DSPy-based) ✅
   - Verify extracted text matches entity type
   - Check for missing references
   - Validate completeness
+  - Confidence scoring and detailed error reporting
 
-- [ ] **Batch Processing**
+### Planned Features
+
+- [ ] **CLI Interface**
+  - Command-line tool for enrichment and validation
+  - Batch processing from command line
+  - Progress bars and verbose logging
+
+- [ ] **Parallel Batch Processing**
   - Process all chapters in parallel
   - Progress tracking
-  - Error recovery
+  - Error recovery and retry logic
 
 - [ ] **Smart Caching**
   - Cache file reads across chapters
   - Skip already-enriched files
-  - Incremental updates
+  - Incremental updates based on file modification time
 
 - [ ] **Text Normalization**
   - Remove line numbers from extracted text
   - Clean up markdown formatting
   - Standardize LaTeX delimiters
+
+- [ ] **Advanced Validation**
+  - Cross-reference validation (check referenced entities exist)
+  - LaTeX syntax validation
+  - Structural consistency checks
 
 ---
 
@@ -786,7 +1016,10 @@ See project root LICENSE file.
 
 ---
 
-**Version**: 1.0.0
-**Module Type**: Text Processing Utility
-**Dependencies**: mathster.core (SourceLocation, TextLocation, RawDocumentSection)
-**Last Updated**: 2025-01-11
+**Version**: 1.1.0
+**Module Type**: Text Processing & Semantic Validation
+**Dependencies**:
+- mathster.core (SourceLocation, TextLocation, RawDocumentSection)
+- mathster.dspy_integration (DSPy configuration)
+- dspy (semantic validation agents)
+**Last Updated**: 2025-11-06

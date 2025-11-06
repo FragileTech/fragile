@@ -1,9 +1,9 @@
 # Mathematical Reference for the Fragile Gas Framework
 
-**Version:** 2.2 (Enhanced with quantitative error bounds)
-**Last Updated:** 2025-10-24
-**Total Entries:** 106 (curated from 741 total in glossary)
-**Coverage:** Chapter 1: ~60 entries, Chapter 2: ~41 entries
+**Version:** 2.3 (Enhanced with HK convergence and quantitative error bounds)
+**Last Updated:** 2025-01-06
+**Total Entries:** ~135 (curated from 741 total in glossary)
+**Coverage:** Chapter 1: ~85 entries, Chapter 2: ~41 entries
 
 ---
 
@@ -14,8 +14,8 @@ This document provides a **curated TLDR reference** for the most important mathe
 **Target Audience:** Language models, researchers, and engineers needing quick understanding of key theorems and proofs.
 
 **Relationship with Other Documents:**
-- **This document (reference.md)**: 101 curated entries with TLDR format, detailed explanations, and "why it matters" context
-- **docs/glossary.md**: Exhaustive index of all 723 mathematical entries with basic metadata (type, label, tags, source)
+- **This document (reference.md)**: ~135 curated entries with TLDR format, detailed explanations, and "why it matters" context
+- **docs/glossary.md**: Exhaustive index of all 741 mathematical entries with basic metadata (type, label, tags, source)
 - **Source documents**: Full rigorous proofs and detailed mathematical development
 
 **Design Philosophy:**
@@ -26,16 +26,16 @@ This document provides a **curated TLDR reference** for the most important mathe
 
 **How to Use:**
 1. **Start here** for understanding key results with context and motivation
-2. **Search by tag:** Use tags like `cloning`, `kinetic`, `lsi`, `qsd`, `convergence`, etc.
+2. **Search by tag:** Use tags like `cloning`, `kinetic`, `lsi`, `qsd`, `convergence`, `hk-metric`, `quantitative-bounds`, etc.
 3. **Browse by section:** Navigate conceptual hierarchy (foundations → operators → convergence → geometry)
 4. **Follow references:** Use labels and cross-references to explore related results
-5. **For exhaustive search:** Use **docs/glossary.md** to find all 723 entries by label/tag
+5. **For exhaustive search:** Use **docs/glossary.md** to find all 741 entries by label/tag
 6. **For full proofs:** Consult source documents listed in each entry
 
 **Document Coverage:**
-- **Chapter 1: Euclidean Gas** (~60 curated entries) - Core framework, operators, convergence theory
+- **Chapter 1: Euclidean Gas** (~85 curated entries) - Core framework, operators, convergence theory, HK metric, quantitative bounds
 - **Chapter 2: Geometric Gas** (~41 curated entries) - Adaptive mechanisms, emergent Riemannian geometry, anisotropic diffusion
-- **Total**: 101 entries carefully selected from 723 total mathematical results in the framework
+- **Total**: ~135 entries carefully selected from 741 total mathematical results in the framework
 
 ---
 
@@ -54,13 +54,15 @@ This document provides a **curated TLDR reference** for the most important mathe
 10. [Mean-Field Limit and McKean-Vlasov PDE](#10-mean-field-limit-and-mckean-vlasov-pde)
 11. [Propagation of Chaos](#11-propagation-of-chaos)
 12. [KL-Divergence Convergence and LSI Theory](#12-kl-divergence-convergence-and-lsi-theory)
+12a. [Hellinger-Kantorovich Convergence](#12a-hellinger-kantorovich-convergence)
+12b. [Quantitative Error Bounds](#12b-quantitative-error-bounds)
 
 ### Chapter 2: Geometric Gas
 13. [Geometric Gas: Adaptive Mechanisms](#13-geometric-gas-adaptive-mechanisms)
 14. [Emergent Riemannian Geometry](#14-emergent-riemannian-geometry)
 15. [Anisotropic Diffusion and Hypocoercivity](#15-anisotropic-diffusion-and-hypocoercivity)
 16. [Geometric Gas Convergence](#16-geometric-gas-convergence)
-17. [C³ and C⁴ Regularity Theory](#17-c3-and-c4-regularity-theory)
+17. [C³ and C∞ Regularity Theory](#17-c3-and-c4-regularity-theory)
 18. [N-Uniform LSI for Geometric Gas](#18-n-uniform-lsi-for-geometric-gas)
 
 ### Cross-Cutting Themes
@@ -1340,6 +1342,130 @@ $$\text{KL}(\mu_t \| \nu_{\text{QSD}}) \leq e^{-\lambda t} \text{KL}(\mu_0 \| \n
 
 ---
 
+## 12a. Hellinger-Kantorovich Convergence
+
+The **Hellinger-Kantorovich (HK) metric** provides a unified framework for analyzing both **mass dynamics** (Hellinger distance) and **spatial transport** (Wasserstein distance). Chapter 11 establishes exponential convergence in this metric with explicit rates, completing the trilogy of convergence proofs (TV, W₂, HK).
+
+### Main HK Convergence Theorem
+
+**Label:** `thm-hk-convergence-main-assembly`
+**Source:** Chapter 11 §1
+**Tags:** `hk-convergence`, `exponential-rate`, `main-result`
+
+**TLDR:** The Euclidean Gas converges exponentially fast in the HK metric to the QSD with explicit rate and residual bound.
+
+**Formula:**
+$$
+d_{\text{HK}}(\mu_t, \pi_{\text{QSD}}) \leq e^{-\kappa_{\text{HK}} t/2} d_{\text{HK}}(\mu_0, \pi) + O\left(\sqrt{\frac{C_{\text{HK}}}{\kappa_{\text{HK}}}}\right)
+$$
+
+**Why it matters:** Provides strongest finite-N convergence result, capturing both mass and spatial dynamics. Foundation for quantitative error bounds and large deviation analysis.
+
+**Related:** `thm-wasserstein-contraction`, `lem-tripartite-decomposition`
+
+---
+
+### Bounded Density Ratio (Proven)
+
+**Label:** `thm-bounded-density-ratio-main`
+**Source:** Chapter 11 §5
+**Tags:** `bounded-density`, `hypoelliptic`, `qsd-theory`, `proven`
+
+**TLDR:** The ratio π_QSD/p_τ is uniformly bounded via hypoelliptic regularity theory - RIGOROUSLY PROVEN.
+
+**Formula:**
+$$
+M := \sup_{x,v} \frac{\pi_{\text{QSD}}(x,v)}{p_\tau((x,v) | (x_0, v_0))} < \infty
+$$
+
+**Proof method:** Hörmander's bracket condition + Parabolic Harnack inequality + QSD strict positivity + Gaussian mollification (Hairer & Mattingly 2011).
+
+**Why it matters:** Removes all conditional assumptions from HK convergence theorem. Makes the entire framework unconditionally rigorous.
+
+**Related:** `lem-hormander-bracket`, `thm-parabolic-harnack`
+
+---
+
+### Tripartite Decomposition
+
+**Label:** `lem-tripartite-decomposition`
+**Source:** Chapter 11 §3
+**Tags:** `decomposition`, `proof-structure`
+
+**TLDR:** HK convergence decomposes into three independent contractive mechanisms: mass, structural variance, and Hellinger shape.
+
+**Components:**
+1. Mass contraction: |α_t - 1| ≤ e^{-κ_α t}
+2. Structural variance contraction from Wasserstein bounds
+3. Hellinger shape contraction via hypocoercivity
+
+**Why it matters:** Modular proof structure isolating independent mechanisms.
+
+**Related:** `lem-mass-contraction-revival-death`, `lem-kinetic-hellinger-contraction`
+
+---
+
+## 12b. Quantitative Error Bounds
+
+Chapter 12 establishes **explicit quantitative bounds** for three error sources: mean-field approximation (O(1/√N)), time discretization (O(τ²)), and mixing time (O(e^(-κt))).
+
+### Total Error Decomposition
+
+**Label:** `thm-total-error-bound`
+**Source:** Chapter 12 §5
+**Tags:** `total-error`, `decomposition`, `main-result`
+
+**TLDR:** Total error decomposes into three independent, quantifiable components.
+
+**Formula:**
+$$
+\text{Error}_{\text{total}} = O\left(\frac{1}{\sqrt{N}}\right) + O(\tau^2) + O(e^{-\kappa_{\text{mix}} t})
+$$
+
+**Why it matters:** Practical guidance for balancing N (cost) vs τ (accuracy) vs t (runtime).
+
+**Related:** `thm-quantitative-propagation-chaos`, `thm-full-system-discretization-error`
+
+---
+
+### Quantitative Propagation of Chaos
+
+**Label:** `thm-quantitative-propagation-chaos`
+**Source:** Chapter 12 §1.3
+**Tags:** `propagation-chaos`, `mean-field-error`, `o(1/sqrt(n))`
+
+**TLDR:** Empirical measure converges to mean-field limit at rate O(1/√N).
+
+**Formula:**
+$$
+W_2(\text{Law}(X_1^N, \ldots, X_N^N), \rho_0^{\otimes N}) \leq \frac{C}{\sqrt{N}}
+$$
+
+**Why it matters:** First explicit O(1/√N) bound for Fragile Gas. Guides swarm size selection.
+
+**Related:** `thm-n-uniform-lsi`, `lem-wasserstein-entropy`
+
+---
+
+### BAOAB Weak Convergence
+
+**Label:** `lem-baoab-weak-error`
+**Source:** Chapter 12 §2.1
+**Tags:** `baoab`, `discretization`, `o(tau-squared)`
+
+**TLDR:** BAOAB integrator achieves second-order weak convergence for Langevin dynamics.
+
+**Formula:**
+$$
+|\mathbb{E}[f(X_T)] - \mathbb{E}[f(X_T^{\text{BAOAB}})]| \leq C_f \tau^2 T
+$$
+
+**Why it matters:** Justifies BAOAB as the discretization scheme. O(τ²) is optimal for splitting methods.
+
+**Related:** `prop-fourth-moment-baoab`, `thm-full-system-discretization-error`
+
+---
+
 # Chapter 2: Geometric Gas
 
 ## 13. Geometric Gas: Adaptive Mechanisms
@@ -1847,7 +1973,7 @@ where coupling $\kappa$ measures inter-operator dependence.
 
 ---
 
-## 17. C³ and C⁴ Regularity Theory
+## 17. C³ and C∞ Regularity Theory
 
 ### C³ Regularity of Fitness Potential
 **Label:** (results throughout `13_geometric_gas_c3_regularity.md`)
@@ -1867,37 +1993,38 @@ where coupling $\kappa$ measures inter-operator dependence.
 
 ---
 
-### C⁴ Regularity of Fitness Potential
-**Label:** `thm-c4-regularity`
-**Source:** [14_geometric_gas_c4_regularity.md § 8](source/2_geometric_gas/14_geometric_gas_c4_regularity)
-**Tags:** `regularity`, `c4`, `fitness`, `theorem`
+### C∞ Regularity of Fitness Potential (Full Model)
+**Label:** `thm-cinf-regularity`
+**Source:** [14_geometric_gas_cinf_regularity_full.md § 8](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
+**Tags:** `regularity`, `cinf`, `fitness`, `theorem`, `gevrey`
 
-**What it says:** With smooth primitives (C⁴ measurement, kernel, rescale), fitness potential is C⁴.
+**What it says:** With smooth primitives, fitness potential $V(x)$ is C∞ (infinitely differentiable) with Gevrey-1 bounds for the full companion-dependent model.
 
-**Math:** Fourth derivatives exist and satisfy $\|\nabla^4 V\| \leq K_{V,4}(\rho)$ where $K_{V,4}$ is **N-uniform**.
+**Math:** All derivatives exist with Gevrey-1 control: $\|\nabla^k V\| \leq C \cdot k! \cdot A^k$ for some constants $C, A$, uniformly in **N** and **k**.
 
 **Why it matters:**
-- Enables Bakry-Émery criterion for LSI (requires C² Hessian, i.e., C⁴ potential)
-- Permits fourth-order integrators
-- Conditional Brascamp-Lieb inequality
+- Enables Bakry-Émery criterion for LSI (requires C² Hessian)
+- Supports arbitrary-order integrators with explicit time-step constraints
+- Proves Brascamp-Lieb inequality under uniform convexity
+- Validates mean-field hypocoercivity for state-dependent diffusion
 
-**Related:** `cor-hessian-lipschitz`, `prop-bakry-emery-gamma2`
+**Related:** `cor-hessian-lipschitz`, `prop-bakry-emery-gamma2`, `thm-lsi-geometric`
 
 ---
 
 ### Hessian Lipschitz Continuity
 **Label:** `cor-hessian-lipschitz`
-**Source:** [14_geometric_gas_c4_regularity.md § 9](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+**Source:** [14_geometric_gas_cinf_regularity_full.md § 9](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 **Tags:** `lipschitz`, `hessian`, `corollary`, `regularity`
 
-**What it says:** C⁴ regularity implies Lipschitz Hessian.
+**What it says:** C∞ regularity implies Lipschitz Hessian (and higher-order Lipschitz control).
 
 **Math:**
-$$\|\nabla^2 V(x_1) - \nabla^2 V(x_2)\| \leq K_{V,4} \cdot d(x_1, x_2)$$
+$$\|\nabla^2 V(x_1) - \nabla^2 V(x_2)\| \leq K_{V,3} \cdot d(x_1, x_2)$$
 
-**Why it matters:** Critical for diffusion tensor Lipschitz continuity and SDE well-posedness.
+**Why it matters:** Critical for diffusion tensor Lipschitz continuity, SDE well-posedness, and hypocoercivity analysis with state-dependent diffusion.
 
-**Related:** `prop-lipschitz-diffusion`, `thm-c4-regularity`
+**Related:** `prop-lipschitz-diffusion`, `thm-cinf-regularity`, `thm-lsi-geometric`
 
 ---
 
@@ -1957,7 +2084,7 @@ where $\lambda_{\text{LSI}} = c \cdot \min(\gamma, T/\epsilon_\Sigma, \lambda_{\
 - **Concentration of measure** for QSD (Talagrand, Bobkov-Ledoux)
 - **Mean-field LSI** passes to continuum limit
 
-**Proof ingredients:** Cattiaux-Guillin + N-uniform Poincaré + C³/C⁴ regularity + uniform ellipticity.
+**Proof ingredients:** Cattiaux-Guillin + N-uniform Poincaré + C³/C∞ regularity + uniform ellipticity.
 
 **Related:** `thm-cattiaux-guillin-verification`, `cor-mean-field-lsi`
 
@@ -2016,12 +2143,12 @@ Constant $\lambda_P$ is spectral gap of generator.
 
 ### Brascamp-Lieb Inequality (Conditional)
 **Label:** `cor-brascamp-lieb`
-**Source:** [14_geometric_gas_c4_regularity.md § 9](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+**Source:** [14_geometric_gas_cinf_regularity_full.md § 9](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 **Tags:** `inequality`, `covariance-bound`, `corollary`
 
 **Math:** If $\nu \propto e^{-V}$ with $\nabla^2 V \succeq m I$, then $\text{Cov}_\nu[f, g] \leq \frac{1}{m} \mathbb{E}[\nabla f \cdot \nabla g]$.
 
-**Condition:** Requires C² Hessian (C⁴ potential).
+**Condition:** Requires C² Hessian (C∞ potential).
 
 ---
 

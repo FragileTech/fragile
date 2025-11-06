@@ -390,11 +390,13 @@ $$
 $$
 
 Substituting the derivatives of $1/v$ and simplifying:
+
 $$
 \nabla^3\left(\frac{u}{v}\right) = \frac{\nabla^3 u}{v} - \frac{3\nabla^2 u \otimes \nabla v}{v^2} + \frac{3\nabla u \otimes (2(\nabla v)^{\otimes 2} - v\nabla^2 v)}{v^3} + \frac{u(-6(\nabla v)^{\otimes 3} + 6v(\nabla v \otimes \nabla^2 v) - v^2 \nabla^3 v)}{v^4}
 $$
 
-$$
+**Norm bound:**
+
 $$
 \begin{aligned}
 \left\|\nabla^3\left(\frac{u}{v}\right)\right\| &\le \frac{\|\nabla^3 u\|}{v_{\min}} + \frac{3\|\nabla^2 u\| \|\nabla v\|}{v_{\min}^2} + \frac{6\|\nabla u\| \|\nabla v\|^2}{v_{\min}^3} + \frac{3\|\nabla u\| \|\nabla^2 v\|}{v_{\min}^2} \\
@@ -403,10 +405,6 @@ $$
 $$
 
 where we use $v \geq v_{\min} > 0$ to bound denominators. Note the $v_{\min}^4$ scaling in the highest-order term (from differentiating $v^{-1}$ three times).
-$$
-
-where we use $v \geq v_{\min} > 0$ to bound denominators. Note the $v_{\min}^4$ scaling in the highest-order term (from differentiating $v^{-1}$ three times).
-where we've used $v > 0$ to bound denominators.
 
 **Key Challenge:** The nested composition $g_A(Z_\rho(\mu_\rho, \sigma_\rho))$ requires careful application of these rules, tracking how derivatives propagate through each layer.
 
@@ -1075,35 +1073,27 @@ plus additional terms. We bound each term:
 - Since $v = Z_i(\rho) \ge K_\rho(x_i, x_i) \ge c_0 > 0$ for some constant (kernel is positive at self)
 - Contribution: $O(C_{\nabla^3 K}(\rho)/\rho^3)$
 
-**Term 2:** $|3\nabla u \cdot \nabla^2 v / v^2|$
-- Bound: $3 \cdot (C_{\nabla K}(\rho)/\rho) \cdot (k \cdot C_{\nabla^2 K}(\rho)/\rho^2) / v^2$
-- **Key insight**: The factor $k/v^2$ is **not** k-uniform naively. However, we use the telescoping property:
+**Remarks on k-uniformity:** The quotient rule formula from §2.4 shows that $\nabla^3(u/v)$ involves terms with denominators up to $v^4$, multiplied by various combinations of derivatives of $u$ and $v$. Since $v = Z_i = \sum_{\ell} K_\rho(x_i, x_\ell)$ involves a sum over $k$ walkers, naive application of the quotient rule appears to produce $k$-dependent bounds.
 
-Since $\sum_{\ell} K_\rho(x_i, x_\ell) = v$, we have $v = O(k)$ (more walkers ρ larger normalization). Thus $k/v^2 = O(1/k)$.
-
-More precisely: $v \ge k \cdot \min_\ell K_\rho(x_i, x_\ell) \ge k \cdot c_{\min} > 0$ where $c_{\min}$ depends on the kernel's minimum value on the domain.
-
-Therefore: $k/v^2 \le k/(k \cdot c_{\min})^2 = 1/(k \cdot c_{\min}^2) \le C/k$ for some constant $C$.
-
-**However**, the correct k-uniform bound uses the fact that $\nabla^2 v$ itself involves a sum over $k$ terms, and after telescoping (see Step 5), the $k$-factors cancel.
-
-**Term 3-5:** Similar analysis for other terms in the quotient rule.
+**Key insight:** k-uniformity is achieved through the **normalization constraint** $\sum_j w_{ij} = 1$. When differentiated three times (see Step 5 below), this constraint provides a telescoping identity that ensures cancellation of $k$-dependent factors. The quotient rule terms involving high powers of $1/Z_i$ combine with sums over $j$ to produce k-uniform expressions.
 
 **Step 5: Achieve k-uniformity via telescoping.**
 
-The naive bound from Step 4 appears to grow with $k$. To obtain k-uniformity, we exploit the constraint $\sum_j w_{ij} = 1$.
+Differentiating the normalization constraint $\sum_{j \in A_k} w_{ij} = 1$ three times yields the **telescoping identity**:
 
-Differentiating this constraint three times:
 $$
 \sum_{j \in A_k} \nabla^3_{x_i} w_{ij}(\rho) = 0
 $$
 
-This means when we sum $\nabla^3 w_{ij}$ over all $j$, terms involving the denominator $v = Z_i$ exactly cancel. The dominant contribution comes from:
+This identity ensures that when $\nabla^3 w_{ij}$ appears in weighted sums (as in the localized moments in §5), the $Z_i$-dependent correction terms from the quotient rule sum to zero, leaving only k-uniform contributions.
+
+More precisely, the quotient rule structure implies:
+
 $$
-\nabla^3 w_{ij} = \frac{\nabla^3 K_\rho(x_i, x_j)}{Z_i} + \text{lower-order terms}
+\nabla^3 w_{ij} = \frac{\nabla^3 K_\rho(x_i, x_j)}{Z_i} + \text{(correction terms from } \nabla^m Z_i\text{, } m=1,2,3\text{)}
 $$
 
-where the lower-order terms involve products of derivatives of $K_\rho$ with derivatives of $1/Z_i$.
+The leading term $\nabla^3 K_\rho(x_i, x_j) / Z_i$ is already k-uniform since both the numerator $\nabla^3 K_\rho$ (bounded by $C_{\nabla^3 K}(\rho)/\rho^3$, independent of $k$) and denominator $Z_i = O(k)$ scale appropriately. The correction terms involve products of kernel derivatives with derivatives of $Z_i^{-1}$, which contain factors of $k$ from sums in $\nabla^m Z_i$. The telescoping identity guarantees that when these are summed over $j$, the net $k$-dependence cancels.
 
 **Step 6: Explicit bound.**
 
@@ -1142,14 +1132,13 @@ $$
 \|\nabla^3_{x_i} \mu_\rho^{(i)}\| \leq K_{\mu,3}(\rho, \varepsilon_d, \varepsilon_c)
 $$
 
-where:
+where $C_{d,m}$ denote constants from the bounds $\|\nabla^m d_j\|$ (from Lemma {prf:ref}`lem-derivative-locality-c3`), and:
+
 $$
-K_{\mu,3}(\rho, \varepsilon_d, \varepsilon_c) := C_{d,3} \varepsilon_d^{-2} + \frac{6 C_{d,2} \varepsilon_d^{-1} C_{\nabla K}(\rho)}{\rho} + \frac{6 C_{d,1} C_{\nabla^2 K}(\rho)}{\rho^2} + 2 D_{\max} C_{w,3}(\rho)
+K_{\mu,3}(\rho, \varepsilon_d, \varepsilon_c) := C_{d,3} \varepsilon_d^{-2} + \frac{6 C_{d,2} \varepsilon_d^{-1} C_{\nabla K}(\rho)}{\rho} k_{\text{eff}}^{(\rho)} + \frac{6 C_{d,1} C_{\nabla^2 K}(\rho)}{\rho^2} k_{\text{eff}}^{(\rho)} + 2 D_{\max} C_{w,3}(\rho) k_{\text{eff}}^{(\rho)}
 $$
 
-
-**Note on $k_{\text{eff}}^{(\rho)}$ dependence**: The constant $K_{\mu,3}$ implicitly contains $k_{\text{eff}}^{(\rho)} \leq C_{\text{vol}} \rho_{\max} \rho^{2d}$ in the last three terms (those with weight derivatives). When $C_{w,3}(\rho) = O(\rho^{-3})$, the bound scales as $K_{\mu,3} = O(\varepsilon_d^{-2}) + O(\rho^{2d-1}) + O(\rho^{2d-2}) + O(\rho^{2d-3})$, matching Document 20's $m=3$ formula.
-with $C_{d,m}$ denoting constants from the bounds $\|\nabla^m d_j\|$ (from Lemma {prf:ref}`lem-derivative-locality-c3`).
+**Note on $k_{\text{eff}}^{(\rho)}$ dependence**: The last three terms (those involving weight derivatives) scale with $k_{\text{eff}}^{(\rho)} \leq C_{\text{vol}} \rho_{\max} \rho^{2d}$. When $C_{w,3}(\rho) = O(\rho^{-3})$, the bound scales as $K_{\mu,3} = O(\varepsilon_d^{-2}) + O(\rho^{2d-1}) + O(\rho^{2d-2}) + O(\rho^{2d-3})$, matching Document 20's $m=3$ formula.
 
 This bound is **k-uniform** and **N-uniform** due to the two-scale framework (derivative locality + telescoping).
 :::
@@ -1299,15 +1288,13 @@ $$
 **Note**: The term $(\nabla u)^3$ does **NOT** appear because $d^3/du^3(u^2) = 0$.
 
 Bounding each term using $|\mu_\rho^{(i)}| \leq D_{\max}$ and bounds from Lemma {prf:ref}`lem-mean-third-derivative`:
-$$
-\|\nabla^3[(\mu_\rho)^2]\| \leq 2D_{\max} K_{\mu,3}(\rho, \varepsilon_d, \varepsilon_c) + 6 K_{\mu,1} K_{\mu,2}
+
 $$
 \|\nabla^3[(\mu_\rho)^2]\| \leq 2D_{\max} K_{\mu,3}(\rho, \varepsilon_d, \varepsilon_c) + 6 K_{\mu,1} K_{\mu,2}
 $$
 
 where $K_{\mu,1}, K_{\mu,2}$ are first and second derivative bounds of $\mu_\rho$ (from lower-order analysis).
 
-**Step 3: Third derivative of $d_j^2$ using chain rule.**
 **Step 3: Third derivative of $d_j^2$ using correct chain rule.**
 
 For each $j$, applying the correct chain rule to $d_j^2$ (using Faà di Bruno with $h(u)=u^2$ where $h'''(u)=0$):
@@ -1318,9 +1305,9 @@ $$
 **Note**: The term $(\nabla d_j)^3$ does **NOT** appear because $d^3/du^3(u^2) = 0$.
 
 Bounding using derivative locality (Lemma {prf:ref}`lem-derivative-locality-c3`):
+
 $$
 \|\nabla^3[d_j^2]\| \leq 2D_{\max} C_{d,3} \varepsilon_d^{-2} + 6 C_{d,1} C_{d,2} \varepsilon_d^{-1}
-$$
 $$
 
 **Step 4: Leibniz rule for $w_{ij} \cdot d_j^2$.**

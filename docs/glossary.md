@@ -28,7 +28,7 @@ Comprehensive index of all mathematical entries from the Fragile Gas framework.
 - [11_geometric_gas.md](#11_geometric_gas) (60 entries)
 - [12_symmetries_geometric_gas.md](#12_symmetries_geometric_gas) (17 entries)
 - [13_geometric_gas_c3_regularity.md](#13_geometric_gas_c3_regularity) (22 entries)
-- [14_geometric_gas_c4_regularity.md](#14_geometric_gas_c4_regularity) (19 entries)
+- [14_geometric_gas_cinf_regularity_full.md](#14_geometric_gas_cinf_regularity_full) (19 entries)
 - [15_geometric_gas_lsi_proof.md](#15_geometric_gas_lsi_proof) (7 entries)
 - [16_convergence_mean_field.md](#16_convergence_mean_field) (35 entries)
 - [18_emergent_geometry.md](#18_emergent_geometry) (40 entries)
@@ -2861,83 +2861,83 @@ Comprehensive index of all mathematical entries from the Fragile Gas framework.
 
 ---
 
-### Source: 14_geometric_gas_c4_regularity.md {#14_geometric_gas_c4_regularity}
+### Source: 14_geometric_gas_cinf_regularity_full.md {#14_geometric_gas_cinf_regularity_full}
 
 
 ### C⁴ Measurement Function
-- **Source:** [14_geometric_gas_c4_regularity.md § 3.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 3.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** C⁴ Measurement Function
 
 ### C⁴ Localization Kernel
-- **Source:** [14_geometric_gas_c4_regularity.md § 3.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 3.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** C⁴ Localization Kernel
 
 ### C⁴ Rescale Function
-- **Source:** [14_geometric_gas_c4_regularity.md § 3.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 3.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** C⁴ Rescale Function
 
 ### C^∞ Regularized Standard Deviation
-- **Source:** [14_geometric_gas_c4_regularity.md § 3.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 3.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** C^∞ Regularized Standard Deviation
 
 ### Bounded Measurement Range
-- **Source:** [14_geometric_gas_c4_regularity.md § 3.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 3.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** Bounded Measurement Range
 
 ### QSD Bounded Density (Regularity Condition R2)
-- **Source:** [14_geometric_gas_c4_regularity.md § 3.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 3.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** QSD Bounded Density (Regularity Condition R2)
 
 ### Fourth Derivative of Localization Weights
-- **Source:** [14_geometric_gas_c4_regularity.md § 4.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 4.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** Fourth Derivative of Localization Weights
 
 ### Telescoping Property for Fourth Derivative
-- **Source:** [14_geometric_gas_c4_regularity.md § 4.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 4.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** Telescoping Property for Fourth Derivative
 
 ### Fourth Derivative of Localized Mean
-- **Source:** [14_geometric_gas_c4_regularity.md § 5.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 5.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** Fourth Derivative of Localized Mean
 
 ### Fourth Derivative of Localized Variance
-- **Source:** [14_geometric_gas_c4_regularity.md § 5.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 5.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** Fourth Derivative of Localized Variance
 
 ### Chain Rule for $\sigma'_{\text{reg}}$
-- **Source:** [14_geometric_gas_c4_regularity.md § 6.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 6.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** Chain Rule for
 
 ### Fourth Derivative of Z-Score
-- **Source:** [14_geometric_gas_c4_regularity.md § 7.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 7.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** Fourth Derivative of Z-Score
 
 ### C⁴ Regularity of Fitness Potential
-- **Source:** [14_geometric_gas_c4_regularity.md § 8.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 8.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** C⁴ Regularity of Fitness Potential
 
 ### Hessian Lipschitz Continuity
-- **Source:** [14_geometric_gas_c4_regularity.md § 9.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 9.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** Hessian Lipschitz Continuity
 
 ### Fourth-Order Integrator Compatibility
-- **Source:** [14_geometric_gas_c4_regularity.md § 9.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 9.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** Fourth-Order Integrator Compatibility
 
 ### Brascamp-Lieb Inequality (Conditional)
-- **Source:** [14_geometric_gas_c4_regularity.md § 9.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 9.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** Brascamp-Lieb Inequality (Conditional)
 
 ### Bakry-Émery Γ₂ Criterion (Conditional)
-- **Source:** [14_geometric_gas_c4_regularity.md § 9.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 9.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** Bakry-Émery Γ₂ Criterion (Conditional)
 
 ### Fourth-Derivative Scaling
-- **Source:** [14_geometric_gas_c4_regularity.md § 10.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 10.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** Fourth-Derivative Scaling
 
 ### Time Step Constraint (Corrected)
-- **Source:** [14_geometric_gas_c4_regularity.md § 10.](source/2_geometric_gas/14_geometric_gas_c4_regularity)
+- **Source:** [14_geometric_gas_cinf_regularity_full.md § 10.](source/2_geometric_gas/14_geometric_gas_cinf_regularity_full)
 - **Description:** Time Step Constraint (Corrected)
 
 ---

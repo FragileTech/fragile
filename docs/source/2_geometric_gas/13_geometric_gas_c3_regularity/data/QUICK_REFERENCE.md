@@ -140,7 +140,7 @@ For h = u·v:
 - Theorem 1.7.2 - BAOAB discretization theorem
 
 ### Forward Reference (⚠️ CRITICAL)
-- `14_geometric_gas_c4_regularity.md` Lemma 5.1
+- `14_geometric_gas_cinf_regularity_full.md` Lemma 5.1
 - Provides corrected scaling C_{μ,∇^m}(ρ) = O(ρ^{-(m-1)})
 - **Needed for**: `prop-scaling-kv3` proof
 
@@ -153,7 +153,7 @@ For h = u·v:
 ✅ **Do**: Apply telescoping identity first
 
 ❌ **Don't**: Assume K_{V,3}(ρ) = O(ρ⁻³) from first principles
-✅ **Do**: Use corrected moment scaling from C⁴ document
+✅ **Do**: Use corrected moment scaling from C∞ document
 
 ❌ **Don't**: Ignore ρ-dependence in time step selection
 ✅ **Do**: Scale Δt ~ ρ³ for stability
