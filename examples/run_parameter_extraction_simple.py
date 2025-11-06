@@ -16,17 +16,17 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from mathster.parsing.conversion.labels import sanitize_label
-from mathster.parsing.conversion.sources import create_source_location
-from mathster.parsing.text_processing.analysis import (
+from mathster.dspy_integration.text_utils import sanitize_label, split_markdown_by_chapters_with_line_numbers
+from mathster.parameter_extraction.text_processing import (
     collect_parameters_from_extraction,
     find_parameter_declarations,
 )
-from mathster.parsing.text_processing.splitting import split_markdown_by_chapters_with_line_numbers
+from mathster.parsing.conversion.sources import create_source_location
 
 
 def extract_parameters_simple(
     chapter_text: str,
+    full_document_text: str,
     existing_extraction: dict,
     file_path: str,
     article_id: str,
@@ -35,7 +35,8 @@ def extract_parameters_simple(
     Simple parameter extraction without AI.
 
     Args:
-        chapter_text: Chapter text with line numbers
+        chapter_text: Chapter text with line numbers (for context)
+        full_document_text: Full document text with line numbers (for searching)
         existing_extraction: Existing chapter extraction
         file_path: Source file path
         article_id: Article ID
@@ -49,8 +50,8 @@ def extract_parameters_simple(
     if not parameters_mentioned:
         return []
 
-    # Step 2: Find declarations in text
-    declarations = find_parameter_declarations(chapter_text, list(parameters_mentioned))
+    # Step 2: Find declarations in FULL document text (not just this chapter)
+    declarations = find_parameter_declarations(full_document_text, list(parameters_mentioned))
 
     # Step 3: Create Parameter objects
     raw_parameters = []
@@ -160,6 +161,13 @@ def run_parameter_extraction(document_path: str):
     chapters = split_markdown_by_chapters_with_line_numbers(str(doc_path))
     print(f"Found {len(chapters)} chapters\n")
 
+    # Load FULL document with line numbers (for cross-chapter parameter search)
+    with open(doc_path, encoding="utf-8") as f:
+        full_doc_lines = f.readlines()
+    # Add line numbers to full document
+    full_document_text = "\n".join(f"{i+1:03d}: {line.rstrip()}" for i, line in enumerate(full_doc_lines))
+    print(f"Loaded full document: {len(full_doc_lines)} lines\n")
+
     article_id = doc_name
     total_params_extracted = 0
 
@@ -184,12 +192,13 @@ def run_parameter_extraction(document_path: str):
             total_params_extracted += len(existing_params)
             continue
 
-        # Get chapter text
+        # Get chapter text (for context, not used for searching)
         chapter_text = chapters[i]
 
-        # Simple extraction (no AI)
+        # Simple extraction with FULL document search
         raw_parameters = extract_parameters_simple(
             chapter_text=chapter_text,
+            full_document_text=full_document_text,  # NEW: search entire document
             existing_extraction=chapter_data,
             file_path=str(doc_path),
             article_id=article_id,

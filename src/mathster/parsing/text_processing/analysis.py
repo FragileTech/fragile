@@ -374,14 +374,27 @@ def _get_symbol_variants(symbol: str) -> list[str]:
 
     # If symbol contains underscore (e.g., "gamma_fric"), handle LaTeX variants
     if "_" in symbol:
-        # gamma_fric → \gamma_{\mathrm{fric}}
-        parts = symbol.split("_")
-        if parts[0].lower() in greek_map:
-            latex_variant = f"\\{parts[0]}_{{\\mathrm{{{parts[1]}}}}}"
-            variants.append(latex_variant)
-            # Also add: γ_fric
-            greek_variant = f"{greek_map[parts[0].lower()]}_{parts[1]}"
-            variants.append(greek_variant)
+        parts = symbol.split("_", 1)  # Split only on first underscore
+        base = parts[0]
+        subscript = parts[1]
+
+        if base.lower() in greek_map:
+            # Add multiple LaTeX subscript formats
+            variants.append(f"\\{base.lower()}_{{\\mathrm{{{subscript}}}}}")  # \gamma_{\mathrm{fric}}
+            variants.append(f"\\{base.lower()}_{{\\text{{{subscript}}}}}")    # \gamma_{\text{fric}}
+            variants.append(f"\\{base.lower()}_{{{subscript}}}")              # \gamma_{fric}
+            variants.append(f"\\{base.lower()}_{subscript}")                  # \gamma_fric (no braces)
+
+            # Greek character variants
+            greek_char = greek_map[base.lower()]
+            variants.append(f"{greek_char}_{{\\mathrm{{{subscript}}}}}")     # γ_{\mathrm{fric}}
+            variants.append(f"{greek_char}_{{\\text{{{subscript}}}}}")       # γ_{\text{fric}}
+            variants.append(f"{greek_char}_{{{subscript}}}")                  # γ_{fric}
+            variants.append(f"{greek_char}_{subscript}")                      # γ_fric
+        else:
+            # Non-Greek subscripted variables (e.g., x_i, v_n)
+            variants.append(f"{base}_{{{subscript}}}")                        # x_{i}
+            variants.append(f"{base}_{subscript}")                            # x_i
 
     return variants
 

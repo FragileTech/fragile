@@ -1,4 +1,3 @@
-
 # The Mean-Field Limit and Continuous Forward Equation**
 
 ## Introduction
@@ -243,6 +242,7 @@ where $\mathcal{L}_{\text{kin}}$ is a local, second-order differential operator 
 Before defining the continuous generator, we first specify the high-fidelity discrete-time integrator whose continuous limit it represents. The kinetic stage of the Euclidean Gas algorithm is not a simple Euler-Maruyama step but a robust, time-reversible, and symmetric splitting integrator known as **BAOAB**. This scheme is specifically designed for the underdamped Langevin equation and provides excellent stability and sampling accuracy, making it a solid foundation for our continuous model.
 
 The integrator is designed to provide a numerical solution to the following stochastic differential equation (SDE) for a single particle:
+
 $$
 \begin{cases}
 \mathrm d X_t = V_t\,\mathrm dt,\\[2pt]
@@ -258,27 +258,32 @@ where $W_t$ is a standard Wiener process and all parameters are as defined in th
 For a single particle with state $(x_n, v_n)$ at time $t_n$, the state $(x_{n+1}, v_{n+1})$ at time $t_{n+1} = t_n + \tau$ is computed via the following five steps:
 
 1.  **B-Step (Force Kick):** The velocity is updated with a half-step kick from the conservative force $F(x)$.
+
     $$
     v_{n+1/2}^{(1)} = v_n + \frac{\tau}{2m} F(x_n)
     $$
 
 2.  **A-Step (Position Drift):** The position is updated with a half-step drift using the new velocity.
+
     $$
     x_{n+1/2} = x_n + \frac{\tau}{2} v_{n+1/2}^{(1)}
     $$
 
 3.  **O-Step (Ornstein-Uhlenbeck):** The velocity is updated for a full timestep by exactly solving the Ornstein-Uhlenbeck process that combines friction and thermal noise. Let $u_{n+1/2} = u(x_{n+1/2})$ be the flow field evaluated at the midpoint.
+
     $$
     v_{n+1/2}^{(2)} = u_{n+1/2} + e^{-\gamma_{\mathrm{fric}}\tau}\left(v_{n+1/2}^{(1)} - u_{n+1/2}\right) + \sqrt{\frac{\Theta}{m}(1 - e^{-2\gamma_{\mathrm{fric}}\tau})} \cdot \xi
     $$
     where $\xi \sim \mathcal{N}(0, I_d)$ is a standard Gaussian random vector.
 
 4.  **A-Step (Position Drift):** The position is updated with a final half-step drift.
+
     $$
     x_{n+1} = x_{n+1/2} + \frac{\tau}{2} v_{n+1/2}^{(2)}
     $$
 
 5.  **B-Step (Force Kick):** The velocity is updated with a final half-step kick using the force evaluated at the new position, $F(x_{n+1})$.
+
     $$
     v_{n+1} = v_{n+1/2}^{(2)} + \frac{\tau}{2m} F(x_{n+1})
     $$

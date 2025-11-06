@@ -138,3 +138,66 @@ class ExtractParameters(dspy.Signature):
     parameters: list = dspy.OutputField(
         desc="List of ParameterExtraction objects with label, symbol, meaning, scope, line ranges"
     )
+
+
+class FindParameterLineNumber(dspy.Signature):
+    """
+    Find the precise line number where a parameter is defined or first meaningfully mentioned.
+
+    This signature is used when automated regex patterns fail to find a parameter's definition.
+    The agent should search the numbered document text and locate:
+
+    1. **Formal definition** (highest priority):
+       - "Let X be..." or "Let X denote..."
+       - "X denotes..." or "X represents..."
+       - "X := ..." (definition with assignment)
+       - "where X is..." or "where X = ..."
+
+    2. **First meaningful mention** (fallback):
+       - First occurrence in a displayed formula ($$...$$)
+       - First occurrence in algorithm specification
+       - First occurrence in theorem statement
+
+    3. **Context clues** to help:
+       - Usage context shows where parameter appears in definitions/theorems
+       - Symbol variants help match LaTeX, Greek letters, subscripts
+
+    The agent should:
+    - Search for the parameter using all variants
+    - Prioritize formal definitions over mentions
+    - Return precise line numbers from numbered text
+    - Explain reasoning and indicate confidence
+    - Return line 1 only if truly not found anywhere
+    """
+
+    parameter_symbol: str = dspy.InputField(
+        desc="Parameter symbol to locate (e.g., 'tau', 'gamma_fric', 'V_alg', 'N')"
+    )
+
+    symbol_variants: str = dspy.InputField(
+        desc="JSON list of symbol variants to search: LaTeX (\\tau), Greek (τ), subscripted (\\gamma_{\\mathrm{fric}}), etc."
+    )
+
+    document_with_lines: str = dspy.InputField(
+        desc="Full document text with line numbers in format 'NNN: content' (use these line numbers in output)"
+    )
+
+    context_from_entity: str = dspy.InputField(
+        desc="Context showing how parameter is used (from definition/theorem that mentions it) - helps understand what to look for"
+    )
+
+    line_start: int = dspy.OutputField(
+        desc="Starting line number where parameter is defined or first meaningfully mentioned (extract from 'NNN:' prefix)"
+    )
+
+    line_end: int = dspy.OutputField(
+        desc="Ending line number (usually line_start + 1 or line_start + 2 for multi-line definitions)"
+    )
+
+    confidence: str = dspy.OutputField(
+        desc="Confidence level: 'high' (formal definition found), 'medium' (clear first mention), 'low' (guess/not found - return line 1)"
+    )
+
+    reasoning: str = dspy.OutputField(
+        desc="Brief explanation of where parameter was found and why these line numbers were chosen (1-2 sentences)"
+    )

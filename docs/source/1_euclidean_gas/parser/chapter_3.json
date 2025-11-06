@@ -211,95 +211,26 @@
   "citations": [],
   "parameters": [
     {
-      "label": "param-sigma_v",
-      "symbol": "sigma_v",
-      "meaning": "Parameter sigma_v",
+      "label": "param-c",
+      "symbol": "c",
+      "meaning": "Parameter c",
       "scope": "global",
-      "full_text": "",
+      "full_text": "$$  Setting $C := \\max(C_1 M_f |\\mathcal{T}_\\delta|, M_v/\\delta)$ gives:  $$",
       "source": {
         "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
         "line_range": {
           "lines": [
             [
-              1,
-              1
+              1209,
+              1211
             ]
           ]
         },
-        "label": "param-sigma_v",
+        "label": "param-c",
         "volume": "1_euclidean_gas",
         "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-t_n",
-      "symbol": "t_n",
-      "meaning": "Parameter t_n",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-t_n",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-u",
-      "symbol": "u",
-      "meaning": "Parameter u",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-u",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-tau",
-      "symbol": "tau",
-      "meaning": "Time step size",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-tau",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
       }
     },
     {
@@ -307,183 +238,45 @@
       "symbol": "x_i",
       "meaning": "Parameter x_i",
       "scope": "global",
-      "full_text": "",
+      "full_text": "$$ \\mathrm d x_i = v_i\\,\\mathrm dt,\\qquad \\mathrm d v_i = \\left(\\frac{1}{m}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\,\\mathrm dt \\;+\\; \\sigma_v\\,\\mathrm dW_t $$",
       "source": {
         "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
         "line_range": {
           "lines": [
             [
-              1,
-              1
+              312,
+              314
             ]
           ]
         },
         "label": "param-x_i",
         "volume": "1_euclidean_gas",
         "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
       }
     },
     {
-      "label": "param-q_delta",
-      "symbol": "Q_delta",
-      "meaning": "Parameter Q_delta",
+      "label": "param-v_i",
+      "symbol": "v_i",
+      "meaning": "Parameter v_i",
       "scope": "global",
-      "full_text": "",
+      "full_text": "$$ \\mathrm d x_i = v_i\\,\\mathrm dt,\\qquad \\mathrm d v_i = \\left(\\frac{1}{m}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\,\\mathrm dt \\;+\\; \\sigma_v\\,\\mathrm dW_t $$",
       "source": {
         "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
         "line_range": {
           "lines": [
             [
-              1,
-              1
+              313,
+              315
             ]
           ]
         },
-        "label": "param-q_delta",
+        "label": "param-v_i",
         "volume": "1_euclidean_gas",
         "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-w_t",
-      "symbol": "W_t",
-      "meaning": "Parameter W_t",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-w_t",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-omega",
-      "symbol": "Omega",
-      "meaning": "Parameter Omega",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-omega",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-v_n",
-      "symbol": "v_n",
-      "meaning": "Parameter v_n",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-v_n",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-gamma_fric",
-      "symbol": "gamma_fric",
-      "meaning": "Friction coefficient",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-gamma_fric",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-f",
-      "symbol": "F",
-      "meaning": "Parameter F",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-f",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-z_d",
-      "symbol": "z_d",
-      "meaning": "Parameter z_d",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-z_d",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
       }
     },
     {
@@ -510,187 +303,26 @@
       }
     },
     {
-      "label": "param-z_c",
-      "symbol": "z_c",
-      "meaning": "Parameter z_c",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-z_c",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
       "label": "param-lambda_revive",
       "symbol": "lambda_revive",
       "meaning": "Parameter lambda_revive",
       "scope": "global",
-      "full_text": "",
+      "full_text": "where: *   $\\lambda_{\\text{revive}} > 0$ is the **revival rate**, a free parameter independent of the timestep (typical values: 0.1-5) *   $m_d(t) = 1 - m_a(t)$ is the current dead mass",
       "source": {
         "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
         "line_range": {
           "lines": [
             [
-              1,
-              1
+              385,
+              386
             ]
           ]
         },
         "label": "param-lambda_revive",
         "volume": "1_euclidean_gas",
         "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-s",
-      "symbol": "S",
-      "meaning": "Parameter S",
-      "scope": "global",
-      "full_text": "\\end{cases} $$ where $W_t$ is a standard Wiener process and all parameters are as defined in the Euclidean Gas specification. The BAOAB method splits this SDE into analytically solvable parts and composes them symmetrically.  :::{prf:definition} The BAOAB Update Rule",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              23,
-              25
-            ]
-          ]
-        },
-        "label": "param-s",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": "1",
-        "section_name": "Foundations of the Mean-Field Model"
-      }
-    },
-    {
-      "label": "param-x_valid",
-      "symbol": "X_valid",
-      "meaning": "Parameter X_valid",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-x_valid",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-z",
-      "symbol": "z",
-      "meaning": "Parameter z",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-z",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-m_a",
-      "symbol": "m_a",
-      "meaning": "Parameter m_a",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-m_a",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-c",
-      "symbol": "c",
-      "meaning": "Parameter c",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-c",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-f",
-      "symbol": "f",
-      "meaning": "Parameter f",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-f",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
+        "section": "2.3",
+        "section_name": "The Reaction Operators (Killing, Revival, and Cloning)"
       }
     },
     {
@@ -698,22 +330,344 @@
       "symbol": "Theta",
       "meaning": "Temperature parameter",
       "scope": "global",
-      "full_text": "",
+      "full_text": "*   **(H2)** The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz. *   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive. *   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.",
       "source": {
         "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
         "line_range": {
           "lines": [
             [
-              1,
-              1
+              741,
+              742
             ]
           ]
         },
         "label": "param-theta",
         "volume": "1_euclidean_gas",
         "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
+        "section": "4.2",
+        "section_name": "Well-Posedness and Future Work"
+      }
+    },
+    {
+      "label": "param-m",
+      "symbol": "m",
+      "meaning": "Mass parameter",
+      "scope": "global",
+      "full_text": "The first conceptual shift is in how we represent the state of the system. In the N-particle framework, the state is a single point in the high-dimensional configuration space $\\Sigma_N$. In the mean-field limit, we shift our perspective to that of a single, representative particle. The state is no longer a collection of individual points but a continuous probability \"cloud\" on the single-particle phase space $\\Omega$. The mathematical bridge enabling this transition is the replacement of discrete empirical averages with continuous integrals against this probability density. This principle forms the core of our translation dictionary. For example, the empirical average of a quantity $Q(w_i)$ over $k$ alive walkers, $\\bar{Q} = \\frac{1}{k} \\sum_{i \\in \\mathcal{A}} Q(w_i)$, becomes the expected value integral, $\\mathbb{E}[Q] = \\int_{\\Omega} Q(z) f(t,z) \\, dz$.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              22,
+              23
+            ]
+          ]
+        },
+        "label": "param-m",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1",
+        "section_name": "Foundations of the Mean-Field Model"
+      }
+    },
+    {
+      "label": "param-z_d",
+      "symbol": "z_d",
+      "meaning": "Parameter z_d",
+      "scope": "global",
+      "full_text": "Walker $i$ arrives at state $z$ if: 1. It was originally at some state $z_d = (x_d, v_d)$ 2. It selected companion at state $z_c = (x_c, v_c)$ 3. Cloning occurred: $P_{\\text{clone}}(V[z_d], V[z_c])$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              456,
+              458
+            ]
+          ]
+        },
+        "label": "param-z_d",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.3.3",
+        "section_name": "Derivation of the Internal Cloning Operator from First Principles"
+      }
+    },
+    {
+      "label": "param-xi",
+      "symbol": "xi",
+      "meaning": "Parameter xi",
+      "scope": "global",
+      "full_text": "$$ where $\\xi \\sim \\mathcal{N}(0, I_d)$ is a standard Gaussian random vector.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              274,
+              275
+            ]
+          ]
+        },
+        "label": "param-xi",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      }
+    },
+    {
+      "label": "param-w_t",
+      "symbol": "W_t",
+      "meaning": "Parameter W_t",
+      "scope": "global",
+      "full_text": "$$ where $W_t$ is a standard Wiener process and all parameters are as defined in the Euclidean Gas specification. The BAOAB method splits this SDE into analytically solvable parts and composes them symmetrically.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              253,
+              254
+            ]
+          ]
+        },
+        "label": "param-w_t",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      }
+    },
+    {
+      "label": "param-z",
+      "symbol": "z",
+      "meaning": "Parameter z",
+      "scope": "global",
+      "full_text": "$$  A key property of this operator with reflecting boundary conditions is that it is **mass-conservative**: when integrated over the domain, the total flux through the boundary vanishes, so $\\int_\\Omega L^\\dagger f \\,\\mathrm{d}z = 0$. :::",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              329,
+              331
+            ]
+          ]
+        },
+        "label": "param-z",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+      }
+    },
+    {
+      "label": "param-u",
+      "symbol": "u",
+      "meaning": "Parameter u",
+      "scope": "global",
+      "full_text": "The first conceptual shift is in how we represent the state of the system. In the N-particle framework, the state is a single point in the high-dimensional configuration space $\\Sigma_N$. In the mean-field limit, we shift our perspective to that of a single, representative particle. The state is no longer a collection of individual points but a continuous probability \"cloud\" on the single-particle phase space $\\Omega$. The mathematical bridge enabling this transition is the replacement of discrete empirical averages with continuous integrals against this probability density. This principle forms the core of our translation dictionary. For example, the empirical average of a quantity $Q(w_i)$ over $k$ alive walkers, $\\bar{Q} = \\frac{1}{k} \\sum_{i \\in \\mathcal{A}} Q(w_i)$, becomes the expected value integral, $\\mathbb{E}[Q] = \\int_{\\Omega} Q(z) f(t,z) \\, dz$.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              22,
+              23
+            ]
+          ]
+        },
+        "label": "param-u",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1",
+        "section_name": "Foundations of the Mean-Field Model"
+      }
+    },
+    {
+      "label": "param-t_n",
+      "symbol": "t_n",
+      "meaning": "Parameter t_n",
+      "scope": "global",
+      "full_text": "For a single particle with state $(x_n, v_n)$ at time $t_n$, the state $(x_{n+1}, v_{n+1})$ at time $t_{n+1} = t_n + \\tau$ is computed via the following five steps:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              258,
+              259
+            ]
+          ]
+        },
+        "label": "param-t_n",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      }
+    },
+    {
+      "label": "param-m_a",
+      "symbol": "m_a",
+      "meaning": "Parameter m_a",
+      "scope": "global",
+      "full_text": "**Positivity Requirement:** The definitions of the statistical moments rely on the normalization by the alive mass $m_a(t)$. These functionals are well-defined for all $t$ such that $m_a(t) > 0$. The global well-posedness of the PDE system requires regularizing the behavior as $m_a(t) \\to 0$.  **Cemetery State ($m_a = 0$) and the Regularization Assumption:**  In the discrete N-particle algorithm, there exists an absorbing \"cemetery state\" where all $N$ walkers have died ($k = 0$). While this state has exponentially low probability for any finite N and initial condition with $k_0 > 0$, it cannot be completely excluded.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              151,
+              153
+            ]
+          ]
+        },
+        "label": "param-m_a",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1.2",
+        "section_name": "Mean-Field Measurement Pipeline"
+      }
+    },
+    {
+      "label": "param-z_c",
+      "symbol": "z_c",
+      "meaning": "Parameter z_c",
+      "scope": "global",
+      "full_text": "Walker $i$ arrives at state $z$ if: 1. It was originally at some state $z_d = (x_d, v_d)$ 2. It selected companion at state $z_c = (x_c, v_c)$ 3. Cloning occurred: $P_{\\text{clone}}(V[z_d], V[z_c])$ 4. The jitter placed it at $z$: $Q_\\delta(z \\mid z_c)$ where $Q_\\delta(x,v \\mid x_c, v_c) = \\mathcal{N}(x; x_c, \\delta^2 I) \\delta(v - v_c)$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              457,
+              459
+            ]
+          ]
+        },
+        "label": "param-z_c",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.3.3",
+        "section_name": "Derivation of the Internal Cloning Operator from First Principles"
+      }
+    },
+    {
+      "label": "param-sigma_v",
+      "symbol": "sigma_v",
+      "meaning": "Parameter sigma_v",
+      "scope": "global",
+      "full_text": "$$  where $\\sigma_v := \\sqrt{\\Theta/m}$, $\\xi \\sim \\mathcal{N}(0, I_d)$, and $v_{n+1/2}^{(1)} = v + \\frac{\\tau}{2m}F(x)$.  For small $\\tau$, using $e^{-\\gamma\\tau} = 1 - \\gamma\\tau + O(\\tau^2)$ and $1 - e^{-2\\gamma\\tau} = 2\\gamma\\tau + O(\\tau^2)$:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              887,
+              889
+            ]
+          ]
+        },
+        "label": "param-sigma_v",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
+      }
+    },
+    {
+      "label": "param-m_d",
+      "symbol": "m_d",
+      "meaning": "Parameter m_d",
+      "scope": "global",
+      "full_text": "*   **Coupled Reaction-Diffusion Structure:** The system has the form of a coupled reaction-diffusion system. The PDE for $f$ has the form of a reaction-diffusion PDE with non-local reaction terms. The kinetic operator $L^\\dagger$ provides the diffusion (with reflecting boundaries), while the killing $-c(z)f$, revival $B[f, m_d]$, and cloning $S[f]$ terms provide the reactions. The ODE for $m_d$ describes the evolution of the dead reservoir. This structure is well-studied in PDE theory and enables the application of standard analytical techniques for coupled systems.  *   **Total Mass Conservation with Dynamic Equilibrium:** As proven in Theorem 3.3, the coupled system conserves the total population $m_a(t) + m_d(t) = 1$. However, unlike a model with instantaneous revival, the alive and dead masses can exchange and evolve towards a non-trivial **stationary state** where $\\mathrm{d}/\\mathrm{d}t\\, m_a = 0$ and $\\mathrm{d}/\\mathrm{d}t\\, m_d = 0$. At this stationary state, the killing and revival rates are balanced: $k_{\\text{killed}}[f_\\infty] = \\lambda_{\\text{revive}} m_{d,\\infty}$. This faithfully represents the discrete algorithm's behavior where the number of alive walkers $k$ fluctuates and converges to a stationary distribution.  ### 4.2. Well-Posedness and Future Work",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              729,
+              731
+            ]
+          ]
+        },
+        "label": "param-m_d",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.1",
+        "section_name": "Key Properties of the Coupled System"
+      }
+    },
+    {
+      "label": "param-f",
+      "symbol": "F",
+      "meaning": "Parameter F",
+      "scope": "global",
+      "full_text": "$$ \\boxed{ \\mathcal{L}_{\\text{kin}} f = \\sum_{i\\in\\mathcal A}\\left[ v_i\\cdot\\nabla_{x_i} f + \\left(m^{-1}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\cdot\\nabla_{v_i} f + \\tfrac{\\sigma_v^2}{2}\\,\\Delta_{v_i} f\\right] } $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              325,
+              327
+            ]
+          ]
+        },
+        "label": "param-f",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+      }
+    },
+    {
+      "label": "param-x_n",
+      "symbol": "x_n",
+      "meaning": "Parameter x_n",
+      "scope": "global",
+      "full_text": "For a single particle with state $(x_n, v_n)$ at time $t_n$, the state $(x_{n+1}, v_{n+1})$ at time $t_{n+1} = t_n + \\tau$ is computed via the following five steps:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              258,
+              259
+            ]
+          ]
+        },
+        "label": "param-x_n",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      }
+    },
+    {
+      "label": "param-f",
+      "symbol": "f",
+      "meaning": "Parameter f",
+      "scope": "global",
+      "full_text": "$$ \\boxed{ \\mathcal{L}_{\\text{kin}} f = \\sum_{i\\in\\mathcal A}\\left[ v_i\\cdot\\nabla_{x_i} f + \\left(m^{-1}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\cdot\\nabla_{v_i} f + \\tfrac{\\sigma_v^2}{2}\\,\\Delta_{v_i} f\\right] } $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              325,
+              327
+            ]
+          ]
+        },
+        "label": "param-f",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
       }
     },
     {
@@ -740,9 +694,32 @@
       }
     },
     {
-      "label": "param-m_d",
-      "symbol": "m_d",
-      "meaning": "Parameter m_d",
+      "label": "param-v_n",
+      "symbol": "v_n",
+      "meaning": "Parameter v_n",
+      "scope": "global",
+      "full_text": "$$  where $C_\\sigma = \\frac{1}{4}\\sigma_v^2 \\cdot 2\\gamma = \\frac{\\gamma\\Theta}{2m}$ and $v_n := v \\cdot n_x(x)$ is the outward normal velocity.  The exit probability is:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              924,
+              926
+            ]
+          ]
+        },
+        "label": "param-v_n",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
+      }
+    },
+    {
+      "label": "param-x_valid",
+      "symbol": "X_valid",
+      "meaning": "Parameter X_valid",
       "scope": "global",
       "full_text": "",
       "source": {
@@ -755,7 +732,7 @@
             ]
           ]
         },
-        "label": "param-m_d",
+        "label": "param-x_valid",
         "volume": "1_euclidean_gas",
         "article_id": "07_mean_field",
         "section": null,
@@ -763,9 +740,78 @@
       }
     },
     {
-      "label": "param-m",
-      "symbol": "m",
-      "meaning": "Mass parameter",
+      "label": "param-s",
+      "symbol": "S",
+      "meaning": "Parameter S",
+      "scope": "global",
+      "full_text": "Let $f(t, \\cdot)$ be the phase-space density at time $t$, with total alive mass $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. The statistical moments required for the standardization pipeline are defined as the following **functionals** of $f$. The notation $\\mu[f]$ emphasizes that these are numbers that depend on the entire *shape* of the function $f$.  The moments are computed with respect to the **normalized density of the alive population**, which is $f(t,z) / m_a(t)$. This normalization is critical for ensuring the mean-field model is a faithful limit of the N-particle system, where statistics are computed by averaging over the $k$ alive walkers.  *   **Reward Moments:** The mean reward, $\\mu_R[f]$, is computed as the expected value over the normalized alive population:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              122,
+              124
+            ]
+          ]
+        },
+        "label": "param-s",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1.2",
+        "section_name": "Mean-Field Measurement Pipeline"
+      }
+    },
+    {
+      "label": "param-omega",
+      "symbol": "Omega",
+      "meaning": "Parameter Omega",
+      "scope": "global",
+      "full_text": "$$ \\Omega := X_{\\text{valid}} \\times V_{\\text{alg}} $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              48,
+              50
+            ]
+          ]
+        },
+        "label": "param-omega",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1.1",
+        "section_name": "Phase Space and Probability Density"
+      }
+    },
+    {
+      "label": "param-gamma_fric",
+      "symbol": "gamma_fric",
+      "meaning": "Friction coefficient",
+      "scope": "global",
+      "full_text": "*   **(H2)** The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz. *   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive. *   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              741,
+              742
+            ]
+          ]
+        },
+        "label": "param-gamma_fric",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.2",
+        "section_name": "Well-Posedness and Future Work"
+      }
+    },
+    {
+      "label": "param-q_delta",
+      "symbol": "Q_delta",
+      "meaning": "Parameter Q_delta",
       "scope": "global",
       "full_text": "",
       "source": {
@@ -778,7 +824,7 @@
             ]
           ]
         },
-        "label": "param-m",
+        "label": "param-q_delta",
         "volume": "1_euclidean_gas",
         "article_id": "07_mean_field",
         "section": null,
@@ -786,72 +832,26 @@
       }
     },
     {
-      "label": "param-xi",
-      "symbol": "xi",
-      "meaning": "Parameter xi",
+      "label": "param-tau",
+      "symbol": "tau",
+      "meaning": "Time step size",
       "scope": "global",
-      "full_text": "",
+      "full_text": "$$  We are interested in the regime where $\\tau \\sim \\tau_* := d(x)/v_n$ (near the ballistic crossing time). Let $\\tau = \\tau_*(1 + \\epsilon)$ where $\\epsilon$ is a small parameter. Then:  $$",
       "source": {
         "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
         "line_range": {
           "lines": [
             [
-              1,
-              1
+              988,
+              990
             ]
           ]
         },
-        "label": "param-xi",
+        "label": "param-tau",
         "volume": "1_euclidean_gas",
         "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-v_i",
-      "symbol": "v_i",
-      "meaning": "Parameter v_i",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-v_i",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-x_n",
-      "symbol": "x_n",
-      "meaning": "Parameter x_n",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-x_n",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
       }
     }
   ],

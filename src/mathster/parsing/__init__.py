@@ -85,12 +85,12 @@ from mathster.parsing import (
     workflows,
 )
 from mathster.parsing.cli import main as cli_main
-from mathster.parsing.config import configure_dspy
+from mathster.dspy_integration import configure_dspy
 from mathster.parsing.conversion.converters import (
     convert_dict_to_extraction_entity,
     convert_to_raw_document_section,
 )
-from mathster.parsing.conversion.labels import (
+from mathster.dspy_integration.text_utils import (
     lookup_label_from_context,
     sanitize_label,
 )
@@ -120,7 +120,7 @@ from mathster.parsing.models.results import (
     ValidationResult,
 )
 from mathster.parsing.orchestrator import extract_section_id, parse_line_number, process_document
-from mathster.parsing.validation.errors import (
+from mathster.dspy_integration import (
     generate_detailed_error_report,
     make_error_dict,
 )

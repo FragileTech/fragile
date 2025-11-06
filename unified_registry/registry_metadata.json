@@ -1,28 +1,28 @@
 {
   "registry_type": "global",
-  "build_timestamp": "2025-11-06T01:22:19.618400",
+  "build_timestamp": "2025-11-06T11:40:20.690767",
   "corpus_root": "/home/guillem/fragile/docs/source",
   "statistics": {
-    "total_entities": 956,
-    "total_parser": 767,
+    "total_entities": 896,
+    "total_parser": 707,
     "total_raw_data": 189,
-    "documents_processed": 69,
+    "documents_processed": 68,
     "chapters_processed": 6,
     "duplicates_resolved": 24,
     "by_type": {
-      "definition": 115,
-      "parameter": 463,
-      "remark": 86,
-      "theorem": 95,
-      "proof": 69,
-      "assumption": 56,
+      "definition": 109,
+      "parameter": 428,
+      "remark": 80,
+      "theorem": 90,
+      "proof": 65,
+      "assumption": 52,
       "axiom": 21,
       "corollarie": 3,
       "lemma": 45,
       "proposition": 3
     },
     "by_chapter": {
-      "1_euclidean_gas": 956
+      "1_euclidean_gas": 896
     }
   },
   "documents": [
@@ -99,13 +99,6 @@
     {
       "chapter": "1_euclidean_gas",
       "document": "11_hk_convergence",
-      "entities": 60,
-      "parser": 62,
-      "raw_data": 0
-    },
-    {
-      "chapter": "1_euclidean_gas",
-      "document": "11_hk_convergence_bounded_density_rigorous_proof",
       "entities": 60,
       "parser": 62,
       "raw_data": 0

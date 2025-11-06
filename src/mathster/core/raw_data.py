@@ -130,7 +130,7 @@ class RawDataModel(BaseModel):
             label = getattr(self, "label")
             # Skip validation if label is None (will be auto-populated by subclass)
             if label is not None:
-                pattern = r"^[a-z]+-[a-z0-9-]+$"
+                pattern = r"^[a-z]+-[a-z0-9_-]+$"  # Allow underscores for subscripted variables
                 if not isinstance(label, str) or not re.match(pattern, label):
                     raise ValueError(
                         f"Invalid label format: '{label}'. Must match pattern '{pattern}'."
@@ -165,13 +165,8 @@ class RawDefinition(RawDataModel):
         "Should be the canonical name as it appears in the text.",
     )
 
-    full_text: TextLocation = Field(
-        ...,
-        description="Line ranges in the source document where the complete definition text is located. "
-        "The LLM should identify the start and end lines of the definition paragraph(s). "
-        "Text extraction will be performed automatically by Python using these line ranges. "
-        "Example: TextLocation(lines=[(142, 158)]) for a definition spanning lines 142-158.",
-    )
+    # Note: full_text inherited from RawDataModel (str type)
+    # Use SourceLocation.line_range for line references
 
     parameters_mentioned: list[str] = Field(
         default_factory=list,
@@ -441,9 +436,10 @@ class RawParameter(RawDataModel):
 
     label: str = Field(
         ...,
-        pattern=r"^param-[a-z0-9-]+$",
-        description="Unique parameter label (e.g., 'param-gamma', 'param-step-size'). "
-        "If the concept has no assigned label then we should create one for it.",
+        pattern=r"^param-[a-z0-9_-]+$",
+        description="Unique parameter label (e.g., 'param-gamma', 'param-step-size', 'param-x_i'). "
+        "If the concept has no assigned label then we should create one for it. "
+        "Underscores are allowed for subscripted variables.",
     )
 
     symbol: str = Field(

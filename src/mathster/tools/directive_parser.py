@@ -43,10 +43,31 @@ class DirectiveHint:
 
     directive_type: str  # "definition", "theorem", "lemma", "proof", "axiom", etc.
     label: str  # The :label: value (e.g., "def-walker-state")
+    title: str | None  # Title from first line or :name: field
     start_line: int  # Line number where directive starts (1-indexed)
     end_line: int  # Line number where directive ends (1-indexed)
+    header_lines: list[int]  # Lines containing :field: metadata
+    content_start: int  # First line of actual content (after metadata)
+    content_end: int  # Last line of content (before closing :::)
     content: str  # Raw content between directive markers
+    metadata: dict  # All :field: values (class, nonumber, name, etc.)
     section: str  # Section identifier where this appears
+
+    def to_dict(self) -> dict:
+        """Convert to dictionary for JSON serialization."""
+        return {
+            "directive_type": self.directive_type,
+            "label": self.label,
+            "title": self.title,
+            "start_line": self.start_line,
+            "end_line": self.end_line,
+            "header_lines": self.header_lines,
+            "content_start": self.content_start,
+            "content_end": self.content_end,
+            "content": self.content,
+            "metadata": self.metadata,
+            "section": self.section,
+        }
 
 
 @dataclass
@@ -110,56 +131,97 @@ def extract_jupyter_directives(
     lines = markdown_text.split("\n")
 
     # Pattern for directive start: :::{prf:TYPE} TITLE
-    directive_start_pattern = r"^:::\{prf:(\w+)\}"
-    # Pattern for label: :label: VALUE
-    label_pattern = r"^:label:\s*(.+)$"
+    directive_start_pattern = r"^:::\{prf:(\w+)\}(?:\s+(.+))?$"
+    # Pattern for metadata field: :field: value
+    metadata_pattern = r"^:(\w+):\s*(.*)$"
     # Pattern for directive end: :::
     directive_end_pattern = r"^:::$"
 
     i = 0
     while i < len(lines):
         line = lines[i]
-        start_match = re.match(directive_start_pattern, line.strip())
+
+        # Strip line number prefix if present (format: "NNN: content")
+        line_stripped = re.sub(r"^\d+:\s*", "", line).strip()
+
+        start_match = re.match(directive_start_pattern, line_stripped)
 
         if start_match:
             directive_type = start_match.group(1)
+            title_from_first_line = start_match.group(2)  # Title on same line as opening
             start_line = i + 1  # 1-indexed
 
-            # Find label (should be in next few lines)
+            # Extract all metadata fields and find content start
             label = None
+            metadata = {}
+            header_lines = []
+            content_start_line = None
             j = i + 1
-            content_start = None
-            while j < len(lines) and not lines[j].strip().startswith(":::"):
-                label_match = re.match(label_pattern, lines[j].strip())
-                if label_match:
-                    label = label_match.group(1).strip()
-                elif lines[j].strip() and not lines[j].strip().startswith(":"):
+
+            while j < len(lines):
+                # Strip line numbers
+                line_stripped = re.sub(r"^\d+:\s*", "", lines[j]).strip()
+
+                # Check for directive end first
+                if re.match(directive_end_pattern, line_stripped):
+                    break
+
+                # Check for metadata field
+                meta_match = re.match(metadata_pattern, line_stripped)
+                if meta_match:
+                    field_name = meta_match.group(1)
+                    field_value = meta_match.group(2).strip()
+                    metadata[field_name] = field_value
+                    header_lines.append(j + 1)  # 1-indexed
+
+                    # Special handling for label and name
+                    if field_name == "label":
+                        label = field_value
+                    elif field_name == "name" and not title_from_first_line:
+                        title_from_first_line = field_value
+
+                elif line_stripped and not line_stripped.startswith(":"):
                     # First non-empty, non-field line is start of content
-                    if content_start is None:
-                        content_start = j
+                    if content_start_line is None:
+                        content_start_line = j + 1  # 1-indexed
                 j += 1
+
+            # If no content start found, use line after last metadata
+            if content_start_line is None:
+                content_start_line = j + 1
 
             # Find directive end
             end_line = None
             k = j
             while k < len(lines):
-                if re.match(directive_end_pattern, lines[k].strip()):
+                # Strip line numbers before matching
+                k_stripped = re.sub(r"^\d+:\s*", "", lines[k]).strip()
+                if re.match(directive_end_pattern, k_stripped):
                     end_line = k + 1  # 1-indexed
                     break
                 k += 1
 
             if end_line is not None:
-                # Extract content (between header and end marker)
-                content_lines = lines[content_start:k] if content_start else []
-                content = "\n".join(content_lines).strip()
+                # Extract content (between content_start and end marker)
+                content_end_line = k  # Line before closing :::
+                if content_start_line <= k:
+                    content_lines = lines[content_start_line - 1 : k]
+                    content = "\n".join(content_lines).strip()
+                else:
+                    content = ""
 
                 directives.append(
                     DirectiveHint(
                         directive_type=directive_type,
                         label=label or f"unlabeled-{directive_type}-{start_line}",
+                        title=title_from_first_line,
                         start_line=start_line,
                         end_line=end_line,
+                        header_lines=header_lines,
+                        content_start=content_start_line,
+                        content_end=content_end_line,
                         content=content,
+                        metadata=metadata,
                         section=section_id,
                     )
                 )

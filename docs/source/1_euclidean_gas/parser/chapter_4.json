@@ -206,187 +206,72 @@
   "citations": [],
   "parameters": [
     {
-      "label": "param-j_v",
-      "symbol": "J_v",
-      "meaning": "Parameter J_v",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-j_v",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-d_x",
-      "symbol": "D_x",
-      "meaning": "Parameter D_x",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-d_x",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
       "label": "param-j_x",
       "symbol": "J_x",
       "meaning": "Parameter J_x",
       "scope": "global",
-      "full_text": "",
+      "full_text": "Let $L$ be the backward kinetic generator from Section 2.2. The **Transport Operator**, denoted $L^\\dagger$, is its formal $L^2$-adjoint, which acts on the density $f$. It can be written in conservative form as the negative divergence of a **probability flux vector** $J = (J_x, J_v)$:",
       "source": {
         "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
         "line_range": {
           "lines": [
             [
-              1,
-              1
+              552,
+              553
             ]
           ]
         },
         "label": "param-j_x",
         "volume": "1_euclidean_gas",
         "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-j",
-      "symbol": "J",
-      "meaning": "Parameter J",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-j",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-a_v",
-      "symbol": "A_v",
-      "meaning": "Parameter A_v",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-a_v",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-d_v",
-      "symbol": "D_v",
-      "meaning": "Parameter D_v",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-d_v",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
-      }
-    },
-    {
-      "label": "param-f",
-      "symbol": "f",
-      "meaning": "Parameter f",
-      "scope": "global",
-      "full_text": "",
-      "source": {
-        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
-        "line_range": {
-          "lines": [
-            [
-              1,
-              1
-            ]
-          ]
-        },
-        "label": "param-f",
-        "volume": "1_euclidean_gas",
-        "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
+        "section": "3.1",
+        "section_name": "The Transport Operator ($L^\\dagger$) is Mass-Conservative"
       }
     },
     {
       "label": "param-l",
       "symbol": "L",
-      "meaning": "Parameter L",
+      "meaning": "dynamic",
       "scope": "global",
-      "full_text": "",
+      "full_text": "### 1.3. Density-Dependent Fitness Potential  The mean-field statistical moments derived in the previous section are not an end in themselves; they are the crucial inputs for constructing the central engine of the continuous model: the **Mean-Field Fitness Potential**. Unlike in simpler physical systems where potentials are fixed external fields (like gravity), this potential is dynamic. Its shape at any moment is determined by the shape of the swarm's own probability density, $f$. This creates the critical feedback loop that governs the system's evolution.  We construct this potential in two steps, mirroring the discrete algorithm. First, we define the mean-field Z-scores, which standardize the raw measurements using the global, density-dependent moments. Second, we combine these scores to form the final, non-linear fitness potential.",
       "source": {
         "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
         "line_range": {
           "lines": [
             [
-              1,
-              1
+              190,
+              192
             ]
           ]
         },
         "label": "param-l",
         "volume": "1_euclidean_gas",
         "article_id": "07_mean_field",
-        "section": null,
-        "section_name": null
+        "section": "1.3",
+        "section_name": "Density-Dependent Fitness Potential"
+      }
+    },
+    {
+      "label": "param-j_v",
+      "symbol": "J_v",
+      "meaning": "Parameter J_v",
+      "scope": "global",
+      "full_text": "Let $L$ be the backward kinetic generator from Section 2.2. The **Transport Operator**, denoted $L^\\dagger$, is its formal $L^2$-adjoint, which acts on the density $f$. It can be written in conservative form as the negative divergence of a **probability flux vector** $J = (J_x, J_v)$:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              552,
+              553
+            ]
+          ]
+        },
+        "label": "param-j_v",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.1",
+        "section_name": "The Transport Operator ($L^\\dagger$) is Mass-Conservative"
       }
     },
     {
@@ -410,6 +295,121 @@
         "article_id": "07_mean_field",
         "section": null,
         "section_name": null
+      }
+    },
+    {
+      "label": "param-d_v",
+      "symbol": "D_v",
+      "meaning": "Parameter D_v",
+      "scope": "global",
+      "full_text": "*   The **A-steps** (position drifts) correspond to the advection in position space, represented by the term $\\nabla_x \\cdot (v f)$. *   The **stochastic part of the O-step** corresponds to the diffusion in velocity space, represented by the term $\\nabla_v \\cdot (D_v \\nabla_v f)$.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              297,
+              298
+            ]
+          ]
+        },
+        "label": "param-d_v",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      }
+    },
+    {
+      "label": "param-a_v",
+      "symbol": "A_v",
+      "meaning": "Parameter A_v",
+      "scope": "global",
+      "full_text": "*   The **B-steps** (force kicks) and the drift part of the **O-step** correspond to the advection in velocity space, represented by the term $\\nabla_v \\cdot (A_v f)$. *   The **A-steps** (position drifts) correspond to the advection in position space, represented by the term $\\nabla_x \\cdot (v f)$.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              295,
+              296
+            ]
+          ]
+        },
+        "label": "param-a_v",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      }
+    },
+    {
+      "label": "param-j",
+      "symbol": "J",
+      "meaning": "Parameter J",
+      "scope": "global",
+      "full_text": "$$ \\begin{aligned} P_{\\text{loss}}(z, \\tau) &= \\sum_{j=1}^k \\frac{1}{k} P_{\\text{clone}}(V[z], V[z_j]) \\cdot \\tau + o(\\tau) \\\\ &= \\int_{\\Omega} P_{\\text{clone}}(V[z], V[z']) \\rho(t, z') \\,\\mathrm{d}z' \\cdot \\tau + o(\\tau) \\end{aligned}",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              442,
+              444
+            ]
+          ]
+        },
+        "label": "param-j",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.3.3",
+        "section_name": "Derivation of the Internal Cloning Operator from First Principles"
+      }
+    },
+    {
+      "label": "param-f",
+      "symbol": "f",
+      "meaning": "Parameter f",
+      "scope": "global",
+      "full_text": "$$ \\boxed{ \\mathcal{L}_{\\text{kin}} f = \\sum_{i\\in\\mathcal A}\\left[ v_i\\cdot\\nabla_{x_i} f + \\left(m^{-1}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\cdot\\nabla_{v_i} f + \\tfrac{\\sigma_v^2}{2}\\,\\Delta_{v_i} f\\right] } $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              325,
+              327
+            ]
+          ]
+        },
+        "label": "param-f",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+      }
+    },
+    {
+      "label": "param-d_x",
+      "symbol": "D_x",
+      "meaning": "Parameter D_x",
+      "scope": "global",
+      "full_text": "where the components of the flux are: *   **Positional Flux ($J_x$):** $J_x[f] := v f - D_x \\nabla_x f$ (Advection + Fickian Diffusion) *   **Velocity Flux ($J_v$):** $J_v[f] := A_v f - D_v \\nabla_v f$ (Drift + Fickian Diffusion)",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              559,
+              560
+            ]
+          ]
+        },
+        "label": "param-d_x",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.1",
+        "section_name": "The Transport Operator ($L^\\dagger$) is Mass-Conservative"
       }
     }
   ],
