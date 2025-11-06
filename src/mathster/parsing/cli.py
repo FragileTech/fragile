@@ -112,8 +112,11 @@ Examples:
     if args.output_dir:
         output_dir = Path(args.output_dir)
     else:
-        # Default: create 'parser' subdirectory next to source file
-        output_dir = markdown_path.parent / "parser"
+        # Default: create 'parser' subdirectory inside document-specific folder
+        # Example: docs/source/1_euclidean_gas/07_mean_field.md
+        #       → docs/source/1_euclidean_gas/07_mean_field/parser/
+        document_folder = markdown_path.parent / markdown_path.stem
+        output_dir = document_folder / "parser"
 
     # Process document
     try:

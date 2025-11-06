@@ -59,6 +59,7 @@ where:
 :::
 
 :::{prf:proof}
+:label: proof-lem-conditional-multivariate-gaussian-geometric
 Consider the velocity dynamics with positions fixed at $\mathbf{x}$. In vector form with $\mathbf{V} = (v_1, \ldots, v_N) \in \mathbb{R}^{3N}$:
 
 $$
@@ -122,6 +123,7 @@ where the bound is **independent of $N$**, $\mathbf{x}$, and the viscous couplin
 :::
 
 :::{prf:proof}
+:label: proof-lem-eigenvalue-bound-geometric
 We bound $\lambda_{\max}(\Sigma_{\mathbf{v}}(\mathbf{x}))$ using properties of the Lyapunov equation and a comparison argument.
 
 **Step 1 (Lyapunov equation structure):**
@@ -207,6 +209,7 @@ is **independent of $N$** and **independent of $\nu$** (viscous coupling strengt
 :::
 
 :::{prf:proof}
+:label: proof-thm-poincare-geometric
 **Step 1 (Conditional Poincaré for multivariate Gaussian):**
 For any fixed $\mathbf{x}$, the conditional distribution $\pi_N(\mathbf{v}|\mathbf{x}) = \mathcal{N}(0, \Sigma_{\mathbf{v}}(\mathbf{x}))$ is a multivariate Gaussian. By Bakry-Émery (1985), it satisfies a Poincaré inequality:
 

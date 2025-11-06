@@ -23,6 +23,7 @@ where $w_i = (x_i, v_i, s_i)$ is the state of walker $i$.
 :::
 
 :::{prf:proof}
+:label: proof-thm-qsd-exchangeability
 The dynamics are manifestly symmetric under permutation of walker labels.
 
 **Kinetic operator**: Each walker evolves according to the same Langevin dynamics:
@@ -140,6 +141,7 @@ for $i \neq j$, where $C$ is independent of $N$.
 :::
 
 :::{prf:proof}
+:label: proof-thm-correlation-decay
 
 **CORRECTED PROOF** (using proper de Finetti identity):
 
@@ -215,6 +217,7 @@ for $i \neq j$, establishing O(1/N) decorrelation for **all bounded measurable f
 :::
 
 :::{prf:proof}
+:label: proof-thm-mixing-variance-corrected
 
 This proof uses the **Donsker-Varadhan entropy inequality** combined with moment generating function (MGF) analysis. The key advantage is that it requires only boundedness of $g$, NOT differentiability or Lipschitz regularity.
 
@@ -426,6 +429,7 @@ independent of $N$ and $\mathbf{x}$.
 :::
 
 :::{prf:proof}
+:label: proof-lem-conditional-gaussian-qsd-euclidean
 For fixed positions, the velocity dynamics of walker $i$ is:
 
 $$

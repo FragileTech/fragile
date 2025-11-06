@@ -247,6 +247,14 @@ def process_document(
 
                         if raw_section:
                             print(f"  Entities: {raw_section.total_entities}")
+                            print(f"    - Definitions: {len(raw_section.definitions)}")
+                            print(f"    - Theorems: {len(raw_section.theorems)}")
+                            print(f"    - Proofs: {len(raw_section.proofs)}")
+                            print(f"    - Axioms: {len(raw_section.axioms)}")
+                            print(f"    - Assumptions: {len(raw_section.assumptions)}")
+                            print(f"    - Parameters: {len(raw_section.parameters)}")
+                            print(f"    - Remarks: {len(raw_section.remarks)}")
+                            print(f"    - Citations: {len(raw_section.citations)}")
                             print(
                                 f"  Changes: +{improvement_result.entities_added} "
                                 f"±{improvement_result.entities_modified} "
@@ -357,6 +365,7 @@ def process_document(
                         print(f"    - Theorems: {len(raw_section.theorems)}")
                         print(f"    - Proofs: {len(raw_section.proofs)}")
                         print(f"    - Axioms: {len(raw_section.axioms)}")
+                        print(f"    - Assumptions: {len(raw_section.assumptions)}")
                         print(f"    - Parameters: {len(raw_section.parameters)}")
                         print(f"    - Remarks: {len(raw_section.remarks)}")
                         print(f"    - Citations: {len(raw_section.citations)}")

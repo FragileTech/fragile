@@ -1,0 +1,170 @@
+[
+  {
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            289,
+            300
+          ]
+        ]
+      },
+      "label": "remark-fidelity-generator",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": "2.1",
+      "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+    },
+    "full_text": "",
+    "label": "remark-fidelity-generator",
+    "remark_type": "note",
+    "_entity_type": "remark",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 289
+  },
+  {
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            332,
+            336
+          ]
+        ]
+      },
+      "label": "remark-separation-kinetic-death",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": "2.2",
+      "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+    },
+    "full_text": "",
+    "label": "remark-separation-kinetic-death",
+    "remark_type": "note",
+    "_entity_type": "remark",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 332
+  },
+  {
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            342,
+            353
+          ]
+        ]
+      },
+      "label": "remark-separation-death-revival-cloning",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": "2.3",
+      "section_name": "The Reaction Operators (Killing, Revival, and Cloning)"
+    },
+    "full_text": "",
+    "label": "remark-separation-death-revival-cloning",
+    "remark_type": "observation",
+    "_entity_type": "remark",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 342
+  },
+  {
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1222,
+            1239
+          ]
+        ]
+      },
+      "label": "remark-killing-rate-interpretation",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": "4.4.3",
+      "section_name": "Interpretation and Mathematical Implications"
+    },
+    "full_text": "",
+    "label": "remark-killing-rate-interpretation",
+    "remark_type": "note",
+    "_entity_type": "remark",
+    "_source_type": "parser",
+    "_section_id": "## 4. Analysis and Properties of the Mean-Field Equations",
+    "_chapter_number": 5,
+    "_parser_file": "chapter_5.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1222
+  },
+  {
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1241,
+            1273
+          ]
+        ]
+      },
+      "label": "remark-important-killing-rate-well-posedness",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": "4.4.3",
+      "section_name": "Interpretation and Mathematical Implications"
+    },
+    "full_text": "",
+    "label": "remark-important-killing-rate-well-posedness",
+    "remark_type": "observation",
+    "_entity_type": "remark",
+    "_source_type": "parser",
+    "_section_id": "## 4. Analysis and Properties of the Mean-Field Equations",
+    "_chapter_number": 5,
+    "_parser_file": "chapter_5.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1241
+  },
+  {
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1275,
+            1310
+          ]
+        ]
+      },
+      "label": "remark-numerical-validation-killing-rate",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": "4.4.3",
+      "section_name": "Interpretation and Mathematical Implications"
+    },
+    "full_text": "",
+    "label": "remark-numerical-validation-killing-rate",
+    "remark_type": "comment",
+    "_entity_type": "remark",
+    "_source_type": "parser",
+    "_section_id": "## 4. Analysis and Properties of the Mean-Field Equations",
+    "_chapter_number": 5,
+    "_parser_file": "chapter_5.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1275
+  }
+]

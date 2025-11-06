@@ -1334,6 +1334,8 @@ These constants verify the continuity axioms for the patched standardization and
 #### 2.3.4. Theorem: Value Continuity of Patched Standardization (Sasaki)
 
 :::{prf:theorem} Value continuity of patched standardization (Sasaki)
+:label: thm-sasaki-standardization-value-sq
+
 Suppose $\mathcal S_1$ and $\mathcal S_2$ share the same alive set $\mathcal A$ of size $k\ge 1$ (so $n_c(\mathcal S_1,\mathcal S_2)=0$). The N-dimensional standardization operator is Lipschitz continuous with respect to positional changes in the Sasaki metric. The squared L2-norm of the output error is bounded as follows:
 
 $$

@@ -370,7 +370,7 @@ Standard result in combinatorial calculus. See Comtet (1974) *Advanced Combinato
 :::
 
 :::{prf:remark} Verification for Standard Choices
-:label: rmk-verification-primitives-cinf
+:label: rem-verification-primitives-cinf
 
 - Gaussian kernel: Real analytic (entire function), Hermite bounds classical
 - Sigmoid g_A(z) = A/(1 + e^{-z}): Real analytic, derivatives decay exponentially
@@ -578,7 +578,7 @@ V_fit is four times continuously differentiable with ||∇⁴_{x_i} V_fit|| ≤ 
 :::
 
 :::{prf:remark} k-Uniformity Mechanism
-:label: rmk-k-uniformity-mechanism-cinf
+:label: rem-k-uniformity-mechanism-cinf
 
 The k-uniformity proven in C³ ([13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md) § 5.2, Lemmas 5.2-5.3) and C⁴ ([14_geometric_gas_c4_regularity.md](14_geometric_gas_c4_regularity.md) § 5, Lemmas 5.1-5.2) relies on the telescoping identity:
 
@@ -882,7 +882,7 @@ where C(m+1) depends on m through the sum over p but is k-independent and N-inde
 :::
 
 :::{prf:remark} Why Factorial Growth Doesn't Explode
-:label: rmk-factorial-no-explosion
+:label: rem-factorial-no-explosion
 
 The potential concern is that iterating the Faà di Bruno formula m times could yield (m!)^m growth. This doesn't happen because:
 
@@ -1004,7 +1004,7 @@ This is the Gevrey-1 condition with s = 1. □
 :::
 
 :::{prf:remark} Why Gevrey-1, Not Real Analytic?
-:label: rmk-gevrey-not-analytic-cinf
+:label: rem-gevrey-not-analytic-cinf
 
 Despite the Gaussian kernel being real analytic, V_fit fails real analyticity due to:
 

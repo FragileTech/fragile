@@ -157,6 +157,7 @@ The core of our strategy is to satisfy this condition by leveraging the powerful
 The sequence of single-particle marginal measures $\{\mu_N\}_{N=2}^\infty$ is tight in the space of probability measures on $\Omega$, $\mathcal{P}(\Omega)$.
 :::
 :::{prf:proof}
+:label: proof-thm-qsd-marginals-are-tight
 **Proof.**
 
 The proof proceeds by verifying the conditions of Prokhorov's theorem. On the Polish space $\Omega$, this is equivalent to showing that for any $\epsilon > 0$, there exists a compact set $K_\epsilon \subset \Omega$ such that the containment condition $\mu_N(K_\epsilon) \ge 1 - \epsilon$ holds uniformly for all $N \ge 2$. We establish this uniform containment by leveraging the moment bounds provided by the Lyapunov function analysis from `06_convergence.md`.
@@ -224,6 +225,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lem-exchangeability
 The Euclidean Gas dynamics are completely symmetric under permutation of walker indices. The kinetic perturbation operator applies the same Ornstein-Uhlenbeck process to each walker independently. The cloning operator selects companions uniformly at random and applies the same fitness comparison rule regardless of walker labels. The boundary revival operator treats all walkers identically.
 
 Since the generator $\mathcal{L}_N$ of the N-particle process is invariant under any permutation of walker indices, and since the QSD $\nu_N^{QSD}$ is the unique stationary measure of this generator, it must inherit this symmetry. By the uniqueness of the QSD, the permuted measure must equal the original measure, establishing exchangeability.
@@ -252,6 +254,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lem-empirical-convergence
 By Lemma [](#lem-exchangeability), the sequence of N-particle QSDs consists of exchangeable measures. The **Hewitt-Savage theorem** (see Kallenberg, *Foundations of Modern Probability*, Theorem 11.10) states that any exchangeable sequence of random variables can be represented as a mixture of independent and identically distributed (IID) sequences.
 
 For large $N_k$, this implies that the companions $\{z_2, \ldots, z_{N_k}\}$ behave asymptotically as if they were independent samples from the marginal distribution $\mu_{N_k}$. The **Glivenko-Cantelli theorem** (or its extension to Polish spaces, Varadarajan's theorem) guarantees that for such sequences, the empirical measure
@@ -286,6 +289,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lem-reward-continuity
 Recall that
 
 $$
@@ -314,6 +318,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lem-distance-continuity
 Recall that
 
 $$
@@ -377,6 +382,7 @@ where $\mathbb{E}^{(N_k)}_{\text{comp}}[\cdot \mid z_1]$ denotes the conditional
 :::
 
 :::{prf:proof}
+:label: proof-lem-uniform-integrability
 We must show that all terms in the generator applied to $\phi$ are uniformly bounded in $N_k$.
 
 1. **Kinetic term**: The test function $\phi$ is smooth and compactly supported, so $\phi$ and all its derivatives are bounded. The kinetic generator $\mathcal{L}_{\text{kin}}$ is a second-order differential operator with smooth, bounded coefficients (from the axioms). Therefore, $|\mathcal{L}_{\text{kin}} \phi(z)| \le C_{\text{kin}}$ for some constant $C_{\text{kin}}$ independent of $N$.
@@ -419,6 +425,7 @@ where $c(z)$ is the interior killing rate and $B[\rho_0, m_{d,\infty}]$ is the r
 :::
 
 :::{prf:proof}
+:label: proof-lem-boundary-convergence
 This convergence is established in two steps, corresponding to the two physical processes: death at the boundary and revival from the dead reservoir.
 
 **Step 1: Discrete Death Converges to Interior Killing**
@@ -550,6 +557,7 @@ Consequently, in the limit $N \to \infty$, the QSD stationarity condition conver
 :::
 
 :::{prf:proof}
+:label: proof-thm-extinction-rate-vanishes
 The proof uses the N-uniform Foster-Lyapunov condition established in `06_convergence.md` to bound the extinction rate.
 
 **Step 1: Relation Between Extinction Rate and Expected Hitting Time**
@@ -666,6 +674,7 @@ This rigorously justifies the identification step.
 :::
 
 :::{prf:remark} Physical Interpretation
+:label: rem-extinction-rate-physical-interpretation
 The vanishing extinction rate reflects the **collective stability** of large swarms. While a small swarm (small $N$) has a non-negligible chance of complete extinction within a finite time, a large swarm becomes exponentially more stable. The probability of all walkers dying simultaneously decays exponentially with $N$, making extinction a zero-probability event in the thermodynamic limit. This is consistent with the physical intuition that macroscopic systems do not exhibit sudden total phase transitions without external perturbations.
 :::
 
@@ -694,6 +703,7 @@ where $\rho_0$ is the density of $\mu_\infty$, $c(z)$ is the interior killing ra
 :::
 
 :::{prf:proof}
+:label: proof-thm-limit-is-weak-solution
 **Proof.**
 
 A measure $\mu_\infty$ with density $\rho_0$ is a weak solution to the stationary mean-field equation if, for any smooth, compactly supported test function $\phi \in C_c^\infty(\Omega)$, it satisfies:
@@ -868,6 +878,7 @@ The weighted Sobolev space $H^1_w(\Omega)$ with the norm $\|\cdot\|_{H^1_w}$ is 
 :::
 
 :::{prf:proof}
+:label: proof-thm-uniqueness-completeness-h1w-omega
 This is a standard result from the theory of weighted Sobolev spaces. Completeness follows from:
 1. The completeness of $L^2$ spaces
 2. The fact that weak derivatives of Cauchy sequences converge to weak derivatives of the limit
@@ -930,6 +941,7 @@ The solution operator $\mathcal{T}: \mathcal{P} \to \mathcal{P}$ maps probabilit
 :::
 
 :::{prf:proof}
+:label: proof-lem-uniqueness-self-mapping
 We must prove two properties: non-negativity and mass conservation.
 
 **Part (a): Non-negativity**
@@ -1063,6 +1075,7 @@ and similarly for the other moments.
 :::
 
 :::{prf:proof}
+:label: proof-lem-uniqueness-lipschitz-moments
 The reward moments are defined by:
 
 $$
@@ -1105,6 +1118,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lem-uniqueness-fixed-point-bounded
 Let $\rho^* = \mathcal{T}[\rho^*]$ be any fixed point. By the definition of $\mathcal{T}$:
 
 $$
@@ -1238,6 +1252,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lem-uniqueness-lipschitz-fitness-potential
 The fitness potential has the form:
 
 $$
@@ -1277,6 +1292,7 @@ where $L_S(R) = O(R)$ (grows at most linearly with $R$).
 :::
 
 :::{prf:proof}
+:label: proof-lem-uniqueness-lipschitz-cloning-operator
 The cloning operator $S[\rho]$ has the structure:
 
 $$
@@ -1445,6 +1461,7 @@ where $X_0, X_1, \ldots, X_m$ are smooth vector fields on a manifold $M$. If the
 :::
 
 :::{prf:proof}
+:label: proof-thm-uniqueness-hormander
 This is Hörmander's celebrated theorem (1967). See Hörmander, "Hypoelliptic second order differential equations," *Acta Math.* 119 (1967), 147-171.
 
 **Q.E.D.**
@@ -1457,6 +1474,7 @@ The kinetic Fokker-Planck operator $L$ satisfies Hörmander's condition on $\Ome
 :::
 
 :::{prf:proof}
+:label: proof-lem-uniqueness-hormander-verification
 Write $L$ in the form required by Hörmander's theorem:
 
 $$
@@ -1544,6 +1562,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-thm-uniqueness-hypoelliptic-regularity
 This proof uses the theory of hypoelliptic operators on weighted spaces. The key references are:
 - Hérau & Nier, "Isotropic hypoellipticity and trend to equilibrium for the Fokker-Planck equation with a high-degree potential" *Arch. Ration. Mech. Anal.* 171 (2004), 151-218.
 - Villani, "Hypocoercivity," *Mem. Amer. Math. Soc.* 202 (2009), no. 950.
@@ -1641,6 +1660,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lem-uniqueness-scaling-hypoelliptic-constant
 The coercivity constant $c_1$ from the hypocoercivity argument in Theorem [](#thm-uniqueness-hypoelliptic-regularity) depends on the parameters as follows:
 
 **From the diffusion term**:
@@ -1710,6 +1730,7 @@ for all $\rho_1, \rho_2 \in \mathcal{P}_R$.
 :::
 
 :::{prf:proof}
+:label: proof-thm-uniqueness-contraction-solution-operator
 Recall $\mathcal{T}[\rho] = (-\mathcal{L}_{\text{lin}})^{-1} (S[\rho] + B[\rho, m_d[\rho]] - c(\cdot)\rho + C\rho)$.
 
 **Step 1: Difference equation**
@@ -1844,6 +1865,7 @@ with equilibrium condition $k_{\text{killed}}[\rho_0] = \lambda_{\text{rev}} m_{
 :::
 
 :::{prf:proof}
+:label: proof-thm-uniqueness-uniqueness-stationary-solution
 We apply the Banach Fixed-Point Theorem to the operator $\mathcal{T}: \mathcal{P}_R \to \mathcal{P}_R$ on the invariant ball $\mathcal{P}_R := \mathcal{P} \cap \{\rho : \|\rho\|_{H^1_w} \le R^*\}$.
 
 **Step 1: Verification of Banach Fixed-Point hypotheses**
@@ -1870,6 +1892,7 @@ But we have proven uniqueness of the fixed point in $\mathcal{P}_R$, which contr
 :::
 
 :::{prf:remark}
+:label: rem-uniqueness-proof-technique
 The proof structure demonstrates a powerful technique in nonlinear analysis: when global Lipschitz continuity fails, we can still prove uniqueness by:
 
 1. **Proving a priori bounds**: Any fixed point must lie in a bounded ball (Lemma [](#lem-uniqueness-fixed-point-boundedness))
@@ -1880,6 +1903,7 @@ This approach is essential for handling operators with quadratic or higher-order
 :::
 
 :::{prf:remark}
+:label: rem-uniqueness-algorithm-connection
 This uniqueness proof reveals a deep connection between the algorithm's design parameters and the mathematical well-posedness of the model. The condition
 
 $$
@@ -1947,6 +1971,7 @@ The first step in proving convergence is to show that the sequence of measures $
 The sequence of single-particle marginal measures $\{\mu_N\}_{N=2}^\infty$ is tight in the space of probability measures on $\Omega$, $\mathcal{P}(\Omega)$.
 :::
 :::{prf:proof}
+:label: proof-thm-qsd-marginals-are-tight-summary
 **Proof.**
 
 The proof proceeds by verifying the conditions of **Prokhorov's theorem**. On the Polish space $\Omega$, a sequence of measures is tight if and only if for every $\epsilon > 0$, there exists a single compact set $K_\epsilon \subset \Omega$ such that $\mu_N(K_\epsilon) \ge 1 - \epsilon$ uniformly for all $N \ge 2$. We establish this uniform containment by leveraging the moment bounds from the N-particle Lyapunov analysis.
@@ -1991,6 +2016,7 @@ Tightness guarantees that at least one convergent subsequence exists. This secti
 Let $\{\mu_{N_k}\}$ be any subsequence of the marginal measures that converges weakly to a limit point $\mu_\infty$. Then $\mu_\infty$ is a weak solution to the stationary mean-field equation $L^\dagger \rho_0 + S[\rho_0] + B[\rho_0] = 0$, where $\rho_0$ is the density of $\mu_\infty$.
 :::
 :::{prf:proof}
+:label: proof-thm-limit-is-weak-solution-summary
 **Proof.**
 
 A measure $\mu_\infty$ with density $\rho_0$ is a weak solution to the stationary mean-field equation if, for any smooth, compactly supported test function $\phi \in C_c^\infty(\Omega)$, it satisfies $\int_\Omega (\mathcal{L}_{\text{FG}} \phi)(z) d\mu_\infty(z) = 0$, where $\mathcal{L}_{\text{FG}}$ is the generator of the mean-field process. This is equivalent to:
@@ -2049,6 +2075,7 @@ The final step is to prove that the stationary solution identified above is uniq
 There is at most one probability density $\rho \in \mathcal{P}(\Omega)$ that is a weak solution to the stationary mean-field equation.
 :::
 :::{prf:proof}
+:label: proof-thm-uniqueness-of-qsd
 **Proof (via Contraction Mapping).**
 
 The proof strategy is to reformulate the stationary PDE as a fixed-point problem, $\rho = \mathcal{T}[\rho]$, and then to prove that the solution operator $\mathcal{T}$ is a strict contraction on a suitable complete metric space. The Banach Fixed-Point Theorem then guarantees the uniqueness of the solution.
@@ -2110,6 +2137,7 @@ $$
 $$
 :::
 :::{prf:proof}
+:label: proof-thm-thermodynamic-limit
 **Proof.**
 
 The proof demonstrates that the left-hand side is equivalent to the definition of weak convergence for the sequence of first marginals.
@@ -2153,6 +2181,7 @@ where $W_2$ is the Wasserstein-2 (optimal transport) distance between probabilit
 :::
 
 :::{prf:proof}
+:label: proof-cor-w2-convergence-thermodynamic-limit
 **Proof.**
 
 The upgrade from weak convergence to W2 convergence follows from a standard metrization theorem in optimal transport theory, given that we have uniform control of second moments.

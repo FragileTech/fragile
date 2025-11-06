@@ -590,7 +590,7 @@ Before proceeding to the main theorems, we clarify the relationship between two 
 The Geometric Gas can be analyzed from two complementary viewpoints:
 
 :::{prf:observation} Two Equivalent Formulations
-:label: obs-two-formulations
+:label: rem-observation-two-formulations
 
 **Perspective 1: Flat Algorithmic Space (This Document)**
 - **State space**: Flat Euclidean $\mathbb{R}^d \times \mathbb{R}^d$ (positions and velocities)
@@ -2499,7 +2499,7 @@ The number of iterations is $n_{\text{iter}} = \lceil t/\tau \rceil$.
 The total convergence rate $\kappa_{\text{total}}$ is the minimum of three terms. Depending on problem and algorithmic parameters, different terms may dominate, leading to distinct convergence regimes.
 
 :::{prf:observation} Three Bottleneck Regimes
-:label: obs-three-regimes
+:label: rem-observation-three-regimes
 
 **Regime 1: Cloning-Limited** ($\kappa_x$ is smallest)
 
@@ -2568,7 +2568,7 @@ $$
 The regularization parameter $\epsilon_\Sigma$ plays a critical role, appearing in both $c_{\min}$ and $c_{\max}$.
 
 :::{prf:observation} Regularization Trade-Off
-:label: obs-regularization-tradeoff
+:label: rem-observation-regularization-tradeoff
 
 The regularization $\epsilon_\Sigma$ controls a fundamental trade-off:
 
@@ -2615,7 +2615,7 @@ This makes $c_{\min}$ scale as $1/\sqrt{H_{\max}}$ (intermediate) while maintain
 We have proven convergence in the **flat state space** $\mathcal{X} \times \mathbb{R}^d$ with anisotropic diffusion. But the anisotropic diffusion **defines an emergent Riemannian geometry**.
 
 :::{prf:observation} The Emergent Metric
-:label: obs-emergent-metric
+:label: rem-observation-emergent-metric
 
 The adaptive diffusion $D_{\text{reg}}(x, S) = (H + \epsilon_\Sigma I)^{-1}$ is the **inverse** of a Riemannian metric:
 

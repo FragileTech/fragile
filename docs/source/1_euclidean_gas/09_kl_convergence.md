@@ -22,10 +22,10 @@ Sections 3-4 provide supplementary material: alternative proof approaches via me
 
 This document consolidates all KL-convergence results for the Euclidean Gas framework. While we focus on the Euclidean Gas as the primary example, the techniques extend naturally to the broader class of Fragile Gas systems. Extensions to the Adaptive Gas with viscous coupling and adaptive forces are discussed in Section 7.
 
-**Scope boundaries**: This document assumes the Foster-Lyapunov drift conditions established in the convergence analysis (document `06_convergence`) and the mean-field limit theory from documents `07_mean_field` and `08_propagation_chaos`. The primary proof (Section 2) assumes log-concavity of the quasi-stationary distribution (Axiom {prf:ref}`ax-qsd-log-concave`), which is verified for specific physical systems (Yang-Mills vacuum, harmonic confinement). Section 4 outlines approaches to remove this assumption using weighted hypocoercivity.
+**Scope boundaries**: This document assumes the Foster-Lyapunov drift conditions established in the convergence analysis (document `06_convergence`) and the mean-field limit theory from documents `07_mean_field` and `08_propagation_chaos`. The primary proof (Section 2) assumes log-concavity of the quasi-stationary distribution (Axiom {prf:ref}`axiom-qsd-log-concave`), which is verified for specific physical systems (Yang-Mills vacuum, harmonic confinement). Section 4 outlines approaches to remove this assumption using weighted hypocoercivity.
 
 :::{important} Axiom Status Update (October 2025)
-**Axiom {prf:ref}`ax-qsd-log-concave` is no longer an axiom**—it is now a **proven theorem** via the hypocoercivity method in [../2_geometric_gas/15_geometric_gas_lsi_proof.md](../2_geometric_gas/15_geometric_gas_lsi_proof.md), which **does NOT require log-concavity**.
+**Axiom {prf:ref}`axiom-qsd-log-concave` is no longer an axiom**—it is now a **proven theorem** via the hypocoercivity method in [../2_geometric_gas/15_geometric_gas_lsi_proof.md](../2_geometric_gas/15_geometric_gas_lsi_proof.md), which **does NOT require log-concavity**.
 
 **Key Achievement**: The LSI is derived from geometric first principles (uniform ellipticity + C³ regularity + Gaussian velocity structure) without assuming log-concavity of the full QSD.
 
@@ -168,7 +168,7 @@ The central theorem of this document is:
 :::{prf:theorem} Exponential KL-Convergence for the Euclidean Gas
 :label: thm-main-kl-convergence
 
-Under Axiom {prf:ref}`ax-qsd-log-concave` (log-concavity of the quasi-stationary distribution), for the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in [06_convergence](06_convergence), and with cloning noise variance $\delta^2$ satisfying:
+Under Axiom {prf:ref}`axiom-qsd-log-concave` (log-concavity of the quasi-stationary distribution), for the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in [06_convergence](06_convergence), and with cloning noise variance $\delta^2$ satisfying:
 
 $$
 \delta > \delta_* = e^{-\alpha\tau/(2C_0)} \cdot C_{\text{HWI}} \sqrt{\frac{2(1 - \kappa_W)}{\kappa_{\text{conf}}}}
@@ -318,6 +318,7 @@ then $\pi$ satisfies an LSI with constant $C_{\text{LSI}} = 1/\rho$.
 :::
 
 :::{prf:proof}
+:label: proof-bakry-emery
 This is the classical result of Bakry-Émery (1985). The $\Gamma_2$ calculus yields:
 
 $$
@@ -371,6 +372,8 @@ $$
 :::
 
 :::{prf:remark}
+:label: rem-note-kinetic-non-reversibility
+
 The generator $\mathcal{L}_{\text{kin}}$ is **not self-adjoint** with respect to $\pi_{\text{kin}}$. This non-reversibility is a fundamental barrier to applying classical LSI theory.
 :::
 
@@ -415,6 +418,7 @@ where $f_t$ solves $\partial_t f = \mathcal{L}_{\text{kin}} f$ and $\alpha = \mi
 :::
 
 :::{prf:proof}
+:label: proof-hypocoercive-dissipation
 We compute the dissipation using explicit matrix calculations.
 
 **Step 1: Block matrix representation**
@@ -538,6 +542,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-kinetic-lsi
 This proof bridges the continuous-time hypocoercive dissipation with the discrete-time integrator using Theorem 1.7.2 from Section 1.7 of [06_convergence](06_convergence).
 
 **Step 1: Continuous-time generator bound for entropy**
@@ -648,6 +653,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-tensorization
 This is a classical result. For the product measure $\pi = \bigotimes_{i=1}^N \pi_i$ and function $f(x_1, \ldots, x_N)$:
 
 $$
@@ -705,7 +711,7 @@ The axiom statement below is retained for backward compatibility and to preserve
 Before proceeding to analyze the cloning operator using optimal transport techniques, we must state a foundational assumption about the target distribution.
 
 :::{prf:axiom} Log-Concavity of the Quasi-Stationary Distribution (Historical - Now Proven)
-:label: ax-qsd-log-concave
+:label: axiom-qsd-log-concave
 
 **Historical Status (Pre-October 2025)**: Axiom (foundational assumption)
 
@@ -735,6 +741,7 @@ for some convex function $V_{\text{QSD}}: \mathcal{S}_N \to \mathbb{R} \cup \{+\
 :::
 
 :::{prf:remark} Motivation and Justification
+:label: rem-note-log-concavity-motivation
 :class: note
 
 This axiom is the cornerstone of our LSI proof, as it enables the use of powerful optimal transport techniques:
@@ -931,6 +938,7 @@ $$
 :::
 
 :::{prf:remark} Implications for Millennium Prize
+:label: rem-important-millennium-prize
 :class: important
 
 Lemma {prf:ref}`lem-log-concave-yang-mills` **removes the conditional nature** of the Yang-Mills mass gap proof:
@@ -1015,6 +1023,8 @@ where:
 :::
 
 :::{prf:remark}
+:label: rem-note-hwi-bridge
+
 The HWI inequality provides a **bridge** between:
 - Wasserstein contraction (geometric, metric space)
 - Entropy convergence (information-theoretic)
@@ -1038,6 +1048,7 @@ where $S_i' = \Psi_{\text{clone}}(S_i)$, $\mu_S$ is the empirical measure of swa
 :::
 
 :::{prf:proof}
+:label: proof-cloning-wasserstein-contraction
 
 The complete proof is provided in [04_wasserstein_contraction](04_wasserstein_contraction). The proof establishes:
 
@@ -1074,6 +1085,7 @@ where $C_I$ depends on the dimension $d$, the domain diameter, and the number of
 :::
 
 :::{prf:proof}
+:label: proof-cloning-fisher-info
 **Step 1: Decomposition**
 
 The cloning operator consists of resampling followed by Gaussian convolution with variance $\delta^2 I$.
@@ -1124,6 +1136,7 @@ where $\kappa_W$ is the Wasserstein contraction rate and $C_I$ is the Fisher inf
 :::
 
 :::{prf:proof}
+:label: proof-cloning-entropy-contraction
 **Step 1: Apply the HWI inequality**
 
 From Theorem {prf:ref}`thm-hwi-inequality`:
@@ -1242,6 +1255,7 @@ where $\mu' = (\Psi_{\text{clone}})_* \mu$ and $\alpha = O(\kappa_x)$ is the con
 :::
 
 :::{prf:proof}
+:label: proof-entropy-transport-dissipation
 This inequality connects geometric contraction to information-theoretic dissipation through the displacement convexity of relative entropy.
 
 **Step 1: Displacement convexity**
@@ -1311,7 +1325,7 @@ $$
 D_{\text{KL}}(T_\# \mu * G_\delta \| \pi * G_\delta) \leq D_{\text{KL}}(T_\# \mu \| \pi)
 $$
 
-When $\pi$ is log-concave (Axiom {prf:ref}`ax-qsd-log-concave`), $\pi * G_\delta$ remains log-concave and close to $\pi$ for small $\delta$. By continuity of the KL divergence with respect to the reference measure (in the weak topology), we have:
+When $\pi$ is log-concave (Axiom {prf:ref}`axiom-qsd-log-concave`), $\pi * G_\delta$ remains log-concave and close to $\pi$ for small $\delta$. By continuity of the KL divergence with respect to the reference measure (in the weak topology), we have:
 
 $$
 D_{\text{KL}}(\mu' \| \pi) \leq D_{\text{KL}}(T_\# \mu * G_\delta \| \pi * G_\delta) + O(\delta^2)
@@ -1351,6 +1365,8 @@ with $\alpha = \frac{\tau_{\text{conv}} \kappa_W}{2} = O(\kappa_{\text{conf}} \k
 :::
 
 :::{prf:remark}
+:label: rem-note-entropy-transport-innovation
+
 This lemma is the **key technical innovation**. It shows that the geometric contraction in Wasserstein space (already proven in [06_convergence](06_convergence)) drives entropy dissipation. The constant $\alpha$ depends on:
 - $\kappa_{\text{conf}}$: convexity of confining potential (controls displacement convexity)
 - $\kappa_x$: position contraction from cloning (controls transport strength)
@@ -1381,6 +1397,7 @@ where $\beta = O(\tau \|v_{\max}\|^2 / r_{\text{valid}}^2)$ accounts for the vel
 :::
 
 :::{prf:proof}
+:label: proof-kinetic-evolution-bounds
 **Entropy:** Direct application of Theorem {prf:ref}`thm-kinetic-lsi`.
 
 **Wasserstein:** The kinetic SDE $dx = v dt + \ldots$ transports particles with velocity $v$. Over time $\tau$, particles can move distance $O(\tau v_{\max})$. This gives a Wasserstein expansion:
@@ -1428,6 +1445,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-entropy-transport-contraction
 Let $\mu_t$ be the distribution at step $t$. Define:
 - $\mu_{t+1/2} = (\Psi_{\text{clone}})_* \mu_t$ (after cloning)
 - $\mu_{t+1} = (\Psi_{\text{kin}})_* \mu_{t+1/2}$ (after kinetics)
@@ -1570,6 +1588,7 @@ for $\lambda$ close to 1.
 :::
 
 :::{prf:proof}
+:label: proof-main-lsi-composition
 **Step 1:** From Theorem {prf:ref}`thm-entropy-transport-contraction`, $V_t \le \lambda^t V_0 + C_{\text{steady}}/(1 - \lambda)$.
 
 **Step 2:** Since $H_t = D_{\text{KL}}(\mu_t \| \pi) \le V_t$:
@@ -1617,6 +1636,8 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-quantitative-lsi-final
+
 Direct computation from Theorem {prf:ref}`thm-main-lsi-composition` using:
 - $\rho_k = \alpha\tau/C_0 = O(\min(\gamma, \kappa_{\text{conf}}) \tau)$
 - $\alpha = O(\kappa_{\text{conf}} \kappa_x) = O(\kappa_{\text{conf}} \kappa_W)$
@@ -1647,6 +1668,7 @@ where $\mu_t = K^t \mu_0$.
 :::
 
 :::{prf:proof}
+:label: proof-lsi-implies-kl-convergence
 **Step 1: Entropy contraction via LSI**
 
 Let $\rho_t = d\mu_t/d\pi$ be the Radon-Nikodym derivative. The LSI states:
@@ -1696,6 +1718,7 @@ where $\gamma$ is the friction coefficient, $\kappa_{\text{conf}}$ is the confin
 :::
 
 :::{prf:proof}
+:label: proof-main-kl-final
 Direct application of:
 1. Corollary {prf:ref}`cor-quantitative-lsi-final` (explicit LSI constant)
 2. Theorem {prf:ref}`thm-lsi-implies-kl-convergence` (LSI implies KL-convergence)
@@ -1752,6 +1775,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lsi-perturbation
 Standard perturbation theory for functional inequalities. The key is that the adaptive terms are **bounded** (see Axiom 3.5 in [11_geometric_gas](../2_geometric_gas/11_geometric_gas)(../2_geometric_gas/11_geometric_gas)):
 
 $$
@@ -1922,6 +1946,7 @@ where $\kappa_{W,\min} > 0$ is the N-uniform lower bound on the Wasserstein cont
 :::
 
 :::{prf:proof}
+:label: proof-n-uniform-lsi
 **Proof.**
 
 1. From Corollary {prf:ref}`cor-quantitative-lsi-final` (Section 5.6), the LSI constant for the N-particle system is given by:
@@ -2275,6 +2300,7 @@ with equality only at $z = 0$.
 :::
 
 :::{prf:proof}
+:label: proof-sinh-bound-global
 Taylor series: $\sinh(z)/z = 1 + z^2/6 + z^4/120 + \ldots \geq 1$ for all $z \neq 0$, and $\lim_{z \to 0} \sinh(z)/z = 1$. ∎
 :::
 
@@ -3009,6 +3035,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-entropy-bound-debruijn
 
 **Step 1**: Define heat flow $\rho_t = \rho_{\text{clone}} * G_t$ for $t \in [0, \delta^2]$.
 
@@ -4154,6 +4181,7 @@ for some universal constant $c > 0$, with $\kappa_{\text{conf}} := \inf_{x} \lam
 :::
 
 :::{prf:proof}
+:label: proof-kinetic-lsi-standalone
 
 We use **Villani's hypocoercivity framework** (Villani 2009, "Hypocoercivity").
 
@@ -4320,6 +4348,7 @@ for $\delta^2 > \delta_{\min}^2$.
 :::
 
 :::{prf:proof}
+:label: proof-cloning-contraction-standalone
 
 We use entropy-potential decomposition:
 
@@ -4570,6 +4599,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-composition-standalone
 
 **Step 1**: Apply kinetic operator:
 
@@ -4639,6 +4669,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-exp-convergence-standalone
 
 **Step 1**: Iterate the contraction from Theorem {prf:ref}`thm-composition-standalone`:
 
@@ -4843,7 +4874,7 @@ For **AI engineers** implementing the Fragile Gas:
 The unified KL-convergence proof in KL-convergence unification analysis establishes exponential convergence of the Euclidean Gas to its quasi-stationary distribution (QSD) under a critical assumption:
 
 :::{prf:axiom} Log-Concavity of the Quasi-Stationary Distribution (Historical Requirement - Now Proven)
-:label: ax-qsd-log-concave-recap
+:label: axiom-qsd-log-concave-recap
 
 **Current Status (October 2025)**: ✅ **PROVEN THEOREM** - No longer required as an axiom
 
@@ -4867,7 +4898,7 @@ The limitations discussed below (regarding multimodal landscapes) were the motiv
 This document establishes exponential KL-convergence using a **strictly weaker assumption** that we **already have**:
 
 :::{prf:axiom} Confining Potential (from 04_convergence.md, Axiom 1.3.1)
-:label: ax-confining-recap
+:label: axiom-confining-recap
 
 The potential $U: \mathcal{X} \to \mathbb{R}$ satisfies:
 
@@ -4895,7 +4926,7 @@ $$
 :::{prf:theorem} Exponential KL Convergence for Non-Convex Fitness (Informal)
 :label: thm-nonconvex-informal
 
-For the N-particle Euclidean Gas with a **confining potential** (Axiom {prf:ref}`ax-confining-recap`) but **no convexity assumption**:
+For the N-particle Euclidean Gas with a **confining potential** (Axiom {prf:ref}`axiom-confining-recap`) but **no convexity assumption**:
 
 $$
 D_{\text{KL}}(\mu_t \| \pi_{\text{QSD}}) \leq e^{-\lambda t} D_{\text{KL}}(\mu_0 \| \pi_{\text{QSD}})
@@ -4955,7 +4986,7 @@ depends on friction $\gamma$, confinement strength $\alpha_U$, kinetic noise $\s
 Axiom 1.3.1 in [06_convergence](06_convergence) establishes:
 
 :::{prf:axiom} Confining Potential (Complete Statement)
-:label: ax-confining-complete
+:label: axiom-confining-complete
 
 The potential $U: \mathcal{X}_{\text{valid}} \to \mathbb{R}_{\geq 0}$ satisfies:
 
@@ -4979,7 +5010,7 @@ $$
 
 **Physical interpretation**: The potential creates a "bowl" that keeps particles away from the boundary, but the bottom of the bowl can have **arbitrary shape** (including multiple wells).
 
-**Key fact**: Axiom {prf:ref}`ax-confining-complete` **does not require** $U$ to be convex.
+**Key fact**: Axiom {prf:ref}`axiom-confining-complete` **does not require** $U$ to be convex.
 
 ### 1.1.2. The Kinetic Operator (from 04_convergence.md)
 
@@ -5130,7 +5161,7 @@ for some universal constant $c > 0$.
 But **NOT** on the convexity or curvature of $U$.
 
 :::{important}
-**Smoothness caveat**: Villani's original theorem requires the potential $U$ to be **globally** $C^2$ on $\mathbb{R}^d$ with at most quadratic growth. However, the framework's Axiom {prf:ref}`ax-confining-complete` allows for **piecewise smooth** potentials with infinite barriers (e.g., hard walls at boundary). The canonical example has:
+**Smoothness caveat**: Villani's original theorem requires the potential $U$ to be **globally** $C^2$ on $\mathbb{R}^d$ with at most quadratic growth. However, the framework's Axiom {prf:ref}`axiom-confining-complete` allows for **piecewise smooth** potentials with infinite barriers (e.g., hard walls at boundary). The canonical example has:
 
 $$
 U(x) = \begin{cases}
@@ -5179,7 +5210,7 @@ This yields exponential convergence **even though neither position nor velocity 
 
 ### 2.1.3. Extension to Piecewise Smooth Confining Potentials
 
-**Problem**: Villani's Theorem {prf:ref}`thm-villani-hypocoercivity` requires $U \in C^2(\mathbb{R}^d)$, but the framework's Axiom {prf:ref}`ax-confining-complete` allows potentials with:
+**Problem**: Villani's Theorem {prf:ref}`thm-villani-hypocoercivity` requires $U \in C^2(\mathbb{R}^d)$, but the framework's Axiom {prf:ref}`axiom-confining-complete` allows potentials with:
 - Piecewise smooth structure (e.g., $U = 0$ in interior, quadratic near boundary)
 - Infinite barriers at boundary ($U = +\infty$ for $\|x\| \geq r_{\text{boundary}}$)
 
@@ -5188,7 +5219,7 @@ This yields exponential convergence **even though neither position nor velocity 
 :::{prf:proposition} Hypocoercivity for Piecewise Smooth Confining Potentials
 :label: prop-hypocoercivity-piecewise
 
-Let $U: \mathcal{X}_{\text{valid}} \to [0, +\infty]$ be a confining potential satisfying Axiom {prf:ref}`ax-confining-complete` with:
+Let $U: \mathcal{X}_{\text{valid}} \to [0, +\infty]$ be a confining potential satisfying Axiom {prf:ref}`axiom-confining-complete` with:
 1. $U$ is piecewise $C^2$ on the interior
 2. $U = +\infty$ on the boundary $\partial \mathcal{X}$
 3. Coercivity: $\langle x, \nabla U(x) \rangle \geq \alpha_U \|x\|^2 - R_U$ where smooth
@@ -5209,6 +5240,7 @@ for some universal constant $c > 0$ (independent of the specific form of $U$).
 :::
 
 :::{prf:proof}
+:label: proof-hypocoercivity-piecewise
 
 **Step 1**: Construct a smooth surrogate potential.
 
@@ -5432,7 +5464,7 @@ dv = -\nabla U(x) \, dt - \gamma v \, dt + \sigma_v \, dW
 \end{cases}
 $$
 
-with confining potential $U$ (Axiom {prf:ref}`ax-confining-complete`), Theorem {prf:ref}`thm-villani-hypocoercivity` directly applies:
+with confining potential $U$ (Axiom {prf:ref}`axiom-confining-complete`), Theorem {prf:ref}`thm-villani-hypocoercivity` directly applies:
 
 $$
 D_{\text{KL}}(\rho_t \| \pi_{\text{kin}}) \leq e^{-\lambda_{\text{hypo}} t} D_{\text{KL}}(\rho_0 \| \pi_{\text{kin}})
@@ -5461,7 +5493,7 @@ From Section 1.7.3 of [06_convergence](06_convergence), the discrete-time weak e
 :::{prf:lemma} Hypocoercive LSI for Discrete-Time Kinetic Operator
 :label: lem-kinetic-lsi-hypocoercive
 
-For the BAOAB integrator with time step $\tau$ and confining potential $U$ (Axiom {prf:ref}`ax-confining-complete`), **without requiring convexity**:
+For the BAOAB integrator with time step $\tau$ and confining potential $U$ (Axiom {prf:ref}`axiom-confining-complete`), **without requiring convexity**:
 
 $$
 D_{\text{KL}}(\mu_{t+\tau} \| \pi_{\text{kin}}) \leq (1 - \tau \lambda_{\text{hypo}}) D_{\text{KL}}(\mu_t \| \pi_{\text{kin}}) + O(\tau^2)
@@ -5483,6 +5515,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-kinetic-lsi-hypocoercive
 
 **Step 1**: From Villani's Theorem {prf:ref}`thm-villani-hypocoercivity`, the continuous-time generator satisfies:
 
@@ -5528,7 +5561,7 @@ $$
 :::{prf:corollary} N-Particle Hypocoercive LSI
 :label: cor-n-particle-hypocoercive
 
-For the N-particle kinetic operator with confining potential $U$ (Axiom {prf:ref}`ax-confining-complete`), **without requiring convexity**:
+For the N-particle kinetic operator with confining potential $U$ (Axiom {prf:ref}`axiom-confining-complete`), **without requiring convexity**:
 
 $$
 D_{\text{KL}}(\mu_S^{(N)} \| \pi_{\text{kin}}^{\otimes N}) \leq (1 - \tau \lambda_{\text{hypo}}) D_{\text{KL}}(\mu_0^{(N)} \| \pi_{\text{kin}}^{\otimes N})
@@ -5542,6 +5575,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-n-particle-hypocoercive
 
 **Setup**: The N-particle state space is $\mathcal{Z}^N$ where $\mathcal{Z} = \mathcal{X} \times \mathbb{R}^d$ (position-velocity phase space). The kinetic operator acts independently:
 
@@ -5716,6 +5750,7 @@ where $k = |\mathcal{A}|$ is the number of alive walkers, and $C_{\text{softmax}
 :::
 
 :::{prf:proof}
+:label: proof-softmax-lipschitz-status
 
 **Strategy**: We directly bound the difference between softmax expectations by decomposing based on common vs. differing companions.
 
@@ -5844,7 +5879,7 @@ The core idea: prove that one step of the Euclidean Gas dynamics brings two swar
 
 Let $\Psi_{\text{EG}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ be the one-step Euclidean Gas operator (cloning followed by kinetic evolution). Assume:
 
-1. **Confining potential**: $U$ satisfies Axiom {prf:ref}`ax-confining-complete`
+1. **Confining potential**: $U$ satisfies Axiom {prf:ref}`axiom-confining-complete`
 2. **Hypocoercivity**: The kinetic operator has LSI constant $\lambda_{\text{hypo}} = c \cdot \min(\gamma, \alpha_U/\sigma_v^2)$ (Proposition {prf:ref}`prop-hypocoercivity-piecewise`)
 3. **Non-degeneracy**: The alive set has size $k \geq k_{\min} \geq 2$ with positive probability
 
@@ -5866,6 +5901,7 @@ where $\lambda_{\text{clone}}$ is the cloning rate (inversely proportional to fi
 :::
 
 :::{prf:proof}
+:label: proof-dobrushin-contraction
 
 The proof proceeds in four steps:
 
@@ -6018,6 +6054,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-exponential-convergence-status
 
 This is a standard application of the **Banach fixed-point theorem for Markov chains** (see Meyn & Tweedie, "Markov Chains and Stochastic Stability", Theorem 16.0.2).
 
@@ -6111,6 +6148,7 @@ depends on friction, confinement strength, kinetic noise, interaction strength, 
 :::
 
 :::{prf:proof}
+:label: proof-nonconvex-main
 
 This proof uses the theory of interacting Feynman-Kac particle systems (Theorem {prf:ref}`thm-propagation-chaos-ips`), which establishes convergence for systems with mutation and state-dependent selection.
 
@@ -6261,7 +6299,7 @@ The following table compares the new result (Theorem {prf:ref}`thm-nonconvex-mai
 **The gap**: Status convergence proves that the **alive/dead structure** of the swarm converges to the QSD pattern, but does NOT directly imply that the **spatial distribution** of alive walkers converges to the QSD's spatial distribution.
 
 :::{prf:observation} Why Composition Fails
-:label: obs-composition-failure
+:label: rem-observation-composition-failure
 
 The fundamental issue is that the kinetic operator $\Psi_{\text{kin}}$ and the full Euclidean Gas operator $\Psi_{\text{EG}}$ have **different stationary distributions**:
 
@@ -6385,7 +6423,7 @@ where $\varepsilon > 0$ is small.
 - **Confining**: $V(x) \sim x^4$ as $|x| \to \infty$
 
 **Convergence analysis**:
-- Axiom {prf:ref}`ax-confining-complete` is satisfied with $\alpha_U \sim \varepsilon$
+- Axiom {prf:ref}`axiom-confining-complete` is satisfied with $\alpha_U \sim \varepsilon$
 - Theorem {prf:ref}`thm-nonconvex-main` applies:
 
 $$
@@ -6793,7 +6831,7 @@ expressed directly in terms of physical parameters (hypocoercive mixing minus me
 
 ## Unconditional Logarithmic Sobolev Inequality via Hypocoercivity
 
-**Motivation:** The conditional LSI proof in KL-convergence unification analysis relies on Axiom `ax-qsd-log-concave` (log-concavity of π_QSD), which is unproven. This document aims to remove that assumption using recent extensions of Bakry-Émery theory to hypocoercive systems.
+**Motivation:** The conditional LSI proof in KL-convergence unification analysis relies on Axiom `axiom-qsd-log-concave` (log-concavity of π_QSD), which is unproven. This document aims to remove that assumption using recent extensions of Bakry-Émery theory to hypocoercive systems.
 
 **Implications:** If successful, this proof would:
 1. Make the Yang-Mills mass gap proof unconditional
@@ -7245,7 +7283,7 @@ using:
 
 | Aspect | Conditional Proof (10_kl_convergence_unification.md) | Unconditional Proof (This Document) |
 |--------|------------------------------------------------------|-------------------------------------|
-| **Assumption** | Axiom ax-qsd-log-concave | None (proven from dynamics) |
+| **Assumption** | Axiom axiom-qsd-log-concave | None (proven from dynamics) |
 | **Method** | Otto-Villani HWI + displacement convexity | Hypocoercive Bakry-Émery |
 | **Key tool** | Wasserstein geometry | Modified Γ₂ operator |
 | **C_LSI formula** | Function of κ_conf and displacement convexity | Function of λ_hypo and coupling |
@@ -7607,8 +7645,8 @@ Accept conditional result but strengthen justification:
 ### Axioms and Definitions
 
 **Fundamental Axioms:**
-- `ax-qsd-log-concave` (Part II, Section 3.5): Log-concavity of QSD (conditional assumption)
-- `ax-confining-recap` (Part I, Part IV): Confining potential (unconditional)
+- `axiom-qsd-log-concave` (Part II, Section 3.5): Log-concavity of QSD (conditional assumption)
+- `axiom-confining-recap` (Part I, Part IV): Confining potential (unconditional)
 
 **Core Definitions:**
 - `def-relative-entropy` (Part II, Section 1.1): KL divergence and Fisher information

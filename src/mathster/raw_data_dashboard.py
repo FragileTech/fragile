@@ -71,8 +71,9 @@ class RawDataDashboard:
 
     def __init__(self):
         """Initialize dashboard."""
-        self.project_root = Path(__file__).parent.parent.parent.parent
+        self.project_root = Path(__file__).parent.parent.parent  # Fixed: removed extra .parent
         self.docs_root = self.project_root / "docs" / "source"
+        self.registry_root = self.project_root / "unified_registry"
 
         # State
         self.current_document_path: Path | None = None
@@ -80,94 +81,96 @@ class RawDataDashboard:
         self.filtered_entities: list[dict[str, Any]] = []
         self.selected_entity: dict[str, Any] | None = None
 
-        # Create UI components
+        # Load global registry data FIRST (before creating widgets)
+        self._load_global_registry()
+
+        # Create UI components (needs entity data for chapter/document options)
         self._create_filter_widgets()
         self._create_reactive_components()
 
-        # Load initial data
-        self._load_initial_data()
+        # Apply initial filters
+        self._apply_filters()
 
-    def _discover_available_documents(self) -> dict[str, str]:
-        """Discover documents with raw_data directories.
+    def _load_global_registry(self):
+        """Load all entities from global unified registry."""
+        logger.info(f"Project root: {self.project_root}")
+        logger.info(f"Registry root: {self.registry_root}")
+        logger.info(f"Registry exists: {self.registry_root.exists()}")
 
-        Returns:
-            Dict mapping display name to identifier
-        """
-        options = {}
+        if not self.registry_root.exists():
+            logger.warning(f"Global registry not found: {self.registry_root}")
+            logger.warning("Run: python -m mathster.tools.build_unified_registry --all")
+            self.all_entities = []
+            return
 
-        if not self.docs_root.exists():
-            logger.warning(f"Docs root does not exist: {self.docs_root}")
-            return options
+        entities = []
 
-        for chapter_dir in sorted(self.docs_root.iterdir()):
-            if not chapter_dir.is_dir() or chapter_dir.name.startswith("."):
+        # Load all entity type files
+        entity_files = sorted(self.registry_root.glob("*.json"))
+        logger.info(f"Found {len(entity_files)} JSON files in registry")
+
+        for entity_file in entity_files:
+            if entity_file.name == "registry_metadata.json":
                 continue
 
-            for doc_dir in sorted(chapter_dir.iterdir()):
-                if not doc_dir.is_dir() or doc_dir.name.startswith("."):
-                    continue
+            try:
+                with open(entity_file, encoding="utf-8") as f:
+                    entity_list = json.load(f)
 
-                raw_data_dir = doc_dir / "raw_data"
-                if raw_data_dir.exists() and raw_data_dir.is_dir():
-                    # Count entities
-                    entity_count = sum(
-                        1
-                        for subdir in raw_data_dir.iterdir()
-                        if subdir.is_dir()
-                        for f in subdir.glob("*.json")
-                        if f.name != "refinement_report.json"
-                    )
+                # entity_list is already a list of dicts with metadata
+                entities.extend(entity_list)
+                logger.info(f"  Loaded {len(entity_list)} entities from {entity_file.name}")
 
-                    display_name = f"{chapter_dir.name} / {doc_dir.name} ({entity_count} entities)"
-                    identifier = f"{chapter_dir.name}|{doc_dir.name}"
-                    options[display_name] = identifier
+            except Exception as e:
+                logger.warning(f"Failed to load {entity_file}: {e}")
 
-        return options
+        self.all_entities = entities
+        logger.info(f"✓ Total loaded: {len(entities)} entities from global registry")
 
     def _create_filter_widgets(self):
         """Create filter control widgets."""
-        # Document selector
-        available_docs = self._discover_available_documents()
-        default_value = None
-        if available_docs:
-            # Prefer 01_fragile_gas_framework
-            for identifier in available_docs.values():
-                if "01_fragile_gas_framework" in identifier:
-                    default_value = identifier
-                    break
-            if default_value is None:
-                default_value = next(iter(available_docs.values()))
-
-        self.document_selector = pn.widgets.Select(
-            name="Document",
-            options=available_docs,
-            value=default_value,
+        # Chapter filter (NEW - replaces document selector)
+        available_chapters = sorted(set(e.get("_chapter") for e in self.all_entities if e.get("_chapter")))
+        self.chapter_filter = pn.widgets.MultiChoice(
+            name="Chapters",
+            options=available_chapters,
+            value=available_chapters,  # Start with all selected
             width=380,
-            description="Select document to explore",
+            description="Filter by chapter",
         )
-        self.document_selector.param.watch(self._on_document_change, "value")
+        self.chapter_filter.param.watch(self._on_filter_change, "value")
 
-        # Entity type filter
-        entity_types = [
-            "axioms",
-            "definitions",
-            "theorems",
-            "lemmas",
-            "propositions",
-            "corollaries",
-            "parameters",
-            "remarks",
-            "mathster",
-            "objects",
-        ]
+        # Document filter (NEW - replaces document selector)
+        available_documents = sorted(set(e.get("_document_id") for e in self.all_entities if e.get("_document_id")))
+        self.document_filter = pn.widgets.MultiChoice(
+            name="Documents",
+            options=available_documents,
+            value=available_documents,  # Start with all selected
+            width=380,
+            description="Filter by document",
+        )
+        self.document_filter.param.watch(self._on_filter_change, "value")
+
+        # Entity type filter (use actual types from loaded data)
+        available_types = sorted(set(e.get("_entity_type") for e in self.all_entities if e.get("_entity_type")))
         self.entity_type_filter = pn.widgets.MultiChoice(
             name="Entity Types",
-            options=entity_types,
-            value=entity_types,
+            options=available_types,
+            value=available_types,  # Start with all selected
             width=380,
             description="Filter by entity type",
         )
         self.entity_type_filter.param.watch(self._on_filter_change, "value")
+
+        # Source type filter (NEW)
+        self.source_filter = pn.widgets.MultiChoice(
+            name="Source",
+            options=["parser", "raw_data"],
+            value=["parser", "raw_data"],  # Start with both selected
+            width=380,
+            description="Filter by data source",
+        )
+        self.source_filter.param.watch(self._on_filter_change, "value")
 
         # Search input
         self.search_input = pn.widgets.TextInput(
@@ -244,113 +247,30 @@ class RawDataDashboard:
         # Track selected line range for highlighting
         self.selected_line_range: list[int] | None = None
 
-    def _load_initial_data(self):
-        """Load initial data based on document selector."""
-        self._load_document_data()
-        self._update_markdown_document_panel()
-
-    def _on_document_change(self, event):
-        """Handle document selection change."""
-        self._load_document_data()
-        self._apply_filters()
-        # Update markdown document panel (clear any previous highlighting)
-        self.selected_line_range = None
-        self._update_markdown_document_panel()
-
     def _on_filter_change(self, event):
         """Handle filter change."""
         self._apply_filters()
 
     def _on_reset_filters(self, event):
         """Reset all filters to defaults."""
+        # Reset chapter filter
+        chapters = list(self.chapter_filter.options)
+        self.chapter_filter.value = chapters
+
+        # Reset document filter
+        documents = list(self.document_filter.options)
+        self.document_filter.value = documents
+
+        # Reset source filter
+        self.source_filter.value = ["parser", "raw_data"]
+
+        # Reset entity type filter
         entity_types = list(self.entity_type_filter.options)
         self.entity_type_filter.value = entity_types
+
         self.search_input.value = ""
         self.sort_selector.value = "line_number"
         self.show_missing_ranges.value = True
-
-    def _load_document_data(self):
-        """Load entities from selected document."""
-        identifier = self.document_selector.value
-        if not identifier:
-            logger.info("No document selected")
-            self.all_entities = []
-            self.current_document_path = None
-            return
-
-        # Parse identifier: chapter|document
-        parts = identifier.split("|")
-        if len(parts) != 2:
-            logger.error(f"Invalid identifier: {identifier}")
-            self.all_entities = []
-            self.current_document_path = None
-            return
-
-        chapter, document = parts
-        doc_path = self.docs_root / chapter / document
-        raw_data_path = doc_path / "raw_data"
-
-        if not raw_data_path.exists():
-            logger.error(f"Raw data path does not exist: {raw_data_path}")
-            self.all_entities = []
-            self.current_document_path = None
-            return
-
-        # Find the markdown file for this document
-        # The markdown file is at: docs/source/{chapter}/{document}.md
-        markdown_file = self.docs_root / chapter / f"{document}.md"
-
-        if not markdown_file.exists():
-            logger.warning(f"Markdown file not found: {markdown_file}")
-            self.current_document_path = None
-        else:
-            self.current_document_path = markdown_file
-
-        logger.info(f"Loading entities from: {raw_data_path}")
-        logger.info(f"Markdown file: {self.current_document_path}")
-
-        # Load all entities
-        entities = []
-        for entity_type_dir in raw_data_path.iterdir():
-            if not entity_type_dir.is_dir() or entity_type_dir.name.startswith("."):
-                continue
-
-            entity_type = entity_type_dir.name
-
-            for json_file in entity_type_dir.glob("*.json"):
-                # Skip metadata files
-                if json_file.name in {
-                    "refinement_report.json",
-                    "object_refinement_report.json",
-                    "object_fix_report.json",
-                }:
-                    continue
-
-                try:
-                    with open(json_file, encoding="utf-8") as f:
-                        data = json.load(f)
-
-                    # Add metadata
-                    data["_entity_type"] = entity_type
-                    data["_file_path"] = str(json_file)
-
-                    # Extract line number for sorting
-                    line_range = data.get("source", {}).get("line_range")
-                    if line_range and line_range.get("lines"):
-                        data["_line_number"] = line_range["lines"][0][0]
-                    else:
-                        data["_line_number"] = float("inf")
-
-                    entities.append(data)
-
-                except Exception as e:
-                    logger.warning(f"Failed to load {json_file}: {e}")
-
-        self.all_entities = entities
-        logger.info(f"Loaded {len(entities)} entities")
-
-        # Apply filters
-        self._apply_filters()
 
     def _apply_filters(self):
         """Apply current filters to all entities."""
@@ -359,6 +279,18 @@ class RawDataDashboard:
             return
 
         filtered = self.all_entities
+
+        # Filter by chapter (NEW)
+        chapters = set(self.chapter_filter.value)
+        filtered = [e for e in filtered if e.get("_chapter") in chapters]
+
+        # Filter by document (NEW)
+        documents = set(self.document_filter.value)
+        filtered = [e for e in filtered if e.get("_document_id") in documents]
+
+        # Filter by source type (NEW)
+        sources = set(self.source_filter.value)
+        filtered = [e for e in filtered if e.get("_source_type") in sources]
 
         # Filter by entity type
         entity_types = set(self.entity_type_filter.value)
@@ -434,6 +366,19 @@ class RawDataDashboard:
             else:
                 line_info = "No line range"
 
+            # Source badge (NEW: show parser vs raw_data)
+            source_type = entity.get("_source_type", "unknown")
+            in_both = entity.get("_in_both_sources", False)
+
+            if in_both:
+                source_badge = '<span style="background: #9c27b0; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.75em; font-weight: bold;">BOTH</span>'
+            elif source_type == "parser":
+                source_badge = '<span style="background: #2196f3; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.75em; font-weight: bold;">PARSER</span>'
+            elif source_type == "raw_data":
+                source_badge = '<span style="background: #4caf50; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.75em; font-weight: bold;">RAW</span>'
+            else:
+                source_badge = ""
+
             # Color badge
             ENTITY_TYPE_COLORS.get(entity_type, "#888888")
 
@@ -450,9 +395,9 @@ class RawDataDashboard:
             )
             button.on_click(lambda event, e=entity: self._on_entity_select(e))
 
-            # Create info markdown
+            # Create info markdown with source badge
             info_md = f"""
-<div style="font-size: 0.85em; color: #666; margin-bottom: 4px; margin-left: 12px;">{line_info}</div>
+<div style="font-size: 0.85em; color: #666; margin-bottom: 4px; margin-left: 12px;">{source_badge} {line_info}</div>
 <div style="font-size: 0.9em; color: #555; margin-left: 12px; margin-bottom: 8px;">{preview}</div>
 """
             info_pane = pn.pane.HTML(info_md, sizing_mode="stretch_width")
@@ -477,15 +422,37 @@ class RawDataDashboard:
         # Update JSON panel
         self._update_json_panel()
 
-        # Update markdown document panel with highlighting
+        # Extract source information
         source = entity.get("source", {})
+        file_path_str = source.get("file_path")
         line_range = source.get("line_range", {}).get("lines")
+
+        # Set current document path from entity source
+        if file_path_str:
+            # Convert relative path to absolute
+            if not Path(file_path_str).is_absolute():
+                self.current_document_path = self.project_root / file_path_str
+            else:
+                self.current_document_path = Path(file_path_str)
+
+            # Verify file exists
+            if not self.current_document_path.exists():
+                logger.warning(f"File not found: {self.current_document_path}")
+                self.current_document_path = None
+            else:
+                logger.info(f"Loading document: {self.current_document_path}")
+        else:
+            self.current_document_path = None
+            logger.warning(f"Entity {entity.get('label')} has no file_path in source")
+
+        # Set line range for highlighting
         if line_range and len(line_range) > 0:
             self.selected_line_range = line_range[0]  # [start, end]
-            self._update_markdown_document_panel()
         else:
             self.selected_line_range = None
-            self._update_markdown_document_panel()
+
+        # Update markdown document panel with highlighting
+        self._update_markdown_document_panel()
 
     def _update_json_panel(self):
         """Update JSON panel with selected entity."""
@@ -737,12 +704,22 @@ class RawDataDashboard:
         without_ranges = total - with_ranges
         coverage = (with_ranges / total * 100) if total > 0 else 0
 
+        # Count by source type (NEW)
+        parser_count = sum(1 for e in self.all_entities if e.get("_source_type") == "parser")
+        raw_data_count = sum(1 for e in self.all_entities if e.get("_source_type") == "raw_data")
+        both_count = sum(1 for e in self.all_entities if e.get("_in_both_sources", False))
+
         # Build markdown
         md = f"""
 ## Statistics
 
 **Total Entities:** {total}
 **Filtered (visible):** {filtered}
+
+### By Source
+- <span style="background: #2196f3; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8em;">PARSER</span> **Parser only:** {parser_count - both_count}
+- <span style="background: #4caf50; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8em;">RAW</span> **Raw data only:** {raw_data_count - both_count}
+- <span style="background: #9c27b0; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8em;">BOTH</span> **In both sources:** {both_count}
 
 ### Coverage
 - **With line ranges:** {with_ranges} ({coverage:.1f}%)
@@ -767,21 +744,18 @@ class RawDataDashboard:
                 styles={"font-size": "1.1em"},
             ),
             pn.layout.Divider(),
-            # Data source
-            pn.pane.Markdown(
-                "## Data Source\n*Select document to explore*",
-                styles={"font-size": "0.95em"},
-                margin=(10, 0, 10, 0),
-            ),
-            self.document_selector,
-            pn.layout.Divider(),
             # Filters
             pn.pane.Markdown(
-                "## Filters\n*Updates apply automatically*",
+                "## Filters\n*Global registry - filter by chapter/document/type*",
                 styles={"font-size": "0.95em"},
                 margin=(10, 0, 10, 0),
             ),
+            self.chapter_filter,
+            self.document_filter,
+            pn.layout.Divider(),
+            self.source_filter,
             self.entity_type_filter,
+            pn.layout.Divider(),
             self.search_input,
             self.sort_selector,
             self.show_missing_ranges,

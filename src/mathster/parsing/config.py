@@ -12,16 +12,16 @@ import dspy
 
 
 def configure_dspy(
-    model: str = "gemini/gemini-2.0-flash-exp",
+    model: str = "gemini/gemini-2.5-flash-latest",
     temperature: float = 0.0,
-    max_tokens: int = 8192,
+    max_tokens: int = 20000,
     verbose: bool = False,
 ) -> None:
     """
     Configure DSPy with the specified model and settings.
 
     Args:
-        model: Model identifier (e.g., "gemini/gemini-2.0-flash-exp", "anthropic/claude-haiku-4-5")
+        model: Model identifier (e.g., "gemini/gemini-2.5-flash-latest", "anthropic/claude-haiku-4-5")
         temperature: Sampling temperature (0.0 for deterministic)
         max_tokens: Maximum tokens in response
         verbose: Whether to print verbose output

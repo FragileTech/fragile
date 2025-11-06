@@ -1,0 +1,273 @@
+{
+  "source": {
+    "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+    "line_range": {
+      "lines": [
+        [
+          713,
+          1429
+        ]
+      ]
+    },
+    "label": "section-4-analysis-and-properties-of-the-mean-field-equations",
+    "volume": "1_euclidean_gas",
+    "article_id": "07_mean_field",
+    "section": "3.3",
+    "section_name": "The Coupled Mean-Field Equations"
+  },
+  "full_text": "",
+  "section_id": "## 4. Analysis and Properties of the Mean-Field Equations",
+  "definitions": [],
+  "theorems": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              812,
+              869
+            ]
+          ]
+        },
+        "label": "thm-killing-rate-consistency",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
+      },
+      "full_text": "",
+      "label": "thm-killing-rate-consistency",
+      "statement_type": "theorem",
+      "conclusion_formula_latex": null,
+      "explicit_definition_references": []
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1316,
+              1332
+            ]
+          ]
+        },
+        "label": "thm-mean-field-limit-informal",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.4",
+        "section_name": "Connection to the Main Mean-Field Result"
+      },
+      "full_text": "",
+      "label": "thm-mean-field-limit-informal",
+      "statement_type": "theorem",
+      "conclusion_formula_latex": null,
+      "explicit_definition_references": []
+    }
+  ],
+  "proofs": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              871,
+              1061
+            ]
+          ]
+        },
+        "label": "proof-thm-killing-rate-consistency-part-i",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
+      },
+      "full_text": "",
+      "label": "proof-thm-killing-rate-consistency-part-i",
+      "proves_label": "thm-killing-rate-consistency",
+      "strategy_text": null,
+      "steps": null,
+      "full_body_text": null,
+      "explicit_theorem_references": [],
+      "citations_in_text": []
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1063,
+              1218
+            ]
+          ]
+        },
+        "label": "proof-thm-killing-rate-consistency-part-ii",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
+      },
+      "full_text": "",
+      "label": "proof-thm-killing-rate-consistency-part-ii",
+      "proves_label": "thm-killing-rate-consistency",
+      "strategy_text": null,
+      "steps": null,
+      "full_body_text": null,
+      "explicit_theorem_references": [],
+      "citations_in_text": []
+    }
+  ],
+  "citations": [],
+  "parameters": [],
+"remarks": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1222,
+              1239
+            ]
+          ]
+        },
+        "label": "remark-killing-rate-interpretation",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.3",
+        "section_name": "Interpretation and Mathematical Implications"
+      },
+      "full_text": "",
+      "label": "remark-killing-rate-interpretation",
+      "remark_type": "note"
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1241,
+              1273
+            ]
+          ]
+        },
+        "label": "remark-important-killing-rate-well-posedness",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.3",
+        "section_name": "Interpretation and Mathematical Implications"
+      },
+      "full_text": "",
+      "label": "remark-important-killing-rate-well-posedness",
+      "remark_type": "observation"
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1275,
+              1310
+            ]
+          ]
+        },
+        "label": "remark-numerical-validation-killing-rate",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.3",
+        "section_name": "Interpretation and Mathematical Implications"
+      },
+      "full_text": "",
+      "label": "remark-numerical-validation-killing-rate",
+      "remark_type": "comment"
+    }
+  ],
+  "axioms": [],
+  "assumptions": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              735,
+              745
+            ]
+          ]
+        },
+        "label": "assumption-regularity-summary",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.2",
+        "section_name": "Well-Posedness and Future Work"
+      },
+      "full_text": "",
+      "label": "assumption-regularity-summary"
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              777,
+              786
+            ]
+          ]
+        },
+        "label": "assumption-domain-regularity",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.1",
+        "section_name": "Mathematical Setup and Regularity Assumptions"
+      },
+      "full_text": "",
+      "label": "assumption-domain-regularity"
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              788,
+              798
+            ]
+          ]
+        },
+        "label": "assumption-integrator-regularity",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.1",
+        "section_name": "Mathematical Setup and Regularity Assumptions"
+      },
+      "full_text": "",
+      "label": "assumption-integrator-regularity"
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              800,
+              808
+            ]
+          ]
+        },
+        "label": "assumption-density-regularity-killing",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.1",
+        "section_name": "Mathematical Setup and Regularity Assumptions"
+      },
+      "full_text": "",
+      "label": "assumption-density-regularity-killing"
+    }
+  ]
+}

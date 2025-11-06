@@ -559,21 +559,21 @@ For the convergence of the Geometric Viscous Fluid Model to be provable, its com
 These are the foundational axioms, inherited from the original framework, that guarantee the existence of the underlying stable system which we are perturbing.
 
 :::{prf:axiom} Axiom of a Globally Confining Potential
-:label: ax:confining-potential-hybrid
+:label: axiom-confining-potential-hybrid
 
 The potential `U(x)` used to define the stability force `F_stable = -∇U(x)` must satisfy the **Axiom of a Globally Confining Potential** as stated in `04_convergence.md` (Axiom 1.3.1). It must be smooth, coercive, and compatible with the boundary.
 *   **Role:** Guarantees the system is recurrent and prevents the swarm from drifting to the boundary. This is the anchor for the hypocoercivity and boundary contraction proofs.
 :::
 
 :::{prf:axiom} Axiom of Positive Friction
-:label: ax:positive-friction-hybrid
+:label: axiom-positive-friction-hybrid
 
 The bulk friction coefficient `γ` must be a strictly positive constant: `γ > 0`.
 *   **Role:** Guarantees dissipation of absolute kinetic energy, preventing velocity explosion and enabling velocity variance contraction.
 :::
 
 :::{prf:axiom} Foundational Cloning and Environmental Axioms
-:label: ax:cloning-env-hybrid
+:label: axiom-cloning-env-hybrid
 
 All foundational axioms related to the cloning operator's pipeline and the environment, as defined in `03_cloning.md` (Chapter 4), must hold. This includes:
 *   **Axiom EG-2 (Safe Harbor):** Ensures the cloning operator provides boundary safety.
@@ -587,7 +587,7 @@ All foundational axioms related to the cloning operator's pipeline and the envir
 These "axioms" are fundamentally different. They are not assumptions about the environment, but rather **properties of the algorithm's adaptive components that must be (and can be) proven**. They state that the adaptive terms are "well-behaved" enough to be treated as bounded perturbations.
 
 :::{prf:proposition} k-Uniform Boundedness of the Adaptive Force (ρ-Dependent)
-:label: prop:bounded-adaptive-force
+:label: prop-bounded-adaptive-force
 
 The adaptive force $\mathbf{F}_{\text{adapt}} = \epsilon_F \nabla V_{\text{fit}}[f_k, \rho]$ is uniformly bounded. There exists a finite, state-independent constant $F_{\text{adapt,max}}(\rho)$ such that:
 
@@ -618,14 +618,14 @@ $$
 :::
 
 :::{prf:axiom} Axiom of a Well-Behaved Viscous Kernel
-:label: ax:viscous-kernel
+:label: axiom-viscous-kernel
 
 The kernel `K(r)` used in the viscous force `F_viscous` must be a non-negative, bounded, and decaying function of the distance `r = ||x_i - x_j||`. For example, a Gaussian kernel `K(r) = exp(-r² / 2l²)`.
 *   **Role:** Ensures the viscous force is a bounded, local interaction, preventing action at a distance and ensuring the term is mathematically well-behaved.
 :::
 
 :::{prf:proposition} k-Uniform Ellipticity by Construction (Proven in Chapter 4)
-:label: prop:ueph-by-construction
+:label: prop-ueph-by-construction
 
 The regularized diffusion tensor $\Sigma_{\text{reg}} = (H + \epsilon_\Sigma I)^{-1/2}$ is **uniformly elliptic by construction**.
 
@@ -713,6 +713,8 @@ for all $S \in \Sigma_N$ and **all N**, where $H_{\max}(\rho)$ is the **N-unifor
 :::
 
 :::{prf:proof}
+:label: proof-lem-hessian-bounded
+
 The fitness potential is constructed as:
 
 $$
@@ -782,6 +784,8 @@ for all swarm states $S$, where:
 :::
 
 :::{prf:proof}
+:label: proof-lem-hessian-bounded-rigorous
+
 We provide a complete derivation tracking all terms. Recall:
 
 $$
@@ -890,6 +894,8 @@ demonstrating that uniform ellipticity cannot be guaranteed without regularizati
 :::
 
 :::{prf:proof}
+:label: proof-lem-hessian-explosion
+
 Consider a swarm collapsing to a point where all walkers have nearly identical measurement values: $d(x_i) \approx d_0$ for all $i$. In this regime:
 
 $$
@@ -916,7 +922,9 @@ as $\sigma_{\text{patch}} \to 0$. This demonstrates that without the regularizat
 **This justifies the necessity of regularization** in both the fitness potential computation and the adaptive diffusion tensor construction.
 :::
 
-:::{prf:proof}[Proof of Theorem [](#thm-ueph)]
+:::{prf:proof} Proof of Theorem [](#thm-ueph)
+:label: proof-thm-ueph
+
 We now prove uniform ellipticity of $G_{\text{reg}} = (H + \epsilon_\Sigma I)^{-1}$.
 
 **Step 1: Eigenvalue bounds for $H_{\text{reg}} = H + \epsilon_\Sigma I$.**
@@ -1003,6 +1011,8 @@ The Hybrid SDE defined in Definition [](#def-hybrid-sde) admits a unique strong 
 :::
 
 :::{prf:proof}
+:label: proof-cor-wellposed
+
 **Key Challenge:** The coefficients $\mathbf{F}_{\text{adapt}}(x_i, S)$, $\mathbf{F}_{\text{viscous}}(x_i, S)$, and $\Sigma_{\text{reg}}(x_i, S)$ depend on the **full swarm state** $S = (x_1, v_1, \ldots, x_N, v_N)$, not just on the individual particle $(x_i, v_i)$. This makes our SDE a **McKean-Vlasov-type system** with particle interactions, requiring more careful analysis than standard SDEs.
 
 **Step 1: Lipschitz Continuity in the Product Topology.**
@@ -1126,7 +1136,9 @@ $$
 Consequently, the backbone system is geometrically ergodic, converging exponentially fast to a unique Quasi-Stationary Distribution (QSD).
 :::
 
-:::{prf:proof}[Proof sketch]
+:::{prf:proof} Proof sketch
+:label: proof-thm-backbone-convergence
+
 The full proof is provided in Theorem 1.4.2 of [04_convergence.md](../1_euclidean_gas/06_convergence.md). The argument proceeds by establishing drift inequalities for each component of $V_{\text{total}}$ under both the cloning operator $\Psi_{\text{clone}}$ and the kinetic evolution $\Psi_{\text{kin,backbone}}$, then combining them via the Discretization Theorem (Theorem 1.7.2).
 
 The key mechanisms are:
@@ -1227,6 +1239,8 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-thm-strat-chain
+
 This follows from the standard Stratonovich chain rule (see Øksendal, "Stochastic Differential Equations", Chapter 3, or Kunita, "Stochastic Flows and Stochastic Differential Equations", Chapter 3).
 
 The key difference from the Itô formula is that the second-order correction term involves the **Lie derivative** along the diffusion vector fields, not simply the trace of the Hessian with the diffusion matrix. This is precisely the term $\frac{1}{2} \sum_j (\sigma_j \cdot \nabla)(\sigma_j \cdot \nabla) V$.
@@ -1334,6 +1348,8 @@ for all $S \in \Sigma_N$ and **all N**.
 :::
 
 :::{prf:proof}
+:label: proof-lem-adaptive-force-bounded
+
 By the Cauchy-Schwarz inequality:
 
 $$
@@ -1442,6 +1458,8 @@ is the normalized viscous dissipation.
 :::
 
 :::{prf:proof}
+:label: proof-lem-viscous-dissipative
+
 The velocity variance is:
 
 $$
@@ -1515,6 +1533,8 @@ where $C_{\text{diff}}$ depends only on the ellipticity constants $c_{\min}, c_{
 :::
 
 :::{prf:proof}
+:label: proof-lem-diffusion-bounded
+
 Recall from Definition [](#def-strat-drift):
 
 $$
@@ -1668,6 +1688,8 @@ Consequently, the full adaptive system is geometrically ergodic with exponential
 ### 7.2. Proof of Main Theorem
 
 :::{prf:proof}
+:label: proof-thm-fl-drift-adaptive
+
 The proof proceeds in six steps, working entirely in the continuous-time domain before discretization.
 
 **Step 1: Decompose the Stratonovich drift.** By Definition [](#def-strat-drift), the Stratonovich drift of $V_{\text{total}}(S_t)$ is:
@@ -2170,6 +2192,8 @@ where $C_{\text{LSI}}$ is the LSI constant from Theorem `thm-lsi-adaptive-gas`.
 :::
 
 :::{prf:proof}
+:label: proof-cor-entropy-convergence-lsi
+
 The LSI, combined with the entropy dissipation identity:
 
 $$
@@ -2278,7 +2302,9 @@ $$
 for some constant $C_{\text{TV}}$ depending on $\mu_0$ and $V_{\text{total}}(\mu_0)$.
 :::
 
-:::{prf:proof}[Proof sketch]
+:::{prf:proof} Proof sketch
+:label: proof-thm-qsd-existence
+
 The Foster-Lyapunov drift condition (Theorem [](#thm-fl-drift-adaptive)) implies:
 1. **Petite set property:** The swarm is irreducible and aperiodic by the same arguments as in [04_convergence.md](../1_euclidean_gas/06_convergence.md) (positive diffusion, global potential, cloning operator mixing).
 2. **Geometric ergodicity:** By the standard Foster-Lyapunov theorem (Meyn & Tweedie, Chapter 15), the drift condition implies the existence of a unique invariant measure $\pi_{\text{QSD}}$ and exponential convergence in the Lyapunov norm.
@@ -2528,6 +2554,7 @@ This captures the hypocoercive coupling: macroscopic gradients are transported b
 :::
 
 :::{prf:proof}
+:label: proof-lem-macro-transport
 
 This proof follows the classical hypocoercivity approach of Villani (2009) adapted to the QSD setting. The key steps are:
 
@@ -3520,6 +3547,7 @@ where $\text{supp}(X)$ denotes the topological support of the law of $X$. When t
 :::
 
 :::{prf:proof}
+:label: proof-lem-variance-to-gap-adaptive
 
 **Strategy**: We define the support radius $R := \sup_{x \in \text{supp}(X)} |x - \mu|$ and show that the variance definition implies $\sigma^2 \le R^2$, from which the result follows by taking square roots.
 

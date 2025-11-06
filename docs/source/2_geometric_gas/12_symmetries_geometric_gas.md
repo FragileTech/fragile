@@ -267,6 +267,8 @@ for all $\sigma \in S_N$.
 :::
 
 :::{prf:proof}
+:label: proof-thm-permutation-symmetry
+
 We verify invariance at each stage of the algorithm.
 
 **Stage 1: Measurement and localized statistics**
@@ -332,6 +334,8 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-cor-qsd-exchangeable
+
 The QSD is the unique stationary distribution of the ergodic Markov chain conditioned on survival. By Theorem {prf:ref}`thm-permutation-symmetry`, if $\pi$ is stationary, then $\sigma_* \pi$ is also stationary for any $\sigma \in S_N$. By uniqueness of the QSD, $\sigma_* \pi_{\text{QSD}} = \pi_{\text{QSD}}$. ∎
 :::
 
@@ -360,6 +364,8 @@ where $T_a$ acts on the swarm by translating all positions: $T_a(\mathcal{S}) = 
 :::
 
 :::{prf:proof}
+:label: proof-thm-translation-equivariance
+
 **Measurement stage**: Since $R(x + a, v) = R(x, v)$, the reward Z-scores are invariant:
 
 $$
@@ -394,6 +400,7 @@ $$
 :::
 
 :::{prf:remark} Breaking of Translation Symmetry
+:label: rem-warning-translation-symmetry-breaking
 :class: warning
 
 **Generic case**: For bounded domains $\mathcal{X}_{\text{valid}} \subset \mathbb{R}^d$ with walls, translation symmetry is **broken** except for special directions (e.g., periodic boundaries).
@@ -423,6 +430,8 @@ where $\mathcal{R}(\mathcal{S}) = \{(Rx_i, Rv_i, s_i)\}$ for a fixed $R \in SO(d
 :::
 
 :::{prf:proof}
+:label: proof-thm-rotation-equivariance
+
 **Algorithmic distance**: Under rotation, the Sasaki metric transforms as:
 
 $$
@@ -454,6 +463,7 @@ The noise is isotropic (covariance $\sigma_v^2 I$), hence rotation-invariant.
 :::
 
 :::{prf:example} Radially Symmetric Fitness Landscapes
+:label: ex-radial-fitness
 :class: tip
 
 Consider a reward of the form:
@@ -484,6 +494,8 @@ where we write the $\alpha, \beta, \eta$ dependence explicitly.
 :::
 
 :::{prf:proof}
+:label: proof-thm-fitness-scaling
+
 The fitness potential is:
 
 $$
@@ -525,6 +537,8 @@ Furthermore, the system exhibits **strict entropy production**: the relative ent
 :::
 
 :::{prf:proof}
+:label: proof-thm-irreversibility
+
 **Time-reversal in Hamiltonian systems** requires velocity inversion: $\mathcal{T}(x, v, s) = (x, -v, s)$. We show this does not reverse the Geometric Gas dynamics.
 
 **Cloning operator breaks time-reversal**: The cloning gate compares fitness values and creates discontinuous jumps:
@@ -566,5 +580,7 @@ This is the **H-theorem** for the Geometric Gas: entropy to equilibrium decrease
 :::
 
 :::{prf:proof}
+:label: proof-prop-h-theorem
+
 This follows from the Foster-Lyapunov drift inequality (`07_geometric_gas.md`, Chapter 7) combined with Pinsker's inequality relating relative entropy to total variation distance. See `04_convergence.md`, §4.3 for the detailed derivation in the Euclidean Gas case, which carries over to the adaptive setting by perturbation theory. ∎
 :::

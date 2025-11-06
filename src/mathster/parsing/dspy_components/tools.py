@@ -179,3 +179,37 @@ def validate_improvement_tool(improved_json: str, context: str) -> str:
     """
     # Reuse validate_extraction_tool
     return validate_extraction_tool(improved_json, context)
+
+
+def validate_parameter_tool(parameter_json: str, context: str) -> str:
+    """
+    Tool for ReAct agent to validate a single parameter extraction.
+
+    Args:
+        parameter_json: JSON string representing ParameterExtraction
+        context: Context JSON dict as a string containing file_path, article_id, chapter_text
+
+    Returns:
+        Validation feedback string for the agent
+    """
+    from mathster.parsing.validation.validators import validate_parameter
+
+    try:
+        # Parse parameter
+        parameter_dict = json.loads(parameter_json)
+
+        # Parse context
+        context_dict = json.loads(context)
+        file_path = context_dict.get("file_path", "")
+        article_id = context_dict.get("article_id", "")
+        chapter_text = context_dict.get("chapter_text", "")
+
+        # Validate
+        result = validate_parameter(
+            parameter_dict, file_path=file_path, article_id=article_id, chapter_text=chapter_text
+        )
+
+        return result.get_feedback()
+
+    except Exception as e:
+        return f"Validation tool error: {e!s}"

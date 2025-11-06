@@ -4,19 +4,19 @@
     "line_range": {
       "lines": [
         [
-          1,
-          3
+          4,
+          17
         ]
       ]
     },
-    "label": "section-chapter-0",
+    "label": "section-introduction",
     "volume": "1_euclidean_gas",
     "article_id": "07_mean_field",
     "section": null,
     "section_name": null
   },
   "full_text": "",
-  "section_id": "Chapter 0",
+  "section_id": "## Introduction",
   "definitions": [],
   "theorems": [],
   "proofs": [],

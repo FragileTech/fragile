@@ -7,21 +7,16 @@ extraction and improvement processes using DSPy components.
 Submodules:
     - extract: Fresh extraction workflows
     - improve: Improvement workflows for existing extractions
-    - retry: Retry logic with fallback model support
-
-For now, these re-export from the original files to maintain backward compatibility.
-The full extraction will be completed in a future refactoring phase.
 """
 
-# Re-export from legacy files (internal implementation detail)
-# Users should import from mathster.parsing.workflows or mathster.parsing
-from mathster.parsing.extract_workflow import (
+# Import from modular workflow files
+from mathster.parsing.workflows.extract import (
     extract_chapter,
     extract_chapter_by_labels,
     extract_chapter_with_retry,
     extract_label_with_retry,
 )
-from mathster.parsing.improve_workflow import (
+from mathster.parsing.workflows.improve import (
     compute_changes,
     improve_chapter,
     improve_chapter_by_labels,

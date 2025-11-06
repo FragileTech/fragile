@@ -1,0 +1,612 @@
+[
+  {
+    "label": "def-baoab-update-rule",
+    "source": {
+      "document_id": "07_mean_field",
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "chapter": "1_euclidean_gas",
+      "section": null,
+      "section_name": null,
+      "label": "def-baoab-update-rule",
+      "line_range": {
+        "lines": [
+          [
+            250,
+            282
+          ]
+        ]
+      },
+      "equation": null,
+      "url_fragment": "#def-baoab-update-rule"
+    },
+    "_entity_type": "definition",
+    "_source_type": "raw_data",
+    "_section_id": null,
+    "_chapter_number": null,
+    "_raw_data_file": "def-baoab-update-rule.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 250,
+    "_in_both_sources": true,
+    "_parser_version": {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              255,
+              287
+            ]
+          ]
+        },
+        "label": "def-baoab-update-rule",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      },
+      "full_text": {
+        "lines": [
+          [
+            255,
+            287
+          ]
+        ]
+      },
+      "label": "def-baoab-update-rule",
+      "term": "BAOAB Update Rule",
+      "parameters_mentioned": [
+        "x_n",
+        "v_n",
+        "t_n",
+        "tau",
+        "m",
+        "F",
+        "u",
+        "gamma_fric",
+        "Theta",
+        "xi"
+      ],
+      "_entity_type": "definition",
+      "_source_type": "parser",
+      "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+      "_chapter_number": 3,
+      "_parser_file": "chapter_3.json",
+      "_document_id": "07_mean_field",
+      "_line_number": 255
+    }
+  },
+  {
+    "label": "def-kinetic-generator",
+    "source": {
+      "document_id": "07_mean_field",
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "chapter": "1_euclidean_gas",
+      "section": null,
+      "section_name": null,
+      "label": "def-kinetic-generator",
+      "line_range": {
+        "lines": [
+          [
+            300,
+            324
+          ]
+        ]
+      },
+      "equation": null,
+      "url_fragment": "#def-kinetic-generator"
+    },
+    "_entity_type": "definition",
+    "_source_type": "raw_data",
+    "_section_id": null,
+    "_chapter_number": null,
+    "_raw_data_file": "def-kinetic-generator.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 300,
+    "_in_both_sources": true,
+    "_parser_version": {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              306,
+              330
+            ]
+          ]
+        },
+        "label": "def-kinetic-generator",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+      },
+      "full_text": {
+        "lines": [
+          [
+            306,
+            330
+          ]
+        ]
+      },
+      "label": "def-kinetic-generator",
+      "term": "Kinetic Transport Operator",
+      "parameters_mentioned": [
+        "x_i",
+        "v_i",
+        "m",
+        "F",
+        "u",
+        "gamma_fric",
+        "sigma_v",
+        "W_t",
+        "Omega"
+      ],
+      "_entity_type": "definition",
+      "_source_type": "parser",
+      "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+      "_chapter_number": 3,
+      "_parser_file": "chapter_3.json",
+      "_document_id": "07_mean_field",
+      "_line_number": 306
+    }
+  },
+  {
+    "label": "def-killing-operator",
+    "source": {
+      "document_id": "07_mean_field",
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "chapter": "1_euclidean_gas",
+      "section": null,
+      "section_name": null,
+      "label": "def-killing-operator",
+      "line_range": {
+        "lines": [
+          [
+            347,
+            363
+          ]
+        ]
+      },
+      "equation": null,
+      "url_fragment": "#def-killing-operator"
+    },
+    "_entity_type": "definition",
+    "_source_type": "raw_data",
+    "_section_id": null,
+    "_chapter_number": null,
+    "_raw_data_file": "def-killing-operator.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 347,
+    "_in_both_sources": true,
+    "_parser_version": {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              355,
+              371
+            ]
+          ]
+        },
+        "label": "def-killing-operator",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.3",
+        "section_name": "The Reaction Operators (Killing, Revival, and Cloning)"
+      },
+      "full_text": {
+        "lines": [
+          [
+            355,
+            371
+          ]
+        ]
+      },
+      "label": "def-killing-operator",
+      "term": "Interior Killing Operator",
+      "parameters_mentioned": [
+        "c",
+        "z",
+        "Omega",
+        "X_valid",
+        "V_alg"
+      ],
+      "_entity_type": "definition",
+      "_source_type": "parser",
+      "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+      "_chapter_number": 3,
+      "_parser_file": "chapter_3.json",
+      "_document_id": "07_mean_field",
+      "_line_number": 355
+    }
+  },
+  {
+    "label": "def-revival-operator",
+    "source": {
+      "document_id": "07_mean_field",
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "chapter": "1_euclidean_gas",
+      "section": null,
+      "section_name": null,
+      "label": "def-revival-operator",
+      "line_range": {
+        "lines": [
+          [
+            365,
+            390
+          ]
+        ]
+      },
+      "equation": null,
+      "url_fragment": "#def-revival-operator"
+    },
+    "_entity_type": "definition",
+    "_source_type": "raw_data",
+    "_section_id": null,
+    "_chapter_number": null,
+    "_raw_data_file": "def-revival-operator.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 365,
+    "_in_both_sources": true,
+    "_parser_version": {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              373,
+              398
+            ]
+          ]
+        },
+        "label": "def-revival-operator",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.3",
+        "section_name": "The Reaction Operators (Killing, Revival, and Cloning)"
+      },
+      "full_text": {
+        "lines": [
+          [
+            373,
+            398
+          ]
+        ]
+      },
+      "label": "def-revival-operator",
+      "term": "Revival Operator",
+      "parameters_mentioned": [
+        "lambda_revive",
+        "m_d",
+        "m_a",
+        "f",
+        "z"
+      ],
+      "_entity_type": "definition",
+      "_source_type": "parser",
+      "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+      "_chapter_number": 3,
+      "_parser_file": "chapter_3.json",
+      "_document_id": "07_mean_field",
+      "_line_number": 373
+    }
+  },
+  {
+    "label": "def-cloning-generator",
+    "source": {
+      "document_id": "07_mean_field",
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "chapter": "1_euclidean_gas",
+      "section": null,
+      "section_name": null,
+      "label": "def-cloning-generator",
+      "line_range": {
+        "lines": [
+          [
+            484,
+            529
+          ]
+        ]
+      },
+      "equation": null,
+      "url_fragment": "#def-cloning-generator"
+    },
+    "_entity_type": "definition",
+    "_source_type": "raw_data",
+    "_section_id": null,
+    "_chapter_number": null,
+    "_raw_data_file": "def-cloning-generator.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 484,
+    "_in_both_sources": true,
+    "_parser_version": {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              492,
+              537
+            ]
+          ]
+        },
+        "label": "def-cloning-generator",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.3.3",
+        "section_name": "Derivation of the Internal Cloning Operator from First Principles"
+      },
+      "full_text": {
+        "lines": [
+          [
+            492,
+            537
+          ]
+        ]
+      },
+      "label": "def-cloning-generator",
+      "term": "Internal Cloning Operator",
+      "parameters_mentioned": [
+        "S",
+        "f",
+        "P_clone",
+        "Q_delta",
+        "tau",
+        "m_a",
+        "z_d",
+        "z_c"
+      ],
+      "_entity_type": "definition",
+      "_source_type": "parser",
+      "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+      "_chapter_number": 3,
+      "_parser_file": "chapter_3.json",
+      "_document_id": "07_mean_field",
+      "_line_number": 492
+    }
+  },
+  {
+    "label": "def-transport-operator",
+    "source": {
+      "document_id": "07_mean_field",
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "chapter": "1_euclidean_gas",
+      "section": null,
+      "section_name": null,
+      "label": "def-transport-operator",
+      "line_range": {
+        "lines": [
+          [
+            541,
+            555
+          ]
+        ]
+      },
+      "equation": null,
+      "url_fragment": "#def-transport-operator"
+    },
+    "_entity_type": "definition",
+    "_source_type": "raw_data",
+    "_section_id": null,
+    "_chapter_number": null,
+    "_raw_data_file": "def-transport-operator.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 541,
+    "_in_both_sources": true,
+    "_parser_version": {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              549,
+              563
+            ]
+          ]
+        },
+        "label": "def-transport-operator",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.1",
+        "section_name": "The Transport Operator ($L^\\dagger$) is Mass-Conservative"
+      },
+      "full_text": {
+        "lines": [
+          [
+            549,
+            563
+          ]
+        ]
+      },
+      "label": "def-transport-operator",
+      "term": "Transport Operator",
+      "parameters_mentioned": [
+        "L",
+        "L^dagger",
+        "f",
+        "J",
+        "J_x",
+        "J_v",
+        "D_x",
+        "D_v",
+        "A_v"
+      ],
+      "_entity_type": "definition",
+      "_source_type": "parser",
+      "_section_id": "## 3. The Mass-Conserving Forward Equation (PDE)",
+      "_chapter_number": 4,
+      "_parser_file": "chapter_4.json",
+      "_document_id": "07_mean_field",
+      "_line_number": 549
+    }
+  },
+  {
+    "label": "def-mean-field-z-scores",
+    "source": {
+      "document_id": "07_mean_field",
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "chapter": "1_euclidean_gas",
+      "section": null,
+      "section_name": null,
+      "label": "def-mean-field-z-scores",
+      "line_range": {
+        "lines": [
+          [
+            190,
+            199
+          ]
+        ]
+      },
+      "equation": null,
+      "url_fragment": "#def-mean-field-z-scores"
+    },
+    "_entity_type": "definition",
+    "_source_type": "raw_data",
+    "_section_id": null,
+    "_chapter_number": null,
+    "_raw_data_file": "def-mean-field-z-scores.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 190
+  },
+  {
+    "label": "def-phase-space-density",
+    "source": {
+      "document_id": "07_mean_field",
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "chapter": "1_euclidean_gas",
+      "section": null,
+      "section_name": null,
+      "label": "def-phase-space-density",
+      "line_range": {
+        "lines": [
+          [
+            61,
+            81
+          ]
+        ]
+      },
+      "equation": null,
+      "url_fragment": "#def-phase-space-density"
+    },
+    "_entity_type": "definition",
+    "_source_type": "raw_data",
+    "_section_id": null,
+    "_chapter_number": null,
+    "_raw_data_file": "def-phase-space-density.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 61
+  },
+  {
+    "label": "def-mean-field-patched-std",
+    "source": {
+      "document_id": "07_mean_field",
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "chapter": "1_euclidean_gas",
+      "section": null,
+      "section_name": null,
+      "label": "def-mean-field-patched-std",
+      "line_range": {
+        "lines": [
+          [
+            173,
+            182
+          ]
+        ]
+      },
+      "equation": null,
+      "url_fragment": "#def-mean-field-patched-std"
+    },
+    "_entity_type": "definition",
+    "_source_type": "raw_data",
+    "_section_id": null,
+    "_chapter_number": null,
+    "_raw_data_file": "def-mean-field-patched-std.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 173
+  },
+  {
+    "label": "def-mean-field-phase-space",
+    "source": {
+      "document_id": "07_mean_field",
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "chapter": "1_euclidean_gas",
+      "section": null,
+      "section_name": null,
+      "label": "def-mean-field-phase-space",
+      "line_range": {
+        "lines": [
+          [
+            40,
+            51
+          ]
+        ]
+      },
+      "equation": null,
+      "url_fragment": "#def-mean-field-phase-space"
+    },
+    "_entity_type": "definition",
+    "_source_type": "raw_data",
+    "_section_id": null,
+    "_chapter_number": null,
+    "_raw_data_file": "def-mean-field-phase-space.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 40
+  },
+  {
+    "label": "def-mean-field-moments",
+    "source": {
+      "document_id": "07_mean_field",
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "chapter": "1_euclidean_gas",
+      "section": null,
+      "section_name": null,
+      "label": "def-mean-field-moments",
+      "line_range": {
+        "lines": [
+          [
+            114,
+            140
+          ]
+        ]
+      },
+      "equation": null,
+      "url_fragment": "#def-mean-field-moments"
+    },
+    "_entity_type": "definition",
+    "_source_type": "raw_data",
+    "_section_id": null,
+    "_chapter_number": null,
+    "_raw_data_file": "def-mean-field-moments.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 114
+  },
+  {
+    "label": "def-mean-field-fitness-potential",
+    "source": {
+      "document_id": "07_mean_field",
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "chapter": "1_euclidean_gas",
+      "section": null,
+      "section_name": null,
+      "label": "def-mean-field-fitness-potential",
+      "line_range": {
+        "lines": [
+          [
+            203,
+            212
+          ]
+        ]
+      },
+      "equation": null,
+      "url_fragment": "#def-mean-field-fitness-potential"
+    },
+    "_entity_type": "definition",
+    "_source_type": "raw_data",
+    "_section_id": null,
+    "_chapter_number": null,
+    "_raw_data_file": "def-mean-field-fitness-potential.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 203
+  }
+]

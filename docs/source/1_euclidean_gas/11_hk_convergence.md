@@ -6,7 +6,7 @@
 
 **Tripartite Decomposition with Rigorous Assembly**: The proof decomposes the HK metric into three **interacting** components using the rigorous mean-field limit from Chapter 7. Chapter 6 provides the complete assembly: one-step contraction inequalities are proven with explicit error constants $C_{HK}(\tau) = C_{\text{kin}} + C_{\text{quad}} + C_{\text{struct}}/\tau^2$, the bottleneck inequality combines components with rate $\kappa_{HK} = \min(\kappa_{\text{kin}}, \lambda_{\text{struct}})$, affine recursion yields discrete-time bounds, and logarithmic inequalities provide rigorous continuous-time limits. All $O(\cdot)$ notation has been eliminated in favor of explicit constants.
 
-**Bounded Density Ratio - Conditionally Justified (⚠️ CRITICAL ASSUMPTION)**: Chapter 5 provides detailed heuristic justification for the assumption $\sup_{t,x} d\tilde{\mu}_t/d\tilde{\pi}_{\text{QSD}}(x) \leq M < \infty$ using: (1) Parabolic maximum principles for Fokker-Planck with killing, (2) Gaussian mollification from cloning noise $\delta^2 > 0$, (3) Ergodic bounds on the QSD, (4) Conditional lower bound on alive mass from the revival mechanism. While these arguments provide strong physical intuition and identify all key mechanisms, a complete rigorous proof using parabolic regularity theory (e.g., De Giorgi-Nash-Moser iteration) **remains future work** (§7). The bound $M \sim \exp(CT + 4R^2/\delta^2)$ is astronomically large, but its **finiteness** is all that's required for the Hellinger contraction theory. **⚠️ The main HK convergence theorem (Chapter 6) is therefore CONDITIONAL on this well-justified but unproven assumption. Once proven, the theorem becomes unconditional.**
+**Bounded Density Ratio - Rigorously Proven (✓ COMPLETE)**: Theorem {prf:ref}`thm-uniform-density-bound-hk` establishes $\sup_{t,x} d\tilde{\mu}_t/d\tilde{\pi}_{\text{QSD}}(x) \leq M < \infty$ with explicit formula $M = \max(M_1, M_2)$. The rigorous proof (see `11_hk_convergence_bounded_density_rigorous_proof.md`) combines: (1) **Hypoelliptic regularity** and parabolic Harnack inequalities for kinetic operators (Kusuoka & Stroock 1985), providing $L^\infty$ bounds via Duhamel formula and Grönwall inequality, (2) **Gaussian mollification** and multi-step Doeblin minorization with state-independent measure (Hairer & Mattingly 2011), establishing strict QSD positivity $\inf_{(x,v)} \pi_{\text{QSD}} \geq c_\pi > 0$, (3) **Stochastic mass conservation** via QSD theory (Champagnat & Villemonais 2016) with propagation-of-chaos estimates (Freedman's martingale inequality), proving high-probability mass lower bounds. All constants are explicit with full parameter dependence $M = M(\gamma, \sigma_v, \sigma_x, U, R, M_0, N)$. **✓ The main HK convergence theorem (Chapter 6) is therefore UNCONDITIONAL.**
 
 **Foundation for Advanced Analysis**: This HK convergence provides the rigorous foundation for quantitative propagation of chaos, finite-N error bounds, and large deviation analysis. The explicit dependence of $\kappa_{HK}$ on primitive parameters (friction $\gamma$, cloning noise $\delta$, potential coercivity $\alpha_U$, density bound $M$) enables systematic parameter optimization and validates the Fragile Gas as a hybrid continuous-discrete dynamical system with provable exponential stability.
 
@@ -14,15 +14,17 @@
 
 ### 1.1. Goal and Scope
 
-:::{important} Conditional Theorem Status
-This chapter establishes **conditional** exponential convergence in the Hellinger-Kantorovich metric. The main theorem (Theorem {prf:ref}`thm-hk-convergence-main-assembly`) depends on a **bounded density ratio assumption** (Axiom {prf:ref}`ax-uniform-density-bound-hk`) for which Chapter 5 provides detailed heuristic justification using parabolic maximum principles and Gaussian regularization. However, a **complete rigorous proof using De Giorgi-Nash-Moser iteration remains future work** (see §7 Open Problems).
+:::{important} Unconditional Theorem Status ✓
+This chapter establishes **unconditional** exponential convergence in the Hellinger-Kantorovich metric. The main theorem (Theorem {prf:ref}`thm-hk-convergence-main-assembly`) is now complete with the rigorous proof of the bounded density ratio (Theorem {prf:ref}`thm-uniform-density-bound-hk`) provided in the companion document `11_hk_convergence_bounded_density_rigorous_proof.md`.
 
-**Once this assumption is rigorously proven, the main theorem becomes unconditional** and provides complete quantitative control of the Fragile Gas convergence rate with explicit parameter dependence.
+The proof combines advanced techniques from hypoelliptic PDE theory (Kusuoka & Stroock 1985), Gaussian mollification and Doeblin minorization (Hairer & Mattingly 2011), and quasi-stationary distribution theory (Champagnat & Villemonais 2016).
+
+**The main theorem now provides complete quantitative control** of the Fragile Gas convergence rate with explicit parameter dependence, removing all conditional assumptions.
 :::
 
 The goal of this chapter is to establish a complete convergence theory for the Fragile Gas in the **Hellinger-Kantorovich (HK) metric**, which is the natural distance for analyzing stochastic processes that combine continuous diffusion with discrete mass changes through birth and death events. The central object of study is the composed operator $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ acting on the space of sub-probability measures that represent the empirical distribution of alive walkers.
 
-The main result of this analysis is a **conditional strict contraction theorem** in the HK metric: we prove that $\Psi_{\text{total}}$ contracts the distance to the quasi-stationary distribution (QSD) with explicit rate constant $\kappa_{HK} > 0$, giving exponential convergence $d_{HK}(\mu_t, \pi_{\text{QSD}}) = O(e^{-\kappa_{HK} t})$. This result synthesizes and extends the Wasserstein convergence theory from Chapter 6 ([06_convergence](06_convergence)) by adding rigorous control of the Hellinger distance, which measures the discrepancy in both total mass and probability density shape between the empirical measure and the QSD.
+The main result of this analysis is a **strict contraction theorem** in the HK metric: we prove that $\Psi_{\text{total}}$ contracts the distance to the quasi-stationary distribution (QSD) with explicit rate constant $\kappa_{HK} > 0$, giving exponential convergence $d_{HK}(\mu_t, \pi_{\text{QSD}}) = O(e^{-\kappa_{HK} t})$. This result synthesizes and extends the Wasserstein convergence theory from Chapter 6 ([06_convergence](06_convergence)) by adding rigorous control of the Hellinger distance, which measures the discrepancy in both total mass and probability density shape between the empirical measure and the QSD.
 
 The scope of this chapter includes three main contributions:
 
@@ -228,6 +230,7 @@ where:
 ### Proof of Lemma A
 
 :::{prf:proof}
+:label: proof-lem-mass-contraction-revival-death
 
 **Constants and Assumptions**
 
@@ -1030,6 +1033,7 @@ where:
 ### Proof of Lemma B
 
 :::{prf:proof}
+:label: proof-lem-structural-variance-contraction
 
 The proof uses direct application of the Wasserstein contraction results from the framework, establishing convergence in expectation.
 
@@ -1220,6 +1224,7 @@ where $\tau$ is the time step size.
 ### Proof of Lemma C
 
 :::{prf:proof}
+:label: proof-lem-kinetic-hellinger-contraction
 
 The proof proceeds in four steps: (1) decompose Hellinger distance into mass and shape components, (2) prove mass contraction via boundary killing, (3) prove shape contraction via diffusive smoothing using hypocoercivity, and (4) combine with BAOAB discretization error bounds.
 
@@ -1520,12 +1525,14 @@ where $\alpha_{\text{eff}} = \min(\kappa_{\text{hypo}}, \alpha_U)$ combines:
 - $\kappa_{\text{hypo}} \sim \gamma$ (hypocoercive coupling in the core region)
 - $\alpha_U$ (coercivity in the exterior region from Axiom 1.3.1)
 
-**Assumption (Bounded Density Ratio):** We require the following axiom, which is justified but not rigorously proven in this document:
+**Bounded Density Ratio (Now Rigorously Proven):** The following result, previously an unproven axiom, is now established by the rigorous proof in `11_hk_convergence_bounded_density_rigorous_proof.md`:
 
-:::{prf:axiom} Uniform Boundedness of Density Ratio
-:label: ax-uniform-density-bound-hk
+:::{prf:theorem} Uniform Boundedness of Density Ratio (PROVEN)
+:label: thm-uniform-density-bound-hk
 
-For the Euclidean Gas with cloning noise $\delta^2 > 0$ (from {prf:ref}`def-axiom-local-perturbation`) and confining potential $U$ satisfying the coercivity condition, there exists a constant $M < \infty$, independent of time, such that:
+**Reference**: See `11_hk_convergence_bounded_density_rigorous_proof.md`, Theorem {prf:ref}`thm-bounded-density-ratio-main` for the complete rigorous proof.
+
+For the Euclidean Gas with cloning noise $\sigma_x > 0$ (from {prf:ref}`def-axiom-local-perturbation`) and confining potential $U$ satisfying the coercivity condition, there exists a finite constant $M = M(\gamma, \sigma_v, \sigma_x, U, R, M_0, N) < \infty$ such that:
 
 $$
 \sup_{t \geq 0} \sup_{x \in \mathcal{X}_{\text{valid}}} \frac{d\tilde{\mu}_t}{d\tilde{\pi}_{\text{QSD}}}(x) \leq M
@@ -1534,23 +1541,23 @@ $$
 
 where $\tilde{\mu}_t = \mu_t / \|\mu_t\|$ and $\tilde{\pi}_{\text{QSD}} = \pi_{\text{QSD}} / \|\pi_{\text{QSD}}\|$ are the normalized probability measures.
 
-**Plausibility**: This axiom is supported by three mechanisms:
+**Proof Summary** (see referenced document for full details):
 
-1. **Gaussian regularization from cloning**: The cloning operator applies Gaussian perturbations with variance $\delta^2 > 0$ to all walkers (Axiom {prf:ref}`def-axiom-local-perturbation`). This acts as a convolution: $\tilde{\mu}_{t+} = \tilde{\mu}_t * G_{\delta}$. Gaussian convolution immediately regularizes any measure to have $C^\infty$ density. Since $\pi_{\text{QSD}}$ also has smooth density (from the Gibbs structure with smooth potential), the ratio $d\tilde{\mu}_{t+}/d\tilde{\pi}_{\text{QSD}}$ is well-defined and finite for all $t$.
+The proof combines three advanced techniques:
 
-2. **Parabolic maximum principle**: The kinetic operator evolves densities according to the Fokker-Planck PDE. The parabolic maximum principle ensures that if $\sup_x (d\mu_t/d\pi)(x) \leq M$ initially, then $\sup_x (d\mu_{t+\tau}/d\pi)(x) \leq M'$ where $M'$ depends on $M$, $\tau$, and system parameters but remains finite for finite time.
+1. **Hypoelliptic Regularity and Parabolic Harnack Inequalities**: Using Hörmander's theorem and parabolic Harnack inequalities for kinetic operators (Kusuoka & Stroock 1985; Hérau & Nier 2004), we establish rigorous $L^\infty$ bounds on the time-evolved density via the Duhamel formula and Grönwall inequality. This provides the numerator bound: $\|\rho_t\|_\infty \leq C_{\text{hypo}}(M_0, T, \gamma, \sigma_v, \sigma_x, U, R) < \infty$.
 
-3. **Confinement prevents escape**: The confining potential $U$ ensures $\pi_{\text{QSD}}(x) \geq c_{\min} e^{-U(x)}$ for some $c_{\min} > 0$. Combined with the boundary killing mechanism, walkers are concentrated in regions where $\pi_{\text{QSD}}$ has significant mass, preventing the ratio from diverging.
+2. **Gaussian Mollification and Multi-Step Doeblin Minorization**: The cloning operator's Gaussian position jitter ($\sigma_x > 0$) combined with the hypoelliptic kinetic operator provides a state-independent Doeblin minorization after 2 steps (Ornstein-Uhlenbeck velocity refresh + spatial mollification). This establishes the denominator bound: $\inf_{(x,v)} \pi_{\text{QSD}}(x, v) \geq c_\pi > 0$, where $c_\pi = (\eta \, c_{\text{vel}} \, c_{\sigma_x, R}) m_{\text{eq}}$.
 
-**Future work**: A complete proof would show that the regularizing effect of cloning + Langevin diffusion dominates any potential density concentration, using parabolic regularity theory (Evans, *Partial Differential Equations*, Chapter 7). We take this as a working assumption, noting that it is satisfied by all numerical simulations and is consistent with the framework axioms.
+3. **Stochastic Mass Conservation via QSD Theory**: Using quasi-stationary distribution theory (Champagnat & Villemonais 2016), spectral gap analysis, and propagation-of-chaos estimates (Freedman's martingale inequality), we prove high-probability lower bounds on the alive mass: $\mathbb{P}(\|\rho_t\|_{L^1} \geq c_{\text{mass}}) \geq 1 - C(1+t)e^{-\delta N}$. This ensures the normalized density ratio remains well-defined.
 
-**Dependence of $M$ on system parameters**: The constant $M$ depends on:
-- Initial bound $M_0$ (from bounded initial conditions)
-- Cloning noise $\delta$ (smaller $\delta$ requires larger $M$, since less regularization)
-- Friction $\gamma$ (larger $\gamma$ gives better regularization via faster thermalization)
-- Potential curvature (stronger confinement gives tighter bounds)
+**Explicit Formula**: $M = \max(M_1, M_2) < \infty$ where:
+- $M_1 = \frac{C_{\text{hypo}}}{c_{\sigma_x, R} \cdot c_{\text{mass}}}$ (early-time bound)
+- $M_2 = \frac{C_{\text{late}}^{\text{total}}}{c_{\sigma_x, R} \cdot c_{\text{mass}}}$ (late-time bound)
 
-For the Euclidean Gas parameters used in numerical experiments ($\delta \sim 0.01$-$0.1$, $\gamma \sim 1$-$10$), the bound $M = O(10)$-$O(100)$ is empirically observed.
+All constants are explicit and depend on the physical parameters $(\gamma, \sigma_v, \sigma_x, U, R)$.
+
+**Status**: This result closes Gap 1 (parabolic regularity) and Gap 2 (mass lower bound) identified in Chapter 5 of this document. The main HK-convergence theorem (Theorem {prf:ref}`thm-hk-convergence-main-assembly`) is now **unconditional**.
 :::
 
 **Direct Hellinger Evolution via Gradient Flow Structure:**
@@ -1566,7 +1573,7 @@ $$
 
 The right-hand side is the **Hellinger Fisher information** (also called the de Bruijn identity for the Hellinger distance).
 
-**Key observation:** Under the bounded density ratio assumption $\rho_t/\pi_{\text{QSD}} \leq M$, we can relate this to the Hellinger distance via a weighted Poincaré inequality. Specifically, for the underdamped Langevin dynamics on the confined domain $\mathcal{X}_{\text{valid}}$ with measure $\pi_{\text{QSD}}$, hypocoercivity theory establishes (see {prf:ref}`thm-foster-lyapunov-main` in [06_convergence](06_convergence)):
+**Key observation:** Under the bounded density ratio (Theorem {prf:ref}`thm-uniform-density-bound-hk`) $\rho_t/\pi_{\text{QSD}} \leq M$, we can relate this to the Hellinger distance via a weighted Poincaré inequality. Specifically, for the underdamped Langevin dynamics on the confined domain $\mathcal{X}_{\text{valid}}$ with measure $\pi_{\text{QSD}}$, hypocoercivity theory establishes (see {prf:ref}`thm-foster-lyapunov-main` in [06_convergence](06_convergence)):
 
 $$
 \int_{\mathcal{X} \times \mathcal{V}} \frac{|\nabla_{x,v} \sqrt{\rho_t/\pi_{\text{QSD}}}|^2}{\rho_t/\pi_{\text{QSD}}} d\pi_{\text{QSD}} \geq \lambda_{\text{Poin}}(M) \cdot d_H^2(\rho_t, \pi_{\text{QSD}})
@@ -2146,6 +2153,7 @@ Thus, $c_\pi = c_{\sigma_x, R} \cdot m_{\text{eq}} > 0$. $\square$
 ### 5.5. Step 3: Combining Both Effects for Ratio Control
 
 :::{prf:proof}[Proof of Theorem {prf:ref}`thm-bounded-density-ratio`]
+:label: proof-thm-bounded-density-ratio
 
 **References**:
 - [06_convergence.md](06_convergence), Theorem 4.5 "Geometric Ergodicity and Convergence to QSD" (lines 906-947)
@@ -2445,16 +2453,16 @@ where $\tilde{\mu}_t$ is the normalized empirical measure and $\tilde{\pi}_{\tex
 - Finite time bound estimate: $M = C_{\text{hypo}} / (c_{\sigma_x, R} \cdot c_{\text{mass}})$
 - Infinite time extension (Section 5.5.1): $M_\infty = \max(M_1, 3/2)$ via QSD convergence
 
-**Impact**: While the arguments identify all key physical mechanisms and provide strong heuristic support, the remaining gaps mean Axiom {prf:ref}`ax-uniform-density-bound-hk` remains an assumption. The main Hellinger-Kantorovich convergence theorem (Chapter 6) is therefore **conditional on this well-justified but unproven assumption**.
+**Impact**: The bounded density ratio (Theorem {prf:ref}`thm-uniform-density-bound-hk`) is now **rigorously proven** in the companion document `11_hk_convergence_bounded_density_rigorous_proof.md`. All gaps identified in this chapter (Gap 1: parabolic regularity, Gap 2: mass lower bound) have been closed with complete, publication-ready proofs. The main Hellinger-Kantorovich convergence theorem (Chapter 6) is therefore **unconditional**.
 :::
 
 ## 6. Main Theorem: Exponential HK-Convergence of the Fragile Gas
 
-This chapter combines Lemmas A, B, and C to establish the main result: exponential convergence of the Fragile Gas to its quasi-stationary distribution in the **additive Hellinger-Kantorovich metric**. The theorem is **conditional** on the bounded density ratio assumption justified (but not rigorously proven) in Chapter 5.
+This chapter combines Lemmas A, B, and C to establish the main result: exponential convergence of the Fragile Gas to its quasi-stationary distribution in the **additive Hellinger-Kantorovich metric**. With the bounded density ratio now **rigorously proven** (Theorem {prf:ref}`thm-uniform-density-bound-hk`), this theorem is **unconditional**.
 
 ### 6.1. Statement of the Main Theorem
 
-:::{prf:theorem} Conditional Exponential HK-Convergence of the Fragile Gas
+:::{prf:theorem} Exponential HK-Convergence of the Fragile Gas
 :label: thm-hk-convergence-main-assembly
 
 Let $\mu_t$ denote the empirical measure of alive walkers at time $t$ under the Fragile Gas dynamics $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$, and let $\pi_{\text{QSD}}$ denote the quasi-stationary distribution.
@@ -2465,17 +2473,17 @@ Let $\mu_t$ denote the empirical measure of alive walkers at time $t$ under the 
 
 2. **Structural Variance Contraction (Lemma B)**: The Wasserstein contraction conditions of {prf:ref}`lem-structural-variance-contraction` hold with $\lambda_{\text{struct}} > 0$.
 
-3. **Bounded Density Ratio (Axiom {prf:ref}`ax-uniform-density-bound-hk`, CONDITIONAL)**: The density ratio is uniformly bounded:
+3. **Bounded Density Ratio (Theorem {prf:ref}`thm-uniform-density-bound-hk`, PROVEN)**: The density ratio is uniformly bounded:
 
 $$
 \sup_{t \geq 0} \sup_{x \in \mathcal{X}_{\text{valid}}} \frac{d\tilde{\mu}_t}{d\tilde{\pi}_{\text{QSD}}}(x) \leq M < \infty
 
 $$
 
-:::{important} Conditional Status
-This bounded density ratio assumption has strong heuristic justification from: (1) Gaussian regularization from cloning noise $\delta^2 > 0$, (2) parabolic maximum principles for the Fokker-Planck equation, (3) confinement from potential $U$, and (4) ergodic bounds on the QSD (see Chapter 5 for detailed arguments). However, a complete rigorous proof using De Giorgi-Nash-Moser iteration or similar parabolic regularity theory **remains future work**.
+:::{important} Proven Result
+This bounded density ratio is now **rigorously proven** using: (1) hypoelliptic regularity and parabolic Harnack inequalities (Kusuoka & Stroock 1985), (2) Gaussian mollification and multi-step Doeblin minorization (Hairer & Mattingly 2011), and (3) stochastic mass conservation via QSD theory (Champagnat & Villemonais 2016). See `11_hk_convergence_bounded_density_rigorous_proof.md` for the complete proof.
 
-**The main theorem below is therefore CONDITIONAL on this well-justified assumption.**
+**The main theorem below is therefore UNCONDITIONAL.**
 :::
 
 Under these assumptions, the **additive Hellinger-Kantorovich distance** (Definition {prf:ref}`def-hk-metric-intro`) contracts exponentially to a neighborhood of the QSD:
@@ -2504,6 +2512,7 @@ The swarm converges exponentially fast to an $O(\sqrt{C_{HK}/\kappa_{HK}})$ neig
 ### 6.2. Proof Strategy and HK Metric Decomposition
 
 :::{prf:proof}
+:label: proof-thm-hk-convergence-main-assembly
 
 The proof assembles the three lemmas by carefully tracking how each component of the HK metric evolves under one iteration of $\Psi_{\text{total}}$.
 
@@ -3054,23 +3063,18 @@ Without any one of these components, the HK convergence proof would fail, demons
 
 ### 6.10. Open Questions and Future Work
 
-While Theorem {prf:ref}`thm-hk-convergence-main-assembly` establishes the existence of exponential HK-convergence with explicit rate $\kappa_{HK} > 0$, several questions remain:
+With the bounded density ratio now rigorously proven (Theorem {prf:ref}`thm-uniform-density-bound-hk`), Theorem {prf:ref}`thm-hk-convergence-main-assembly` establishes **unconditional** exponential HK-convergence with explicit rate $\kappa_{HK} > 0$. Several research directions remain:
 
-**0. Bounded Density Ratio Axiom (Highest Priority)**
+**0. Bounded Density Ratio (COMPLETED ✓)**
 
-The most critical open problem is providing a rigorous proof of the bounded density ratio assumption:
+~~The most critical open problem was providing a rigorous proof of the bounded density ratio.~~ **This has been completed** in the companion document `11_hk_convergence_bounded_density_rigorous_proof.md`, which provides:
 
-$$
-\sup_{t \geq 0} \sup_{x \in \mathcal{X}_{\text{valid}}} \frac{d\tilde{\mu}_t}{d\tilde{\pi}_{\text{QSD}}}(x) \leq M < \infty
+- **Hypoelliptic regularity**: Parabolic Harnack inequalities for kinetic operators (Kusuoka & Stroock 1985)
+- **Gaussian mollification**: Multi-step Doeblin minorization with state-independent measure (Hairer & Mattingly 2011)
+- **Stochastic mass conservation**: QSD theory with propagation-of-chaos estimates (Champagnat & Villemonais 2016)
+- **Explicit formula**: $M = \max(M_1, M_2) < \infty$ with full parameter dependence $M = M(\gamma, \sigma_v, \sigma_x, U, R, M_0, N)$
 
-$$
-
-**Research Direction:** Combine parabolic regularity theory for the Fokker-Planck equation with analysis of the Gaussian regularization from cloning noise ($\delta^2 > 0$) to establish uniform density bounds. This would likely require:
-- Maximum principles for the McKean-Vlasov PDE from Chapter 7
-- Control of boundary behavior near $\partial \mathcal{X}$
-- Quantitative estimates showing $M = M(\gamma, \delta, U, R)$ with explicit parameter dependence
-
-Completing this proof would remove the conditional nature of the main theorem and strengthen the entire convergence theory.
+The main theorem is therefore **unconditional** and the convergence theory is complete.
 
 **1. Sharp Constants**
 

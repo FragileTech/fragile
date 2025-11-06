@@ -903,6 +903,7 @@ Here:
 :::
 
 :::{prf:proof}
+:label: proof-thm-qsd-poincare-rigorous
 We prove this using the Lyapunov equation for the conditional velocity covariance and the Holley-Stroock theorem for mixtures of Gaussians.
 
 ---
@@ -1088,6 +1089,7 @@ where $\|v\|_{\max}$ is the maximum velocity magnitude (controlled by the QSD er
 :::
 
 :::{prf:proof}
+:label: proof-thm-drift-perturbation-bounds
 **Adaptive force:** This follows immediately from Theorem {prf:ref}`thm-c1-regularity` in Appendix A of `07_geometric_gas.md`, which establishes C¹ regularity with k-uniform (and thus N-uniform) gradient bound. The explicit formula is:
 
 $$
@@ -1148,6 +1150,7 @@ where $\mathcal{E}(f, f) = \int |\Sigma_{\text{reg}} \nabla_v f|^2 d\pi_N$ is th
 :::
 
 :::{prf:proof}
+:label: proof-thm-cattiaux-guillin-verification
 **Hypothesis 1 (Invariance):** The QSD $\pi_N$ is defined as the unique invariant probability measure of $\mathcal{L}_{\text{full}}$ conditioned on the alive set (Theorem 5.1 in `07_geometric_gas.md`). Invariance holds by definition.
 
 **Hypothesis 2 (Relative boundedness):** We use the Cauchy-Schwarz inequality for Dirichlet forms. For the adaptive perturbation:

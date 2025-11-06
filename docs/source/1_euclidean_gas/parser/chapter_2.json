@@ -1,0 +1,368 @@
+{
+  "source": {
+    "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+    "line_range": {
+      "lines": [
+        [
+          18,
+          230
+        ]
+      ]
+    },
+    "label": "section-1-foundations-of-the-mean-field-model",
+    "volume": "1_euclidean_gas",
+    "article_id": "07_mean_field",
+    "section": null,
+    "section_name": "Introduction"
+  },
+  "full_text": "",
+  "section_id": "## 1. Foundations of the Mean-Field Model",
+  "definitions": [],
+  "theorems": [],
+  "proofs": [],
+  "citations": [],
+  "parameters": [],
+  "remarks": [],
+  "axioms": [],
+  "assumptions": [],
+  "_improvement_metadata": {
+    "changes": [],
+    "summary": {
+      "entities_added": 0,
+      "entities_modified": 0,
+      "entities_deleted": 0,
+      "entities_unchanged": 0
+    }
+  },
+  "_improvement_errors": [
+    {
+      "error": "Failed to parse existing extraction: 22 validation errors for ChapterExtraction\ndefinitions.0.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...rameters_mentioned': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndefinitions.0.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...rameters_mentioned': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndefinitions.1.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ..._mentioned': ['m_a(t)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndefinitions.1.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ..._mentioned': ['m_a(t)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndefinitions.2.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...[f]', '\\\\sigma_D^2[f]']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndefinitions.2.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...[f]', '\\\\sigma_D^2[f]']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndefinitions.3.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...ehat{\\\\sigma}_D[f](t)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndefinitions.3.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...ehat{\\\\sigma}_D[f](t)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndefinitions.4.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...etilde{d}[f](z,z_c,t)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndefinitions.4.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...etilde{d}[f](z,z_c,t)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndefinitions.5.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...ned': ['V[f](z,z_c,t)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndefinitions.5.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...ned': ['V[f](z,z_c,t)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nremarks.0.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ..., 'remark_type': 'note'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nremarks.0.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ..., 'remark_type': 'note'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nremarks.1.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ..., 'remark_type': 'note'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nremarks.1.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ..., 'remark_type': 'note'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nremarks.2.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...remark_type': 'example'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nremarks.2.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...remark_type': 'example'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nremarks.3.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...'remark_type': 'remark'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nremarks.3.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...'remark_type': 'remark'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nremarks.4.line_start\n  Field required [type=missing, input_value={'source': {'file_path': ...'remark_type': 'remark'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nremarks.4.line_end\n  Field required [type=missing, input_value={'source': {'file_path': ...'remark_type': 'remark'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing",
+      "value": {
+        "existing_extraction": {
+          "source": {
+            "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+            "line_range": {
+              "lines": [
+                [
+                  18,
+                  230
+                ]
+              ]
+            },
+            "label": "section-1-foundations-of-the-mean-field-model",
+            "volume": "1_euclidean_gas",
+            "article_id": "07_mean_field",
+            "section": null,
+            "section_name": "Introduction"
+          },
+          "full_text": "",
+          "section_id": "## 1. Foundations of the Mean-Field Model",
+          "definitions": [
+            {
+              "source": {
+                "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+                "line_range": {
+                  "lines": [
+                    [
+                      40,
+                      51
+                    ]
+                  ]
+                },
+                "label": "def-mean-field-phase-space",
+                "volume": "1_euclidean_gas",
+                "article_id": "07_mean_field",
+                "section": "1.1",
+                "section_name": "Phase Space and Probability Density"
+              },
+              "full_text": {
+                "lines": [
+                  [
+                    40,
+                    51
+                  ]
+                ]
+              },
+              "label": "def-mean-field-phase-space",
+              "term": "Phase Space",
+              "parameters_mentioned": []
+            },
+            {
+              "source": {
+                "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+                "line_range": {
+                  "lines": [
+                    [
+                      62,
+                      82
+                    ]
+                  ]
+                },
+                "label": "def-phase-space-density",
+                "volume": "1_euclidean_gas",
+                "article_id": "07_mean_field",
+                "section": "1.1",
+                "section_name": "Phase Space and Probability Density"
+              },
+              "full_text": {
+                "lines": [
+                  [
+                    62,
+                    82
+                  ]
+                ]
+              },
+              "label": "def-phase-space-density",
+              "term": "Phase-Space Density",
+              "parameters_mentioned": [
+                "m_a(t)"
+              ]
+            },
+            {
+              "source": {
+                "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+                "line_range": {
+                  "lines": [
+                    [
+                      117,
+                      143
+                    ]
+                  ]
+                },
+                "label": "def-mean-field-moments",
+                "volume": "1_euclidean_gas",
+                "article_id": "07_mean_field",
+                "section": "1.2",
+                "section_name": "Mean-Field Measurement Pipeline"
+              },
+              "full_text": {
+                "lines": [
+                  [
+                    117,
+                    143
+                  ]
+                ]
+              },
+              "label": "def-mean-field-moments",
+              "term": "Mean-Field Statistical Moments",
+              "parameters_mentioned": [
+                "\\mu_R[f]",
+                "\\sigma_R^2[f]",
+                "\\mu_D[f]",
+                "\\sigma_D^2[f]"
+              ]
+            },
+            {
+              "source": {
+                "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+                "line_range": {
+                  "lines": [
+                    [
+                      177,
+                      186
+                    ]
+                  ]
+                },
+                "label": "def-mean-field-patched-std",
+                "volume": "1_euclidean_gas",
+                "article_id": "07_mean_field",
+                "section": "1.2",
+                "section_name": "Mean-Field Measurement Pipeline"
+              },
+              "full_text": {
+                "lines": [
+                  [
+                    177,
+                    186
+                  ]
+                ]
+              },
+              "label": "def-mean-field-patched-std",
+              "term": "Mean-Field Regularized Standard Deviation",
+              "parameters_mentioned": [
+                "\\widehat{\\sigma}_R[f](t)",
+                "\\widehat{\\sigma}_D[f](t)"
+              ]
+            },
+            {
+              "source": {
+                "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+                "line_range": {
+                  "lines": [
+                    [
+                      194,
+                      203
+                    ]
+                  ]
+                },
+                "label": "def-mean-field-z-scores",
+                "volume": "1_euclidean_gas",
+                "article_id": "07_mean_field",
+                "section": "1.3",
+                "section_name": "Density-Dependent Fitness Potential"
+              },
+              "full_text": {
+                "lines": [
+                  [
+                    194,
+                    203
+                  ]
+                ]
+              },
+              "label": "def-mean-field-z-scores",
+              "term": "Mean-Field Z-Scores",
+              "parameters_mentioned": [
+                "\\widetilde{r}[f](z,t)",
+                "\\widetilde{d}[f](z,z_c,t)"
+              ]
+            },
+            {
+              "source": {
+                "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+                "line_range": {
+                  "lines": [
+                    [
+                      207,
+                      216
+                    ]
+                  ]
+                },
+                "label": "def-mean-field-fitness-potential",
+                "volume": "1_euclidean_gas",
+                "article_id": "07_mean_field",
+                "section": "1.3",
+                "section_name": "Density-Dependent Fitness Potential"
+              },
+              "full_text": {
+                "lines": [
+                  [
+                    207,
+                    216
+                  ]
+                ]
+              },
+              "label": "def-mean-field-fitness-potential",
+              "term": "Mean-Field Fitness Potential",
+              "parameters_mentioned": [
+                "V[f](z,z_c,t)"
+              ]
+            }
+          ],
+          "theorems": [],
+          "proofs": [],
+          "citations": [],
+          "parameters": [],
+          "remarks": [
+            {
+              "source": {
+                "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+                "line_range": {
+                  "lines": [
+                    [
+                      54,
+                      58
+                    ]
+                  ]
+                },
+                "label": "remark-mean-field-cloud",
+                "volume": "1_euclidean_gas",
+                "article_id": "07_mean_field",
+                "section": "1.1",
+                "section_name": "Phase Space and Probability Density"
+              },
+              "full_text": "",
+              "label": "remark-mean-field-cloud",
+              "remark_type": "note"
+            },
+            {
+              "source": {
+                "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+                "line_range": {
+                  "lines": [
+                    [
+                      84,
+                      90
+                    ]
+                  ]
+                },
+                "label": "remark-mean-field-regularity",
+                "volume": "1_euclidean_gas",
+                "article_id": "07_mean_field",
+                "section": "1.1",
+                "section_name": "Phase Space and Probability Density"
+              },
+              "full_text": "",
+              "label": "remark-mean-field-regularity",
+              "remark_type": "note"
+            },
+            {
+              "source": {
+                "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+                "line_range": {
+                  "lines": [
+                    [
+                      96,
+                      113
+                    ]
+                  ]
+                },
+                "label": "remark-mean-field-sum-to-integral",
+                "volume": "1_euclidean_gas",
+                "article_id": "07_mean_field",
+                "section": "1.2",
+                "section_name": "Mean-Field Measurement Pipeline"
+              },
+              "full_text": "",
+              "label": "remark-mean-field-sum-to-integral",
+              "remark_type": "example"
+            },
+            {
+              "source": {
+                "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+                "line_range": {
+                  "lines": [
+                    [
+                      145,
+                      173
+                    ]
+                  ]
+                },
+                "label": "remark-cemetery-state",
+                "volume": "1_euclidean_gas",
+                "article_id": "07_mean_field",
+                "section": "1.2",
+                "section_name": "Mean-Field Measurement Pipeline"
+              },
+              "full_text": "",
+              "label": "remark-cemetery-state",
+              "remark_type": "remark"
+            },
+            {
+              "source": {
+                "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+                "line_range": {
+                  "lines": [
+                    [
+                      218,
+                      229
+                    ]
+                  ]
+                },
+                "label": "remark-important-nonlocal-nonlinear",
+                "volume": "1_euclidean_gas",
+                "article_id": "07_mean_field",
+                "section": "1.3",
+                "section_name": "Density-Dependent Fitness Potential"
+              },
+              "full_text": "",
+              "label": "remark-important-nonlocal-nonlinear",
+              "remark_type": "remark"
+            }
+          ],
+          "axioms": [],
+          "assumptions": []
+        }
+      }
+    }
+  ]
+}

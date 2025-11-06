@@ -1,0 +1,1052 @@
+[
+  {
+    "label": "param-sigma_v",
+    "symbol": "sigma_v",
+    "meaning": "Parameter sigma_v",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-sigma_v",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-t_n",
+    "symbol": "t_n",
+    "meaning": "Parameter t_n",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-t_n",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-u",
+    "symbol": "u",
+    "meaning": "Parameter u",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-u",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-tau",
+    "symbol": "tau",
+    "meaning": "Time step size",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-tau",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-x_i",
+    "symbol": "x_i",
+    "meaning": "Parameter x_i",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-x_i",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-q_delta",
+    "symbol": "Q_delta",
+    "meaning": "Parameter Q_delta",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-q_delta",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-w_t",
+    "symbol": "W_t",
+    "meaning": "Parameter W_t",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-w_t",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-omega",
+    "symbol": "Omega",
+    "meaning": "Parameter Omega",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-omega",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-v_n",
+    "symbol": "v_n",
+    "meaning": "Parameter v_n",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-v_n",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-gamma_fric",
+    "symbol": "gamma_fric",
+    "meaning": "Friction coefficient",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-gamma_fric",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-f",
+    "symbol": "f",
+    "meaning": "Parameter f",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-f",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 3. The Mass-Conserving Forward Equation (PDE)",
+    "_chapter_number": 4,
+    "_parser_file": "chapter_4.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-z_d",
+    "symbol": "z_d",
+    "meaning": "Parameter z_d",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-z_d",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-v_alg",
+    "symbol": "V_alg",
+    "meaning": "Parameter V_alg",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-v_alg",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-z_c",
+    "symbol": "z_c",
+    "meaning": "Parameter z_c",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-z_c",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-lambda_revive",
+    "symbol": "lambda_revive",
+    "meaning": "Parameter lambda_revive",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-lambda_revive",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-s",
+    "symbol": "S",
+    "meaning": "Parameter S",
+    "scope": "global",
+    "full_text": "\\end{cases} $$ where $W_t$ is a standard Wiener process and all parameters are as defined in the Euclidean Gas specification. The BAOAB method splits this SDE into analytically solvable parts and composes them symmetrically.  :::{prf:definition} The BAOAB Update Rule",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            23,
+            25
+          ]
+        ]
+      },
+      "label": "param-s",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": "1",
+      "section_name": "Foundations of the Mean-Field Model"
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 23
+  },
+  {
+    "label": "param-x_valid",
+    "symbol": "X_valid",
+    "meaning": "Parameter X_valid",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-x_valid",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-z",
+    "symbol": "z",
+    "meaning": "Parameter z",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-z",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-m_a",
+    "symbol": "m_a",
+    "meaning": "Parameter m_a",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-m_a",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-c",
+    "symbol": "c",
+    "meaning": "Parameter c",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-c",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-theta",
+    "symbol": "Theta",
+    "meaning": "Temperature parameter",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-theta",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-p_clone",
+    "symbol": "P_clone",
+    "meaning": "Parameter P_clone",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-p_clone",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-m_d",
+    "symbol": "m_d",
+    "meaning": "Parameter m_d",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-m_d",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-m",
+    "symbol": "m",
+    "meaning": "Mass parameter",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-m",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-xi",
+    "symbol": "xi",
+    "meaning": "Parameter xi",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-xi",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-v_i",
+    "symbol": "v_i",
+    "meaning": "Parameter v_i",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-v_i",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-x_n",
+    "symbol": "x_n",
+    "meaning": "Parameter x_n",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-x_n",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
+    "_chapter_number": 3,
+    "_parser_file": "chapter_3.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-j_v",
+    "symbol": "J_v",
+    "meaning": "Parameter J_v",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-j_v",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 3. The Mass-Conserving Forward Equation (PDE)",
+    "_chapter_number": 4,
+    "_parser_file": "chapter_4.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-d_x",
+    "symbol": "D_x",
+    "meaning": "Parameter D_x",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-d_x",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 3. The Mass-Conserving Forward Equation (PDE)",
+    "_chapter_number": 4,
+    "_parser_file": "chapter_4.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-j_x",
+    "symbol": "J_x",
+    "meaning": "Parameter J_x",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-j_x",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 3. The Mass-Conserving Forward Equation (PDE)",
+    "_chapter_number": 4,
+    "_parser_file": "chapter_4.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-j",
+    "symbol": "J",
+    "meaning": "Parameter J",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-j",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 3. The Mass-Conserving Forward Equation (PDE)",
+    "_chapter_number": 4,
+    "_parser_file": "chapter_4.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-a_v",
+    "symbol": "A_v",
+    "meaning": "Parameter A_v",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-a_v",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 3. The Mass-Conserving Forward Equation (PDE)",
+    "_chapter_number": 4,
+    "_parser_file": "chapter_4.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-d_v",
+    "symbol": "D_v",
+    "meaning": "Parameter D_v",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-d_v",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 3. The Mass-Conserving Forward Equation (PDE)",
+    "_chapter_number": 4,
+    "_parser_file": "chapter_4.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-l",
+    "symbol": "L",
+    "meaning": "Parameter L",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-l",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 3. The Mass-Conserving Forward Equation (PDE)",
+    "_chapter_number": 4,
+    "_parser_file": "chapter_4.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  },
+  {
+    "label": "param-l-dagger",
+    "symbol": "L^dagger",
+    "meaning": "Parameter L^dagger",
+    "scope": "global",
+    "full_text": "",
+    "source": {
+      "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+      "line_range": {
+        "lines": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "label": "param-l-dagger",
+      "volume": "1_euclidean_gas",
+      "article_id": "07_mean_field",
+      "section": null,
+      "section_name": null
+    },
+    "_entity_type": "parameter",
+    "_source_type": "parser",
+    "_section_id": "## 3. The Mass-Conserving Forward Equation (PDE)",
+    "_chapter_number": 4,
+    "_parser_file": "chapter_4.json",
+    "_document_id": "07_mean_field",
+    "_line_number": 1
+  }
+]

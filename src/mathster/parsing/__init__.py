@@ -141,6 +141,12 @@ from mathster.parsing.workflows import (
     improve_label_with_retry,
 )
 
+# Import parameter extraction workflows
+from mathster.parsing.workflows.extract_parameters import (
+    extract_parameters_from_chapter,
+    improve_parameters_from_chapter,
+)
+
 
 __all__ = [
     "AssumptionExtraction",
@@ -172,12 +178,14 @@ __all__ = [
     "extract_chapter_by_labels",
     "extract_chapter_with_retry",
     "extract_label_with_retry",
+    "extract_parameters_from_chapter",
     "extract_section_id",
     "generate_detailed_error_report",
     "improve_chapter",
     "improve_chapter_by_labels",
     "improve_chapter_with_retry",
     "improve_label_with_retry",
+    "improve_parameters_from_chapter",
     "lookup_label_from_context",
     "make_error_dict",
     # Modular submodules (Phases 1-8)

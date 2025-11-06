@@ -90,3 +90,51 @@ class ImproveMathematicalConcepts(dspy.Signature):
     improved_extraction: ChapterExtraction = dspy.OutputField(
         desc="Updated extraction including previously missed entities"
     )
+
+
+class ExtractParameters(dspy.Signature):
+    """
+    Extract parameter definitions from chapter text.
+
+    Parameters are mathematical symbols/variables that are mentioned in definitions
+    and theorems but don't have their own Jupyter Book directives. This signature
+    extracts standalone Parameter objects for each symbol.
+
+    The agent should:
+    1. Analyze the parameters_mentioned list from existing extraction
+    2. Find where each parameter is defined in the chapter text
+    3. Extract the parameter's meaning/description from context
+    4. Determine if the parameter is global (document-wide) or local (section-specific)
+    5. Create ParameterExtraction objects with precise line ranges
+
+    Common parameter declaration patterns:
+    - "Let α be the..." or "Let α denote..."
+    - "α represents..." or "α denotes..."
+    - "Throughout, α is..."
+    - Algorithm parameter lists: "Parameters: α, β, γ, ..."
+    - Notation tables with Greek letters and their meanings
+    """
+
+    chapter_with_lines: str = dspy.InputField(
+        desc="Chapter text with line numbers in format 'NNN: content'"
+    )
+
+    parameters_mentioned: str = dspy.InputField(
+        desc="Comma-separated list of parameter symbols found in definitions/theorems (e.g., 'alpha,beta,tau,N')"
+    )
+
+    parameter_declarations: str = dspy.InputField(
+        desc="JSON string of parameter declarations found in text with line numbers and context"
+    )
+
+    file_path: str = dspy.InputField(desc="Path to source markdown file")
+
+    article_id: str = dspy.InputField(desc="Article identifier (e.g., '01_fragile_gas_framework')")
+
+    previous_error_report: str = dspy.InputField(
+        default="", desc="Error report from previous attempt (empty on first attempt)"
+    )
+
+    parameters: list = dspy.OutputField(
+        desc="List of ParameterExtraction objects with label, symbol, meaning, scope, line ranges"
+    )

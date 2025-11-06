@@ -415,6 +415,8 @@ The fourth derivative involves sums of products of kernel derivatives up to orde
 :::
 
 :::{prf:proof}
+:label: proof-lem-weight-fourth-derivative
+
 The fourth derivative of the quotient $w_{ij} = K_{ij}/S_i$ (where $S_i = \sum_{j'} K_{ij'}$) follows from the general Leibniz rule. The numerator derivatives involve $\nabla^m K_{ij}$ for $m \le 4$, and the denominator derivatives involve products. The bound follows from:
 
 1. $\|\nabla^4 K_{ij}\| \le C_{\nabla^4 K}(\rho) K_{ij}$ with $C_{\nabla^4 K}(\rho) = 24/\rho^4$
@@ -436,6 +438,8 @@ ensuring **k-uniformity** of all fourth-derivative bounds.
 :::
 
 :::{prf:proof}
+:label: proof-lem-weight-telescoping-fourth
+
 The weights satisfy the normalization $\sum_{j \in A_k} w_{ij}(\rho) = 1$ identically for all $x_i$. Differentiating this identity four times with respect to $x_i$ yields:
 
 $$
@@ -464,6 +468,8 @@ where $C_{\mu,\nabla^4}(\rho) = O(\rho^{-4})$ is **k-uniform** and **N-uniform**
 :::
 
 :::{prf:proof}
+:label: proof-lem-mean-fourth-derivative
+
 **Step 1: Apply product rule.** The mean is $\mu_\rho^{(i)} = \sum_{j \in A_k} w_{ij}(\rho) \, d(x_j)$. Only the term with $j = i$ has $d$ depending on $x_i$. For $j \ne i$, only $w_{ij}$ depends on $x_i$.
 
 Differentiating four times:
@@ -559,6 +565,8 @@ with **k-uniform** bounds involving products of measurement and weight derivativ
 :::
 
 :::{prf:proof}
+:label: proof-lem-variance-fourth-derivative
+
 **Step 1: Expand using product and chain rules.** The variance is:
 
 $$
@@ -709,6 +717,8 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lem-reg-fourth-chain
+
 Apply the Faà di Bruno formula (Section 2.2) to the composition $h = \sigma'_{\text{reg}} \circ V$ with:
 
 - $g = \sigma'_{\text{reg}}$, $f = V$
@@ -736,6 +746,8 @@ with **k-uniform** bound.
 :::
 
 :::{prf:proof}
+:label: proof-lem-zscore-fourth-derivative
+
 **Step 1: Set up quotient.** Write $Z_\rho = N/D$ where:
 - $N = d(x_i) - \mu_\rho$ (numerator)
 - $D = \sigma'_{\text{reg}}(\sigma^2_\rho)$ (denominator)
@@ -875,6 +887,8 @@ with $K_{V,4}(\rho) = O(\rho^{-3})$ for small $\rho$.
 :::
 
 :::{prf:proof}
+:label: proof-thm-c4-regularity
+
 **Step 1:** Apply fourth-order chain rule (Faà di Bruno formula) to $V_{\text{fit}} = g_A \circ Z_\rho$.
 
 **Step 2:** Bound each of the 5 terms using assumptions on $g_A$ and bounds on $Z_\rho$ derivatives.
@@ -904,6 +918,8 @@ where $K_{V,3}(\rho) = O(\rho^{-3})$ is the third-derivative bound from C³ regu
 :::
 
 :::{prf:proof}
+:label: proof-cor-hessian-lipschitz
+
 Lipschitz continuity of the Hessian follows from the fundamental theorem of calculus:
 
 $$
@@ -1005,6 +1021,8 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-prop-scaling-k-v-4
+
 From Theorem {prf:ref}`thm-c4-regularity`, the fourth-derivative bound is:
 
 $$
@@ -1043,6 +1061,8 @@ For numerical stability, both BAOAB and fourth-order integrators have the **same
 :::
 
 :::{prf:proof}
+:label: proof-prop-timestep-c4
+
 **Step 1: Stability for BAOAB (2nd order).** The BAOAB integrator requires controlling the third derivative:
 
 $$

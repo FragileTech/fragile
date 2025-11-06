@@ -603,6 +603,7 @@ where the push-forward measure is $(K\rho)(B) = \int_{\mathcal{X}} K(x, B) \, \r
 :::
 
 :::{prf:proof}
+:label: proof-thm-data-processing
 
 **Historical Context**: This theorem is a fundamental result in information theory, first stated by Kullback and formalized by Shannon. The proof follows the classical approach via the chain rule for relative entropy. Primary references: Cover & Thomas (2006, Theorem 2.8.1), Csiszár & Körner (2011, Section 1.2).
 
@@ -1070,7 +1071,7 @@ $$
 **Conclusion**: If $\lambda \le 1$, contraction holds. If $\lambda > 1$, expansion!
 
 :::{prf:observation} Revival Rate Constraint
-:label: obs-revival-rate-constraint
+:label: rem-observation-revival-rate-constraint
 
 In the two-state model, KL-non-expansiveness requires $\lambda_{\text{revive}} \le 1$.
 
@@ -1252,6 +1253,7 @@ for all $\rho \not\propto \pi$ with $m_d > 0$.
 :::
 
 :::{prf:proof}
+:label: proof-thm-stage0-complete
 
 We establish the three statements through direct KL entropy production analysis.
 
@@ -3988,6 +3990,7 @@ where:
 :::
 
 :::{prf:proof}
+:label: proof-thm-lsi-constant-explicit
 The proof follows from the Holley-Stroock perturbation theorem. The reference Gaussian measure $\mu(v) = (2\pi/\alpha_{\exp})^{-d/2} e^{-\alpha_{\exp}|v|^2/2}$ has LSI constant $\lambda_0 = \alpha_{\exp}$.
 
 The log-ratio $\log(\rho_\infty^x / \mu)$ satisfies:
@@ -6068,6 +6071,7 @@ The system converges exponentially if and only if the velocity noise is strong e
 ## 2. Proof of Main Theorem
 
 :::{prf:proof}
+:label: proof-thm-mean-field-lsi-main
 We assemble the proof from the established results in Stages 0-2.
 
 **Step 1: Full Generator Entropy Production Equation**

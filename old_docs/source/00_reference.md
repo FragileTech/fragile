@@ -8,6 +8,22 @@ This document provides a comprehensive, searchable reference of all mathematical
 - Cross-reference to the source document and section
 - Related results and dependencies
 
+:::{important} **Research Program Disclaimer**
+This document presents an **exploratory research program** investigating whether discrete algorithmic dynamics can reproduce structures from fundamental physics. All results are **internal to the Fragile Gas framework** and represent:
+- Mathematical derivations within stated axioms and assumptions
+- Structural similarities to established physics theories
+- Proposed mechanisms requiring extensive peer review and independent verification
+- Conjectures and research directions, not proven solutions to open problems
+
+**Scope limitations:**
+- Results have not undergone formal peer review by the broader physics/mathematics communities
+- Claims about connections to major open problems (Millennium Problems, AdS/CFT, etc.) represent exploratory approaches requiring rigorous validation
+- Framework-internal consistency does not imply correctness of broader physics claims
+- Experimental predictions and comparisons with established theories are preliminary
+
+**Interpretation guideline:** When the document states something is "proven" or "derived," this means "established within the framework's axioms" rather than "accepted by the scientific community." Independent verification and peer review are essential before broader claims can be substantiated.
+:::
+
 **Document Status:** Currently includes results from:
 - [01_fragile_gas_framework.md](01_fragile_gas_framework.md) - Core axioms, foundational definitions, viability conditions
 - [03_cloning.md](03_cloning.md) - Cloning operator and Keystone Principle
@@ -25,19 +41,19 @@ This document provides a comprehensive, searchable reference of all mathematical
 - [14_yang_mills_noether.md](14_yang_mills_noether.md) - Yang-Mills gauge theory, Noether currents, effective field theory, fundamental constants from algorithmic parameters, UV safety, mass gap, renormalization group flow
 - [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md) - **Scutoid Geometry Framework (69 mathematical objects)**: Swarm spacetime manifolds, Riemannian Voronoi tessellations, scutoid volume cells, cloning as neighbor-swapping topology, genealogical transport plans, Hellinger-Kantorovich energy minimization, deficit angle convergence (Regge calculus), five unified curvature perspectives (deficit angles, spectral gap, emergent metric tensor, heat kernel asymptotics, causal set volume), Gromov-Hausdorff convergence, Γ-convergence of Dirichlet forms, discrete-to-continuum geometry bridges
 - [15_scutoid_curvature_raychaudhuri.md](15_scutoid_curvature_raychaudhuri.md) - **Scutoid Curvature and Raychaudhuri Equation (35 mathematical objects)**: Emergent Riemannian metric from fitness Hessian, scutoid-induced affine connection (Christoffel symbols from edge deformation), Riemann curvature tensor from plaquette holonomy, Ricci tensor and scalar curvature, Raychaudhuri equation governing volume evolution, geodesic congruences, expansion/shear/rotation decomposition, cloning events as curvature singularities, focusing theorem, emergent gravitational potential, geometric phase transitions, equivalence with information-theoretic phases
-- [scutoid_integration.md](scutoid_integration.md), [appendix_A_decomposition.md](appendix_A_decomposition.md), [appendix_B_convergence.md](appendix_B_convergence.md) - **Scutoid Integration Framework (70 mathematical objects)**: Complete computational differential geometry on scutoid tessellations, simplicial decomposition algorithms (prism fan with explicit barycentric formulas, general centroid fan), spacetime volume computation via Gram determinants, discrete expansion scalar (logarithmic volume evolution rate), flux integration with d-simplex normal vectors (d! factor correction), discrete divergence theorem with interior facet cancellation, parallel transport via Christoffel finite differences, holonomy around plaquettes, Riemann curvature extraction via full basis method, systematic error analysis O(N^(-1/d)), statistical error from stochastic geometry O(N^(-(d+1)/d²) log N), main convergence theorem (N^(-3/4) for d=2, N^(-4/9) for d=3), optimal time step balancing, complete error decomposition (spatial + temporal + sampling), publication-ready rigorous proofs
+- [scutoid_integration.md](scutoid_integration.md), [appendix_A_decomposition.md](appendix_A_decomposition.md), [appendix_B_convergence.md](appendix_B_convergence.md) - **Scutoid Integration Framework (70 mathematical objects)**: Comprehensive computational differential geometry on scutoid tessellations, simplicial decomposition algorithms (prism fan with explicit barycentric formulas, general centroid fan), spacetime volume computation via Gram determinants, discrete expansion scalar (logarithmic volume evolution rate), flux integration with d-simplex normal vectors (d! factor correction), discrete divergence theorem with interior facet cancellation, parallel transport via Christoffel finite differences, holonomy around plaquettes, Riemann curvature extraction via full basis method, systematic error analysis O(N^(-1/d)), statistical error from stochastic geometry O(N^(-(d+1)/d²) log N), main convergence theorem (N^(-3/4) for d=2, N^(-4/9) for d=3), optimal time step balancing, complete error decomposition (spatial + temporal + sampling), detailed mathematical derivations
 - [18_hk_convergence.md](18_hk_convergence.md) - Hellinger-Kantorovich metric convergence, mass contraction, LSI-based structural variance contraction, kinetic Hellinger analysis
 - [20_A_quantitative_error_bounds.md](20_A_quantitative_error_bounds.md) - **Quantitative Error Bounds (21 mathematical objects)**: Explicit O(1/√N + Δt) convergence rates for discrete N-particle Fragile Gas to continuous mean-field limit, mean-field convergence with Fournier-Guillin bounds, BAOAB discretization analysis, N-uniform commutator bounds via propagation of chaos, total error decomposition, all constants independent of N and Δt
-- [15_millennium_problem_completion.md](15_millennium_problem_completion.md) - **Yang-Mills Millennium Problem Solution (12 mathematical objects)**: Matter vs gauge field distinction, pure Yang-Mills Hamiltonian from Noether current, gauge field decoupling in mean-field limit with uniform QSD, Wilson loop area law from LSI and Fractal Set geometric decomposition (two independent proofs), string tension σ = c·λ_gap/ε_c², oscillation frequency lower bound from uniform ellipticity, pure Yang-Mills mass gap Δ_YM ≥ c₀·λ_gap·ℏ_eff > 0, QSD velocity distribution is Maxwellian from BAOAB Ornstein-Uhlenbeck process, Noether current vanishes in QSD by rotational symmetry, uniform QSD assumption validated as theorem (no hidden assumptions), complete Clay Institute requirements satisfied
-- [16_general_relativity_derivation.md](16_general_relativity_derivation.md), [16_C_qsd_equilibrium_proof.md](16_C_qsd_equilibrium_proof.md), [16_D2_ricci_functional_rigorous.md](16_D2_ricci_functional_rigorous.md), [16_F_adaptive_forces.md](16_F_adaptive_forces.md), [16_G_viscous_coupling.md](16_G_viscous_coupling.md) - **Emergent General Relativity from QSD (38 mathematical objects)**: Discrete and continuum stress-energy tensors from walker kinematics, $O(1/\sqrt{N} + \Delta t)$ convergence, energy-momentum conservation at QSD ($\nabla_\mu T^{\mu\nu} = 0$), Einstein field equations $G_{\mu\nu} = 8\pi G T_{\mu\nu}$ from Raychaudhuri consistency, Newton's constant from algorithmic parameters, Voronoi/CVT theory, Wasserstein-2 distance, Brenier-McCann optimal transport, emergent metric = OT metric (rigorous variational proof via Kullback-Leibler potential), Regge calculus convergence $O(N^{-2/d})$, CVT shape regularity, scutoid Ricci convergence to Riemannian Ricci, Ricci functional property (dependence only through metric), Lovelock preconditions satisfied, complete error estimate $O(N^{-1/d})$ from CVT quantization, adaptive force corrections vanish at QSD, viscous coupling momentum conservation and energy dissipation, source term vanishing $J^\nu = 0$ at equilibrium, testable predictions (zero cosmological constant, GW damping, modified Friedmann equations)
-- [hydrodynamics.md](hydrodynamics.md) - **Fragile Hydrodynamics and Stochastic Navier-Stokes (25 mathematical objects)**: Velocity-modulated viscosity coefficient with local kinetic energy density, velocity-modulated viscous force as discrete Laplacian, global dissipation via kernel symmetry cancellation (anti-dissipative terms vanish), discrete strain rate tensor, velocity-modulated stress tensor (symmetric incompressible vs asymmetric compressible), N-particle Fragile Navier-Stokes SDE system with Itô-Stratonovich equivalence, global well-posedness for N-particle system (velocity boundedness, spatial confinement, moment bounds, uniqueness), empirical phase-space density, mean-field Fragile Navier-Stokes Fokker-Planck PDE, O(1/√N) Wasserstein-2 mean-field convergence, global weak solutions via entropy method with rigorous regularization (explicit dominating function for DCT), Hölder continuity and instantaneous C^{k+2} smoothing, exponential QSD convergence via LSI stability under perturbations, macroscopic conservation laws (mass, momentum, energy), continuum vorticity equation with global enstrophy bound, Fragile Reynolds number, Kolmogorov k^{-5/3} turbulence scaling with adaptive cutoff, three structural blow-up prevention mechanisms (velocity bounds, adaptive viscosity, cloning regularization), resolution of 3D Navier-Stokes well-posedness by construction
+- [15_millennium_problem_completion.md](15_millennium_problem_completion.md) - **Yang-Mills Mass Gap Conjecture (12 mathematical objects)**: Proposed approach to mass gap problem via algorithmic dynamics. Framework establishes: Matter vs gauge field distinction, pure Yang-Mills Hamiltonian from Noether current, gauge field decoupling in mean-field limit with uniform QSD, Wilson loop area law from LSI and Fractal Set geometric decomposition (two independent derivations), string tension σ = c·λ_gap/ε_c², oscillation frequency lower bound from uniform ellipticity, conjectured pure Yang-Mills mass gap Δ_YM ≥ c₀·λ_gap·ℏ_eff > 0. QSD velocity distribution is Maxwellian from BAOAB Ornstein-Uhlenbeck process, Noether current vanishes in QSD by rotational symmetry. **Note**: This represents a novel approach that requires extensive peer review and independent verification before claims of resolution can be substantiated
+- [16_general_relativity_derivation.md](16_general_relativity_derivation.md), [16_C_qsd_equilibrium_proof.md](16_C_qsd_equilibrium_proof.md), [16_D2_ricci_functional_rigorous.md](16_D2_ricci_functional_rigorous.md), [16_F_adaptive_forces.md](16_F_adaptive_forces.md), [16_G_viscous_coupling.md](16_G_viscous_coupling.md) - **GR-like Structures from QSD (38 mathematical objects)**: Investigation of general-relativity-like structures emerging from swarm dynamics. Discrete and continuum stress-energy tensors from walker kinematics, $O(1/\sqrt{N} + \Delta t)$ convergence, energy-momentum-like conservation at QSD ($\nabla_\mu T^{\mu\nu} \approx 0$), Einstein-equation-like structures $G_{\mu\nu} \sim 8\pi G T_{\mu\nu}$ from Raychaudhuri consistency conditions, effective Newton's-constant-like parameter from algorithmic parameters, Voronoi/CVT theory, Wasserstein-2 distance, Brenier-McCann optimal transport, emergent metric equals OT metric (rigorous variational proof via Kullback-Leibler potential), Regge calculus convergence $O(N^{-2/d})$, CVT shape regularity, scutoid Ricci convergence to Riemannian Ricci, Ricci functional property (dependence only through metric), Lovelock preconditions investigated, complete error estimate $O(N^{-1/d})$ from CVT quantization, adaptive force corrections vanish at QSD, viscous coupling momentum conservation and energy dissipation, source term vanishing $J^\nu = 0$ at equilibrium, proposed testable predictions (zero cosmological constant, GW damping, modified Friedmann equations). **Note**: These represent structural similarities to GR; establishing that the framework genuinely reproduces GR predictions requires extensive comparison with observational tests
+- [hydrodynamics.md](hydrodynamics.md) - **Fragile Hydrodynamics and Modified Navier-Stokes (25 mathematical objects)**: Velocity-modulated viscosity coefficient with local kinetic energy density, velocity-modulated viscous force as discrete Laplacian, global dissipation via kernel symmetry cancellation (anti-dissipative terms vanish), discrete strain rate tensor, velocity-modulated stress tensor (symmetric incompressible vs asymmetric compressible), N-particle Fragile Navier-Stokes SDE system with Itô-Stratonovich equivalence, global well-posedness for N-particle system (velocity boundedness, spatial confinement, moment bounds, uniqueness), empirical phase-space density, mean-field Fragile Navier-Stokes Fokker-Planck PDE, O(1/√N) Wasserstein-2 mean-field convergence, global weak solutions via entropy method with rigorous regularization (explicit dominating function for DCT), Hölder continuity and instantaneous C^{k+2} smoothing, exponential QSD convergence via LSI stability under perturbations, macroscopic conservation laws (mass, momentum, energy), continuum vorticity equation with global enstrophy bound, Fragile Reynolds number, Kolmogorov k^{-5/3} turbulence scaling with adaptive cutoff, three structural blow-up prevention mechanisms (velocity bounds, adaptive viscosity, cloning regularization). **Note**: This is a modified Navier-Stokes system with additional regularization mechanisms, not a solution to the standard 3D Navier-Stokes Clay Millennium Problem
 - [curvature.md](curvature.md) - **Unified Curvature Theory and Dimension Estimation (10+ mathematical objects)**: Weyl conformal tensor (trace-free Riemann tensor), Weyl squared norm $\|C\|^2$ (anisotropic curvature measure), Regge calculus Weyl norm computation (O(N·d²) efficient algorithm), intrinsic dimension (topological vs Hausdorff vs correlation vs box-counting), eight dimension estimation methods (Myrheim-Meyer causal set, Levina-Bickel ML k-NN, Local PCA eigenvalue spectrum, Grassberger-Procaccia correlation, Box-counting fractal, Graph Laplacian spectral decay, Geodesic volume growth, **Scutoid Topological Dimension unique to framework** via Voronoi coordination numbers), QSD-corrected dimension estimation with importance weighting, multi-method consensus algorithm with confidence intervals, dimension-curvature consistency checks, comprehensive comparison tables and decision trees
 - [19_geometric_sampling_reweighting.md](19_geometric_sampling_reweighting.md) - **Geometric Sampling and Importance Reweighting (11 mathematical objects)**: Importance weights for extracting unbiased geometric observables from biased QSD samples, asymptotic error bounds via Delta method with explicit $O(1/\sqrt{\text{ESS}})$ scaling, Effective Sample Size (ESS) diagnostic quantifying statistical power, ESS-guided parameter tuning algorithm for $(α, β, T)$ control, gamma channel mechanism for direct geometric optimization ($\gamma_R$ Ricci scalar reward, $\gamma_W$ Weyl norm penalty), self-referential dynamical geometry (swarm→metric→curvature→potential→swarm feedback loop), dual-metric importance reweighting with volume element corrections, geometric annealing algorithm (exploration→geometric shaping→convergence phases), computational complexity analysis proving $O(N \log N)$ efficiency for $d \leq 3$ via Delaunay triangulation, dimension-dependent phase transition at $d=4$ with $O(N^{\lceil d/2 \rceil})$ barrier, Fragile Gas Anthropic Principle conjecture proposing computational explanation for $3+1$ spacetime dimensionality
-- [fragile_lqcd.md](fragile_lqcd.md) - **Fragile QFT: Lattice QCD with O(N) Complexity (28 mathematical objects)**: Fixed-Node Scutoid Tessellation for true O(N) scaling, Centroidal Voronoi Tessellation (CVT) with Lloyd algorithm, five optimization synthesis (online triangulation, Regge curvature, CCD dynamics, Voronoi acceptance, adaptive sampling), curvature-corrected diffusion with geometric time-lag analysis, predictor-corrector CCD for high accuracy, force interpolation error bounds O(n_cell^{-1/d}), Voronoi volume approximation with O(N^{-1/d}) error, detailed balance violation analysis with three correction schemes (pure Voronoi, Hybrid Metropolis, Delayed Rejection), tournament selection cloning, gamma channel with Ricci/Weyl rewards, complete Fragile QFT timestep algorithm, LQCD complexity comparison showing ~100× speedup, information-theoretic lower bound Ω(N), dimension-dependent accuracy-cost scaling S_geom(ε,d) = O(ε^{-d⌈d/2⌉}), accuracy-cost phase transition at d=4, O(N) Universe Hypothesis as complexity-theoretic anthropic principle explaining d=3+1 spacetime from geometric accuracy requirements
+- [fragile_lqcd.md](fragile_lqcd.md) - **Fragile QFT: Lattice QCD with O(N) Complexity (28 mathematical objects)**: Fixed-Node Scutoid Tessellation for O(N) scaling, Centroidal Voronoi Tessellation (CVT) with Lloyd algorithm, five optimization synthesis (online triangulation, Regge curvature, CCD dynamics, Voronoi acceptance, adaptive sampling), curvature-corrected diffusion with geometric time-lag analysis, predictor-corrector CCD for high accuracy, force interpolation error bounds O(n_cell^{-1/d}), Voronoi volume approximation with O(N^{-1/d}) error, detailed balance violation analysis with three correction schemes (pure Voronoi, Hybrid Metropolis, Delayed Rejection), tournament selection cloning, gamma channel with Ricci/Weyl rewards, complete Fragile QFT timestep algorithm, theoretical complexity analysis suggesting potential speedup over standard LQCD (requires benchmarking against production codes), information-theoretic lower bound Ω(N), dimension-dependent accuracy-cost scaling S_geom(ε,d) = O(ε^{-d⌈d/2⌉}), accuracy-cost phase transition at d=4, speculative hypothesis: dimensional preference from computational complexity considerations
 - [21_conformal_fields.md](21_conformal_fields.md) - **Conformal Field Theory Characterization (20+ mathematical objects)**: H2 (2-point CFT convergence) proven via spatial hypocoercivity (local LSI, correlation length bounds, mean-field screening), H3 (all n-point CFT convergence) proven via cluster expansion (strong induction, OPE algebra closure), convergence rate O(N^{-1}) uniformly for n ≤ N^{1/4}, central charge extraction from stress-energy correlators, trace anomaly and gamma channel connection, Ward-Takahashi identities for swarm observables
-- [13_fractal_set_new/12_holography.md](13_fractal_set_new/12_holography.md) - **Holographic Principle and AdS/CFT Correspondence (24 mathematical objects)**: Complete rigorous proof of Maldacena's conjecture from algorithmic first principles, Informational Area Law with explicit Γ-convergence (C² boundary regularity, BV compactness), First Law of Algorithmic Entanglement with rigorous β-constancy proof (9-substep Gaussian integral calculation), Einstein equations from thermodynamic consistency (Jacobson derivation), Bekenstein-Hawking formula (α = 1/(4G_N)), effective cosmological constant with IG pressure (sign corrected), AdS geometry in UV regime (surface tension dominance), boundary CFT with full n-point convergence (H2+H3 proven), partition function equality via functional derivatives, Ryu-Takayanagi formula, no conditional assumptions, publication-ready for Physical Review D/JHEP
+- [13_fractal_set_new/12_holography.md](13_fractal_set_new/12_holography.md) - **Holographic Principle Analogs (24 mathematical objects)**: Exploration of holography-like structures in algorithmic framework. Investigates: Informational Area Law via Γ-convergence (C² boundary regularity, BV compactness), proposed First Law of Algorithmic Entanglement with explicit β formula (9-substep Gaussian integral calculation), Einstein equations from thermodynamic consistency (Jacobson-inspired derivation), effective cosmological constant with IG pressure (sign corrected), AdS-like geometry in UV regime (surface tension dominance), boundary CFT analogs with n-point correlator convergence (H2+H3 investigated), partition function relations via functional derivatives, Ryu-Takayanagi-like formulas. **Note**: These results represent structural similarities to AdS/CFT rather than a proof of Maldacena's conjecture. Extensive work needed to establish rigorous connections to string theory formulation
 
-Complete coverage from foundational axioms through N-particle and mean-field KL-convergence to discrete spacetime formulation, Yang-Mills effective field theory, **complete solution to the Clay Mathematics Institute Yang-Mills Millennium Problem** with rigorous proof of mass gap via confinement, **derivation of Einstein's general relativity from algorithmic dynamics at quasi-stationary distribution** without quantum mechanics assumptions, **complete proof of the holographic principle and AdS/CFT correspondence** (first constructive, non-perturbative proof from discrete principles), **rigorous globally well-posed stochastic Navier-Stokes equations with velocity-modulated viscosity** avoiding classical blow-up issues, and **importance sampling framework for unbiased geometric analysis** with computational complexity bounds suggesting anthropic principle for low spacetime dimensionality.
+Complete coverage from foundational axioms through N-particle and mean-field KL-convergence to discrete spacetime formulation, Yang-Mills-like gauge structures, **exploratory connections to the Clay Mathematics Institute Yang-Mills Millennium Problem** with proposed mass gap mechanism via confinement, **investigation of GR-like structures from algorithmic dynamics at quasi-stationary distribution**, **holographic-principle-like area laws and entanglement relations** (structural similarities to AdS/CFT requiring further investigation to establish connections to string theory), **modified stochastic Navier-Stokes equations with velocity-modulated viscosity** exhibiting global well-posedness properties, and **importance sampling framework for unbiased geometric analysis** with computational complexity bounds suggesting potential dimensional preferences.
 
 ---
 
@@ -4617,9 +4633,9 @@ The Fragile Navier-Stokes system avoids finite-time blow-up through **three stru
 3. **Cloning as Automatic Regularization:** High-vorticity walkers have low diversity fitness → cloned away → replaced by smoother configurations
    - Population-level selection against extreme configurations
 
-**Consequence:** All solutions remain smooth and bounded for all time, resolving well-posedness by construction.
+**Consequence:** All solutions to the modified system remain smooth and bounded for all time within the algorithmic framework.
 
-**Contrast with Classical NS:** Classical Navier-Stokes lacks these mechanisms, leading to the Clay Millennium Problem.
+**Contrast with Classical NS:** Classical Navier-Stokes lacks these additional regularization mechanisms. Note that the Fragile system is a modified version with velocity bounds and adaptive viscosity, not the standard Navier-Stokes equations that are the subject of the Clay Millennium Problem.
 
 **Related Results:** `thm-n-particle-wellposedness`, `thm-global-weak-solutions-mfns`
 
@@ -6033,7 +6049,7 @@ $$
 \frac{d}{dt} D_{\text{KL}}(\rho \| \pi) \Big|_{\text{revival}} = \lambda m_d \left( 1 + \frac{D_{\text{KL}}(\rho \| \pi)}{\|\rho\|_{L^1}} \right)
 $$
 
-**Status**: PROVEN (verified by Gemini 2025-01-08)
+**Status**: Derived within framework
 
 **Implication:** KL-convergence requires kinetic dissipation to dominate revival expansion.
 
@@ -6323,7 +6339,7 @@ d_{HK}(\mu_t, \pi_{\text{QSD}}) \leq e^{-\kappa_{HK} t/2} \cdot d_{HK}(\mu_0, \p
 $$
 
 **Proof Dependency Structure:**
-- Part I: Wasserstein Component (PROVEN in existing framework via hypocoercivity and W₂ cloning contraction)
+- Part I: Wasserstein Component (Established in framework via hypocoercivity and W₂ cloning contraction)
 - Part II: Hellinger Component (Lemmas A, B, C below)
 
 **Related Results:** `lem-mass-contraction-revival-death`, `lem-structural-variance-contraction`, `lem-kinetic-hellinger-contraction`
@@ -7204,48 +7220,67 @@ The reward field is stored as a **node scalar attribute**:
 
 ---
 
-### SU(3) Gluon Field Components from Manifold Geometry
+### SU(3) Gauge Field: Edge-Centric Link Variables (Crystalline Gas)
 
 **Type:** Definition
-**Label:** `def-su3-gluon-field`
-**Source:** [13_fractal_set_new/01_fractal_set.md § 7.13. SU(3) Strong Sector from Viscous Force](13_fractal_set_new/01_fractal_set.md)
-**Tags:** `cst`, `data-structure`, `edges`, `fractal-set`, `ig`, `metric-tensor`, `nodes`, `riemannian`, `spinor`, `su3-symmetry`
+**Label:** `def-su3-link-variables`
+**Source:** [crystalline_gas/01_crystalline_gas_yang_mills_mass_gap_proof.md § 4.2](crystalline_gas/01_crystalline_gas_yang_mills_mass_gap_proof.md)
+**Tags:** `su3-symmetry`, `gauge-field`, `link-variables`, `parallel-transport`, `color-charge`, `yang-mills`
 
 **Statement:**
-The eight gluon field components $A_{ij}^a$ for $a = 1, \ldots, 8$ are constructed from the emergent Riemannian metric $g_{\mu\nu}(x)$:
 
-**1. Metric Tensor:**
+**1. Color Observable (SU(3) Charge):**
 
-$$
-g_{\mu\nu}(x) = \delta_{\mu\nu} + \frac{1}{\epsilon_\Sigma^2} \frac{\partial^2 V_{\text{fit}}}{\partial x^\mu \partial x^\nu}(x)
-$$
-
-from the regularized Hessian diffusion (see {prf:ref}`def-hybrid-sde`).
-
-**2. Christoffel Symbols (Connection Coefficients):**
+For walker $i$, the **color observable** is a complex 3-vector encoding the walker's interaction state:
 
 $$
-\Gamma^\lambda_{\mu\nu}(x) = \frac{1}{2} g^{\lambda\rho}(x) \left(\frac{\partial g_{\rho\mu}}{\partial x^\nu} + \frac{\partial g_{\rho\nu}}{\partial x^\mu} - \frac{\partial g_{\mu\nu}}{\partial x^\rho}\right)
+|\Psi_i\rangle := F_i^{\text{matter}} + \frac{i}{\hbar_{\text{eff}}} p_i \in \mathbb{C}^{3}
 $$
 
-**3. Gluon Field Components:**
+where:
+- $F_i^{\text{matter}} \in \mathbb{R}^{3}$ is the matter force from the fitness landscape
+- $p_i \in \mathbb{R}^{3}$ is the momentum
+- This serves as the **SU(3) charge** for gauge field interactions
 
-The SU(3) gluon field $A_{ij}^a$ is derived from the Christoffel symbols projected onto the Gell-Mann basis:
+**2. Link Variables (SU(3) Gauge Field):**
+
+On every edge $(i, j) \in \mathcal{E}$ (walkers within interaction range $\varepsilon_c$), there exists a **fundamental degree of freedom**:
 
 $$
-A_{ij}^a = \text{Tr}\left[\lambda_a \cdot \Gamma(x_i, x_j)\right]
+U_{ij} \in \text{SU}(3)
 $$
 
-where $\Gamma(x_i, x_j)$ is the parallel transport operator from walker i to walker j along geodesic.
+The set $\{U_{ij}\}_{(i,j) \in \mathcal{E}}$ **is the SU(3) gauge field**.
+
+**Key Properties:**
+- $U_{ij}$ is a $3 \times 3$ special unitary matrix: $U_{ij}^\dagger U_{ij} = I_3$ and $\det(U_{ij}) = 1$
+- Hermitian symmetry: $U_{ji} = U_{ij}^\dagger$
+- $U_{ij}$ is **NOT** derived from walker states; it is an independent variable
+- $U_{ij}$ acts as the **parallel transport operator** for color vectors from site $j$ to site $i$
+
+**3. Gauge-Covariant Force Law:**
+
+The **gauge force** on walker $i$ is:
+
+$$
+F_i^{\text{gauge}} := \nu \sum_{j : (i,j) \in \mathcal{E}} K_\rho(x_i, x_j) \left[ \text{Re}(U_{ij} |\Psi_j\rangle) - \text{Re}(|\Psi_i\rangle) \right]
+$$
+
+where $\nu > 0$ is the gauge coupling strength and $K_\rho$ is the interaction kernel.
+
+**Physical Interpretation:**
+- The link variable $U_{ij}$ "rotates" the color vector $|\Psi_j\rangle$ from $j$'s local color basis to $i$'s local color basis
+- When $U_{ij} = I_3$, the field is "flat" between $i$ and $j$
+- When $U_{ij} \neq I_3$, the field has non-trivial holonomy
+- This creates bidirectional feedback: field affects matter (gauge force) and matter affects field (Wilson action)
 
 **Storage in Fractal Set:**
 
-Each IG edge $(n_{i,t}, n_{j,t})$ stores:
-- Gluon field: $\mathbf{A}_{ij} = (A_{ij}^1, \ldots, A_{ij}^8) \in \mathbb{R}^8$
-- Color state: $|\Psi_i^{(\text{color})}\rangle \in \mathbb{C}^3$ (node attribute)
-- Viscous force spinor: $\psi_{\mathbf{F}_{\text{viscous}},ij}$ (already stored)
+Each IG edge $(i, j)$ stores:
+- Link variable: $U_{ij} \in \text{SU}(3)$ (9 complex parameters, 8 independent due to SU(3) constraints)
+- Color observable: $|\Psi_i\rangle \in \mathbb{C}^3$ (node attribute)
 
-**Related Results:** `def-hybrid-sde`
+**Related Results:** See crystalline_gas document for Wilson action, plaquette definitions, and Yang-Mills dynamics
 
 ---
 
@@ -12094,7 +12129,7 @@ where:
 
 **Critical insight:** The $\sqrt{\det g(x)}$ factor arises because the Langevin SDE in Chapter 07 uses **Stratonovich calculus**, not Itô calculus.
 
-**Source:** `qsd_stratonovich_final.md` Theorem `thm-main-result-final` (Gemini validated as publication-ready).
+**Source:** `qsd_stratonovich_final.md` Theorem `thm-main-result-final` (validated within framework).
 
 ---
 
@@ -14376,10 +14411,10 @@ $$
 **Status:** All components **rigorously defined** through Chapters 13-14. This theorem **synthesizes** existing structures into unified QFT framework.
 
 **Physical significance:**
-- ✅ First **dynamics-driven lattice** for QFT (not hand-designed)
-- ✅ Causal structure from **optimization dynamics**, not background geometry
-- ✅ Quantum correlations from **algorithmic selection coupling**
-- ✅ Enables **non-perturbative QFT** calculations on emergent spacetime
+- Novel **dynamics-driven lattice** approach for QFT (not hand-designed)
+- Causal structure from **optimization dynamics**, not background geometry
+- Quantum correlations from **algorithmic selection coupling**
+- Enables **non-perturbative QFT** calculations on emergent spacetime
 
 ---
 
@@ -14391,7 +14426,7 @@ $$
 **Tags:** `fermionic`, `field-theory`, `fractal-set`, `lattice-qft`, `metric-tensor`, `qft`, `symmetry`
 
 **Statement:**
-**Source:** [13_D_fractal_set_emergent_qft_comprehensive.md § 4.2, lines 294-322] ✅ **GEMINI VALIDATED**
+**Source:** [13_D_fractal_set_emergent_qft_comprehensive.md § 4.2, lines 294-322] Validated within framework
 
 The cloning scores (Chapter 3) satisfy:
 
@@ -14435,7 +14470,7 @@ This is the **algorithmic signature of fermionic structure**.
 **Tags:** `fermionic`, `field-theory`, `fractal-set`, `lattice-qft`, `qft`
 
 **Statement:**
-**Source:** [13_D_fractal_set_emergent_qft_comprehensive.md § 5.1, lines 364-386] ✅ **GEMINI VALIDATED**
+**Source:** [13_D_fractal_set_emergent_qft_comprehensive.md § 5.1, lines 364-386] Validated within framework
 
 For any walker pair $(i, j)$:
 
@@ -16075,8 +16110,8 @@ Convergence guarantees across all four frameworks:
 | **Property** | **N-Particle** | **Mean-Field** | **Fractal Set** | **Scutoid Geometry** |
 |--------------|----------------|----------------|-----------------|----------------------|
 | **Primary state** | $Z_k = (X_k, V_k)$ | $\mu_t(dx, dv)$ | $\mathcal{F} = (\mathcal{N}, E)$ | $\mathcal{T} = \{S_i\}$ |
-| **Markov property** | ✅ Discrete-time | ✅ Nonlinear | ✅ Inherited | ✅ Inherited via $\Psi$ |
-| **Ergodicity** | ✅ Geometric | ✅ Exponential | ✅ Inherited | ✅ Inherited |
+| **Markov property** | Discrete-time | Nonlinear | Inherited | Inherited via $\Psi$ |
+| **Ergodicity** | Geometric | Exponential | Inherited | Inherited |
 | **Convergence rate** | $\rho_{\text{discrete}}^k$ | $e^{-\kappa t}$ | $\rho_{\text{discrete}}^k$ | $\rho_{\text{discrete}}^k$ |
 | **Stationary dist.** | $\pi_{\Delta t}(dZ)$ | $\pi(dx, dv)$ | $\pi_{\text{fractal}}$ | $\pi_{\text{scutoid}}$ |
 | **Limit $N \to \infty$** | Propagation of chaos | McKean-Vlasov PDE | Continuum QFT | Riemannian manifold |
@@ -17139,18 +17174,18 @@ $$
 **Tags:** `millennium-problem`, `yang-mills`, `status`, `requirements`
 
 **Statement:**
-**Framework provides:**
-✅ Rigorous spectral gap $\lambda_{\text{gap}} > 0$
-✅ Explicit error bounds $O(1/\sqrt{N})$
-✅ N-uniform LSI
-✅ UV safety from uniform ellipticity
-✅ Asymptotic freedom
+**Framework establishes within its scope:**
+- Spectral gap $\lambda_{\text{gap}} > 0$
+- Explicit error bounds $O(1/\sqrt{N})$
+- N-uniform LSI
+- UV safety from uniform ellipticity
+- Asymptotic freedom properties
 
-**Remaining for Millennium Prize:**
-❌ 4D spacetime structure
-❌ Decoupling of fitness/confining potentials
-❌ Wightman axiom verification
-❌ Full glueball spectrum mass gap
+**Remaining open questions for Millennium Prize connection:**
+- 4D spacetime structure rigorously established
+- Decoupling of fitness/confining potentials
+- Wightman axiom verification
+- Full glueball spectrum mass gap
 
 **Status:** Strong candidate for constructive Yang-Mills theory with mass gap
 
@@ -19210,15 +19245,15 @@ where $dV_g$ is the Riemannian volume measure on $(M, g)$.
 
 **Required prerequisites**:
 1. **Gromov-Hausdorff convergence** ({prf:ref}`lem-gromov-hausdorff`): $(V_N, d_{\text{alg}}) \xrightarrow{GH} (M, g)$
-2. **N-uniform LSI**: $\sup_{N \geq 2} C_{\text{LSI}}(N) < \infty$ (✅ proven in [10_kl_convergence.md](10_kl_convergence/10_kl_convergence.md))
-3. **Empirical measure convergence**: $\mu_N \Rightarrow \rho_\infty dx$ (✅ proven in [06_propagation_chaos.md](06_propagation_chaos.md))
+2. **N-uniform LSI**: $\sup_{N \geq 2} C_{\text{LSI}}(N) < \infty$ (established in [10_kl_convergence.md](10_kl_convergence/10_kl_convergence.md))
+3. **Empirical measure convergence**: $\mu_N \Rightarrow \rho_\infty dx$ (established in [06_propagation_chaos.md](06_propagation_chaos.md))
 
 **Key techniques**:
 1. **Spectral graph theory**: Use N-uniform LSI as discrete Ricci curvature bound
 2. **Γ-convergence of Dirichlet energies**: Show $\mathcal{E}_N(f) \to \mathcal{E}_{\text{cont}}(f)$
 3. **Mosco convergence**: Show $\Delta_0^{(N)}$ converges to $\Delta_g$ in the sense of generators
 
-**Status**: ✅ **PROVEN** (complete proof below, leverages {prf:ref}`lem-gromov-hausdorff`)
+**Status**: Established in framework (derivation leverages {prf:ref}`lem-gromov-hausdorff`)
 :::
 
 **Related Results:** See scutoid geometry framework results
@@ -19260,7 +19295,7 @@ where $d_{GH}$ is the Gromov-Hausdorff distance.
 2. **Hausdorff approximation**: Show $V_N$ is $\epsilon_N$-dense in $M$ with $\epsilon_N \to 0$
 3. **Lipschitz approximation**: Show distance function $d_{\text{alg}}$ is close to geodesic distance $d_g$
 
-**Status**: ✅ **PROVEN** (complete proof below)
+**Status**: Established in framework
 :::
 
 **Related Results:** See scutoid geometry framework results
@@ -19300,7 +19335,7 @@ where $g(x) = H(x) + \epsilon_\Sigma I$ is the emergent metric tensor from the f
 2. **Emergent metric identification**: $D^{-1} = g = H + \epsilon_\Sigma I$ (Chapter 8)
 3. **Hypoelliptic regularity**: Use hypocoercivity theory from [11_mean_field_convergence/](11_mean_field_convergence/) to show $\rho_\infty$ is smooth
 
-**Status**: ✅ **PROVEN** (complete proof below)
+**Status**: Established in framework
 :::
 
 **Related Results:** See scutoid geometry framework results
@@ -19468,9 +19503,9 @@ $$
 
 These three properties together allow the reverse inference: the proven spectral gap, combined with uniform ellipticity and bounded diameter, imply positive effective curvature bounds for the emergent geometry. **Status**: Rigorous (both directions) given framework infrastructure.
 
-**Connection 4 (Spectral Gap ← Deficit Angle)**: The convergence of the discrete graph Laplacian $\Delta_0$ to the continuum Laplace-Beltrami operator $\Delta_g$ (Chapter 13 conjecture) would imply spectral convergence, which in turn would imply convergence of discrete curvature measures to continuum ones. **Status**: ✅ Proven ({prf:ref}`lem-laplacian-convergence`).
+**Connection 4 (Spectral Gap ← Deficit Angle)**: The convergence of the discrete graph Laplacian $\Delta_0$ to the continuum Laplace-Beltrami operator $\Delta_g$ (Chapter 13 conjecture) would imply spectral convergence, which in turn would imply convergence of discrete curvature measures to continuum ones. **Status**: Established in framework ({prf:ref}`lem-laplacian-convergence`).
 
-**Connection 5 (Causal Set Volume ← QSD Density)**: The causal set curvature estimator $R_{\text{CST}}$ ({prf:ref}`def-ricci-causal-set-volume`) relies on the adaptive sprinkling density $\rho(x) \propto \sqrt{\det g(x)} e^{-U_{\text{eff}}/T}$ from the QSD. The $\sqrt{\det g}$ factor automatically compensates for the Riemannian volume element, enabling accurate curvature estimation from causal interval statistics. **Status**: ✅ Proven ({prf:ref}`thm-causal-set-ricci-convergence`).
+**Connection 5 (Causal Set Volume ← QSD Density)**: The causal set curvature estimator $R_{\text{CST}}$ ({prf:ref}`def-ricci-causal-set-volume`) relies on the adaptive sprinkling density $\rho(x) \propto \sqrt{\det g(x)} e^{-U_{\text{eff}}/T}$ from the QSD. The $\sqrt{\det g}$ factor automatically compensates for the Riemannian volume element, enabling accurate curvature estimation from causal interval statistics. **Status**: Established in framework ({prf:ref}`thm-causal-set-ricci-convergence`).
 
 **Remaining items**:
 - All five convergence theorems are now proven
@@ -21901,11 +21936,11 @@ $$
    - All constants explicit and N-uniform
 
 **Key Non-Circularities:**
-- ✅ No entropy-area relation assumed
-- ✅ No holographic principle required
-- ✅ No quantum field theory needed
-- ✅ No thermodynamic assumptions
-- ✅ Pure algorithmic dynamics + consistency
+- No entropy-area relation assumed
+- No holographic principle required
+- No quantum field theory needed
+- No thermodynamic assumptions
+- Pure algorithmic dynamics + consistency
 
 **Related Results:**
 - Stress-energy: {prf:ref}`def-stress-energy-continuum`
@@ -22503,11 +22538,11 @@ $$
 
 **Statement:**
 
-The emergent spacetime geometry from the Fractal Set satisfies all preconditions for Lovelock's uniqueness theorem:
+The emergent spacetime geometry from the Fractal Set satisfies preconditions for Lovelock's uniqueness theorem:
 
-1. ✅ **Metric dependence:** $R_{\mu\nu} = R_{\mu\nu}[g, \partial g, \partial^2 g]$ (proven in {prf:ref}`thm-ricci-metric-functional-rigorous`)
-2. ✅ **Second-order derivatives:** The Riemannian Ricci tensor involves $\partial^2 g$ through Christoffel symbols
-3. ✅ **Linearity in $\partial^2 g$:** Standard property of Ricci tensor
+1. **Metric dependence:** $R_{\mu\nu} = R_{\mu\nu}[g, \partial g, \partial^2 g]$ (established in {prf:ref}`thm-ricci-metric-functional-rigorous`)
+2. **Second-order derivatives:** The Riemannian Ricci tensor involves $\partial^2 g$ through Christoffel symbols
+3. **Linearity in $\partial^2 g$:** Standard property of Ricci tensor
 
 **Consequence:** By **Lovelock's theorem**, the Einstein tensor:
 
@@ -23238,7 +23273,7 @@ Axioms (Ch 4) → State Space (Ch 2) → Lyapunov (Ch 3)
 
 ## Yang-Mills Millennium Problem and Mass Gap
 
-This section contains mathematical results proving that the Fragile Gas framework solves the Clay Mathematics Institute Yang-Mills Millennium Problem by demonstrating a mass gap in pure Yang-Mills gauge theory.
+This section contains mathematical results exploring whether the Fragile Gas framework might provide insights into the Clay Mathematics Institute Yang-Mills Millennium Problem by investigating a potential mass gap in pure Yang-Mills gauge theory within the algorithmic framework.
 
 ### Matter vs Gauge Field Distinction
 
@@ -23639,56 +23674,62 @@ Therefore: $\boxed{\langle J_\mu^{(a)}(x) \rangle_{\text{QSD}} = 0}$
 
 **Statement:**
 
-**The "uniform QSD" assumption is NOT an assumption—it is a PROVEN THEOREM.**
+The uniform QSD assumption, stating that $\langle J_\mu^{(a)} \rangle_{\text{QSD}} = 0$, has been derived as a theorem within the framework based on the BAOAB Maxwellian velocity distribution and rotational symmetry.
 
-**Consequences:**
+**Consequences within the framework:**
 
-1. ✅ **Gauge field decoupling** (§17.3-17.4): Since $\langle J_\mu^{(a)} \rangle_{\text{QSD}} = 0$, the gauge field background is trivial, and fluctuations satisfy pure Yang-Mills equations.
+1. **Gauge field decoupling** (§17.3-17.4): Under this assumption, the gauge field background becomes trivial, and fluctuations would satisfy pure Yang-Mills-like equations.
 
-2. ✅ **Wilson loop area law** (§17.8): The proof is **rigorously justified** by {prf:ref}`cor-noether-current-vanishes`.
+2. **Wilson loop area law** (§17.8): The derivation relies on {prf:ref}`cor-noether-current-vanishes` and the framework's LSI spectral gap.
 
-3. ✅ **Mass gap proof** (§17.8, §17.10): All arguments relying on $\langle J \rangle = 0$ are **mathematically sound**.
+3. **Mass gap conjecture** (§17.8, §17.10): Arguments relying on $\langle J \rangle = 0$ are internally consistent within the framework.
 
-**No hidden assumptions remain.** The proof is **complete and rigorous**.
+**Framework status:** Derivations are internally consistent. Independent verification by the quantum field theory community is needed to establish connections to continuum Yang-Mills theory.
 
 **Related Results:** `thm-qsd-velocity-maxwellian`, `cor-noether-current-vanishes`, `thm-gauge-field-mass-gap`
 
 ---
 
-### Clay Institute Millennium Problem Solution Status
+### Conjectured Approach to Clay Institute Millennium Problem
 
-**Type:** Summary
-**Label:** `sum-millennium-problem-complete`
+**Type:** Research Direction
+**Label:** `conjecture-millennium-problem-approach`
 **Source:** [15_millennium_problem_completion.md § 18](15_millennium_problem_completion.md)
-**Tags:** `millennium-problem`, `clay-institute`, `completion-status`, `yang-mills`, `mass-gap`
+**Tags:** `millennium-problem`, `clay-institute`, `research-direction`, `yang-mills`, `mass-gap`
 
 **Statement:**
 
-**Clay Institute requirements status:**
+**Framework development status:**
 
-- ✅ Compact gauge group $SU(2)$ - **COMPLETE**
-- ✅ Quantum field theory (Fock space, Wightman axioms) - **COMPLETE**
-- ✅ Four-dimensional spacetime (emergent Lorentzian structure) - **COMPLETE**
-- ✅ Non-trivial interactions (cloning/death processes) - **COMPLETE**
-- ✅ **Pure Yang-Mills mass gap** $\Delta_{\text{YM}} \geq c_0 \lambda_{\text{gap}} \hbar_{\text{eff}} > 0$ - **PROVEN**
-  - ✅ Confinement (Wilson loop area law) - **PROVEN** via Fractal Set + LSI
-  - ✅ String tension $\sigma = c\lambda_{\text{gap}}/\epsilon_c^2 > 0$ - **PROVEN**
-  - ✅ Oscillation frequency bound $\Omega_1^2 \geq C' \lambda_{\text{gap}}^2$ - **PROVEN**
-  - ✅ Uniform QSD assumption $\langle J_\mu \rangle_{\text{QSD}} = 0$ - **VALIDATED**
-- ✅ Wightman axioms - **COMPLETE**
-- ✅ Lorentz invariance - **COMPLETE** (emergent from causal set)
+- ✓ Compact gauge group $SU(2)$ - Formulated
+- ✓ Quantum field theory structure (Fock space, Wightman axioms) - Formulated
+- ✓ Four-dimensional spacetime (emergent Lorentzian structure) - Proposed
+- ✓ Non-trivial interactions (cloning/death processes) - Implemented
+- ? **Conjectured Yang-Mills mass gap** $\Delta_{\text{YM}} \geq c_0 \lambda_{\text{gap}} \hbar_{\text{eff}}$ - **REQUIRES VERIFICATION**
+  - ? Confinement (Wilson loop area law) - Derived within framework
+  - ? String tension $\sigma = c\lambda_{\text{gap}}/\epsilon_c^2 > 0$ - Proposed
+  - ? Oscillation frequency bound $\Omega_1^2 \geq C' \lambda_{\text{gap}}^2$ - Derived
+  - ? Uniform QSD assumption $\langle J_\mu \rangle_{\text{QSD}} = 0$ - Needs independent validation
+- ? Wightman axioms - Framework compatibility requires verification
+- ? Lorentz invariance - Emergent mechanism proposed, requires rigorous proof
 
-**Status**: ✅ **100% COMPLETE** (all gaps closed, all assumptions validated)
+**Status**: **EXPLORATORY RESEARCH** - Extensive peer review and independent verification needed
 
-**Major achievements:**
-1. First construction of 4D Lorentz-invariant Yang-Mills QFT from algorithmic dynamics
-2. Proof that Lorentz invariance emerges from causal set order-invariance
-3. **PROOF of confinement** via Wilson loop area law (two independent derivations)
-4. **PROOF of mass gap** via oscillation frequency bound from uniform ellipticity
-5. **VALIDATION of uniform QSD** via BAOAB Maxwellian velocity distribution
-6. Complete framework with 5000+ pages of rigorous mathematical foundations
+**Research contributions:**
+1. Novel construction of algorithmic Yang-Mills-like structure from particle dynamics
+2. Proposed mechanism for Lorentz invariance emergence from discrete causal structure
+3. Heuristic derivation of confinement via Wilson loop area law (two independent approaches)
+4. Suggested connection between spectral gap and mass gap via oscillation frequency
+5. Validation approach for uniform QSD via BAOAB velocity distribution
+6. Comprehensive framework documented across multiple technical documents
 
-**Result:** **The Yang-Mills Millennium Problem is SOLVED.**
+**Open questions requiring resolution:**
+- Rigorous proof of equivalence to continuum Yang-Mills theory
+- Independent verification of LSI spectral gap bounds
+- Mathematical rigor of discrete-to-continuum limits
+- Validation by quantum field theory community
+- Formal submission to Clay Institute (if warranted after peer review)
+- Connection to lattice QCD and existing non-perturbative methods
 
 **Related Results:** All theorems in this section, plus complete framework documents
 
@@ -24039,32 +24080,32 @@ If physical spacetime emerges from a computational process governed by Fragile G
 **End of Mathematical Reference Document**
 
 **Included Documents:**
-- ✅ [03_cloning.md](03_cloning.md) - Cloning operator, Keystone Principle, variance/boundary contraction
-- ✅ [03_B__wasserstein_contraction.md](03_B__wasserstein_contraction.md) - W₂ contraction via synchronous coupling
-- ✅ [04_convergence.md](04_convergence.md) - Kinetic operator, hypocoercivity, complete QSD convergence
-- ✅ [05_mean_field.md](05_mean_field.md) - Mean-field limit, McKean-Vlasov PDE, killing rate consistency
-- ✅ [06_propagation_chaos.md](06_propagation_chaos.md) - Propagation of chaos, thermodynamic limit, uniqueness
-- ✅ [07_adaptative_gas.md](07_adaptative_gas.md) - Adaptive Viscous Fluid Model with ρ-localization, unified measurement pipeline, N-uniform regularity
-- ✅ [08_emergent_geometry.md](08_emergent_geometry.md) - Anisotropic diffusion, emergent Riemannian geometry, hypocoercivity with state-dependent diffusion
-- ✅ [09_symmetries_adaptive_gas.md](09_symmetries_adaptive_gas.md) - Permutation invariance, Euclidean symmetries, emergent isometries, Noether's theorem, conservation laws
-- ✅ [12_gauge_theory_adaptive_gas.md](12_gauge_theory_adaptive_gas.md) - Gauge group, orbifold structure, braid group topology, holonomy, principal bundles
-- ✅ [13_fractal_set_new/](13_fractal_set_new/) - **Complete Fractal Set framework (210 mathematical objects)**: Discrete spacetime (CST/IG), spinor representations, gauge theories (U(1), SU(2), SU(3), S_N, SO(10) GUT), episode computational equivalence, BAOAB discretization, geometric ergodicity, lattice QFT with fermionic exclusion, Yang-Mills gauge theory, Noether currents, fundamental constants from algorithmic parameters, QSD-Stratonovich foundations, continuum limits, graph Laplacian→Laplace-Beltrami convergence, Riemannian volumes/areas/integration, Cayley-Menger formula, fan triangulation, discrete divergence theorem, Wilson loops, gauge action, **causal set theory** (Fractal Set as valid causal set satisfying all CST axioms, adaptive vs Poisson sprinkling, faithful discretization with volume matching and metric recovery, discrete d'Alembertian operator with continuum convergence, Myrheim-Meyer dimension estimator, Ricci scalar from causal structure, Einstein equations emergence, observable predictions including Planck-scale discreteness and Lorentz violations)
-- ✅ [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md) - **Scutoid Geometry Framework (69 mathematical objects)**: Swarm spacetime manifolds, Riemannian Voronoi tessellations, scutoid volume cells connecting time slices, cloning as neighbor-swapping topology, boundary correspondence maps, genealogical transport plans, Hellinger-Kantorovich energy minimization theorem, deficit angle convergence to Ricci scalar via Regge calculus (all dimensions d≥2), **five unified curvature measurement perspectives** (deficit angles, spectral gap/graph Laplacian, emergent metric tensor from fitness Hessian, heat kernel asymptotics, causal set volume with adaptive sprinkling), companion graph Laplacian on position-velocity space, Gromov-Hausdorff convergence of algorithmic metric spaces, Γ-convergence of Dirichlet forms, heat kernel identification lemma, curvature unification theorem, discrete-to-continuum geometry bridges
-- ✅ [18_hk_convergence.md](18_hk_convergence.md) - Hellinger-Kantorovich metric convergence with explicit constants, mass contraction via Lyapunov analysis, LSI-based structural variance contraction (path-dependent), kinetic Hellinger contraction via exact mass-shape decomposition and hypocoercivity
-- ✅ [20_A_quantitative_error_bounds.md](20_A_quantitative_error_bounds.md) - Quantitative error bounds with explicit O(1/√N + Δt) convergence rates for discrete N-particle system to continuous mean-field limit, mean-field error via Fournier-Guillin and Kantorovich-Rubinstein, BAOAB discretization analysis with fourth-moment bounds, N-uniform commutator bounds via Sznitman's propagation of chaos, total error decomposition with negligible O(Δt/N) discretization term
-- ✅ [15_millennium_problem_completion.md](15_millennium_problem_completion.md) - **Yang-Mills Millennium Problem Solution (12 mathematical objects)**: Matter vs gauge field distinction, pure Yang-Mills Hamiltonian from Noether current, gauge field decoupling in mean-field limit with uniform QSD, Wilson loop area law from LSI and Fractal Set geometric decomposition (two independent proofs), string tension σ = c·λ_gap/ε_c², oscillation frequency lower bound from uniform ellipticity, pure Yang-Mills mass gap Δ_YM ≥ c₀·λ_gap·ℏ_eff > 0, QSD velocity distribution is Maxwellian from BAOAB Ornstein-Uhlenbeck process, Noether current vanishes in QSD by rotational symmetry, uniform QSD assumption validated as theorem (no hidden assumptions), complete Clay Institute requirements satisfied
+- [03_cloning.md](03_cloning.md) - Cloning operator, Keystone Principle, variance/boundary contraction
+- [03_B__wasserstein_contraction.md](03_B__wasserstein_contraction.md) - W₂ contraction via synchronous coupling
+- [04_convergence.md](04_convergence.md) - Kinetic operator, hypocoercivity, complete QSD convergence
+- [05_mean_field.md](05_mean_field.md) - Mean-field limit, McKean-Vlasov PDE, killing rate consistency
+- [06_propagation_chaos.md](06_propagation_chaos.md) - Propagation of chaos, thermodynamic limit, uniqueness
+- [07_adaptative_gas.md](07_adaptative_gas.md) - Adaptive Viscous Fluid Model with ρ-localization, unified measurement pipeline, N-uniform regularity
+- [08_emergent_geometry.md](08_emergent_geometry.md) - Anisotropic diffusion, emergent Riemannian geometry, hypocoercivity with state-dependent diffusion
+- [09_symmetries_adaptive_gas.md](09_symmetries_adaptive_gas.md) - Permutation invariance, Euclidean symmetries, emergent isometries, Noether's theorem, conservation laws
+- [12_gauge_theory_adaptive_gas.md](12_gauge_theory_adaptive_gas.md) - Gauge group, orbifold structure, braid group topology, holonomy, principal bundles
+- [13_fractal_set_new/](13_fractal_set_new/) - **Complete Fractal Set framework (210 mathematical objects)**: Discrete spacetime (CST/IG), spinor representations, gauge theories (U(1), SU(2), SU(3), S_N, SO(10) GUT), episode computational equivalence, BAOAB discretization, geometric ergodicity, lattice QFT with fermionic exclusion, Yang-Mills gauge theory, Noether currents, fundamental constants from algorithmic parameters, QSD-Stratonovich foundations, continuum limits, graph Laplacian→Laplace-Beltrami convergence, Riemannian volumes/areas/integration, Cayley-Menger formula, fan triangulation, discrete divergence theorem, Wilson loops, gauge action, **causal set theory** (Fractal Set as valid causal set satisfying all CST axioms, adaptive vs Poisson sprinkling, faithful discretization with volume matching and metric recovery, discrete d'Alembertian operator with continuum convergence, Myrheim-Meyer dimension estimator, Ricci scalar from causal structure, Einstein equations emergence, observable predictions including Planck-scale discreteness and Lorentz violations)
+- [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md) - **Scutoid Geometry Framework (69 mathematical objects)**: Swarm spacetime manifolds, Riemannian Voronoi tessellations, scutoid volume cells connecting time slices, cloning as neighbor-swapping topology, boundary correspondence maps, genealogical transport plans, Hellinger-Kantorovich energy minimization theorem, deficit angle convergence to Ricci scalar via Regge calculus (all dimensions d≥2), **five unified curvature measurement perspectives** (deficit angles, spectral gap/graph Laplacian, emergent metric tensor from fitness Hessian, heat kernel asymptotics, causal set volume with adaptive sprinkling), companion graph Laplacian on position-velocity space, Gromov-Hausdorff convergence of algorithmic metric spaces, Γ-convergence of Dirichlet forms, heat kernel identification lemma, curvature unification theorem, discrete-to-continuum geometry bridges
+- [18_hk_convergence.md](18_hk_convergence.md) - Hellinger-Kantorovich metric convergence with explicit constants, mass contraction via Lyapunov analysis, LSI-based structural variance contraction (path-dependent), kinetic Hellinger contraction via exact mass-shape decomposition and hypocoercivity
+- [20_A_quantitative_error_bounds.md](20_A_quantitative_error_bounds.md) - Quantitative error bounds with explicit O(1/√N + Δt) convergence rates for discrete N-particle system to continuous mean-field limit, mean-field error via Fournier-Guillin and Kantorovich-Rubinstein, BAOAB discretization analysis with fourth-moment bounds, N-uniform commutator bounds via Sznitman's propagation of chaos, total error decomposition with negligible O(Δt/N) discretization term
+- [15_millennium_problem_completion.md](15_millennium_problem_completion.md) - **Yang-Mills Mass Gap Exploration (12 mathematical objects)**: Matter vs gauge field distinction, pure Yang-Mills Hamiltonian from Noether current, gauge field decoupling in mean-field limit with uniform QSD, Wilson loop area law from LSI and Fractal Set geometric decomposition (two independent derivations), string tension σ = c·λ_gap/ε_c², oscillation frequency lower bound from uniform ellipticity, conjectured Yang-Mills mass gap Δ_YM ≥ c₀·λ_gap·ℏ_eff > 0, QSD velocity distribution is Maxwellian from BAOAB Ornstein-Uhlenbeck process, Noether current vanishes in QSD by rotational symmetry. Framework approach to Millennium Problem requires extensive peer review
 
-**Coverage:** Complete convergence proof chain from N-particle dynamics to mean-field limit, including adaptive extensions with ρ-localized fitness, emergent geometric structure with five unified curvature perspectives, symmetry analysis, rigorous gauge-theoretic formulation, comprehensive discrete spacetime formulation with lattice QFT, Yang-Mills gauge theory, scutoid spacetime tessellations bridging discrete and continuum geometry, Hellinger-Kantorovich metric convergence for birth-death dynamics, explicit quantitative error bounds with N-uniform constants, and **complete solution to the Clay Mathematics Institute Yang-Mills Millennium Problem** with rigorous proof of mass gap via confinement
+**Coverage:** Comprehensive derivations from N-particle dynamics to mean-field limit, including adaptive extensions with ρ-localized fitness, emergent geometric structure with five unified curvature perspectives, symmetry analysis, gauge-theoretic formulation, discrete spacetime formulation with lattice QFT, Yang-Mills-like gauge theory, scutoid spacetime tessellations bridging discrete and continuum geometry, Hellinger-Kantorovich metric convergence for birth-death dynamics, explicit quantitative error bounds with N-uniform constants, and **exploratory approach to the Clay Mathematics Institute Yang-Mills Millennium Problem** investigating mass gap mechanisms via confinement
 
 **New Additions (Latest):**
-- ✅ [curvature.md](curvature.md) - **Unified Curvature Theory (70+ mathematical objects)**: Five equivalent Ricci scalar definitions (deficit angles, graph Laplacian, emergent metric, heat kernel, causal set volume), Weyl conformal tensor (full tensor and norms), Riemann tensor from plaquette holonomy, **eight dimension estimation methods** including novel Scutoid Topological Dimension (STD) unique to framework (Myrheim-Meyer causal set, Levina-Bickel ML, Local PCA, Grassberger-Procaccia correlation, Box-counting fractal, Graph Laplacian spectral decay, Geodesic volume growth, Voronoi coordination number), QSD non-uniform sampling corrections, comprehensive comparison tables, practical decision trees, validation protocols, dimension-curvature consistency checks
-- ✅ [19_geometric_sampling_reweighting.md](19_geometric_sampling_reweighting.md) - **Geometric Sampling and Importance Reweighting (11 mathematical objects)**: Importance weights for geometric analysis, asymptotic error bounds via Delta method, Effective Sample Size (ESS) diagnostic with $O(1/\sqrt{\text{ESS}})$ scaling, ESS-guided parameter tuning algorithm, gamma channel for curvature-based optimization ($\gamma_R$ Ricci reward, $\gamma_W$ Weyl penalty), self-referential dynamical geometry (swarm→metric→curvature→potential→swarm), dual-metric importance reweighting with volume ratios, geometric annealing algorithm (exploration→geometric shaping→convergence), computational complexity analysis ($O(N \log N)$ for $d \leq 3$ via Delaunay triangulation), dimension-dependent phase transition at $d=4$ ($O(N^{\lceil d/2 \rceil})$ barrier), Fragile Gas Anthropic Principle conjecture for spacetime dimensionality
+- [curvature.md](curvature.md) - **Unified Curvature Theory (70+ mathematical objects)**: Five equivalent Ricci scalar definitions (deficit angles, graph Laplacian, emergent metric, heat kernel, causal set volume), Weyl conformal tensor (full tensor and norms), Riemann tensor from plaquette holonomy, **eight dimension estimation methods** including novel Scutoid Topological Dimension (STD) unique to framework (Myrheim-Meyer causal set, Levina-Bickel ML, Local PCA, Grassberger-Procaccia correlation, Box-counting fractal, Graph Laplacian spectral decay, Geodesic volume growth, Voronoi coordination number), QSD non-uniform sampling corrections, comprehensive comparison tables, practical decision trees, validation protocols, dimension-curvature consistency checks
+- [19_geometric_sampling_reweighting.md](19_geometric_sampling_reweighting.md) - **Geometric Sampling and Importance Reweighting (11 mathematical objects)**: Importance weights for geometric analysis, asymptotic error bounds via Delta method, Effective Sample Size (ESS) diagnostic with $O(1/\sqrt{\text{ESS}})$ scaling, ESS-guided parameter tuning algorithm, gamma channel for curvature-based optimization ($\gamma_R$ Ricci reward, $\gamma_W$ Weyl penalty), self-referential dynamical geometry (swarm→metric→curvature→potential→swarm), dual-metric importance reweighting with volume ratios, geometric annealing algorithm (exploration→geometric shaping→convergence), computational complexity analysis ($O(N \log N)$ for $d \leq 3$ via Delaunay triangulation), dimension-dependent phase transition at $d=4$ ($O(N^{\lceil d/2 \rceil})$ barrier), Fragile Gas Anthropic Principle conjecture for spacetime dimensionality
 
 **Future Additions:**
 - [01_fragile_gas_framework.md](01_fragile_gas_framework.md) - Core framework axioms and definitions
 - [02_euclidean_gas.md](02_euclidean_gas.md) - Euclidean Gas specification
 - Other specialized documents as needed
-- ✅ [fragile_lqcd.md](fragile_lqcd.md) - **Fragile QFT: Lattice QCD with O(N) Complexity (28 mathematical objects)**: Fixed-Node Scutoid Tessellation for true O(N) scaling, Centroidal Voronoi Tessellation (CVT) with Lloyd's algorithm, five optimization synthesis (online triangulation, Regge curvature, CCD dynamics, Voronoi acceptance, adaptive sampling), curvature-corrected diffusion (CCD) with geometric time-lag analysis, predictor-corrector CCD for high accuracy, force interpolation error bounds $O(n_{\text{cell}}^{-1/d})$ in Fixed-Node variant, Voronoi volume approximation for metric determinant with $O(N^{-1/d})$ error, detailed balance violation analysis with three correction schemes (pure Voronoi, Hybrid Metropolis, Delayed Rejection), tournament selection cloning for tunable exploitation, gamma channel with Ricci/Weyl rewards, complete Fragile QFT timestep algorithm with CVT clustering and gauge field updates, LQCD complexity comparison showing $\sim 100\times$ speedup, information-theoretic lower bound $\Omega(N)$ for optimality, **dimension-dependent accuracy-cost scaling** $S_{\text{geom}}(\epsilon, d) = O(\epsilon^{-d \lceil d/2 \rceil})$, accuracy-cost phase transition at $d=4$ (marginal tractability), **O(N) Universe Hypothesis (refined)** as complexity-theoretic anthropic principle: spacetime dimensionality $d=3+1$ emerges from computational cost to achieve geometric accuracy $\epsilon \sim 0.01$, higher dimensions $d \geq 5$ intractable (petabyte-scale memory for coarse $\epsilon=0.1$), testable predictions via lattice QCD scaling studies
+- [fragile_lqcd.md](fragile_lqcd.md) - **Fragile QFT: Lattice QCD with O(N) Complexity (28 mathematical objects)**: Fixed-Node Scutoid Tessellation for true O(N) scaling, Centroidal Voronoi Tessellation (CVT) with Lloyd's algorithm, five optimization synthesis (online triangulation, Regge curvature, CCD dynamics, Voronoi acceptance, adaptive sampling), curvature-corrected diffusion (CCD) with geometric time-lag analysis, predictor-corrector CCD for high accuracy, force interpolation error bounds $O(n_{\text{cell}}^{-1/d})$ in Fixed-Node variant, Voronoi volume approximation for metric determinant with $O(N^{-1/d})$ error, detailed balance violation analysis with three correction schemes (pure Voronoi, Hybrid Metropolis, Delayed Rejection), tournament selection cloning for tunable exploitation, gamma channel with Ricci/Weyl rewards, complete Fragile QFT timestep algorithm with CVT clustering and gauge field updates, LQCD complexity comparison showing $\sim 100\times$ speedup, information-theoretic lower bound $\Omega(N)$ for optimality, **dimension-dependent accuracy-cost scaling** $S_{\text{geom}}(\epsilon, d) = O(\epsilon^{-d \lceil d/2 \rceil})$, accuracy-cost phase transition at $d=4$ (marginal tractability), **O(N) Universe Hypothesis (refined)** as complexity-theoretic anthropic principle: spacetime dimensionality $d=3+1$ emerges from computational cost to achieve geometric accuracy $\epsilon \sim 0.01$, higher dimensions $d \geq 5$ intractable (petabyte-scale memory for coarse $\epsilon=0.1$), testable predictions via lattice QCD scaling studies
 
 
 ---
@@ -24874,18 +24915,18 @@ $$
 
 ## Conformal Field Theory Characterization
 
-This section contains the complete CFT characterization of the Fragile Gas swarm in the thermodynamic limit. The framework proves that the empirical stress-energy tensor converges to a 2D Conformal Field Theory with central charge $c \approx 2$, establishing rigorous connections to statistical field theory. All three hypotheses (H1, H2, H3) covering n-point correlation functions for all n ≥ 1 are now proven, making this framework publication-ready for top-tier journals.
+This section contains CFT-like characterization of the Fragile Gas swarm in the thermodynamic limit. The framework establishes that the empirical stress-energy tensor exhibits convergence properties analogous to a 2D Conformal Field Theory with central charge $c \approx 2$, suggesting connections to statistical field theory. The three hypotheses (H1, H2, H3) covering n-point correlation functions for all n ≥ 1 have been derived within the framework, though independent verification by the CFT community would strengthen these results.
 
 ---
 
 ### H1: One-Point Convergence (Thermodynamic Limit)
 
-**Type:** Hypothesis (✅ PROVEN)
+**Type:** Hypothesis (Established in framework)
 **Label:** `hyp-stress-energy-continuum-limit`
 **Source:** [21_conformal_fields.md § 2.1.1](21_conformal_fields.md)
 **Tags:** `cft`, `convergence`, `thermodynamic-limit`, `stress-energy-tensor`
 
-**Status:** ✅ **PROVEN** via mean-field theory ({prf:ref}`thm-mean-field-convergence`)
+**Status:** Established in framework via mean-field theory ({prf:ref}`thm-mean-field-convergence`)
 
 **Statement:**
 
@@ -24907,12 +24948,12 @@ where $\rho_\epsilon$ is a mollifier with support scale $\epsilon \sim N^{-1/2}$
 
 ### H2: Two-Point Stress-Energy Convergence
 
-**Type:** Hypothesis (✅ PROVEN)
+**Type:** Hypothesis (Established in framework)
 **Label:** `hyp-two-point-cft-form`
 **Source:** [21_conformal_fields.md § 2.1.2](21_conformal_fields.md)
 **Tags:** `cft`, `two-point-function`, `stress-energy-tensor`, `conformal-symmetry`
 
-**Status:** ✅ **PROVEN** via {prf:ref}`lem-local-lsi` + {prf:ref}`lem-correlation-length-bound` + screening
+**Status:** Established in framework via {prf:ref}`lem-local-lsi` + {prf:ref}`lem-correlation-length-bound` + screening
 
 **Statement:**
 
@@ -24938,12 +24979,12 @@ where $\mathcal{I}_{\mu\nu\rho\sigma}$ is the conformal tensor structure and $C_
 
 ### H3: n-Point Stress-Energy Convergence for All n
 
-**Type:** Hypothesis (✅ PROVEN)
+**Type:** Hypothesis (Established in framework)
 **Label:** `hyp-n-point-cft-convergence`
 **Source:** [21_conformal_fields.md § 2.2.7](21_conformal_fields.md)
 **Tags:** `cft`, `n-point-functions`, `cluster-expansion`, `mayer-expansion`, `ursell-functions`
 
-**Status:** ✅ **PROVEN** via cluster expansion + induction on n
+**Status:** Established in framework via cluster expansion + induction on n
 
 **Statement:**
 
@@ -25308,7 +25349,7 @@ $$
 **Source:** [21_conformal_fields.md § 3.1](21_conformal_fields.md)
 **Tags:** `cft`, `qsd`, `main-result`, `conformal-symmetry`
 
-**Status:** ✅ **UNCONDITIONALLY RIGOROUS** (H1, H2, H3 all proven)
+**Status:** Established in framework (H1, H2, H3 all proven)
 
 **Statement:**
 
@@ -25345,7 +25386,7 @@ In the thermodynamic limit $N \to \infty$ with fixed density $\rho_0$, the Fragi
 **Source:** [21_conformal_fields.md § 3.2](21_conformal_fields.md)
 **Tags:** `ward-identities`, `conservation-laws`, `momentum-conservation`, `conformal-symmetry`
 
-**Status:** ✅ **UNCONDITIONALLY RIGOROUS** (derived from momentum conservation)
+**Status:** Established in framework (derived from momentum conservation)
 
 **Statement:**
 
@@ -25406,7 +25447,7 @@ $$
 **Source:** [21_conformal_fields.md § 4.1](21_conformal_fields.md)
 **Tags:** `central-charge`, `operator-product-expansion`, `cft-data`
 
-**Status:** ✅ **UNCONDITIONALLY RIGOROUS** (follows from H2 + Ward identities)
+**Status:** Established in framework (follows from H2 + Ward identities)
 
 **Statement:**
 
@@ -25457,7 +25498,7 @@ $$
 **Source:** [21_conformal_fields.md § 4.1.1](21_conformal_fields.md)
 **Tags:** `central-charge`, `thermodynamics`, `virial-theorem`, `explicit-formula`
 
-**Status:** ✅ **PROVEN** (Problem #2 SOLVED)
+**Status:** Established in framework (Problem #2 SOLVED)
 
 **Statement:**
 
@@ -25509,7 +25550,7 @@ $$
 **Source:** [21_conformal_fields.md § 3.2](21_conformal_fields.md)
 **Tags:** `trace-anomaly`, `conformal-breaking`, `curvature`, `quantum-effects`
 
-**Status:** ✅ **UNCONDITIONALLY RIGOROUS** (standard CFT result + QSD curvature)
+**Status:** Established in framework (standard CFT result + QSD curvature)
 
 **Statement:**
 
@@ -25576,7 +25617,7 @@ Algorithmic construction of thermodynamic geometry (Ruppeiner and Weinhold metri
 **Label:** `thm-qsd-canonical-ensemble`
 **Source:** [22_geometrothermodynamics.md § 1.1](22_geometrothermodynamics.md)
 **Tags:** `thermodynamics`, `qsd`, `canonical-ensemble`, `gibbs`
-**Status:** ✅ PROVEN
+**Status:** Established in framework
 
 **Statement:**
 
@@ -25614,7 +25655,7 @@ First Law: $dU = T dS - P dV + \mu dN$
 **Label:** `thm-ruppeiner-fisher-connection`
 **Source:** [22_geometrothermodynamics.md § 3.5](22_geometrothermodynamics.md)
 **Tags:** `ruppeiner-metric`, `fisher-information`, `statistical-manifold`
-**Status:** ✅ PROVEN
+**Status:** Established in framework
 
 **Statement:**
 
@@ -25634,7 +25675,7 @@ where $s_i(\xi) = \partial_{\theta^i} \log \rho_\theta(\xi)$ is the score functi
 **Label:** `thm-thermodynamic-emergent-connection`
 **Source:** [22_geometrothermodynamics.md § 3.6](22_geometrothermodynamics.md)
 **Tags:** `ruppeiner-metric`, `emergent-geometry`, `adaptive-gas`, `three-way-unification`
-**Status:** ✅ PROVEN
+**Status:** Established in framework
 
 **Statement:**
 
@@ -25655,7 +25696,7 @@ Ruppeiner (thermodynamics) = Fisher (statistics) = $\mathbb{E}$[Emergent metric 
 **Label:** `thm-ruppeiner-convergence`
 **Source:** [22_geometrothermodynamics.md § 4.5](22_geometrothermodynamics.md)
 **Tags:** `ruppeiner-metric`, `kde`, `convergence`, `algorithmic-construction`
-**Status:** ✅ PROVEN
+**Status:** Established in framework
 
 **Statement:**
 
@@ -25677,7 +25718,7 @@ with optimal bandwidth $h^* \sim M^{-1/(d+4)}$. Sample complexity: $M \gtrsim \e
 **Label:** `thm-weinhold-ruppeiner-conformal`
 **Source:** [22_geometrothermodynamics.md § 5.3](22_geometrothermodynamics.md)
 **Tags:** `weinhold-metric`, `ruppeiner-metric`, `conformal-duality`
-**Status:** ✅ PROVEN
+**Status:** Established in framework
 
 **Statement:**
 
@@ -25697,7 +25738,7 @@ $$
 **Label:** `thm-ruppeiner-curvature-phase-transition`
 **Source:** [22_geometrothermodynamics.md § 6.2](22_geometrothermodynamics.md)
 **Tags:** `phase-transition`, `ruppeiner-metric`, `curvature-singularity`
-**Status:** ✅ PROVEN
+**Status:** Established in framework
 
 **Statement:**
 
@@ -25717,7 +25758,7 @@ Mechanism: $g_R^{TT} = C_V/T^2$, so $C_V \to \infty$ implies $R \to \infty$. Pha
 **Label:** `thm-quantum-ruppeiner-metric`
 **Source:** [22_geometrothermodynamics.md § 7.3](22_geometrothermodynamics.md)
 **Tags:** `quantum`, `ruppeiner-metric`, `bures-metric`, `yang-mills`
-**Status:** ✅ PROVEN
+**Status:** Established in framework
 
 **Statement:**
 
@@ -25737,7 +25778,7 @@ General form: $g_R^{ij}(\theta) = \frac{1}{2} \text{Tr}[\rho_\theta \{L_i, L_j\}
 **Label:** `prop-exploration-exploitation-curvature`
 **Source:** [22_geometrothermodynamics.md § 6.3](22_geometrothermodynamics.md)
 **Tags:** `exploration-exploitation`, `curvature`, `optimization`, `algorithmic-diagnostic`
-**Status:** ✅ PROVEN
+**Status:** Established in framework
 
 **Statement:**
 
@@ -25967,7 +26008,7 @@ Curvature amplifies metric errors cubically via $\|g^{-1}\|^3$ factor.
 **Label:** `thm-holographic-main`
 **Source:** [13_fractal_set_new/12_holography.md § 0.1](13_fractal_set_new/12_holography.md)
 **Tags:** `holography`, `ads-cft`, `maldacena`, `area-law`, `einstein-equations`, `emergent-gravity`
-**Status:** ✅ COMPLETELY PROVEN (no conditional assumptions)
+**Status:** Established in framework (no conditional assumptions)
 
 **Statement:**
 
@@ -26067,7 +26108,7 @@ $$
 **Label:** `thm-gamma-convergence-holography`
 **Source:** [13_fractal_set_new/12_holography.md § 1.2](13_fractal_set_new/12_holography.md)
 **Tags:** `gamma-convergence`, `geometric-measure-theory`, `bv-functions`, `compactness`
-**Status:** ✅ PROVEN (with explicit C² regularity and compactness)
+**Status:** Established in framework (with explicit C² regularity and compactness)
 
 **Statement:**
 
@@ -26104,7 +26145,7 @@ where $K_1$ is the rescaled kernel $K_1(z) := \varepsilon^d K_\varepsilon(\varep
 **Label:** `thm-area-law-holography`
 **Source:** [13_fractal_set_new/12_holography.md § 1.3](13_fractal_set_new/12_holography.md)
 **Tags:** `area-law`, `bekenstein-hawking`, `holography`, `entanglement`
-**Status:** ✅ PROVEN
+**Status:** Established in framework
 
 **Statement:**
 
@@ -26186,7 +26227,7 @@ $$
 **Label:** `thm-first-law-holography`
 **Source:** [13_fractal_set_new/12_holography.md § 2.2](13_fractal_set_new/12_holography.md)
 **Tags:** `first-law`, `entanglement`, `thermodynamics`, `β-constancy`, `rindler-horizon`
-**Status:** ✅ PROVEN (rigorous β calculation with explicit Gaussian integrals, substeps 5a-5i)
+**Status:** Established in framework (rigorous β calculation with explicit Gaussian integrals, substeps 5a-5i)
 
 **Statement:**
 
@@ -26218,7 +26259,7 @@ is an effective inverse temperature of the algorithmic vacuum.
 **Label:** `thm-unruh-holography`
 **Source:** [13_fractal_set_new/12_holography.md § 3.1](13_fractal_set_new/12_holography.md)
 **Tags:** `unruh-effect`, `temperature`, `acceleration`, `langevin`, `kms-condition`
-**Status:** ✅ PROVEN
+**Status:** Established in framework
 
 **Statement:**
 
@@ -26240,7 +26281,7 @@ $$
 **Label:** `thm-einstein-equations-holography`
 **Source:** [13_fractal_set_new/12_holography.md § 3.2](13_fractal_set_new/12_holography.md)
 **Tags:** `einstein-equations`, `jacobson-derivation`, `emergent-gravity`, `clausius-relation`
-**Status:** ✅ PROVEN
+**Status:** Established in framework
 
 **Statement:**
 
@@ -26273,7 +26314,7 @@ $$
 **Label:** `thm-bekenstein-hawking-holography`
 **Source:** [13_fractal_set_new/12_holography.md § 3.3](13_fractal_set_new/12_holography.md)
 **Tags:** `bekenstein-hawking`, `black-hole-entropy`, `area-law`, `planck-units`
-**Status:** ✅ PROVEN (α = 1/(4G_N))
+**Status:** Established in framework (α = 1/(4G_N))
 
 **Statement:**
 
@@ -26353,7 +26394,7 @@ $$
 **Label:** `thm-lambda-eff`
 **Source:** [13_fractal_set_new/12_holography.md § 4.2](13_fractal_set_new/12_holography.md)
 **Tags:** `cosmological-constant`, `lambda-eff`, `ig-pressure`, `einstein-equations`
-**Status:** ✅ PROVEN (sign corrected: plus sign)
+**Status:** Established in framework (sign corrected: plus sign)
 
 **Statement:**
 
@@ -26385,7 +26426,7 @@ $$
 **Label:** `thm-ig-pressure-sign`
 **Source:** [13_fractal_set_new/12_holography.md § 4.3](13_fractal_set_new/12_holography.md)
 **Tags:** `ig-pressure`, `uv-regime`, `ir-regime`, `sign`, `surface-tension`
-**Status:** ✅ PROVEN (UV: Π_IG < 0, IR: Π_IG > 0)
+**Status:** Established in framework (UV: Π_IG < 0, IR: Π_IG > 0)
 
 **Statement:**
 
@@ -26417,7 +26458,7 @@ $$
 **Label:** `thm-ads-geometry`
 **Source:** [13_fractal_set_new/12_holography.md § 4.4](13_fractal_set_new/12_holography.md)
 **Tags:** `ads`, `negative-lambda`, `uv-regime`, `surface-tension`
-**Status:** ✅ PROVEN
+**Status:** Established in framework
 
 **Statement:**
 
@@ -26469,7 +26510,7 @@ Under these conditions, the emergent spacetime is **AdS₅** (5-dimensional Anti
 **Label:** `thm-ig-quantum-recap`
 **Source:** [13_fractal_set_new/12_holography.md § 5.1](13_fractal_set_new/12_holography.md)
 **Tags:** `quantum`, `os-axioms`, `wightman-axioms`, `qft`, `reflection-positivity`
-**Status:** ✅ PROVEN (reference to 08_lattice_qft_framework)
+**Status:** Established in framework (reference to 08_lattice_qft_framework)
 
 **Statement:**
 
@@ -26517,7 +26558,7 @@ for some positive scalar function $\Omega(x)$ (conformal factor).
 **Label:** `thm-ig-conformal`
 **Source:** [13_fractal_set_new/12_holography.md § 5.2](13_fractal_set_new/12_holography.md)
 **Tags:** `conformal`, `cft`, `scaling-limit`, `h2-h3`, `cluster-expansion`
-**Status:** ✅ COMPLETELY PROVEN (H2 + H3 proven via hypocoercivity + cluster expansion)
+**Status:** Established in framework (H2 + H3 proven via hypocoercivity + cluster expansion)
 
 **Statement:**
 
@@ -26542,8 +26583,8 @@ $$
 $$
 
 **Proof methods**:
-- **H2 (n=2)**: Spatial hypocoercivity (local LSI + correlation length + screening) - PROVEN
-- **H3 (all n)**: Cluster expansion (strong induction + OPE closure) - PROVEN
+- **H2 (n=2)**: Spatial hypocoercivity (local LSI + correlation length + screening) - Established in framework
+- **H3 (all n)**: Cluster expansion (strong induction + OPE closure) - Established in framework
 
 **Convergence rate**: Uniform $O(N^{-1})$ for $n \le N^{1/4}$.
 
@@ -26557,7 +26598,7 @@ $$
 **Label:** `thm-ads-cft-correspondence`
 **Source:** [13_fractal_set_new/12_holography.md § 5.3](13_fractal_set_new/12_holography.md)
 **Tags:** `ads-cft`, `holographic-dictionary`, `partition-function`, `maldacena`
-**Status:** ✅ COMPLETELY PROVEN (including partition function equality via functional derivatives)
+**Status:** Established in framework (including partition function equality via functional derivatives)
 
 **Statement:**
 
@@ -26602,8 +26643,8 @@ $$
 **Type:** Theorem
 **Label:** `thm-holography-complete`
 **Source:** [13_fractal_set_new/12_holography.md § 6.1](13_fractal_set_new/12_holography.md)
-**Tags:** `holography`, `summary`, `complete-proof`, `publication-ready`
-**Status:** ✅ PUBLICATION-READY (Physical Review D, JHEP, Comm. Math. Phys.)
+**Tags:** `holography`, `summary`, `framework-derivation`, `exploratory`
+**Status:** Developed within framework (would benefit from peer review by the holography community)
 
 **Statement:**
 
@@ -26659,9 +26700,9 @@ These can be tested numerically without assuming string theory or quantum gravit
 
 ---
 
-## Holographic Principle and AdS/CFT Correspondence (from 12_holography.md)
+## Holographic-like Structures in Fragile Gas Framework (from 12_holography.md)
 
-This section contains the complete rigorous proof of the holographic principle and AdS/CFT correspondence from the Fragile Gas framework. The proof establishes: (1) Informational Area Law via Γ-convergence, (2) First Law of Algorithmic Entanglement with explicit β formula, (3) Einstein equations from thermodynamic consistency (Jacobson derivation), (4) AdS geometry from IG pressure, (5) Boundary CFT with full n-point convergence (H2+H3 proven), (6) Partition function equality. This is the first constructive, non-perturbative proof of Maldacena's conjecture from discrete algorithmic principles.
+This section contains mathematical results exploring structural similarities between the Fragile Gas framework and the holographic principle/AdS/CFT correspondence. The framework exhibits: (1) Area-law-like scaling for information via Γ-convergence, (2) Thermodynamic relations resembling the First Law of entanglement with explicit β formula, (3) Einstein-equation-like structures from thermodynamic consistency (Jacobson-inspired), (4) AdS-like geometry from interaction pressure, (5) Boundary CFT analogs with n-point convergence properties (H2+H3), (6) Partition function relationships. These represent intriguing structural parallels that warrant further investigation to determine if they constitute genuine instances of holography.
 
 # Holography Reference Entries
 
@@ -26679,16 +26720,22 @@ Complete extraction of all 27 mathematical entries from `docs/source/13_fractal_
 **Tags:** `holography`, `ads-cft`, `main-result`, `entanglement`, `gravity`
 
 **Statement:**
-The Fragile Gas framework, at its quasi-stationary distribution (QSD) with marginal stability conditions, generates:
+The Fragile Gas framework, at its quasi-stationary distribution (QSD) with marginal stability conditions, exhibits structures analogous to holography:
 
-1. **Bulk Gravity Theory**: Emergent spacetime geometry satisfying Einstein's equations with negative cosmological constant (AdS₅)
-2. **Boundary Quantum Field Theory**: Conformal field theory on the boundary with quantum vacuum structure
-3. **Holographic Dictionary**: One-to-one correspondence between bulk observables (CST) and boundary observables (IG), including:
-   - Area law: $S_{\text{IG}}(A) = \frac{\text{Area}_{\text{CST}}(\partial A)}{4G_N}$
-   - Entropy-energy relation: $\delta S_{\text{IG}} = \beta \cdot \delta E_{\text{swarm}}$
-   - Ryu-Takayanagi formula for entanglement entropy
+1. **Gravity-like Bulk Theory**: Emergent spacetime geometry satisfying Einstein-like equations with negative effective cosmological constant (AdS₅-like structure)
+2. **Boundary QFT-like Theory**: Conformal field theory analogs on the boundary with vacuum-like structure
+3. **Information-Geometry Dictionary**: Proposed correspondence between bulk observables (CST) and boundary observables (IG), including:
+   - Area-law-like scaling: $S_{\text{IG}}(A) \propto \text{Area}_{\text{CST}}(\partial A)/(4G_N)$
+   - Entropy-energy relation: $\delta S_{\text{IG}} \approx \beta \cdot \delta E_{\text{swarm}}$
+   - Ryu-Takayanagi-like formula for entanglement entropy
 
-**Physical Interpretation**: The AdS/CFT correspondence is not a mysterious duality but a provable equivalence arising from the fact that geometry (CST) and quantum information (IG) are two mathematical descriptions of the same discrete algorithmic process.
+**Interpretation**: These results suggest that AdS/CFT-like structures may emerge naturally from discrete algorithmic dynamics, providing a potential computational foundation for holography. However, establishing rigorous equivalence to string-theoretic AdS/CFT requires significant additional work.
+
+**Open questions:**
+- Precise relationship to Maldacena's AdS/CFT conjecture
+- Connection to string theory and M-theory
+- Validation of bulk-boundary correspondence
+- Consistency with known holographic tests (Wilson loops, thermalization, etc.)
 
 **Related Results:** `thm-area-law-holography`, `thm-first-law-holography`, `thm-einstein-equations-holography`, `thm-ads-geometry`, `thm-ads-cft-correspondence`
 
@@ -26857,7 +26904,7 @@ $$
 
 **Error bound**: The convergence rate is $O(N^{-1/d})$.
 
-**Status**: ✅ **PROVEN**. See `12_holography_antichain_proof` for the complete rigorous proof using the scutoid tessellation framework.
+**Status**: Established in framework. See `12_holography_antichain_proof` for the complete rigorous proof using the scutoid tessellation framework.
 
 **Physical interpretation**: Episodes are created by cloning and distributed via QSD sampling. The causal boundary of $A$ (minimal antichain) scales as $N^{(d-1)/d}$ because it is a $(d-1)$-dimensional hypersurface intersecting $\rho_{\text{spatial}}^{(d-1)/d}$ episodes per unit area (weighted by density to the fractional power).
 
@@ -26891,7 +26938,7 @@ where:
 
 **Concentration**: By concentration of measure, $|S_{\text{IG}}(A) - \mathbb{E}[S_{\text{IG}}(A)]| = O(\sqrt{N^{(d-1)/d}})$ with high probability.
 
-**Status**: ✅ **PROVEN** (proof uses Laplace asymptotics in thermodynamic limit).
+**Status**: Established in framework (derivation uses Laplace asymptotics in thermodynamic limit).
 
 **Related Results:** `thm-antichain-surface-correspondence`, `thm-area-law-holography`
 
@@ -27328,8 +27375,8 @@ where $\Delta$ is the scaling dimension determined by the fitness potential.
 **Condition**: The fitness potential must be scale-invariant in the IR limit: $V_{\text{fit}}(\lambda x) = \lambda^\Delta V_{\text{fit}}(x)$ for $\lambda \gg \ell_0$.
 
 **Extension to all n**:
-- **✅ Proven for n=2** (`thm-h2-two-point-convergence` from `21_conformal_fields`): 2-point function satisfies conformal covariance via spatial hypocoercivity
-- **✅ Proven for all n** (`thm-h3-n-point-convergence` from `21_conformal_fields`): All n-point connected correlation functions converge to CFT form via cluster expansion
+- **Established for n=2** (`thm-h2-two-point-convergence` from `21_conformal_fields`): 2-point function satisfies conformal covariance via spatial hypocoercivity
+- **Established for all n** (`thm-h3-n-point-convergence` from `21_conformal_fields`): All n-point connected correlation functions converge to CFT form via cluster expansion
 - **Convergence rate**: Uniform $O(N^{-1})$ for $n \le N^{1/4}$
 
 **Consequence**: The boundary theory in the scaling limit is a **Conformal Field Theory (CFT)** with central charge determined by the framework parameters.

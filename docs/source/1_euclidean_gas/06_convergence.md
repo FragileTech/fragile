@@ -292,6 +292,8 @@ $$
 ### 3.5. Proof: Choosing the Coupling Constants
 
 :::{prf:proof}
+:label: proof-thm-foster-lyapunov-main
+
 **Proof (Rigorous Verification of Coupling Constants).**
 
 This proof verifies that there exist finite coupling constants $c_V^*, c_B^* > 0$ such that the Foster-Lyapunov condition holds with explicit $\kappa_{\text{total}}$ and $C_{\text{total}}$.
@@ -645,6 +647,8 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-thm-phi-irreducibility
+
 **Proof (Two-Stage Construction: Gathering + Spreading).**
 
 The proof constructs an explicit path showing how to get from any starting state to any target neighborhood by combining the distinct powers of cloning (global reset) and kinetics (local steering).
@@ -846,6 +850,8 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-thm-aperiodicity
+
 **Proof (Non-Degenerate Noise Prevents Periodicity).**
 
 **Method 1: Direct Argument via Continuous Noise**
@@ -949,6 +955,8 @@ where $V_{\text{total}}^{\text{QSD}} = \mathbb{E}_{\nu_{\text{QSD}}}[V_{\text{to
 ### 4.5.1. Proof Sketch
 
 :::{prf:proof}
+:label: proof-thm-main-convergence
+
 **Proof Sketch.**
 
 We apply standard Foster-Lyapunov theory, adapted to the quasi-stationary setting.
@@ -1110,6 +1118,8 @@ All bounds are N-uniform, ensuring the QSD remains well-defined in the thermodyn
 :::
 
 :::{prf:proof}
+:label: proof-thm-equilibrium-variance-bounds
+
 **Proof.**
 
 The equilibrium variance bounds follow immediately from the drift inequalities by setting the expected change to zero.

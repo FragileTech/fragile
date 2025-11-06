@@ -21,7 +21,7 @@ We will prove that this complex, stochastic, and highly non-linear operator is f
 This document focuses exclusively on the analysis of the cloning operator. While we use the Euclidean Gas as a primary concrete example, the results derived are general to the entire class of Fragile Gas systems. The subsequent analysis of the kinetic Langevin operator ($\Psi_{\text{kin}}$), which provides the necessary **contraction of velocity error**, the composition of the two operators, and the final proof of exponential convergence for the full Euclidean Gas model are deferred to the companion document, *"Hypocoercivity and Convergence of the Euclidean Gas."*
 
 :::{remark} A Note on the Possibility of Extinction and Quasi-Stationary Distributions
-:label: remark-extinction-possibility
+:label: rem-note-extinction-possibility
 
 A critical feature of the Euclidean Gas, and any Fragile Gas instantiation employing unbounded noise kernels, is the existence of an absorbing "cemetery state." While the axioms and dynamics are designed to make the swarm robust, the use of unbounded Gaussian noise in the kinetic stage means there remains a strictly positive, albeit potentially infinitesimal, probability of total swarm extinction in a single step from any state. Even a swarm located centrally in the valid domain can, through a sufficiently large and coherent random fluctuation, have all $N$ of its walkers displaced beyond the boundary of $\mathcal X_{\mathrm{valid}}$.
 
@@ -196,7 +196,7 @@ The analysis of the swarm's behavior near the boundary of the valid domain $\mat
 For the construction to be valid, we impose the following standard regularity conditions on the single-walker state space $\mathcal{X}$.
 
 :::{prf:axiom} **(Axiom EG-0): Regularity of the Domain**
-:label: ax:domain-regularity
+:label: axiom-domain-regularity
 
 The valid domain for a single walker's position, $\mathcal{X}_{\text{valid}}$, is an open, bounded, and connected subset of $\mathbb{R}^d$. Its boundary, $\partial \mathcal{X}_{\text{valid}}$, is a $C^{\infty}$-smooth compact manifold without boundary.
 :::
@@ -216,6 +216,8 @@ Let $\mathcal{X}_{\text{valid}}$ satisfy the conditions of Axiom EG-0. Then ther
 3.  **Boundary Divergence:** $\varphi(x) \to \infty$ as $x \to \partial \mathcal{X}_{\text{valid}}$.
 :::
 :::{prf:proof}
+:label: proof-prop-barrier-existence
+
 **Proof.**
 
 The proof is constructive. We build the function $\varphi(x)$ using two primary tools: the signed distance function to the boundary and a smooth cutoff function. The construction proceeds in three steps, followed by rigorous verification of all required properties.
@@ -474,6 +476,7 @@ $$
 
 :::
 :::{prf:proof}
+:label: proof-lem-wasserstein-decomposition
 **Proof.**
 
 This fundamental decomposition theorem for Wasserstein distances with quadratic costs is a consequence of the gluing lemma in optimal transport and the geometry of barycenters. We provide a complete proof adapted to the hypocoercive cost structure.
@@ -635,6 +638,7 @@ $$
 Consequently, if $V_{\text{x,struct}} > R^2_{\text{spread}}$ for some threshold $R_{\text{spread}}$, then at least one swarm $k$ must have an internal variance $\text{Var}_k(x) > R^2_{\text{spread}} / 4$.
 :::
 :::{prf:proof}
+:label: proof-lem-sx-implies-variance
 **Proof.**
 
 The proof is in two parts. First, we rigorously establish the primary inequality by analyzing the optimal transport structure and using a carefully constructed sub-optimal coupling. Second, we demonstrate the consequence using a proof by contradiction.
@@ -970,6 +974,7 @@ The coupling constant $c_B$ is chosen small enough that the boundary term does n
 :::
 
 :::{prf:remark} Analogy to Classical Hypocoercivity Theory
+:label: rem-note-hypocoercivity-analogy
 :class: tip
 
 This structure is the **discrete stochastic analogue** of the classical hypocoercivity framework for kinetic PDEs (Villani, 2009; Dolbeault-Mouhot-Schmeiser, 2015):
@@ -1007,6 +1012,7 @@ This condition ensures that there exist constants $\lambda_1, \lambda_2 > 0$ suc
 *   $V_{\text{struct}} \ge \lambda_2 \frac{1}{N}\sum_i (\|\Delta\delta_{x,i}\|^2 + \|\Delta\delta_{v,i}\|^2)$
 :::
 :::{prf:proof}
+:label: proof-lem-V-coercive
 **Proof.**
 
 We prove the coercivity of both the location and structural components by verifying that the associated quadratic forms are positive-definite under the stated condition.
@@ -1153,7 +1159,7 @@ This chapter organizes these axioms into three logical groups:
 These axioms describe the fundamental properties of the state space and the reward function, which constitute the static "world" that the swarm explores.
 
 :::{prf:axiom} **(Axiom EG-1): Lipschitz Regularity of Environmental Fields**
-:label: ax:lipschitz-fields
+:label: axiom-lipschitz-fields
 
 The deterministic fields governing the system's kinetic dynamics are locally smooth and globally well-behaved on the compact valid domain $\mathcal X_{\mathrm{valid}}$. Specifically, there exist finite constants $L_F$ and $L_u$ such that for all $x_1, x_2 \in \mathcal X_{\mathrm{valid}}$:
 
@@ -1177,7 +1183,7 @@ If the force or flow fields were not Lipschitz (e.g., if they had discontinuitie
 :::
 
 :::{prf:axiom} **(Axiom EG-2): Existence of a Safe Harbor**
-:label: ax:safe-harbor
+:label: axiom-safe-harbor
 
 There exists a compact set $C_{\mathrm{safe}} \subset \mathcal X_{\mathrm{valid}}$ and a reward threshold $R_{\mathrm{safe}}$ such that:
 
@@ -1205,7 +1211,7 @@ If no such Safe Harbor exists, the reward landscape could be structured such tha
 These axioms ensure that the environment is sufficiently informative to prevent algorithmic stagnation and to allow the swarm to distinguish between good and bad configurations.
 
 :::{prf:axiom} **(Axiom EG-3): Non-Deceptive Landscape**
-:label: ax:non-deceptive-landscape
+:label: axiom-non-deceptive-landscape
 
 The environment is **non-deceptive**. A sufficient geometric separation between two walkers guarantees a minimal, non-zero difference in their raw positional rewards. Formally, there exist constants $L_{\text{grad}} > 0$ and $\kappa_{\text{raw},r} > 0$ such that:
 
@@ -1234,7 +1240,7 @@ This failure mode is analyzed in detail in Chapter 7, where it is shown to break
 These final axioms are assumptions about the user's choice of algorithmic parameters. They ensure the algorithm is configured to be active, to correctly interpret the signals it receives, and to remain dynamically stable.
 
 :::{prf:axiom} **(Axiom EG-4): Velocity Regularization via Reward**
-:label: ax:velocity-regularization
+:label: axiom-velocity-regularization
 
 The total reward function `R(x,v)` is designed to actively penalize high kinetic energy. It is composed of the positional reward `R_pos(x)` and a quadratic velocity regularization term:
 
@@ -1278,7 +1284,7 @@ In summary, setting `c_{v_reg} = 0` breaks the bounding mechanism that keeps vel
 :::
 
 :::{prf:axiom} **(Axiom EG-5): Active Diversity Signal**
-:label: ax:active-diversity
+:label: axiom-active-diversity
 
 The diversity channel of the fitness potential is active. The dynamics weight $\beta$ is strictly positive:
 
@@ -1455,6 +1461,8 @@ $$
 The following pseudocode provides a concrete implementation of this operator.
 
 :::{prf:algorithm} Sequential Stochastic Greedy Pairing Algorithm
+:label: alg-greedy-pairing
+
 ALGORITHM: GreedyPairing(alive_walkers, epsilon_d)
 -------------------------------------------------
 INPUT:
@@ -1554,6 +1562,7 @@ For the sake of narrative flow, we present the full measurement pipeline here in
 3.  After completing Chapter 6, **return to this section** to verify the details of the proof, which will then be fully self-contained based on the established geometric results.
 :::
 :::{prf:proof}
+:label: proof-lem-greedy-preserves-signal
 **Proof.**
 
 The proof establishes rigorous probabilistic bounds on the expected distance measurements by carefully analyzing the sequential pairing process. We show that the geometric partition imposed by high variance creates an unavoidable statistical signature in the measurements, regardless of the pairing order.
@@ -1884,6 +1893,8 @@ Any non-zero fitness potential $V_i$ generated by this pipeline is uniformly bou
 *   $V_{\text{pot,max}} := (g_{A,\max} + \eta)^{\alpha+\beta}$
 :::
 :::{prf:proof}
+:label: proof-lem-potential-bounds
+
 **Proof.**
 
 The proof follows directly from the definition of the multiplicative potential and the bounded properties of its components.
@@ -2085,6 +2096,7 @@ where $V_{\max,\text{KE}}$ is a uniform bound on the maximum possible kinetic en
 :::
 
 :::{prf:proof}
+:label: proof-prop-bounded-velocity-expansion
 **Proof:**
 
 We will prove that the one-step change in the velocity variance component $V_{Var,v}$ due to cloning is bounded by a state-independent constant. The proof proceeds in four parts: (1) establish the domain of possible velocities, (2) bound the per-walker variance change from velocity reset, (3) bound the total variance change across all cloned walkers, and (4) verify that all bounds are state-independent through the velocity regularization mechanism.
@@ -2327,6 +2339,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lem-V_Varx-implies-variance
 **Proof.**
 
 The proof is by contradiction. Assume the premise holds: $V_{Var,x} > R_{total\_var,x}^2$. Assume for contradiction that the conclusion is false. This would mean that for *both* swarms (`k=1` and `k=2`):
@@ -2437,6 +2450,7 @@ Furthermore, if the hypocoercive variance exceeds a threshold $\mathrm{Var}_h(S_
 :::
 
 :::{prf:proof}
+:label: proof-lem-phase-space-packing
 **Proof.**
 
 The proof generalizes the classical packing argument to phase space and proceeds in four parts. First, we establish fundamental identities relating the hypocoercive variance to sums of pairwise squared distances in both position and velocity. Second, we partition pairs by their algorithmic distance and bound the hypocoercive variance. Third, we carefully account for the potentially different velocity weighting factors $\lambda_v$ (in the variance) and $\lambda_{\text{alg}}$ (in the distance). Finally, we invert the relationship to derive the desired upper bound on the fraction of close pairs.
@@ -2573,6 +2587,7 @@ Consequently, if $\mathrm{Var}_x(S_k) > R^2_{\text{var}}$ for some threshold $R^
 :::
 
 :::{prf:proof}
+:label: proof-lem-var-x-implies-var-h
 **Proof.**
 
 By definition, the hypocoercive variance is:
@@ -2608,6 +2623,8 @@ $$
 where $D_h^2 := D_x^2 + \lambda_v D_v^2$ is the squared **hypocoercive diameter** of the valid domain, with $D_x := \sup_{x_1, x_2 \in \mathcal{X}_{\text{valid}}} \|x_1 - x_2\|$ being the positional domain diameter and $D_v$ being the velocity domain diameter.
 :::
 :::{prf:proof}
+:label: proof-lem-outlier-fraction-lower-bound
+
 **Proof.**
 
 The proof establishes the lower bound by relating the total hypocoercive variance of the swarm to the maximum possible contribution of any single walker in phase space, which is a fixed geometric property of the environment.
@@ -2713,6 +2730,8 @@ $$
 
 :::
 :::{prf:proof}
+:label: proof-lem-outlier-cluster-fraction-lower-bound
+
 **Proof.**
 
 The proof is constructive. We use the Law of Total Variance to show that a large global variance forces a large variance *between* the cluster centers. We then apply the same logic used in the mean-field regime (Lemma 6.4.2) to this set of cluster centers to prove that a non-vanishing fraction of the population must reside in these outlier clusters.
@@ -2799,6 +2818,8 @@ $$
 
 :::
 :::{prf:proof}
+:label: proof-cor-vvarx-to-high-error-fraction
+
 **Proof.**
 
 This corollary is a direct synthesis of the lemmas established in this chapter.
@@ -2913,6 +2934,7 @@ Both approaches guarantee that the positional signal dominates the velocity nois
 #### 6.5.2. Unified Proof via Clustering-Based Geometric Separation
 
 :::{prf:proof} Proof of Geometric Separation (All Regimes)
+:label: proof-geometric-separation-all-regimes
 
 **Objective:** Using the unified clustering-based definition from Section 6.3, we will prove that high-error clusters are geometrically isolated from low-error clusters in the algorithmic phase-space metric $d_{\text{alg}}$, starting from the premise $\mathrm{Var}_x(S_k) > R^2_{\mathrm{var}}$. This proof applies uniformly across all interaction regimes.
 
@@ -3317,6 +3339,8 @@ $$
 
 :::
 :::{prf:proof}
+:label: proof-thm-geometry-guarantees-variance
+
 **Proof.**
 
 The proof is constructive and proceeds in three stages. First, we invoke the proven geometric consequences for a high-variance swarm, which guarantee a separation in the *expected* distance measurements between the high-error and low-error subpopulations. Second, we prove that this separation between subpopulation means necessitates a non-zero variance in the set of all individual expected distances. Finally, we use the Law of Total Variance to show that this provides a direct lower bound for the total expected measurement variance.
@@ -3470,6 +3494,8 @@ $$
 where `Var_max(d')` is the maximum possible variance of the rescaled values, and $\kappa_var(d')$ is the guaranteed lower bound on the variance of the rescaled values in the high-error state.
 :::
 :::{prf:proof}
+:label: proof-prop-satisfiability-of-snr-gamma
+
 **Proof.**
 
 The proof strategy is to show that the guaranteed signal variance of the rescaled values, $\kappa_var(d')$, scales with $\gamma^{2}$ in the small-signal limit, while the maximum possible noise, `Var_max(d')`, remains a fixed constant independent of $\gamma$. This algebraic advantage allows $\gamma$ to be chosen to ensure the signal always dominates the noise.
@@ -3577,6 +3603,8 @@ $$
 
 :::
 :::{prf:proof}
+:label: proof-lem-variance-to-gap
+
 **Proof.**
 
 The proof relies on a standard identity that relates the empirical variance of a set to the sum of its pairwise squared differences.
@@ -3653,6 +3681,8 @@ $$
 where $Z_{\text{supp}} := \left[ -2V_{\max}/\sigma'_{\min,\text{patch}}, 2V_{\max}/\sigma'_{\min,\text{patch}} \right]$ is the compact support of all possible standardized scores.
 :::
 :::{prf:proof}
+:label: proof-lem-rescale-derivative-lower-bound
+
 **Proof.**
 1.  **Compactness of the Domain:** Any standardized score `zᵢ` must lie within the interval `Z_supp`. This interval is defined by the uniform constants `V_max` and $\sigma'_min,patch$, making `Z_supp` a compact set that is independent of the swarm state.
 
@@ -3686,6 +3716,8 @@ $$
 
 :::
 :::{prf:proof}
+:label: proof-lem-raw-gap-to-rescaled-gap
+
 **Proof.**
 
 The proof follows the signal gap as it propagates through the two main steps of the pipeline.
@@ -3771,6 +3803,8 @@ $$
 
 :::
 :::{prf:proof}
+:label: proof-lem-variance-to-mean-separation
+
 **Proof.**
 
 The proof is based on the decomposition of the total variance provided by the Law of Total Variance. We will establish a precise identity relating the total variance to the difference in subset means, find a sharp upper bound on the confounding variance term, and combine these results to derive the desired lower bound.
@@ -3894,6 +3928,8 @@ $$
 where $\kappa_mean,d'(\varepsilon)$ and $\kappa_mean,r'$ are the guaranteed N-uniform separations between the *mean* rescaled values of the high-error and low-error populations, derived from the system's guaranteed signal variance and landscape regularity, respectively.
 :::
 :::{prf:proof}
+:label: proof-thm-derivation-of-stability-condition
+
 **Proof.**
 
 The proof proceeds in four stages. First, we formalize the condition for intelligent targeting in terms of the expected log-fitness of the high-error and low-error populations. Second, we decompose this condition to isolate the trade-off between the diversity and reward signals. Third, we derive rigorous, uniform bounds for these signal gaps under worst-case adversarial conditions. Finally, we assemble these bounds to derive the necessary and sufficient inequality.
@@ -4009,6 +4045,8 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lem-log-gap-lower-bound
+
 **Proof.**
 
 The proof uses the theory of extremal distributions for concave functions. We establish tight bounds on each term by identifying the distributions that minimize $\mathbb{E}[\ln(X)]$ and maximize $\mathbb{E}[\ln(Y)]$, then find the minimum of their difference over all valid mean pairs.
@@ -4118,6 +4156,7 @@ Therefore, $\ln(1 + \kappa/V_{\max})$ is a valid (conservative) lower bound that
 :::
 
 :::{prf:remark} On the Tightness of the Bound
+:label: rem-log-gap-bound-tightness
 :class: note
 
 The stated bound $\ln(1 + \kappa/V_{\max})$ is slightly conservative compared to the tight bound $\ln(1 + \kappa/(V_{\max} - \kappa))$ derived in Step 4. For most practical applications where $\kappa \ll V_{\max}$, the difference is negligible:
@@ -4147,6 +4186,8 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lem-log-gap-upper-bound
+
 **Proof.**
 
 The proof uses extremal distribution theory to find the configuration that maximizes the logarithmic gap. By symmetry, it suffices to bound the one-sided difference $\mathbb{E}[\ln(X)] - \mathbb{E}[\ln(Y)]$; the bound on the absolute value follows immediately.
@@ -4235,6 +4276,7 @@ This completes the proof.
 :::
 
 :::{prf:remark} Why the Bound is Tight at $V_{\min}$
+:label: rem-log-gap-bound-tight-at-vmin
 :class: note
 
 The upper bound $\ln(1 + \kappa/V_{\min})$ is achieved in the worst-case scenario where:
@@ -4267,6 +4309,8 @@ $$
 where $\kappa_{d', \text{mean}} := \frac{1}{\sqrt{f_H f_L}}\sqrt{\kappa_{d', \text{var}} - \operatorname{Var}_{\max}(d')}$.
 :::
 :::{prf:proof}
+:label: proof-prop-corrective-signal-bound
+
 **Proof.**
 
 The proof proceeds in two steps. First, we translate the guaranteed variance into a guaranteed separation between the means of the high-error and low-error populations. Second, we translate this mean separation into a guaranteed separation in the expected logarithms.
@@ -4308,6 +4352,8 @@ $$
 
 :::
 :::{prf:proof}
+:label: proof-prop-adversarial-signal-bound-naive
+
 **Proof.**
 
 The proof finds the maximum possible separation by considering the most extreme allowable configuration of mean rewards, unconstrained by any landscape regularity.
@@ -4371,6 +4417,8 @@ $$
 
 :::
 :::{prf:proof}
+:label: proof-prop-raw-reward-mean-gap-bound
+
 **Proof.**
 The mean reward difference is $|\frac{1}{|L_k|}\sum_{l \in L_k} R(x_l) - \frac{1}{|H_k|}\sum_{h \in H_k} R(x_h)|$. This can be rewritten as the average difference over all pairs: $\frac{1}{|L_k||H_k|} |\sum_{l,h} (R(x_l) - R(x_h))|$.
 
@@ -4405,6 +4453,8 @@ $$
 where $\kappa_{\mathrm{rescaled}}(\cdot)$ is the signal propagation function.
 :::
 :::{prf:proof}
+:label: proof-prop-log-reward-gap-axiom-bound
+
 **Proof.**
 
 The proof proceeds in three direct steps. First, we establish a uniform upper bound on the maximum possible *microscopic* gap between any two rescaled reward values, using the Lipschitz axiom. Second, we argue that the gap between the *means* of any two subpopulations cannot exceed this maximum microscopic gap. Finally, we apply the upper-bound lemma for logarithmic gaps to this bounded mean separation.
@@ -4471,6 +4521,8 @@ $$
 where $\kappa_{d', \text{mean}}$ is the guaranteed N-uniform separation between the mean rescaled diversity values of the high-error and low-error populations, as derived in **Proposition 7.5.2.1**.
 :::
 :::{prf:proof}
+:label: proof-thm-stability-condition-final-corrected
+
 **Proof.**
 
 The proof is a direct assembly of the bounds derived in the preceding propositions. The condition for intelligence, as established in the core trade-off inequality of the main stability proof, is that the guaranteed *minimum* of the corrective signal must be strictly greater than the allowed *maximum* of the adversarial signal.
@@ -4531,6 +4583,8 @@ $$
 where $V_{\text{pot,max}}$ and $V_{\text{pot,min}}$ are the N-uniform bounds on the fitness potential from [](#lem-potential-bounds).
 :::
 :::{prf:proof}
+:label: proof-lem-unfit-fraction-lower-bound
+
 **Proof.**
 
 The proof establishes the bound by analyzing the balance of deviations from the mean fitness, a fundamental statistical property.
@@ -4593,6 +4647,8 @@ $$
 where `k` is the number of alive walkers in swarm `k`.
 :::
 :::{prf:proof}
+:label: proof-thm-unfit-high-error-overlap-fraction
+
 **Proof (by contradiction).**
 
 The proof follows directly from the consequences of the **Stability Condition** ([](#thm-stability-condition-final-corrected)). This condition guarantees that the high-error population is systematically less fit, a statistical property that makes a vanishing overlap with the unfit set impossible.
@@ -4751,6 +4807,8 @@ where $\Delta_{\min} > 0$ for all $k \geq 2$ and all fitness distributions satis
 :::
 
 :::{prf:proof}
+:label: proof-lem-mean-companion-fitness-gap
+
 **Proof.**
 
 The proof proceeds in three steps: (1) express the mean companion fitness algebraically, (2) bound it from below using population fractions, and (3) relate the inter-set mean difference to the fitness range.
@@ -4883,6 +4941,7 @@ Since $f_U, f_F > 0$ and $f_U + f_F = 1$, this bound is strictly positive. For $
 :::
 
 :::{prf:remark} N-Uniformity of the Bound
+:label: rem-n-uniformity-delta-min-bound
 :class: note
 
 The bound $\Delta_{\min}(\epsilon, f_U, f_F, k)$ depends on $k$ through the factor $\frac{1}{k-1}$, which decreases as $k$ increases. However, this is the correct physical behavior: as the swarm size grows, the influence of removing a single walker from the mean calculation diminishes. The critical observation is that for any fixed minimum population fractions $f_U \geq f_{\min}$ and $f_F \geq f_{\min}$ (guaranteed by the Stability Condition from Chapter 7), the bound remains strictly positive and of order $O(1/k)$, which is sufficient for establishing a non-vanishing cloning probability after applying Jensen's inequality in the subsequent lemma.
@@ -4899,6 +4958,8 @@ $$
 
 :::
 :::{prf:proof}
+:label: proof-lem-unfit-cloning-pressure
+
 **Proof.**
 
 The proof establishes that for any walker $i$ in the unfit set, the average fitness of its potential companions is guaranteed to be strictly greater than its own fitness. This ensures a positive average cloning score, which in turn guarantees a positive cloning probability via Jensen's inequality.
@@ -4956,6 +5017,8 @@ $$
 
 :::
 :::{prf:proof}
+:label: proof-cor-cloning-pressure-target-set
+
 **Proof.**
 This is a direct consequence of the preceding lemma. The critical target set $I_{\text{target}}$ is, by definition, a subset of the unfit set $U_k$. Since the lower bound on the cloning probability established in Lemma 8.3.1 holds for every member of $U_k$, it must also hold for every member of any of its subsets.
 
@@ -4979,6 +5042,8 @@ $$
 
 :::
 :::{prf:proof}
+:label: proof-lem-variance-concentration-Hk
+
 **Proof.**
 This follows from the definition of $H_k(\epsilon)$ in the two regimes established by the $\epsilon$-dichotomy. We prove each regime separately.
 
@@ -5101,6 +5166,8 @@ $$
 where $c_{err}(\epsilon) > 0$ and $g_{err}(\epsilon) \ge 0$ are **strictly N-uniform constants**.
 :::
 :::{prf:proof}
+:label: proof-lem-error-concentration-target-set
+
 **Proof.**
 
 The proof is constructive and proceeds in four steps. We first establish a linear relationship between the total system error $V_{\text{struct}}$ and the internal variance of the high-variance swarm $k$. Second, we use this to find a linear lower bound on the error concentrated within the high-error set $H_k(\epsilon)$. Third, we subtract the maximum possible error that can exist in the part of $H_k(\epsilon)$ that is *not* our target set. Finally, we assemble these results to derive the N-uniform constants $c_{\text{err}}$ and $g_{\text{err}}$.
@@ -5213,6 +5280,7 @@ The preceding sections have established the two crucial, N-uniform properties of
 We now assemble these results to provide the final, rigorous proof of the main theorem of this analysis. The strategy is to show that the large error concentrated in the target set, when weighted by the strong average cloning probability of that same set, produces a collective corrective force that is proportional to the total system error.
 
 :::{prf:proof}
+:label: proof-prop-n-uniformity-keystone-addendum
 **Proof of the N-Uniform Quantitative Keystone Lemma (Lemma 8.1.1).**
 
 The proof establishes the inequality for the high-error regime ($V_{\text{struct}} > R^2_{\text{spread}}$) and then defines the global offset $g_{\max}(\epsilon)$ to ensure it holds everywhere, as per the strategy outlined in Section 8.1.
@@ -5505,6 +5573,8 @@ where $\chi_0(\epsilon)$ and $g_0(\epsilon)$ depend only on $\epsilon$ and the f
 :::
 
 :::{prf:proof}
+:label: proof-prop-n-uniformity-keystone
+
 **Proof.**
 
 We verify N-independence by systematically checking every component in the definitions of $\chi(\epsilon) = p_u(\epsilon) \cdot c_{\text{err}}(\epsilon)$ and $g_{\max}(\epsilon) = \max(p_u(\epsilon) \cdot g_{\text{err}}(\epsilon), \chi(\epsilon)R^2_{\text{spread}})$.
@@ -5972,6 +6042,8 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lem-dead-walker-clone-prob
+
 For a dead walker $i$, the fitness potential is $V_{\text{fit},i} = 0$. Any alive companion $c_i$ has $V_{\text{fit},c_i} \geq \eta^{\alpha+\beta}$ by Lemma 5.6.1.
 
 The cloning score is:
@@ -6188,6 +6260,7 @@ For a walker that persists ($a_i = \text{persist}$), $\Delta x_i = 0$ determinis
 :::
 
 :::{prf:proof}
+:label: proof-prop-expected-displacement-cloning
 **Proof.**
 
 The walker clones with probability $p_i$, in which case its position is sampled from $\mathcal{Q}_\delta(x_{c_i}, \cdot)$, yielding displacement bounded by $D_{\text{max}}$.
@@ -6346,6 +6419,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lem-variance-change-decomposition
 **Proof.**
 
 Following [](#def-variance-conversions), recall that $V_{\text{Var},x}$ is **$N$-normalized** (per walker slot):
@@ -6396,6 +6470,7 @@ where $\chi(\epsilon) > 0$ and $g_{\max}(\epsilon)$ are the Keystone constants (
 :::
 
 :::{prf:proof}
+:label: proof-lem-keystone-contraction-alive
 **Proof.**
 
 We analyze the variance change for each walker $i \in I_{11}$ by conditioning on its cloning action.
@@ -6494,6 +6569,7 @@ where $D_{\text{valid}}$ is the diameter of the valid domain.
 :::
 
 :::{prf:proof}
+:label: proof-lem-dead-walker-revival-bounded
 **Proof.**
 
 The proof establishes an upper bound on the variance contribution from dead walker revival by carefully analyzing the geometry of centered positions after cloning.
@@ -6623,6 +6699,7 @@ The contribution from dead walker revival is bounded by a term proportional to t
 ### 10.3.6. Proof of Main Theorem
 
 :::{prf:proof}
+:label: proof-lem-velocity-noise-propagation
 **Proof of Theorem 10.3.1.**
 
 Combining Lemmas 10.3.4 and 10.3.5:
@@ -6687,6 +6764,7 @@ $$
 ### 10.4.1. Proof
 
 :::{prf:proof}
+:label: proof-thm-velocity-variance-bounded-expansion
 **Proof.**
 
 The proof analyzes how the inelastic collision model affects velocity variance.
@@ -6789,6 +6867,7 @@ for some $\kappa_{\text{struct}} > 0$.
 :::
 
 :::{prf:proof}
+:label: proof-cor-structural-error-contraction
 **Proof.**
 
 By Lemma 3.2.4:
@@ -6841,6 +6920,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-thm-complete-variance-drift
 **Proof.**
 
 This result follows immediately by combining the two component drift inequalities established earlier in this chapter.
@@ -7029,6 +7109,7 @@ where $f(\Delta) > 0$ for $\Delta > 0$ is a monotonically increasing function de
 :::
 
 :::{prf:proof}
+:label: proof-lem-fitness-gradient-boundary
 **Proof.**
 
 The proof traces the boundary-induced fitness difference through each stage of the measurement and fitness evaluation pipeline defined in Chapter 5, demonstrating that the ordering is preserved and quantifying the resulting gap.
@@ -7253,6 +7334,7 @@ where $p_{\text{boundary}}(\phi)$ is a monotonically increasing function of $\ph
 :::
 
 :::{prf:proof}
+:label: proof-lem-boundary-enhanced-cloning
 **Proof.**
 
 Let $i \in \mathcal{E}_{\text{boundary}}(S)$ be a boundary-exposed walker. By definition, $\varphi_{\text{barrier}}(x_i) > \phi_{\text{thresh}}$.
@@ -7330,6 +7412,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lem-barrier-reduction-cloning
 **Proof.**
 
 When walker $i$ clones from companion $c_i$, its new position is:
@@ -7370,6 +7453,7 @@ By smoothness of $\varphi_{\text{barrier}}$ in the interior, the second term is 
 ### 11.4.3. Proof of Main Theorem
 
 :::{prf:proof}
+:label: proof-lem-barrier-reduction-measurement
 **Proof of Theorem 11.3.1.**
 
 We analyze the expected change in boundary potential:
@@ -7480,6 +7564,7 @@ This provides a **state-independent upper bound** on how close the swarm can get
 :::
 
 :::{prf:proof}
+:label: proof-cor-bounded-boundary-exposure
 **Proof.**
 
 From the Foster-Lyapunov drift condition:
@@ -7522,6 +7607,7 @@ when the swarm is in a region where $W_b \leq \frac{C_b}{\kappa_b}$.
 :::
 
 :::{prf:proof}
+:label: proof-cor-extinction-suppression
 **Proof.**
 
 We establish exponential suppression of extinction probability through a concentration inequality argument.
@@ -7761,6 +7847,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-thm-inter-swarm-bounded-expansion
 **Proof.**
 
 The proof analyzes how the stochastic cloning mechanism affects the distance between the two swarms' empirical measures.
@@ -7928,6 +8015,7 @@ where $\kappa_W^{\text{kin}} \sim \min(\gamma, \alpha_U, \sigma_{\min}^2) > 0$ p
 :::
 
 :::{prf:proof}
+:label: proof-thm-complete-wasserstein-drift
 **Proof.**
 
 By linearity of expectation and the Wasserstein decomposition {prf:ref}`lem-wasserstein-decomposition`:
@@ -8014,6 +8102,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-thm-complete-cloning-drift
 **Proof.**
 
 The total drift is obtained by summing the component drifts with their respective weights:
@@ -8143,6 +8232,7 @@ for some $\kappa_{\text{total}} > 0$ and $C_{\text{total}} < \infty$, both indep
 :::
 
 :::{prf:proof}
+:label: proof-thm-synergistic-foster-lyapunov-preview
 **Proof Strategy (Complete proof requires both documents).**
 
 This theorem combines the drift inequalities proven in this document (cloning operator) with those from the companion document (kinetic operator). We outline the proof strategy and indicate which results come from which document.
@@ -8309,6 +8399,7 @@ All results hold under the foundational axioms (Chapter 4) and are **constructiv
 :::
 
 :::{prf:proof}
+:label: proof-thm-main-results-summary
 This theorem is proven by systematic consolidation and verification. The complete detailed proof (9/10 rigor, 850 lines) is available in `proofs/proof_20251025_0227_thm_main_results_summary.md`. Here we provide the proof structure:
 
 **Proof Strategy**: Meta-proof via systematic citation. Each of the five summary items is verified by citing the corresponding proven theorem and confirming all dependencies.

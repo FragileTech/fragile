@@ -125,7 +125,7 @@ The proposition's statement is a simplified asymptotic form that:
 | Label | Document | Definition | Used for |
 |-------|----------|------------|----------|
 | def-d-adaptive-diffusion | 18_emergent_geometry.md § 3.1 | $\Sigma_{\text{reg}} = (H + \epsilon_\Sigma I)^{-1/2}$ | Establishing emergent metric |
-| obs-emergent-metric | 18_emergent_geometry.md § 8.1 | $g_{\text{emergent}} = H + \epsilon_\Sigma I$ | Geometric interpretation |
+| rem-observation-emergent-metric | 18_emergent_geometry.md § 8.1 | $g_{\text{emergent}} = H + \epsilon_\Sigma I$ | Geometric interpretation |
 
 **Constants**:
 | Symbol | Definition | Value/Bound | Properties |
@@ -184,7 +184,7 @@ The proof proceeds in 5 main stages:
 - **Expected result**: $\Sigma_{\text{reg}}(x_i, S) = (H_i(S) + \epsilon_\Sigma I)^{-1/2}$ where $H_i(S) = \nabla^2_{x_i} V_{\text{fit}}$
 
 **Substep 1.2**: Define emergent metric as inverse of diffusion
-- **Justification**: obs-emergent-metric (18_emergent_geometry.md:2617-2629)
+- **Justification**: rem-observation-emergent-metric (18_emergent_geometry.md:2617-2629)
 - **Why valid**: Geometric interpretation - diffusion is covariance of noise, metric is inverse
 - **Expected result**: $g_{\text{emergent}} = H + \epsilon_\Sigma I$ and $D_{\text{reg}} = g_{\text{emergent}}^{-1}$
 
@@ -196,7 +196,7 @@ The proof proceeds in 5 main stages:
 **Conclusion**: The emergent metric $g = H + \epsilon_\Sigma I$ is a well-defined Riemannian metric on the state space
 
 **Dependencies**:
-- Uses: def-d-adaptive-diffusion, obs-emergent-metric, assump-spectral-floor
+- Uses: def-d-adaptive-diffusion, rem-observation-emergent-metric, assump-spectral-floor
 - Requires: Spectral floor assumption $\epsilon_\Sigma > \Lambda_-$
 
 **Potential Issues**:
@@ -411,7 +411,7 @@ $$\kappa_{\text{total}} = O(\min\{\kappa_x, \min\{\gamma, c_{\min}\}\tau, \kappa
 This preserves all bottlenecks and avoids the $\tau$-distribution issue.
 
 **References**:
-- Three-regime analysis in 18_emergent_geometry.md § 7.6 (obs-three-regimes) explicitly discusses when each term dominates
+- Three-regime analysis in 18_emergent_geometry.md § 7.6 (rem-observation-three-regimes) explicitly discusses when each term dominates
 - For practical algorithms, $\kappa_b$ is typically large (weak boundary effects), making the simplified form useful
 
 ---
@@ -479,7 +479,7 @@ This preserves all bottlenecks and avoids the $\tau$-distribution issue.
 ### Conjectures
 1. **Optimal Regularization**: Conjecture that $\epsilon_\Sigma^* \sim \sqrt{H_{\min} H_{\max}}$ (geometric mean) optimizes the trade-off between adaptation ($c_{\min}$ large) and geometry exploitation ($D \approx H^{-1}$). **Why plausible**: Balances condition number $\kappa(g) = (H_{\max}+\epsilon_\Sigma)/(\epsilon_\Sigma)$ at intermediate value.
 
-2. **Sharpness of Min-Structure**: Conjecture that the three-term minimum $\min\{\kappa_x, \min\{\gamma, c_{\min}\}\tau, \kappa_b\}$ is tight (each term can be the bottleneck for appropriate parameter choices). **Why plausible**: Section 7.6 (obs-three-regimes) provides examples of each regime.
+2. **Sharpness of Min-Structure**: Conjecture that the three-term minimum $\min\{\kappa_x, \min\{\gamma, c_{\min}\}\tau, \kappa_b\}$ is tight (each term can be the bottleneck for appropriate parameter choices). **Why plausible**: Section 7.6 (rem-observation-three-regimes) provides examples of each regime.
 
 ### Extensions
 1. **Non-Uniform Ellipticity**: Extend to adaptive diffusions with variable ellipticity $c_{\min}(x, S)$, allowing stronger adaptation at cost of state-dependent convergence rate.
@@ -523,15 +523,15 @@ This preserves all bottlenecks and avoids the $\tau$-distribution issue.
 
 **Definitions Used**:
 - {prf:ref}`def-d-adaptive-diffusion`
-- {prf:ref}`obs-emergent-metric`
+- {prf:ref}`rem-observation-emergent-metric`
 
 **Assumptions Used**:
 - {prf:ref}`assump-spectral-floor`
 
 **Related Proofs** (for comparison):
 - Similar technique in: {prf:ref}`thm-main-informal` (shows how ellipticity enters total rate)
-- Dual result: {prf:ref}`obs-three-regimes` (identifies when each term in min dominates)
-- Detailed analysis: Section 7.7 {prf:ref}`obs-regularization-tradeoff` (trade-offs in choosing $\epsilon_\Sigma$)
+- Dual result: {prf:ref}`rem-observation-three-regimes` (identifies when each term in min dominates)
+- Detailed analysis: Section 7.7 {prf:ref}`rem-observation-regularization-tradeoff` (trade-offs in choosing $\epsilon_\Sigma$)
 
 ---
 

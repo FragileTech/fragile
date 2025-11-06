@@ -548,6 +548,7 @@ for some N-uniform constant $c_{\text{align}}(\varepsilon) > 0$.
 :::
 
 :::{prf:proof}
+:label: proof-lem-cluster-alignment
 
 This is a **static proof** using only framework axioms and proven results from [03_cloning](03_cloning).
 
@@ -923,6 +924,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-thm-main-contraction-full
 
 **Step 1: Expected Change in Population Cross-Distances**
 

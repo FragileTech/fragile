@@ -1,0 +1,419 @@
+{
+  "source": {
+    "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+    "line_range": {
+      "lines": [
+        [
+          539,
+          712
+        ]
+      ]
+    },
+    "label": "section-3-the-mass-conserving-forward-equation-pde",
+    "volume": "1_euclidean_gas",
+    "article_id": "07_mean_field",
+    "section": "2.3.3",
+    "section_name": "Derivation of the Internal Cloning Operator from First Principles"
+  },
+  "full_text": "",
+  "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)",
+  "definitions": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              549,
+              563
+            ]
+          ]
+        },
+        "label": "def-transport-operator",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.1",
+        "section_name": "The Transport Operator ($L^\\dagger$) is Mass-Conservative"
+      },
+      "full_text": {
+        "lines": [
+          [
+            549,
+            563
+          ]
+        ]
+      },
+      "label": "def-transport-operator",
+      "term": "Transport Operator",
+      "parameters_mentioned": [
+        "L",
+        "L^dagger",
+        "f",
+        "J",
+        "J_x",
+        "J_v",
+        "D_x",
+        "D_v",
+        "A_v"
+      ]
+    }
+  ],
+  "theorems": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              567,
+              576
+            ]
+          ]
+        },
+        "label": "lem-mass-conservation-transport",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.1",
+        "section_name": "The Transport Operator ($L^\\dagger$) is Mass-Conservative"
+      },
+      "full_text": "",
+      "label": "lem-mass-conservation-transport",
+      "statement_type": "lemma",
+      "conclusion_formula_latex": "\\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0",
+      "explicit_definition_references": [
+        "def-transport-operator"
+      ]
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              609,
+              646
+            ]
+          ]
+        },
+        "label": "thm-mean-field-equation",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.3",
+        "section_name": "The Coupled Mean-Field Equations"
+      },
+      "full_text": "",
+      "label": "thm-mean-field-equation",
+      "statement_type": "theorem",
+      "conclusion_formula_latex": "\\partial_t f = L^\\dagger f - c(z)f + B[f, m_d] + S[f]",
+      "explicit_definition_references": [
+        "def-transport-operator"
+      ]
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              650,
+              670
+            ]
+          ]
+        },
+        "label": "thm-mass-conservation",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.3",
+        "section_name": "The Coupled Mean-Field Equations"
+      },
+      "full_text": "",
+      "label": "thm-mass-conservation",
+      "statement_type": "theorem",
+      "conclusion_formula_latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0",
+      "explicit_definition_references": []
+    }
+  ],
+  "proofs": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              577,
+              593
+            ]
+          ]
+        },
+        "label": "proof-lem-mass-conservation-transport",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.1",
+        "section_name": "The Transport Operator ($L^\\dagger$) is Mass-Conservative"
+      },
+      "full_text": "",
+      "label": "proof-lem-mass-conservation-transport",
+      "proves_label": "lem-mass-conservation-transport",
+      "strategy_text": null,
+      "steps": null,
+      "full_body_text": {
+        "lines": [
+          [
+            579,
+            592
+          ]
+        ]
+      },
+      "explicit_theorem_references": [],
+      "citations_in_text": []
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              672,
+              711
+            ]
+          ]
+        },
+        "label": "proof-thm-mass-conservation",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.3",
+        "section_name": "The Coupled Mean-Field Equations"
+      },
+      "full_text": "",
+      "label": "proof-thm-mass-conservation",
+      "proves_label": "thm-mass-conservation",
+      "strategy_text": null,
+      "steps": null,
+      "full_body_text": {
+        "lines": [
+          [
+            674,
+            710
+          ]
+        ]
+      },
+      "explicit_theorem_references": [
+        "lem-mass-conservation-transport"
+      ],
+      "citations_in_text": []
+    }
+  ],
+  "citations": [],
+  "parameters": [
+    {
+      "label": "param-j_v",
+      "symbol": "J_v",
+      "meaning": "Parameter J_v",
+      "scope": "global",
+      "full_text": "",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-j_v",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      }
+    },
+    {
+      "label": "param-d_x",
+      "symbol": "D_x",
+      "meaning": "Parameter D_x",
+      "scope": "global",
+      "full_text": "",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-d_x",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      }
+    },
+    {
+      "label": "param-j_x",
+      "symbol": "J_x",
+      "meaning": "Parameter J_x",
+      "scope": "global",
+      "full_text": "",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-j_x",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      }
+    },
+    {
+      "label": "param-j",
+      "symbol": "J",
+      "meaning": "Parameter J",
+      "scope": "global",
+      "full_text": "",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-j",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      }
+    },
+    {
+      "label": "param-a_v",
+      "symbol": "A_v",
+      "meaning": "Parameter A_v",
+      "scope": "global",
+      "full_text": "",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-a_v",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      }
+    },
+    {
+      "label": "param-d_v",
+      "symbol": "D_v",
+      "meaning": "Parameter D_v",
+      "scope": "global",
+      "full_text": "",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-d_v",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      }
+    },
+    {
+      "label": "param-f",
+      "symbol": "f",
+      "meaning": "Parameter f",
+      "scope": "global",
+      "full_text": "",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-f",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      }
+    },
+    {
+      "label": "param-l",
+      "symbol": "L",
+      "meaning": "Parameter L",
+      "scope": "global",
+      "full_text": "",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-l",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      }
+    },
+    {
+      "label": "param-l-dagger",
+      "symbol": "L^dagger",
+      "meaning": "Parameter L^dagger",
+      "scope": "global",
+      "full_text": "",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-l-dagger",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      }
+    }
+  ],
+  "remarks": [],
+  "axioms": [],
+  "assumptions": []
+}

@@ -47,6 +47,7 @@ where $\lambda_{\text{LSI}} = \gamma \kappa_{\text{conf}} \kappa_W \delta^2 / C_
 :::
 
 :::{prf:proof}
+:label: proof-lem-wasserstein-entropy
 
 This result follows from Talagrand's inequality relating the Wasserstein distance to relative entropy for probability measures on a metric space.
 
@@ -191,6 +192,7 @@ where $P_{\text{comp}}^i(Z)$ is the diversity companion probability for particle
 :::
 
 :::{prf:proof}
+:label: proof-lem-quantitative-kl-bound
 
 The proof uses a modulated free energy argument combined with the entropy production inequality from {prf:ref}`thm-entropy-production-discrete`.
 
@@ -309,6 +311,7 @@ All terms are independent of the number of particles $N$.
 :::
 
 :::{prf:proof}
+:label: proof-prop-interaction-complexity-bound
 
 The proof follows Jabin & Wang (2016, Lemma 3.2) and relies on the mean-field scaling of the cloning mechanism and the Lipschitz regularity of the mean-field QSD.
 
@@ -458,6 +461,7 @@ where $C_W$ depends on $C_{\text{int}}$, $\lambda_{\text{LSI}}$, and the geometr
 :::
 
 :::{prf:proof}
+:label: proof-lem-lipschitz-observable-error
 
 The proof proceeds in three steps: (1) Kantorovich-Rubinstein duality, (2) relating empirical measure Wasserstein distance to KL divergence, (3) applying previous lemmas.
 
@@ -607,6 +611,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-prop-finite-second-moment-meanfield
 
 The proof relies on the confinement axiom and energy bounds for the mean-field dynamics.
 
@@ -729,6 +734,7 @@ and depends on:
 :::
 
 :::{prf:proof}
+:label: proof-thm-quantitative-propagation-chaos
 
 **Step 1: Apply {prf:ref}`lem-lipschitz-observable-error`**
 
@@ -844,6 +850,7 @@ where $|Z|^4 = (|x|^2 + |v|^2)^2$ for $Z = (x, v)$.
 :::
 
 :::{prf:proof}
+:label: proof-prop-fourth-moment-baoab
 
 The proof uses the energy bounds and geometric ergodicity of the BAOAB chain.
 
@@ -1204,6 +1211,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-lem-baoab-weak-error
 
 The proof uses backward error analysis and Taylor expansion of the BAOAB integrator.
 
@@ -1307,6 +1315,7 @@ where $C_{\text{inv}}$ depends on $\gamma, \sigma, \|\nabla U\|_{\text{Lip}}, M_
 :::
 
 :::{prf:proof}
+:label: proof-lem-baoab-invariant-measure-error
 
 The proof uses the Poisson equation method and exploits the symmetry of the BAOAB integrator.
 
@@ -1503,6 +1512,7 @@ where $C_{\text{BAOAB}}$ depends on $\gamma, \sigma, \|\nabla U\|_{\text{Lip}}, 
 :::
 
 :::{prf:proof}
+:label: proof-thm-langevin-baoab-discretization-error
 
 This follows directly from {prf:ref}`lem-baoab-invariant-measure-error` applied to each particle in the N-particle Langevin system.
 
@@ -1683,6 +1693,7 @@ where $C_{\text{split}}$ depends on $\gamma, \sigma, \lambda, \delta, M_4$ but n
 :::
 
 :::{prf:proof}
+:label: proof-lem-lie-splitting-weak-error
 
 **Step 1: Taylor expansion of semigroups**
 
@@ -1995,6 +2006,7 @@ where $\mathcal{P}_k$ is the distribution after $k$ steps starting from an arbit
 :::
 
 :::{prf:proof}
+:label: proof-lem-uniform-geometric-ergodicity
 
 The proof follows the standard Lyapunov drift approach for discrete-time Markov chains (Meyn & Tweedie, 2009, Chapter 15).
 
@@ -2296,6 +2308,7 @@ $$
 :::
 
 :::{prf:proof}
+:label: proof-prop-mixing-rate-relationship
 
 **Step 1: Spectral analysis**
 
@@ -2355,6 +2368,7 @@ $$
 :::
 
 :::{prf:proof} Proof of {prf:ref}`thm-full-system-discretization-error`
+:label: proof-thm-full-system-discretization-error
 
 **Step 1: Centered observable and Poisson equation**
 
@@ -2555,6 +2569,7 @@ where $\rho_N$ is the single-particle marginal of $\nu_N$. This connects N-parti
 ---
 
 :::{prf:proof}
+:label: proof-thm-total-error-bound
 
 **Step 1: Triangle inequality decomposition**
 
@@ -2847,6 +2862,7 @@ where:
 :::
 
 :::{prf:proof}
+:label: proof-prop-quantitative-explicit-constants
 
 These formulas are derived by tracing through the constants in Parts I, II, and III:
 

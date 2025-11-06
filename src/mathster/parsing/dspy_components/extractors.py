@@ -132,3 +132,72 @@ class SingleLabelExtractor(dspy.Module):
             entity_type=entity_type,
             previous_error_report=previous_error_report,
         )
+
+
+class ParameterExtractor(dspy.Module):
+    """
+    ReAct agent for extracting parameter definitions from chapter text.
+
+    Unlike other mathematical entities (definitions, theorems, etc.), parameters
+    don't have their own Jupyter Book directives. This agent extracts parameters
+    by analyzing parameters_mentioned fields and finding their declarations in text.
+
+    The agent uses multiple search patterns to locate parameter definitions:
+    - "Let X be ..." declarations
+    - "X denotes ..." statements
+    - Algorithm parameter lists
+    - Notation tables
+
+    Uses validation tools for self-correction during extraction.
+    """
+
+    def __init__(self):
+        super().__init__()
+        from mathster.parsing.dspy_components.signatures import ExtractParameters
+        from mathster.parsing.dspy_components.tools import validate_parameter_tool
+
+        self.prog = dspy.ReAct(
+            signature=ExtractParameters,
+            tools=[validate_parameter_tool],
+        )
+
+    def forward(
+        self,
+        chapter_with_lines: str,
+        parameters_mentioned: list[str],
+        parameter_declarations: dict,
+        file_path: str,
+        article_id: str,
+        previous_error_report: str = "",
+    ):
+        """
+        Extract parameter definitions from chapter.
+
+        Args:
+            chapter_with_lines: Numbered chapter text
+            parameters_mentioned: List of parameter symbols from definitions/theorems
+            parameter_declarations: Dict mapping symbols to their declaration locations
+            file_path: Path to source markdown file
+            article_id: Article identifier
+            previous_error_report: Errors from previous attempt
+
+        Returns:
+            List of ParameterExtraction objects
+        """
+        import json
+
+        # Convert inputs to strings for DSPy
+        parameters_str = ",".join(parameters_mentioned)
+        declarations_str = json.dumps(parameter_declarations)
+
+        result = self.prog(
+            chapter_with_lines=chapter_with_lines,
+            parameters_mentioned=parameters_str,
+            parameter_declarations=declarations_str,
+            file_path=file_path,
+            article_id=article_id,
+            previous_error_report=previous_error_report,
+        )
+
+        # Return the parameters list from result
+        return result.parameters if hasattr(result, "parameters") else []
